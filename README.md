@@ -8,6 +8,10 @@ The site is served with GitHub Pages at https://garrettgivre.github.io/Room-For-
 
 One-time setup: in the repo's **Settings → Pages**, set **Source** to **GitHub Actions**.
 
-## Saving
+## Shared rooms
 
-Outside Claude, the room saves to the browser's local storage ("Solo on this device"). The live two-person sync used Claude's artifact database, so it only works in the Claude-hosted version.
+Two people see each other's changes through a free Firebase Firestore database. Until `firebase-config.js` has a config, the room saves only to each browser ("Solo on this device").
+
+- Each device gets its own private room code. **Room → Share invite link** sends a `?room=` link that puts the other person in the same room.
+- `firestore.rules` holds the database rules: rooms are readable and writable by anyone who knows the code, and nothing else in the database can be read or written.
+- The Firebase web SDK is included in `vendor/` (v10.14.1 compat build), so the page loads no outside scripts.

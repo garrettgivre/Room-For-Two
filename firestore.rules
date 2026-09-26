@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Each room is one document. The room code is the key, so anyone who knows it can join.
+    match /rooms/{room} {
+      allow read: if room.size() >= 4 && room.size() <= 24;
+      allow write: if room.size() >= 4 && room.size() <= 24
+        && request.resource.data.keys().hasAll(['items', 'pet', 'feed'])
+        && request.resource.data.items.size() <= 80
+        && request.resource.data.feed.size() <= 50;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
