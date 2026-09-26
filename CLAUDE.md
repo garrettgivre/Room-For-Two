@@ -7,7 +7,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 - Origin: started as a claude.ai artifact, moved here.
 
 ## Files
-- `index.html` — the whole app (~460 KB): CSS, a custom WebGL2 engine, game logic, UI. No build step, no framework.
+- `index.html` — the whole app (~565 KB): CSS, a custom WebGL2 engine, game logic, UI. No build step, no framework.
 - `firebase-config.js` — Firebase web config (public by design). Shared rooms sync through Firestore doc `rooms/<code>`; rules in `firestore.rules`. `null` config = solo mode.
 - `vendor/` — Firebase compat SDK 10.14.1 (loaded only when a config exists).
 - `sw.js` + `manifest.webmanifest` — offline cache (stale-while-revalidate) and install metadata. Debug menu "Refresh app" unregisters the SW and clears caches.
@@ -21,11 +21,11 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 - `WebGLRenderer` — custom three.js-like engine (`window.THREE`). Linear HDR, GGX, ceiling point light (`sun` with `userData.point`) with perspective shadows, lamps as point lights, SH ambient from the sky, room/contact AO, bloom + ACES. `scene.userData.lighting` = `LIT`.
 - Lighting is locked to the Daydream look (`SKY_LIGHT.daydream`) and never changes with the sky.
 - Sky: `SKY_TIMES` + `updateSky()` — backdrop follows **US Central time**, blending night → dawn → daydream → golden → twilight. No sky picker. Debug slider previews hours.
-- Tiles (Sims-style): floor = N×N tiles `state.tf`, walls = 4×N full-height columns `state.tw` (N = `state.size`, 8/10/12; `GRID`/`HALF` are `let` and change with `setRoomSize`) (normalize migrates old `floor`/`wall`). `TILESETS` via `tileset(kind,k,{n,span,mode,paint|img})`: modes `repeat` (span tiles, grid-aligned), `border` (floors, 3x3 source, edges/corners/inner corners by quadrant) and `run` (walls, 3-column source with end caps). Painters: `FLOOR_FN`/`WALL_FN` (the originals, span 4) + `TILE_PAINT`; image sets go in `TILE_ART` (made with `tools/tiles/make_tile.py`, guide + ChatGPT prompts in `tools/tiles/README.md`). `syncTiles` rebuilds merged per-set meshes (`buildFloorTiles`/`buildWallTiles`); the old floor/wall planes stay invisible for raycasts. Painting: `startBrush`, paint bar `#paintbar` (Tile/Area/Room, undo), strokes in `startStroke`/`moveStroke`/`endStroke`.
+- Tiles (Sims-style): floor = N×N tiles `state.tf`, walls = 4×N full-height columns `state.tw` (N = `state.size`, 8/10/12; `GRID`/`HALF` are `let` and change with `setRoomSize`) (normalize migrates old `floor`/`wall`). `TILESETS` via `tileset(kind,k,{n,span,mode,paint|img})`: modes `repeat` (span tiles, grid-aligned), `border` (floors, 3x3 source, edges/corners/inner corners by quadrant) and `run` (walls, 3-column source with end caps). Painters: `FLOOR_FN`/`WALL_FN` (the originals, span 4) + `TILE_PAINT`; image sets go in `TILE_ART` (made with `tools/tiles/make_tile.py`, guide + ChatGPT prompts in `tools/tiles/README.md`). `syncTiles` rebuilds merged per-set meshes (`buildFloorTiles`/`buildWallTiles`); the old floor/wall planes stay invisible for raycasts. Painting: pick a set in Decorate → Floors/Walls, `startBrush`, paint bar `#paintbar` (its swatch reopens that Decorate view) (Tile/Area/Room, undo), strokes in `startStroke`/`moveStroke`/`endStroke`.
 - Sky textures: `SKY_FN` (canvas-painted, generated on demand by `roomTexture`).
 - Furniture: `CAT` (catalog), `BUILD` (models), `makePiece` (adds bevels + procedural surface detail), `renderThumb` (thumbnails; also used for props via `'toy:'+id`).
 - Build vs live mode: furniture can only be selected/moved while the Decorate tab is open (`pointerdown` checks `openTab`). One undo history for all build changes: `beginBuild()`/`endBuild(U)` around an action, `undoBuild()` (Decorate header `#decoUndo`, paint bar `#pbUndo`); snapshots hold items, tiles, `fown` and `door`; cleared when a partner's change arrives (`adoptRemote`).
-- Decorate menu: `renderDeco` (search `decoQ`, kind `decoFn`, set `decoSet`, `DECO_SORTS`), a scrolling grid whose thumbnails are queued by an IntersectionObserver (`queueThumbsFirst`) so it scales to a big catalog. `decoMode` 'place' (Decorate: places from storage `state.fown`, owned first, unowned show a Shop tag → `goBuy`) or 'buy' (Cozy Nest catalog). `bindCard`: tap places, hold (touch) or drag (mouse) picks up and places into the room. New catalog items only need a `CAT` entry + `BUILD` model; new kinds go in `FUNCS`, new sets in `SETS` (with a `set-*.webp` icon).
+- Decorate menu: `renderDeco` (search `decoQ`, kind `decoFn`, set `decoSet`, `DECO_SORTS`), a scrolling grid whose thumbnails are queued by an IntersectionObserver (`queueThumbsFirst`) so it scales to a big catalog. `decoMode` 'place' (Decorate: only owned furniture, in storage or placed; tapping one that's all placed selects it in the room) or 'buy' (Cozy Nest catalog). `bindCard`: tap places, hold (touch) or drag (mouse) picks up and places into the room. New catalog items only need a `CAT` entry + `BUILD` model; new kinds go in `FUNCS`, new sets in `SETS` (with a `set-*.webp` icon).
 - Pet: `PET_PALS`, `PST` (8 stages: Egg, Baby, Toddler, Child, Teen, Young adult, Adult, Elder; `STAGE_XP`), `buildPet`, `updatePet`. Two-headed jelly creature: lime + blue heads, one big eye each, antenna tufts. Rig has attachment sockets `R.sock.*` (hatL/hatR, faceL/faceR, neck, back, waist, handL/handR, footL/footR) reserved for future clothing.
 - Pet animation layer: `ACTS_ANIM` + `petAct(k)` (dance, stretch, nuzzle, curious, sit, tumble, sneeze, slump, shrug, doze, spinjump, and held poses hold/hug/wand/press/stroke/munch/scrub/brush/spritz/lather/soak). `idleAct` chooses by mood, stage and personality.
 - Living in the room: `pickUse` (idle chooser, weighted by stats) picks from `USE_ITEM` (per item) / `USE_FN` (per catalog fn). Kinds: `perch` (seats, beds, rocking horse via `CAT.perch` {y,z,x,w,bz,fz,top,fe,side,se,foot,kind:'sit'|'bed'|'ride'}; `perchSpots` only returns spots the pet fits, from `PET_DIM` per stage), `nap` (pet beds), `stand` (walk up, face it, play a `u_*` anim from `ACTS_ANIM`), `wall`, `rug`. Use state: `pet.use`, `startUse`/`updUse`/`endUse` (lamp `flick`, `wob`, emotes, `then`). Beds: nap when tired, else bounce. Walking goes round furniture: `findPath` (A* on a 32x32 `navGrid`, string-pulled), `spotClear` keeps use spots off other furniture. All of it is cosmetic (no stat changes) so both devices can run their own pet AI safely.
@@ -78,10 +78,23 @@ with shopkeepers); Cozy Nest (furniture) and Hammer & Hue (construction: tile un
 Economy now: pet items, furniture, tile sets, door styles, windows and room size are all bought in shops. Furniture
 and windows go to storage (`state.fown`) and are placed from Decorate; storing returns them (no refund).
 
-Not yet verified by hand: moving the door by tapping a wall (Room tab → Move door), the 12×12 upgrade, storing
+Not yet verified by hand: moving the door by tapping a wall (Decorate → Door → Move door), the 12×12 upgrade, storing
 furniture back to storage, and scrolling door/window thumbnails on a phone (each renders its set's pattern, may stutter).
 
+## Where things stand (end of the Sept 2026 cloud session, after the desktop one)
+Done, in order: room sets 01–10 imported (40 tile sets); buy/build rework (Decorate tabs Furniture/Floors/Walls/Door,
+owned-only outside shops, clear tile names with theme headings, debug Sandbox, fixed the paint bar that never showed);
+the Two-Do List game loop (daily two-dos, treat, weekly sticker card, story levels, big moments); Jelly Arcade with four
+minigames; then the arcade redo (real 3D pet in the games, levels/stars/mastery, refined art).
+
+Not verified on a real phone yet: arcade performance (the pet renders in a second WebGL context every frame; if it
+stutters, render the pet every other frame or at a smaller size in `gpDraw`), game touch controls, and the reward
+cards. High scores started fresh with the stars version (old `state.arc.best` is ignored). Placeholder icons
+`assets/icons/arcade.webp` and `twodo.webp` were drawn in SVG by Claude; the user may replace them with ChatGPT art
+(prompts were given: glossy jelly arcade cabinet; pink clipboard with checks and a heart).
+
 ## Where we're going
+- The user wants clothes/accessories later and expects them to show in the arcade too (they will, if attached to the rig sockets).
 - More shops on the map: clothing (outfits on the rig sockets `R.sock.*`) is the obvious next one; map art for the shop houses.
 - More ChatGPT art: tile sets (follow `tools/tiles/README.md`), pet portraits per stage, item art, posters, backdrops.
 - Shops could change stock/prices over time (the showroom and deals are already daily, seeded by date).
