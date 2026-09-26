@@ -229,7 +229,7 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px da
 .dbg-slider{grid-template-columns:62px 1fr 34px;margin:8px 0}
 
 /* ---------- Klasky-Csupo pass: wonky letters, wobble, sets ---------- */
-.dbg-btn,.price{filter:url(#wob)}
+.dbg-btn{filter:url(#wob)}
 .card .thumb{background:radial-gradient(rgba(255,255,255,.55) 1.5px,transparent 2px) 0 0/10px 10px,var(--th,#CFEFEA)}
 .card:nth-child(4n+2) .thumb{--th:#FFD1E6}.card:nth-child(4n+3) .thumb{--th:#FBE7A6}.card:nth-child(4n+4) .thumb{--th:#E3F5B5}
 .chip span{margin-right:5px}
@@ -369,7 +369,12 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px da
 .dcard:nth-child(even){transform:rotate(1.5deg)}
 .dcard .thumb{width:100%;height:auto;aspect-ratio:1/.9;position:relative}
 .dcard b{font-size:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.dcard .price{width:42px;height:42px;top:-13px;right:-11px;font-size:12px}
+.price{width:48px;height:44px;top:-15px;right:-13px;padding:0 0 4px;display:flex;align-items:center;justify-content:center;transform:rotate(9deg);font-size:15px;line-height:1;color:#fff;letter-spacing:.01em;
+  text-shadow:1.6px 0 var(--ink),-1.6px 0 var(--ink),0 1.6px var(--ink),0 -1.6px var(--ink),1.2px 1.2px var(--ink),-1.2px 1.2px var(--ink),1.2px -1.2px var(--ink),-1.2px -1.2px var(--ink);filter:drop-shadow(0 2px 0 rgba(59,18,115,.35))}
+.price::after{display:none}
+.price::before{inset:0;clip-path:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 44'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23FF7CC0'/%3E%3Cstop offset='1' stop-color='%23FF2E8C'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M24 40C11 31 4 24 4 15.5 4 9.5 8.6 5 14.3 5c4.2 0 7.6 2.4 9.7 6 2.1-3.6 5.5-6 9.7-6C39.4 5 44 9.5 44 15.5 44 24 37 31 24 40Z' fill='%23fff' stroke='%23fff' stroke-width='7' stroke-linejoin='round'/%3E%3Cpath d='M24 40C11 31 4 24 4 15.5 4 9.5 8.6 5 14.3 5c4.2 0 7.6 2.4 9.7 6 2.1-3.6 5.5-6 9.7-6C39.4 5 44 9.5 44 15.5 44 24 37 31 24 40Z' fill='url(%23g)' stroke='%233B1273' stroke-width='3' stroke-linejoin='round'/%3E%3Cellipse cx='14' cy='12.5' rx='5' ry='3' transform='rotate(-30 14 12.5)' fill='%23fff' opacity='.75'/%3E%3Ccircle cx='35' cy='25' r='1.6' fill='%23fff' opacity='.5'/%3E%3Ccircle cx='31' cy='30' r='1.1' fill='%23fff' opacity='.45'/%3E%3C/svg%3E") center/100% 100% no-repeat}
+.price i{display:none}
+.price.long{font-size:12.5px}
 .dcard .setb{width:32px!important;height:32px!important;top:-13px!important;left:-12px!important}.dcard .setb img{width:32px;height:32px}
 .dcard.held{transform:scale(.92) rotate(0);opacity:.55}
 .own{position:absolute;left:4px;bottom:4px;font-family:var(--disp);font-size:11px;line-height:1;color:#fff;background:var(--ink);border-radius:8px;padding:3px 6px 4px}
@@ -942,11 +947,11 @@ const FUNCS=[['seat','Seats','🛋️'],['bed','Beds','🛏️'],['surface','Tab
 const CAT=[
  // Space Age (Y2K chrome originals + a few new)
  {k:'bed',n:'Bubble bed',set:'space',fn:'bed',p:12,dc:0},
- {k:'sofa',n:'Blob sofa',set:'space',fn:'seat',p:10,dc:7},
- {k:'egg',n:'Egg chair',set:'space',fn:'seat',p:9,dc:8},
- {k:'bean',n:'Bean bag',set:'space',fn:'seat',p:4,dc:9},
- {k:'blow',n:'Blow-up chair',set:'space',fn:'seat',p:5,dc:0},
- {k:'pouf',n:'Star pouf',set:'space',fn:'seat',p:3,dc:3},
+ {k:'sofa',n:'Blob sofa',set:'space',fn:'seat',p:10,dc:7,seat:[.75,.08,-.57,.57]},
+ {k:'egg',n:'Egg chair',set:'space',fn:'seat',p:9,dc:8,seat:[.93,.1]},
+ {k:'bean',n:'Bean bag',set:'space',fn:'seat',p:4,dc:9,seat:[.7,.1]},
+ {k:'blow',n:'Blow-up chair',set:'space',fn:'seat',p:5,dc:0,seat:[.4,.05]},
+ {k:'pouf',n:'Star pouf',set:'space',fn:'seat',p:3,dc:3,seat:[.44,0]},
  {k:'table',n:'Tulip table',set:'space',fn:'surface',p:5,dc:7},
  {k:'orbtable',n:'Orb side table',set:'space',fn:'surface',p:6,dc:9},
  {k:'shelf',n:'Cube shelf',set:'space',fn:'storage',p:6,dc:12},
@@ -969,10 +974,10 @@ const CAT=[
  {k:'neon',n:'Neon heart',set:'space',fn:'wall',p:5,dc:0,wall:1,y:2.2},
  {k:'mirror',n:'Mirror',set:'space',fn:'wall',p:5,dc:8,wall:1,y:1.8},
  // Sweet Tooth
- {k:'cupcake',n:'Cupcake chair',set:'candy',fn:'seat',p:8,dc:0},
- {k:'donut',n:'Donut pouf',set:'candy',fn:'seat',p:4,dc:0},
- {k:'gumdrop',n:'Gumdrop stool',set:'candy',fn:'seat',p:3,dc:4},
- {k:'bonbon',n:'Bonbon sofa',set:'candy',fn:'seat',p:11,dc:9},
+ {k:'cupcake',n:'Cupcake chair',set:'candy',fn:'seat',p:8,dc:0,seat:[.88,.1]},
+ {k:'donut',n:'Donut pouf',set:'candy',fn:'seat',p:4,dc:0,seat:[.42,0]},
+ {k:'gumdrop',n:'Gumdrop stool',set:'candy',fn:'seat',p:3,dc:4,seat:[.64,0]},
+ {k:'bonbon',n:'Bonbon sofa',set:'candy',fn:'seat',p:11,dc:9,seat:[.71,.12,-.5,.5]},
  {k:'cakebed',n:'Layer cake bed',set:'candy',fn:'bed',p:13,dc:0},
  {k:'cakestand',n:'Cake stand table',set:'candy',fn:'surface',p:6,dc:5},
  {k:'macaron',n:'Macaron tower',set:'candy',fn:'deco',p:4,dc:9},
@@ -988,9 +993,9 @@ const CAT=[
  {k:'frostshelf',n:'Frosting shelf',set:'candy',fn:'wall',p:3,dc:0,wall:1,y:1.6},
  {k:'donutmirror',n:'Donut mirror',set:'candy',fn:'wall',p:5,dc:0,wall:1,y:1.9},
  // Oat & Linen
- {k:'linensofa',n:'Linen sofa',set:'calm',fn:'seat',p:10,dc:10},
- {k:'boucle',n:'Bouclé chair',set:'calm',fn:'seat',p:7,dc:12},
- {k:'cushion',n:'Floor cushion',set:'calm',fn:'seat',p:2,dc:6},
+ {k:'linensofa',n:'Linen sofa',set:'calm',fn:'seat',p:10,dc:10,seat:[.64,.08,-.54,.54]},
+ {k:'boucle',n:'Bouclé chair',set:'calm',fn:'seat',p:7,dc:12,seat:[.45,.08]},
+ {k:'cushion',n:'Floor cushion',set:'calm',fn:'seat',p:2,dc:6,seat:[.22,0]},
  {k:'platbed',n:'Platform bed',set:'calm',fn:'bed',p:12,dc:10},
  {k:'oaktable',n:'Oak coffee table',set:'calm',fn:'surface',p:5,dc:10},
  {k:'sideboard',n:'Low sideboard',set:'calm',fn:'storage',p:8,dc:10},
@@ -1007,9 +1012,9 @@ const CAT=[
  {k:'floatshelf',n:'Floating shelf',set:'calm',fn:'wall',p:3,dc:6,wall:1,y:1.5},
  {k:'macrame',n:'Macramé hanging',set:'calm',fn:'wall',p:3,dc:10,wall:1,y:2.1},
  // Dumpster Den
- {k:'trashcan',n:'Trash can throne',set:'monster',fn:'seat',p:6,dc:6},
- {k:'tire',n:'Tire pouf',set:'monster',fn:'seat',p:3,dc:4},
- {k:'patchcouch',n:'Patched couch',set:'monster',fn:'seat',p:9,dc:8},
+ {k:'trashcan',n:'Trash can throne',set:'monster',fn:'seat',p:6,dc:6,seat:[.86,.03]},
+ {k:'tire',n:'Tire pouf',set:'monster',fn:'seat',p:3,dc:4,seat:[.65,0]},
+ {k:'patchcouch',n:'Patched couch',set:'monster',fn:'seat',p:9,dc:8,seat:[.76,.08,-.74,0,.74]},
  {k:'crustybed',n:'Crate mattress',set:'monster',fn:'bed',p:8,dc:6},
  {k:'crate',n:'Crate table',set:'monster',fn:'surface',p:4,dc:2},
  {k:'barrel',n:'Sludge barrel',set:'monster',fn:'storage',p:5,dc:8},
@@ -2258,6 +2263,16 @@ Object.keys(GROOM_PLAY).forEach(k=>TOY_PLAY[k]=GROOM_PLAY[k]);
 function petBlockers(){const bs=[];itemObjs.forEach(o=>{const d=CATMAP[o.userData.k];if(d.wall||d.flat)return;const b=new THREE.Box3().setFromObject(o);b.expandByScalar(.35);bs.push(b)});return bs}
 function randomSpot(){const bs=petBlockers();for(let i=0;i<14;i++){const p=new THREE.Vector3((Math.random()*2-1)*3.2,0,(Math.random()*2-1)*3.2);if(!bs.some(b=>b.containsPoint(p.clone().setY(.3))))return p}return new THREE.Vector3((Math.random()*2-1)*2,0,(Math.random()*2-1)*2)}
 function findItem(flag){for(const o of itemObjs.values())if(CATMAP[o.userData.k]&&CATMAP[o.userData.k][flag])return o;return null}
+/* ---------- seats: now and then the pet hops up onto a seat and sits a while ---------- */
+// CAT seat:[y,z,...x] = cushion height, how far forward the sitting spot is, and the x of each spot (sofas have several).
+function seatWorld(sp){const o=itemObjs.get(sp.id),d=o&&CATMAP[o.userData.k];if(!d||!d.seat)return null;const r=o.rotation.y,c=Math.cos(r),sn=Math.sin(r),fx=sn,fz=c,x=o.position.x+sp.x*c+sp.z*sn,z=o.position.z-sp.x*sn+sp.z*c,f=1.05-sp.z;
+  return{x,z,y:d.seat[0],h:r,front:new THREE.Vector3(x+fx*f,0,z+fz*f)}}
+function seatSpots(){const out=[];itemObjs.forEach(o=>{const d=CATMAP[o.userData.k];if(!d||!d.seat)return;const [,z,...xs]=d.seat;(xs.length?xs:[0]).forEach(x=>out.push({id:o.userData.id,x,z}))});
+  return out.filter(sp=>{const w=seatWorld(sp);return w&&Math.abs(w.front.x)<3.3&&Math.abs(w.front.z)<3.3})}
+function goSit(){const ss=seatSpots().filter(sp=>!pet.lastSeat||sp.id!==pet.lastSeat||Math.random()<.3);if(!ss.length)return false;const sp=ss[Math.random()*ss.length|0],w=seatWorld(sp);
+  petGo(w.front,()=>{if(!seatWorld(sp))return;pet.mode='perch';pet.seat=sp;pet.lastSeat=sp.id;pet.seatK=0;pet.seatDir=1;pet.act=null;pet.fidget=3;
+    const stats=petStats();pet.perchT=(stats.energy<40?16:9)+Math.random()*10});return true}
+function leaveSeatNow(){const w=pet.seat&&seatWorld(pet.seat);if(w)pet.pos.copy(w.front);pet.seat=null;pet.seatY=0;pet.seatK=0;pet.hop=Math.max(pet.hop,.45)}
 function petGo(p,cb){pet.target=p.clone();pet.target.y=0;pet.mode='walk';pet.onArrive=cb||null}
 const approach=(cur,to,k)=>cur+(to-cur)*Math.min(1,k);
 
@@ -2305,6 +2320,7 @@ function updatePet(dt,t){
   if(st===0){const burst=Math.sin(t*.9)>.55?1:0;R.body.rotation.z=Math.sin(t*10)*.13*burst+Math.sin(t*2)*.03;
     R.root.position.y=Math.sin(pet.hop*Math.PI)*.35;R.root.scale.set(pop,pop*(1+Math.sin(pet.hop*Math.PI*2)*.08),pop);g.position.copy(pet.pos);g.rotation.y=0;return}
 
+  if(pet.seat&&pet.mode!=='perch')leaveSeatNow();
   const S=R.S,stats=petStats(),avg=(stats.hunger+stats.fun+stats.energy+stats.clean)/4,tired=stats.energy<20;
   const walking=pet.mode==='walk'&&!!pet.target,sleeping=pet.mode==='sleep',eating=pet.mode==='eat';
   if(walking){const d=pet.target.clone().sub(pet.pos);d.y=0;const L=d.length();
@@ -2312,19 +2328,31 @@ function updatePet(dt,t){
     else{const sp=(tired?.5:.85)*S.speed*(stats.hunger>100?.6:1)*dt;pet.pos.add(d.multiplyScalar(Math.min(1,sp/L)));const h=Math.atan2(pet.target.x-pet.pos.x,pet.target.z-pet.pos.z);let dh=h-pet.heading;dh=Math.atan2(Math.sin(dh),Math.cos(dh));pet.heading+=dh*Math.min(1,dt*8)}
     pet.ph+=dt*(tired?8:12)*(S.scoot?.8:S.elder?.7:1)}
   else if(pet.mode==='idle'){pet.timer-=dt;
-    if(pet.timer<=0){if(stats.energy<12&&Math.random()<.5){pet.mode='sleep';pet.sleepT=10}else{petGo(randomSpot());const P=persOf();if(P&&P.wander)pet.timer=0}}
+    if(pet.timer<=0){if(stats.energy<12&&Math.random()<.5){pet.mode='sleep';pet.sleepT=10}else if(!(Math.random()<(stats.energy<50?.4:.22)+(S.elder?.2:0)&&goSit())){petGo(randomSpot());const P=persOf();if(P&&P.wander)pet.timer=0}}
     pet.fidget-=dt;if(pet.fidget<=0&&!pet.act){pet.fidget=5+Math.random()*6;const r=Math.random();if(r<.45)idleAct(avg,stats);else if(avg>55){if(r<.65)pet.waveT=1.4;else if(r<.8){pet.hop=1;pet.happyT=.8}}}
     pet.chatIn-=dt*((persOf()||{}).chat||1);if(pet.chatIn<=0){pet.chatIn=8+Math.random()*10;pet.chatT=1.6;if(avg>70&&Math.random()<.35)emote('🎵')}
     const h=Math.atan2(camera.position.x-pet.pos.x,camera.position.z-pet.pos.z);let dh=h-pet.heading;dh=Math.atan2(Math.sin(dh),Math.cos(dh));pet.heading+=dh*Math.min(1,dt*1.8)}
+  else if(pet.mode==='perch'){const w=seatWorld(pet.seat);
+    if(!w){pet.seat=null;pet.seatY=0;pet.mode='idle';pet.timer=1;pet.hop=.5}
+    else{pet.seatK=clamp(pet.seatK+dt*2.3*pet.seatDir,0,1);const k=pet.seatK,e=k*k*(3-2*k);
+      pet.pos.set(w.front.x+(w.x-w.front.x)*e,0,w.front.z+(w.z-w.front.z)*e);pet.seatY=w.y*e+Math.sin(k*Math.PI)*(pet.seatDir>0?.5:.3);
+      // face the seat, spin round during the hop up, and sit facing out
+      const hh=pet.seatDir>0?w.h+Math.PI*(1-e):w.h;let dh=hh-pet.heading;dh=Math.atan2(Math.sin(dh),Math.cos(dh));pet.heading+=dh*Math.min(1,dt*(k>0&&k<1?14:8));
+      if(pet.seatDir>0&&k>=1){pet.perchT-=dt;pet.fidget-=dt;
+        if(pet.fidget<=0){pet.fidget=4+Math.random()*5;const r=Math.random();if(r<.25&&avg>45)pet.waveT=1.2;else if(r<.45)pet.chatT=1.6;else if(r<.6&&avg>65)emote('🎵');else if(r<.7&&stats.energy<30)emote('😪')}
+        if(pet.perchT<=0)pet.seatDir=-1}
+      if(pet.seatDir<0&&k<=0){pet.seat=null;pet.seatY=0;pet.mode='idle';pet.timer=1.5+Math.random()*2;pet.hop=.35}}}
   else if(sleeping){pet.sleepT-=dt;if(pet.sleepT<=0){pet.mode='idle';pet.timer=1;pet.hop=.6}if(Math.random()<dt*.45)emote('💤')}
   else if(eating){pet.eatT-=dt;if(pet.eatT<=0){pet.mode='idle';pet.timer=2;pet.happyT=1.2;emote('😋')}}
   let A=null;if(pet.act){pet.act.t+=dt;if(pet.act.t>=pet.act.d||walking||sleeping||eating)pet.act=null;else A=ACTS_ANIM[pet.act.k].f(pet.act.t/pet.act.d,t,S)}
+  if(pet.mode==='perch'&&!A){const k=pet.seatK,e=k*k*(3-2*k),kick=(stats.energy<30?.12:avg>55?.32:.2)*e,sp=avg>55?3.4:2.2;
+    A={y:-(S.leg*.95+.02)*e,rx:-.06*e,legs:[-1.35*e+Math.sin(t*sp)*kick,-1.35*e+Math.sin(t*sp+Math.PI)*kick],lid:stats.energy<30?.5:undefined,arms:[0,1].map(i=>({rz:(i?1:-1)*.35,rx:-.45,w:e*.8}))}}
   pet.spinT=Math.max(0,pet.spinT-dt);pet.shakeT=Math.max(0,pet.shakeT-dt);pet.waveT=Math.max(0,pet.waveT-dt);pet.happyT=Math.max(0,pet.happyT-dt);
   pet.chatT=walking||sleeping||eating?0:Math.max(0,pet.chatT-dt);const chat=pet.chatT>0?Math.sin(Math.min(1,(1.6-pet.chatT)/.25)*Math.PI/2)*Math.min(1,pet.chatT/.25):0;
 
   // whole-body placement: babies scoot in little hops, toddlers wobble, elders hunch
   const hopY=Math.sin(pet.hop*Math.PI)*.75,scootY=walking&&S.scoot?Math.abs(Math.sin(pet.ph))*.12:0;
-  g.position.set(pet.pos.x,hopY+scootY+(A&&A.spin!==undefined?A.y:0)+(pet.lift||0),pet.pos.z);
+  g.position.set(pet.pos.x,hopY+scootY+(A&&A.spin!==undefined?A.y:0)+(pet.lift||0)+(pet.seat?pet.seatY||0:0),pet.pos.z);
   g.rotation.y=pet.heading+(A&&A.spin?A.spin:0)+(A&&A.sway?A.sway:0)+(A&&A.shake?Math.sin(t*40)*.12*A.shake:0)+(pet.spinT>0?(1-pet.spinT/1.2)*Math.PI*4:0)+(pet.shakeT>0?Math.sin(t*38)*.35*Math.min(1,pet.shakeT):0);
   const land=pet.hop>0&&pet.hop<.12?1:0,breathe=1+Math.sin(t*(sleeping?1.5:2.4))*(sleeping?.04:.018)-land*.12;
   const bob=walking&&!S.scoot?Math.abs(Math.sin(pet.ph))*.06:0;
@@ -2565,7 +2593,7 @@ function doAct(k,itemId){const a=ACTS[k],P=persOf();if(k!=='nap'&&!itemId){petVi
   petView=null;saveSoon();updHUD();if(openTab==='pet')renderSheet()}
 function warm(){commitPet((s,p)=>{p.xp+=1});state.hearts+=1;pet.hop=.7;pet.waveT=1.3;pet.happyT=1.3;emote('💗');if(stageOf(state.pet.xp)===0)logEvent('warmed the egg');saveSoon();updHUD();if(openTab==='pet')renderSheet()}
 let lastPat=0;
-function petTap(){if(stageOf(state.pet.xp)===0){warm();return}if(pet.mode==='sleep'){emote('💤');return}if(Math.random()<.35&&petAct('nuzzle')){}else{pet.hop=1;emote('💗')}
+function petTap(){if(stageOf(state.pet.xp)===0){warm();return}if(pet.mode==='sleep'){emote('💤');return}if(pet.mode==='perch'){pet.waveT=1.3;pet.happyT=.9;emote('💗')}else if(Math.random()<.35&&petAct('nuzzle')){}else{pet.hop=1;emote('💗')}
   if(Date.now()-lastPat>20000){lastPat=Date.now();commitPet(s=>{s.fun=clamp(s.fun+5,0,100);s.affection=clamp((s.affection??40)+2*((persOf()||{}).love||1),0,100)});saveSoon();updHUD()}}
 
 /* ================= SHEETS ================= */
@@ -2587,7 +2615,7 @@ const FUNCMAP={};FUNCS.forEach(f=>FUNCMAP[f[0]]=f);
 const decoText=c=>(c.n+' '+SETMAP[c.set].n+' '+FUNCMAP[c.fn][1]).toLowerCase();
 function roomCounts(){const n={};state.items.forEach(i=>n[i.k]=(n[i.k]||0)+1);return n}
 function centerChip(row){const on=row.querySelector('[aria-pressed="true"]');if(on)row.scrollLeft=Math.max(0,on.offsetLeft-row.clientWidth/2+on.offsetWidth/2)}
-function decoCard(c,n){return`<div class="card dcard${state.hearts<c.p?' poor':''}" data-k="${c.k}" role="button" tabindex="0" aria-label="Add ${esc(c.n)}, ${c.p} hearts${n?`, ${n} in your room`:''}"><span class="setb" aria-hidden="true"><img src="assets/icons/${SETMAP[c.set].img}.webp" alt=""></span><div class="thumb">${thumbs[c.k]?`<img src="${thumbs[c.k]}" alt="">`:'<i class="spin"></i>'}<span class="own"${n?'':' hidden'}>×${n||0}</span></div><b>${esc(c.n)}</b><span class="price"><i>♥</i>${c.p}</span></div>`}
+function decoCard(c,n){return`<div class="card dcard${state.hearts<c.p?' poor':''}" data-k="${c.k}" role="button" tabindex="0" aria-label="Add ${esc(c.n)}, ${c.p} hearts${n?`, ${n} in your room`:''}"><span class="setb" aria-hidden="true"><img src="assets/icons/${SETMAP[c.set].img}.webp" alt=""></span><div class="thumb">${thumbs[c.k]?`<img src="${thumbs[c.k]}" alt="">`:'<i class="spin"></i>'}<span class="own"${n?'':' hidden'}>×${n||0}</span></div><b>${esc(c.n)}</b><span class="price${c.p>99?' long':''}"><i>♥</i>${c.p}</span></div>`}
 function renderDeco(toTop){const grid=$('#tray');if(!grid)return;
   const words=decoQ.trim().toLowerCase().split(/\s+/).filter(Boolean),hit=c=>{const t=decoText(c);return words.every(w=>t.includes(w))};
   const pool=CAT.filter(c=>(decoSet==='all'||c.set===decoSet)&&hit(c)),per={};pool.forEach(c=>per[c.fn]=(per[c.fn]||0)+1);
