@@ -21,17 +21,20 @@ from art_fix import make_tileable, wrap_x, cut_background, border_source, plank_
 
 WALLH = 3.4
 PX = 320                      # pixels per tile
-SETS = {  # folder prefix -> (key, name, rug band as a fraction of the rug image, corner motif fraction)
-    '01': ('diner', 'Bubblegum diner', .14, .2),
-    '02': ('motel', 'Moon motel', .2, .26),
-    '03': ('aqua', 'Aquarium', .17, .24),
-    '04': ('toybox', 'Toybox', .2, .24),
-    '05': ('cyber', 'Cyber bedroom', .15, .2),
-    '06': ('punch', 'Fruit punch', .2, .26),
-    '07': ('cloud', 'Cloud club', .17, .24),
-    '08': ('garden', 'Indoor garden', .17, .24),
-    '09': ('arcade', 'Arcade carpet', .18, .24),
-    '10': ('candybath', 'Candy bathroom', .15, .22),
+# folder prefix -> (key, theme, rug band as a fraction of the rug image, corner motif fraction, names)
+# names: what each piece shows (floor, rug, wallpaper motif). The theme is only the heading it's listed under, so a
+# wall is never called "carpet": wallpaper = '<motif> wallpaper', panel = '<motif> wainscot', run = '<motif> paneling'.
+SETS = {
+    '01': ('diner', 'Bubblegum Diner', .14, .2, ('Diner checker', 'Cherry soda rug', 'Milkshake')),
+    '02': ('motel', 'Moon Motel', .2, .26, ('Moon carpet', 'Crescent moon rug', 'Moon & planets')),
+    '03': ('aqua', 'Aquarium', .17, .24, ('Pool water', 'Seashell rug', 'Fishbowl')),
+    '04': ('toybox', 'Toybox', .2, .24, ('Toy block planks', 'Building block rug', 'Toy confetti')),
+    '05': ('cyber', 'Cyber Bedroom', .15, .2, ('Pixel grid tiles', 'Circuit rug', 'Retro computer')),
+    '06': ('punch', 'Fruit Punch', .2, .26, ('Punch splash', 'Orange slice rug', 'Fruit salad')),
+    '07': ('cloud', 'Cloud Club', .17, .24, ('Fluffy clouds', 'Cloud rug', 'Rainbow weather')),
+    '08': ('garden', 'Indoor Garden', .17, .24, ('Stepping stones', 'Mossy lawn rug', 'Mushroom garden')),
+    '09': ('arcade', 'Arcade', .18, .24, ('Arcade carpet', 'Arcade rug', 'Game controller')),
+    '10': ('candybath', 'Candy Bathroom', .15, .22, ('Mint bath tiles', 'Bubble bath rug', 'Bubble bath')),
 }
 PLANKS = {'toybox'}          # plank floors: wrap each row at a plank joint
 BIG_SEAM = {'garden'}        # chunky patterns need a wider overlap to hide the seam
@@ -101,35 +104,35 @@ def main(src):
         m = re.match(r'(\d\d)_', d)
         if not m or m.group(1) not in SETS:
             continue
-        key, name, band, corner = SETS[m.group(1)]
+        key, theme, band, corner, (fname, rname, motif) = SETS[m.group(1)]
         P = lambda f: os.path.join(src, d, f)
         # floor: 2x2 repeat
         a = load(P('floor.png'))
         a = plank_rows(a) if key in PLANKS else make_tileable(a, (1, 0), .12 if key not in BIG_SEAM else .3)
         save(cv2.resize(a, (2 * PX, 2 * PX), interpolation=cv2.INTER_AREA), f'f-{key}.webp')
-        lines.append(f"{{kind:'f',k:'{key}',n:'{name}',span:[2,2],img:'assets/tiles/f-{key}.webp'}},")
+        lines.append(f"{{kind:'f',k:'{key}',n:'{fname}',g:'{theme}',span:[2,2],img:'assets/tiles/f-{key}.webp'}},")
         # rug: border mode
         if os.path.exists(P('bordered-rug.png')):
             rug = clean_rug(load(P('bordered-rug.png')))
             rug = cv2.resize(rug, (1024, 1024), interpolation=cv2.INTER_AREA)
             srcimg, b = border_source(rug, PX, .42, band, corner)
             save(srcimg, f'f-{key}rug.webp')
-            lines.append(f"{{kind:'f',k:'{key}rug',n:'{name} rug',mode:'border',b:{b:.2f},img:'assets/tiles/f-{key}rug.webp'}},")
+            lines.append(f"{{kind:'f',k:'{key}rug',n:'{rname}',g:'{theme}',mode:'border',b:{b:.2f},img:'assets/tiles/f-{key}rug.webp'}},")
         # wallpaper: 2 columns per repeat
         wp = load(P('wallpaper.png'))
         a = make_tileable(wp, (1, 0), .12)
         save(cv2.resize(a, (2 * PX, int(2 * PX * a.shape[0] / a.shape[1])), interpolation=cv2.INTER_AREA), f'w-{key}.webp')
-        lines.append(f"{{kind:'w',k:'{key}',n:'{name}',span:[2,1],img:'assets/tiles/w-{key}.webp'}},")
+        lines.append(f"{{kind:'w',k:'{key}',n:'{motif} wallpaper',g:'{theme}',span:[2,1],img:'assets/tiles/w-{key}.webp'}},")
         if os.path.exists(P('full-wall.png')):
             fw = load(P('full-wall.png'))
             target_w = int(fw.shape[0] * 2 / WALLH)            # 2 columns at full wall height
             o = max(24, fw.shape[1] - target_w)
             a = wrap_x(fw, o)
             save(cv2.resize(a, (2 * PX, int(WALLH * PX)), interpolation=cv2.INTER_AREA), f'w-{key}panel.webp')
-            lines.append(f"{{kind:'w',k:'{key}panel',n:'{name} wainscot',span:[2,1],full:1,img:'assets/tiles/w-{key}panel.webp'}},")
+            lines.append(f"{{kind:'w',k:'{key}panel',n:'{motif} wainscot',g:'{theme}',span:[2,1],full:1,img:'assets/tiles/w-{key}panel.webp'}},")
         if os.path.exists(P('wall-run.png')):
             save(wall_run(load(P('wall-run.png')), wp), f'w-{key}run.webp')
-            lines.append(f"{{kind:'w',k:'{key}run',n:'{name} paneling',mode:'run',img:'assets/tiles/w-{key}run.webp'}},")
+            lines.append(f"{{kind:'w',k:'{key}run',n:'{motif} paneling',g:'{theme}',mode:'run',img:'assets/tiles/w-{key}run.webp'}},")
     print('\n'.join('  ' + l for l in lines))
 
 

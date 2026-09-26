@@ -34,6 +34,8 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 - Care system (from the user's old game "Phraipets"): `TIERS` (mood names), Affection (no timer), `spiritOf`, overfeeding to 120 (Bloated), `PERSONALITIES`, `ITEMS` (food/groom/toy), hearts economy, `checkDaily` gift per person.
 - Props: `TOY_BUILD`, `FOOD_BUILD` (pieces in `userData.bites`, eaten one group at a time; drinks drain `userData.level`), `GROOM_BUILD`; scenes in `TOY_PLAY` / `GROOM_PLAY` / `TOY_PLAY.__food`, run by `startToyPlay(id)` / `updateToyPlay`.
 - Emotes: `emote(ch)` maps an emoji key through `EMO` to a bubble (speech/thought/shout) + an icon from `assets/icons`.
+- Build/buy: Decorate has four views (`decoView`: furn / f / w / door, `DECO_VIEWS`, `renderTileView`). Outside shops only owned things show (furniture in storage or placed; unlocked tile sets in `state.town`; door styles in `state.downs`); each view ends with a "Shop at …" button (`shopFor`). Tile sets carry a theme `g` (heading; `TILE_ORDER` is sorted by it) and a name that says what the piece is — never name a wall after the set ("Arcade carpet" wallpaper was the bug). Door/window names come from `styleName` (drops "wallpaper", wainscot → "panel"). The Room tab is sharing/settings only.
+- Sandbox (debug menu, `setSandbox`): unlocks everything in memory; `flush` and `tryRemote` are paused, leaving restores the saved state. Use it to test content instead of editing ownership.
 - State: `defaultState`, `normalize` (migrates old saves — keep it backward compatible), `saveSoon`/`flush`, `connectShared`.
 
 ## Engine gotchas
