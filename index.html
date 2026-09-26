@@ -974,12 +974,12 @@ const SETMAP={};SETS.forEach(s=>SETMAP[s.k]=s);
 const FUNCS=[['seat','Seats','🛋️'],['bed','Beds','🛏️'],['surface','Tables','🍽️'],['storage','Storage','📦'],['light','Lights','💡'],['fun','Fun','🕹️'],['plant','Plants','🌵'],['rug','Rugs','🌀'],['deco','Decor','🗿'],['wall','Walls','🖼️'],['pet','Pet','🐾']];
 const CAT=[
  // Space Age (Y2K chrome originals + a few new)
- {k:'bed',n:'Bubble bed',set:'space',fn:'bed',p:12,dc:0},
- {k:'sofa',n:'Blob sofa',set:'space',fn:'seat',p:10,dc:7,seat:[.75,.08,-.57,.57]},
- {k:'egg',n:'Egg chair',set:'space',fn:'seat',p:9,dc:8,seat:[.93,.1]},
- {k:'bean',n:'Bean bag',set:'space',fn:'seat',p:4,dc:9,seat:[.7,.1]},
- {k:'blow',n:'Blow-up chair',set:'space',fn:'seat',p:5,dc:0,seat:[.4,.05]},
- {k:'pouf',n:'Star pouf',set:'space',fn:'seat',p:3,dc:3,seat:[.44,0]},
+ {k:'bed',n:'Bubble bed',set:'space',fn:'bed',p:12,dc:0,perch:{y:.87,z:.2,x:[-.4,0,.4],w:1.0,bz:-.8,side:1,se:1.1,kind:'bed',foot:1.5}},
+ {k:'sofa',n:'Blob sofa',set:'space',fn:'seat',p:10,dc:7,perch:{y:.75,z:.08,x:[-.57,.57],w:1.02,bz:-.2,fe:.5}},
+ {k:'egg',n:'Egg chair',set:'space',fn:'seat',p:9,dc:8,perch:{y:.93,z:.1,w:.62,bz:-.62,fe:.78,top:1.0}},
+ {k:'bean',n:'Bean bag',set:'space',fn:'seat',p:4,dc:9,perch:{y:.7,z:.12,bz:0,fe:.65}},
+ {k:'blow',n:'Blow-up chair',set:'space',fn:'seat',p:5,dc:0,perch:{y:.42,z:.05,w:.42,bz:-.15,fe:.6}},
+ {k:'pouf',n:'Star pouf',set:'space',fn:'seat',p:3,dc:3,perch:{y:.44,z:0,fe:.58}},
  {k:'table',n:'Tulip table',set:'space',fn:'surface',p:5,dc:7},
  {k:'orbtable',n:'Orb side table',set:'space',fn:'surface',p:6,dc:9},
  {k:'shelf',n:'Cube shelf',set:'space',fn:'storage',p:6,dc:12},
@@ -1002,11 +1002,11 @@ const CAT=[
  {k:'neon',n:'Neon heart',set:'space',fn:'wall',p:5,dc:0,wall:1,y:2.2},
  {k:'mirror',n:'Mirror',set:'space',fn:'wall',p:5,dc:8,wall:1,y:1.8},
  // Sweet Tooth
- {k:'cupcake',n:'Cupcake chair',set:'candy',fn:'seat',p:8,dc:0,seat:[.88,.1]},
- {k:'donut',n:'Donut pouf',set:'candy',fn:'seat',p:4,dc:0,seat:[.42,0]},
- {k:'gumdrop',n:'Gumdrop stool',set:'candy',fn:'seat',p:3,dc:4,seat:[.64,0]},
- {k:'bonbon',n:'Bonbon sofa',set:'candy',fn:'seat',p:11,dc:9,seat:[.71,.12,-.5,.5]},
- {k:'cakebed',n:'Layer cake bed',set:'candy',fn:'bed',p:13,dc:0},
+ {k:'cupcake',n:'Cupcake chair',set:'candy',fn:'seat',p:8,dc:0,perch:{y:.88,z:.1,bz:-.02,fe:.62}},
+ {k:'donut',n:'Donut pouf',set:'candy',fn:'seat',p:4,dc:0,perch:{y:.42,z:0,fe:.66}},
+ {k:'gumdrop',n:'Gumdrop stool',set:'candy',fn:'seat',p:3,dc:4,perch:{y:.64,z:0,fe:.45}},
+ {k:'bonbon',n:'Bonbon sofa',set:'candy',fn:'seat',p:11,dc:9,perch:{y:.71,z:.12,x:[-.5,.5],w:1.05,bz:.04,fe:.55}},
+ {k:'cakebed',n:'Layer cake bed',set:'candy',fn:'bed',p:13,dc:0,perch:{y:.92,z:.3,x:[-.4,0,.4],w:1.0,bz:-.8,side:1,se:1.15,kind:'bed',foot:1.52}},
  {k:'cakestand',n:'Cake stand table',set:'candy',fn:'surface',p:6,dc:5},
  {k:'macaron',n:'Macaron tower',set:'candy',fn:'deco',p:4,dc:9},
  {k:'candyjar',n:'Candy jar',set:'candy',fn:'storage',p:4,dc:0},
@@ -1021,10 +1021,10 @@ const CAT=[
  {k:'frostshelf',n:'Frosting shelf',set:'candy',fn:'wall',p:3,dc:0,wall:1,y:1.6},
  {k:'donutmirror',n:'Donut mirror',set:'candy',fn:'wall',p:5,dc:0,wall:1,y:1.9},
  // Oat & Linen
- {k:'linensofa',n:'Linen sofa',set:'calm',fn:'seat',p:10,dc:10,seat:[.64,.08,-.54,.54]},
- {k:'boucle',n:'Bouclé chair',set:'calm',fn:'seat',p:7,dc:12,seat:[.45,.08]},
- {k:'cushion',n:'Floor cushion',set:'calm',fn:'seat',p:2,dc:6,seat:[.22,0]},
- {k:'platbed',n:'Platform bed',set:'calm',fn:'bed',p:12,dc:10},
+ {k:'linensofa',n:'Linen sofa',set:'calm',fn:'seat',p:10,dc:10,perch:{y:.64,z:.08,x:[-.54,.54],w:1.03,bz:-.22,fe:.5}},
+ {k:'boucle',n:'Bouclé chair',set:'calm',fn:'seat',p:7,dc:12,perch:{y:.45,z:.08,w:.3,bz:-.07,fe:.45}},
+ {k:'cushion',n:'Floor cushion',set:'calm',fn:'seat',p:2,dc:6,perch:{y:.22,z:0,fe:.41}},
+ {k:'platbed',n:'Platform bed',set:'calm',fn:'bed',p:12,dc:10,perch:{y:.58,z:.3,x:[-.4,0,.4],w:1.0,bz:-.8,side:1,se:1.15,kind:'bed',foot:1.55}},
  {k:'oaktable',n:'Oak coffee table',set:'calm',fn:'surface',p:5,dc:10},
  {k:'sideboard',n:'Low sideboard',set:'calm',fn:'storage',p:8,dc:10},
  {k:'ladder',n:'Ladder shelf',set:'calm',fn:'storage',p:5,dc:12},
@@ -1040,10 +1040,10 @@ const CAT=[
  {k:'floatshelf',n:'Floating shelf',set:'calm',fn:'wall',p:3,dc:6,wall:1,y:1.5},
  {k:'macrame',n:'Macramé hanging',set:'calm',fn:'wall',p:3,dc:10,wall:1,y:2.1},
  // Dumpster Den
- {k:'trashcan',n:'Trash can throne',set:'monster',fn:'seat',p:6,dc:6,seat:[.86,.03]},
- {k:'tire',n:'Tire pouf',set:'monster',fn:'seat',p:3,dc:4,seat:[.65,0]},
- {k:'patchcouch',n:'Patched couch',set:'monster',fn:'seat',p:9,dc:8,seat:[.76,.08,-.74,0,.74]},
- {k:'crustybed',n:'Crate mattress',set:'monster',fn:'bed',p:8,dc:6},
+ {k:'trashcan',n:'Trash can throne',set:'monster',fn:'seat',p:6,dc:6,perch:{y:.86,z:.03,bz:-.2,fe:.4}},
+ {k:'tire',n:'Tire pouf',set:'monster',fn:'seat',p:3,dc:4,perch:{y:.65,z:0,fe:.5}},
+ {k:'patchcouch',n:'Patched couch',set:'monster',fn:'seat',p:9,dc:8,perch:{y:.76,z:.08,x:[-.74,0,.74],w:.86,bz:-.21,fe:.5}},
+ {k:'crustybed',n:'Crate mattress',set:'monster',fn:'bed',p:8,dc:6,perch:{y:.73,z:.3,x:[-.4,0,.4],w:1.0,bz:-.8,side:1,se:1.1,kind:'bed',foot:1.45}},
  {k:'crate',n:'Crate table',set:'monster',fn:'surface',p:4,dc:2},
  {k:'barrel',n:'Sludge barrel',set:'monster',fn:'storage',p:5,dc:8},
  {k:'trashbags',n:'Trash bag pile',set:'monster',fn:'deco',p:2,dc:11},
@@ -1058,11 +1058,11 @@ const CAT=[
  {k:'pipes',n:'Leaky pipes',set:'monster',fn:'wall',p:4,dc:6,wall:1,y:2.3},
  {k:'crackmirror',n:'Cracked mirror',set:'monster',fn:'wall',p:4,dc:8,wall:1,y:1.8},
  // Toybox
- {k:'kidbed',n:'Big kid bed',set:'play',fn:'bed',p:10,dc:7},
+ {k:'kidbed',n:'Big kid bed',set:'play',fn:'bed',p:10,dc:7,perch:{y:.7,z:.2,w:.68,bz:-.75,side:1,se:.78,kind:'bed',foot:1.3}},
  {k:'teatable',n:'Tea party table',set:'play',fn:'surface',p:5,dc:0},
  {k:'toychest',n:'Toy chest',set:'play',fn:'storage',p:6,dc:1},
  {k:'playpen',n:'Playpen',set:'play',fn:'fun',p:8,dc:7},
- {k:'horse',n:'Rocking horse',set:'play',fn:'fun',p:8,dc:1},
+ {k:'horse',n:'Rocking horse',set:'play',fn:'fun',p:8,dc:1,perch:{y:.84,z:-.02,fz:.3,side:1,se:.3,kind:'ride'}},
  {k:'robot',n:'Wind-up robot',set:'play',fn:'fun',p:5,dc:6},
  {k:'blocks',n:'Block tower',set:'play',fn:'deco',p:3,dc:3},
  {k:'ball',n:'Bouncy ball',set:'play',fn:'deco',p:2,dc:1},
@@ -2420,17 +2420,117 @@ Object.keys(GROOM_PLAY).forEach(k=>TOY_PLAY[k]=GROOM_PLAY[k]);
 function petBlockers(){const bs=[];itemObjs.forEach(o=>{const d=CATMAP[o.userData.k];if(d.wall||d.flat)return;const b=new THREE.Box3().setFromObject(o);b.expandByScalar(.35);bs.push(b)});return bs}
 function randomSpot(){const bs=petBlockers();for(let i=0;i<14;i++){const p=new THREE.Vector3((Math.random()*2-1)*3.2,0,(Math.random()*2-1)*3.2);if(!bs.some(b=>b.containsPoint(p.clone().setY(.3))))return p}return new THREE.Vector3((Math.random()*2-1)*2,0,(Math.random()*2-1)*2)}
 function findItem(flag){for(const o of itemObjs.values())if(CATMAP[o.userData.k]&&CATMAP[o.userData.k][flag])return o;return null}
-/* ---------- seats: now and then the pet hops up onto a seat and sits a while ---------- */
-// CAT seat:[y,z,...x] = cushion height, how far forward the sitting spot is, and the x of each spot (sofas have several).
-function seatWorld(sp){const o=itemObjs.get(sp.id),d=o&&CATMAP[o.userData.k];if(!d||!d.seat)return null;const r=o.rotation.y,c=Math.cos(r),sn=Math.sin(r),fx=sn,fz=c,x=o.position.x+sp.x*c+sp.z*sn,z=o.position.z-sp.x*sn+sp.z*c,f=1.05-sp.z;
-  return{x,z,y:d.seat[0],h:r,front:new THREE.Vector3(x+fx*f,0,z+fz*f)}}
-function seatSpots(){const out=[];itemObjs.forEach(o=>{const d=CATMAP[o.userData.k];if(!d||!d.seat)return;const [,z,...xs]=d.seat;(xs.length?xs:[0]).forEach(x=>out.push({id:o.userData.id,x,z}))});
-  return out.filter(sp=>{const w=seatWorld(sp);return w&&Math.abs(w.front.x)<3.3&&Math.abs(w.front.z)<3.3})}
-function goSit(){const ss=seatSpots().filter(sp=>!pet.lastSeat||sp.id!==pet.lastSeat||Math.random()<.3);if(!ss.length)return false;const sp=ss[Math.random()*ss.length|0],w=seatWorld(sp);
-  petGo(w.front,()=>{if(!seatWorld(sp))return;pet.mode='perch';pet.seat=sp;pet.lastSeat=sp.id;pet.seatK=0;pet.seatDir=1;pet.act=null;pet.fidget=3;
-    const stats=petStats();pet.perchT=(stats.energy<40?16:9)+Math.random()*10});return true}
-function leaveSeatNow(){const w=pet.seat&&seatWorld(pet.seat);if(w)pet.pos.copy(w.front);pet.seat=null;pet.seatY=0;pet.seatK=0;pet.hop=Math.max(pet.hop,.45)}
-function petGo(p,cb){pet.target=p.clone();pet.target.y=0;pet.mode='walk';pet.onArrive=cb||null}
+/* ---------- how big the pet is, so it only uses things it fits on ---------- */
+// width, depth, standing height per stage (measured from the rig)
+const PET_DIM=[null,[.54,.36,.49],[.64,.44,.68],[.87,.54,.97],[1.1,.61,1.36],[1.26,.67,1.73],[1.39,.81,1.71],[1.36,.82,1.43]];
+function petDim(){const q=PET_DIM[clamp(pet.stage,1,7)],R=pet.rig;return{w:q[0],d:q[1],h:q[2],leg:R?R.S.leg*.95*(pet.scale||1):0}}
+const angLerp=(a,b,k)=>a+Math.atan2(Math.sin(b-a),Math.cos(b-a))*k;
+function toWorld(o,lx,lz){const r=o.rotation.y,c=Math.cos(r),sn=Math.sin(r);return new THREE.Vector3(o.position.x+lx*c+lz*sn,0,o.position.z-lx*sn+lz*c)}
+function inRoom(v,m){return Math.abs(v.x)<HALF-m&&Math.abs(v.z)<HALF-m}
+// Is there room for the pet (radius rad) at v, ignoring the item it is about to use?
+function spotClear(v,rad,except){for(const o of itemObjs.values()){if(o.userData.id===except)continue;const d=CATMAP[o.userData.k];if(!d||d.wall||d.flat)continue;const q=new THREE.Box3().setFromObject(o);if(v.x>q.min.x-rad&&v.x<q.max.x+rad&&v.z>q.min.z-rad&&v.z<q.max.z+rad)return false}return true}
+
+/* ---------- walking around furniture: A* over a 32x32 grid ---------- */
+const NAV=32,NCELL=2*HALF/NAV;let navKey='',navBlk=null;
+function navGrid(){const r=Math.max(.14,petDim().w*.26),key=r.toFixed(2)+'|'+state.items.map(i=>i.id+':'+i.x+','+i.z+','+(i.r||0)).join(';');if(key===navKey&&navBlk)return navBlk;
+  const boxes=[];itemObjs.forEach(o=>{const d=CATMAP[o.userData.k];if(d&&!d.wall&&!d.flat)boxes.push(new THREE.Box3().setFromObject(o))});
+  const blk=new Uint8Array(NAV*NAV);for(let j=0;j<NAV;j++)for(let i=0;i<NAV;i++){const x=-HALF+(i+.5)*NCELL,z=-HALF+(j+.5)*NCELL;let b=Math.abs(x)>HALF-r||Math.abs(z)>HALF-r;
+    if(!b)for(const q of boxes)if(x>q.min.x-r&&x<q.max.x+r&&z>q.min.z-r&&z<q.max.z+r){b=true;break}blk[j*NAV+i]=b?1:0}
+  navKey=key;return navBlk=blk}
+const navCell=v=>[clamp(Math.floor((v.x+HALF)/NCELL),0,NAV-1),clamp(Math.floor((v.z+HALF)/NCELL),0,NAV-1)],navPt=(i,j)=>new THREE.Vector3(-HALF+(i+.5)*NCELL,0,-HALF+(j+.5)*NCELL);
+function navNearest(blk,i,j){for(let r=1;r<8;r++)for(let dj=-r;dj<=r;dj++)for(let di=-r;di<=r;di++){if(Math.max(Math.abs(di),Math.abs(dj))!==r)continue;const a=i+di,b=j+dj;if(a>=0&&b>=0&&a<NAV&&b<NAV&&!blk[b*NAV+a])return[a,b]}return null}
+function navLine(blk,a,b){const n=Math.ceil(a.distanceTo(b)/(NCELL*.4));for(let k=1;k<n;k++){const [i,j]=navCell(new THREE.Vector3(a.x+(b.x-a.x)*k/n,0,a.z+(b.z-a.z)*k/n));if(blk[j*NAV+i])return false}return true}
+// Returns waypoints from a to b around furniture, or null if there is no way through.
+function findPath(a,b){const blk=navGrid();let [si,sj]=navCell(a),[gi,gj]=navCell(b);if(blk[sj*NAV+si]){const q=navNearest(blk,si,sj);if(!q)return null;[si,sj]=q}
+  const goalOpen=!blk[gj*NAV+gi];if(!goalOpen){const q=navNearest(blk,gi,gj);if(!q)return null;[gi,gj]=q}
+  const N=NAV*NAV,g=new Float32Array(N).fill(1e9),from=new Int32Array(N).fill(-1),closed=new Uint8Array(N),open=[sj*NAV+si],goal=gj*NAV+gi,hh=n=>Math.hypot(n%NAV-gi,(n/NAV|0)-gj);g[open[0]]=0;
+  while(open.length){let bi=0;for(let k=1;k<open.length;k++)if(g[open[k]]+hh(open[k])<g[open[bi]]+hh(open[bi]))bi=k;const n=open.splice(bi,1)[0];if(n===goal)break;if(closed[n])continue;closed[n]=1;const x=n%NAV,y=n/NAV|0;
+    for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;const X=x+dx,Y=y+dy;if(X<0||Y<0||X>=NAV||Y>=NAV)continue;const m=Y*NAV+X;if(blk[m]||closed[m])continue;if(dx&&dy&&(blk[y*NAV+X]||blk[Y*NAV+x]))continue;
+      const c=g[n]+(dx&&dy?1.414:1);if(c<g[m]){g[m]=c;from[m]=n;if(!open.includes(m))open.push(m)}}}
+  if(from[goal]<0&&goal!==sj*NAV+si)return null;const cells=[];for(let n=goal;n>=0;n=from[n]){cells.unshift(n);if(n===sj*NAV+si)break}
+  const pts=cells.map(n=>navPt(n%NAV,n/NAV|0));pts.push(b.clone().setY(0));
+  // pull the string: skip every waypoint we can walk straight past
+  const out=[];let cur=a.clone().setY(0),k=0;while(k<pts.length){let far=k;for(let m=pts.length-1;m>k;m--)if(navLine(blk,cur,pts[m])){far=m;break}out.push(pts[far]);cur=pts[far];k=far+1}
+  return out}
+function randomSpot(){const blk=navGrid(),free=[];for(let n=0;n<blk.length;n++)if(!blk[n])free.push(n);if(!free.length)return new THREE.Vector3((Math.random()*2-1)*2,0,(Math.random()*2-1)*2);
+  for(let t=0;t<8;t++){const n=free[Math.random()*free.length|0],v=navPt(n%NAV,n/NAV|0);v.x+=(Math.random()-.5)*NCELL*.6;v.z+=(Math.random()-.5)*NCELL*.6;if(v.distanceTo(pet.pos)>1.2)return v}
+  const n=free[Math.random()*free.length|0];return navPt(n%NAV,n/NAV|0)}
+
+/* ---------- perches: seats, beds and the rocking horse ---------- */
+// Only spots the pet fits: not wider than the arms allow, not taller than a shell's headroom, not bumping a backrest.
+function perchSpots(o){const d=CATMAP[o.userData.k],P=d&&d.perch;if(!P)return[];const D=petDim(),hw=D.w/2,hd=D.d/2,hs=D.h-D.leg;
+  if(P.w!=null&&hw*.8>P.w+.1)return[];if(P.top&&hs>P.top)return[];const zc=Math.max(P.z,(P.bz??-9)+hd*.9);if(P.fz!=null&&zc+hd*.8>P.fz)return[];
+  const lim=Math.max(0,(P.w??9)-hw*.8),xs=[...new Set((P.x||[0]).map(x=>+clamp(x,-lim,lim).toFixed(2)))],out=[];
+  xs.forEach(x=>{const aps=P.side?[[-(P.se+hd+.12),zc],[P.se+hd+.12,zc]]:[[x,(P.fe??.55)+hd+.1]];if(P.foot)aps.push([x,P.foot+hd+.1]);aps.forEach(([ax,az])=>{const v=toWorld(o,ax,az);if(inRoom(v,hw*.6)&&spotClear(v,hd*.8,o.userData.id))out.push({id:o.userData.id,x,z:zc,y:P.y,kind:P.kind||'sit',ax,az})})});return out}
+function seatWorld(sp){const o=itemObjs.get(sp.id);if(!o||!CATMAP[o.userData.k].perch)return null;const c=toWorld(o,sp.x,sp.z),f=toWorld(o,sp.ax,sp.az);
+  return{x:c.x,z:c.z,y:sp.y,h:o.rotation.y,front:f,ha:Math.atan2(c.x-f.x,c.z-f.z),o}}
+function startPerch(sp){const w=seatWorld(sp);if(!w)return;const st=petStats(),avg=(st.hunger+st.fun+st.energy+st.clean)/4;pet.mode='perch';pet.seat=sp;pet.lastUse=sp.id;pet.seatK=0;pet.seatDir=1;pet.act=null;pet.fidget=3;
+  sp.nap=sp.kind==='bed'&&st.energy<45;sp.bounce=sp.kind==='bed'&&!sp.nap;pet.perchT=sp.nap?16+Math.random()*10:sp.bounce?5+Math.random()*3:sp.kind==='ride'?7+Math.random()*4:(st.energy<40?16:9)+Math.random()*10;
+  if(sp.bounce&&avg>50)setTimeout(()=>emote('🎉'),900)}
+function leaveSeatNow(){const w=pet.seat&&seatWorld(pet.seat);if(w){pet.pos.copy(w.front);rockPart(w.o,0)}pet.seat=null;pet.seatY=0;pet.seatK=0;pet.hop=Math.max(pet.hop,.45)}
+function rockPart(o,a){const p=o&&o.children[0];if(p&&CATMAP[o.userData.k].perch.kind==='ride')p.rotation.x=a}
+
+/* ---------- using the things in the room ---------- */
+// kind: perch (hop on), nap (curl up in a pet bed), stand (walk up to it and do something), wall (look at / play with
+// something on the wall), rug (roll about on it). w = how much the pet wants to, from its stats. front: only from the front.
+// emo: emotes it may show. then: [act, chance] after. flick: lamps blink when booped. wob: the thing wobbles.
+const USE_FN={
+  seat:{kind:'perch',w:(s,a,S)=>.7+(s.energy<50?.8:0)+(S.elder?.5:0)},
+  bed:{kind:'perch',w:(s,a)=>s.energy<45?2.6:a>65?.55:.25},
+  surface:{kind:'stand',anim:'u_lean',d:5,dist:.05,emo:['🎵','❓'],w:.5},
+  storage:{kind:'stand',front:1,anim:'u_rummage',d:4.6,dist:.05,emo:['❓','🎉'],w:.7},
+  light:{kind:'stand',anim:'u_boop',d:5,dist:.12,flick:1,emo:['❗','💗'],w:.5},
+  plant:{kind:'stand',anim:'u_sniff',d:3.4,dist:.1,then:['sneeze',.35],emo:['💗'],w:.6},
+  rug:{kind:'rug',anim:'u_wiggle',d:3.8,emo:['🎉','🎵'],w:.55},
+  deco:{kind:'stand',anim:'u_pat',d:4,dist:.1,emo:['💗'],w:.6},
+  fun:{kind:'stand',front:1,anim:'press',d:6,dist:.1,emo:['🎵','🎉'],w:.9},
+  wall:{kind:'wall',anim:'u_gaze',d:4.2,emo:['❓'],w:.45}};
+const NAP={kind:'nap',w:s=>s.energy<45?2.2:.12},BOWL={kind:'stand',anim:'u_sniffLow',d:3.2,dist:0,emo:s=>[s.hunger<60?'🍙':'❓'],w:s=>s.hunger<60?1:.2},
+  MIRROR={kind:'wall',anim:'u_admire',d:4.6,spin:.55,emo:['💗','✨'],w:.8},CLOCK={kind:'wall',anim:'u_tick',d:4.5,emo:['❓'],w:.5},
+  TV={kind:'stand',front:1,anim:'u_watch',d:13,dist:1.1,emo:['🎉','❗','🎵'],w:1.3};
+const USE_ITEM={tv:TV,bustedtv:Object.assign({},TV,{d:10,emo:['❓','💥'],w:1}),
+  arcade:{kind:'stand',front:1,anim:'press',d:7,dist:.05,emo:['🎵','🎉','💥'],w:1.1},robot:{kind:'stand',anim:'dance',d:4.2,dist:.35,emo:['🎵'],w:.9},
+  horse:{kind:'perch',w:1.1},playpen:{kind:'stand',anim:'u_lean',d:5,dist:.05,emo:['🎾'],w:.6},
+  teddy:{kind:'stand',anim:'hug',d:4.5,dist:0,emo:['💗'],w:.8},ball:{kind:'stand',anim:'u_kick',d:2.6,dist:.05,wob:1,emo:['🎾','🎉'],w:.8},
+  blocks:{kind:'stand',anim:'press',d:4.5,dist:.05,emo:['🎉','⭐'],w:.7},rocket:{kind:'stand',anim:'curious',d:2.6,dist:.15,then:['spinjump',1],emo:['❗'],w:.6},
+  holo:{kind:'stand',anim:'dance',d:4.2,dist:.2,emo:['🎵','✨'],w:.7},fish:{kind:'stand',anim:'u_peer',d:6,dist:.05,emo:['💗','❓'],w:.8},
+  macaron:{kind:'stand',anim:'u_sniff',d:3.4,dist:.1,emo:['😋'],w:.5},trashbags:{kind:'stand',anim:'u_rummage',d:4,dist:.05,then:['sneeze',.6],emo:['❓'],w:.4},
+  candyjar:{kind:'stand',anim:'u_rummage',d:4,dist:.05,emo:['😋'],w:.8},fridge:{kind:'stand',front:1,anim:'u_rummage',d:4.6,dist:.05,emo:['😋','🍙'],w:.9},
+  mirror:MIRROR,archmirror:MIRROR,donutmirror:MIRROR,crackmirror:MIRROR,clock:CLOCK,swirlclock:CLOCK,
+  window:{kind:'wall',anim:'u_gaze',d:7,emo:['💗','❓'],w:.8},neon:{kind:'wall',anim:'dance',d:4.2,emo:['🎵'],w:.6},bunting:{kind:'wall',anim:'u_gaze',d:4,wave:1,emo:['🎉'],w:.5},
+  petbed:NAP,donutbed:NAP,basketbed:NAP,tirebed:NAP,bowl:BOWL,candybowl:BOWL,ceramicbowl:BOWL,hubcap:BOWL};
+const useOf=d=>USE_ITEM[d.k]||USE_FN[d.fn]||null;
+// Where to stand to use o, and which way to face.
+function useSpot(o,u){const it=itemById(o.userData.id),d=CATMAP[it.k],D=petDim(),hd=D.d/2,e=o.userData.ext||{x:.4,z:.4};
+  if(u.kind==='wall'){const W=WALLDEF[it.w||0],b=new THREE.Vector3(W.c[0]+W.T[0]*it.u,0,W.c[1]+W.T[1]*it.u),v=b.clone().add(new THREE.Vector3(W.n[0],0,W.n[1]).multiplyScalar(hd+.75));
+    return inRoom(v,D.w*.3)&&spotClear(v,hd*.8)?{at:v,face:b,look:it.y}:null}
+  if(u.kind==='rug'){for(let t=0;t<6;t++){const v=toWorld(o,(Math.random()-.5)*e.x*1.1,(Math.random()-.5)*e.z*1.1);if(inRoom(v,D.w*.4)&&spotClear(v,hd*.8))return{at:v,face:null}}return null}
+  if(u.kind==='nap')return{at:o.position.clone().setY(0)};
+  // try the ideal distance first, then closer (a TV can be watched from nearer if the way is blocked)
+  for(const gap of [...new Set([u.dist||0,(u.dist||0)*.55,.02])]){const dist=hd*1.15+gap+.1,sides=u.front?[[0,e.z+dist]]:[[0,e.z+dist],[e.x+dist,0],[-(e.x+dist),0],[0,-(e.z+dist)]];
+    while(sides.length){const [lx,lz]=sides.splice(Math.random()*sides.length|0,1)[0],v=toWorld(o,lx,lz);if(inRoom(v,D.w*.4)&&spotClear(v,hd*.8,o.userData.id))return{at:v,face:toWorld(o,0,0)}}}return null}
+// Pick something to do, weighted by what the pet feels like and never the same thing twice in a row. only: filter.
+function pickUse(stats,avg,only){const S=pet.rig.S,c=[];itemObjs.forEach(o=>{const it=itemById(o.userData.id);if(!it)return;const d=CATMAP[it.k],u=useOf(d);if(!u||(only&&!only(u,d)))return;
+    let w=typeof u.w==='function'?u.w(stats,avg,S):u.w;if(it.id===pet.lastUse)w*=.1;if(u.kind==='wall'&&!walls[it.w||0].g.visible)w*=.3;if(w>0)c.push({o,it,d,u,w})});
+  for(let tries=0;tries<5&&c.length;tries++){let q=Math.random()*c.reduce((a,b)=>a+b.w,0),i=0;for(;i<c.length-1;i++){q-=c[i].w;if(q<=0)break}const C=c.splice(i,1)[0];
+    if(C.u.kind==='perch'){const sps=perchSpots(C.o);if(!sps.length)continue;const sp=sps[Math.random()*sps.length|0];petGo(seatWorld(sp).front,()=>startPerch(sp));return true}
+    const at=useSpot(C.o,C.u);if(!at)continue;
+    if(C.u.kind==='nap'){petGo(at.at,()=>{pet.mode='sleep';pet.sleepT=9+Math.random()*9;pet.lastUse=C.it.id;emote('💤')});return true}
+    petGo(at.at,()=>startUse(C,at));return true}
+  return false}
+function startUse(C,at){if(!itemObjs.has(C.it.id))return;const u=C.u,st=petStats(),d=u.d*(.85+Math.random()*.3);pet.mode='use';pet.lastUse=C.it.id;
+  pet.use={id:C.it.id,u,t:0,d,face:at.face,emoAt:[.3,d>8?.75:2].map(f=>f*d),emo:typeof u.emo==='function'?u.emo(st):u.emo};pet.act={k:u.anim,t:0,d}}
+function endUse(done){const U=pet.use;if(!U)return;pet.use=null;const o=itemObjs.get(U.id);if(o){delete o.userData.flick;if(U.u.wob)o.rotation.z=0}
+  if(pet.act&&pet.act.k===U.u.anim)pet.act=null;if(done){pet.mode='idle';pet.timer=1.5+Math.random()*2.5;const th=U.u.then;if(th&&Math.random()<th[1])setTimeout(()=>petAct(th[0]),250)}}
+function updUse(dt,t){const U=pet.use,o=itemObjs.get(U.id);if(!o){endUse(true);return}U.t+=dt;const p=U.t/U.d;
+  if(U.face)faceToward(U.face,dt);
+  U.emoAt.forEach((a,i)=>{if(a>=0&&U.t>=a){U.emoAt[i]=-1;if(U.emo&&U.emo.length)emote(U.emo[Math.random()*U.emo.length|0])}});
+  if(U.u.flick)o.userData.flick=(p>.3&&p<.34)||(p>.44&&p<.48)?.12:p>.55?1+.3*bell(p,.6,.95):1;
+  if(U.u.wob)o.rotation.z=Math.sin(U.t*13)*.22*bell(p,.38,.95);
+  if(U.u.spin&&p>=U.u.spin&&!U.spun){U.spun=1;pet.spinT=1.2}if(U.u.wave&&p>.5&&!U.waved){U.waved=1;pet.waveT=1.4}
+  if(!pet.act||pet.act.k!==U.u.anim)pet.act={k:U.u.anim,t:U.t,d:U.d};if(U.t>=U.d)endUse(true)}
+
+function petGo(p,cb){const path=pet.rig?findPath(pet.pos,p):null;pet.path=path&&path.length>1?path.slice(1):null;pet.target=(path?path[0]:p).clone();pet.target.y=0;pet.mode='walk';pet.onArrive=cb||null}
 const approach=(cur,to,k)=>cur+(to-cur)*Math.min(1,k);
 
 /* One-off acts layered over the base behaviour. Each returns target overrides for progress p (0..1) and time t. */
@@ -2458,6 +2558,21 @@ const ACTS_ANIM={
   spritz:{d:60,f:(p,t)=>({arms:[{rz:-.5,rx:0,w:0},{rz:2+Math.sin(t*6)*.3,rx:-.6,w:1}],heads:[{rx:-.2,w:1},{rx:-.2,w:1}],lid:.55})},
   lather:{d:60,f:(p,t)=>({arms:[0,1].map(i=>({rz:(i?1:-1)*(2.55+Math.sin(t*9+i*2)*.2),rx:-.35,w:1})),heads:[0,1].map(i=>({rz:Math.sin(t*9+i)*.12,w:1})),lid:.8,mouth:.4})},
   soak:{d:60,f:(p,t)=>({arms:[0,1].map(i=>({rz:(i?1:-1)*1.2,rx:-.2,w:1})),heads:[0,1].map(i=>({rz:(i?1:-1)*.25,rx:-.1,w:1})),lid:.95,rz:Math.sin(t*1.2)*.05})},
+  // using things in the room (d is set by the use)
+  u_lean:{d:5,f:(p,t)=>{const k=bell(p,.12,.88);return{rx:.2*k,arms:[0,1].map(i=>({rz:(i?1:-1)*.42,rx:-1.3+(i?Math.sin(t*9)*.12:0),w:k})),heads:[0,1].map(i=>({rx:.22,rz:Math.sin(t*.8+i)*.18,w:k})),look:{x:Math.sin(t*.7)*.6,y:-.4,w:k}}}},
+  u_rummage:{d:4.6,f:(p,t)=>{const k=bell(p,.1,.78),up=bell(p,.8,.97);return{rx:(.34+Math.sin(t*6)*.04)*k-.05*up,arms:[0,1].map(i=>({rz:(i?1:-1)*(.5*k+2.5*up),rx:(-1.5+Math.sin(t*7+i*Math.PI)*.5)*k-.2*up,w:Math.max(k,up)})),heads:[0,1].map(i=>({rx:(.35+Math.sin(t*7+i)*.1)*k-.25*up,w:Math.max(k,up)})),mouth:.3*k+.9*up,lid:.3*k}}},
+  u_boop:{d:5,f:(p,t)=>{const r=bell(p,.08,.52),tap=(p>.28&&p<.36)||(p>.42&&p<.5)?1:0,w=bell(p,.56,.94);return{rx:-.06*r,arms:[{rz:-.4*r+(-.5)*w,rx:-1.0*w,w:Math.max(r*.4,w)},{rz:1.5*r+.5*w,rx:(-1.35-.35*tap)*r-1.0*w,w:Math.max(r,w)}],heads:[0,1].map(i=>({rx:-.3*r+.1*w,rz:.1*w,w:Math.max(r,w)})),look:{x:0,y:.5*r,w:r},lid:.55*w,mouth:.6*tap,rz:Math.sin(t*1.6)*.05*w}}},
+  u_sniff:{d:3.4,f:(p,t)=>{const k=bell(p,.15,.85);return{rx:.28*k,heads:[0,1].map(i=>({rx:.22+Math.sin(t*16+i)*.05,ry:(i?1:-1)*.1,w:k})),lid:.35*k,arms:[0,1].map(i=>({rz:(i?1:-1)*.3,rx:.25,w:k}))}}},
+  u_sniffLow:{d:3.2,f:(p,t)=>{const k=bell(p,.15,.85);return{rx:.46*k,y:-.03*k,heads:[0,1].map(i=>({rx:.45+Math.sin(t*14+i)*.06,w:k})),lid:.3*k,arms:[0,1].map(i=>({rz:(i?1:-1)*.25,rx:.2,w:k}))}}},
+  u_pat:{d:4,f:(p,t)=>{const k=bell(p,.12,.88);return{rx:.1*k,arms:[{rz:-.4,rx:0,w:0},{rz:.6,rx:-1.05+Math.abs(Math.sin(t*7))*.4,w:k}],heads:[0,1].map(i=>({rz:.22,rx:.12,w:k})),lid:.55*k,mouth:.4*k}}},
+  u_kick:{d:2.6,f:(p,t)=>{const kick=bell(p,.3,.5),cheer=bell(p,.55,.95);return{legs:[-1.3*kick,.3*kick],rx:-.12*kick,arms:[0,1].map(i=>({rz:(i?1:-1)*(1+1.6*cheer),rx:-.2,w:Math.max(kick,cheer)})),mouth:.9*cheer,lid:.4*cheer,y:.05*cheer}}},
+  u_watch:{d:13,f:(p,t,S)=>{const k=bell(p,.06,.94),laugh=Math.pow(Math.max(0,Math.sin(t*1.1)),10);return{y:-(S.leg*.95+.02)*k,legs:[-1.35*k,-1.35*k],rx:-.04*k+laugh*.1,rz:laugh*Math.sin(t*20)*.05,
+    arms:[0,1].map(i=>({rz:(i?1:-1)*(.35+laugh*1.2),rx:-.5,w:k})),heads:[0,1].map(i=>({rz:Math.sin(t*.45+i*.6)*.16,rx:-.05,w:k})),look:{x:Math.sin(t*2.7)*.35,y:.15,w:k},mouth:.9*laugh,lid:.25*k}}},
+  u_peer:{d:6,f:(p,t)=>{const k=bell(p,.1,.9);return{rx:.16*k,arms:[0,1].map(i=>({rz:(i?1:-1)*.5,rx:-1.25,w:k})),heads:[0,1].map(i=>({rx:.08,rz:Math.sin(t*.9+i)*.2,w:k})),look:{x:Math.sin(t*1.3)*.8,y:Math.sin(t*.9)*.3,w:k},mouth:.25*k}}},
+  u_gaze:{d:4.2,f:(p,t)=>{const k=bell(p,.15,.85);return{rz:Math.sin(t*1.2)*.05*k,heads:[0,1].map(i=>({rx:-.34,rz:(i?1:-1)*.06,w:k})),look:{x:Math.sin(t*.6)*.25,y:.6,w:k},arms:[0,1].map(i=>({rz:(i?1:-1)*.22,rx:.15,w:k}))}}},
+  u_tick:{d:4.5,f:(p,t)=>{const k=bell(p,.15,.85),tk=Math.sign(Math.sin(t*Math.PI*2))*Math.min(1,Math.abs(Math.sin(t*Math.PI*2))*4);return{rz:tk*.08*k,heads:[0,1].map(i=>({rx:-.3,rz:tk*.22,w:k})),look:{x:tk*.4,y:.55,w:k},mouth:.2*k}}},
+  u_admire:{d:4.6,f:(p,t)=>{const k=bell(p,.1,.9);return{sway:Math.sin(t*3)*.25*k,arms:[{rz:-.4,rx:0,w:0},{rz:2.4+Math.sin(t*10)*.4,rx:-.2,w:k}],heads:[0,1].map(i=>({rz:(i?1:-1)*.22,w:k})),mouth:.7*k,lid:.45*k}}},
+  u_wiggle:{d:3.8,f:(p,t,S)=>{const k=bell(p,.12,.88);return{y:-(S.leg*.95+.02)*k+Math.abs(Math.sin(t*5))*S.bw*.25*k,legs:[-1.35*k,-1.35*k],rz:Math.sin(t*5)*.45*k,arms:[0,1].map(i=>({rz:(i?1:-1)*2.3,rx:0,w:k})),mouth:.85*k,lid:.5*k}}},
   spinjump:{d:1.4,f:p=>({spin:ease(p/.8)*Math.PI*2,y:Math.sin(Math.min(1,p/.8)*Math.PI)*.6,arms:[0,1].map(i=>({rz:(i?1:-1)*2.6,rx:0,w:bell(p,.1,.85)})),mouth:.9,lid:.5})}
 };
 function petAct(k){const R=pet.rig;if(!R||pet.stage<1||!ACTS_ANIM[k])return false;if(k==='sit'&&R.S.leg<.06)return false;if(k==='tumble'&&pet.stage>2)k='curious';
@@ -2478,32 +2593,42 @@ function updatePet(dt,t){
     R.root.position.y=Math.sin(pet.hop*Math.PI)*.35;R.root.scale.set(pop,pop*(1+Math.sin(pet.hop*Math.PI*2)*.08),pop);g.position.copy(pet.pos);g.rotation.y=0;return}
 
   if(pet.seat&&pet.mode!=='perch')leaveSeatNow();
+  if(pet.use&&pet.mode!=='use')endUse(false);
   const S=R.S,stats=petStats(),avg=(stats.hunger+stats.fun+stats.energy+stats.clean)/4,tired=stats.energy<20;
   const walking=pet.mode==='walk'&&!!pet.target,sleeping=pet.mode==='sleep',eating=pet.mode==='eat';
   if(walking){const d=pet.target.clone().sub(pet.pos);d.y=0;const L=d.length();
-    if(L<.08){pet.mode='idle';pet.timer=2+Math.random()*4;const cb=pet.onArrive;pet.onArrive=null;cb&&cb()}
+    if(pet.path&&pet.path.length&&L<.14){pet.target=pet.path.shift()}
+    else if(L<.08){pet.mode='idle';pet.path=null;pet.timer=2+Math.random()*4;const cb=pet.onArrive;pet.onArrive=null;cb&&cb()}
     else{const sp=(tired?.5:.85)*S.speed*(stats.hunger>100?.6:1)*dt;pet.pos.add(d.multiplyScalar(Math.min(1,sp/L)));const h=Math.atan2(pet.target.x-pet.pos.x,pet.target.z-pet.pos.z);let dh=h-pet.heading;dh=Math.atan2(Math.sin(dh),Math.cos(dh));pet.heading+=dh*Math.min(1,dt*8)}
     pet.ph+=dt*(tired?8:12)*(S.scoot?.8:S.elder?.7:1)}
   else if(pet.mode==='idle'){pet.timer-=dt;
-    if(pet.timer<=0){if(stats.energy<12&&Math.random()<.5){pet.mode='sleep';pet.sleepT=10}else if(!(Math.random()<(stats.energy<50?.4:.22)+(S.elder?.2:0)&&goSit())){petGo(randomSpot());const P=persOf();if(P&&P.wander)pet.timer=0}}
+    if(pet.timer<=0){const worn=stats.energy<12;if(!(worn?pickUse(stats,avg,(u,d)=>u.kind==='nap'||(d.perch&&d.perch.kind==='bed')):Math.random()<.65&&pickUse(stats,avg))){if(worn&&Math.random()<.5){pet.mode='sleep';pet.sleepT=10}else{petGo(randomSpot());const P=persOf();if(P&&P.wander)pet.timer=0}}}
     pet.fidget-=dt;if(pet.fidget<=0&&!pet.act){pet.fidget=5+Math.random()*6;const r=Math.random();if(r<.45)idleAct(avg,stats);else if(avg>55){if(r<.65)pet.waveT=1.4;else if(r<.8){pet.hop=1;pet.happyT=.8}}}
     pet.chatIn-=dt*((persOf()||{}).chat||1);if(pet.chatIn<=0){pet.chatIn=8+Math.random()*10;pet.chatT=1.6;if(avg>70&&Math.random()<.35)emote('🎵')}
     const h=Math.atan2(camera.position.x-pet.pos.x,camera.position.z-pet.pos.z);let dh=h-pet.heading;dh=Math.atan2(Math.sin(dh),Math.cos(dh));pet.heading+=dh*Math.min(1,dt*1.8)}
-  else if(pet.mode==='perch'){const w=seatWorld(pet.seat);
+  else if(pet.mode==='perch'){const w=seatWorld(pet.seat),sp=pet.seat;
     if(!w){pet.seat=null;pet.seatY=0;pet.mode='idle';pet.timer=1;pet.hop=.5}
-    else{pet.seatK=clamp(pet.seatK+dt*2.3*pet.seatDir,0,1);const k=pet.seatK,e=k*k*(3-2*k);
-      pet.pos.set(w.front.x+(w.x-w.front.x)*e,0,w.front.z+(w.z-w.front.z)*e);pet.seatY=w.y*e+Math.sin(k*Math.PI)*(pet.seatDir>0?.5:.3);
-      // face the seat, spin round during the hop up, and sit facing out
-      const hh=pet.seatDir>0?w.h+Math.PI*(1-e):w.h;let dh=hh-pet.heading;dh=Math.atan2(Math.sin(dh),Math.cos(dh));pet.heading+=dh*Math.min(1,dt*(k>0&&k<1?14:8));
+    else{pet.seatK=clamp(pet.seatK+dt*2.3*pet.seatDir,0,1);const k=pet.seatK,e=k*k*(3-2*k),rock=sp.kind==='ride'&&k>=1?Math.sin(t*3.2)*.2:0;
+      pet.pos.set(w.front.x+(w.x-w.front.x)*e,0,w.front.z+(w.z-w.front.z)*e);pet.pos.x+=Math.sin(w.h)*rock*.45;pet.pos.z+=Math.cos(w.h)*rock*.45;
+      pet.seatY=w.y*e+Math.sin(k*Math.PI)*(pet.seatDir>0?.5:.3)+Math.abs(rock)*.12;rockPart(w.o,rock);
+      // face the seat, turn round during the hop, and settle facing the way the seat faces
+      const hh=pet.seatDir>0?angLerp(w.ha,w.h,e):angLerp(w.ha+Math.PI,w.h,e);let dh=hh-pet.heading;dh=Math.atan2(Math.sin(dh),Math.cos(dh));pet.heading+=dh*Math.min(1,dt*(k>0&&k<1?14:8));
       if(pet.seatDir>0&&k>=1){pet.perchT-=dt;pet.fidget-=dt;
-        if(pet.fidget<=0){pet.fidget=4+Math.random()*5;const r=Math.random();if(r<.25&&avg>45)pet.waveT=1.2;else if(r<.45)pet.chatT=1.6;else if(r<.6&&avg>65)emote('🎵');else if(r<.7&&stats.energy<30)emote('😪')}
-        if(pet.perchT<=0)pet.seatDir=-1}
-      if(pet.seatDir<0&&k<=0){pet.seat=null;pet.seatY=0;pet.mode='idle';pet.timer=1.5+Math.random()*2;pet.hop=.35}}}
+        if(sp.nap){if(Math.random()<dt*.4)emote('💤')}
+        else if(sp.bounce){if(pet.hop<=0){pet.hop=1;pet.happyT=.8}}
+        else if(pet.fidget<=0){pet.fidget=4+Math.random()*5;const r=Math.random();if(sp.kind==='ride'){if(r<.5)emote(r<.25?'🎉':'🎵')}else if(r<.25&&avg>45)pet.waveT=1.2;else if(r<.45)pet.chatT=1.6;else if(r<.6&&avg>65)emote('🎵');else if(r<.7&&stats.energy<30)emote('😪')}
+        if(pet.perchT<=0&&!(sp.bounce&&pet.hop>0))pet.seatDir=-1}
+      if(pet.seatDir<0&&k<=0){rockPart(w.o,0);pet.seat=null;pet.seatY=0;pet.mode='idle';pet.timer=1.5+Math.random()*2;pet.hop=.35}}}
+  else if(pet.mode==='use'){if(pet.use)updUse(dt,t);else{pet.mode='idle';pet.timer=1}}
   else if(sleeping){pet.sleepT-=dt;if(pet.sleepT<=0){pet.mode='idle';pet.timer=1;pet.hop=.6}if(Math.random()<dt*.45)emote('💤')}
   else if(eating){pet.eatT-=dt;if(pet.eatT<=0){pet.mode='idle';pet.timer=2;pet.happyT=1.2;emote('😋')}}
   let A=null;if(pet.act){pet.act.t+=dt;if(pet.act.t>=pet.act.d||walking||sleeping||eating)pet.act=null;else A=ACTS_ANIM[pet.act.k].f(pet.act.t/pet.act.d,t,S)}
-  if(pet.mode==='perch'&&!A){const k=pet.seatK,e=k*k*(3-2*k),kick=(stats.energy<30?.12:avg>55?.32:.2)*e,sp=avg>55?3.4:2.2;
-    A={y:-(S.leg*.95+.02)*e,rx:-.06*e,legs:[-1.35*e+Math.sin(t*sp)*kick,-1.35*e+Math.sin(t*sp+Math.PI)*kick],lid:stats.energy<30?.5:undefined,arms:[0,1].map(i=>({rz:(i?1:-1)*.35,rx:-.45,w:e*.8}))}}
+  if(pet.mode==='perch'&&!A&&pet.seat){const k=pet.seatK,e=k*k*(3-2*k),P=pet.seat;
+    if(P.bounce)A={arms:[0,1].map(i=>({rz:(i?1:-1)*(2.2+Math.sin(t*9+i)*.3),rx:-.2,w:e})),mouth:.8*e,lid:.4*e};
+    else if(P.nap)A={y:-(S.leg*.95+.02)*e,rx:.14*e,legs:[-1.35*e,-1.35*e],lid:k>=1?1:undefined,heads:[0,1].map(i=>({rz:(i?1:-1)*.3,rx:.2,w:e})),arms:[0,1].map(i=>({rz:(i?1:-1)*.2,rx:-.3,w:e})),sy:Math.sin(t*1.5)*.03*e};
+    else{const ride=P.kind==='ride',kick=ride?0:(stats.energy<30?.12:avg>55?.32:.2)*e,sp=avg>55?3.4:2.2;
+      A={y:-(S.leg*.95+.02)*e,rx:(ride?Math.sin(t*3.2)*.16:-.06)*e,legs:ride?[-.5*e,-.5*e]:[-1.35*e+Math.sin(t*sp)*kick,-1.35*e+Math.sin(t*sp+Math.PI)*kick],lid:stats.energy<30?.5:undefined,
+        arms:[0,1].map(i=>ride?{rz:(i?1:-1)*.5,rx:-1.1,w:e}:{rz:(i?1:-1)*.35,rx:-.45,w:e*.8}),mouth:ride?.5*e:undefined}}}
   pet.spinT=Math.max(0,pet.spinT-dt);pet.shakeT=Math.max(0,pet.shakeT-dt);pet.waveT=Math.max(0,pet.waveT-dt);pet.happyT=Math.max(0,pet.happyT-dt);
   pet.chatT=walking||sleeping||eating?0:Math.max(0,pet.chatT-dt);const chat=pet.chatT>0?Math.sin(Math.min(1,(1.6-pet.chatT)/.25)*Math.PI/2)*Math.min(1,pet.chatT/.25):0;
 
@@ -2580,7 +2705,7 @@ function avgColor(img){const c=mkCanvas(1,1),x=c.getContext('2d');x.drawImage(im
 const _lv=new THREE.Vector3();
 function updLighting(t){LIT.time=t;LIT.wallVis=walls.map(w=>w.g.visible?1:0);const pts=[],ao=[];
   itemObjs.forEach(o=>{const it=itemById(o.userData.id);if(!it)return;const d=CATMAP[it.k],e=o.userData.ext;
-    if(o.userData.glow&&pts.length<8){_lv.copy(o.userData.glow.off);o.localToWorld(_lv);const g=o.userData.glow.color,k=2.6*LIT.lamp;pts.push({pos:[_lv.x,_lv.y,_lv.z],color:[g[0]*k,g[1]*k,g[2]*k],range:4.2})}
+    if(o.userData.glow&&pts.length<8){_lv.copy(o.userData.glow.off);o.localToWorld(_lv);const g=o.userData.glow.color,k=2.6*LIT.lamp*(o.userData.flick??1);pts.push({pos:[_lv.x,_lv.y,_lv.z],color:[g[0]*k,g[1]*k,g[2]*k],range:4.2})}
     if(!d.wall&&!d.flat&&e&&ao.length<23)ao.push([o.position.x,o.position.z,Math.max(e.x,e.z)*1.05+.12,.55])});
   if(toyPlay&&toyPlay.light&&pts.length<8)pts.push(toyPlay.light);
   if(pet.group.visible)ao.push([pet.group.position.x,pet.group.position.z,.42*(pet.scale||1),.5]);LIT.points=pts;LIT.ao=ao}
