@@ -118,6 +118,12 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px da
 .sheet .grab::before{content:"";position:absolute;left:-70px;right:-70px;top:-14px;bottom:-12px}
 .followpill{position:fixed;z-index:5;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 100px);transform:translateX(-50%);display:flex;align-items:center;gap:6px;height:38px;padding:0 8px 0 6px;background:#fff;border:2.5px solid var(--ink);border-radius:14px 11px 15px 10px;box-shadow:0 4px 0 var(--ink);color:var(--ink);font-family:var(--disp);font-size:13px;letter-spacing:.02em;animation:kpop .35s cubic-bezier(.3,1.8,.5,1)}
 .followpill[hidden]{display:none}
+.wishdot{position:absolute;z-index:2;top:-14px;right:-12px;width:36px;height:34px;display:grid;place-items:center;background:#fff;border:2.5px solid var(--ink);border-radius:50% 50% 50% 16%;box-shadow:0 3px 0 var(--ink);animation:wig 1.8s ease-in-out infinite}
+.wishdot[hidden]{display:none}.wishdot img{width:24px;height:24px}
+.wishrow{display:flex;align-items:center;gap:10px;margin:2px 0 10px;padding:8px 10px;background:#FFF6C8;border:2.5px solid var(--ink);border-radius:16px 12px 17px 13px;box-shadow:0 3px 0 var(--ink)}
+.wishrow img{width:40px;height:40px;flex:none}.wishrow span{flex:1;display:flex;flex-direction:column;line-height:1.2}.wishrow small{font-size:11.5px;font-weight:800;color:#6A4B96}
+.wishrow b{font-family:var(--disp);font-weight:400;font-size:15px;letter-spacing:.02em;color:var(--ink)}.wishrow i{font-style:normal;font-size:11px;font-weight:900;color:var(--pink)}
+.wishrow .gel{min-height:40px;padding:0 16px;font-size:15px;flex:none}
 /* styling (salon, wardrobe, try-on): the HUD steps aside so the pet has the stage; the hearts stay for prices */
 .brand,.petchip,.tdpill,.dbg-btn,.storebar{transition:opacity .25s,transform .25s}
 body.styling .brand,body.styling .petchip,body.styling .tdpill,body.styling .dbg-btn,body.styling .storebar,body.styling #kbub{opacity:0;pointer-events:none;transform:translateY(-12px)}
@@ -603,7 +609,7 @@ body.away .tag{visibility:hidden}
 
 <button class="dbg-btn" id="dbgBtn" aria-label="Open debug menu">🐞</button>
 <button class="tdpill" id="tdBtn" aria-label="Open the two-do list"><img class="tdpi" src="assets/icons/twodo.webp" alt=""><b id="tdLbl">Two-dos</b><i id="tdCnt">0/3</i></button>
-<button class="petchip" id="petchip" aria-label="Open pet">
+<button class="petchip" id="petchip" aria-label="Open pet"><i class="wishdot" id="wishDot" hidden><img alt=""></i>
   <span class="face" id="petface">🥚</span>
   <span><b id="petname">Mochi</b><span class="minibars" id="minibars"><i style="--c:#FF7A1A"></i><i style="--c:#FF3EA5"></i><i style="--c:#8B3DFF"></i><i style="--c:#29C5FF"></i><i style="--c:#FF6FB5"></i></span></span>
 </button>
@@ -4081,7 +4087,7 @@ function emote(ch){const d=EMO[ch]||{b:'speech',e:ch},c=BUBBLES[d.b],el=document
 function updEmotes(){if(!emotes.length)return;const v=new THREE.Vector3(pet.group.position.x,pet.group.position.y+(pet.head||1),pet.group.position.z).project(camera);const x=(v.x+1)/2*W,y=(1-v.y)/2*H;emotes.forEach(e=>{e.el.style.left=x+e.dx+'px';e.el.style.top=y+'px'})}
 let toastT=0;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600)}
 function moodFace(){const st=stageOf(state.pet.xp);if(st===0)return'🥚';const s=petStats(),a=spiritOf(s);if(pet.mode==='sleep')return'😴';return a>75?'😊':a>50?'🙂':a>30?'😕':'😢'}
-function updHUD(){$('#hearts').textContent=state.hearts;$('#petname').textContent=state.pet.name;$('#petface').textContent=moodFace();
+function updHUD(){updWish();$('#hearts').textContent=state.hearts;$('#petname').textContent=state.pet.name;$('#petface').textContent=moodFace();
   const s=petStats(),bars=$('#minibars').children;['hunger','fun','energy','clean','affection'].forEach((k,i)=>bars[i]&&bars[i].style.setProperty('--v',Math.min(100,s[k])+'%'));
   $('#petface').style.backgroundColor=hex(lighten(PET_COLORS[state.pet.color%6],.35));
   const un=unread();const b=$('#mailBadge');b.textContent=un;b.classList.toggle('on',un>0&&openTab!=='mail');updPresence();tdUI()}
@@ -4147,6 +4153,39 @@ let lastPatTd=0;function petTap(){if(stageOf(state.pet.xp)===0){warm();return}if
 // (prizes at 4, 8 and 12) and your story level (every level unlocks a whole room set). Big moments are one-off goals.
 // Nothing is lost by skipping a day: no streaks, no timers. State lives in state.td; arcade scores in state.arc.
 const pid=()=>myId||'me',PN=()=>state.pet.name;
+/* ================= PET WISHES =================
+   Every so often the pet wishes for something specific, picked from how it's feeling (hungry → a snack, grubby → a bath...).
+   Grant it within a few hours for a small reward; if nobody does, it passes quietly (no penalty). The wish lives in
+   state.wish {k, ev, n, got, shop, t, until} so you both see the same one and either of you can grant it; between wishes
+   it holds {next}. Granting is detected from the same events the two-dos use (td → wishHit). */
+const WISH_T={
+  snack:{ev:'feed',ic:'act-feed',go:'feed',txt:()=>'a snack'},
+  fav:{ev:'feed:fav',ic:'act-feed',go:'feed',ok:()=>!!persOf(),txt:()=>`something ${FOOD_CATS[persOf().fav].toLowerCase()}`},
+  bath:{ev:'bath',ic:'act-bath',go:'bath',txt:()=>'a bubble bath'},
+  play:{ev:'play',ic:'act-play',go:'play',txt:()=>'playtime with a toy'},
+  nap:{ev:'nap',ic:'act-nap',go:'pet',txt:()=>'a cozy nap'},
+  pats:{ev:'pat',n:5,ic:'stat-happy',go:'pat',txt:n=>`${n} pats`},
+  look:{ev:'wear',ic:'tab-pet',go:'wardrobe',txt:()=>'a change of outfit'},
+  trip:{ev:'visit',ic:'tab-room',go:'map',txt:(n,k)=>`a trip to ${SHOPS[k]?SHOPS[k].n:'town'}`}};
+const WISH_HOURS=4,WISH_GAP=[25,45];
+function wishPick(){const st=petStats(),P=persOf(),c=['pats','look','trip','trip'];if(st.hunger<60)c.push('snack','snack');if(P&&st.hunger<90)c.push('fav');if(st.clean<60)c.push('bath','bath');
+  if(st.fun<65)c.push('play','play');if(st.energy<40)c.push('nap','nap');const ok=c.filter(k=>!WISH_T[k].ok||WISH_T[k].ok());return ok[Math.random()*ok.length|0]}
+function wishText(){const W=state.wish,T=W&&WISH_T[W.k];return T?T.txt(W.n,W.shop):''}
+function wishTick(){if(!ready||sandbox||!state)return;if(!stageOf(state.pet.xp))return;const now=Date.now(),W=state.wish||{};
+  if(W.k){if(now>W.until){state.wish={next:now+WISH_GAP[0]*6e4};saveSoon();updWish()}else if(!openTab&&!toyPlay&&Math.random()<.3)wishEmote();return}
+  if(W.next&&now<W.next)return;
+  const k=wishPick(),T=WISH_T[k],shops=Object.keys(SHOPS),shop=k==='trip'?shops[Math.random()*shops.length|0]:null;
+  state.wish={k,ev:k==='trip'?'visit:'+shop:T.ev,n:T.n||1,got:0,shop,t:now,until:now+WISH_HOURS*36e5};saveSoon();updWish();
+  wishEmote();toast(`${PN()} has a wish: ${wishText()}!`);if(openTab==='pet')renderSheet()}
+function wishEmote(){const W=state.wish;if(!W||!W.k||pet.stage<1)return;EMO.wish={b:'thought',i:WISH_T[W.k].ic};emote('wish')}
+function wishHit(ev){const W=state.wish;if(!W||!W.k||W.ev!==ev)return;W.got=(W.got|0)+1;if(W.got<W.n){saveSoon();updWish();if(openTab==='pet')renderSheet();return}
+  state.wish={next:Date.now()+(WISH_GAP[0]+Math.random()*(WISH_GAP[1]-WISH_GAP[0]))*6e4};state.hearts+=3;
+  commitPet(st=>{st.affection=clamp((st.affection??40)+6,0,100);st.fun=clamp(st.fun+5,0,100)});logEvent(`granted ${PN()}’s wish`);saveSoon();updHUD();
+  toast(`Wish granted! ${PN()} is thrilled. +3 hearts`);setTimeout(()=>{emote('🎉');pet.happyT=1.5;petAct('spinjump')},600);if(openTab==='pet')renderSheet()}
+function updWish(){const W=state&&state.wish,on=!!(W&&W.k&&WISH_T[W.k])&&stageOf(state.pet.xp)>0,d=$('#wishDot');if(!d)return;d.hidden=!on;if(on)d.querySelector('img').src=`assets/icons/${WISH_T[W.k].ic}.webp`}
+function wishRow(){const W=state.wish;if(!W||!W.k||!WISH_T[W.k])return'';const T=WISH_T[W.k];
+  return`<div class="wishrow"><img src="assets/icons/${T.ic}.webp" alt=""><span><small>${esc(PN())} wishes for</small><b>${esc(wishText())}</b>${W.n>1?`<i>${W.got|0} of ${W.n}</i>`:''}</span><button class="gel pink" id="wishGo">Go</button></div>`}
+function wishGo(){const W=state.wish;if(!W||!W.k)return;if(W.k==='trip'){setTab(null);if(!(away&&away.key===W.shop))travelTo(W.shop);return}tdGo(WISH_T[W.k].go)}
 function cDate(){try{const p=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',year:'numeric',month:'numeric',day:'numeric'}).formatToParts(new Date()),g=t=>+p.find(x=>x.type===t).value;return new Date(Date.UTC(g('year'),g('month')-1,g('day')))}
   catch(_){const d=new Date();return new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()))}}
 let tdDayShift=0;// debug: pretend it's a later day
@@ -4207,7 +4246,7 @@ function tdEnsure(){if(!state)return false;const T=state.td=state.td&&typeof sta
 function tdText(e){return TD_T[e.k].txt(e.n)}
 function tdCount(e){const v=Object.values(state.td.prog[e.k]||{});return TD_T[e.k].score?Math.max(0,...v):v.reduce((a,b)=>a+b,0)}
 // Something happened (feed, place, score:catch...). Every matching two-do on today's list moves along.
-function td(ev,amt,val){if(!state)return;tdEnsure();const T=state.td,id=pid();let hit=false;if(ev==='note')T.notes=(T.notes|0)+1;
+function td(ev,amt,val){if(!state)return;wishHit(ev);tdEnsure();const T=state.td,id=pid();let hit=false;if(ev==='note')T.notes=(T.notes|0)+1;
   T.list.forEach(e=>{const t=TD_T[e.k];if(!t||t.ev!==ev||T.done.includes(e.k))return;const P=T.prog[e.k]=T.prog[e.k]||{};
     if(t.score){if(!((val|0)>(P[id]|0)))return;P[id]=val|0}else P[id]=(P[id]|0)+(amt||1);hit=true;if(tdCount(e)>=e.n)tdComplete(e)});
   tdMilestones();if(hit||ev==='note')saveSoon();tdUI();if(hit&&openTab==='todo')renderSheet()}
@@ -4779,7 +4818,7 @@ function renderSheet(){const body=$('#sheetBody');
         <span class="iq">${canBuy?`<span class="shopat">${SHOPS[SHOP_FOR[it.k]].n}</span>`:it.k==='toy'?'Owned':'×'+have}</span></button>`}).join('')}</div>`;
       $('#pvBack').onclick=()=>{petView=null;renderSheet()};queueThumbs(list.filter(i=>PROP_BUILD[i.id]).map(i=>'toy:'+i.id));body.querySelectorAll('[data-item]').forEach(b=>b.onclick=()=>{const it=ITEMMAP[b.dataset.item];if(owned(it)){doAct(act,it.id);return}const sk=SHOP_FOR[it.k];if(away&&away.key===sk){setTab(null);openProduct(it.id);return}toast(`${it.n} is sold at ${SHOPS[sk].n}.`);travelTo(sk,null,it.id)});return}
     const sp=spiritOf(s),bag=Object.values(state.inv).reduce((a,b)=>a+b,0);
-    body.innerHTML=`<div class="pet-head"><input id="pname" maxlength="16" value="${esc(p.name)}" aria-label="Pet name"><span class="stage">${STAGE_NAMES[st]}</span></div>`+
+    body.innerHTML=`<div class="pet-head"><input id="pname" maxlength="16" value="${esc(p.name)}" aria-label="Pet name"><span class="stage">${STAGE_NAMES[st]}</span></div>`+(st?wishRow():'')+
     (st===0?`<p class="hint">A mystery egg lives in your room. Warm it together to hatch it. Either of you can tap the egg or the button.</p><div class="actions"><button class="gel pink" id="warm" style="grid-column:span 2">Warm the egg (${p.xp}/3)</button></div>`:
     `${P?`<p class="pers"><b>${P.n}</b> ${P.d}</p>`:''}
     <div class="spirit"><span>Spirit</span><b>${tier('spirit',sp)}</b><div class="bar"><i style="width:${sp|0}%;--c:#A6E22E"></i></div></div>
@@ -4788,6 +4827,7 @@ function renderSheet(){const body=$('#sheetBody');
     <p class="xp">${next?`${next-p.xp} more care moments until ${esc(p.name)} grows.`:`${esc(p.name)} is fully grown. Keep the love coming.`} ${bag} ${bag===1?'item':'items'} in your bag. Stats drain while you're away, so take turns.</p>`)+
     (st?`<div class="row-label">Style</div><div class="actions"><button class="gel" id="goWard">Wardrobe</button><button class="gel" id="goGlam">Glow Up Studio</button></div>`:'');
     const w=$('#warm');if(w)w.onclick=warm;body.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>doAct(b.dataset.act));
+    {const wg=$('#wishGo');if(wg)wg.onclick=wishGo}
     {const a=$('#goWard'),b=$('#goGlam');if(a)a.onclick=()=>setTab('wardrobe');if(b)b.onclick=()=>{setTab(null);travelTo('glam')}}
     const ni=$('#pname');ni.onchange=()=>{const v=ni.value.trim().slice(0,16);if(v&&v!==state.pet.name){logEvent(`renamed the pet to ${v}`);state.pet.name=v;saveSoon();updHUD()}}}
   else if(openTab==='mail'){const f=state.feed;const ids=[...new Set(f.map(x=>x.by))];resolveNames(ids);
@@ -4973,7 +5013,7 @@ function tryRemote(){if(sandbox||!remote||dirty||writing||dragging)return;if((re
 function normalize(s){const oldPal=!!s&&!(s.pv>=2);const d=defaultState();s=Object.assign({},d,s||{});s.items=Array.isArray(s.items)?s.items.filter(i=>i&&CATMAP[i.k]&&typeof i.id==='string').slice(0,80):[];
   s.inv=s.inv&&typeof s.inv==='object'?Object.fromEntries(Object.entries(s.inv).filter(([k,v])=>ITEMMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):Object.assign({},d.inv);
   s.toys=Array.isArray(s.toys)?s.toys.filter(k=>ITEMMAP[k]&&ITEMMAP[k].k==='toy'):d.toys.slice();s.daily=s.daily&&typeof s.daily==='object'?s.daily:{};
-  s.pet=Object.assign({},d.pet,s.pet||{});if(s.pet.look&&typeof s.pet.look!=='object')delete s.pet.look;s.wear=[...new Set(Array.isArray(s.wear)?s.wear.filter(id=>wearDef(id)):[])];s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
+  s.pet=Object.assign({},d.pet,s.pet||{});if(s.pet.look&&typeof s.pet.look!=='object')delete s.pet.look;s.wish=s.wish&&typeof s.wish==='object'&&(!s.wish.k||WISH_T[s.wish.k])?s.wish:{};s.wear=[...new Set(Array.isArray(s.wear)?s.wear.filter(id=>wearDef(id)):[])];s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
   s.feed=Array.isArray(s.feed)?s.feed.slice(0,50).map(f=>({t:+f.t||0,by:String(f.by||''),k:f.k==='note'?'note':'event',text:String(f.text||'').slice(0,160)})):[];
   s.visits=s.visits&&typeof s.visits==='object'?s.visits:{};s.names=s.names&&typeof s.names==='object'?Object.fromEntries(Object.entries(s.names).slice(0,8).map(([k,v])=>[String(k).slice(0,64),String(v||'').slice(0,20)])):{};s.hearts=Math.max(0,+s.hearts||0);if(!FLOORS.includes(s.floor))s.floor='checker';if(!WALLS.includes(s.wall))s.wall='bubble';const RN=ROOM_SIZES.includes(s.size)?s.size:8;s.size=RN;s.tf=Array.isArray(s.tf)&&s.tf.length===RN*RN?s.tf.map(k=>TILESETS.f[k]?k:s.floor):Array(RN*RN).fill(s.floor);s.tw=Array.isArray(s.tw)&&s.tw.length===RN*4?s.tw.map(k=>TILESETS.w[k]?k:s.wall):Array(RN*4).fill(s.wall);s.fown=s.fown&&typeof s.fown==='object'?Object.fromEntries(Object.entries(s.fown).filter(([k,v])=>CATMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):{};s.town=[...new Set([...STARTER_TILES,...(Array.isArray(s.town)?s.town:[]),...s.tf.map(k=>'f:'+k),...s.tw.map(k=>'w:'+k)])].filter(k=>TILESETS[k[0]]&&TILESETS[k[0]][k.slice(2)]);s.downs=[...new Set(['classic',...(Array.isArray(s.downs)?s.downs:[])])].filter(k=>k==='classic'||(TILESETS[k[0]]&&TILESETS[k[0]][k.slice(2)]));s.door=Object.assign({s:'classic',w:3,u:-2.6},s.door&&typeof s.door==='object'?s.door:{});if(!s.downs.includes(s.door.s))s.door.s='classic';s.door.w=clamp(s.door.w|0,0,3);s.door.u=clamp(+s.door.u||0,-RN/2+.8,RN/2-.8);if(!SKY_KEYS.includes(s.sky))s.sky='classic';if(oldPal){const mp=[0,7,8,3,12,5,2];s.items.forEach(i=>i.c=mp[(i.c||0)%7])}s.td=s.td&&typeof s.td==='object'&&!Array.isArray(s.td)?s.td:{};s.arc=s.arc&&typeof s.arc==='object'&&!Array.isArray(s.arc)?s.arc:{best:{},plays:0};s.pv=2;return s}
 function loadLocal(){let s=null;try{s=JSON.parse(localStorage.getItem(soloKey())||'null')}catch(_){}state=normalize(s||defaultState());if(!s)state.rev=0;syncScene();updHUD()}
@@ -5021,7 +5061,7 @@ if('serviceWorker' in navigator&&window.isSecureContext)window.addEventListener(
   if(!dbc&&FB){myId=myId||deviceId();dbc=await withTimeout(loadFirebase(),15000)}
   if(dbc){db=dbc;connectShared()}else{mode='solo';updHUD();if(openTab==='room')renderSheet()}
 })();
-setInterval(()=>{if(ready)updHUD();const ae=document.activeElement;if(openTab==='pet'&&!(ae&&ae.matches&&ae.matches('input')))renderSheet()},15000);
+setInterval(()=>{if(ready){updHUD();wishTick()}const ae=document.activeElement;if(openTab==='pet'&&!(ae&&ae.matches&&ae.matches('input')))renderSheet()},15000);
 
 /* ================= LOOP ================= */
 let skyTick=0;const clock=new THREE.Clock();let tAcc=0,fpsN=0,fpsT=0;const tmp=new THREE.Vector3();
