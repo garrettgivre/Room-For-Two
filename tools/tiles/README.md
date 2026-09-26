@@ -34,6 +34,21 @@ Floor border (3 x 3 tiles)          Wall run (3 columns)
 - The **border band** should be about **30%** of an edge tile (roughly 1/10 of the whole image), running the same width all round. If yours is thicker or thinner, pass `--b 0.25` or similar. Inner corners (on L-shaped areas) are made automatically from the corners.
 - For **runs**, the middle column repeats sideways. The end columns carry the trim that caps each stretch.
 
+## Importing a whole batch of room sets
+
+For folders of themed sets (each with `floor.png`, `bordered-rug.png`, `wallpaper.png`, and `full-wall.png` or
+`wall-run.png`), use the batch importer instead. Add the folder's number, key and name to `SETS` at the top of
+`tools/tiles/import_sets.py`, then:
+
+```bash
+python tools/tiles/import_sets.py path/to/Room-For-Two-Room-Sets-01-10
+```
+
+It fixes seams automatically (crops to the pattern's repeat when there is one, otherwise cuts the least visible
+seam; plank floors wrap at a plank joint), rebuilds bordered rugs so their edges and corners join at any size,
+turns full walls into 2-column panels, and turns short banner "wall runs" into paneling under the set's wallpaper.
+Paste the printed lines into `TILE_ART`. Helpers live in `tools/tiles/art_fix.py`.
+
 ## Making one
 
 1. Generate the image in ChatGPT with one of the prompts below. Save it into the repo, or anywhere else.

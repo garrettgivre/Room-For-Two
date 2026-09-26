@@ -14,6 +14,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 - `assets/` — logo, app icons (from the two-heads pet icon, never crop the logo's door), `r42-bubble.woff2` font, `icons/*.webp` (UI icons, set icons, emote bubbles + symbols).
 - `tools/font/` — scripts that traced the user's bubble-letter specimen into the font.
 - `tools/tiles/` — `make_tile.py` (turns a ChatGPT image into tile art in `assets/tiles/`) + `README.md` (sizes, prompt templates, lessons learned).
+- `tools/tiles/import_sets.py` + `art_fix.py` — batch importer for themed room sets (seam repair, rug rebuild for border mode, banner → run paneling). Room sets 01–10 (Bubblegum diner, Moon motel, Aquarium, Toybox, Cyber bedroom, Fruit punch, Cloud club, Indoor garden, Arcade carpet, Candy bathroom) came through it: 4 tile sets each (floor, `…rug` border floor, wallpaper, `…panel` full wall or `…run` paneling).
 - `assets/tiles/` — image tile sets registered in `TILE_ART`.
 
 ## How index.html is organised (search for these)
