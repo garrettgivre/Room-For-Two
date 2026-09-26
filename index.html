@@ -2381,11 +2381,11 @@ const PET_COLORS=PET_PALS.map(p=>p.body);
 const PST=[null,
   {sc:.5, bw:.34,bh:.28,hr:.31,hs:.2, leg:.03,foot:.085,arm:.05,hand:.07,tufts:1,tl:.12,scoot:1,speed:.45},
   {sc:.6, bw:.35,bh:.33,hr:.3, hs:.21,leg:.06,foot:.095,arm:.12,hand:.08,tufts:2,tl:.16,wobble:1,speed:.6},
-  {sc:.72,bw:.37,bh:.4, hr:.29,hs:.22,leg:.1, foot:.11,arm:.18,hand:.085,tufts:3,tl:.2,speed:.9},
-  {sc:.84,bw:.35,bh:.5, hr:.28,hs:.22,leg:.15,foot:.11,arm:.24,hand:.085,tufts:3,tl:.27,moody:1,speed:.9},
-  {sc:.94,bw:.35,bh:.58,hr:.27,hs:.22,leg:.2, foot:.12,arm:.28,hand:.09,tufts:3,tl:.3,shoes:1,speed:1},
-  {sc:1,  bw:.43,bh:.55,hr:.29,hs:.23,leg:.14,foot:.13,arm:.26,hand:.1,tufts:3,tl:.26,speed:.8},
-  {sc:.96,bw:.47,bh:.5, hr:.29,hs:.23,leg:.1, foot:.13,arm:.22,hand:.1,tufts:5,tl:.2,elder:1,speed:.45}];
+  {sc:.72,bw:.4, bh:.38,hr:.29,hs:.22,leg:.1, foot:.11,arm:.18,hand:.085,tufts:3,tl:.2,speed:.9},
+  {sc:.84,bw:.43,bh:.44,hr:.28,hs:.22,leg:.15,foot:.11,arm:.24,hand:.085,tufts:3,tl:.27,moody:1,speed:.9},
+  {sc:.94,bw:.45,bh:.47,hr:.27,hs:.22,leg:.2, foot:.12,arm:.28,hand:.09,tufts:3,tl:.3,shoes:1,speed:1},
+  {sc:1,  bw:.49,bh:.48,hr:.29,hs:.23,leg:.14,foot:.13,arm:.26,hand:.1,tufts:3,tl:.26,speed:.8},
+  {sc:.96,bw:.51,bh:.46,hr:.29,hs:.23,leg:.1, foot:.13,arm:.22,hand:.1,tufts:5,tl:.2,elder:1,speed:.45}];
 /* ================= PET LOOK: everything the boutique can change =================
    state.pet.look overrides the palette's defaults (petLook() fills the gaps, so older saves look the same):
    {body, headL, headR, pat, pc:[pattern colours], hand:{s,c}, foot:{s,cL,cR}, ant:{s,cL,cR}, acc:{slot:id}}
@@ -2437,6 +2437,12 @@ function gloss(parent,r,sy,sz,x,y,w,h,a,op,ox,oy,oz){const pv=onSurface(parent,r
 // jelly materials (detail 4 in the shader)
 function jel(h,o){const m=M(h,Object.assign({roughness:.34},o||{}));m.detail=4;return m}
 
+// The body: a unit sphere widened towards the bottom (x,z scale by 1-k*y), so the pet sits like a gumdrop.
+const BODY_TAPER=.16,bodyTaper=yn=>1-BODY_TAPER*clamp(yn,-1,1);let bodyGeoC=null;
+function bodyGeo(){if(bodyGeoC)return bodyGeoC;const g=new THREE.SphereGeometry(1,56,40),P_=g.pos,N=g.nrm,k=BODY_TAPER;
+  for(let i=0;i<P_.length;i+=3){const x=P_[i],y=P_[i+1],z=P_[i+2],t=1-k*y,X=x*t,Z=z*t;P_[i]=X;P_[i+2]=Z;
+    const nx=2*X/(t*t),nz=2*Z/(t*t),ny=2*y+2*k*(X*X+Z*Z)/(t*t*t),l=Math.hypot(nx,ny,nz)||1;N[i]=nx/l;N[i+1]=ny/l;N[i+2]=nz/l}
+  g.version++;g._bounds();return bodyGeoC=g}
 /* --- parts: each style builds under a pivot; the defaults are the original shapes --- */
 // hands: (pivot, stage, material, side, handMat) at the end of the arm
 const HAND_STYLES={
@@ -2583,12 +2589,12 @@ function buildPet(){
     antL:jel(L.ant.cL,{roughness:.35}),antR:jel(L.ant.cR,{roughness:.35})};
   const hipY=S.foot*.55+S.leg,cy=hipY+S.bh*.72,top=cy+S.bh,headY=top-S.hr*.04;R.cy=cy;R.headY=headY;R.S=S;
   // body (its pattern is a texture: crisp, round on the curve, and one mesh instead of dozens)
-  const bm=P(body,SPH(1,56,40),T.body,0,cy,0,.016);bm.scale.set(S.bw,S.bh,S.bw*.8);
-  {const bw=piv(body,0,cy,0);bw.scale.set(S.bw,S.bh,S.bw*.8);gloss(bw,1,1,1,-.55,.36,.24,.12,.6,.34)}
+  const bm=P(body,bodyGeo(),T.body,0,cy,0,.016);bm.scale.set(S.bw,S.bh,S.bw*.8);
+  {const bw=piv(body,0,cy,0);bw.scale.set(S.bw,S.bh,S.bw*.8);const gl=gloss(bw,1,1,1,-.55,.36,.24,.12,.6,.34),yp=gl.parent.parent,tp=bodyTaper(.36);yp.position.x*=tp;yp.position.z*=tp}
   // neck = the collar just under the heads; ring accessories (neck, waist) are sized to the body's width at that height
-  const ringR=y=>S.bw*Math.sqrt(Math.max(.05,1-((y-cy)/S.bh)**2)),neckY=Math.min(top-S.hr*.95,cy+S.bh*.55),waistY=cy-S.bh*.35;
-  R.sock.neck=piv(body,0,neckY,0);R.sock.back=piv(body,0,cy+S.bh*.2,-S.bw*.8);R.sock.waist=piv(body,0,waistY,0);
-  R.sockSize.neck=ringR(neckY);R.sockSize.back=S.bw*.7;R.sockSize.waist=ringR(waistY);
+  const ringR=y=>S.bw*bodyTaper((y-cy)/S.bh)*Math.sqrt(Math.max(.05,1-((y-cy)/S.bh)**2)),neckY=Math.min(top-S.hr*.95,cy+S.bh*.55),waistY=cy-S.bh*.35;
+  R.sock.neck=piv(body,0,neckY,0);R.sock.back=piv(body,0,cy+S.bh*.2,-S.bw*.8*bodyTaper(.2));R.sock.waist=piv(body,0,waistY,0);
+  R.sockSize.neck=ringR(neckY);R.sockSize.back=S.bw*.7*bodyTaper(.2);R.sockSize.waist=ringR(waistY);
   // legs + feet
   const fs=L.foot.s==='auto'?(S.shoes?'sneaker':'nub'):L.foot.s;
   R.legs=[];[-1,1].forEach(s=>{const lp=piv(body,s*S.bw*.46,hipY,0),gy=-hipY;R.legs.push(lp);
@@ -2596,13 +2602,13 @@ function buildPet(){
     FOOT_STYLES[fs].build(lp,S,s<0?T.footL:T.footR,s,gy);
     R.sock[s<0?'footL':'footR']=piv(lp,0,gy,S.foot*.25);R.sockSize[s<0?'footL':'footR']=S.foot});
   // arms + hands
-  R.arms=[];[-1,1].forEach(s=>{const ap=piv(body,s*S.bw*.9,cy+S.bh*.3,.02);ap.rotation.z=s*.55;
+  R.arms=[];[-1,1].forEach(s=>{const ap=piv(body,s*S.bw*.9*bodyTaper(.3),cy+S.bh*.3,.02);ap.rotation.z=s*.55;
     if(S.arm>.06){const a=P(ap,SPH(.065,14,10),T.limb,0,-S.arm/2,0,.012);a.scale.set(1,S.arm/.11+.3,1)}
     HAND_STYLES[L.hand.s].build(ap,S,T.hand,s);
     R.sock[s<0?'handL':'handR']=piv(ap,0,-S.arm-S.hand*.6,0);R.sockSize[s<0?'handL':'handR']=S.hand;R.arms.push({p:ap,s})});
   // two heads
   R.heads=[];R.eyes=[];R.pupils=[];R.lids=[];R.mouths=[];R.smiles=[];R.tufts=[];
-  [-1,1].forEach((s,i)=>{const hk=s<0?'headL':'headR',hp=piv(body,s*S.hs,headY,.06);hp.rotation.z=-s*.1;R.heads.push({p:hp,s});
+  [-1,1].forEach((s,i)=>{const hk=s<0?'headL':'headR',hp=piv(body,s*Math.max(S.hs,S.hr*.96),headY,.06);hp.rotation.z=-s*.17;R.heads.push({p:hp,s});
     const hd=P(hp,SPH(S.hr,48,34),T[hk],0,0,0,.016);hd.scale.set(1,.95,.92);
     gloss(hp,S.hr,.95,.92,s*S.hr*.55,S.hr*.5,S.hr*.26,S.hr*.13,-s*.75,.7);gloss(hp,S.hr,.95,.92,s*S.hr*.8,S.hr*.2,S.hr*.07,S.hr*.06,0,.6);
     // one big eye with an eyelid that can close
