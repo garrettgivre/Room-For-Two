@@ -2383,7 +2383,10 @@ let W=1,H=1;
 function resize(){W=window.innerWidth;H=window.innerHeight;renderer.setSize(W,H,false);camera.aspect=W/H;
   const hTan=6.4/19;camera.fov=clamp(2*Math.atan(hTan/Math.min(1.2,camera.aspect))*180/Math.PI,30,68);camera.updateProjectionMatrix()}
 window.addEventListener('resize',resize);resize();
-function updCam(){const cp=Math.cos(cam.pitch);camera.position.set(cam.target.x+cam.dist*cp*Math.sin(cam.yaw),cam.target.y+cam.dist*Math.sin(cam.pitch),cam.target.z+cam.dist*cp*Math.cos(cam.yaw));camera.lookAt(cam.target);
+function updCam(){
+  // While the pet sheet is up or a play scene runs, drift toward the pet so it stays in view above the sheet.
+  const fp=(openTab==='pet'||toyPlay)&&pet.stage>0,pp=pet.group.position;cam.target.x+=((fp?pp.x*.75:0)-cam.target.x)*.06;cam.target.z+=((fp?pp.z*.75:0)-cam.target.z)*.06;
+  const cp=Math.cos(cam.pitch);camera.position.set(cam.target.x+cam.dist*cp*Math.sin(cam.yaw),cam.target.y+cam.dist*Math.sin(cam.pitch),cam.target.z+cam.dist*cp*Math.cos(cam.yaw));camera.lookAt(cam.target);
   cam.shift+=(cam.shiftTo-cam.shift)*.15;camera.setViewOffset(W,H,0,cam.shift,W,H)}
 
 /* ================= INTERACTION ================= */
@@ -2537,7 +2540,10 @@ document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{const t=b.dataset.ta
 $('#petchip').onclick=()=>setTab(openTab==='pet'?null:'pet');
 $('#dbgBtn').onclick=()=>setTab(openTab==='debug'?null:'debug');
 function setTab(t){petView=null;openTab=t;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));$('#sheet').classList.toggle('open',!!t);
-  if(t){renderSheet();if(t==='mail')markRead()}requestAnimationFrame(()=>{const sh=t?$('#sheet').offsetHeight:0;cam.shiftTo=sh*.42;$('#seltools').style.bottom=`calc(env(safe-area-inset-bottom,0px) + ${90+(t?sh+8:0)}px)`});updHUD()}
+  if(t){renderSheet();if(t==='mail')markRead()}requestAnimationFrame(fitSheet);updHUD()}
+// Keep the room framed above the sheet, also when its content grows or shrinks (e.g. the egg hatching).
+function fitSheet(){const sh=openTab?$('#sheet').offsetHeight:0;cam.shiftTo=sh*.5;$('#seltools').style.bottom=`calc(env(safe-area-inset-bottom,0px) + ${90+(openTab?sh+8:0)}px)`}
+if(window.ResizeObserver)new ResizeObserver(()=>{if(openTab)fitSheet()}).observe($('#sheet'));
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function renderSheet(){const body=$('#sheetBody');
   if(openTab==='decorate'){
