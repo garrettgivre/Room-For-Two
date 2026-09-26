@@ -307,6 +307,23 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px da
 .gel .bi{width:34px;height:34px;margin:-8px 0 -8px -6px;flex:none;filter:drop-shadow(0 2px 0 rgba(59,18,115,.35))}
 .stat{display:block}.stat .si{width:22px;height:22px;vertical-align:-6px;margin-right:4px}
 .coach li span.ci{background:none;border:0}.coach li span.ci img{width:40px;height:40px}
+
+/* set icons */
+.chip .chi{width:24px;height:24px;margin:-4px 4px -4px -4px;vertical-align:middle;filter:drop-shadow(0 1px 0 rgba(59,18,115,.3))}
+.chip{display:inline-flex;align-items:center}
+.setb{background:none!important;border:0!important;box-shadow:none!important;width:38px!important;height:38px!important;top:-15px!important;left:-14px!important}
+.setb img{width:38px;height:38px;filter:drop-shadow(0 2px 0 rgba(59,18,115,.35))}
+/* emotes: bubble art + symbol */
+.emote{width:74px!important;height:74px!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;display:block!important;font-size:0!important;transform:translate(-22%,-88%);animation:emoFloat 1.9s ease-out forwards}
+.emote::after{display:none!important}
+.emote .eb{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 3px 4px rgba(20,0,40,.35))}
+.emote .es{position:absolute;width:46%;height:46%;transform:translate(-50%,-50%) scale(0);display:grid;place-items:center;animation:emoSym .5s .12s cubic-bezier(.3,1.9,.5,1) forwards}
+.emote .es img{width:100%;height:100%;object-fit:contain}
+.emote .es b{font-family:var(--disp);font-weight:400;font-size:17px;color:var(--grape);white-space:nowrap;letter-spacing:.02em}
+.emote.b-shout .es b{color:var(--pink);font-size:18px}
+.emote .es i{font-style:normal;font-size:24px;line-height:1}
+@keyframes emoFloat{0%{opacity:0;transform:translate(-22%,-88%) scale(.2) rotate(-18deg)}14%{opacity:1;transform:translate(-22%,-88%) scale(1.15) rotate(5deg)}26%{transform:translate(-22%,-88%) scale(1) rotate(-2deg)}78%{opacity:1}100%{opacity:0;margin-top:-54px;transform:translate(-22%,-88%) scale(.95) rotate(3deg)}}
+@keyframes emoSym{0%{transform:translate(-50%,-50%) scale(0) rotate(-25deg)}60%{transform:translate(-50%,-50%) scale(1.15) rotate(8deg)}80%{transform:translate(-50%,-50%) scale(.95) rotate(-4deg)}100%{transform:translate(-50%,-50%) scale(1) rotate(0)}}
 </style>
 </head>
 <body>
@@ -862,11 +879,11 @@ const hex=n=>'#'+n.toString(16).padStart(6,'0');
 /* ================= CATALOG ================= */
 // Sets work like Sims packs; fn is the "buy by function" category.
 const SETS=[
- {k:'space',n:'Space Age',e:'🪐',c:'#4FC3F7'},
- {k:'candy',n:'Sweet Tooth',e:'🍭',c:'#FF6FB5'},
- {k:'calm',n:'Oat & Linen',e:'🌾',c:'#E8D8BC'},
- {k:'monster',n:'Dumpster Den',e:'👾',c:'#B5E03A'},
- {k:'play',n:'Toybox',e:'🧸',c:'#F2C230'}
+ {k:'space',img:'set-space',n:'Space Age',e:'🪐',c:'#4FC3F7'},
+ {k:'candy',img:'set-candy',n:'Sweet Tooth',e:'🍭',c:'#FF6FB5'},
+ {k:'calm',img:'set-calm',n:'Oat & Linen',e:'🌾',c:'#E8D8BC'},
+ {k:'monster',img:'set-monster',n:'Dumpster Den',e:'👾',c:'#B5E03A'},
+ {k:'play',img:'set-play',n:'Toybox',e:'🧸',c:'#F2C230'}
 ];
 const SETMAP={};SETS.forEach(s=>SETMAP[s.k]=s);
 const FUNCS=[['seat','Seats','🛋️'],['bed','Beds','🛏️'],['surface','Tables','🍽️'],['storage','Storage','📦'],['light','Lights','💡'],['fun','Fun','🕹️'],['plant','Plants','🌵'],['rug','Rugs','🌀'],['deco','Decor','🗿'],['wall','Walls','🖼️'],['pet','Pet','🐾']];
@@ -2018,7 +2035,13 @@ function spawn(k){const d=CATMAP[k];if(state.hearts<d.p){toast(`You need ${d.p-s
 
 /* ================= EMOTES / HUD ================= */
 const emotes=[];
-function emote(ch){const el=document.createElement('div');el.className='emote';el.textContent=ch;$('#emotes').appendChild(el);const e={el,born:performance.now(),dx:(Math.random()-.5)*30};emotes.push(e);setTimeout(()=>{el.remove();emotes.splice(emotes.indexOf(e),1)},1800)}
+// Emotes: a bubble (speech, thought or shout) with a symbol dropped inside. i = icon file, t = text in the bubble font, e = stand-in emoji.
+const BUBBLES={speech:[.512,.432],thought:[.511,.381],shout:[.509,.493]};
+const EMO={'💗':{b:'speech',i:'stat-happy'},'🍙':{b:'speech',i:'stat-full'},'🫧':{b:'speech',i:'stat-clean'},'😪':{b:'thought',i:'stat-energy'},'💤':{b:'thought',t:'Zzz'},
+  '🎾':{b:'speech',i:'act-play'},'😋':{b:'speech',i:'act-feed'},'⭐':{b:'speech',e:'⭐'},'✨':{b:'shout',e:'⭐'},'💥':{b:'shout',t:'Pop!'},'🐣':{b:'shout',e:'🐣'},'🎉':{b:'shout',e:'🎉'}};
+function emote(ch){const d=EMO[ch]||{b:'speech',e:ch},c=BUBBLES[d.b],el=document.createElement('div');el.className='emote b-'+d.b;
+  el.innerHTML=`<img class="eb" src="assets/icons/bubble-${d.b}.webp" alt=""><span class="es" style="left:${c[0]*100}%;top:${c[1]*100}%">${d.i?`<img src="assets/icons/${d.i}.webp" alt="">`:d.t?`<b>${d.t}</b>`:`<i>${d.e}</i>`}</span>`;
+  $('#emotes').appendChild(el);const e={el,born:performance.now(),dx:(Math.random()-.5)*30};emotes.push(e);setTimeout(()=>{el.remove();emotes.splice(emotes.indexOf(e),1)},1800)}
 function updEmotes(){if(!emotes.length)return;const v=new THREE.Vector3(pet.group.position.x,pet.group.position.y+(pet.head||1),pet.group.position.z).project(camera);const x=(v.x+1)/2*W,y=(1-v.y)/2*H;emotes.forEach(e=>{e.el.style.left=x+e.dx+'px';e.el.style.top=y+'px'})}
 let toastT=0;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600)}
 function moodFace(){const st=stageOf(state.pet.xp);if(st===0)return'🥚';const s=petStats(),a=(s.hunger+s.fun+s.energy+s.clean)/4;if(pet.mode==='sleep')return'😴';return a>75?'😊':a>50?'🙂':a>30?'😕':'😢'}
@@ -2075,9 +2098,9 @@ function renderSheet(){const body=$('#sheetBody');
   if(openTab==='decorate'){
     const inSet=CAT.filter(c=>decoSet==='all'||c.set===decoSet),fns=new Set(inSet.map(c=>c.fn));if(decoFn!=='all'&&!fns.has(decoFn))decoFn='all';
     const list=inSet.filter(c=>decoFn==='all'||c.fn===decoFn);
-    const card=c=>`<div class="card${state.hearts<c.p?' poor':''}" data-k="${c.k}" role="button" tabindex="0" aria-label="Add ${esc(c.n)}, ${c.p} hearts"><span class="setb" style="--sc:${SETMAP[c.set].c}" aria-hidden="true">${SETMAP[c.set].e}</span><div class="thumb">${thumbs[c.k]?`<img src="${thumbs[c.k]}" alt="">`:'<i class="spin"></i>'}</div><b>${esc(c.n)}</b><span class="price"><i>♥</i>${c.p}</span></div>`;
+    const card=c=>`<div class="card${state.hearts<c.p?' poor':''}" data-k="${c.k}" role="button" tabindex="0" aria-label="Add ${esc(c.n)}, ${c.p} hearts"><span class="setb" aria-hidden="true"><img src="assets/icons/${SETMAP[c.set].img}.webp" alt=""></span><div class="thumb">${thumbs[c.k]?`<img src="${thumbs[c.k]}" alt="">`:'<i class="spin"></i>'}</div><b>${esc(c.n)}</b><span class="price"><i>♥</i>${c.p}</span></div>`;
     body.innerHTML=`<h2>Decorate</h2>
-    <div class="chips" role="group" aria-label="Filter by set"><button class="chip" data-set="all" aria-pressed="${decoSet==='all'}">Everything</button>${SETS.map(t=>`<button class="chip setchip" data-set="${t.k}" style="--sc:${t.c}" aria-pressed="${decoSet===t.k}"><span aria-hidden="true">${t.e}</span>${t.n}</button>`).join('')}</div>
+    <div class="chips" role="group" aria-label="Filter by set"><button class="chip" data-set="all" aria-pressed="${decoSet==='all'}"><img class="chi" src="assets/icons/heart-jar.webp" alt="">Everything</button>${SETS.map(t=>`<button class="chip setchip" data-set="${t.k}" style="--sc:${t.c}" aria-pressed="${decoSet===t.k}"><img class="chi" src="assets/icons/${t.img}.webp" alt="">${t.n}</button>`).join('')}</div>
     <div class="chips" role="group" aria-label="Filter by function"><button class="chip sm" data-fn="all" aria-pressed="${decoFn==='all'}">All kinds</button>${FUNCS.filter(f=>fns.has(f[0])).map(([k,n,e])=>`<button class="chip sm" data-fn="${k}" aria-pressed="${decoFn===k}"><span aria-hidden="true">${e}</span>${n}</button>`).join('')}</div>
     <p class="hint">${list.length} ${list.length===1?'piece':'pieces'}${decoSet!=='all'?' in '+SETMAP[decoSet].n:''}. Tap to add, or drag one up into the room.</p>
     <div class="tray" id="tray">${list.map(card).join('')}</div>`;
