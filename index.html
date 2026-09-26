@@ -114,7 +114,14 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px da
   background:radial-gradient(rgba(27,16,48,.07) 1.3px,transparent 1.8px) 0 0/12px 12px,var(--paper);border:3px solid var(--ink);border-radius:28px 22px 30px 20px;box-shadow:0 7px 0 var(--ink);
   transform:translateY(calc(100% + 140px)) rotate(4deg);transition:transform .38s cubic-bezier(.25,1.5,.45,1);max-height:min(50%,440px);display:flex;flex-direction:column}
 .sheet.open{transform:none}
-.sheet .grab{width:54px;height:8px;border-radius:5px;background:var(--ink);margin:0 auto 8px;flex:none}
+.sheet .grab{position:relative;width:54px;height:8px;border-radius:5px;background:var(--ink);margin:0 auto 8px;flex:none;touch-action:none;cursor:grab}
+.sheet .grab::before{content:"";position:absolute;left:-70px;right:-70px;top:-14px;bottom:-12px}
+.followpill{position:fixed;z-index:5;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 100px);transform:translateX(-50%);display:flex;align-items:center;gap:6px;height:38px;padding:0 8px 0 6px;background:#fff;border:2.5px solid var(--ink);border-radius:14px 11px 15px 10px;box-shadow:0 4px 0 var(--ink);color:var(--ink);font-family:var(--disp);font-size:13px;letter-spacing:.02em;animation:kpop .35s cubic-bezier(.3,1.8,.5,1)}
+.followpill[hidden]{display:none}
+/* styling (salon, wardrobe, try-on): the HUD steps aside so the pet has the stage; the hearts stay for prices */
+.brand,.petchip,.tdpill,.dbg-btn,.storebar{transition:opacity .25s,transform .25s}
+body.styling .brand,body.styling .petchip,body.styling .tdpill,body.styling .dbg-btn,body.styling .storebar,body.styling #kbub{opacity:0;pointer-events:none;transform:translateY(-12px)}
+body.styling .sheet{max-height:min(46%,420px)}.followpill img{width:26px;height:26px}.followpill b{font-weight:400;color:var(--pink)}.followpill i{font-style:normal;display:grid;place-items:center;width:22px;height:22px;margin-left:2px;border-radius:50%;background:var(--pink);color:#fff;border:2px solid var(--ink);font-size:14px;line-height:1}
 .sheet-body{overflow-y:auto;overflow-x:hidden;padding:0 16px;-webkit-overflow-scrolling:touch}
 .sheet h2{display:inline-block;font-weight:900;font-size:24px;margin:2px 0 6px;letter-spacing:-.02em;line-height:1.05;background:linear-gradient(transparent 58%,var(--sun) 58%,var(--sun) 92%,transparent 92%);padding:0 4px;transform:rotate(-1.5deg)}
 .sheet p.hint{margin:0 0 10px;font-size:13px;line-height:1.45;color:#4A3A6A}
@@ -424,17 +431,18 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px da
 .map.on .map-card{transform:none}
 .map-card h2{margin:0 0 8px;text-align:center;font-family:var(--disp);font-weight:400;font-size:30px;color:var(--pink);text-shadow:2.5px 0 var(--ink),-2.5px 0 var(--ink),0 2.5px var(--ink),0 -2.5px var(--ink),2px 2px var(--ink),-2px 2px var(--ink),2px -2px var(--ink),-2px -2px var(--ink),0 5px 0 var(--ink)}
 .map-x{position:absolute;top:-12px;right:-10px;width:42px;height:42px;border-radius:50%;border:3px solid var(--ink);background:var(--pink);color:#fff;font-family:var(--disp);font-size:24px;line-height:1;box-shadow:0 4px 0 var(--ink);z-index:2}
-.map-land{position:relative;flex:1;min-height:380px;aspect-ratio:300/360;border-radius:22px;border:3px solid var(--ink);overflow:hidden;
+.map-land{position:relative;flex:1;width:100%;aspect-ratio:300/420;max-height:calc(100dvh - 150px);min-height:300px;border-radius:22px;border:3px solid var(--ink);overflow:hidden;
   background:radial-gradient(rgba(255,255,255,.35) 1.5px,transparent 2px) 0 0/14px 14px,radial-gradient(circle at 30% 20%,#C8F59A,#8FD85A 70%)}
 .map-art{position:absolute;inset:0;width:100%;height:100%}
 .pin{position:absolute;transform:translate(-50%,-60%);display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:0;color:var(--ink);animation:pinBob 3s ease-in-out infinite}
 .pin:nth-of-type(2){animation-delay:-.7s}.pin:nth-of-type(3){animation-delay:-1.4s}.pin:nth-of-type(4){animation-delay:-2.1s}
-@keyframes pinBob{50%{transform:translate(-50%,-66%)}}
-.house{position:relative;width:70px;height:62px;display:grid;place-items:end center;padding-bottom:4px}
-.house::before{content:"";position:absolute;inset:18px 6px 0;background:#fff;border:3px solid var(--ink);border-radius:8px 8px 12px 12px;box-shadow:0 4px 0 var(--ink)}
+@keyframes pinBob{50%{transform:translate(-50%,-63%)}}
+.house{position:relative;width:62px;height:56px;display:grid;place-items:center;padding-top:14px}
+.house .door{position:absolute;z-index:1;bottom:3px;left:50%;width:12px;height:13px;margin-left:-6px;background:var(--c);border:2px solid var(--ink);border-bottom:0;border-radius:7px 7px 0 0}
+.house::before{content:"";position:absolute;inset:18px 7px 0;background:#FFF9EF;border:3px solid var(--ink);border-radius:8px 8px 12px 12px;box-shadow:0 4px 0 var(--ink)}
 .house::after{content:"";position:absolute;left:-2px;right:-2px;top:0;height:30px;background:var(--c);clip-path:polygon(50% 0,100% 70%,100% 100%,0 100%,0 70%);filter:drop-shadow(0 3px 0 var(--ink))}
-.house img{position:relative;z-index:1;width:40px;height:40px;filter:drop-shadow(0 2px 0 rgba(59,18,115,.3))}
-.pin b{font-family:var(--disp);font-weight:400;font-size:13px;letter-spacing:.02em;background:#fff;border:2.5px solid var(--ink);border-radius:10px;padding:2px 8px 3px;box-shadow:0 3px 0 var(--ink);white-space:nowrap}
+.house img,.house .hicon{position:relative;z-index:2;width:32px;height:32px;margin-bottom:8px;filter:drop-shadow(0 2px 0 rgba(59,18,115,.3))}
+.pin b{font-family:var(--disp);font-weight:400;font-size:12px;letter-spacing:.02em;background:#fff;border:2.5px solid var(--ink);border-radius:10px;padding:1px 7px 2px;margin-top:-2px;box-shadow:0 3px 0 var(--ink);white-space:nowrap}
 .pin.here b{background:var(--sun)}.pin.here .house img{animation:wig .9s ease-in-out infinite}
 .pin.here::after{content:"You are here";position:absolute;top:-16px;font-family:var(--disp);font-size:10px;color:#fff;background:var(--grape);border:2px solid var(--ink);border-radius:8px;padding:1px 6px 2px;white-space:nowrap}
 .travel{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;opacity:0;transition:opacity .4s;
@@ -607,22 +615,35 @@ body.away .tag{visibility:hidden}
 <div class="map" id="map" hidden><div class="map-card" role="dialog" aria-label="Town map">
   <button class="map-x" id="mapX" aria-label="Close map">×</button><h2>Where to?</h2>
   <div class="map-land">
-    <svg class="map-art" viewBox="0 0 300 360" preserveAspectRatio="none" aria-hidden="true">
-      <g fill="none" stroke="#FFF1C9" stroke-width="26" stroke-linecap="round"><path d="M150 330 C 150 290, 150 250, 150 215 S 120 150, 110 110 S 120 70, 120 50"/><path d="M150 285 C 110 275, 80 255, 66 238"/><path d="M150 285 C 190 275, 225 262, 234 245"/><path d="M150 215 C 180 195, 205 175, 210 158"/><path d="M130 160 C 110 150, 90 145, 84 138"/><path d="M116 72 C 150 78, 200 82, 230 80"/></g>
-      <g fill="none" stroke="#E9C77E" stroke-width="3" stroke-dasharray="7 9" stroke-linecap="round"><path d="M150 330 C 150 290, 150 250, 150 215 S 120 150, 110 110 S 120 70, 120 50"/></g>
-      <ellipse cx="248" cy="318" rx="36" ry="20" fill="#7FD8F5" stroke="#3B1273" stroke-width="3"/><ellipse cx="238" cy="312" rx="10" ry="3.5" fill="#fff" opacity=".7"/>
-      <g stroke="#3B1273" stroke-width="3"><circle cx="30" cy="110" r="16" fill="#7BD44A"/><circle cx="46" cy="122" r="12" fill="#A6E22E"/><circle cx="268" cy="120" r="14" fill="#7BD44A"/><circle cx="26" cy="310" r="15" fill="#A6E22E"/><circle cx="192" cy="96" r="11" fill="#7BD44A"/><circle cx="268" cy="200" r="12" fill="#A6E22E"/></g>
-      <g fill="#fff" opacity=".9"><ellipse cx="60" cy="20" rx="26" ry="9"/><ellipse cx="236" cy="18" rx="32" ry="10"/></g>
+    <svg class="map-art" viewBox="0 0 300 420" preserveAspectRatio="none" aria-hidden="true">
+      <defs><pattern id="mgr" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="1.6" fill="#fff" opacity=".35"/><circle cx="12" cy="12" r="1.2" fill="#6CC23A" opacity=".45"/></pattern>
+        <radialGradient id="mgp" cx=".4" cy=".35"><stop offset="0" stop-color="#FFE3F3"/><stop offset="1" stop-color="#FFB8DD"/></radialGradient></defs>
+      <rect width="300" height="420" fill="#9ADB5E"/><rect width="300" height="420" fill="url(#mgr)"/>
+      <g fill="#B6EA7C" stroke="#7CC447" stroke-width="2"><rect x="72" y="92" width="64" height="136" rx="18"/><rect x="164" y="92" width="64" height="136" rx="18"/><rect x="72" y="260" width="64" height="118" rx="18"/><rect x="164" y="260" width="64" height="118" rx="18"/></g>
+      <path d="M150 398V70 M80 70H220 M55 160V322 M245 160V322 M55 244H245" fill="none" stroke="#3B1273" stroke-width="25" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M150 398V70 M80 70H220 M55 160V322 M245 160V322 M55 244H245" fill="none" stroke="#FFF3D6" stroke-width="19" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M150 398V70 M80 70H220 M55 160V322 M245 160V322 M55 244H245" fill="none" stroke="#F2C97E" stroke-width="2.5" stroke-dasharray="6 8" stroke-linecap="round"/>
+      <circle cx="150" cy="244" r="30" fill="url(#mgp)" stroke="#3B1273" stroke-width="3"/><circle cx="150" cy="244" r="17" fill="#7FD8F5" stroke="#3B1273" stroke-width="3"/>
+      <circle cx="150" cy="244" r="6" fill="#fff" stroke="#3B1273" stroke-width="2"/><path d="M150 238c-4-8-12-8-14-3M150 238c4-8 12-8 14-3" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+      <ellipse cx="143" cy="249" rx="4" ry="1.6" fill="#fff" opacity=".8"/>
+      <ellipse cx="262" cy="404" rx="26" ry="11" fill="#7FD8F5" stroke="#3B1273" stroke-width="3"/><ellipse cx="254" cy="401" rx="8" ry="2.5" fill="#fff" opacity=".7"/>
+      <g stroke="#3B1273" stroke-width="2.5"><circle cx="112" cy="150" r="13" fill="#7ED04A"/><circle cx="107.5" cy="145.4" r="3.9" fill="#fff" opacity=".35" stroke="none"/><circle cx="124" cy="160" r="10" fill="#5DBB35"/><circle cx="120.5" cy="156.5" r="3.0" fill="#fff" opacity=".35" stroke="none"/><circle cx="188" cy="150" r="12" fill="#7ED04A"/><circle cx="183.8" cy="145.8" r="3.6" fill="#fff" opacity=".35" stroke="none"/><circle cx="176" cy="161" r="9" fill="#5DBB35"/><circle cx="172.8" cy="157.8" r="2.7" fill="#fff" opacity=".35" stroke="none"/><circle cx="110" cy="318" r="12" fill="#7ED04A"/><circle cx="105.8" cy="313.8" r="3.6" fill="#fff" opacity=".35" stroke="none"/><circle cx="190" cy="318" r="13" fill="#5DBB35"/><circle cx="185.4" cy="313.4" r="3.9" fill="#fff" opacity=".35" stroke="none"/><circle cx="202" cy="328" r="9" fill="#7ED04A"/><circle cx="198.8" cy="324.9" r="2.7" fill="#fff" opacity=".35" stroke="none"/><circle cx="18" cy="112" r="11" fill="#5DBB35"/><circle cx="14.2" cy="108.2" r="3.3" fill="#fff" opacity=".35" stroke="none"/><circle cx="282" cy="112" r="11" fill="#7ED04A"/><circle cx="278.1" cy="108.2" r="3.3" fill="#fff" opacity=".35" stroke="none"/><circle cx="20" cy="210" r="10" fill="#5DBB35"/><circle cx="16.5" cy="206.5" r="3.0" fill="#fff" opacity=".35" stroke="none"/><circle cx="280" cy="210" r="10" fill="#7ED04A"/><circle cx="276.5" cy="206.5" r="3.0" fill="#fff" opacity=".35" stroke="none"/><circle cx="120" cy="112" r="9" fill="#5DBB35"/><circle cx="116.8" cy="108.8" r="2.7" fill="#fff" opacity=".35" stroke="none"/><circle cx="180" cy="112" r="9" fill="#7ED04A"/><circle cx="176.8" cy="108.8" r="2.7" fill="#fff" opacity=".35" stroke="none"/><circle cx="24" cy="404" r="12" fill="#5DBB35"/><circle cx="19.8" cy="399.8" r="3.6" fill="#fff" opacity=".35" stroke="none"/><circle cx="40" cy="410" r="9" fill="#7ED04A"/><circle cx="36.9" cy="406.9" r="2.7" fill="#fff" opacity=".35" stroke="none"/></g>
+      <g stroke="#3B1273" stroke-width="1.5"><circle cx="98" cy="200" r="3.2" fill="#FF5FA8"/><circle cx="104" cy="206" r="3.2" fill="#FFD21F"/><circle cx="196" cy="200" r="3.2" fill="#fff"/><circle cx="202" cy="206" r="3.2" fill="#3EC8F2"/><circle cx="96" cy="282" r="3.2" fill="#FF5FA8"/><circle cx="206" cy="282" r="3.2" fill="#FFD21F"/><circle cx="132" cy="356" r="3.2" fill="#fff"/><circle cx="168" cy="356" r="3.2" fill="#3EC8F2"/><circle cx="18" cy="300" r="3.2" fill="#FF5FA8"/><circle cx="282" cy="300" r="3.2" fill="#FFD21F"/><circle cx="118" cy="40" r="3.2" fill="#fff"/><circle cx="182" cy="40" r="3.2" fill="#3EC8F2"/></g>
+      <g font-family="R42 Bubble, Arial Rounded MT Bold, sans-serif" font-size="11" text-anchor="middle">
+        <g transform="translate(55 376)"><rect x="-34" y="-10" width="68" height="17" rx="6" fill="#FF8A1C" stroke="#3B1273" stroke-width="2.5"/><text y="3" fill="#fff">Treat Street</text></g>
+        <g transform="translate(245 376)"><rect x="-30" y="-10" width="60" height="17" rx="6" fill="#FF5FB0" stroke="#3B1273" stroke-width="2.5"/><text y="3" fill="#fff">Style Row</text></g>
+        <g transform="translate(150 58)"><rect x="-38" y="-10" width="76" height="17" rx="6" fill="#9B4DF2" stroke="#3B1273" stroke-width="2.5"/><text y="3" fill="#fff">Maker’s Lane</text></g></g>
+      <g fill="#fff" opacity=".9"><ellipse cx="40" cy="18" rx="22" ry="7"/><ellipse cx="262" cy="22" rx="26" ry="8"/></g>
     </svg>
-    <button class="pin" data-go="home" style="left:50%;top:91%;--c:#FF3D9A"><span class="house"><img src="assets/icons/tab-room.webp" alt=""></span><b>Home</b></button>
-    <button class="pin" data-go="snack" style="left:22%;top:66%;--c:#FF8A1C"><span class="house"><img src="assets/icons/act-feed.webp" alt=""></span><b>Snack Shack</b></button>
-    <button class="pin" data-go="build" style="left:78%;top:68%;--c:#FF8A1C"><span class="house"><svg class="hicon" viewBox="0 0 40 40"><g stroke="#3B1273" stroke-width="2.5" stroke-linejoin="round"><rect x="17" y="14" width="6" height="22" rx="2" fill="#B47A4A" transform="rotate(35 20 25)"/><rect x="8" y="6" width="18" height="10" rx="3" fill="#9FB3C8" transform="rotate(35 17 11)"/><rect x="24" y="18" width="12" height="8" rx="3" fill="#FF3D9A"/><rect x="28" y="26" width="4" height="10" rx="1.5" fill="#FFD21F"/></g></svg></span><b>Hammer &amp; Hue</b></button>
-    <button class="pin" data-go="salon" style="left:72%;top:43%;--c:#3EC8F2"><span class="house"><img src="assets/icons/act-bath.webp" alt=""></span><b>Bubble Salon</b></button>
-    <button class="pin" data-go="furn" style="left:27%;top:38%;--c:#FF3D9A"><span class="house"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Cozy Nest</b></button>
-    <button class="pin" data-go="arcade" style="left:77%;top:21%;--c:#9B4DF2"><span class="house"><img src="assets/icons/arcade.webp" alt=""></span><b>Jelly Arcade</b></button>
-    <button class="pin" data-go="glam" style="left:52%;top:30%;--c:#FF5FB0"><span class="house"><img src="assets/icons/glam.svg" alt=""></span><b>Glow Up Studio</b></button>
-    <button class="pin" data-go="wear" style="left:48%;top:52%;--c:#A6E22E"><span class="house"><img src="assets/icons/wear.svg" alt=""></span><b>Jelly Threads</b></button>
-    <button class="pin" data-go="toys" style="left:42%;top:13%;--c:#9B4DF2"><span class="house"><img src="assets/icons/act-play.webp" alt=""></span><b>Toy Box</b></button>
+    <button class="pin" data-go="home" style="left:50%;top:93%;--c:#FF3D9A"><span class="house"><i class="door"></i><img src="assets/icons/tab-room.webp" alt=""></span><b>Home</b></button>
+    <button class="pin" data-go="furn" style="left:26.7%;top:16.7%;--c:#FF3D9A"><span class="house"><i class="door"></i><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Cozy Nest</b></button>
+    <button class="pin" data-go="build" style="left:73.3%;top:16.7%;--c:#FF8A1C"><span class="house"><i class="door"></i><svg class="hicon" viewBox="0 0 40 40"><g stroke="#3B1273" stroke-width="2.5" stroke-linejoin="round"><rect x="17" y="14" width="6" height="22" rx="2" fill="#B47A4A" transform="rotate(35 20 25)"/><rect x="8" y="6" width="18" height="10" rx="3" fill="#9FB3C8" transform="rotate(35 17 11)"/><rect x="24" y="18" width="12" height="8" rx="3" fill="#FF3D9A"/><rect x="28" y="26" width="4" height="10" rx="1.5" fill="#FFD21F"/></g></svg></span><b>Hammer &amp; Hue</b></button>
+    <button class="pin" data-go="toys" style="left:18.3%;top:38.1%;--c:#9B4DF2"><span class="house"><i class="door"></i><img src="assets/icons/act-play.webp" alt=""></span><b>Toy Box</b></button>
+    <button class="pin" data-go="arcade" style="left:18.3%;top:58.1%;--c:#7B4BD6"><span class="house"><i class="door"></i><img src="assets/icons/arcade.webp" alt=""></span><b>Jelly Arcade</b></button>
+    <button class="pin" data-go="snack" style="left:18.3%;top:76.7%;--c:#FF8A1C"><span class="house"><i class="door"></i><img src="assets/icons/act-feed.webp" alt=""></span><b>Snack Shack</b></button>
+    <button class="pin" data-go="glam" style="left:81.7%;top:38.1%;--c:#FF5FB0"><span class="house"><i class="door"></i><img src="assets/icons/glam.svg" alt=""></span><b>Glow Up Studio</b></button>
+    <button class="pin" data-go="wear" style="left:81.7%;top:58.1%;--c:#7FC21E"><span class="house"><i class="door"></i><img src="assets/icons/wear.svg" alt=""></span><b>Jelly Threads</b></button>
+    <button class="pin" data-go="salon" style="left:81.7%;top:76.7%;--c:#3EC8F2"><span class="house"><i class="door"></i><img src="assets/icons/act-bath.webp" alt=""></span><b>Bubble Salon</b></button>
   </div></div></div>
 <div class="travel" id="travel" hidden><img id="tvIcon" alt=""><b id="tvText"></b></div>
 <div class="game" id="game" hidden><div class="gm-bar"><button class="gm-x" id="gmX" aria-label="Leave the game">×</button><b class="gm-title" id="gmTitle"></b><span class="gm-stat gm-lv" id="gmLv"></span><span class="gm-stat" id="gmTime"></span><span class="gm-score" id="gmScore"></span></div><canvas id="gmc"></canvas><div class="gm-card" id="gmCard" hidden></div></div>
@@ -643,8 +664,9 @@ body.away .tag{visibility:hidden}
   <button class="gel slime" id="bDone" aria-label="Done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg></button>
 </div>
 
+<button class="followpill" id="followPill" hidden><img src="assets/icons/tab-pet.webp" alt="">Following <b id="fpName">Mochi</b><i aria-hidden="true">×</i></button>
 <section class="sheet" id="sheet" aria-live="polite">
-  <div class="grab"></div>
+  <div class="grab" role="button" aria-label="Close" title="Drag down to close"></div>
   <div class="sheet-body" id="sheetBody"></div>
 </section>
 
@@ -3054,7 +3076,7 @@ const ACTS_ANIM={
   u_wiggle:{d:3.8,f:(p,t,S)=>{const k=bell(p,.12,.88);return{y:-(S.leg*.95+.02)*k+Math.abs(Math.sin(t*5))*S.bw*.25*k,legs:[-1.35*k,-1.35*k],rz:Math.sin(t*5)*.45*k,arms:[0,1].map(i=>({rz:(i?1:-1)*2.3,rx:0,w:k})),mouth:.85*k,lid:.5*k}}},
   spinjump:{d:1.4,f:p=>({spin:ease(p/.8)*Math.PI*2,y:Math.sin(Math.min(1,p/.8)*Math.PI)*.6,arms:[0,1].map(i=>({rz:(i?1:-1)*2.6,rx:0,w:bell(p,.1,.85)})),mouth:.9,lid:.5})}
 };
-function petAct(k){const R=pet.rig;if(!R||pet.stage<1||!ACTS_ANIM[k])return false;if(k==='sit'&&R.S.leg<.06)return false;if(k==='tumble'&&pet.stage>2)k='curious';
+function petAct(k){const R=pet.rig;if(!R||pet.stage<1||!ACTS_ANIM[k]||styling())return false;if(k==='sit'&&R.S.leg<.06)return false;if(k==='tumble'&&pet.stage>2)k='curious';
   pet.act={k,t:0,d:ACTS_ANIM[k].d};if(pet.mode!=='toy'){pet.mode='idle';pet.target=null;pet.timer=ACTS_ANIM[k].d+1.5}
   if(k==='nuzzle'&&state.pet.s)state.pet.s.affection=clamp((state.pet.s.affection??40)+1,0,100);
   const e={dance:'🎵',stretch:'😪',nuzzle:'💗',curious:'❓',tumble:'❗',sneeze:'🫧',slump:'😢',spinjump:'🎉'}[k];if(e)setTimeout(()=>emote(e),k==='sneeze'?900:150);return true}
@@ -3071,6 +3093,9 @@ function updatePet(dt,t){
   if(st===0){const burst=Math.sin(t*.9)>.55?1:0;R.body.rotation.z=Math.sin(t*10)*.13*burst+Math.sin(t*2)*.03;
     R.root.position.y=Math.sin(pet.hop*Math.PI)*.35;R.root.scale.set(pop,pop*(1+Math.sin(pet.hop*Math.PI*2)*.08),pop);g.position.copy(pet.pos);g.rotation.y=0;return}
 
+  if(styling()){if(pet.use)endUse(false);if(pet.seat)leaveSeatNow();if(pet.mode!=='idle'||pet.act){pet.act=null;pet.path=null;pet.target=null;pet.onArrive=null;pet.mode='idle'}
+    pet.timer=Math.max(pet.timer,1);pet.fidget=Math.max(pet.fidget,2);pet.chatIn=Math.max(pet.chatIn,2);pet.hop=0;pet.waveT=0;pet.spinT=0;pet.shakeT=0}
+  else pet.styleYaw=0;
   if(pet.seat&&pet.mode!=='perch')leaveSeatNow();
   if(pet.use&&pet.mode!=='use')endUse(false);
   const S=R.S,stats=petStats(),avg=(stats.hunger+stats.fun+stats.energy+stats.clean)/4,tired=stats.energy<20;
@@ -3080,11 +3105,11 @@ function updatePet(dt,t){
     else if(L<.08){pet.mode='idle';pet.path=null;pet.timer=2+Math.random()*4;const cb=pet.onArrive;pet.onArrive=null;cb&&cb()}
     else{const sp=(tired?.5:.85)*S.speed*(stats.hunger>100?.6:1)*dt;pet.pos.add(d.multiplyScalar(Math.min(1,sp/L)));const h=Math.atan2(pet.target.x-pet.pos.x,pet.target.z-pet.pos.z);let dh=h-pet.heading;dh=Math.atan2(Math.sin(dh),Math.cos(dh));pet.heading+=dh*Math.min(1,dt*8)}
     pet.ph+=dt*(tired?8:12)*(S.scoot?.8:S.elder?.7:1)}
-  else if(pet.mode==='idle'){pet.timer-=dt;if(pet.timer<=0&&(openTab==='studio'||openTab==='wardrobe'))pet.timer=1.2;
+  else if(pet.mode==='idle'){pet.timer-=dt;
     if(pet.timer<=0){const worn=stats.energy<12;if(!(worn?pickUse(stats,avg,(u,d)=>u.kind==='nap'||(d.perch&&d.perch.kind==='bed')):Math.random()<.65&&pickUse(stats,avg))){if(worn&&Math.random()<.5){pet.mode='sleep';pet.sleepT=10}else{petGo(randomSpot());const P=persOf();if(P&&P.wander)pet.timer=0}}}
     pet.fidget-=dt;if(pet.fidget<=0&&!pet.act){pet.fidget=5+Math.random()*6;const r=Math.random();if(r<.45)idleAct(avg,stats);else if(avg>55){if(r<.65)pet.waveT=1.4;else if(r<.8){pet.hop=1;pet.happyT=.8}}}
     pet.chatIn-=dt*((persOf()||{}).chat||1);if(pet.chatIn<=0){pet.chatIn=8+Math.random()*10;pet.chatT=1.6;if(avg>70&&Math.random()<.35)emote('🎵')}
-    const h=Math.atan2(camera.position.x-pet.pos.x,camera.position.z-pet.pos.z);let dh=h-pet.heading;dh=Math.atan2(Math.sin(dh),Math.cos(dh));pet.heading+=dh*Math.min(1,dt*1.8)}
+    const sy=styling(),h=Math.atan2(camera.position.x-pet.pos.x,camera.position.z-pet.pos.z)+(sy?pet.styleYaw||0:0);let dh=h-pet.heading;dh=Math.atan2(Math.sin(dh),Math.cos(dh));pet.heading+=dh*Math.min(1,dt*(sy?7:1.8))}
   else if(pet.mode==='perch'){const w=seatWorld(pet.seat),sp=pet.seat;
     if(!w){pet.seat=null;pet.seatY=0;pet.mode='idle';pet.timer=1;pet.hop=.5}
     else{pet.seatK=clamp(pet.seatK+dt*2.3*pet.seatDir,0,1);const k=pet.seatK,e=k*k*(3-2*k),rock=sp.kind==='ride'&&k>=1?Math.sin(t*3.2)*.2:0;
@@ -3542,7 +3567,7 @@ KEEPERS.joy=function(){const g=G(),b=G();g.add(b);const C=jel(0xB07BFF,{roughnes
     notes.forEach(q=>{q.t+=dt;const k=q.t/1.6;q.n.visible=k>0&&k<1;if(q.n.visible){q.n.position.set(q.x+Math.sin(k*9)*.06,1.3+k*.8,.1);q.n.scale.setScalar(k<.15?k/.15:k>.8?(1-k)/.2:1)}});
     F.update(dt,t,{talk,happy:cheer||greet||wp<1.2})}}};
 /* ================= GLOW UP STUDIO (hair + makeup) and JELLY THREADS (clothes) ================= */
-const BLANK='data:image/gif;base64,R0lGODlhAQABAAAAACw=';
+const BLANK='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 const DYES=[0xFF3D9A,0xFF7FB8,0xFFB3DA,0xFF4F7A,0xFF8A1C,0xFFB22E,0xFFD21F,0xFFF3A0,0xA6E22E,0x5FD68A,0x7FE0C0,0x3EC8F2,0x8FD8FF,0x4A7FF2,0x9B4DF2,0xC6A6FF,0xFFFFFF,0x3A3158];
 const PAT_MIXES=[[0xFF5FA8,0xFFD21F,0xA6E22E,0x9B4DF2],[0xFFFFFF,0x8FD8FF,0xFFE27A,0xB98CFF],[0xA6E22E,0x7CFC3A,0x6A5A96,0xC9F66A],[0xFFE066,0xFF5FA8,0xFFFFFF,0xFFCF4A],
   [0x3EC8F2,0xFF5FA8,0xFFD21F,0xC9A8FF],[0xFFD21F,0x9B4DF2,0xFFFFFF,0xFFB3D1],[0xFFFFFF,0xFFFFFF,0xFFF3F9,0xF4F0FF],[0x3B1273,0x6A2FC0,0x3B1273,0x9B4DF2]];
@@ -3703,9 +3728,8 @@ SHOPS.wear={n:'Jelly Threads',kind:'wear',icon:'wear.svg',color:'#A6E22E',keeper
 
 /* --- salon chairs: an appointment is a draft look; you pay for what changed when you book --- */
 let studio=null,wearCat='hand',wearPrev=false;
-function openService(k,style){if(!away)return;const K=away.keepers.find(q=>q.svc===k)||away.keeper;away.keeper=K;
+function openService(k,style){if(!away)return;$('#toast').classList.remove('on');const K=away.keepers.find(q=>q.svc===k)||away.keeper;away.keeper=K;
   if(stageOf(state.pet.xp)===0){keeperReact('greet',1.6);keeperSay(k==='wardrobe'?'Nothing fits an egg just yet. Come back after it hatches!':'Let’s wait until your egg hatches, sweetie!');return}
-  if(pet.stage>0&&pet.mode!=='toy'&&!toyPlay){endUse(false);pet.act=null;pet.seat=null;pet.seatY=0;petGo(new THREE.Vector3(K.g.position.x*.85,0,K.g.position.z+1.8))}
   keeperReact('greet',1.6);keeperSay(pick1(K.lines.hi));
   if(k==='wardrobe'){setTab('wardrobe');return}
   const base=petLook(true),draft=JSON.parse(JSON.stringify(base));if(style&&ANT_STYLES[style])draft.ant.s=style;studio={k,K,base,draft,part:'body',side:'B'};setTab('studio');previewLook(draft)}
@@ -3728,13 +3752,13 @@ function renderStudio(body){const S=studio;if(!S||!away){setTab(null);return}con
   h+=`<div class="studiobar"><button class="chip" id="stX">Never mind</button><button class="gel pink" id="stBook"${pr>state.hearts?' disabled':''}>${pr?`Book it <span class="cost">${pr}<img src="assets/icons/stat-happy.webp" alt="hearts"></span>`:'Looks good!'}</button></div>`;
   body.innerHTML=h;
   const upd=()=>{previewLook(d);renderSheet()};
-  body.querySelectorAll('[data-st]').forEach(e=>e.onclick=()=>{d.ant.s=e.dataset.st;pet.hop=.5;upd()});
+  body.querySelectorAll('[data-st]').forEach(e=>e.onclick=()=>{d.ant.s=e.dataset.st;pet.happyT=.6;upd()});
   body.querySelectorAll('[data-side]').forEach(e=>e.onclick=()=>{S.side=e.dataset.side;renderSheet()});
   body.querySelectorAll('.sw[data-c]').forEach(e=>e.onclick=()=>{const c=+e.dataset.c;if(hair){if(S.side!=='R')d.ant.cL=c;if(S.side!=='L')d.ant.cR=c}else d[S.part]=c;upd()});
   body.querySelectorAll('[data-pal]').forEach(e=>e.onclick=()=>{const P_=PET_PALS[+e.dataset.pal];Object.assign(d,{body:P_.body,headL:P_.L,headR:P_.R,pc:P_.spl.slice(0,4)});upd()});
   body.querySelectorAll('[data-part]').forEach(e=>e.onclick=()=>{S.part=e.dataset.part;renderSheet()});
   body.querySelectorAll('[data-mix]').forEach(e=>e.onclick=()=>{d.pc=PAT_MIXES[+e.dataset.mix].slice();upd()});
-  body.querySelectorAll('[data-pat]').forEach(e=>e.onclick=()=>{d.pat=e.dataset.pat;pet.hop=.5;upd()});
+  body.querySelectorAll('[data-pat]').forEach(e=>e.onclick=()=>{d.pat=e.dataset.pat;pet.happyT=.6;upd()});
   $('#stX').onclick=()=>setTab(null);$('#stBook').onclick=bookStudio;if(hair)queueThumbs(Object.keys(ANT_STYLES).map(k=>'ant:'+k))}
 function bookStudio(){const S=studio;if(!S)return;const pr=studioPrice(),K=S.K;if(pr>state.hearts){keeperSay(pick1(K.lines.poor));return}
   if(pr){state.hearts-=pr;logEvent(S.k==='hair'?`gave ${state.pet.name} new antennae at Glow Up Studio`:`gave ${state.pet.name} a makeover at Glow Up Studio`);td('buy');td('buy:glam');td('look')}
@@ -3743,7 +3767,7 @@ function bookStudio(){const S=studio;if(!S)return;const pr=studioPrice(),K=S.K;i
 function endWearPrev(){if(wearPrev){wearPrev=false;endPreview()}}
 function openWearOffer(id){previewLook(wearNext(petLook(true),id));wearPrev=true;openOffer(()=>offerWear(id))}
 function offerWear(id){const D=wearDef(id),own=ownsWear(id),cat=(WEAR_CATS.find(c=>c[0]===D.cat)||[0,''])[1];
-  return{key:id,title:D.n,sub:cat,desc:D.d,price:D.p,thumb:`<img data-tt="wear:${id}" src="${thumbs['wear:'+id]||BLANK}" alt="">`,thumbQ:'wear:'+id,have:own?'In your wardrobe':`Trying it on ${esc(PN())}`,canBuy:!own,
+  return{key:id,title:D.n,sub:cat,desc:D.d,price:D.p,thumb:`<img data-tt="wear:${id}" src="${thumbs['wear:'+id]||BLANK}" alt="">`,thumbQ:'wear:'+id,have:own?'In your wardrobe':away&&away.key==='wear'?`Trying it on ${esc(PN())}`:'Sold at Jelly Threads',canBuy:!own&&!!away&&away.key==='wear',go:!own&&!(away&&away.key==='wear')?{label:'Shop there',fn:()=>{closeProduct();setTab(null);travelTo('wear',()=>{setTab('wardrobe');openWearOffer(id)})}}:null,
     buy(){state.wear.push(id);wearPrev=false;const L=petLook(true);setLook(wornOn(id,L).length?L:wearNext(L,id));td('wear');if(openTab==='wardrobe')renderSheet();setTimeout(()=>toast('It’s in your Wardrobe. Swap outfits any time from the Pet tab.'),900)}}}
 function renderWardrobe(body){const L=petLook(true),inShop=away&&away.key==='wear',st=stageOf(state.pet.xp);
   let h=`<div class="pv-head"><h2>${inShop?'Fitting room':'Wardrobe'}</h2><span class="stage">${state.hearts} hearts</span></div>`;
@@ -3758,8 +3782,8 @@ function renderWardrobe(body){const L=petLook(true),inShop=away&&away.key==='wea
   if(!inShop)h+=`<div class="studiobar"><button class="gel" id="wShop">Shop at Jelly Threads</button></div>`;
   body.innerHTML=h;
   body.querySelectorAll('[data-wc]').forEach(e=>e.onclick=()=>{wearCat=e.dataset.wc;renderSheet();$('#sheetBody').scrollTop=0});
-  body.querySelectorAll('[data-w]').forEach(e=>e.onclick=()=>{const id=e.dataset.w;if(ownsWear(id)){endWearPrev();setLook(wearNext(petLook(true),id));td('wear');pet.hop=.6;renderSheet();return}
-    if(inShop){openWearOffer(id);return}toast(`${wearDef(id).n} is sold at Jelly Threads.`);travelTo('wear',()=>setTab('wardrobe'))});
+  body.querySelectorAll('[data-w]').forEach(e=>e.onclick=()=>{const id=e.dataset.w;if(ownsWear(id)){endWearPrev();setLook(wearNext(petLook(true),id));td('wear');pet.happyT=.6;renderSheet();return}
+    openWearOffer(id)});
   body.querySelectorAll('[data-hc]').forEach(e=>e.onclick=()=>{const L2=petLook(true);L2.hand.c=+e.dataset.hc;setLook(L2);renderSheet()});
   body.querySelectorAll('[data-fc]').forEach(e=>e.onclick=()=>{const [k,c]=e.dataset.fc.split(':'),L2=petLook(true);L2.foot[k]=+c;setLook(L2);renderSheet()});
   const ws=$('#wShop');if(ws)ws.onclick=()=>travelTo('wear',()=>setTab('wardrobe'));queueThumbs(ids.map(id=>'wear:'+id))}
@@ -3807,7 +3831,7 @@ function updShop(dt,t){away.keepers.forEach(K=>{K.k+=dt;if(K.act!=='idle'&&K.k>=
 function openDoor(){if(traveling)return;doorTarget=1;setTab(null);if(pet.stage>0&&pet.mode!=='toy'&&!toyPlay){endUse(false);pet.act=null;pet.seat=null;petGo(doorFront())}setTimeout(()=>showMap(),350)}
 function showMap(){const m=$('#map'),here=away?away.key:'home';m.querySelectorAll('[data-go]').forEach(b=>b.classList.toggle('here',b.dataset.go===here));m.hidden=false;requestAnimationFrame(()=>m.classList.add('on'))}
 function closeMap(){const m=$('#map');m.classList.remove('on');setTimeout(()=>{m.hidden=true},250);if(!traveling)doorTarget=0}
-function travelTo(dest,then,focus){if(traveling)return;const here=away?away.key:'home';if(dest===here){closeMap();then&&then();return}traveling=true;closeMap();setTab(null);select(null);if(brush)endBrush();
+function travelTo(dest,then,focus){if(traveling)return;const here=away?away.key:'home';if(dest===here){closeMap();then&&then();return}traveling=true;closeMap();closeProduct();setTab(null);select(null);if(brush)endBrush();
   const tv=$('#travel');$('#tvText').textContent=dest==='home'?'Heading home…':`Off to ${SHOPS[dest].n}…`;$('#tvIcon').src=ico(dest==='home'?'tab-room':SHOPS[dest].icon);tv.hidden=false;requestAnimationFrame(()=>tv.classList.add('on'));
   setTimeout(()=>{if(away){scene.remove(away.root);away=null}setRoomSize(dest!=='home'?8:state.size);if(dest!=='home')away=buildShop(dest);itemRoot.visible=!away;tilesDirty=true;syncTiles();doorKey='';syncDoor();navKey='';
     endToyPlay(true);endUse(false);pet.act=null;pet.seat=null;pet.seatY=0;pet.path=null;pet.target=null;pet.mode='idle';pet.timer=2.5;const f=doorFront();pet.pos.copy(f);pet.heading=Math.PI/2;
@@ -3845,10 +3869,10 @@ function offerSize(n){const got=state.size>=n,next=state.size+2===n;return{key:'
 function makeOffer(o){return o.t==='wear'?()=>offerWear(o.k):o.t==='item'?()=>offerItem(o.k):o.t==='furn'?()=>offerFurn(o.k):o.t==='tile'?()=>offerTile(o.k):o.t==='door'?()=>offerDoor(o.k):()=>offerSize(o.k)}
 function openOffer(fn){const O=fn();cardFn=fn;const c=$('#shopcard');
   c.innerHTML=`<button class="sc-x" id="scX" aria-label="Close">×</button><div class="sc-top"><span class="sc-th">${O.thumb}</span><div><h3>${esc(O.title)}</h3><small>${O.sub}</small></div></div><p>${esc(O.desc)}</p>
-    <div class="sc-row"><span class="sc-have">${O.have}</span>${O.canBuy?`<button class="gel pink sc-buy" id="scBuy"${state.hearts<O.price?' disabled':''}>Buy <span class="cost">${O.was?`<s>${O.was}</s>`:''}${O.price}<img src="assets/icons/stat-happy.webp" alt="hearts"></span></button>`:''}</div>`;
-  c.hidden=false;requestAnimationFrame(()=>c.classList.add('on'));if(O.thumbQ)queueThumbs([O.thumbQ]);if(O.tex)queueTexThumbs();$('#scX').onclick=closeProduct;const b=$('#scBuy');if(b)b.onclick=()=>buyOffer()}
+    <div class="sc-row"><span class="sc-have">${O.have}</span>${O.go?`<button class="gel pink sc-buy" id="scGo">${esc(O.go.label)}</button>`:''}${O.canBuy?`<button class="gel pink sc-buy" id="scBuy"${state.hearts<O.price?' disabled':''}>Buy <span class="cost">${O.was?`<s>${O.was}</s>`:''}${O.price}<img src="assets/icons/stat-happy.webp" alt="hearts"></span></button>`:''}</div>`;
+  c.hidden=false;requestAnimationFrame(()=>{c.classList.add('on');fitSheet()});if(O.thumbQ)queueThumbs([O.thumbQ]);if(O.tex)queueTexThumbs();$('#scX').onclick=closeProduct;const b=$('#scBuy');if(b)b.onclick=()=>buyOffer();const gb=$('#scGo');if(gb)gb.onclick=()=>O.go.fn()}
 function openProduct(id){openOffer(()=>offerItem(id))}
-function closeProduct(){endWearPrev();const c=$('#shopcard');c.classList.remove('on');setTimeout(()=>{if(!c.classList.contains('on'))c.hidden=true},250);cardFn=null}
+function closeProduct(){endWearPrev();const c=$('#shopcard');c.classList.remove('on');requestAnimationFrame(fitSheet);setTimeout(()=>{if(!c.classList.contains('on'))c.hidden=true},250);cardFn=null}
 function buyOffer(){if(!cardFn||!away)return;const O=cardFn();if(!O.canBuy)return;if(state.hearts<O.price){keeperSay(pick1(away.keeper.lines.poor));return}
   state.hearts-=O.price;O.buy();logEvent(`bought ${O.title.toLowerCase()} at ${away.def.n}`);td('buy');td('buy:'+away.key);saveSoon();updHUD();keeperReact('cheer',1.4);keeperSay(pick1(away.keeper.lines.buy));pet.happyT=1;setTimeout(()=>emote('💗'),300);
   const tag=O.hop||O.key;away.objs.forEach(o=>o.traverse(h=>{const q=h.userData;if(q.product===tag||(q.offer&&(q.offer.k===O.key||('door:'+q.offer.k)===O.key))){const t0=performance.now(),y0=h.position.y;const hop=()=>{const k=(performance.now()-t0)/450;h.position.y=y0+Math.sin(Math.min(1,k)*Math.PI)*.18;if(k<1)requestAnimationFrame(hop);else h.position.y=y0};hop()}}));
@@ -3922,12 +3946,23 @@ let W=1,H=1;
 function resize(){W=window.innerWidth;H=window.innerHeight;renderer.setSize(W,H,false);camera.aspect=W/H;
   const hTan=6.4/19;camera.fov=clamp(2*Math.atan(hTan/Math.min(1.2,camera.aspect))*180/Math.PI,30,68);camera.updateProjectionMatrix()}
 window.addEventListener('resize',resize);resize();
+// Camera: looks at the middle of the room by default. Tapping the pet makes it follow the pet (camFollow) until you tap
+// somewhere else in the room. While styling (salon, wardrobe, trying something on) it closes in on the pet, Create-a-Sim style:
+// cam.sk blends from the free camera to the close-up, cam.sz is the close-up's own zoom (pinch/wheel while styling).
+let camFollow=false,camSnap=0;
+const camMin=()=>camFollow?4.5:9;
+function setFollow(on){if(camFollow===on)return;camFollow=on;if(on)camSnap=.7;updFollowPill()}
+function updFollowPill(){const b=$('#followPill');if(!b)return;b.hidden=!(camFollow&&!openTab&&pet.stage>=0);$('#fpName').textContent=state.pet.name}
+const styling=()=>pet.stage>0&&(openTab==='studio'||openTab==='wardrobe'||wearPrev);
 function updCam(){
-  // While the pet sheet is up or a play scene runs, drift toward the pet so it stays in view above the sheet.
-  const fp=(openTab==='pet'||openTab==='studio'||openTab==='wardrobe'||toyPlay)&&pet.stage>0,pp=pet.group.position;cam.target.x+=((fp?pp.x*.75:0)-cam.target.x)*.06;cam.target.z+=((fp?pp.z*.75:0)-cam.target.z)*.06;
-  // in a salon chair or the fitting room the camera also leans in, like a mirror
-  cam.zf=(cam.zf||1)+(((openTab==='studio'||openTab==='wardrobe')&&pet.stage>0?.62:1)-(cam.zf||1))*.05;const cd=cam.dist*cam.zf;
-  const cp=Math.cos(cam.pitch);camera.position.set(cam.target.x+cd*cp*Math.sin(cam.yaw),cam.target.y+cd*Math.sin(cam.pitch),cam.target.z+cd*cp*Math.cos(cam.yaw));camera.lookAt(cam.target);
+  const sty=styling(),fp=(openTab==='pet'||toyPlay)&&pet.stage>0,pp=pet.group.position,dt=1/60;
+  if(sty!==document.body.classList.contains('styling')){document.body.classList.toggle('styling',sty);requestAnimationFrame(fitSheet)}
+  cam.sk=(cam.sk||0)+((sty?1:0)-(cam.sk||0))*.07;cam.sz=cam.sz||1;if(!camFollow&&cam.dist<9)cam.dist+=(9-cam.dist)*.08;
+  let tx=0,tz=0,ty=.8;if(sty||camFollow){tx=pp.x;tz=pp.z;ty=Math.max(.8,(pet.head||1.4)*(sty?.5:.45))}else if(fp){tx=pp.x*.75;tz=pp.z*.75}
+  const k=camSnap>0?.16:sty?.1:.06;camSnap=Math.max(0,camSnap-dt);cam.target.x+=(tx-cam.target.x)*k;cam.target.z+=(tz-cam.target.z)*k;cam.target.y+=(ty-cam.target.y)*k;
+  // close-up distance: the whole pet fits in the space left above the sheet
+  const vis=clamp((H-cam.shiftTo*2)/H,.3,1),petD=clamp((pet.head||1.4)/(.76*vis)/(2*Math.tan((camera.fov||40)*Math.PI/360)),3,16)*cam.sz,cd=cam.dist+(petD-cam.dist)*cam.sk,pitch=cam.pitch+(.26-cam.pitch)*cam.sk;
+  const cp=Math.cos(pitch);camera.position.set(cam.target.x+cd*cp*Math.sin(cam.yaw),cam.target.y+cd*Math.sin(pitch),cam.target.z+cd*cp*Math.cos(cam.yaw));camera.lookAt(cam.target);
   cam.shift+=(cam.shiftTo-cam.shift)*.15;camera.setViewOffset(W,H,0,cam.shift,W,H)}
 
 /* ================= INTERACTION ================= */
@@ -3958,7 +3993,7 @@ function pdist(){const a=[...ptrs.values()];return Math.hypot(a[0].x-a[1].x,a[0]
 function pang(){const a=[...ptrs.values()];return Math.atan2(a[1].y-a[0].y,a[1].x-a[0].x)}
 canvas.addEventListener('pointerdown',e=>{if(!ready)return;try{canvas.setPointerCapture(e.pointerId)}catch(_){}
   ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,t:performance.now()});
-  if(ptrs.size===2){if(stroke)cancelStroke();if(gest&&gest.type==='item'&&gest.started)finishDrag();gest={type:'pinch',d0:pdist(),dist0:cam.dist,a0:pang(),yaw0:cam.yaw};return}
+  if(ptrs.size===2){if(stroke)cancelStroke();if(gest&&gest.type==='item'&&gest.started)finishDrag();gest={type:'pinch',d0:pdist(),dist0:cam.dist,sz0:cam.sz||1,a0:pang(),yaw0:cam.yaw};return}
   if(ptrs.size>2)return;
   if(openTab!=='decorate'&&!brush){const th=townHit(e.clientX,e.clientY);if(th){gest={type:'orbit',yaw0:cam.yaw,pitch0:cam.pitch,town:th};return}}
   if(brush&&brush.kind==='d'){setRay(e.clientX,e.clientY);const vis=walls.filter(w=>w.g.visible).map(w=>w.plane),hh=ray.intersectObjects(vis,false)[0];
@@ -3973,9 +4008,9 @@ canvas.addEventListener('pointerdown',e=>{if(!ready)return;try{canvas.setPointer
 });
 canvas.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(!p||!gest)return;p.x=e.clientX;p.y=e.clientY;
   const dx=p.x-p.sx,dy=p.y-p.sy;
-  if(gest.type==='pinch'&&ptrs.size===2){cam.dist=clamp(gest.dist0*gest.d0/Math.max(20,pdist()),9,camMax());cam.yaw=gest.yaw0-(pang()-gest.a0)}
+  if(gest.type==='pinch'&&ptrs.size===2){if(styling()){cam.sz=clamp(gest.sz0*gest.d0/Math.max(20,pdist()),.6,1.6);return}cam.dist=clamp(gest.dist0*gest.d0/Math.max(20,pdist()),camMin(),camMax());cam.yaw=gest.yaw0-(pang()-gest.a0)}
   else if(gest.type==='paint'){if(stroke)moveStroke(p.x,p.y)}
-  else if(gest.type==='orbit'){cam.yaw=gest.yaw0-dx*.009;cam.pitch=clamp(gest.pitch0+dy*.006,.22,1.3)}
+  else if(gest.type==='orbit'||(gest.type==='pet'&&styling())){if(styling()){if(gest.sy0===undefined)gest.sy0=pet.styleYaw||0;pet.styleYaw=gest.sy0+dx*.012;return}cam.yaw=gest.yaw0-dx*.009;cam.pitch=clamp(gest.pitch0+dy*.006,.22,1.3)}
   else if(gest.type==='item'){if(!gest.started&&Math.hypot(dx,dy)>6){gest.started=true;dragging=true;gest.U=beginBuild();const it=itemById(gest.id);
       if(it&&!CATMAP[it.k].wall){setRay(p.sx,p.sy);const q=new THREE.Vector3();ray.ray.intersectPlane(floorPlane,q);gest.off={x:it.x-q.x,z:it.z-q.z}}
       else if(it){setRay(p.sx,p.sy);const vis=walls.filter(w=>w.g.visible).map(w=>w.plane);const hh=ray.intersectObjects(vis,false)[0];gest.off={y:hh?it.y-hh.point.y:0}}}
@@ -3984,13 +4019,24 @@ canvas.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(!p||!
 function endPtr(e){const p=ptrs.get(e.pointerId);if(!p)return;ptrs.delete(e.pointerId);if(!gest)return;
   const tap=Math.hypot(p.x-p.sx,p.y-p.sy)<8&&performance.now()-p.t<350;
   if(gest.type==='orbit'&&tap&&gest.town){townTap(gest.town);gest=ptrs.size?{type:'none'}:null;return}
-  if(gest.type==='orbit'&&tap){select(null);if(gest.liveItem&&!liveHinted){liveHinted=true;toast('Open Decorate to move furniture.')}}
-  if(gest.type==='pet'&&tap)petTap();
+  if(gest.type==='orbit'&&tap){select(null);if(gest.liveItem&&!liveHinted){liveHinted=true;toast('Open Decorate to move furniture.')}emptyTap()}
+  if(gest.type==='pet'&&tap){petTap();if(!styling()&&openTab!=='decorate')setFollow(true)}
   if(gest.type==='item'&&gest.started)finishDrag();
   if(gest.type==='paint'&&stroke)endStroke();
   if(ptrs.size===0||gest.type==='pinch')gest=ptrs.size?{type:'none'}:null}
 canvas.addEventListener('pointerup',endPtr);canvas.addEventListener('pointercancel',endPtr);
-canvas.addEventListener('wheel',e=>{e.preventDefault();cam.dist=clamp(cam.dist*(1+e.deltaY*.001),9,camMax())},{passive:false});
+canvas.addEventListener('wheel',e=>{e.preventDefault();if(styling()){cam.sz=clamp((cam.sz||1)*(1+e.deltaY*.001),.6,1.6);return}cam.dist=clamp(cam.dist*(1+e.deltaY*.001),camMin(),camMax())},{passive:false});
+// A tap on nothing in particular: closes a product card or a menu first, otherwise stops following the pet.
+// (Decorate stays open: taps there are for building. Styling stays open too: drags there turn the pet.)
+function emptyTap(){if(styling())return;const c=$('#shopcard');if(c&&!c.hidden){closeProduct();return}if(openTab&&openTab!=='decorate'){setTab(null);return}setFollow(false)}
+// Menus with a handle: drag the handle down (or tap it) to close. Escape closes the top-most thing on a keyboard.
+{const sh=$('#sheet'),gr=sh.querySelector('.grab');let d=null;
+  const reset=()=>{sh.style.transition='';sh.style.transform='';d=null};
+  gr.addEventListener('pointerdown',e=>{if(!openTab)return;e.preventDefault();d={y:e.clientY,t:performance.now(),dy:0,id:e.pointerId};try{gr.setPointerCapture(e.pointerId)}catch(_){}sh.style.transition='none'});
+  gr.addEventListener('pointermove',e=>{if(!d||e.pointerId!==d.id)return;d.dy=Math.max(-12,e.clientY-d.y);sh.style.transform=`translateY(${d.dy<0?d.dy*.3:d.dy}px)`});
+  gr.addEventListener('pointerup',e=>{if(!d||e.pointerId!==d.id)return;const ms=performance.now()-d.t,tap=Math.abs(d.dy)<6&&ms<350,close=tap||d.dy>60||(d.dy>20&&d.dy/ms>.5);if(close)setTab(null);reset()});
+  gr.addEventListener('pointercancel',reset)}
+window.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('#game').hidden||!$('#reward').hidden)return;if(!$('#map').hidden){closeMap();return}const c=$('#shopcard');if(!c.hidden){closeProduct();return}if(openTab){setTab(null);return}setFollow(false)});
 function finishDrag(){dragging=false;if(gest&&gest.U){const n=buildHist.length;endBuild(gest.U);gest.U=null;if(buildHist.length>n)td('move')}saveSoon()}
 
 function renderPalette(){const it=itemById(selId),pl=$('#palette');if(!it){pl.hidden=true;return}
@@ -3999,7 +4045,7 @@ function renderPalette(){const it=itemById(selId),pl=$('#palette');if(!it){pl.hi
 $('#bColor').onclick=()=>{const pl=$('#palette');if(!itemById(selId))return;pl.hidden=!pl.hidden;if(!pl.hidden)renderPalette()};
 $('#bStore').onclick=()=>{const it=itemById(selId);if(!it)return;const U=beginBuild();setTimeout(()=>endBuild(U));const d=CATMAP[it.k];state.items=state.items.filter(i=>i!==it);state.fown[it.k]=(state.fown[it.k]||0)+1;select(null);syncScene();updHUD();toast(`${d.n} put in storage.`);saveSoon();if(openTab==='decorate')renderSheet()};
 $('#bDone').onclick=()=>select(null);
-$('#mapX').onclick=closeMap;$('#map').onclick=e=>{if(e.target.id==='map')closeMap()};document.querySelectorAll('#map [data-go]').forEach(b=>b.onclick=()=>travelTo(b.dataset.go));$('#sbHome').onclick=()=>travelTo('home');
+$('#mapX').onclick=closeMap;$('#followPill').onclick=()=>setFollow(false);$('#map').onclick=e=>{if(e.target.id==='map')closeMap()};document.querySelectorAll('#map [data-go]').forEach(b=>b.onclick=()=>travelTo(b.dataset.go));$('#sbHome').onclick=()=>travelTo('home');
 document.querySelectorAll('#paintbar [data-tool]').forEach(b=>b.onclick=()=>{if(!brush)return;brush.tool=b.dataset.tool;updPaintBar()});
 $('#pbUndo').onclick=undoBuild;$('#sandX').onclick=()=>setSandbox(false);$('#pbDone').onclick=endBrush;$('#pbSwatch').onclick=()=>openDecorate(brush?(brush.kind==='d'?'door':brush.kind):'f');
 function projXY(o){const v=new THREE.Vector3();o.getWorldPosition(v);v.project(camera);return[(v.x+1)/2*W,(1-v.y)/2*H]}
@@ -4085,7 +4131,7 @@ function doAct(k,itemId){const a=ACTS[k],P=persOf();if(k!=='nap'&&!itemId){petVi
   petView=null;td('care');td(k);if(note==='fav')td('feed:fav');saveSoon();updHUD();if(openTab==='pet')renderSheet()}
 function warm(){td('warm');commitPet((s,p)=>{p.xp+=1});state.hearts+=1;pet.hop=.7;pet.waveT=1.3;pet.happyT=1.3;emote('💗');if(stageOf(state.pet.xp)===0)logEvent('warmed the egg');saveSoon();updHUD();if(openTab==='pet')renderSheet()}
 let lastPat=0;
-let lastPatTd=0;function petTap(){if(stageOf(state.pet.xp)===0){warm();return}if(pet.mode==='sleep'){emote('💤');return}if(Date.now()-lastPatTd>700){lastPatTd=Date.now();td('pat')}if(pet.mode==='perch'){pet.waveT=1.3;pet.happyT=.9;emote('💗')}else if(Math.random()<.35&&petAct('nuzzle')){}else{pet.hop=1;emote('💗')}
+let lastPatTd=0;function petTap(){if(stageOf(state.pet.xp)===0){warm();return}if(styling()){pet.happyT=.8;return}if(pet.mode==='sleep'){emote('💤');return}if(Date.now()-lastPatTd>700){lastPatTd=Date.now();td('pat')}if(pet.mode==='perch'){pet.waveT=1.3;pet.happyT=.9;emote('💗')}else if(Math.random()<.35&&petAct('nuzzle')){}else{pet.hop=1;emote('💗')}
   if(Date.now()-lastPat>20000){lastPat=Date.now();commitPet(s=>{s.fun=clamp(s.fun+5,0,100);s.affection=clamp((s.affection??40)+2*((persOf()||{}).love||1),0,100)});saveSoon();updHUD()}}
 
 /* ================= TWO-DO LIST ================= */
@@ -4586,10 +4632,10 @@ let openTab=null,decoSet='all',decoFn='all';const thumbs={};
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{const t=b.dataset.tab;if(away&&(t==='decorate'||t==='room')){travelTo('home',()=>setTab(t));return}setTab(openTab===t?null:t)});
 $('#petchip').onclick=()=>setTab(openTab==='pet'?null:'pet');
 $('#dbgBtn').onclick=()=>setTab(openTab==='debug'?null:'debug');
-function setTab(t){if(t&&brush)endBrush();if(openTab!==t&&(openTab==='studio'||openTab==='wardrobe')){endPreview();if(t!=='studio')studio=null}$('#tdBtn').setAttribute('aria-expanded',t==='todo');if(t)closeProduct();if(t!=='decorate')select(null);petView=null;openTab=t;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));$('#sheet').classList.toggle('open',!!t);
-  if(t){renderSheet();if(t==='mail')markRead()}requestAnimationFrame(fitSheet);updHUD()}
+function setTab(t){if(t&&brush)endBrush();if((t==='studio'||t==='wardrobe')&&toyPlay)endToyPlay(true);if(t==='decorate')setFollow(false);if(openTab!==t&&(openTab==='studio'||openTab==='wardrobe')){endPreview();if(t!=='studio')studio=null}$('#tdBtn').setAttribute('aria-expanded',t==='todo');if(t)closeProduct();if(t!=='decorate')select(null);petView=null;openTab=t;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));$('#sheet').classList.toggle('open',!!t);
+  if(t){renderSheet();if(t==='mail')markRead()}requestAnimationFrame(fitSheet);updHUD();updFollowPill()}
 // Keep the room framed above the sheet, also when its content grows or shrinks (e.g. the egg hatching).
-function fitSheet(){const sh=openTab?$('#sheet').offsetHeight:0;cam.shiftTo=sh*.5;$('#seltools').style.bottom=`calc(env(safe-area-inset-bottom,0px) + ${90+(openTab?sh+8:0)}px)`}
+function fitSheet(){const c=$('#shopcard'),sh=Math.max(openTab?$('#sheet').offsetHeight:0,c&&!c.hidden&&c.classList.contains('on')?c.offsetHeight:0);cam.shiftTo=sh*.5;$('#seltools').style.bottom=`calc(env(safe-area-inset-bottom,0px) + ${90+(openTab?sh+8:0)}px)`}
 if(window.ResizeObserver)new ResizeObserver(()=>{if(openTab)fitSheet()}).observe($('#sheet'));
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 /* ---------- decorate catalog ---------- */
@@ -4704,10 +4750,10 @@ function renderSheet(){const body=$('#sheetBody');
     <div class="dbar"><button type="button" class="chip sm dpick" id="decoSetBtn" aria-expanded="${decoSetsOpen}"></button><button type="button" class="chip sm dpick" id="decoSortBtn"></button>${decoMode==='buy'?`<button type="button" class="chip sm dpick" id="decoMineBtn" aria-pressed="${decoMine}">Owned</button>`:''}<span class="dcount" id="decoCount"></span></div>
     <div class="chips dsets" id="decoSets" role="group" aria-label="Filter by set"${decoSetsOpen?'':' hidden'}></div>
     <div class="dgrid" id="tray"></div>`;
-    const q=$('#decoQ');q.oninput=()=>{decoQ=q.value;$('#decoClr').hidden=!decoQ;renderDeco(true)};
+    const q=$('#decoQ');q.oninput=()=>{decoQ=q.value;const cl=$('#decoClr');if(cl)cl.hidden=!decoQ;renderDeco(true)};
     q.onkeydown=e=>{if(e.key==='Enter')q.blur()};
     $('#decoUndo').onclick=undoBuild;
-    $('#decoClr').onclick=()=>{decoQ='';q.value='';$('#decoClr').hidden=true;renderDeco(true)};
+    $('#decoClr').onclick=()=>{decoQ='';q.value='';const cl=$('#decoClr');if(cl)cl.hidden=true;renderDeco(true)};
     $('#decoSetBtn').onclick=()=>{decoSetsOpen=!decoSetsOpen;$('#decoSets').hidden=!decoSetsOpen;$('#decoSetBtn').setAttribute('aria-expanded',decoSetsOpen);if(decoSetsOpen)centerChip($('#decoSets'))};
     $('#decoSortBtn').onclick=()=>{decoSort=(decoSort+1)%DECO_SORTS.length;renderDeco(true)};
     const mb=$('#decoMineBtn');if(mb)mb.onclick=()=>{decoMine=!decoMine;mb.setAttribute('aria-pressed',decoMine);renderDeco(true)};
