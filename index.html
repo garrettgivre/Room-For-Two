@@ -342,6 +342,40 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px da
 .item b{display:block;font-family:var(--disp);font-weight:400;font-size:14px}.item small{display:block;font-size:11px;font-weight:800;color:var(--grape)}
 .item em{display:block;font-style:normal;font-size:11.5px;line-height:1.35;color:#5B3C86;margin-top:2px}
 .item .iq{font-family:var(--disp);font-size:13px;white-space:nowrap}.item .cost{display:inline-flex;align-items:center;gap:3px;background:var(--sun);border:2px solid var(--ink);border-radius:10px;padding:2px 7px}.item .cost img{width:16px;height:16px}
+
+/* decorate catalog */
+.sheet.deco{height:min(56%,480px)}
+.sheet.deco .sheet-body{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.dhead{display:flex;align-items:center;gap:10px;flex:none}.dhead h2{margin:2px 0 4px;flex:none}
+.dsearch{flex:1;min-width:0;position:relative;display:block}
+.dsearch input{width:100%;height:38px;padding:0 34px;border-radius:14px 11px 15px 12px;border:2.5px solid var(--ink);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='10' cy='10' r='6.5' fill='none' stroke='%233B1273' stroke-width='3'/%3E%3Cpath d='M15 15l5.5 5.5' stroke='%233B1273' stroke-width='3.4' stroke-linecap='round'/%3E%3C/svg%3E") 10px 50%/17px no-repeat;
+  box-shadow:0 3px 0 var(--ink);font-family:var(--disp);font-size:16px;letter-spacing:.02em;color:var(--ink);outline:none;-webkit-appearance:none;appearance:none}
+.dsearch input::placeholder{color:#9B86BD}.dsearch input:focus{box-shadow:0 3px 0 var(--ink),0 0 0 3px var(--sky)}
+.dclear{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;border:2px solid var(--ink);background:var(--pink);color:#fff;font-family:var(--disp);font-size:16px;line-height:1;display:grid;place-items:center;padding:0 0 2px}
+.dclear[hidden]{display:none}
+.dfns,.dsets{flex:none;padding-top:6px;padding-bottom:8px}.dsets[hidden]{display:none}
+.chip small{font-family:var(--disp);font-size:11px;margin-left:6px;padding:1px 6px 2px;border-radius:8px;background:rgba(59,18,115,.1)}
+.chip[aria-pressed="true"] small{background:rgba(255,255,255,.55)}
+.dbar{display:flex;align-items:center;gap:8px;flex:none;padding-bottom:4px}
+.dpick.on{background:var(--sc)}.dpick .chi{width:22px;height:22px}
+.caret{width:0;height:0;margin-left:7px;border:5px solid transparent;border-top:6px solid var(--ink);border-bottom:0;transition:transform .2s}
+.dpick[aria-expanded="true"] .caret{transform:rotate(180deg)}
+.dcount{margin-left:auto;font-family:var(--disp);font-size:12px;color:#6B4E95;white-space:nowrap}
+.dgrid{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;margin:0 -16px;padding:18px 18px 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:22px 14px;align-content:start;
+  touch-action:pan-y;overscroll-behavior:contain;scrollbar-width:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+  -webkit-mask-image:linear-gradient(transparent,#000 12px,#000 calc(100% - 14px),transparent);mask-image:linear-gradient(transparent,#000 12px,#000 calc(100% - 14px),transparent)}
+.dgrid::-webkit-scrollbar{display:none}
+.dcard{width:auto;touch-action:pan-y;transform:rotate(-1.5deg);padding:6px 6px 8px}
+.dcard:nth-child(even){transform:rotate(1.5deg)}
+.dcard .thumb{width:100%;height:auto;aspect-ratio:1/.9;position:relative}
+.dcard b{font-size:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dcard .price{width:42px;height:42px;top:-13px;right:-11px;font-size:12px}
+.dcard .setb{width:32px!important;height:32px!important;top:-13px!important;left:-12px!important}.dcard .setb img{width:32px;height:32px}
+.dcard.held{transform:scale(.92) rotate(0);opacity:.55}
+.own{position:absolute;left:4px;bottom:4px;font-family:var(--disp);font-size:11px;line-height:1;color:#fff;background:var(--ink);border-radius:8px;padding:3px 6px 4px}
+.own[hidden]{display:none}
+.dend{grid-column:1/-1;margin:2px 0 0;text-align:center;font-size:12px;color:#6B4E95}
+.dempty{grid-column:1/-1;text-align:center;padding:18px 8px}.dempty p{margin:0 0 12px;font-family:var(--disp);font-size:15px;color:var(--ink)}
 </style>
 </head>
 <body>
@@ -2545,20 +2579,53 @@ function setTab(t){petView=null;openTab=t;document.querySelectorAll('.tab').forE
 function fitSheet(){const sh=openTab?$('#sheet').offsetHeight:0;cam.shiftTo=sh*.5;$('#seltools').style.bottom=`calc(env(safe-area-inset-bottom,0px) + ${90+(openTab?sh+8:0)}px)`}
 if(window.ResizeObserver)new ResizeObserver(()=>{if(openTab)fitSheet()}).observe($('#sheet'));
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+/* ---------- decorate catalog ---------- */
+// Built for a big catalog: search + kind + set filters, a scrolling grid, and thumbnails rendered only as cards come into view.
+let decoQ='',decoSort=0,decoSetsOpen=false,decoHolding=false,decoIO=null;
+const DECO_SORTS=[['Featured',null],['Cheapest',(a,b)=>a.p-b.p||a.n.localeCompare(b.n)],['Priciest',(a,b)=>b.p-a.p||a.n.localeCompare(b.n)],['A to Z',(a,b)=>a.n.localeCompare(b.n)]];
+const FUNCMAP={};FUNCS.forEach(f=>FUNCMAP[f[0]]=f);
+const decoText=c=>(c.n+' '+SETMAP[c.set].n+' '+FUNCMAP[c.fn][1]).toLowerCase();
+function roomCounts(){const n={};state.items.forEach(i=>n[i.k]=(n[i.k]||0)+1);return n}
+function centerChip(row){const on=row.querySelector('[aria-pressed="true"]');if(on)row.scrollLeft=Math.max(0,on.offsetLeft-row.clientWidth/2+on.offsetWidth/2)}
+function decoCard(c,n){return`<div class="card dcard${state.hearts<c.p?' poor':''}" data-k="${c.k}" role="button" tabindex="0" aria-label="Add ${esc(c.n)}, ${c.p} hearts${n?`, ${n} in your room`:''}"><span class="setb" aria-hidden="true"><img src="assets/icons/${SETMAP[c.set].img}.webp" alt=""></span><div class="thumb">${thumbs[c.k]?`<img src="${thumbs[c.k]}" alt="">`:'<i class="spin"></i>'}<span class="own"${n?'':' hidden'}>×${n||0}</span></div><b>${esc(c.n)}</b><span class="price"><i>♥</i>${c.p}</span></div>`}
+function renderDeco(toTop){const grid=$('#tray');if(!grid)return;
+  const words=decoQ.trim().toLowerCase().split(/\s+/).filter(Boolean),hit=c=>{const t=decoText(c);return words.every(w=>t.includes(w))};
+  const pool=CAT.filter(c=>(decoSet==='all'||c.set===decoSet)&&hit(c)),per={};pool.forEach(c=>per[c.fn]=(per[c.fn]||0)+1);
+  if(decoFn!=='all'&&!per[decoFn]&&!words.length)decoFn='all';
+  let list=pool.filter(c=>decoFn==='all'||c.fn===decoFn);const sort=DECO_SORTS[decoSort][1];if(sort)list=list.slice().sort(sort);
+  const fns=$('#decoFns');fns.innerHTML=`<button type="button" class="chip sm" data-fn="all" aria-pressed="${decoFn==='all'}">All<small>${pool.length}</small></button>`+
+    FUNCS.filter(f=>per[f[0]]||f[0]===decoFn).map(([k,n,e])=>`<button type="button" class="chip sm" data-fn="${k}" aria-pressed="${decoFn===k}"><span aria-hidden="true">${e}</span>${n}<small>${per[k]||0}</small></button>`).join('');
+  fns.querySelectorAll('[data-fn]').forEach(b=>b.onclick=()=>{decoFn=b.dataset.fn;renderDeco(true)});centerChip(fns);
+  const S=decoSet==='all'?null:SETMAP[decoSet],sb=$('#decoSetBtn');sb.style.setProperty('--sc',S?S.c:'#fff');sb.classList.toggle('on',!!S);
+  sb.innerHTML=`<img class="chi" src="assets/icons/${S?S.img:'heart-jar'}.webp" alt="">${S?esc(S.n):'All sets'}<i class="caret" aria-hidden="true"></i>`;
+  $('#decoSortBtn').textContent='Sort: '+DECO_SORTS[decoSort][0];
+  const sets=$('#decoSets');sets.innerHTML=`<button type="button" class="chip sm" data-set="all" aria-pressed="${decoSet==='all'}"><img class="chi" src="assets/icons/heart-jar.webp" alt="">Everything</button>`+
+    SETS.map(t=>`<button type="button" class="chip sm setchip" data-set="${t.k}" style="--sc:${t.c}" aria-pressed="${decoSet===t.k}"><img class="chi" src="assets/icons/${t.img}.webp" alt="">${esc(t.n)}</button>`).join('');
+  sets.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>{decoSet=b.dataset.set;decoSetsOpen=false;sets.hidden=true;sb.setAttribute('aria-expanded',false);renderDeco(true)});
+  $('#decoCount').textContent=`${list.length} ${list.length===1?'piece':'pieces'}`;
+  const filtered=words.length||decoSet!=='all'||decoFn!=='all',n=roomCounts();
+  grid.innerHTML=list.length?list.map(c=>decoCard(c,n[c.k])).join('')+`<p class="dend">Tap to add. Hold and drag to place it just so.</p>`
+    :`<div class="dempty"><p>${words.length?`Nothing called “${esc(decoQ.trim())}”${decoSet!=='all'?' in '+esc(SETMAP[decoSet].n):''}.`:'Nothing here yet.'}</p>${filtered?'<button type="button" class="chip" id="decoAll">Show everything</button>':''}</div>`;
+  const all=$('#decoAll');if(all)all.onclick=()=>{decoQ='';decoFn='all';decoSet='all';const q=$('#decoQ');if(q)q.value='';$('#decoClr').hidden=true;renderDeco(true)};
+  if(toTop)grid.scrollTop=0;
+  if(decoIO)decoIO.disconnect();
+  decoIO=window.IntersectionObserver?new IntersectionObserver(es=>{const ks=[];es.forEach(e=>{if(e.isIntersecting){ks.push(e.target.dataset.k);decoIO.unobserve(e.target)}});if(ks.length)queueThumbsFirst(ks)},{root:grid,rootMargin:'200px 0px'}):null;
+  grid.querySelectorAll('.card').forEach(c=>{bindCard(c);if(thumbs[c.dataset.k])return;if(decoIO)decoIO.observe(c);else queueThumbs([c.dataset.k])})}
 function renderSheet(){const body=$('#sheetBody');
-  if(openTab==='decorate'){
-    const inSet=CAT.filter(c=>decoSet==='all'||c.set===decoSet),fns=new Set(inSet.map(c=>c.fn));if(decoFn!=='all'&&!fns.has(decoFn))decoFn='all';
-    const list=inSet.filter(c=>decoFn==='all'||c.fn===decoFn);
-    const card=c=>`<div class="card${state.hearts<c.p?' poor':''}" data-k="${c.k}" role="button" tabindex="0" aria-label="Add ${esc(c.n)}, ${c.p} hearts"><span class="setb" aria-hidden="true"><img src="assets/icons/${SETMAP[c.set].img}.webp" alt=""></span><div class="thumb">${thumbs[c.k]?`<img src="${thumbs[c.k]}" alt="">`:'<i class="spin"></i>'}</div><b>${esc(c.n)}</b><span class="price"><i>♥</i>${c.p}</span></div>`;
-    body.innerHTML=`<h2>Decorate</h2>
-    <div class="chips" role="group" aria-label="Filter by set"><button class="chip" data-set="all" aria-pressed="${decoSet==='all'}"><img class="chi" src="assets/icons/heart-jar.webp" alt="">Everything</button>${SETS.map(t=>`<button class="chip setchip" data-set="${t.k}" style="--sc:${t.c}" aria-pressed="${decoSet===t.k}"><img class="chi" src="assets/icons/${t.img}.webp" alt="">${t.n}</button>`).join('')}</div>
-    <div class="chips" role="group" aria-label="Filter by function"><button class="chip sm" data-fn="all" aria-pressed="${decoFn==='all'}">All kinds</button>${FUNCS.filter(f=>fns.has(f[0])).map(([k,n,e])=>`<button class="chip sm" data-fn="${k}" aria-pressed="${decoFn===k}"><span aria-hidden="true">${e}</span>${n}</button>`).join('')}</div>
-    <p class="hint">${list.length} ${list.length===1?'piece':'pieces'}${decoSet!=='all'?' in '+SETMAP[decoSet].n:''}. Tap to add, or drag one up into the room.</p>
-    <div class="tray" id="tray">${list.map(card).join('')}</div>`;
-    body.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>{decoSet=b.dataset.set;renderSheet()});
-    body.querySelectorAll('[data-fn]').forEach(b=>b.onclick=()=>{decoFn=b.dataset.fn;renderSheet()});
-    body.querySelectorAll('.chips').forEach(r=>{const q=r.querySelector('[aria-pressed="true"]');if(q)r.scrollLeft=Math.max(0,q.offsetLeft-r.clientWidth/2+q.offsetWidth/2)});
-    body.querySelectorAll('.card').forEach(bindCard);queueThumbs(list.map(c=>c.k))}
+  $('#sheet').classList.toggle('deco',openTab==='decorate');
+  if(openTab==='decorate'){const old=$('#tray'),keep=old?old.scrollTop:0;
+    body.innerHTML=`<div class="dhead"><h2>Decorate</h2><label class="dsearch"><input id="decoQ" type="text" inputmode="search" enterkeyhint="search" placeholder="Search" autocomplete="off" spellcheck="false" aria-label="Search furniture" value="${esc(decoQ)}"><button type="button" class="dclear" id="decoClr" aria-label="Clear search"${decoQ?'':' hidden'}>×</button></label></div>
+    <div class="chips dfns" id="decoFns" role="group" aria-label="Filter by kind"></div>
+    <div class="dbar"><button type="button" class="chip sm dpick" id="decoSetBtn" aria-expanded="${decoSetsOpen}"></button><button type="button" class="chip sm dpick" id="decoSortBtn"></button><span class="dcount" id="decoCount"></span></div>
+    <div class="chips dsets" id="decoSets" role="group" aria-label="Filter by set"${decoSetsOpen?'':' hidden'}></div>
+    <div class="dgrid" id="tray"></div>`;
+    const q=$('#decoQ');q.oninput=()=>{decoQ=q.value;$('#decoClr').hidden=!decoQ;renderDeco(true)};
+    q.onkeydown=e=>{if(e.key==='Enter')q.blur()};
+    $('#decoClr').onclick=()=>{decoQ='';q.value='';$('#decoClr').hidden=true;renderDeco(true)};
+    $('#decoSetBtn').onclick=()=>{decoSetsOpen=!decoSetsOpen;$('#decoSets').hidden=!decoSetsOpen;$('#decoSetBtn').setAttribute('aria-expanded',decoSetsOpen);if(decoSetsOpen)centerChip($('#decoSets'))};
+    $('#decoSortBtn').onclick=()=>{decoSort=(decoSort+1)%DECO_SORTS.length;renderDeco(true)};
+    const grid=$('#tray');grid.addEventListener('touchmove',e=>{if(decoHolding)e.preventDefault()},{passive:false});
+    renderDeco(false);grid.scrollTop=keep}
 
   else if(openTab==='pet'){const p=state.pet,st=stageOf(p.xp),s=petStats(),P=persOf();
     const next=STAGE_XP[st+1];
@@ -2654,20 +2721,26 @@ function renderSheet(){const body=$('#sheetBody');
     $('#join').onclick=()=>{const v=cleanCode($('#code').value);if(v.length<4){toast('Use at least 4 letters, numbers or dashes.');return}if(v!==roomCode){openRoom(v);toast(`Opened room “${v}”`)}};
     $('#reset').onclick=()=>{const b=$('#reset');if(b.dataset.arm){const vis=state.visits,f=state.feed,nm=state.names;state=Object.assign(defaultState(),{visits:vis,feed:f,names:nm});logEvent('reset the room');syncScene();pet.key=null;buildPet();saveSoon();updHUD();renderSheet();toast('Room reset')}else{b.dataset.arm=1;b.textContent='Tap again to reset everything';setTimeout(()=>{if(b.isConnected){delete b.dataset.arm;b.textContent='Reset this room'}},3000)}}}
 }
-function bindCard(card){const k=card.dataset.k;let st=null,ghost=null,spawned=null;
-  card.addEventListener('pointerdown',e=>{st={x:e.clientX,y:e.clientY,id:e.pointerId,t:performance.now()};try{card.setPointerCapture(e.pointerId)}catch(_){}});
-  card.addEventListener('pointermove',e=>{if(!st||e.pointerId!==st.id)return;const dx=e.clientX-st.x,dy=e.clientY-st.y;
-    if(!spawned&&!ghost&&dy<-18&&Math.abs(dy)>Math.abs(dx)){ghost=document.createElement('div');ghost.className='ghost';ghost.innerHTML=thumbs[k]?`<img src="${thumbs[k]}" alt="">`:'';document.body.appendChild(ghost)}
-    if(ghost){ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px';const sheetTop=$('#sheet').getBoundingClientRect().top;
-      if(!spawned&&e.clientY<sheetTop-10){spawned=spawn(k);if(!spawned){ghost.remove();ghost=null;st=null;return}ghost.style.display='none';dragging=true}
-      if(spawned)dragItemTo(spawned.id,e.clientX,e.clientY,null)}});
-  const up=e=>{if(!st||e.pointerId!==st.id)return;const moved=Math.hypot(e.clientX-st.x,e.clientY-st.y);
-    if(ghost){ghost.remove();ghost=null}
+// Tap a card to add it. Hold (or mouse-drag) to pick it up and drag it into the room; a plain swipe scrolls the grid.
+function bindCard(card){const k=card.dataset.k;let st=null,ghost=null,spawned=null,holdT=0;
+  const pick=()=>{if(!st)return;st.held=true;decoHolding=true;card.classList.add('held');try{card.setPointerCapture(st.id)}catch(_){}try{navigator.vibrate&&navigator.vibrate(12)}catch(_){}
+    ghost=document.createElement('div');ghost.className='ghost';ghost.innerHTML=thumbs[k]?`<img src="${thumbs[k]}" alt="">`:'';ghost.style.left=st.cx+'px';ghost.style.top=st.cy+'px';document.body.appendChild(ghost)};
+  const reset=()=>{clearTimeout(holdT);if(ghost){ghost.remove();ghost=null}card.classList.remove('held');decoHolding=false;st=null;spawned=null};
+  card.addEventListener('contextmenu',e=>e.preventDefault());
+  card.addEventListener('pointerdown',e=>{if(e.button>0)return;reset();st={x:e.clientX,y:e.clientY,cx:e.clientX,cy:e.clientY,id:e.pointerId,moved:false,held:false};
+    if(e.pointerType!=='mouse')holdT=setTimeout(()=>{if(st&&!st.moved)pick()},300)});
+  card.addEventListener('pointermove',e=>{if(!st||e.pointerId!==st.id)return;st.cx=e.clientX;st.cy=e.clientY;
+    if(!st.held){if(Math.hypot(e.clientX-st.x,e.clientY-st.y)<9)return;st.moved=true;clearTimeout(holdT);if(e.pointerType==='mouse'&&(e.buttons&1))pick();else return}
+    if(ghost){ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px'}const sheetTop=$('#sheet').getBoundingClientRect().top;
+    if(!spawned&&e.clientY<sheetTop-10){spawned=spawn(k);if(!spawned){reset();return}if(ghost)ghost.style.display='none';dragging=true}
+    if(spawned)dragItemTo(spawned.id,e.clientX,e.clientY,null)});
+  card.addEventListener('pointerup',e=>{if(!st||e.pointerId!==st.id)return;
     if(spawned){dragging=false;toast(`${CATMAP[k].n} placed`);saveSoon();renderSheetSoft()}
-    else if(moved<10&&e.type==='pointerup'){const it=spawn(k);if(it){toast(`${CATMAP[k].n} added. Drag it where you like.`);saveSoon();renderSheetSoft()}}
-    st=null;spawned=null};
-  card.addEventListener('pointerup',up);card.addEventListener('pointercancel',e=>{if(ghost){ghost.remove();ghost=null}if(spawned){dragging=false;saveSoon()}st=null;spawned=null});
-  card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();if(spawn(k)){saveSoon();renderSheetSoft()}}})}
+    else if(st.held)toast('Drag it up into the room to place it.');
+    else if(!st.moved){const it=spawn(k);if(it){toast(`${CATMAP[k].n} added. Drag it where you like.`);saveSoon();renderSheetSoft()}}
+    reset()});
+  card.addEventListener('pointercancel',()=>{if(spawned){dragging=false;saveSoon();renderSheetSoft()}reset()});
+  card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();if(spawn(k)){toast(`${CATMAP[k].n} added`);saveSoon();renderSheetSoft()}}})}
 let fps=0,dbgSetI=0;
 // Drop render resolution in steps if the phone can't keep ~45fps.
 const maxPR=Math.min(window.devicePixelRatio||1,2);let curPR=maxPR,slowT=0,qT=0;
@@ -2680,7 +2753,7 @@ function syncBg(){const cs=getComputedStyle(document.documentElement),g=n=>cssRG
 syncBg();try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',syncBg)}catch(_){}
 function updDbgInfo(){const el=document.getElementById('dbgInfo');if(!el)return;const s=petStats();
   el.innerHTML=`sync: <b>${mode}</b>${db?'':' (no db in this view)'} &nbsp; room: <b>${esc(roomCode)}</b><br>you: ${esc(myId||'unknown')} &nbsp; rev: ${state.rev||0}<br>items: ${state.items.length} &nbsp; hearts: ${state.hearts} &nbsp; fps: ${fps}<br>pet: ${STAGE_NAMES[stageOf(state.pet.xp)]}, mode ${pet.mode}, H${s.hunger|0} F${s.fun|0} E${s.energy|0} C${s.clean|0}`}
-function renderSheetSoft(){document.querySelectorAll('.card').forEach(c=>c.classList.toggle('poor',state.hearts<CATMAP[c.dataset.k].p))}
+function renderSheetSoft(){const n=roomCounts();document.querySelectorAll('.card').forEach(c=>{const k=c.dataset.k;c.classList.toggle('poor',state.hearts<CATMAP[k].p);const o=c.querySelector('.own');if(o){o.hidden=!n[k];o.textContent='×'+(n[k]||0)}})}
 
 /* thumbnails: rendered on demand, a few per frame */
 let thumbR=null,thumbSc=null,thumbCam=null,thumbBusy=false,thumbFail=false;const thumbQ=[];
@@ -2693,7 +2766,8 @@ function renderThumb(k){const isToy=k.startsWith('toy:'),d=isToy?{}:CATMAP[k],g=
   const b=new THREE.Box3().setFromObject(g),sph=b.getBoundingSphere(new THREE.Sphere());const dist=sph.radius/Math.sin(15*Math.PI/180)*1.02;
   const dir=d.wall?new THREE.Vector3(.35,.15,1).normalize():new THREE.Vector3(.8,.6,1).normalize();thumbCam.position.copy(sph.center).addScaledVector(dir,dist);thumbCam.lookAt(sph.center);
   thumbR.render(thumbSc,thumbCam);const url=thumbR.domElement.toDataURL('image/png');thumbSc.remove(g);thumbs[k]=url;
-  document.querySelectorAll(`.card[data-k="${k}"] .thumb`).forEach(t=>t.innerHTML=`<img src="${url}" alt="">`);document.querySelectorAll(`[data-tt="${k}"]`).forEach(i=>{i.src=url;i.classList.add('model')})}
+  document.querySelectorAll(`.card[data-k="${k}"] .thumb`).forEach(t=>{const o=t.querySelector('.spin,img');if(o)o.outerHTML=`<img src="${url}" alt="">`;else t.insertAdjacentHTML('afterbegin',`<img src="${url}" alt="">`)});document.querySelectorAll(`[data-tt="${k}"]`).forEach(i=>{i.src=url;i.classList.add('model')})}
+function queueThumbsFirst(keys){keys=keys.filter(k=>!thumbs[k]);thumbQ.splice(0,thumbQ.length,...keys,...thumbQ.filter(k=>!keys.includes(k)));if(!thumbBusy)requestAnimationFrame(pumpThumbs)}
 function queueThumbs(keys){keys.forEach(k=>{if(!thumbs[k]&&!thumbQ.includes(k))thumbQ.push(k)});if(!thumbBusy)requestAnimationFrame(pumpThumbs)}
 function pumpThumbs(){if(!thumbQ.length||!initThumbR()){thumbBusy=false;return}thumbBusy=true;const t0=performance.now();
   while(thumbQ.length&&performance.now()-t0<22){const k=thumbQ.shift();try{renderThumb(k)}catch(e){console.warn('thumb '+k,e)}}requestAnimationFrame(pumpThumbs)}
