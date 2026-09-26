@@ -914,7 +914,10 @@ float vn(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
   return mix(mix(mix(h3(i),h3(i+vec3(1,0,0)),f.x),mix(h3(i+vec3(0,1,0)),h3(i+vec3(1,1,0)),f.x),f.y),mix(mix(h3(i+vec3(0,0,1)),h3(i+vec3(1,0,1)),f.x),mix(h3(i+vec3(0,1,1)),h3(i+vec3(1,1,1)),f.x),f.y),f.z);}
 vec2 puv(vec3 p,vec3 n){n=abs(n);return n.x>n.y&&n.x>n.z?p.zy:n.y>n.z?p.xz:p.xy;}
 // Procedural surface detail for furniture: 1 fabric weave, 2 wood grain, 3 fine speckle (ceramic, matte plastic).
-void surfaceDetail(inout vec3 alb,inout float r){if(uDetail==0)return;vec2 uv=puv(vL,vLN);
+void surfaceDetail(inout vec3 alb,inout float r){if(uDetail==0)return;
+  // 4 = jelly (the pet): a few sugar-fine speckles, the rest is done in the lighting
+  if(uDetail==4){float fw=clamp(1.-fwidth(vL.x*140.)*1.5,0.,1.);float sp=step(.986,h3(floor(vL*140.)));alb=mix(alb,min(alb*1.45+.12,vec3(1.)),sp*.55*fw);return;}
+  vec2 uv=puv(vL,vLN);
   if(uDetail==1){vec2 t=uv*95.;float fw=clamp(1.-max(fwidth(t.x),fwidth(t.y))*1.2,0.,1.);float wv=sin(t.x*6.2832)*sin(t.y*6.2832);
     float fz=vn(vL*38.)-.5,cl=vn(vL*6.)-.5;alb*=1.+wv*.07*fw+fz*.1+cl*.08;r=min(1.,r+.06);}
   else if(uDetail==2){float n=vn(vec3(uv.x*2.2,uv.y*36.,3.))+vn(vec3(uv.x*6.,uv.y*90.,7.))*.35;float rings=smoothstep(.2,.8,fract(n*3.2));
@@ -935,7 +938,11 @@ void main(){vec4 base=vec4(uColor,uOpacity);if(uHasMap){vec4 t=texture(uMap,vUv)
     vec3 L;float att=1.;if(uLightPt){vec3 Lv=uLightDir-vW;float d2=max(dot(Lv,Lv),.01);L=Lv*inversesqrt(d2);att=uLightRef/d2;}else L=normalize(uLightDir);float NdL=dot(N,L);
     vec3 sunC=uLightCol*att*(uShadow?shadowF(max(NdL,0.)):1.);
     if(uCaustic>0.)sunC*=1.+uCaustic*caustic(vW.xz,uTime)*smoothstep(-.2,.7,N.y);
-    col=lightBRDF(N,V,L,diff,f0,a,.25)*sunC;
+    bool jel=uDetail==4;
+    col=lightBRDF(N,V,L,diff,f0,a,jel?.42:.25)*sunC;
+    // jelly: a glassy top coat over the softer body, and light glowing through the thin edges
+    if(jel){vec3 H=normalize(L+V);float cc=D_GGX(max(dot(N,H),0.),.012)*V_Smith(NdV,max(NdL,0.),.012)*max(NdL,0.)*.05;col+=vec3(min(cc,1.5))*sunC;
+      col+=base.rgb*sunC*.16*pow(clamp(dot(V,-L)*.5+.5,0.,1.),3.)*pow(1.-NdV,1.5);}
     for(int i=0;i<8;i++){if(i>=uNumPL)break;vec3 Lv=uPLPos[i].xyz-vW;float d2=max(dot(Lv,Lv),1e-4),R2=uPLPos[i].w*uPLPos[i].w,f=clamp(1.-d2*d2/(R2*R2),0.,1.);
       col+=lightBRDF(N,V,Lv*inversesqrt(d2),diff,f0,a,.4)*uPLCol[i].rgb*(f*f/(d2+.8));}
     float ao=roomAO(vW,N)*contactAO(vW,N);
@@ -943,7 +950,7 @@ void main(){vec4 base=vec4(uColor,uOpacity);if(uHasMap){vec4 t=texture(uMap,vUv)
     vec3 amb=shIrr(N)*uEnvInt+uBounce*clamp(.55-.45*N.y,0.,1.)*uRoom.z*step(vW.y,uRoom.y+.1);
     col+=diff*(1.-kS)*amb*ao;
     if(uHasEnv){vec3 rad=dec(textureLod(uEnv,eq(reflect(-V,N)),r*(uEnvLod-1.5)).rgb);float sao=clamp(pow(NdV+ao,exp2(-16.*r-1.))-1.+ao,0.,1.);col+=rad*kS*uSpecInt*sao*mix(1.,.35,r*(1.-uMetal));}
-    col+=base.rgb*pow(1.-NdV,4.)*.3*(shIrr(-V)*uEnvInt)*ao*(1.-uMetal);
+    col+=base.rgb*pow(1.-NdV,4.)*(uDetail==4?.55:.3)*(shIrr(-V)*uEnvInt)*ao*(1.-uMetal);
   }
   col+=uEmissive*uEmisBoost;
   if(!uPost)col=enc(aces(col*uExposure));
@@ -2345,22 +2352,94 @@ const PST=[null,
   {sc:.94,bw:.35,bh:.58,hr:.27,hs:.22,leg:.2, foot:.12,arm:.28,hand:.09,tufts:3,tl:.3,shoes:1,speed:1},
   {sc:1,  bw:.43,bh:.55,hr:.29,hs:.23,leg:.14,foot:.13,arm:.26,hand:.1,tufts:3,tl:.26,speed:.8},
   {sc:.96,bw:.47,bh:.5, hr:.29,hs:.23,leg:.1, foot:.13,arm:.22,hand:.1,tufts:5,tl:.2,elder:1,speed:.45}];
-function surfSpots(parent,cx,cy,cz,rx,ry,rz,n,cols,R,rMin,rMax,front){for(let i=0;i<n;i++){const th=(front===false?.5:1.35)+R()*(front===false?2.1:1.35),ph=front===false?(Math.PI*1.15+R()*Math.PI*.7):R()*Math.PI*2,sr=rMin+R()*(rMax-rMin);
-  const x=cx+rx*Math.sin(th)*Math.cos(ph),y=cy+ry*Math.cos(th),z=cz+rz*Math.sin(th)*Math.sin(ph);const s=P(parent,SPH(sr,14,10),M(cols[i%cols.length],{roughness:.4}),cx+(x-cx)*.99,cy+(y-cy)*.99,cz+(z-cz)*.99,0);s.scale.z=.2;s.lookAt(cx,cy,cz)}}
+/* ================= PET LOOK: everything the boutique can change =================
+   state.pet.look overrides the palette's defaults (petLook() fills the gaps, so older saves look the same):
+   {body, headL, headR, pat, pc:[pattern colours], hand:{s,c}, foot:{s,cL,cR}, ant:{s,cL,cR}, acc:{slot:id}}
+   Colours are applied to shared materials (R.mats) so a colour change only repaints; a style change rebuilds.
+   Patterns are painted textures (equirectangular, matching the sphere UVs: front of a head is u=.25). */
+const PET_PATTERNS={none:'Plain',spots:'Spots',polka:'Polka dots',stripes:'Stripes',hearts:'Hearts',stars:'Stars',sprinkles:'Sprinkles',checks:'Checks'};
+function petLook(){const C=PET_PALS[(state.pet.color|0)%PET_PALS.length],o=state.pet.look||{};
+  const d={body:C.body,headL:C.L,headR:C.R,pat:'spots',pc:C.spl.slice(0,4),hand:{s:'mitten',c:C.hand},foot:{s:'auto',cL:C.fL,cR:C.fR},ant:{s:'bobble',cL:C.tL,cR:C.tR},acc:{}};
+  const L=Object.assign({},d,o);['hand','foot','ant'].forEach(k=>L[k]=Object.assign({},d[k],o[k]||{}));L.acc=Object.assign({},o.acc||{});
+  if(!PET_PATTERNS[L.pat])L.pat='spots';if(!HAND_STYLES[L.hand.s])L.hand.s='mitten';if(L.foot.s!=='auto'&&!FOOT_STYLES[L.foot.s])L.foot.s='auto';if(!ANT_STYLES[L.ant.s])L.ant.s='bobble';
+  Object.keys(L.acc).forEach(k=>{if(!ACCS[L.acc[k]])delete L.acc[k]});return L}
+// what changes the rig's shape (anything else is only colour)
+const lookShape=L=>[L.hand.s,L.foot.s,L.ant.s,Object.entries(L.acc).sort().join(';')].join('|');
+const hexS=h=>'#'+(h>>>0).toString(16).padStart(6,'0');
+function heartPath(x,cx,cy,r){x.beginPath();x.moveTo(cx,cy+r*.9);x.bezierCurveTo(cx-r*1.3,cy,cx-r*.9,cy-r*1.05,cx,cy-r*.35);x.bezierCurveTo(cx+r*.9,cy-r*1.05,cx+r*1.3,cy,cx,cy+r*.9);x.closePath()}
+function starPath(x,cx,cy,r){x.beginPath();for(let i=0;i<10;i++){const a=i/10*Math.PI*2-Math.PI/2,q=i%2?r*.45:r;i?x.lineTo(cx+Math.cos(a)*q,cy+Math.sin(a)*q):x.moveTo(cx+Math.cos(a)*q,cy+Math.sin(a)*q)}x.closePath()}
+const patCacheP={};
+// part: 'body' (all over) or 'head' (keeps clear of the face: the front quarter around u=.25)
+// asp: how squashed the part is (so a spot drawn round on the texture stays round on the body)
+function petPatternTex(base,pat,pc,part,seed,asp){asp=Math.round((asp||1)*20)/20;const key=[base,pat,pc.join(','),part,seed,asp].join('|');if(patCacheP[key])return patCacheP[key];
+  const W=512,H=256,c=mkCanvas(W,H),x=c.getContext('2d'),R=rnd(seed),head=part==='head';x.fillStyle=hexS(base);x.fillRect(0,0,W,H);
+  const face=(u,v)=>head&&Math.abs(u-.25)<.2&&v>.22&&v<.85;
+  // draw a shape so it looks round on the sphere (stretch sideways towards the poles), wrapping at the seam
+  const put=(u,v,r,fn)=>{if(face(u,v))return;const th=v*Math.PI,k=1/Math.max(.25,Math.sin(th));[-W,0,W].forEach(o=>{x.save();x.translate(u*W+o,v*H);x.scale(k,asp);fn(r);x.restore()})};
+  const col=i=>hexS(pc[i%pc.length]);
+  // scattered things are spread evenly (an R2 low-discrepancy sequence with a little jitter) so they never bunch up on one side
+  const spread=(i,n,v0,v1)=>[(.5+i*.7548777+R()*.08)%1,v0+((.5+i*.5698403+R()*.08)%1)*(v1-v0)];
+  if(pat==='spots'){const n=head?4:22;for(let i=0;i<n;i++){const [u,v]=head?spread(i,n,.18,.84):spread(i,n,.42,.88),r=(head?8:9)+R()*(head?6:13);x.fillStyle=col(i);put(u,v,r,r=>{x.beginPath();x.ellipse(0,0,r,r*.92,R()*3,0,7);x.fill()})}}
+  else if(pat==='polka'){const rows=head?5:7;for(let j=1;j<rows;j++)for(let i=0;i<12;i++){const u=(i+(j%2)*.5)/12,v=j/rows;x.fillStyle=col(j);put(u,v,head?7:9,r=>{x.beginPath();x.arc(0,0,r,0,7);x.fill()})}}
+  else if(pat==='stripes'){for(let j=0;j<9;j++){if(j%2)continue;x.fillStyle=col(j/2);x.beginPath();for(let i=0;i<=64;i++){const u=i/64*W,v=(j+.5)/9*H+Math.sin(i/64*Math.PI*6)*6;i?x.lineTo(u,v-9):x.moveTo(u,v-9)}for(let i=64;i>=0;i--){const u=i/64*W,v=(j+.5)/9*H+Math.sin(i/64*Math.PI*6)*6;x.lineTo(u,v+9)}x.fill()}
+    if(head){x.fillStyle=hexS(base);x.beginPath();x.ellipse(.25*W,.54*H,.2*W,.34*H,0,0,7);x.fill()}}
+  else if(pat==='hearts'||pat==='stars'){const n=head?5:22;for(let i=0;i<n;i++){const [u,v]=spread(i,n,.16,.86),r=(head?9:10)+R()*9;x.fillStyle=col(i);put(u,v,r,r=>{x.rotate((R()-.5)*.7);(pat==='hearts'?heartPath:starPath)(x,0,0,r);x.fill()})}}
+  else if(pat==='sprinkles'){const n=head?24:90;x.lineCap='round';for(let i=0;i<n;i++){const [u,v]=spread(i,n,.1,.9);x.strokeStyle=col(i);x.lineWidth=4;put(u,v,6,r=>{x.rotate(R()*3);x.beginPath();x.moveTo(-r,0);x.lineTo(r,0);x.stroke()})}}
+  else if(pat==='checks'){const nu=12,nv=6;for(let j=0;j<nv;j++)for(let i=0;i<nu;i++){if((i+j)%2)continue;const u0=i/nu,v0=j/nv;if(face(u0+.5/nu,v0+.5/nv))continue;x.fillStyle=col(j);x.fillRect(u0*W,v0*H,W/nu+1,H/nv+1)}}
+  const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return patCacheP[key]=t}
+// jelly materials (detail 4 in the shader)
+function jel(h,o){const m=M(h,Object.assign({roughness:.34},o||{}));m.detail=4;return m}
+
+/* --- parts: each style builds under a pivot; the defaults are the original shapes --- */
+// hands: (pivot, stage, material, side, handMat) at the end of the arm
+const HAND_STYLES={
+  mitten:{n:'Mittens',build(ap,S,m,s){const y=-S.arm-S.hand*.55;const hd=P(ap,SPH(S.hand,16,12),m,0,y,.01,.012);hd.scale.set(1,1.1,.95);P(ap,SPH(S.hand*.45,10,8),m,s*-S.hand*.55,-S.arm-S.hand*.3,S.hand*.55,.008)}},
+  glove:{n:'Gloves',build(ap,S,m,s){const y=-S.arm-S.hand*.55;const hd=P(ap,SPH(S.hand,16,12),m,0,y,.01,.012);hd.scale.set(1,1.1,.95);P(ap,SPH(S.hand*.45,10,8),m,s*-S.hand*.55,-S.arm-S.hand*.3,S.hand*.55,.008);
+    const cf=P(ap,new THREE.TorusGeometry(S.hand*.72,S.hand*.2,10,20),M(0xFFFFFF,{roughness:.5}),0,-S.arm-S.hand*.02,.01,.008);cf.rotation.x=Math.PI/2;
+    [-1,0,1].forEach(k=>P(ap,SPH(S.hand*.28,8,6),m,k*S.hand*.42,y-S.hand*.95,S.hand*.2,.006))}},
+  paw:{n:'Paws',build(ap,S,m,s){const y=-S.arm-S.hand*.55;const hd=P(ap,SPH(S.hand*1.06,16,12),m,0,y,.01,.012);hd.scale.set(1.08,.95,1);const bean=M(0xFFB3D9,{roughness:.5});
+    const pd=P(ap,SPH(S.hand*.42,10,8),bean,0,y-S.hand*.25,S.hand*.85,0);pd.scale.set(1.1,.8,.35);[-1,0,1].forEach(k=>{const b=P(ap,SPH(S.hand*.2,8,6),bean,k*S.hand*.42,y+S.hand*.32,S.hand*.82,0);b.scale.set(1,1,.35)})}}};
+// feet: (leg pivot, stage, material, side, ground y); 'auto' = the stage's own feet (sneakers for young adults)
+const FOOT_STYLES={
+  nub:{n:'Jelly feet',build(lp,S,m,s,gy){const f=P(lp,new THREE.SphereGeometry(S.foot*1.1,24,12,0,Math.PI*2,0,Math.PI/2),m,0,gy,S.foot*.25,.014);f.scale.set(1.05,.75,1.35)}},
+  sneaker:{n:'Sneakers',build(lp,S,m,s,gy){const white=M(0xffffff,{roughness:.18});P(lp,rbox(S.foot*1.7,.05,S.foot*2.7,.02),white,0,gy+.025,S.foot*.35,.012);P(lp,rbox(S.foot*1.5,S.foot*.85,S.foot*2.3,.07),m,0,gy+.05+S.foot*.42,S.foot*.3,.012);
+    P(lp,SPH(S.foot*.6,12,8),white,0,gy+.05+S.foot*.3,S.foot*1.3,0).scale.set(1.15,.7,.7);for(let k=0;k<3;k++)P(lp,new THREE.BoxGeometry(S.foot*.9,.012,.02),white,0,gy+.05+S.foot*.78,S.foot*(.1+k*.28),0)}},
+  boot:{n:'Rain boots',build(lp,S,m,s,gy){P(lp,rbox(S.foot*1.6,.04,S.foot*2.4,.02),M(0x3B1273,{roughness:.5}),0,gy+.02,S.foot*.3,.01);P(lp,rbox(S.foot*1.45,S.foot*.8,S.foot*2.2,.08),m,0,gy+.04+S.foot*.4,S.foot*.28,.012);
+    const sh=P(lp,new THREE.CylinderGeometry(S.foot*.62,S.foot*.7,S.foot*1.5,16),m,0,gy+S.foot*1.3,0,.012);P(lp,new THREE.TorusGeometry(S.foot*.64,S.foot*.1,8,20),M(0xFFFFFF,{roughness:.4}),0,gy+S.foot*2.02,0,.008).rotation.x=Math.PI/2}}};
+// antennae: the springy three-segment tuft is shared; styles change the tip (and the segment thickness)
+const ANT_STYLES={
+  bobble:{n:'Bobbles',tip(p,S,m,thin){P(p,SPH(.055*thin+(S.elder?0:.01),12,10),m,0,.02,0,.01)}},
+  heart:{n:'Hearts',tip(p,S,m,thin){const h=P(p,heartGeo(),m,0,.05,0,.01);h.scale.setScalar(.075*thin);h.rotation.z=Math.PI}},
+  star:{n:'Stars',tip(p,S,m,thin){const st=P(p,new THREE.ExtrudeGeometry(starShape(.07*thin,.032*thin,5),{depth:.03,bevelEnabled:true,bevelThickness:.012,bevelSize:.01,bevelSegments:2}),m,0,.06,-.02,.01)}},
+  curl:{n:'Curlies',tip(p,S,m,thin){const t=P(p,new THREE.TorusGeometry(.045*thin,.016*thin,8,20,Math.PI*1.6),m,.03*thin,.05,0,.008);t.rotation.z=-.4;P(p,SPH(.02*thin,8,6),m,-.012,.018,0,.006)}}};
+/* --- accessories: sized from the socket they sit on, so one model fits every stage --- */
+// slot → socket(s): hat (both heads or one), face, neck, back, waist. size = that part's radius.
+const ACCS={
+  bow:{n:'Hair bow',slot:'hatL',build(r){const g=G(),m=M(0xFF3D9A,{roughness:.35});[-1,1].forEach(s=>{const w=sp(g,r*.42,m,s*r*.38,r*.12,0,1.2,.75,.5);w.rotation.z=s*.35});sp(g,r*.16,M(0xFFD21F,{roughness:.35}),0,r*.12,r*.05);return g}},
+  scarf:{n:'Cozy scarf',slot:'neck',build(r){const g=G(),m=M(0xFF8A1C,{roughness:.8}),st=M(0xFFF3D6,{roughness:.8});const t=to(g,r*1.02,r*.17,m,0,0,0,Math.PI/2);t.scale.set(1,.8,1);
+    const tail=G();tail.position.set(r*.35,-r*.05,r*.78);tail.rotation.set(.25,0,.18);g.add(tail);rb(tail,r*.34,r*.95,r*.12,r*.05,m,0,-r*.45,0);
+    for(let k=0;k<3;k++)nosh(bx(tail,r*.36,r*.07,r*.13,st,0,-r*.2-k*r*.26,.005));return g}}};
+function dressPet(R,S,L){R.acc={};Object.entries(L.acc).forEach(([slot,id])=>{const A=ACCS[id],sk=R.sock[slot];if(!A||!sk)return;const r=R.sockSize[slot]||.2,g=A.build(r);g.userData.acc=id;sk.add(g);R.acc[slot]=g})}
+// recolour in place (no rebuild): used by the boutique's live preview
+function tintPet(L){const R=pet.rig;if(!R||!R.mats)return;const T=R.mats,el=R.S&&R.S.elder;
+  T.limb.color=col(el?darken(L.body,.12):L.body);T.hand.color=col(L.hand.c);T.footL.color=col(L.foot.cL);T.footR.color=col(L.foot.cR);
+  [['headL',L.headL],['headR',L.headR]].forEach(([k,c])=>{T[k].map=petPatternTex(el?darken(c,.1):c,L.pat,L.pc,'head',k==='headL'?11:12,.97);T[k+'lid'].color=col(el?darken(c,.1):c)});
+  T.body.map=petPatternTex(el?darken(L.body,.12):L.body,L.pat,L.pc,'body',7,R.S?R.S.bw*.9/R.S.bh:1);
+  T.antL.color=col(el?lighten(L.ant.cL,.55):L.ant.cL);T.antR.color=col(el?lighten(L.ant.cR,.55):L.ant.cR)}
 
 function buildPet(){
-  const st=stageOf(state.pet.xp),ci=state.pet.color%PET_PALS.length,cracks=st===0?Math.min(2,state.pet.xp):0;
-  const key=st+'|'+ci+'|'+cracks;if(key===pet.key)return;
-  const grew=pet.stage>=0&&st>pet.stage,cracked=pet.stage===0&&st===0&&pet.key&&cracks>+pet.key.split('|')[2];
-  pet.key=key;pet.stage=st;pet.color=ci;
+  const st=stageOf(state.pet.xp),cracks=st===0?Math.min(2,state.pet.xp):0,L=petLook();
+  const key=st+'|'+cracks+'|'+lookShape(L);if(key===pet.key){tintPet(L);return}
+  const grew=pet.stage>=0&&st>pet.stage,cracked=pet.stage===0&&st===0&&pet.key&&cracks>+pet.key.split('|')[1];
+  pet.key=key;pet.stage=st;pet.color=(state.pet.color|0)%PET_PALS.length;
   const g=pet.group;while(g.children.length)g.remove(g.children[0]);
-  const C=PET_PALS[ci],R={sock:{}};pet.rig=R;const rng=rnd(7+ci*13);
-  const ink=M(INKC,{roughness:.3}),white=M(0xffffff,{roughness:.18});
+  const R={sock:{},sockSize:{}};pet.rig=R;const rng=rnd(7+pet.color*13);
+  const ink=M(INKC,{roughness:.3});
   const root=piv(g);R.root=root;const body=piv(root);R.body=body;
 
   if(st===0){
-    const e=P(body,SPH(.34,28,20),M(C.body,{roughness:.35}),0,.44,0,.016);e.scale.set(1,1.3,1);R.egg=e;
-    for(let i=0;i<9;i++){const a=i*2.3+.3,y=.2+(i%4)*.15,r=eggSurface(0,y);const s=P(body,SPH(.05+(i%3)*.018,12,8),M(C.spl[i%C.spl.length],{roughness:.4}),Math.cos(a)*r,y,Math.sin(a)*r,0);s.scale.z=.3;s.lookAt(0,y,0)}
+    const e=P(body,SPH(.34,32,24),jel(L.body,{roughness:.32}),0,.44,0,.016);e.scale.set(1,1.3,1);R.egg=e;
+    for(let i=0;i<9;i++){const a=i*2.3+.3,y=.2+(i%4)*.15,r=eggSurface(0,y);const sp_=P(body,SPH(.05+(i%3)*.018,12,8),jel(L.pc[i%L.pc.length],{roughness:.4}),Math.cos(a)*r,y,Math.sin(a)*r,0);sp_.scale.z=.3;sp_.lookAt(0,y,0)}
     const hl=P(body,SPH(.07,12,8),B(0xffffff),-.13,.66,.24,0);hl.scale.set(.7,1.2,.3);hl.lookAt(0,.44,0);
     // straw nest
     const straw=[M(0xE8B84A,{roughness:.8}),M(0xD39B2E,{roughness:.8}),M(0xF4D27A,{roughness:.8})];
@@ -2371,49 +2450,52 @@ function buildPet(){
     pet.scale=1;pet.head=1.05;if(cracked){pet.popT=1;emote('💥')}return}
 
   const S=PST[st];pet.scale=S.sc;root.scale.setScalar(S.sc);
-  const matB=M(S.elder?darken(C.body,.12):C.body,{roughness:.38});
+  // shared materials, recoloured by tintPet
+  const T=R.mats={body:jel(0xffffff),limb:jel(L.body),hand:jel(L.hand.c,{roughness:.4}),footL:jel(L.foot.cL,{roughness:.4}),footR:jel(L.foot.cR,{roughness:.4}),
+    headL:jel(0xffffff,{roughness:.36}),headR:jel(0xffffff,{roughness:.36}),headLlid:jel(L.headL,{roughness:.36,side:THREE.DoubleSide}),headRlid:jel(L.headR,{roughness:.36,side:THREE.DoubleSide}),
+    antL:jel(L.ant.cL,{roughness:.35}),antR:jel(L.ant.cR,{roughness:.35})};
   const hipY=S.foot*.55+S.leg,cy=hipY+S.bh*.72,top=cy+S.bh,headY=top-S.hr*.12;R.cy=cy;R.headY=headY;R.S=S;
-  // body
-  const bm=P(body,SPH(1,44,32),matB,0,cy,0,.016);bm.scale.set(S.bw,S.bh,S.bw*.8);
-  surfSpots(body,0,cy,0,S.bw,S.bh,S.bw*.8,st===1?9:17,C.spl,rng,.045,.12);
-  R.sock.neck=piv(body,0,top-.04,S.bw*.55);R.sock.back=piv(body,0,cy+S.bh*.2,-S.bw*.85);R.sock.waist=piv(body,0,cy-S.bh*.35,0);
-    // legs + feet (sneakers for young adults)
+  // body (its pattern is a texture: crisp, round on the curve, and one mesh instead of dozens)
+  const bm=P(body,SPH(1,48,34),T.body,0,cy,0,.016);bm.scale.set(S.bw,S.bh,S.bw*.8);
+  // neck = the collar just under the heads; ring accessories (neck, waist) are sized to the body's width at that height
+  const ringR=y=>S.bw*Math.sqrt(Math.max(.05,1-((y-cy)/S.bh)**2)),neckY=Math.min(top-S.hr*.95,cy+S.bh*.55),waistY=cy-S.bh*.35;
+  R.sock.neck=piv(body,0,neckY,0);R.sock.back=piv(body,0,cy+S.bh*.2,-S.bw*.8);R.sock.waist=piv(body,0,waistY,0);
+  R.sockSize.neck=ringR(neckY);R.sockSize.back=S.bw*.7;R.sockSize.waist=ringR(waistY);
+  // legs + feet
+  const fs=L.foot.s==='auto'?(S.shoes?'sneaker':'nub'):L.foot.s;
   R.legs=[];[-1,1].forEach(s=>{const lp=piv(body,s*S.bw*.46,hipY,0),gy=-hipY;R.legs.push(lp);
-    if(S.leg>.04){const lg=P(lp,SPH(.075,12,10),matB,0,gy/2+S.foot*.3,0,.012);lg.scale.set(1,Math.max(.6,(hipY-S.foot*.3)/.15),1)}
-    const fc=s<0?C.fL:C.fR;
-    if(S.shoes){P(lp,rbox(S.foot*1.7,.05,S.foot*2.7,.02),white,0,gy+.025,S.foot*.35,.012);const up=P(lp,rbox(S.foot*1.5,S.foot*.85,S.foot*2.3,.07),M(fc,{roughness:.45}),0,gy+.05+S.foot*.42,S.foot*.3,.012);
-      P(lp,SPH(S.foot*.6,12,8),white,0,gy+.05+S.foot*.3,S.foot*1.3,0).scale.set(1.15,.7,.7);for(let k=0;k<3;k++)P(lp,new THREE.BoxGeometry(S.foot*.9,.012,.02),white,0,gy+.05+S.foot*.78,S.foot*(.1+k*.28),0)}
-    else{const f=P(lp,new THREE.SphereGeometry(S.foot*1.1,24,12,0,Math.PI*2,0,Math.PI/2),M(fc,{roughness:.4}),0,gy,S.foot*.25,.014);f.scale.set(1.05,.75,1.35)}
-    R.sock[s<0?'footL':'footR']=piv(lp,0,gy,S.foot*.25)});
-  // arms with mitten hands
+    if(S.leg>.04){const lg=P(lp,SPH(.075,14,10),T.limb,0,gy/2+S.foot*.3,0,.012);lg.scale.set(1,Math.max(.6,(hipY-S.foot*.3)/.15),1)}
+    FOOT_STYLES[fs].build(lp,S,s<0?T.footL:T.footR,s,gy);
+    R.sock[s<0?'footL':'footR']=piv(lp,0,gy,S.foot*.25);R.sockSize[s<0?'footL':'footR']=S.foot});
+  // arms + hands
   R.arms=[];[-1,1].forEach(s=>{const ap=piv(body,s*S.bw*.9,cy+S.bh*.3,.02);ap.rotation.z=s*.55;
-    if(S.arm>.06){const a=P(ap,SPH(.065,12,10),matB,0,-S.arm/2,0,.012);a.scale.set(1,S.arm/.11+.3,1)}
-    const hd=P(ap,SPH(S.hand,14,10),M(C.hand,{roughness:.4}),0,-S.arm-S.hand*.55,.01,.012);hd.scale.set(1,1.1,.95);
-    P(ap,SPH(S.hand*.45,10,8),M(C.hand,{roughness:.4}),s*-S.hand*.55,-S.arm-S.hand*.3,S.hand*.55,.008);
-    R.sock[s<0?'handL':'handR']=piv(ap,0,-S.arm-S.hand*.6,0);R.arms.push({p:ap,s})});
+    if(S.arm>.06){const a=P(ap,SPH(.065,14,10),T.limb,0,-S.arm/2,0,.012);a.scale.set(1,S.arm/.11+.3,1)}
+    HAND_STYLES[L.hand.s].build(ap,S,T.hand,s);
+    R.sock[s<0?'handL':'handR']=piv(ap,0,-S.arm-S.hand*.6,0);R.sockSize[s<0?'handL':'handR']=S.hand;R.arms.push({p:ap,s})});
   // two heads
   R.heads=[];R.eyes=[];R.pupils=[];R.lids=[];R.mouths=[];R.smiles=[];R.tufts=[];
-  [-1,1].forEach((s,i)=>{const hc=s<0?C.L:C.R,hm=M(S.elder?darken(hc,.1):hc,{roughness:.36}),hp=piv(body,s*S.hs,headY,.06);hp.rotation.z=-s*.1;R.heads.push({p:hp,s});
-    const hd=P(hp,SPH(S.hr,36,26),hm,0,0,0,.016);hd.scale.set(1,.95,.92);surfSpots(hp,0,0,0,S.hr,S.hr*.95,S.hr*.92,st===1?1:3,C.spl,rng,.03,.06,false);
+  [-1,1].forEach((s,i)=>{const hk=s<0?'headL':'headR',hp=piv(body,s*S.hs,headY,.06);hp.rotation.z=-s*.1;R.heads.push({p:hp,s});
+    const hd=P(hp,SPH(S.hr,40,28),T[hk],0,0,0,.016);hd.scale.set(1,.95,.92);
     // one big eye with an eyelid that can close
     const er=S.hr*.7,eg=piv(hp,s*S.hr*.06,S.hr*.08,S.hr*.52);eg.rotation.y=s*.14;
-    const w=P(eg,SPH(er,30,22),M(0xFFFAF0,{roughness:.16}),0,0,0,.012);w.scale.set(1,1.06,.62);
-    const pg=piv(eg,0,0,er*.42),pu=P(pg,SPH(er*.48,18,14),ink,0,0,0,0);pu.scale.set(1,1.12,.5);
+    const w=P(eg,SPH(er,32,24),M(0xFFFAF0,{roughness:.12}),0,0,0,.012);w.scale.set(1,1.06,.62);
+    const pg=piv(eg,0,0,er*.42),pu=P(pg,SPH(er*.48,20,14),ink,0,0,0,0);pu.scale.set(1,1.12,.5);
     P(pg,SPH(er*.17,10,8),B(0xffffff),er*.16,er*.22,er*.26,0);P(pg,SPH(er*.08,8,6),B(0xffffff),-er*.16,-er*.2,er*.26,0);
-    const ls=piv(eg);ls.scale.set(1,1.06,.66);const lp=piv(ls);const lid=P(lp,new THREE.SphereGeometry(er*1.07,24,12,0,Math.PI*2,0,Math.PI/2),M(S.elder?darken(hc,.1):hc,{roughness:.36,side:THREE.DoubleSide}),0,0,0,.008);{const rim=P(lp,new THREE.TorusGeometry(er*1.07,.016,8,28,Math.PI),ink,0,0,0,0);rim.rotation.x=Math.PI/2;rim.castShadow=false}
+    const ls=piv(eg);ls.scale.set(1,1.06,.66);const lp=piv(ls);P(lp,new THREE.SphereGeometry(er*1.07,24,12,0,Math.PI*2,0,Math.PI/2),T[hk+'lid'],0,0,0,.008);{const rim=P(lp,new THREE.TorusGeometry(er*1.07,.016,8,28,Math.PI),ink,0,0,0,0);rim.rotation.x=Math.PI/2;rim.castShadow=false}
     if(S.elder){const br=P(eg,SPH(er*.3,10,8),M(0xF4EEFF,{roughness:.9}),s*er*.1,er*1.08,er*.15,.008);br.scale.set(2.3,.42,.6);br.rotation.z=-s*.2}
     {const bl=P(hp,SPH(S.hr*.15,16,10),M(0xFF6FB5,{roughness:.6}),s*S.hr*.5,-S.hr*.36,S.hr*.74,0);bl.scale.set(1.35,.7,.3);bl.lookAt(hp.position.x*0,0,0);bl.rotation.y+=Math.PI}
-    R.eyes.push({g:eg,er});R.pupils.push(pg);R.lids.push(lp);R.sock[s<0?'faceL':'faceR']=piv(eg,0,0,er*.7);
+    R.eyes.push({g:eg,er});R.pupils.push(pg);R.lids.push(lp);R.sock[s<0?'faceL':'faceR']=piv(eg,0,0,er*.7);R.sockSize[s<0?'faceL':'faceR']=er;
     // mouth: smile arc (flips to a frown) and an open mouth for cheering and chomping
     const sm=P(hp,new THREE.TorusGeometry(S.hr*.18,.02,10,24,Math.PI),ink,s*-S.hr*.1,-S.hr*.6,S.hr*.76,0);sm.rotation.z=Math.PI;R.smiles.push(sm);
     const mo=piv(hp,s*-S.hr*.1,-S.hr*.58,S.hr*.74);const mi=P(mo,SPH(S.hr*.2,16,12),M(0x3A0F2E,{roughness:.6}),0,0,0,.008);mi.scale.set(1,.85,.45);
     const tg=P(mo,SPH(S.hr*.12,12,8),M(0xFF6F9F,{roughness:.6}),0,-S.hr*.07,S.hr*.03,0);tg.scale.set(1,.55,.6);mo.scale.set(1,.01,1);mo.visible=false;R.mouths.push(mo);
-    // springy antenna tufts
-    const tc=S.elder?lighten(s<0?C.tL:C.tR,.55):(s<0?C.tL:C.tR),tm=M(tc,{roughness:.35}),n=S.tufts,thin=S.elder?.7:1;
+    // springy antenna tufts (the tip is the antenna style)
+    const tm=T[s<0?'antL':'antR'],n=S.tufts,thin=S.elder?.7:1,AS=ANT_STYLES[L.ant.s];
     for(let k=0;k<n;k++){const a=(k-(n-1)/2)*(n>3?.32:.42)+s*.18,root=piv(hp,Math.sin(a)*S.hr*.6,S.hr*.78,-S.hr*.08);root.rotation.z=-a*1.3;root.rotation.x=-.12;
       const chain=[];let p=root;const seg=S.tl/3;for(let j=0;j<3;j++){const r0=(.036-j*.007)*thin;P(p,new THREE.CylinderGeometry(r0*.8,r0,seg,12),tm,0,seg/2,0,.01);if(j)P(p,SPH(r0*1.02,12,8),tm,0,0,0,.01);const nx=piv(p,0,seg,0);chain.push(p);p=nx}
-      P(p,SPH(.055*thin+(S.elder?0:.01),12,10),tm,0,.02,0,.01);R.tufts.push({chain,s,i,a,base:-s*.22-a*.2})}
-    R.sock[s<0?'hatL':'hatR']=piv(hp,0,S.hr*.8,0)});
+      AS.tip(p,S,tm,thin);R.tufts.push({chain,s,i,a,base:-s*.22-a*.2})}
+    R.sock[s<0?'hatL':'hatR']=piv(hp,0,S.hr*.8,0);R.sockSize[s<0?'hatL':'hatR']=S.hr});
+  tintPet(L);dressPet(R,S,L);
   pet.head=(headY+S.hr+S.tl)*S.sc+.1;
   if(grew){pet.popT=1;emote('✨');setTimeout(()=>{emote(st===1?'🐣':'🎉');if(st>1)petAct('spinjump')},350)}
 }
@@ -4324,7 +4406,7 @@ function tryRemote(){if(sandbox||!remote||dirty||writing||dragging)return;if((re
 function normalize(s){const oldPal=!!s&&!(s.pv>=2);const d=defaultState();s=Object.assign({},d,s||{});s.items=Array.isArray(s.items)?s.items.filter(i=>i&&CATMAP[i.k]&&typeof i.id==='string').slice(0,80):[];
   s.inv=s.inv&&typeof s.inv==='object'?Object.fromEntries(Object.entries(s.inv).filter(([k,v])=>ITEMMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):Object.assign({},d.inv);
   s.toys=Array.isArray(s.toys)?s.toys.filter(k=>ITEMMAP[k]&&ITEMMAP[k].k==='toy'):d.toys.slice();s.daily=s.daily&&typeof s.daily==='object'?s.daily:{};
-  s.pet=Object.assign({},d.pet,s.pet||{});s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
+  s.pet=Object.assign({},d.pet,s.pet||{});if(s.pet.look&&typeof s.pet.look!=='object')delete s.pet.look;s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
   s.feed=Array.isArray(s.feed)?s.feed.slice(0,50).map(f=>({t:+f.t||0,by:String(f.by||''),k:f.k==='note'?'note':'event',text:String(f.text||'').slice(0,160)})):[];
   s.visits=s.visits&&typeof s.visits==='object'?s.visits:{};s.names=s.names&&typeof s.names==='object'?Object.fromEntries(Object.entries(s.names).slice(0,8).map(([k,v])=>[String(k).slice(0,64),String(v||'').slice(0,20)])):{};s.hearts=Math.max(0,+s.hearts||0);if(!FLOORS.includes(s.floor))s.floor='checker';if(!WALLS.includes(s.wall))s.wall='bubble';const RN=ROOM_SIZES.includes(s.size)?s.size:8;s.size=RN;s.tf=Array.isArray(s.tf)&&s.tf.length===RN*RN?s.tf.map(k=>TILESETS.f[k]?k:s.floor):Array(RN*RN).fill(s.floor);s.tw=Array.isArray(s.tw)&&s.tw.length===RN*4?s.tw.map(k=>TILESETS.w[k]?k:s.wall):Array(RN*4).fill(s.wall);s.fown=s.fown&&typeof s.fown==='object'?Object.fromEntries(Object.entries(s.fown).filter(([k,v])=>CATMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):{};s.town=[...new Set([...STARTER_TILES,...(Array.isArray(s.town)?s.town:[]),...s.tf.map(k=>'f:'+k),...s.tw.map(k=>'w:'+k)])].filter(k=>TILESETS[k[0]]&&TILESETS[k[0]][k.slice(2)]);s.downs=[...new Set(['classic',...(Array.isArray(s.downs)?s.downs:[])])].filter(k=>k==='classic'||(TILESETS[k[0]]&&TILESETS[k[0]][k.slice(2)]));s.door=Object.assign({s:'classic',w:3,u:-2.6},s.door&&typeof s.door==='object'?s.door:{});if(!s.downs.includes(s.door.s))s.door.s='classic';s.door.w=clamp(s.door.w|0,0,3);s.door.u=clamp(+s.door.u||0,-RN/2+.8,RN/2-.8);if(!SKY_KEYS.includes(s.sky))s.sky='classic';if(oldPal){const mp=[0,7,8,3,12,5,2];s.items.forEach(i=>i.c=mp[(i.c||0)%7])}s.td=s.td&&typeof s.td==='object'&&!Array.isArray(s.td)?s.td:{};s.arc=s.arc&&typeof s.arc==='object'&&!Array.isArray(s.arc)?s.arc:{best:{},plays:0};s.pv=2;return s}
 function loadLocal(){let s=null;try{s=JSON.parse(localStorage.getItem(soloKey())||'null')}catch(_){}state=normalize(s||defaultState());if(!s)state.rev=0;syncScene();updHUD()}
