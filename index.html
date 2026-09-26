@@ -1771,8 +1771,8 @@ const PST=[null,
   {sc:.94,bw:.35,bh:.58,hr:.27,hs:.22,leg:.2, foot:.12,arm:.28,hand:.09,tufts:3,tl:.3,shoes:1,speed:1},
   {sc:1,  bw:.43,bh:.55,hr:.29,hs:.23,leg:.14,foot:.13,arm:.26,hand:.1,tufts:3,tl:.26,speed:.8},
   {sc:.96,bw:.47,bh:.5, hr:.29,hs:.23,leg:.1, foot:.13,arm:.22,hand:.1,tufts:5,tl:.2,elder:1,speed:.45}];
-function surfSpots(parent,cx,cy,cz,rx,ry,rz,n,cols,R,rMin,rMax,front){for(let i=0;i<n;i++){const th=(front===false?.5:1.0)+R()*(front===false?2.1:1.7),ph=front===false?(Math.PI*1.15+R()*Math.PI*.7):R()*Math.PI*2,sr=rMin+R()*(rMax-rMin);
-  const x=cx+rx*Math.sin(th)*Math.cos(ph),y=cy+ry*Math.cos(th),z=cz+rz*Math.sin(th)*Math.sin(ph);const s=P(parent,SPH(sr,12,8),M(cols[i%cols.length],{roughness:.4}),x,y,z,0);s.scale.z=.28;s.lookAt(cx,cy,cz)}}
+function surfSpots(parent,cx,cy,cz,rx,ry,rz,n,cols,R,rMin,rMax,front){for(let i=0;i<n;i++){const th=(front===false?.5:1.35)+R()*(front===false?2.1:1.35),ph=front===false?(Math.PI*1.15+R()*Math.PI*.7):R()*Math.PI*2,sr=rMin+R()*(rMax-rMin);
+  const x=cx+rx*Math.sin(th)*Math.cos(ph),y=cy+ry*Math.cos(th),z=cz+rz*Math.sin(th)*Math.sin(ph);const s=P(parent,SPH(sr,14,10),M(cols[i%cols.length],{roughness:.4}),cx+(x-cx)*.99,cy+(y-cy)*.99,cz+(z-cz)*.99,0);s.scale.z=.2;s.lookAt(cx,cy,cz)}}
 
 function buildPet(){
   const st=stageOf(state.pet.xp),ci=state.pet.color%PET_PALS.length,cracks=st===0?Math.min(2,state.pet.xp):0;
@@ -1798,10 +1798,10 @@ function buildPet(){
 
   const S=PST[st];pet.scale=S.sc;root.scale.setScalar(S.sc);
   const matB=M(S.elder?darken(C.body,.12):C.body,{roughness:.38});
-  const hipY=S.foot*.55+S.leg,cy=hipY+S.bh*.72,top=cy+S.bh,headY=top+S.hr*.3;R.cy=cy;R.headY=headY;R.S=S;
+  const hipY=S.foot*.55+S.leg,cy=hipY+S.bh*.72,top=cy+S.bh,headY=top-S.hr*.12;R.cy=cy;R.headY=headY;R.S=S;
   // body
-  const bm=P(body,SPH(1,32,24),matB,0,cy,0,.016);bm.scale.set(S.bw,S.bh,S.bw*.9);
-  surfSpots(body,0,cy,0,S.bw,S.bh,S.bw*.9,st===1?9:17,C.spl,rng,.045,.12);
+  const bm=P(body,SPH(1,44,32),matB,0,cy,0,.016);bm.scale.set(S.bw,S.bh,S.bw*.8);
+  surfSpots(body,0,cy,0,S.bw,S.bh,S.bw*.8,st===1?9:17,C.spl,rng,.045,.12);
   R.sock.neck=piv(body,0,top-.04,S.bw*.55);R.sock.back=piv(body,0,cy+S.bh*.2,-S.bw*.85);R.sock.waist=piv(body,0,cy-S.bh*.35,0);
     // legs + feet (sneakers for young adults)
   R.legs=[];[-1,1].forEach(s=>{const lp=piv(body,s*S.bw*.46,hipY,0),gy=-hipY;R.legs.push(lp);
@@ -1809,7 +1809,7 @@ function buildPet(){
     const fc=s<0?C.fL:C.fR;
     if(S.shoes){P(lp,rbox(S.foot*1.7,.05,S.foot*2.7,.02),white,0,gy+.025,S.foot*.35,.012);const up=P(lp,rbox(S.foot*1.5,S.foot*.85,S.foot*2.3,.07),M(fc,{roughness:.45}),0,gy+.05+S.foot*.42,S.foot*.3,.012);
       P(lp,SPH(S.foot*.6,12,8),white,0,gy+.05+S.foot*.3,S.foot*1.3,0).scale.set(1.15,.7,.7);for(let k=0;k<3;k++)P(lp,new THREE.BoxGeometry(S.foot*.9,.012,.02),white,0,gy+.05+S.foot*.78,S.foot*(.1+k*.28),0)}
-    else{const f=P(lp,new THREE.SphereGeometry(S.foot,18,10,0,Math.PI*2,0,Math.PI/2),M(fc,{roughness:.4}),0,gy,S.foot*.25,.014);f.scale.set(1.05,.75,1.35)}
+    else{const f=P(lp,new THREE.SphereGeometry(S.foot*1.1,24,12,0,Math.PI*2,0,Math.PI/2),M(fc,{roughness:.4}),0,gy,S.foot*.25,.014);f.scale.set(1.05,.75,1.35)}
     R.sock[s<0?'footL':'footR']=piv(lp,0,gy,S.foot*.25)});
   // arms with mitten hands
   R.arms=[];[-1,1].forEach(s=>{const ap=piv(body,s*S.bw*.9,cy+S.bh*.3,.02);ap.rotation.z=s*.55;
@@ -1819,28 +1819,29 @@ function buildPet(){
     R.sock[s<0?'handL':'handR']=piv(ap,0,-S.arm-S.hand*.6,0);R.arms.push({p:ap,s})});
   // two heads
   R.heads=[];R.eyes=[];R.pupils=[];R.lids=[];R.mouths=[];R.smiles=[];R.tufts=[];
-  [-1,1].forEach((s,i)=>{const hc=s<0?C.L:C.R,hm=M(S.elder?darken(hc,.1):hc,{roughness:.36}),hp=piv(body,s*S.hs,headY,.02);hp.rotation.z=-s*.1;R.heads.push({p:hp,s});
-    const hd=P(hp,SPH(S.hr,28,20),hm,0,0,0,.016);hd.scale.set(1,.95,.92);surfSpots(hp,0,0,0,S.hr,S.hr*.95,S.hr*.92,st===1?1:3,C.spl,rng,.03,.06,false);
+  [-1,1].forEach((s,i)=>{const hc=s<0?C.L:C.R,hm=M(S.elder?darken(hc,.1):hc,{roughness:.36}),hp=piv(body,s*S.hs,headY,.06);hp.rotation.z=-s*.1;R.heads.push({p:hp,s});
+    const hd=P(hp,SPH(S.hr,36,26),hm,0,0,0,.016);hd.scale.set(1,.95,.92);surfSpots(hp,0,0,0,S.hr,S.hr*.95,S.hr*.92,st===1?1:3,C.spl,rng,.03,.06,false);
     // one big eye with an eyelid that can close
     const er=S.hr*.7,eg=piv(hp,s*S.hr*.06,S.hr*.08,S.hr*.52);eg.rotation.y=s*.14;
-    const w=P(eg,SPH(er,24,18),white,0,0,0,.012);w.scale.set(1,1.06,.62);
+    const w=P(eg,SPH(er,30,22),M(0xFFFAF0,{roughness:.16}),0,0,0,.012);w.scale.set(1,1.06,.62);
     const pg=piv(eg,0,0,er*.42),pu=P(pg,SPH(er*.48,18,14),ink,0,0,0,0);pu.scale.set(1,1.12,.5);
     P(pg,SPH(er*.17,10,8),B(0xffffff),er*.16,er*.22,er*.26,0);P(pg,SPH(er*.08,8,6),B(0xffffff),-er*.16,-er*.2,er*.26,0);
-    const ls=piv(eg);ls.scale.set(1,1.06,.66);const lp=piv(ls);const lid=P(lp,new THREE.SphereGeometry(er*1.07,24,12,0,Math.PI*2,0,Math.PI/2),M(S.elder?darken(hc,.1):hc,{roughness:.36,side:THREE.DoubleSide}),0,0,0,.008);
+    const ls=piv(eg);ls.scale.set(1,1.06,.66);const lp=piv(ls);const lid=P(lp,new THREE.SphereGeometry(er*1.07,24,12,0,Math.PI*2,0,Math.PI/2),M(S.elder?darken(hc,.1):hc,{roughness:.36,side:THREE.DoubleSide}),0,0,0,.008);{const rim=P(lp,new THREE.TorusGeometry(er*1.07,.016,8,28,Math.PI),ink,0,0,0,0);rim.rotation.x=Math.PI/2;rim.castShadow=false}
     if(S.elder){const br=P(eg,SPH(er*.3,10,8),M(0xF4EEFF,{roughness:.9}),s*er*.1,er*1.08,er*.15,.008);br.scale.set(2.3,.42,.6);br.rotation.z=-s*.2}
+    {const bl=P(hp,SPH(S.hr*.15,16,10),M(0xFF6FB5,{roughness:.6}),s*S.hr*.5,-S.hr*.36,S.hr*.74,0);bl.scale.set(1.35,.7,.3);bl.lookAt(hp.position.x*0,0,0);bl.rotation.y+=Math.PI}
     R.eyes.push({g:eg,er});R.pupils.push(pg);R.lids.push(lp);R.sock[s<0?'faceL':'faceR']=piv(eg,0,0,er*.7);
     // mouth: smile arc (flips to a frown) and an open mouth for cheering and chomping
-    const sm=P(hp,new THREE.TorusGeometry(S.hr*.16,.016,8,20,Math.PI),ink,s*-S.hr*.1,-S.hr*.6,S.hr*.76,0);sm.rotation.z=Math.PI;R.smiles.push(sm);
+    const sm=P(hp,new THREE.TorusGeometry(S.hr*.18,.02,10,24,Math.PI),ink,s*-S.hr*.1,-S.hr*.6,S.hr*.76,0);sm.rotation.z=Math.PI;R.smiles.push(sm);
     const mo=piv(hp,s*-S.hr*.1,-S.hr*.58,S.hr*.74);const mi=P(mo,SPH(S.hr*.2,16,12),M(0x3A0F2E,{roughness:.6}),0,0,0,.008);mi.scale.set(1,.85,.45);
     const tg=P(mo,SPH(S.hr*.12,12,8),M(0xFF6F9F,{roughness:.6}),0,-S.hr*.07,S.hr*.03,0);tg.scale.set(1,.55,.6);mo.scale.set(1,.01,1);mo.visible=false;R.mouths.push(mo);
     // springy antenna tufts
     const tc=S.elder?lighten(s<0?C.tL:C.tR,.55):(s<0?C.tL:C.tR),tm=M(tc,{roughness:.35}),n=S.tufts,thin=S.elder?.7:1;
     for(let k=0;k<n;k++){const a=(k-(n-1)/2)*(n>3?.32:.42)+s*.18,root=piv(hp,Math.sin(a)*S.hr*.6,S.hr*.78,-S.hr*.08);root.rotation.z=-a*1.3;root.rotation.x=-.12;
-      const chain=[];let p=root;const seg=S.tl/3;for(let j=0;j<3;j++){const r0=(.036-j*.007)*thin;P(p,new THREE.CylinderGeometry(r0*.8,r0,seg,8),tm,0,seg/2,0,.01);const nx=piv(p,0,seg,0);chain.push(p);p=nx}
+      const chain=[];let p=root;const seg=S.tl/3;for(let j=0;j<3;j++){const r0=(.036-j*.007)*thin;P(p,new THREE.CylinderGeometry(r0*.8,r0,seg,12),tm,0,seg/2,0,.01);if(j)P(p,SPH(r0*1.02,12,8),tm,0,0,0,.01);const nx=piv(p,0,seg,0);chain.push(p);p=nx}
       P(p,SPH(.055*thin+(S.elder?0:.01),12,10),tm,0,.02,0,.01);R.tufts.push({chain,s,i,a,base:-s*.22-a*.2})}
     R.sock[s<0?'hatL':'hatR']=piv(hp,0,S.hr*.8,0)});
   pet.head=(headY+S.hr+S.tl)*S.sc+.1;
-  if(grew){pet.popT=1;emote('✨');setTimeout(()=>emote(st===1?'🐣':'🎉'),350)}
+  if(grew){pet.popT=1;emote('✨');setTimeout(()=>{emote(st===1?'🐣':'🎉');if(st>1)petAct('spinjump')},350)}
 }
 
 function petBlockers(){const bs=[];itemObjs.forEach(o=>{const d=CATMAP[o.userData.k];if(d.wall||d.flat)return;const b=new THREE.Box3().setFromObject(o);b.expandByScalar(.35);bs.push(b)});return bs}
@@ -1849,6 +1850,29 @@ function findItem(flag){for(const o of itemObjs.values())if(CATMAP[o.userData.k]
 function petGo(p,cb){pet.target=p.clone();pet.target.y=0;pet.mode='walk';pet.onArrive=cb||null}
 const approach=(cur,to,k)=>cur+(to-cur)*Math.min(1,k);
 
+/* One-off acts layered over the base behaviour. Each returns target overrides for progress p (0..1) and time t. */
+const ease=x=>x<0?0:x>1?1:x*x*(3-2*x),bell=(p,a,b)=>ease(p/a)*(1-ease((p-b)/(1-b)));
+const ACTS_ANIM={
+  dance:{d:4.2,f:(p,t,S)=>{const k=bell(p,.08,.9);return{y:Math.abs(Math.sin(t*8))*.07*k,rz:Math.sin(t*4)*.18*k,sway:Math.sin(t*4)*.35*k,
+    arms:[0,1].map(i=>({rz:(i?1:-1)*(1.6+Math.sin(t*8+i*Math.PI)*.8),rx:Math.sin(t*8+i)*.3,w:k})),heads:[0,1].map(i=>({rz:Math.sin(t*8+i*Math.PI)*.22,w:k})),mouth:.8*k,lid:.5*k,legs:[0,1].map(i=>Math.sin(t*8+i*Math.PI)*.4*k)}}},
+  stretch:{d:2.8,f:p=>{const k=bell(p,.3,.75),y=bell(p,.35,.65);return{sy:.1*k,rx:-.12*k,arms:[0,1].map(i=>({rz:(i?1:-1)*2.9,rx:-.2,w:k})),heads:[0,1].map(i=>({rx:-.3,rz:(i?1:-1)*-.12,w:k})),mouth:.95*y,lid:.85*y}}},
+  nuzzle:{d:2.4,f:(p,t)=>{const k=bell(p,.2,.8);return{rz:Math.sin(t*3)*.04*k,heads:[0,1].map(i=>({rz:(i?1:-1)*.38,ry:(i?1:-1)*-.25,rx:.05,w:k})),lid:.95*k,arms:[0,1].map(i=>({rz:(i?1:-1)*1.1,rx:-.6,w:k*.8}))}}},
+  curious:{d:2.6,f:p=>{const k=bell(p,.18,.82);return{rx:.1*k,heads:[0,1].map(i=>({rz:.36,rx:-.08,w:k})),look:{x:0,y:.3,w:k},arms:[0,1].map(i=>({rz:(i?1:-1)*.3,rx:-.1,w:k}))}}},
+  sit:{d:6,f:(p,t,S)=>{const k=bell(p,.12,.88);return{y:-S.leg*.95*k-.02*k,rx:-.06*k,legs:[-1.35*k,-1.35*k],arms:[0,1].map(i=>({rz:(i?1:-1)*.35,rx:-.5,w:k}))}}},
+  tumble:{d:2.4,f:(p,t,S)=>{const fall=ease(p/.18)*(1-ease((p-.6)/.3));return{rz:1.3*fall,y:S.bw*.8*fall,arms:[0,1].map(i=>({rz:(i?1:-1)*2.2,rx:0,w:fall})),lid:p>.2&&p<.6?.9:0,mouth:p<.2?.8:0}}},
+  sneeze:{d:1.6,f:(p,t)=>{const wind=bell(p,.4,.55),snap=bell(p,.58,.72);return{rx:-.22*wind+.38*snap,heads:[0,1].map(i=>({rx:-.3*wind+.45*snap,w:1})),mouth:.55*wind+.9*snap,lid:.6*wind+1*snap,shake:snap}}},
+  slump:{d:3.2,f:p=>{const k=bell(p,.2,.85);return{rx:.28*k,y:-.03*k,heads:[0,1].map(i=>({rx:.4,rz:(i?1:-1)*.15,w:k})),arms:[0,1].map(i=>({rz:(i?1:-1)*.06,rx:.1,w:k})),lid:.45*k}}},
+  shrug:{d:1.8,f:p=>{const k=bell(p,.2,.7);return{y:.03*k,arms:[0,1].map(i=>({rz:(i?1:-1)*1.25,rx:-.7,w:k})),heads:[0,1].map(i=>({rz:(i?1:-1)*.18,w:k})),lid:.35*k}}},
+  doze:{d:4.6,f:p=>{const nod=ease(p/.8)*(1-ease((p-.86)/.06));return{heads:[0,1].map(i=>({rx:.42*nod,rz:(i?1:-1)*.12*nod,w:1})),lid:Math.min(1,nod*1.3),rx:.05*nod}}},
+  spinjump:{d:1.4,f:p=>({spin:ease(p/.8)*Math.PI*2,y:Math.sin(Math.min(1,p/.8)*Math.PI)*.6,arms:[0,1].map(i=>({rz:(i?1:-1)*2.6,rx:0,w:bell(p,.1,.85)})),mouth:.9,lid:.5})}
+};
+function petAct(k){const R=pet.rig;if(!R||pet.stage<1||!ACTS_ANIM[k])return false;if(k==='sit'&&R.S.leg<.06)return false;if(k==='tumble'&&pet.stage>2)k='curious';
+  pet.act={k,t:0,d:ACTS_ANIM[k].d};pet.mode='idle';pet.target=null;pet.timer=ACTS_ANIM[k].d+1.5;
+  const e={dance:'🎵',stretch:'😪',nuzzle:'💗',curious:'❓',tumble:'❗',sneeze:'🫧',slump:'😢',spinjump:'🎉'}[k];if(e)setTimeout(()=>emote(e),k==='sneeze'?900:150);return true}
+function idleAct(avg,stats){const st=pet.stage,S=pet.rig.S,r=Math.random();
+  if(stats.clean<30&&r<.3)return petAct('sneeze');if(avg<30)return petAct('slump');if(stats.energy<30)return petAct(S.elder&&r<.6?'doze':'stretch');
+  if(S.elder)return petAct(r<.4?'doze':r<.7?'sit':'curious');if(st<=2&&r<.25)return petAct('tumble');if(S.moody&&r<.35)return petAct('shrug');
+  if(avg>70)return petAct(r<.35?'dance':r<.55?'nuzzle':r<.75?'spinjump':'curious');return petAct(r<.4?'curious':r<.7?'sit':'nuzzle')}
 function updatePet(dt,t){
   const R=pet.rig;if(!R)return;const g=pet.group,st=pet.stage;
   pet.popT=Math.max(0,pet.popT-dt*1.5);const pop=1+Math.sin(pet.popT*Math.PI*3)*.28*pet.popT;
@@ -1864,36 +1888,38 @@ function updatePet(dt,t){
     pet.ph+=dt*(tired?8:12)*(S.scoot?.8:S.elder?.7:1)}
   else if(pet.mode==='idle'){pet.timer-=dt;
     if(pet.timer<=0){if(stats.energy<12&&Math.random()<.5){pet.mode='sleep';pet.sleepT=10}else petGo(randomSpot())}
-    pet.fidget-=dt;if(pet.fidget<=0){pet.fidget=5+Math.random()*6;const r=Math.random();if(avg>55){if(r<.3)pet.waveT=1.4;else if(r<.55){pet.hop=1;pet.happyT=.8}}}
+    pet.fidget-=dt;if(pet.fidget<=0&&!pet.act){pet.fidget=5+Math.random()*6;const r=Math.random();if(r<.45)idleAct(avg,stats);else if(avg>55){if(r<.65)pet.waveT=1.4;else if(r<.8){pet.hop=1;pet.happyT=.8}}}
     pet.chatIn-=dt;if(pet.chatIn<=0){pet.chatIn=8+Math.random()*10;pet.chatT=1.6;if(avg>70&&Math.random()<.35)emote('🎵')}
     const h=Math.atan2(camera.position.x-pet.pos.x,camera.position.z-pet.pos.z);let dh=h-pet.heading;dh=Math.atan2(Math.sin(dh),Math.cos(dh));pet.heading+=dh*Math.min(1,dt*1.8)}
   else if(sleeping){pet.sleepT-=dt;if(pet.sleepT<=0){pet.mode='idle';pet.timer=1;pet.hop=.6}if(Math.random()<dt*.45)emote('💤')}
   else if(eating){pet.eatT-=dt;if(pet.eatT<=0){pet.mode='idle';pet.timer=2;pet.happyT=1.2;emote('😋')}}
+  let A=null;if(pet.act){pet.act.t+=dt;if(pet.act.t>=pet.act.d||walking||sleeping||eating)pet.act=null;else A=ACTS_ANIM[pet.act.k].f(pet.act.t/pet.act.d,t,S)}
   pet.spinT=Math.max(0,pet.spinT-dt);pet.shakeT=Math.max(0,pet.shakeT-dt);pet.waveT=Math.max(0,pet.waveT-dt);pet.happyT=Math.max(0,pet.happyT-dt);
   pet.chatT=walking||sleeping||eating?0:Math.max(0,pet.chatT-dt);const chat=pet.chatT>0?Math.sin(Math.min(1,(1.6-pet.chatT)/.25)*Math.PI/2)*Math.min(1,pet.chatT/.25):0;
 
   // whole-body placement: babies scoot in little hops, toddlers wobble, elders hunch
   const hopY=Math.sin(pet.hop*Math.PI)*.75,scootY=walking&&S.scoot?Math.abs(Math.sin(pet.ph))*.12:0;
-  g.position.set(pet.pos.x,hopY+scootY,pet.pos.z);
-  g.rotation.y=pet.heading+(pet.spinT>0?(1-pet.spinT/1.2)*Math.PI*4:0)+(pet.shakeT>0?Math.sin(t*38)*.35*Math.min(1,pet.shakeT):0);
+  g.position.set(pet.pos.x,hopY+scootY+(A&&A.spin!==undefined?A.y:0),pet.pos.z);
+  g.rotation.y=pet.heading+(A&&A.spin?A.spin:0)+(A&&A.sway?A.sway:0)+(A&&A.shake?Math.sin(t*40)*.12*A.shake:0)+(pet.spinT>0?(1-pet.spinT/1.2)*Math.PI*4:0)+(pet.shakeT>0?Math.sin(t*38)*.35*Math.min(1,pet.shakeT):0);
   const land=pet.hop>0&&pet.hop<.12?1:0,breathe=1+Math.sin(t*(sleeping?1.5:2.4))*(sleeping?.04:.018)-land*.12;
   const bob=walking&&!S.scoot?Math.abs(Math.sin(pet.ph))*.06:0;
-  R.body.position.y=approach(R.body.position.y,bob+(sleeping?-.06:0),dt*14);
-  R.body.scale.set(2-breathe,breathe,2-breathe);R.root.scale.setScalar(pet.scale*pop);
-  R.body.rotation.x=approach(R.body.rotation.x,eating?.3+Math.sin(t*18)*.05:sleeping?.12:(S.elder?.12:0)+(walking?.08:0)+(S.scoot&&walking?.15:0),dt*10);
+  R.body.position.y=approach(R.body.position.y,bob+(sleeping?-.06:0)+(A&&A.y&&A.spin===undefined?A.y:0),dt*14);
+  const sy=breathe+(A&&A.sy?A.sy:0);R.body.scale.set(2-sy,sy,2-sy);R.root.scale.setScalar(pet.scale*pop);
+  R.body.rotation.x=approach(R.body.rotation.x,(A&&A.rx?A.rx:0)+(eating?.3+Math.sin(t*18)*.05:sleeping?.12:(S.elder?.12:0)+(walking?.08:0)+(S.scoot&&walking?.15:0)),dt*10);
   const sway=walking?Math.sin(pet.ph)*(S.wobble?.2:S.scoot?.1:.07):0;
-  R.body.rotation.z=approach(R.body.rotation.z,sleeping?.08:sway+(pet.waveT>0?-.07:0),dt*10);
+  R.body.rotation.z=approach(R.body.rotation.z,(sleeping?.08:sway+(pet.waveT>0?-.07:0))+(A&&A.rz?A.rz:0),dt*(A&&A.rz?6:10));
   // legs
-  R.legs.forEach((L,i)=>{const a=walking&&!S.scoot?Math.sin(pet.ph+(i?Math.PI:0)):0;L.rotation.x=approach(L.rotation.x,sleeping?-.9:a*.7,dt*16)});
+  R.legs.forEach((L,i)=>{const a=walking&&!S.scoot?Math.sin(pet.ph+(i?Math.PI:0)):0;L.rotation.x=approach(L.rotation.x,A&&A.legs?A.legs[i]:sleeping?-.9:a*.7,dt*16)});
   // arms: counter-swing, cheer, wave, nom, snooze
-  R.arms.forEach((A,i)=>{const s=A.s;let rz=s*.55,rx=Math.sin(t*1.6+i)*.06;
+  R.arms.forEach((Ar,i)=>{const s=Ar.s;let rz=s*.55,rx=Math.sin(t*1.6+i)*.06;
     if(walking)rx=-Math.sin(pet.ph+(i?Math.PI:0))*(S.scoot?.3:.85);
     if(pet.hop>0||pet.happyT>0){rz=s*2.5+Math.sin(t*22+i)*.25*s;rx=0}
     if(pet.waveT>0&&s>0){rz=2.7+Math.sin(t*15)*.45;rx=-.2}
     if(eating){rx=-1.2+Math.sin(t*18+i*Math.PI)*.25;rz=s*.25}
     if(sleeping){rz=s*.25;rx=-.3}
     if(avg<35&&!walking&&pet.hop<=0)rz=s*.18;
-    A.p.rotation.z=approach(A.p.rotation.z,rz,dt*12);A.p.rotation.x=approach(A.p.rotation.x,rx,dt*12)});
+    const o=A&&A.arms&&A.arms[i];if(o){rz+=(o.rz-rz)*o.w;rx+=(o.rx-rx)*o.w}
+    Ar.p.rotation.z=approach(Ar.p.rotation.z,rz,dt*12);Ar.p.rotation.x=approach(Ar.p.rotation.x,rx,dt*12)});
   // heads: each bobs on its own, they glance at each other, and lean together to sleep
   R.heads.forEach((H,i)=>{const s=H.s,ph=i*1.9;let rz=-s*.1+Math.sin(t*1.3+ph)*.05,rx=Math.sin(t*1.1+ph)*.04,ry=0;
     if(walking)rz+=Math.sin(pet.ph*2+ph)*.07;
@@ -1902,20 +1928,21 @@ function updatePet(dt,t){
     if(avg<35&&!sleeping)rx+=.15;
     if(S.elder)rx+=.1;
     if(pet.hop>0)rz+=Math.sin(t*20+ph)*.12;
+    const o=A&&A.heads&&A.heads[i];if(o){rz+=((o.rz??rz)-rz)*o.w;rx+=((o.rx??rx)-rx)*o.w;ry+=((o.ry??ry)-ry)*o.w}
     H.p.rotation.z=approach(H.p.rotation.z,rz,dt*8);H.p.rotation.x=approach(H.p.rotation.x,rx,dt*8);H.p.rotation.y=approach(H.p.rotation.y,ry,dt*8)});
   // springy tufts react to bounces and turns
   const y=g.position.y+R.body.position.y,vy=(y-pet.lastY)/Math.max(dt,1e-3);pet.lastY=y;
   pet.tuft.forEach((T,i)=>{const target=-vy*.08+(avg<35?.35:0)+(sleeping?.3:0)+(walking?Math.sin(pet.ph*2+i)*.1:0);T.v+=((target-T.a)*95-T.v*7)*dt;T.a=Math.max(-.9,Math.min(1,T.a+T.v*dt))});
   R.tufts.forEach(F=>{const T=pet.tuft[F.i],wig=Math.sin(t*2.4+F.a*5)*.05;F.chain.forEach((p,j)=>{p.rotation.z=(j?F.base+(-F.s*T.a*.5)+wig:p.rotation.z);if(j===0)p.rotation.x=-.12+T.a*.2})});
   // eyes: independent blinks (sometimes together), moods, glances
-  let lid=0;if(tired)lid=.45;if(pet.happyT>0||pet.waveT>0)lid=.5;
+  let lid=0;if(tired)lid=.45;if(pet.happyT>0||pet.waveT>0)lid=.5;if(A&&A.lid!==undefined)lid=Math.max(lid,A.lid);
   pet.blink=pet.blink.map((b,i)=>{b-=dt;if(b<-.13){b=1.8+Math.random()*3.5;if(Math.random()<.4)pet.blink[1-i]=Math.min(pet.blink[1-i],.05)}return b});
   R.lids.forEach((L,i)=>{let c=pet.blink[i]<0?1:lid;if(sleeping)c=1;if(S.moody&&i===1&&!sleeping)c=Math.max(c,.42);if(S.elder&&!sleeping)c=Math.max(c,.38);if(avg<35&&!sleeping)c=Math.max(c,.3);
     L.userData.c=approach(L.userData.c||0,c,dt*26);L.rotation.x=-1.25+L.userData.c*2.82});
   pet.lookT-=dt;if(pet.lookT<0){pet.lookT=.8+Math.random()*2.6;pet.lookTo={x:(Math.random()-.5)*2,y:(Math.random()-.5)*1.4}}
-  R.pupils.forEach((p,i)=>{const m=R.eyes[i].er*.26,s=R.heads[i].s,tx=chat?-s*m*1.1:pet.lookTo.x*m,ty=chat?0:pet.lookTo.y*m;p.position.x=approach(p.position.x,tx,dt*9);p.position.y=approach(p.position.y,ty,dt*9)});
+  R.pupils.forEach((p,i)=>{const m=R.eyes[i].er*.26,s=R.heads[i].s,tx=chat?-s*m*1.1:A&&A.look?A.look.x*m:pet.lookTo.x*m,ty=chat?0:A&&A.look?A.look.y*m:pet.lookTo.y*m;p.position.x=approach(p.position.x,tx,dt*9);p.position.y=approach(p.position.y,ty,dt*9)});
   // mouths: chomp, cheer, snore, chatter, smile or frown
-  R.mouths.forEach((mo,i)=>{let open=eating?Math.abs(Math.sin(t*9+i*1.3)):(pet.hop>0||pet.happyT>0||pet.waveT>0)?.9:sleeping?(i?.25+Math.sin(t*1.5)*.1:0):chat?Math.abs(Math.sin(t*14+i*2.2))*.7:0;
+  R.mouths.forEach((mo,i)=>{let open=eating?Math.abs(Math.sin(t*9+i*1.3)):(pet.hop>0||pet.happyT>0||pet.waveT>0)?.9:sleeping?(i?.25+Math.sin(t*1.5)*.1:0):chat?Math.abs(Math.sin(t*14+i*2.2))*.7:0;if(A&&A.mouth)open=Math.max(open,A.mouth);
     mo.scale.y=approach(mo.scale.y,Math.max(.01,open),dt*20);mo.visible=mo.scale.y>.06;const sm=R.smiles[i];sm.visible=!mo.visible;sm.rotation.z=avg>=40?Math.PI:0});
   pet.nag-=dt;if(pet.nag<=0&&!sleeping){pet.nag=9+Math.random()*6;const low=Object.entries(stats).sort((a,b)=>a[1]-b[1])[0];if(low[1]<12&&Math.random()<.4)emote('😢');else if(low[1]<30)emote({hunger:'🍙',fun:'🎾',energy:'😪',clean:'🫧'}[low[0]])}
 }
@@ -2086,7 +2113,7 @@ function doAct(k){const a=ACTS[k];let gained=false;
   saveSoon();updHUD();if(openTab==='pet')renderSheet()}
 function warm(){commitPet((s,p)=>{p.xp+=1});state.hearts+=1;pet.hop=.7;pet.waveT=1.3;pet.happyT=1.3;emote('💗');if(stageOf(state.pet.xp)===0)logEvent('warmed the egg');saveSoon();updHUD();if(openTab==='pet')renderSheet()}
 let lastPat=0;
-function petTap(){if(stageOf(state.pet.xp)===0){warm();return}if(pet.mode==='sleep'){emote('💤');return}pet.hop=1;emote('💗');
+function petTap(){if(stageOf(state.pet.xp)===0){warm();return}if(pet.mode==='sleep'){emote('💤');return}if(Math.random()<.35&&petAct('nuzzle')){}else{pet.hop=1;emote('💗')}
   if(Date.now()-lastPat>20000){lastPat=Date.now();commitPet(s=>{s.fun=clamp(s.fun+5,0,100)});saveSoon();updHUD()}}
 
 /* ================= SHEETS ================= */
@@ -2141,7 +2168,7 @@ function renderSheet(){const body=$('#sheetBody');
     <div class="row-label">Time travel</div>
     <div class="dbg-grid"><button class="gel lilac" data-skip="1">+1h</button><button class="gel lilac" data-skip="6">+6h</button><button class="gel lilac" data-skip="24">+24h</button><button class="gel lilac" data-skip="72">+3d</button></div>
     <div class="row-label">Pet behavior</div>
-    <div class="dbg-grid"><button class="gel" data-beh="sleep">Sleep</button><button class="gel" data-beh="eat">Eat</button><button class="gel" data-beh="hop">Hop</button><button class="gel" data-beh="walk">Walk</button><button class="gel" data-beh="spin">Spin</button><button class="gel" data-beh="emote">Emote</button><button class="gel" data-beh="home">Center</button><button class="gel" data-beh="color">Color</button></div>
+    <div class="dbg-grid"><button class="gel" data-beh="sleep">Sleep</button><button class="gel" data-beh="eat">Eat</button><button class="gel" data-beh="hop">Hop</button><button class="gel" data-beh="walk">Walk</button><button class="gel" data-beh="spin">Spin</button><button class="gel" data-beh="dance">Dance</button><button class="gel" data-beh="stretch">Stretch</button><button class="gel" data-beh="nuzzle">Nuzzle</button><button class="gel" data-beh="curious">Curious</button><button class="gel" data-beh="sit">Sit</button><button class="gel" data-beh="tumble">Tumble</button><button class="gel" data-beh="sneeze">Sneeze</button><button class="gel" data-beh="slump">Slump</button><button class="gel" data-beh="shrug">Shrug</button><button class="gel" data-beh="doze">Doze</button><button class="gel" data-beh="spinjump">Spin jump</button><button class="gel" data-beh="emote">Emote</button><button class="gel" data-beh="home">Center</button><button class="gel" data-beh="color">Color</button></div>
     <div class="row-label">Hearts and people</div>
     <div class="dbg-grid two"><button class="gel sun" data-h="50">+50 hearts</button><button class="gel sun" data-h="-9999">Empty jar</button>
     <button class="gel pink" id="dbgNote">Fake partner note</button><button class="gel pink" id="dbgVisit">Fake partner visit</button></div>
@@ -2159,7 +2186,7 @@ function renderSheet(){const body=$('#sheetBody');
     body.querySelectorAll('[data-beh]').forEach(b=>b.onclick=()=>{const k=b.dataset.beh;
       if(stageOf(state.pet.xp)===0&&k!=='color'&&k!=='emote'){toast('Hatch the egg first to test behaviors.');return}
       if(k==='sleep'){pet.mode='sleep';pet.sleepT=10}else if(k==='eat'){pet.mode='eat';pet.eatT=2.6;emote('🍙')}else if(k==='hop')pet.hop=1;
-      else if(k==='walk')petGo(randomSpot());else if(k==='spin')pet.spinT=1.2;else if(k==='emote')emote(['💗','⭐','✨','🎾','🍙','🫧','😪'][Math.floor(Math.random()*7)]);
+      else if(k==='walk')petGo(randomSpot());else if(k==='spin')pet.spinT=1.2;else if(ACTS_ANIM[k]){if(!petAct(k))toast('This stage can\'t do that one.')}else if(k==='emote')emote(['💗','⭐','✨','🎾','🍙','🫧','😪'][Math.floor(Math.random()*7)]);
       else if(k==='home'){pet.pos.set(0,0,0);pet.mode='idle';pet.timer=3}else if(k==='color'){state.pet.color=(state.pet.color+1)%6;buildPet();saveSoon();updHUD()}});
     body.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{state.hearts=Math.max(0,state.hearts+ +b.dataset.h);saveSoon();updHUD();renderSheet()});
     $('#dbgNote').onclick=()=>{state.feed.unshift({t:Date.now(),by:'debug-partner',k:'note',text:['miss u! fed the little guy','rearranged the couch, hope u like it','goodnight 💤'][Math.floor(Math.random()*3)]});saveSoon();updHUD();toast('Fake note added. Check Mail.')};
