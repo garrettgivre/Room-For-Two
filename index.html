@@ -452,6 +452,21 @@ body.away .tag{visibility:hidden}
 .sc-buy{width:auto;min-height:44px;padding:0 16px;display:inline-flex;align-items:center;gap:8px;font-size:16px}.sc-buy:disabled{opacity:.5}
 .sc-buy .cost{display:inline-flex;align-items:center;gap:3px;background:var(--sun);color:var(--ink);text-shadow:none;border:2px solid var(--ink);border-radius:10px;padding:1px 7px;font-size:14px}.sc-buy .cost img{width:16px;height:16px}
 .item .shopat{font-family:var(--disp);font-size:10.5px;color:#fff;background:var(--grape);border:2px solid var(--ink);border-radius:9px;padding:2px 7px 3px;white-space:nowrap}
+
+/* ownership, build catalog */
+.stock{position:absolute;top:-12px;right:-10px;min-width:34px;height:34px;padding:0 6px;display:grid;place-items:center;border-radius:17px;background:#fff;border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink);font-family:var(--disp);font-size:14px;color:var(--ink);transform:rotate(8deg)}
+.stock::before{content:"×";font-size:11px;margin-right:1px}.stock.owned{background:var(--slime)}.stock.owned::before{content:""}
+.toshop{position:absolute;top:-10px;right:-8px;font-family:var(--disp);font-size:11px;color:#fff;background:var(--grape);border:2.5px solid var(--ink);border-radius:10px;padding:2px 7px 3px;transform:rotate(8deg);box-shadow:0 2px 0 var(--ink)}
+.price.deal::after{display:block!important;content:"Deal";position:absolute;inset:auto -6px -12px auto;width:auto;height:auto;clip-path:none;background:var(--slime);border:2px solid var(--ink);border-radius:8px;padding:0 5px;font-size:10px;color:var(--ink);text-shadow:none;z-index:2}
+.sc-buy .cost s{opacity:.55;margin-right:4px;font-size:12px}
+.tsw.locked .tsi{filter:grayscale(.7) opacity(.75)}.tlock{position:absolute;right:-7px;bottom:-7px;font-style:normal;font-family:var(--disp);font-size:10px;color:var(--ink);background:var(--sun);border:2px solid var(--ink);border-radius:8px;padding:1px 5px 2px}
+.tsi.mv{display:grid;place-items:center;background:var(--sky)}.tsi.mv svg{width:34px;height:34px;color:#fff}
+.dthumb{width:100%;height:100%;object-fit:contain;background:#F3E8FF;border-radius:12px}
+.paintbar.doormode .pbt,.paintbar.doormode #pbUndo{display:none}
+.bcard .thumb{padding:0}.bctex{display:block;width:100%;height:100%;background:#EDE6F5 center/cover}.bcsize{font-family:var(--disp);font-size:24px;color:var(--grape)}
+.bcard.gotit{opacity:.75}
+.sc-tile{display:block;width:60px;height:60px;border-radius:12px;background:#EDE6F5 center/cover}
+.hicon{position:relative;z-index:1;width:40px;height:40px}
 </style>
 </head>
 <body>
@@ -480,17 +495,18 @@ body.away .tag{visibility:hidden}
   <button class="map-x" id="mapX" aria-label="Close map">×</button><h2>Where to?</h2>
   <div class="map-land">
     <svg class="map-art" viewBox="0 0 300 360" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M150 340 C 90 300, 60 260, 80 215 S 200 170, 210 130 S 150 60, 90 45" fill="none" stroke="#FFF1C9" stroke-width="30" stroke-linecap="round"/>
-      <path d="M150 340 C 90 300, 60 260, 80 215 S 200 170, 210 130 S 150 60, 90 45" fill="none" stroke="#E9C77E" stroke-width="3" stroke-dasharray="7 9" stroke-linecap="round"/>
-      <path d="M210 130 C 250 110, 262 80, 250 50" fill="none" stroke="#FFF1C9" stroke-width="24" stroke-linecap="round"/>
-      <ellipse cx="238" cy="262" rx="42" ry="24" fill="#7FD8F5" stroke="#3B1273" stroke-width="3"/><ellipse cx="226" cy="256" rx="12" ry="4" fill="#fff" opacity=".7"/>
-      <g stroke="#3B1273" stroke-width="3"><circle cx="40" cy="120" r="18" fill="#7BD44A"/><circle cx="58" cy="132" r="14" fill="#A6E22E"/><circle cx="262" cy="190" r="15" fill="#7BD44A"/><circle cx="30" cy="300" r="16" fill="#A6E22E"/><circle cx="130" cy="110" r="12" fill="#7BD44A"/></g>
-      <g fill="#fff" opacity=".9"><ellipse cx="60" cy="20" rx="26" ry="9"/><ellipse cx="230" cy="16" rx="32" ry="10"/></g>
+      <g fill="none" stroke="#FFF1C9" stroke-width="26" stroke-linecap="round"><path d="M150 330 C 150 290, 150 250, 150 215 S 120 150, 110 110 S 120 70, 120 50"/><path d="M150 285 C 110 275, 80 255, 66 238"/><path d="M150 285 C 190 275, 225 262, 234 245"/><path d="M150 215 C 180 195, 205 175, 210 158"/><path d="M130 160 C 110 150, 90 145, 84 138"/></g>
+      <g fill="none" stroke="#E9C77E" stroke-width="3" stroke-dasharray="7 9" stroke-linecap="round"><path d="M150 330 C 150 290, 150 250, 150 215 S 120 150, 110 110 S 120 70, 120 50"/></g>
+      <ellipse cx="248" cy="318" rx="36" ry="20" fill="#7FD8F5" stroke="#3B1273" stroke-width="3"/><ellipse cx="238" cy="312" rx="10" ry="3.5" fill="#fff" opacity=".7"/>
+      <g stroke="#3B1273" stroke-width="3"><circle cx="30" cy="110" r="16" fill="#7BD44A"/><circle cx="46" cy="122" r="12" fill="#A6E22E"/><circle cx="268" cy="120" r="14" fill="#7BD44A"/><circle cx="26" cy="310" r="15" fill="#A6E22E"/><circle cx="192" cy="96" r="11" fill="#7BD44A"/><circle cx="268" cy="200" r="12" fill="#A6E22E"/></g>
+      <g fill="#fff" opacity=".9"><ellipse cx="60" cy="20" rx="26" ry="9"/><ellipse cx="236" cy="18" rx="32" ry="10"/></g>
     </svg>
-    <button class="pin" data-go="home" style="left:50%;top:86%;--c:#FF3D9A"><span class="house"><img src="assets/icons/tab-room.webp" alt=""></span><b>Home</b></button>
-    <button class="pin" data-go="snack" style="left:26%;top:60%;--c:#FF8A1C"><span class="house"><img src="assets/icons/act-feed.webp" alt=""></span><b>Snack Shack</b></button>
-    <button class="pin" data-go="salon" style="left:72%;top:36%;--c:#3EC8F2"><span class="house"><img src="assets/icons/act-bath.webp" alt=""></span><b>Bubble Salon</b></button>
-    <button class="pin" data-go="toys" style="left:30%;top:13%;--c:#9B4DF2"><span class="house"><img src="assets/icons/act-play.webp" alt=""></span><b>Toy Box</b></button>
+    <button class="pin" data-go="home" style="left:50%;top:91%;--c:#FF3D9A"><span class="house"><img src="assets/icons/tab-room.webp" alt=""></span><b>Home</b></button>
+    <button class="pin" data-go="snack" style="left:22%;top:66%;--c:#FF8A1C"><span class="house"><img src="assets/icons/act-feed.webp" alt=""></span><b>Snack Shack</b></button>
+    <button class="pin" data-go="build" style="left:78%;top:68%;--c:#FF8A1C"><span class="house"><svg class="hicon" viewBox="0 0 40 40"><g stroke="#3B1273" stroke-width="2.5" stroke-linejoin="round"><rect x="17" y="14" width="6" height="22" rx="2" fill="#B47A4A" transform="rotate(35 20 25)"/><rect x="8" y="6" width="18" height="10" rx="3" fill="#9FB3C8" transform="rotate(35 17 11)"/><rect x="24" y="18" width="12" height="8" rx="3" fill="#FF3D9A"/><rect x="28" y="26" width="4" height="10" rx="1.5" fill="#FFD21F"/></g></svg></span><b>Hammer &amp; Hue</b></button>
+    <button class="pin" data-go="salon" style="left:72%;top:43%;--c:#3EC8F2"><span class="house"><img src="assets/icons/act-bath.webp" alt=""></span><b>Bubble Salon</b></button>
+    <button class="pin" data-go="furn" style="left:27%;top:38%;--c:#FF3D9A"><span class="house"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Cozy Nest</b></button>
+    <button class="pin" data-go="toys" style="left:42%;top:13%;--c:#9B4DF2"><span class="house"><img src="assets/icons/act-play.webp" alt=""></span><b>Toy Box</b></button>
   </div></div></div>
 <div class="travel" id="travel" hidden><img id="tvIcon" alt=""><b id="tvText"></b></div>
 <div class="seltools paintbar" id="paintbar\" role="toolbar" aria-label="Paint tiles">
@@ -1027,7 +1043,7 @@ window.addEventListener('error',e=>showErr((e.message||'error')+(e.lineno?' (lin
 window.addEventListener('unhandledrejection',e=>showErr((e.reason&&(e.reason.message||e.reason.code))||String(e.reason)));
 if(!window.THREE){showErr('The 3D engine failed to start. Reload the page.');return}
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const HALF=4, WALLH=3.4;
+let HALF=4;const WALLH=3.4;
 const TINTS=[0xFF6FB5,0xE8384F,0xFF8A3D,0xF2C230,0xB5E03A,0x7FE3B8,0x2FA39A,0x4FC3F7,0x7B4BD6,0xC9A8FF,0xE6D5B8,0x4A4458,0xFBF6EC];
 const TINT_NAMES=['Bubblegum','Cherry','Tangerine','Mustard','Acid lime','Mint','Swamp teal','Sky','Grape','Lilac','Oat','Charcoal','Cream'];
 const hex=n=>'#'+n.toString(16).padStart(6,'0');
@@ -1528,7 +1544,7 @@ const walls=WALLDEF.map((d,i)=>{const g=new THREE.Group();g.rotation.y=Math.atan
   const bb=add(g,new THREE.BoxGeometry(8,.2,.06),M(0xffffff,{roughness:.3}),0,.1,.03);bb.castShadow=false;
   const tt=add(g,new THREE.BoxGeometry(8.1,.1,.22),chromeMat(),0,WALLH,-.04);tt.castShadow=false;
   const back=new THREE.Mesh(new THREE.BoxGeometry(8.1,WALLH+.05,.12),M(0xE9EAF4));back.position.set(0,WALLH/2,-.07);back.castShadow=false;back.outline=.04;g.add(back);
-  scene.add(g);d.T=[Math.cos(g.rotation.y),-Math.sin(g.rotation.y)];return{g,plane:p,d}});
+  scene.add(g);d.T=[Math.cos(g.rotation.y),-Math.sin(g.rotation.y)];return{g,plane:p,d,bb,tt,back}});
 const itemRoot=new THREE.Group();scene.add(itemRoot);
 
 /* ================= TILES: floors and walls are painted tile by tile ================= */
@@ -1539,7 +1555,7 @@ const itemRoot=new THREE.Group();scene.add(itemRoot);
 //    edges and corners, inner corners included. b = how much of an edge tile the border band covers.
 //  - mode 'run' (walls): the source is 3 columns (left end, middle, right end). Every run of it gets end caps.
 // Sets are canvas painters (below) or image files in TILE_ART (see tools/tiles/README.md).
-const GRID=8,TPX=256,WPXH=870;let floorAvg=[.8,.7,.6];
+let GRID=8;const TPX=256,WPXH=870;let floorAvg=[.8,.7,.6];
 const FLOOR_NAMES={checker:'Butter checker',zigzag:'Zigzag',slime:'Slime',wood:'Wood planks',shag:'Shag carpet',tile:'Bath tiles',galaxy:'Galaxy',terrazzo:'Terrazzo',sprinkle:'Sprinkles',herring:'Herringbone',concrete:'Concrete',foammat:'Foam mat'};
 const WALL_NAMES={squiggle:'Squiggles',splat:'Paint splats',bubble:'Bubbles',stripe:'Stripes',stars:'Stars',sunset:'Sunset',grid:'Blueprint grid',plain:'Plain',gingham:'Gingham',plaster:'Plaster',graffiti:'Graffiti bricks',crayonwall:'Crayon'};
 const TILESETS={f:{},w:{}},TILE_ORDER={f:[],w:[]};
@@ -1615,10 +1631,50 @@ const TILE_ART=[
   {kind:'w',k:'terrazzorun',n:'Terrazzo wainscot',mode:'run',img:'assets/tiles/w-terrazzorun.webp'}];
 TILE_ART.forEach(a=>tileset(a.kind,a.k,Object.assign({},a)));
 
+
+/* ---------- door & window styles: one of each to match every floor and wall set ---------- */
+// Colours come from the set's own texture (its average and its boldest colour), and the set's pattern is used on the
+// door panels and the window curtains. Shapes vary by set: square, arched or round.
+const STARTER_TILES=['f:checker','f:wood','f:tile','f:concrete','w:squiggle','w:plain','w:stripe','w:bubble'];
+const ROOM_SIZES=[8,10,12],SIZE_PRICE={10:40,12:90};
+const hashStr=t=>[...t].reduce((a,c)=>(a*31+c.charCodeAt(0))|0,7)>>>0;
+function tilePrice(d){return d.img?(d.mode==='repeat'?5:6):d.mode==='repeat'?(d.span[0]>2?3:4):5}
+function styleSet(key){return key==='classic'?null:TILESETS[key[0]]&&TILESETS[key[0]][key.slice(2)]}
+function styleName(key){const d=styleSet(key);return d?d.n:'Classic'}
+const palCache={},patCache={};
+function stylePal(key){if(palCache[key])return palCache[key];const d=styleSet(key);if(!d)return palCache[key]={base:0xFF7FB8,acc:0x9B4DF2,light:0xFFB3D9};
+  const src=tileSource(d);if(!src)return{base:0xE9DDF7,acc:0x9B4DF2,light:0xFFFFFF};const c=mkCanvas(20,20),x=c.getContext('2d');x.drawImage(src,0,0,20,20);const px=x.getImageData(0,0,20,20).data;
+  let r=0,g=0,b=0,best=null,bs=-1;for(let i=0;i<px.length;i+=4){r+=px[i];g+=px[i+1];b+=px[i+2];const mx=Math.max(px[i],px[i+1],px[i+2]),mn=Math.min(px[i],px[i+1],px[i+2]),sat=(mx-mn)*(mx/255);if(sat>bs){bs=sat;best=[px[i],px[i+1],px[i+2]]}}
+  const n=px.length/4,avg=((r/n)<<16)|((g/n)<<8)|(b/n|0),acc=(best[0]<<16)|(best[1]<<8)|best[2];return palCache[key]={base:avg,acc,light:lighten(avg,.35)}}
+function stylePat(key){if(patCache[key])return patCache[key];const d=styleSet(key);if(!d)return null;const src=tileSource(d);if(!src)return null;
+  const c=mkCanvas(256,256);c.getContext('2d').drawImage(src,0,0,Math.min(src.width||src.naturalWidth,1024),Math.min(src.height||src.naturalHeight,1024),0,0,256,256);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;
+  // the full-size source is only kept while that set is on the floor or walls
+  if(!d.img&&!(key[0]==='f'?curTF():curTW()).includes(key.slice(2)))delete tileSrc[key];return patCache[key]=t}
+function buildDoorModel(key){const g=G(),P=stylePal(key),tex=stylePat(key),F=M(P.acc,{roughness:.4}),L=M(P.base,{roughness:.45}),Pn=tex?M(0xffffff,{map:tex,roughness:.6}):M(P.light,{roughness:.5}),
+    Gd=M(0xFFD21F,{metalness:.5,roughness:.3}),Gl=M(0xBDEBFF,{emissive:0x9FDFFF,emissiveIntensity:.5,roughness:.1}),shape=key==='classic'?2:hashStr(key)%3;
+  const out=add(g,new THREE.PlaneGeometry(1.12,2.22),M(0xFFF3D6,{emissive:0xFFE2A8,emissiveIntensity:1.1,roughness:1}),0,1.11,-.01);out.castShadow=false;out.outline=0;
+  rb(g,.16,2.4,.18,.05,F,-.64,1.2,0);rb(g,.16,2.4,.18,.05,F,.64,1.2,0);rb(g,1.44,.18,.18,.05,F,0,2.33,0);nosh(rb(g,1.5,.06,.34,.03,F,0,.03,.12));
+  if(shape===1){const a=to(g,.66,.08,F,0,2.42,0,0,0,0,Math.PI);a.scale.set(1,.55,1)}
+  const hinge=G();hinge.position.set(-.56,0,.03);g.add(hinge);rb(hinge,1.12,2.2,.08,.05,L,.56,1.1,0);
+  if(shape===0){rb(hinge,.82,.78,.04,.05,Pn,.56,.6,.05);rb(hinge,.82,.66,.04,.05,Pn,.56,1.58,.05)}
+  else if(shape===1){rb(hinge,.82,1.05,.04,.05,Pn,.56,.72,.05);const w=cy(hinge,.34,.34,.05,Gl,.56,1.66,.05,24);w.rotation.x=Math.PI/2;w.scale.set(1,1,.8);to(hinge,.34,.035,F,.56,1.66,.07,0,0,0,Math.PI)}
+  else{rb(hinge,.82,.72,.04,.05,key==='classic'?M(0xFFB3D9,{roughness:.5}):Pn,.56,.6,.05);const w=cy(hinge,.22,.22,.05,Gl,.56,1.62,.05);w.rotation.x=Math.PI/2;to(hinge,.22,.04,Gd,.56,1.62,.07)}
+  sp(hinge,.075,Gd,1.0,1.08,.09);return{g,hinge}}
+function buildWindowModel(key){const g=G(),P=stylePal(key),tex=stylePat(key),F=M(P.acc,{roughness:.4}),W=M(0xFFFFFF,{roughness:.4}),Cu=tex?M(0xffffff,{map:tex,roughness:.85}):M(P.light,{roughness:.8}),
+    Gl=M(0xBDEBFF,{emissive:0x9FDFFF,emissiveIntensity:.55,roughness:.05}),shape=hashStr(key)%3;
+  if(shape===2){const gl=cy(g,.5,.5,.04,Gl,0,.05,0,32);gl.rotation.x=Math.PI/2;to(g,.5,.07,F,0,.05,.03);nosh(bx(g,.04,.96,.03,W,0,.05,.04));nosh(bx(g,.96,.04,.03,W,0,.05,.04))}
+  else{rb(g,.92,1.1,.03,.02,Gl,0,0,0);[[-.49,0,.08,1.2],[.49,0,.08,1.2]].forEach(([x,y,w,h])=>rb(g,w,h,.1,.03,F,x,y,.03));rb(g,1.06,.08,.1,.03,F,0,-.58,.03);
+    if(shape===1){const t=cy(g,.46,.46,.04,Gl,0,.55,0,24);t.rotation.x=Math.PI/2;t.scale.set(1,1,.9);to(g,.47,.06,F,0,.55,.03,0,0,0,Math.PI)}else rb(g,1.06,.08,.1,.03,F,0,.58,.03);
+    nosh(bx(g,.04,1.1,.03,W,0,0,.04));nosh(bx(g,.92,.04,.03,W,0,.05,.04))}
+  rb(g,1.3,.08,.24,.03,F,0,-.66,.1);
+  // curtains in the set's pattern
+  [-1,1].forEach(sg=>{const c=rb(g,.3,1.25,.05,.04,Cu,sg*.56,.02,.14);c.scale.set(1,1,1);const tie=to(g,.08,.02,F,sg*.56,-.18,.17,Math.PI/2)});
+  rb(g,1.42,.2,.1,.05,Cu,0,.72,.14);return g}
+
 const tileSrc={},tileTex={};let tilesSig='|',tilesDirty=true;
 function srcSize(d){const s=d.span;return d.kind==='f'?(d.mode==='border'?[3*TPX,3*TPX]:[TPX*s[0],TPX*s[1]]):[d.mode==='run'?3*TPX:TPX*s[0],WPXH]}
 function tileSource(d){const key=d.kind+':'+d.k;if(key in tileSrc)return tileSrc[key];
-  if(d.img){tileSrc[key]=null;const im=new Image();im.onload=()=>{tileSrc[key]=im;dropTileTex(key);tilesDirty=true;syncTiles()};im.onerror=()=>console.warn('tile art missing: '+d.img);im.src=d.img;return null}
+  if(d.img){tileSrc[key]=null;const im=new Image();im.onload=()=>{tileSrc[key]=im;dropTileTex(key);delete palCache[key];delete patCache[key];tilesDirty=true;syncTiles();doorKey='';syncDoor()};im.onerror=()=>console.warn('tile art missing: '+d.img);im.src=d.img;return null}
   const [w,h]=srcSize(d),c=mkCanvas(w,h);d.paint(c.getContext('2d'),w,h);return tileSrc[key]=c}
 // Dynamic sets become an atlas with a gutter round every cell so neighbouring cells never bleed into each other.
 function tileAtlas(src,d){const W=src.naturalWidth||src.width,H=src.naturalHeight||src.height,G=8,x0=mkCanvas(1,1);
@@ -2512,7 +2568,7 @@ function inRoom(v,m){return Math.abs(v.x)<HALF-m&&Math.abs(v.z)<HALF-m}
 function spotClear(v,rad,except){if(away&&away.extra.some(q=>v.x>q.min.x-rad&&v.x<q.max.x+rad&&v.z>q.min.z-rad&&v.z<q.max.z+rad))return false;for(const o of roomObjs().values()){if(o.userData.id===except)continue;const d=defOf(o.userData.k);if(!d||d.wall||d.flat)continue;const q=new THREE.Box3().setFromObject(o);if(v.x>q.min.x-rad&&v.x<q.max.x+rad&&v.z>q.min.z-rad&&v.z<q.max.z+rad)return false}return true}
 
 /* ---------- walking around furniture: A* over a 32x32 grid ---------- */
-const NAV=32,NCELL=2*HALF/NAV;let navKey='',navBlk=null;
+let NAV=32,NCELL=2*HALF/NAV;let navKey='',navBlk=null;
 function navGrid(){const r=Math.max(.14,petDim().w*.26),key=(away?away.key:'home')+r.toFixed(2)+'|'+(away?[...away.items.values()]:state.items).map(i=>i.id+':'+i.x+','+i.z+','+(i.r||0)).join(';');if(key===navKey&&navBlk)return navBlk;
   const boxes=away?away.extra.slice():[];roomObjs().forEach(o=>{const d=defOf(o.userData.k);if(d&&!d.wall&&!d.flat)boxes.push(new THREE.Box3().setFromObject(o))});
   const blk=new Uint8Array(NAV*NAV);for(let j=0;j<NAV;j++)for(let i=0;i<NAV;i++){const x=-HALF+(i+.5)*NCELL,z=-HALF+(j+.5)*NCELL;let b=Math.abs(x)>HALF-r||Math.abs(z)>HALF-r;
@@ -2565,7 +2621,8 @@ const USE_FN={
   rug:{kind:'rug',anim:'u_wiggle',d:3.8,emo:['🎉','🎵'],w:.55},
   deco:{kind:'stand',anim:'u_pat',d:4,dist:.1,emo:['💗'],w:.6},
   fun:{kind:'stand',front:1,anim:'press',d:6,dist:.1,emo:['🎵','🎉'],w:.9},
-  wall:{kind:'wall',anim:'u_gaze',d:4.2,emo:['❓'],w:.45}};
+  wall:{kind:'wall',anim:'u_gaze',d:4.2,emo:['❓'],w:.45},
+  window:{kind:'wall',anim:'u_gaze',d:6,emo:['💗','❓'],w:.55}};
 const NAP={kind:'nap',w:s=>s.energy<45?2.2:.12},BOWL={kind:'stand',anim:'u_sniffLow',d:3.2,dist:0,emo:s=>[s.hunger<60?'🍙':'❓'],w:s=>s.hunger<60?1:.2},
   MIRROR={kind:'wall',anim:'u_admire',d:4.6,spin:.55,emo:['💗','✨'],w:.8},CLOCK={kind:'wall',anim:'u_tick',d:4.5,emo:['❓'],w:.5},
   TV={kind:'stand',front:1,anim:'u_watch',d:13,dist:1.1,emo:['🎉','❗','🎵'],w:1.3};
@@ -2764,6 +2821,26 @@ function updatePet(dt,t){
 }
 
 
+
+/* ---------- room size: the room can grow at Hammer & Hue (shops are always 8 x 8) ---------- */
+const camMax=()=>28*Math.max(1,GRID/8);
+function setRoomSize(n){if(n===GRID)return;const old=GRID;GRID=n;HALF=n/2;NAV=n*4;NCELL=2*HALF/NAV;
+  WALLDEF[0].c=[0,-HALF];WALLDEF[1].c=[HALF,0];WALLDEF[2].c=[0,HALF];WALLDEF[3].c=[-HALF,0];
+  walls.forEach((w,i)=>{w.g.position.set(WALLDEF[i].c[0],0,WALLDEF[i].c[1]);w.plane.geometry=new THREE.PlaneGeometry(n,WALLH);w.bb.geometry=new THREE.BoxGeometry(n,.2,.06);w.tt.geometry=new THREE.BoxGeometry(n+.1,.1,.22);w.back.geometry=new THREE.BoxGeometry(n+.1,WALLH+.05,.12)});
+  slab.geometry=new THREE.BoxGeometry(n+.5,.35,n+.5);trim.geometry=new THREE.BoxGeometry(n+.62,.08,n+.62);floor.geometry=new THREE.PlaneGeometry(n,n);
+  LIT.room.half=HALF;const e=HALF+3;Object.assign(sun.shadow.camera,{left:-e,right:e,top:e,bottom:-e,far:16+n,fov:Math.min(130,96+(n-8)*6)});sun.position.y=6.8+(n-8)*.35;
+  cam.dist=clamp(cam.dist*n/old,9,camMax());tilesDirty=true;navKey='';doorKey=''}
+// Grow the painted floor and walls with the room: new tiles copy their nearest old neighbour.
+function growTiles(to){const from=Math.round(Math.sqrt(state.tf.length)),off=(to-from)/2,tf=[],tw=[];
+  for(let j=0;j<to;j++)for(let i=0;i<to;i++)tf.push(state.tf[clamp(j-off,0,from-1)*from+clamp(i-off,0,from-1)]);
+  for(let w=0;w<4;w++)for(let c=0;c<to;c++)tw.push(state.tw[w*from+clamp(c-off,0,from-1)]);state.tf=tf;state.tw=tw;state.size=to}
+
+// every floor and wall set gets a window in the catalog (sold at Hammer & Hue)
+const WIN_KEYS=[];
+['w','f'].forEach(kind=>TILE_ORDER[kind].forEach(k=>{const key=kind+':'+k,wk='win_'+kind+'_'+k,d=TILESETS[kind][k];
+  const c={k:wk,n:d.n+' window',set:'build',fn:'window',p:4,dc:0,wall:1,y:1.85,winOf:key};CAT.push(c);CATMAP[wk]=c;BUILD[wk]=()=>buildWindowModel(key);WIN_KEYS.push(wk)}));
+SETS.push({k:'build',img:'tab-room',n:'Build',e:'',c:'#FFD21F'});SETMAP.build=SETS[SETS.length-1];FUNCS.push(['window','Windows','🪟']);
+const DOOR_KEYS=['classic',...['w','f'].flatMap(kind=>TILE_ORDER[kind].map(k=>kind+':'+k))];
 /* ================= TOWN: the door, the map and the shops ================= */
 // The room has a door (left wall). Tap it for the town map; each shop is its own room with a shopkeeper, and the pet
 // goes along. Shops are built from the same tile system + catalog furniture + shop fixtures (FIX). Nothing about
@@ -2774,20 +2851,17 @@ const curTF=()=>away?away.tf:state.tf,curTW=()=>away?away.tw:state.tw;
 const pick1=a=>a[Math.random()*a.length|0];
 
 /* --- the door --- */
-const DOOR={w:3,u:-2.6};
-const doorG=G(),doorHinge=G();let doorOpen=0,doorTarget=0;
-(function(){walls[DOOR.w].g.add(doorG);doorG.position.set(DOOR.u,0,.03);doorG.userData.door=1;
-  const F=M(0x9B4DF2,{roughness:.4}),L=M(0xFF7FB8,{roughness:.45}),L2=M(0xFFB3D9,{roughness:.5}),Gd=M(0xFFD21F,{metalness:.5,roughness:.3});
-  const out=add(doorG,new THREE.PlaneGeometry(1.12,2.22),M(0xFFF3D6,{emissive:0xFFE2A8,emissiveIntensity:1.1,roughness:1}),0,1.11,-.01);out.castShadow=false;out.outline=0;
-  rb(doorG,.16,2.4,.18,.05,F,-.64,1.2,0);rb(doorG,.16,2.4,.18,.05,F,.64,1.2,0);rb(doorG,1.44,.18,.18,.05,F,0,2.33,0);nosh(rb(doorG,1.5,.06,.34,.03,F,0,.03,.12));
-  doorHinge.position.set(-.56,0,.03);doorG.add(doorHinge);rb(doorHinge,1.12,2.2,.08,.05,L,.56,1.1,0);rb(doorHinge,.82,.72,.04,.05,L2,.56,.6,.05);
-  const win=cy(doorHinge,.22,.22,.05,M(0xBDEBFF,{emissive:0x9FDFFF,emissiveIntensity:.5,roughness:.1}),.56,1.62,.05);win.rotation.x=Math.PI/2;to(doorHinge,.22,.04,Gd,.56,1.62,.07);
-  sp(doorHinge,.075,Gd,1.0,1.08,.09);
-  // little sign over the door, drawn once the bubble font is ready
-  const c=mkCanvas(256,72),tex=new THREE.CanvasTexture(c);tex.encoding=THREE.sRGBEncoding;const sg=add(doorG,new THREE.PlaneGeometry(.9,.25),M(0xffffff,{map:tex,roughness:.7}),0,2.62,.02);sg.castShadow=false;
-  const draw=()=>{const x=c.getContext('2d');x.clearRect(0,0,256,72);x.fillStyle='#FFD21F';rr(x,4,4,248,64,26);x.fill();x.lineWidth=6;x.strokeStyle='#3B1273';x.stroke();x.font='40px "R42 Bubble"';x.textAlign='center';x.textBaseline='middle';x.fillStyle='#3B1273';x.fillText('Town',128,40);tex.needsUpdate=true};
-  draw();document.fonts&&document.fonts.ready.then(draw)})();
-function doorFront(){const W=WALLDEF[DOOR.w];return new THREE.Vector3(W.c[0]+W.T[0]*DOOR.u+W.n[0]*.8,0,W.c[1]+W.T[1]*DOOR.u+W.n[1]*.8)}
+const DOOR={s:'classic',w:3,u:-2.6};
+const curDoor=()=>away?DOOR:state.door;
+const doorG=G();let doorHinge=G(),doorOpen=0,doorTarget=0,doorKey='';doorG.userData.door=1;
+// little sign over the door, drawn once the bubble font is ready
+const doorSign=(function(){const c=mkCanvas(256,72),tex=new THREE.CanvasTexture(c);tex.encoding=THREE.sRGBEncoding;const g=G(),sg=add(g,new THREE.PlaneGeometry(.9,.25),M(0xffffff,{map:tex,roughness:.7}),0,2.62,.02);sg.castShadow=false;
+  const draw=()=>{const x=c.getContext('2d');x.clearRect(0,0,256,72);x.fillStyle='#FFD21F';rr(x,4,4,248,64,26);x.fill();x.lineWidth=6;x.strokeStyle='#3B1273';x.stroke();x.font='40px "R42 Bubble"';x.textAlign='center';x.textBaseline='middle';x.fillStyle='#3B1273';x.fillText('Town',128,40);tex.needsUpdate=true;renderer.disposeTexture(tex)};
+  draw();document.fonts&&document.fonts.ready.then(draw);return g})();
+function syncDoor(){const D=curDoor(),key=D.s+'|'+D.w+'|'+D.u+'|'+HALF;if(key===doorKey&&doorG.parent)return;doorKey=key;
+  if(doorG.parent)doorG.parent.remove(doorG);while(doorG.children.length)doorG.remove(doorG.children[0]);const m=buildDoorModel(D.s);doorG.add(m.g);doorG.add(doorSign);doorHinge=m.hinge;
+  walls[D.w].g.add(doorG);doorG.position.set(D.u,0,.03)}
+function doorFront(){const D=curDoor(),W=WALLDEF[D.w];return new THREE.Vector3(W.c[0]+W.T[0]*D.u+W.n[0]*.8,0,W.c[1]+W.T[1]*D.u+W.n[1]*.8)}
 function updDoor(dt){doorOpen=approach(doorOpen,doorTarget,dt*3.5);doorHinge.rotation.y=-1.45*ease(doorOpen)}
 
 /* --- shop fixtures --- */
@@ -2803,8 +2877,25 @@ function fxCooler(){const g=G(),C=M(0x9FE3F5,{roughness:.4}),W=M(0xFFFFFF,{rough
 function fxSign(txt,c){const g=G(),F=M(c,{roughness:.4});rb(g,2.1,.66,.1,.08,F,0,0,0);const cv=mkCanvas(512,150),tex=new THREE.CanvasTexture(cv);tex.encoding=THREE.sRGBEncoding;
   const x=cv.getContext('2d');x.fillStyle='#FFF7FC';rr(x,6,6,500,138,50);x.fill();x.font='76px "R42 Bubble"';x.textAlign='center';x.textBaseline='middle';x.lineJoin='round';x.lineWidth=14;x.strokeStyle='#3B1273';x.strokeText(txt,256,82);x.fillStyle='#FF3D9A';x.fillText(txt,256,82);
   const pl=add(g,new THREE.PlaneGeometry(1.94,.56),M(0xffffff,{map:tex,roughness:.7}),0,0,.055);pl.castShadow=false;pl.outline=0;return g}
+function fxLectern(c){const g=G(),C=M(c,{roughness:.45}),Pg=M(0xFFFDF4,{roughness:.7});cy(g,.08,.1,.95,C,0,.48,0,12);cy(g,.3,.34,.06,C,0,.03,0,20);const top=G();top.position.set(0,1.0,0);top.rotation.x=-.45;g.add(top);
+  rb(top,.72,.06,.52,.03,C,0,0,0);const bk=G();bk.position.y=.05;top.add(bk);[-1,1].forEach(sg=>{const pg=rb(bk,.32,.05,.44,.02,Pg,sg*.17,.02,0);pg.rotation.z=-sg*.08});rb(bk,.66,.04,.46,.02,M(0xFF3D9A,{roughness:.5}),0,-.02,0);
+  nosh(bx(bk,.2,.012,.02,M(0x3B1273),-.17,.06,-.1));nosh(bx(bk,.24,.012,.02,M(0x3B1273),-.17,.06,.0));nosh(bx(bk,.2,.012,.02,M(0x3B1273),.17,.06,-.1));g.userData.catalog=1;return g}
+function fxSample(key){const g=G(),F=M(0xFFFFFF,{roughness:.5}),P=stylePal(key),tex=stylePat(key);rb(g,.06,1.9,.06,.02,M(0x9B8CB5),-.5,.95,-.06);rb(g,.06,1.9,.06,.02,M(0x9B8CB5),.5,.95,-.06);cy(g,.34,.36,.05,M(0x9B8CB5),0,.03,0,20);
+  rb(g,1.04,1.3,.06,.04,F,0,1.2,0);const pl=add(g,new THREE.PlaneGeometry(.94,1.2),tex?M(0xffffff,{map:tex,roughness:.7}):M(P.base),0,1.2,.035);pl.outline=0;g.userData.offer={t:'tile',k:key};return g}
+function fxFloorSample(key){const g=G(),P=stylePal(key),tex=stylePat(key);rb(g,1.1,.24,1.1,.05,M(0xE0D6EE,{roughness:.6}),0,.12,0);const pl=add(g,new THREE.PlaneGeometry(1,1),tex?M(0xffffff,{map:tex,roughness:.6}):M(P.base),0,.245,0);pl.rotation.x=-Math.PI/2;pl.outline=0;
+  g.userData.offer={t:'tile',k:key};return g}
+function fxDoorStand(key){const g=G();rb(g,1.7,.12,.6,.04,M(0x9B8CB5,{roughness:.6}),0,.06,0);const m=buildDoorModel(key);m.g.position.set(0,.12,0);m.g.scale.setScalar(.8);g.add(m.g);m.hinge.rotation.y=-.35;g.userData.offer={t:'door',k:key};return g}
+// paint cans wear a label made from the set's little swatch (cheap: no full-size pattern needed)
+const ttCache={};function thumbTex(key){if(ttCache[key])return ttCache[key];const c=mkCanvas(128,128);{const x=c.getContext('2d');x.fillStyle='#F3E8FF';x.fillRect(0,0,128,128)}const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;ttCache[key]=t;
+  const fill=()=>{const url=texThumb[key];if(!url){queueTexThumbs();setTimeout(fill,400);return}const im=new Image();im.onload=()=>{c.getContext('2d').drawImage(im,0,0,128,128);renderer.disposeTexture(t)};im.src=url};fill();return t}
+function paintCan(key){const g=G();cy(g,.13,.13,.26,M(0xDDE3EE,{metalness:.5,roughness:.35}),0,.13,0,18);const lb=cy(g,.132,.132,.14,M(0xffffff,{map:thumbTex(key),roughness:.6}),0,.13,0,18);lb.outline=0;
+  cy(g,.12,.12,.03,M(0xC9CFDB,{metalness:.4,roughness:.4}),0,.27,0,18);return g}
 // slots: where products sit (local x,y,z) and how big they may be
 const FIX={
+  catalog:{n:'Catalog',fn:'fixture',build:it=>fxLectern(it.c),use:{kind:'stand',front:1,anim:'u_peer',d:4,dist:.1,emo:['❓','⭐'],w:.7}},
+  sample:{n:'Sample',fn:'fixture',build:it=>fxSample(it.style),use:{kind:'stand',front:1,anim:'u_gaze',d:3.5,dist:.2,emo:['💗','❓'],w:.6}},
+  floorsample:{n:'Sample',fn:'fixture',build:it=>fxFloorSample(it.style),use:{kind:'stand',anim:'u_sniffLow',d:3,dist:.05,emo:['❓'],w:.4}},
+  doorstand:{n:'Door',fn:'fixture',build:it=>fxDoorStand(it.style),use:{kind:'stand',front:1,anim:'u_pat',d:3.5,dist:.15,emo:['❗','💗'],w:.5}},
   shelfunit:{n:'Shelf',fn:'fixture',build:it=>fxShelf(it.c),slots:[.17,.77,1.37].flatMap(y=>[-.8,-.27,.27,.8].map(x=>[x,y,.05,.42])),use:{kind:'stand',front:1,anim:'u_peer',d:4.5,dist:.1,emo:['❓','💗'],w:1}},
   counter:{n:'Counter',fn:'fixture',build:it=>fxCounter(it.c),slots:[[-.45,1.01,.08,.3],[-.05,1.01,.12,.3]],use:{kind:'stand',front:1,anim:'u_lean',d:4.5,dist:.05,greet:1,emo:['🎵'],w:.8}},
   display:{n:'Display',fn:'fixture',build:it=>fxDisplay(it.c),slots:[...[0,1,2,3,4].map(i=>{const a=i/5*Math.PI*2+.3;return[Math.sin(a)*.58,.52,Math.cos(a)*.58,.36]}),[0,.86,0,.42]],use:{kind:'stand',anim:'u_peer',d:4,dist:.1,emo:['❓','⭐'],w:.9}},
@@ -2819,6 +2910,29 @@ function kFace(par,y,z,eyeR,gap){const I=M(0x3B1273,{roughness:.3}),W=M(0xFFFFFF
   return{eyes,smile,open,talk(m,t){open.scale.set(1,.2+m*1.3,.5);smile.visible=m<.2;const bl=(t%3.3)<.12;eyes.forEach(e=>e.scale.y=bl?.15:1)}}}
 function kArm(par,x,y,mat,len){const a=G();a.position.set(x,y,0);par.add(a);sp(a,.09,mat,0,-len/2,0,1,len/.18,1);return a}
 const KEEPERS={
+  // Cushy: a plump pillow with button eyes, corner tassels and a measuring tape that zips in and out
+  cushion(){const g=G(),b=G();g.add(b);const C=M(0xFFC6E0,{roughness:.8}),T=M(0xFFD21F,{roughness:.5}),Bt=M(0x9B4DF2,{roughness:.35});
+    rb(b,.95,.9,.55,.26,C,0,.62,0);[[-1,1],[1,1],[-1,-1],[1,-1]].forEach(([x,y])=>{const t=co(b,.06,.18,T,x*.47,.62+y*.45,0,8);t.rotation.z=x*y*.8+(y<0?Math.PI:0)});
+    const face=G();face.position.set(0,.72,.28);b.add(face);const eyes=[-.17,.17].map(x=>{const e=cy(face,.08,.08,.04,Bt,x,.04,0,16);e.rotation.x=Math.PI/2;[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,c])=>{const h=nosh(cy(face,.012,.012,.05,M(0xFFFFFF),x+a*.025,.04+c*.025,.005,6));h.rotation.x=Math.PI/2});return e});
+    for(let i=0;i<5;i++){const a=Math.PI*(1.15+i*.175),st=nosh(bx(face,.04,.012,.01,M(0x3B1273),Math.cos(a)*.13,-.02+Math.sin(a)*.1,.01));st.rotation.z=a+Math.PI/2}
+    const open=nosh(sp(face,.06,M(0xB0305C),0,-.1,.01,1,.2,.5));[-.33,.33].forEach(x=>nosh(sp(face,.07,M(0xFF8AB8),x,-.05,-.02,1,.6,.4)));
+    const arms=[-1,1].map(s=>kArm(b,s*.5,.6,C,.3));const tape=G();tape.position.set(0,-.34,.05);arms[1].add(tape);rb(tape,.16,.16,.08,.04,T,0,0,0);const strip=nosh(bx(tape,.5,.05,.01,M(0xFFF3B0),.33,0,0));
+    [-.25,.25].forEach(x=>sp(g,.14,C,x,.1,.05,1,.55,1.2));
+    return{g,head:face,upd(dt,t,act,p,talk){const pl=1+Math.sin(t*2.2)*.03;b.scale.set(pl,2-pl,pl);b.position.y=act==='cheer'?Math.sin(Math.min(1,p*1.4)*Math.PI)*.35:0;b.rotation.y=act==='cheer'?ease(p)*Math.PI*2:0;
+      const ext=.5+Math.sin(t*1.6)*.5;strip.scale.x=.2+ext;strip.position.x=.08+.25*(.2+ext);arms[1].rotation.set(-.5,0,1.1+Math.sin(t*1.6)*.2);
+      arms[0].rotation.set(0,0,act==='greet'?-2.6+Math.sin(t*14)*.35:act==='cheer'?-2.4:-.4);eyes.forEach(e=>e.scale.z=(t%3.6)<.12?.2:1);open.scale.set(1,.2+(talk?Math.abs(Math.sin(t*13)):act==='cheer'?.8:0)*1.3,.5)}}},
+  // Bolt: a builder in a hard hat and overalls, rolling paint up and down with a roller
+  builder(){const g=G(),b=G();g.add(b);const O=M(0xFF8A1C,{roughness:.4}),Y=M(0xFFD21F,{roughness:.35}),Bl=M(0x3E7FD8,{roughness:.6}),Pk=M(0xFF3D9A,{roughness:.5});
+    sp(b,.5,O,0,.66,0,1,1.1,1);rb(b,.62,.5,.12,.08,Bl,0,.42,.38);[-1,1].forEach(x=>{const st=rb(b,.1,.55,.06,.03,Bl,x*.22,.78,.36);st.rotation.x=-.2});[-1,1].forEach(x=>sp(b,.035,Y,x*.22,.97,.43));
+    const f=kFace(b,.86,.46,.075,.15);const hat=G();hat.position.set(0,1.12,0);b.add(hat);sp(hat,.4,Y,0,0,0,1,.6,1);cy(hat,.5,.5,.05,Y,0,-.02,.08,28);rb(hat,.1,.26,.5,.04,lighten(0xFFD21F,.3)===0?Y:M(0xFFE66E,{roughness:.35}),0,.12,0);
+    const pencil=cy(b,.025,.025,.3,Pk,.44,1.0,-.05,8);pencil.rotation.z=1.1;
+    const arms=[-1,1].map(s=>kArm(b,s*.5,.74,O,.34));const roller=G();roller.position.set(0,-.36,.04);arms[1].add(roller);cy(roller,.02,.02,.4,M(0x6B4A2E),0,-.12,0,8);
+    const rl=cy(roller,.08,.08,.34,Pk,0,-.34,.06,16);rl.rotation.z=Math.PI/2;
+    [-.22,.22].forEach(x=>rb(g,.26,.14,.34,.06,M(0x6B4A2E,{roughness:.6}),x,.07,.05));
+    return{g,head:hat,upd(dt,t,act,p,talk){b.position.y=act==='cheer'?Math.sin(Math.min(1,p*1.4)*Math.PI)*.4:Math.abs(Math.sin(t*2))*.02;
+      arms[1].rotation.set(-1.2+Math.sin(t*2.6)*.5,0,.35);hat.rotation.z=act==='greet'?Math.sin(Math.min(1,p*2)*Math.PI)*.4:0;hat.position.y=1.12+(act==='greet'?Math.sin(Math.min(1,p*2)*Math.PI)*.12:0);
+      arms[0].rotation.set(0,0,act==='greet'?-2.3+Math.sin(t*12)*.3:act==='cheer'?-2.5:-.35);if(act==='cheer')arms[1].rotation.set(0,0,2.4);rl.rotation.x+=dt*(Math.cos(t*2.6)*3);
+      f.talk(talk?Math.abs(Math.sin(t*13)):act==='cheer'?.8:0,t)}}},
   // Bunbun the baker: a round bun in a chef's hat, forever whisking
   baker(){const g=G(),b=G();g.add(b);const D=M(0xFFE0B0,{roughness:.5}),W=M(0xFFFFFF,{roughness:.55}),P=M(0xFF7FB8,{roughness:.5});
     sp(b,.55,D,0,.62,0,1,.92,1);sp(b,.47,P,0,.5,.13,1,.72,.9);const f=kFace(b,.74,.47,.075,.16);
@@ -2873,18 +2987,41 @@ const SHOPS={
       {k:'display',x:1.3,z:.7,c:0xFFB3D9},{k:'sign',w:0,u:-1.6,y:2.72,c:0x9B4DF2},{k:'playpen',x:2.8,z:2.5},{k:'horse',x:3.2,z:-1.3,r:-Math.PI/2},{k:'blocks',x:.2,z:2.6},{k:'bulb',x:-3.2,z:1.5}],
     lines:{hi:['Boing! Welcome to the Toy Box!','Everything here goes boing!','Toys, toys, toys!'],buy:['Have fun with it!','Play hard!','Boing boing!'],
       poor:['Almost! A few more hearts!'],tip:P=>P&&`${state.pet.name} goes wild for ${P.toy} toys!`}}};
+// Cozy Nest: a showroom that changes every day (three pieces on sale), and the full catalog on the lectern
+SHOPS.furn={n:'Cozy Nest',kind:'furn',icon:'tab-decorate',color:'#FF3D9A',keeper:'cushion',kx:1.7,kz:-3.5,
+  tf:()=>tilesWith('herring','parquet',[1,1,6,6]),tw:()=>wallsWith('plaster','stripe'),
+  layout:()=>{const pk=dealKeys(),spots=[[-2.3,-1.4,.5],[-2.4,1.1,.9],[.2,-.5,.6],[2.4,-.3,-.6],[.2,1.8,.3],[2.5,2.3,-.8]],wallK=CAT.filter(c=>c.wall&&c.fn!=='window').map(c=>c.k),R=rnd(Math.floor(Date.now()/864e5)),wp=[wallK[R()*wallK.length|0],wallK[R()*wallK.length|0]];
+    return[{k:'counter',x:1.7,z:-2.75,c:0xFFC6E0},{k:'catalog',x:-.3,z:-2.9,c:0xFF3D9A},{k:'sign',w:0,u:1.7,y:2.72,c:0xFF3D9A},{k:'bigleaf',x:3.45,z:-2.5},{k:'arc',x:-3.3,z:-3.2},
+      ...spots.map(([x,z,r],i)=>({k:pk[i],x,z,r,sale:'furn'})),{k:wp[0],w:0,u:-2.3,y:1.9,sale:'furn'},{k:wp[1],w:3,u:.6,y:1.9,sale:'furn'}]},
+  lines:{hi:['Welcome to Cozy Nest! Make yourself at home.','Everything here is sittable. Mostly.','Fresh pieces on the floor today!'],buy:['It’ll look lovely at home!','Wrapped and ready. Well, sort of.','Great eye!'],
+    poor:['A few more hearts and it’s yours!'],tip:()=>`Today’s deals are the first three pieces on the floor. Or peek in the catalog!`}};
+// Hammer & Hue: floors, walls, doors, windows and bigger rooms
+SHOPS.build={n:'Hammer & Hue',kind:'build',icon:'tab-room',color:'#FF8A1C',keeper:'builder',kx:-1.9,kz:-3.5,
+  tf:()=>tilesWith('concrete','jellytile',[3,3,4,4]),tw:()=>wallsWith('grid','plain'),
+  layout:()=>{const R=rnd(Math.floor(Date.now()/864e5)+3),pickOf=a=>a[R()*a.length|0],W=TILE_ORDER.w,F=TILE_ORDER.f;
+    return[{k:'counter',x:-1.9,z:-2.75,c:0xFF8A1C},{k:'catalog',x:.55,z:-2.95,c:0xFF8A1C},{k:'sign',w:0,u:-1.9,y:2.72,c:0xFF8A1C},
+      {k:'shelfunit',x:-3.66,z:-.4,r:Math.PI/2,c:0xFFD27F},{k:'shelfunit',x:2.45,z:-3.66,c:0x9FE3F5},
+      {k:'sample',x:1.5,z:-.9,r:.6,style:'w:'+pickOf(W)},{k:'sample',x:2.9,z:.4,r:.8,style:'w:'+pickOf(W)},{k:'sample',x:.1,z:.3,r:.5,style:'w:'+pickOf(W)},
+      {k:'floorsample',x:-1.7,z:1.0,style:'f:'+pickOf(F)},{k:'floorsample',x:-.3,z:2.3,style:'f:'+pickOf(F)},
+      {k:'doorstand',x:2.3,z:2.5,r:.75,style:'w:'+pickOf(W)},{k:'win_w_'+pickOf(W),w:0,u:-.2,y:1.9,sale:'furn'},{k:'win_f_'+pickOf(F),w:0,u:.65,y:1.9,sale:'furn'},
+      {k:'crate',x:3.4,z:-1.6},{k:'bulb',x:-3.3,z:1.8},{k:'barrel',x:1.0,z:2.9}]},
+  lines:{hi:['Hammer & Hue! What are we building today?','Need a bigger room? I know a guy. It’s me.','Every wall deserves a little love.'],buy:['Nailed it!','That’s going to look sharp.','Measure twice, buy once!'],
+    poor:['Not quite enough hearts yet, pal.'],tip:()=>state.size<12?`Your room’s ${state.size} × ${state.size}. Check the catalog under Room size!`:'Tap a paint can to see the whole pattern.'}};
 const SHOP_FOR={food:'snack',groom:'salon',toy:'toys'};
 function buildShop(key){const S=SHOPS[key],root=G(),objs=new Map(),items=new Map(),extra=[];scene.add(root);
-  S.layout.forEach((q,i)=>{const it=Object.assign({id:'s'+i,r:0,c:0},q);if(it.k==='sign')it.txt=S.n;items.set(it.id,it);let o;
+  (typeof S.layout==='function'?S.layout():S.layout).forEach((q,i)=>{const it=Object.assign({id:'s'+i,r:0,c:0},q);if(it.k==='sign')it.txt=S.n;items.set(it.id,it);let o;
     if(CATMAP[it.k])o=buildItem(it);else{o=FIX[it.k].build(it);o.userData.id=it.id;o.userData.k=it.k;const box=new THREE.Box3().setFromObject(o),sz=new THREE.Vector3();box.getSize(sz);o.userData.ext={x:sz.x/2,z:sz.z/2,y:sz.y/2,cx:0,cy:(box.min.y+box.max.y)/2}}
     placeObj(o,it);root.add(o);objs.set(it.id,o)});
   // stock the shelves: this shop's goods, round and round until every slot is full
+  const R=rnd(Math.floor(Date.now()/864e5)+S.n.length),daily=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=R()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a},cans=daily([...TILE_ORDER.f.map(k=>'f:'+k),...TILE_ORDER.w.map(k=>'w:'+k)]);let ci=0;
   const goods=ITEMS.filter(i=>i.k===S.kind&&i.p>0),drinks=goods.filter(i=>i.cat==='drinks'),rest=drinks.length?goods.filter(i=>i.cat!=='drinks'):goods;let gi=0,di=0;
-  objs.forEach((o,id)=>{const f=FIX[items.get(id).k];if(!f||!f.slots)return;f.slots.forEach(([x,y,z,sz])=>{const it=items.get(id).k==='cooler'&&drinks.length?drinks[di++%drinks.length]:rest[gi++%rest.length],pr=buildProp(it.id);if(!pr)return;
+  objs.forEach((o,id)=>{const f=FIX[items.get(id).k];if(!f||!f.slots)return;if(S.kind==='furn')return;if(S.kind==='build'){f.slots.forEach(([x,y,z])=>{const key=cans[ci++%cans.length],c=paintCan(key);c.position.set(x+(Math.random()-.5)*.06,y,z);c.userData.offer={t:'tile',k:key};o.add(c)});return}f.slots.forEach(([x,y,z,sz])=>{const it=items.get(id).k==='cooler'&&drinks.length?drinks[di++%drinks.length]:rest[gi++%rest.length],pr=buildProp(it.id);if(!pr)return;
     const holder=G();holder.add(pr);const b=new THREE.Box3().setFromObject(pr),v=new THREE.Vector3();b.getSize(v);const k=Math.min(1.3,sz/Math.max(v.x,v.y,v.z,.01));pr.scale.multiplyScalar(k);
     const b2=new THREE.Box3().setFromObject(pr);pr.position.y-=b2.min.y;pr.position.x-=(b2.min.x+b2.max.x)/2;pr.position.z-=(b2.min.z+b2.max.z)/2;holder.position.set(x,y,z);holder.rotation.y=(Math.random()-.5)*.6;
     holder.userData.product=it.id;o.add(holder)})});
   // shopkeepers stand on a little step behind the counter so they're easy to see
+  // showroom pieces and on-display doors/windows are for sale too
+  objs.forEach((o,id)=>{const it=items.get(id);if(it.sale)o.userData.offer={t:it.sale,k:it.k}});
   const K=KEEPERS[S.keeper]();K.g.position.set(S.kx,.32,S.kz);K.g.scale.setScalar(1.22);rb(root,1.1,.32,.9,.05,M(0xE9DDF7,{roughness:.6}),S.kx,.16,S.kz);K.g.userData.keeper=1;K.act='idle';K.k=0;K.d=1;root.add(K.g);
   extra.push(new THREE.Box3(new THREE.Vector3(S.kx-.6,0,S.kz-.6),new THREE.Vector3(S.kx+.6,2,S.kz+.6)));
   return{key,def:S,root,objs,items,extra,keeper:K,tf:S.tf(),tw:S.tw()}}
@@ -2901,32 +3038,74 @@ function showMap(){const m=$('#map'),here=away?away.key:'home';m.querySelectorAl
 function closeMap(){const m=$('#map');m.classList.remove('on');setTimeout(()=>{m.hidden=true},250);if(!traveling)doorTarget=0}
 function travelTo(dest,then,focus){if(traveling)return;const here=away?away.key:'home';if(dest===here){closeMap();then&&then();return}traveling=true;closeMap();setTab(null);select(null);if(brush)endBrush();
   const tv=$('#travel');$('#tvText').textContent=dest==='home'?'Heading home…':`Off to ${SHOPS[dest].n}…`;$('#tvIcon').src=`assets/icons/${dest==='home'?'tab-room':SHOPS[dest].icon}.webp`;tv.hidden=false;requestAnimationFrame(()=>tv.classList.add('on'));
-  setTimeout(()=>{if(away){scene.remove(away.root);away=null}if(dest!=='home')away=buildShop(dest);itemRoot.visible=!away;tilesDirty=true;syncTiles();navKey='';
+  setTimeout(()=>{if(away){scene.remove(away.root);away=null}if(dest!=='home')away=buildShop(dest);itemRoot.visible=!away;setRoomSize(away?8:state.size);tilesDirty=true;syncTiles();doorKey='';syncDoor();navKey='';
     endToyPlay(true);endUse(false);pet.act=null;pet.seat=null;pet.seatY=0;pet.path=null;pet.target=null;pet.mode='idle';pet.timer=2.5;const f=doorFront();pet.pos.copy(f);pet.heading=Math.PI/2;
     doorOpen=doorTarget=1;cam.target.set(0,.8,0);updStoreBar();
     setTimeout(()=>{tv.classList.remove('on');setTimeout(()=>{tv.hidden=true},400);if(pet.stage>0)petGo(f.clone().add(new THREE.Vector3(1.3,0,-.4)));setTimeout(()=>{doorTarget=0},1100);
-      if(away){keeperReact('greet',2.4);setTimeout(()=>keeperSay(pick1(away.def.lines.hi)),500);if(!focus)setTimeout(()=>toast('Tap anything on the shelves to shop.'),4300);if(focus)setTimeout(()=>openProduct(focus),1400)}
+      if(away){keeperReact('greet',2.4);setTimeout(()=>keeperSay(pick1(away.def.lines.hi)),500);if(!focus)setTimeout(()=>toast(away&&away.key==='furn'?'Tap any piece on the floor, or the catalog, to shop.':away&&away.key==='build'?'Tap paint cans, samples and doors, or the catalog.':'Tap anything on the shelves to shop.'),4300);if(focus)setTimeout(()=>typeof focus==='function'?openOffer(focus):openProduct(focus),1400)}
       traveling=false;then&&then()},250)},650)}
 function updStoreBar(){const b=$('#storebar');b.hidden=!away;document.body.classList.toggle('away',!!away);$('#kbub').hidden=true;kbT=0;if(!away)return;$('#sbIcon').src=`assets/icons/${away.def.icon}.webp`;$('#sbName').textContent=away.def.n;b.style.setProperty('--sc',away.def.color)}
 
 /* --- shopping --- */
-let cardItem=null;
-function openProduct(id){const it=ITEMMAP[id];if(!it)return;cardItem=id;const c=$('#shopcard'),have=it.k==='toy'?owned(it):(state.inv[id]||0),P=persOf(),fav=P&&(it.cat===P.fav||it.tt===P.toy);
-  c.innerHTML=`<button class="sc-x" id="scX" aria-label="Close">×</button><div class="sc-top"><span class="sc-th"><img data-tt="toy:${id}" src="${thumbs['toy:'+id]||'assets/icons/'+KIND_ICON[it.k]+'.webp'}" alt=""></span>
-    <div><h3>${esc(it.n)}</h3><small>${itemTag(it)}${it.cat?' · '+FOOD_CATS[it.cat]:''}${it.tt?' · '+it.tt:''}${fav?' · <b>Favorite!</b>':''}</small></div></div><p>${esc(it.d)}</p>
-    <div class="sc-row"><span class="sc-have">${it.k==='toy'?(have?'You own this':'Keeps forever'):'You have '+have}</span>
-    ${it.k==='toy'&&have?'':`<button class="gel pink sc-buy" id="scBuy"${state.hearts<it.p?' disabled':''}>Buy <span class="cost">${it.p}<img src="assets/icons/stat-happy.webp" alt="hearts"></span></button>`}</div>`;
-  c.hidden=false;requestAnimationFrame(()=>c.classList.add('on'));queueThumbs(['toy:'+id]);$('#scX').onclick=closeProduct;const b=$('#scBuy');if(b)b.onclick=()=>buyItem(id)}
-function closeProduct(){const c=$('#shopcard');c.classList.remove('on');setTimeout(()=>{if(!c.classList.contains('on'))c.hidden=true},250);cardItem=null}
-function buyItem(id){const it=ITEMMAP[id];if(!away||!it)return;if(state.hearts<it.p){keeperSay(pick1(away.def.lines.poor));return}if(it.k==='toy'&&owned(it))return;
-  state.hearts-=it.p;if(it.k==='toy')state.toys.push(it.id);else state.inv[it.id]=(state.inv[it.id]||0)+1;logEvent(`bought ${it.n.toLowerCase()} at ${away.def.n}`);saveSoon();updHUD();
-  keeperReact('cheer',1.4);keeperSay(pick1(away.def.lines.buy));pet.happyT=1;setTimeout(()=>emote('💗'),300);
-  away.objs.forEach(o=>o.traverse(h=>{if(h.userData.product===id){const t0=performance.now(),y0=h.position.y;const hop=()=>{const k=(performance.now()-t0)/450;h.position.y=y0+Math.sin(Math.min(1,k)*Math.PI)*.18;if(k<1)requestAnimationFrame(hop);else h.position.y=y0};hop()}}));
-  openProduct(id)}
+// An offer is anything for sale: {title, sub, desc, price, deal, thumb, have, canBuy, buy(), hop}. Cards are opened with a
+// factory so they can be rebuilt after buying.
+let cardFn=null;
+const FN_DESC={seat:'Comfy for sitting, and for pets who like to perch.',bed:'For naps, bounces and big dreams.',surface:'Somewhere to put things down (or lean on).',storage:'Stash things away. Pets love a good rummage.',
+  light:'Warm glow for cosy evenings.',fun:'Something to do on a slow afternoon.',plant:'A little green for your room.',rug:'Soft underfoot.',deco:'A little something to make it yours.',wall:'For your walls.',pet:'Made with your pet in mind.',window:'Let the sky in. Place it on any wall.'};
+function offerItem(id){const it=ITEMMAP[id],have=it.k==='toy'?owned(it):(state.inv[id]||0),P=persOf(),fav=P&&(it.cat===P.fav||it.tt===P.toy);
+  return{key:'toy:'+id,title:it.n,sub:`${itemTag(it)}${it.cat?' · '+FOOD_CATS[it.cat]:''}${it.tt?' · '+it.tt:''}${fav?' · <b>Favorite!</b>':''}`,desc:it.d,price:it.p,
+    thumb:`<img data-tt="toy:${id}" src="${thumbs['toy:'+id]||'assets/icons/'+KIND_ICON[it.k]+'.webp'}" alt="">`,thumbQ:'toy:'+id,have:it.k==='toy'?(have?'You own this':'Keeps forever'):'You have '+have,
+    canBuy:!(it.k==='toy'&&have),hop:id,buy(){if(it.k==='toy')state.toys.push(it.id);else state.inv[it.id]=(state.inv[it.id]||0)+1}}}
+function dealKeys(){const R=rnd(Math.floor(Date.now()/864e5)+7),pool=CAT.filter(c=>!c.wall&&c.fn!=='window'&&c.fn!=='bed'&&c.fn!=='rug').map(c=>c.k),out=[];while(out.length<9&&pool.length)out.push(pool.splice(R()*pool.length|0,1)[0]);return out}
+function furnPrice(k){const d=CATMAP[k];return dealKeys().slice(0,3).includes(k)?Math.max(1,Math.round(d.p*.75)):d.p}
+function offerFurn(k){const d=CATMAP[k],own=state.fown[k]||0,placed=state.items.filter(i=>i.k===k).length,pr=furnPrice(k);
+  return{key:k,title:d.n,sub:`${SETMAP[d.set].n} · ${FUNCMAP[d.fn][1]}${pr<d.p?' · <b>Today’s deal!</b>':''}`,desc:FN_DESC[d.fn]||'',price:pr,was:pr<d.p?d.p:0,
+    thumb:`<img data-tt="${k}" src="${thumbs[k]||'assets/icons/tab-decorate.webp'}" alt="">`,thumbQ:k,have:`In storage: ${own}${placed?` · In your room: ${placed}`:''}`,canBuy:true,
+    buy(){state.fown[k]=(state.fown[k]||0)+1;setTimeout(()=>toast(`${d.n} is in storage. Place it from Decorate at home.`),900)}}}
+function offerTile(key){const d=TILESETS[key[0]][key.slice(2)],own=state.town.includes(key);
+  return{key,title:d.n,sub:`${key[0]==='f'?'Floor':'Wallpaper'}${d.mode==='border'?' · Edges':d.mode==='run'?' · End caps':d.span[0]>1?` · ${d.span[0]}×${d.span[1]} repeat`:''}`,
+    desc:'Unlock it once, then paint it anywhere in your room from the Room tab.',price:tilePrice(d),thumb:`<span class="sc-tile${key[0]==='w'?' wall':''}" data-tk="${key}" style="${tileStyle(key)}"></span>`,tex:1,
+    have:own?'Unlocked':'Not unlocked yet',canBuy:!own,buy(){state.town.push(key)}}}
+function offerDoor(key){const own=state.downs.includes(key);return{key:'door:'+key,title:styleName(key)+' door',sub:'Door',desc:'Swap your door to this style in the Room tab. There’s one door per room, and it always leads to town.',price:6,
+  thumb:`<img data-tt="door:${key}" src="${thumbs['door:'+key]||'assets/icons/tab-room.webp'}" alt="">`,thumbQ:'door:'+key,have:own?'You own this style':'Not owned yet',canBuy:!own,buy(){state.downs.push(key)}}}
+function offerSize(n){const got=state.size>=n,next=state.size+2===n;return{key:'size:'+n,title:n===10?'Roomier room':'Grand room',sub:`Room size · ${n} × ${n}`,
+  desc:got?'Your room is already this big.':next?`Knocks the walls out to ${n} × ${n} tiles. Everything stays where it is, and your floors and walls stretch to fit.`:`Get the ${n-2} × ${n-2} room first.`,price:SIZE_PRICE[n],
+  thumb:`<img src="assets/icons/tab-room.webp" alt="">`,have:got?'Done!':'',canBuy:!got&&next,buy(){growTiles(n);setTimeout(()=>toast(`Your room is now ${n} × ${n}! Head home to see it.`),900)}}}
+function makeOffer(o){return o.t==='item'?()=>offerItem(o.k):o.t==='furn'?()=>offerFurn(o.k):o.t==='tile'?()=>offerTile(o.k):o.t==='door'?()=>offerDoor(o.k):()=>offerSize(o.k)}
+function openOffer(fn){const O=fn();cardFn=fn;const c=$('#shopcard');
+  c.innerHTML=`<button class="sc-x" id="scX" aria-label="Close">×</button><div class="sc-top"><span class="sc-th">${O.thumb}</span><div><h3>${esc(O.title)}</h3><small>${O.sub}</small></div></div><p>${esc(O.desc)}</p>
+    <div class="sc-row"><span class="sc-have">${O.have}</span>${O.canBuy?`<button class="gel pink sc-buy" id="scBuy"${state.hearts<O.price?' disabled':''}>Buy <span class="cost">${O.was?`<s>${O.was}</s>`:''}${O.price}<img src="assets/icons/stat-happy.webp" alt="hearts"></span></button>`:''}</div>`;
+  c.hidden=false;requestAnimationFrame(()=>c.classList.add('on'));if(O.thumbQ)queueThumbs([O.thumbQ]);if(O.tex)queueTexThumbs();$('#scX').onclick=closeProduct;const b=$('#scBuy');if(b)b.onclick=()=>buyOffer()}
+function openProduct(id){openOffer(()=>offerItem(id))}
+function closeProduct(){const c=$('#shopcard');c.classList.remove('on');setTimeout(()=>{if(!c.classList.contains('on'))c.hidden=true},250);cardFn=null}
+function buyOffer(){if(!cardFn||!away)return;const O=cardFn();if(!O.canBuy)return;if(state.hearts<O.price){keeperSay(pick1(away.def.lines.poor));return}
+  state.hearts-=O.price;O.buy();logEvent(`bought ${O.title.toLowerCase()} at ${away.def.n}`);saveSoon();updHUD();keeperReact('cheer',1.4);keeperSay(pick1(away.def.lines.buy));pet.happyT=1;setTimeout(()=>emote('💗'),300);
+  const tag=O.hop||O.key;away.objs.forEach(o=>o.traverse(h=>{const q=h.userData;if(q.product===tag||(q.offer&&(q.offer.k===O.key||('door:'+q.offer.k)===O.key))){const t0=performance.now(),y0=h.position.y;const hop=()=>{const k=(performance.now()-t0)/450;h.position.y=y0+Math.sin(Math.min(1,k)*Math.PI)*.18;if(k<1)requestAnimationFrame(hop);else h.position.y=y0};hop()}}));
+  if(openTab==='shopcat')renderSheet();openOffer(cardFn)}
+// Things you don't own yet send you to the shop that has them
+function goBuy(k){const d=CATMAP[k],sk=d.fn==='window'?'build':'furn',S=SHOPS[sk];if(away&&away.key===sk){setTab(null);openOffer(()=>offerFurn(k));return}toast(`${d.n} is sold at ${S.n}.`);travelTo(sk,null,()=>offerFurn(k))}
+function goBuyTile(key){if(away&&away.key==='build'){setTab(null);openOffer(()=>offerTile(key));return}toast(`${styleName(key)} is sold at Hammer & Hue.`);travelTo('build',null,()=>offerTile(key))}
+function ownedFirst(kind){return TILE_ORDER[kind].slice().sort((a,b)=>state.town.includes(kind+':'+b)-state.town.includes(kind+':'+a))}
+function doorSwatch(k){return`<button class="tsw" data-door="${k}" aria-pressed="${state.door.s===k}" title="${esc(styleName(k))} door"><span class="tsi wall"><img class="dthumb" data-tt="door:${k}" src="${thumbs['door:'+k]||''}" alt=""></span><small>${esc(styleName(k))}</small></button>`}
+// The Hammer & Hue catalog: floors, walls, doors, windows and room size
+let bcCat='f';const BC_CATS=[['f','Floors'],['w','Walls'],['door','Doors'],['win','Windows'],['size','Room size']];
+function renderBuildCat(body){if(!away||away.key!=='build'){setTab(null);return}const old=$('#tray'),keep=old?old.scrollTop:0;
+  body.innerHTML=`<div class="dhead"><h2>Build catalog</h2></div><div class="chips dfns" role="group" aria-label="Category">${BC_CATS.map(([k,n])=>`<button type="button" class="chip sm" data-bc="${k}" aria-pressed="${bcCat===k}">${n}</button>`).join('')}</div>
+    <div class="dgrid" id="tray"></div>`;
+  body.querySelectorAll('[data-bc]').forEach(b=>b.onclick=()=>{bcCat=b.dataset.bc;renderSheet();$('#tray').scrollTop=0});
+  const card=(key,name,price,own,thumb,wall)=>`<div class="card dcard bcard${own?' gotit':state.hearts<price?' poor':''}" data-k="${key}" role="button" tabindex="0"><div class="thumb${wall?' tall':''}">${thumb}</div><b>${esc(name)}</b>${own?'<span class="stock owned">✓</span>':`<span class="price"><i>♥</i>${price}</span>`}</div>`;
+  let html='';if(bcCat==='f'||bcCat==='w')html=TILE_ORDER[bcCat].map(k=>{const key=bcCat+':'+k,d=TILESETS[bcCat][k];return card(key,d.n,tilePrice(d),state.town.includes(key),`<span class="bctex" data-tk="${key}" style="${tileStyle(key)}"></span>`,bcCat==='w')}).join('');
+  else if(bcCat==='door')html=DOOR_KEYS.filter(k=>k!=='classic').map(k=>card('door:'+k,styleName(k)+' door',6,state.downs.includes(k),thumbs['door:'+k]?`<img src="${thumbs['door:'+k]}" alt="">`:'<i class="spin"></i>',1)).join('');
+  else if(bcCat==='win')html=WIN_KEYS.map(k=>card(k,CATMAP[k].n,CATMAP[k].p,0,thumbs[k]?`<img src="${thumbs[k]}" alt="">`:'<i class="spin"></i>')).join('');
+  else html=ROOM_SIZES.slice(1).map(n=>card('size:'+n,n===10?'Roomier room':'Grand room',SIZE_PRICE[n],state.size>=n,`<span class="bcsize">${n}×${n}</span>`)).join('');
+  const grid=$('#tray');grid.innerHTML=html+`<p class="dend">${bcCat==='win'?'Windows go in storage. Place them on any wall from Decorate.':bcCat==='door'?'Pick your door style in the Room tab at home.':bcCat==='size'?'Bigger rooms keep everything you have.':'Unlock once, then paint it anywhere from the Room tab.'}</p>`;grid.scrollTop=keep;
+  queueTexThumbs();const tk=[...grid.querySelectorAll('.card')].map(c=>c.dataset.k).filter(k=>k.startsWith('door:')||CATMAP[k]);if(tk.length){if(decoIO)decoIO.disconnect();
+    decoIO=new IntersectionObserver(es=>{const ks=[];es.forEach(e=>{if(e.isIntersecting){ks.push(e.target.dataset.k);decoIO.unobserve(e.target)}});if(ks.length)queueThumbsFirst(ks)},{root:grid,rootMargin:'200px 0px'});grid.querySelectorAll('.card').forEach(c=>{if(tk.includes(c.dataset.k)&&!thumbs[c.dataset.k])decoIO.observe(c)})}
+  grid.querySelectorAll('.card').forEach(c=>c.onclick=()=>{const k=c.dataset.k;openOffer(k.startsWith('door:')?()=>offerDoor(k.slice(5)):k.startsWith('size:')?()=>offerSize(+k.slice(5)):CATMAP[k]?()=>offerFurn(k):()=>offerTile(k))})}
 // What was tapped out in town: the door, a product, a shopkeeper (the pet takes priority)
 function townHit(x,y){setRay(x,y);const list=[doorG,pet.group];if(away)list.push(away.root);const hits=ray.intersectObjects(list,true);
-  for(const h of hits){if(!visDeep(h.object))continue;let o=h.object;while(o){if(o.userData.pet)return null;if(o.userData.door)return{door:1};if(o.userData.product)return{product:o.userData.product};if(o.userData.keeper)return{keeper:1};o=o.parent}if(away)continue;return null}return null}
-function townTap(h){if(h.door)openDoor();else if(h.product)openProduct(h.product);else if(h.keeper){keeperReact('greet',1.8);const S=away.def,P=persOf(),r=Math.random();keeperSay(r<.4&&S.lines.tip(P)||pick1(S.lines.hi))}}
+  for(const h of hits){if(!visDeep(h.object))continue;let o=h.object;while(o){if(o.userData.pet)return null;if(o.userData.door)return{door:1};if(o.userData.product)return{product:o.userData.product};if(o.userData.offer)return{offer:o.userData.offer};if(o.userData.catalog)return{catalog:1};if(o.userData.keeper)return{keeper:1};o=o.parent}if(away)continue;return null}return null}
+function townTap(h){if(h.door)openDoor();else if(h.product)openProduct(h.product);else if(h.offer)openOffer(makeOffer(h.offer));else if(h.catalog){closeProduct();setTab('shopcat')}else if(h.keeper){keeperReact('greet',1.8);const S=away.def,P=persOf(),r=Math.random();keeperSay(r<.4&&S.lines.tip(P)||pick1(S.lines.hi))}}
 
 /* ================= SCENE SYNC ================= */
 const itemObjs=new Map();
@@ -2956,7 +3135,7 @@ function updLighting(t){LIT.time=t;LIT.wallVis=walls.map(w=>w.g.visible?1:0);con
   if(toyPlay&&toyPlay.light&&pts.length<8)pts.push(toyPlay.light);
   if(pet.group.visible)ao.push([pet.group.position.x,pet.group.position.z,.42*(pet.scale||1),.5]);LIT.points=pts;LIT.ao=ao}
 function syncScene(){
-  syncTiles();
+  setRoomSize(away?8:state.size);syncTiles();syncDoor();
   if(!curSky){curSky='fixed';applySky()}
   const seen=new Set();
   state.items.forEach(it=>{if(!CATMAP[it.k])return;seen.add(it.id);let o=itemObjs.get(it.id);
@@ -2990,7 +3169,7 @@ function itemById(id){return state.items.find(i=>i.id===id)}
 function dragItemTo(id,x,y,off){const it=itemById(id),o=itemObjs.get(id);if(!it||!o)return false;const d=CATMAP[it.k],e=o.userData.ext;setRay(x,y);
   if(d.wall){const vis=walls.filter(w=>w.g.visible).map(w=>w.plane);const h=ray.intersectObjects(vis,false)[0];if(!h)return false;const wi=h.object.userData.wall,Wd=WALLDEF[wi];
     const u=(h.point.x-Wd.c[0])*Wd.T[0]+(h.point.z-Wd.c[1])*Wd.T[1];it.w=wi;it.u=clamp(u,-HALF+e.x+.05,HALF-e.x-.05);it.y=clamp(h.point.y+(off?off.y:0),e.y+.25,WALLH-e.y-.05);
-    if(wi===DOOR.w&&Math.abs(it.u-DOOR.u)<.75+e.x&&it.y-e.y<2.8)it.u=clamp(DOOR.u+Math.sign(it.u-DOOR.u||1)*(.76+e.x),-HALF+e.x+.05,HALF-e.x-.05)}
+    const DR=curDoor();if(wi===DR.w&&Math.abs(it.u-DR.u)<.75+e.x&&it.y-e.y<2.8)it.u=clamp(DR.u+Math.sign(it.u-DR.u||1)*(.76+e.x),-HALF+e.x+.05,HALF-e.x-.05)}
   else{const p=new THREE.Vector3();if(!ray.ray.intersectPlane(floorPlane,p))return false;if(off){p.x+=off.x;p.z+=off.z}
     const r=it.r||0,ex=Math.abs(Math.cos(r))*e.x+Math.abs(Math.sin(r))*e.z,ez=Math.abs(Math.sin(r))*e.x+Math.abs(Math.cos(r))*e.z;
     it.x=clamp(p.x,-HALF+ex+.02,HALF-ex-.02);it.z=clamp(p.z,-HALF+ez+.02,HALF-ez-.02)}
@@ -3009,6 +3188,9 @@ canvas.addEventListener('pointerdown',e=>{if(!ready)return;try{canvas.setPointer
   if(ptrs.size===2){if(stroke)cancelStroke();if(gest&&gest.type==='item'&&gest.started)finishDrag();gest={type:'pinch',d0:pdist(),dist0:cam.dist,a0:pang(),yaw0:cam.yaw};return}
   if(ptrs.size>2)return;
   if(openTab!=='decorate'&&!brush){const th=townHit(e.clientX,e.clientY);if(th){gest={type:'orbit',yaw0:cam.yaw,pitch0:cam.pitch,town:th};return}}
+  if(brush&&brush.kind==='d'){setRay(e.clientX,e.clientY);const vis=walls.filter(w=>w.g.visible).map(w=>w.plane),hh=ray.intersectObjects(vis,false)[0];
+    if(hh){const wi=hh.object.userData.wall,Wd=WALLDEF[wi],u=(hh.point.x-Wd.c[0])*Wd.T[0]+(hh.point.z-Wd.c[1])*Wd.T[1],U=beginBuild();state.door.w=wi;state.door.u=clamp(Math.round(u*2)/2,-HALF+.8,HALF-.8);syncDoor();endBuild(U);saveSoon();doorTarget=1;setTimeout(()=>{doorTarget=0},700)}
+    gest={type:'orbit',yaw0:cam.yaw,pitch0:cam.pitch};return}
   if(brush){const th=paintHit(e.clientX,e.clientY);if(th){gest={type:'paint'};startStroke(th,e.clientX,e.clientY)}else gest={type:'orbit',yaw0:cam.yaw,pitch0:cam.pitch};return}
   const h=pick(e.clientX,e.clientY);
   if(h&&h.id&&openTab!=='decorate')gest={type:'orbit',yaw0:cam.yaw,pitch0:cam.pitch,liveItem:true};
@@ -3018,7 +3200,7 @@ canvas.addEventListener('pointerdown',e=>{if(!ready)return;try{canvas.setPointer
 });
 canvas.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(!p||!gest)return;p.x=e.clientX;p.y=e.clientY;
   const dx=p.x-p.sx,dy=p.y-p.sy;
-  if(gest.type==='pinch'&&ptrs.size===2){cam.dist=clamp(gest.dist0*gest.d0/Math.max(20,pdist()),9,28);cam.yaw=gest.yaw0-(pang()-gest.a0)}
+  if(gest.type==='pinch'&&ptrs.size===2){cam.dist=clamp(gest.dist0*gest.d0/Math.max(20,pdist()),9,camMax());cam.yaw=gest.yaw0-(pang()-gest.a0)}
   else if(gest.type==='paint'){if(stroke)moveStroke(p.x,p.y)}
   else if(gest.type==='orbit'){cam.yaw=gest.yaw0-dx*.009;cam.pitch=clamp(gest.pitch0+dy*.006,.22,1.3)}
   else if(gest.type==='item'){if(!gest.started&&Math.hypot(dx,dy)>6){gest.started=true;dragging=true;gest.U=beginBuild();const it=itemById(gest.id);
@@ -3035,14 +3217,14 @@ function endPtr(e){const p=ptrs.get(e.pointerId);if(!p)return;ptrs.delete(e.poin
   if(gest.type==='paint'&&stroke)endStroke();
   if(ptrs.size===0||gest.type==='pinch')gest=ptrs.size?{type:'none'}:null}
 canvas.addEventListener('pointerup',endPtr);canvas.addEventListener('pointercancel',endPtr);
-canvas.addEventListener('wheel',e=>{e.preventDefault();cam.dist=clamp(cam.dist*(1+e.deltaY*.001),9,28)},{passive:false});
+canvas.addEventListener('wheel',e=>{e.preventDefault();cam.dist=clamp(cam.dist*(1+e.deltaY*.001),9,camMax())},{passive:false});
 function finishDrag(){dragging=false;if(gest&&gest.U){endBuild(gest.U);gest.U=null}saveSoon()}
 
 function renderPalette(){const it=itemById(selId),pl=$('#palette');if(!it){pl.hidden=true;return}
   pl.innerHTML=TINTS.map((c,i)=>`<button class="sw" data-i="${i}" style="background:${hex(c)}" aria-label="${TINT_NAMES[i]}" aria-pressed="${(it.c||0)%TINTS.length===i}"></button>`).join('');
   pl.querySelectorAll('.sw').forEach(b=>b.onclick=e=>{e.stopPropagation();const t=itemById(selId);if(!t)return;const U=beginBuild();t.c=+b.dataset.i;endBuild(U);syncScene();select(t.id);saveSoon();renderPalette()})}
 $('#bColor').onclick=()=>{const pl=$('#palette');if(!itemById(selId))return;pl.hidden=!pl.hidden;if(!pl.hidden)renderPalette()};
-$('#bStore').onclick=()=>{const it=itemById(selId);if(!it)return;const U=beginBuild();setTimeout(()=>endBuild(U));const d=CATMAP[it.k];state.items=state.items.filter(i=>i!==it);state.hearts+=d.p;select(null);syncScene();updHUD();toast(`${d.n} stored. ${d.p} hearts back in the jar.`);saveSoon();if(openTab==='decorate')renderSheet()};
+$('#bStore').onclick=()=>{const it=itemById(selId);if(!it)return;const U=beginBuild();setTimeout(()=>endBuild(U));const d=CATMAP[it.k];state.items=state.items.filter(i=>i!==it);state.fown[it.k]=(state.fown[it.k]||0)+1;select(null);syncScene();updHUD();toast(`${d.n} put in storage.`);saveSoon();if(openTab==='decorate')renderSheet()};
 $('#bDone').onclick=()=>select(null);
 $('#mapX').onclick=closeMap;$('#map').onclick=e=>{if(e.target.id==='map')closeMap()};document.querySelectorAll('#map [data-go]').forEach(b=>b.onclick=()=>travelTo(b.dataset.go));$('#sbHome').onclick=()=>travelTo('home');
 document.querySelectorAll('#paintbar [data-tool]').forEach(b=>b.onclick=()=>{if(!brush)return;brush.tool=b.dataset.tool;updPaintBar()});
@@ -3055,9 +3237,9 @@ $('#bTurn').onclick=()=>{const it=itemById(selId);if(!it)return;const U=beginBui
 
 /* spawn from tray */
 function visibleWall(){let best=0,bd=-1e9;walls.forEach((w,i)=>{if(!w.g.visible)return;const d=WALLDEF[i];const v=(camera.position.x-d.c[0])*d.n[0]+(camera.position.z-d.c[1])*d.n[1];if(v>bd){bd=v;best=i}});return best}
-function spawn(k){const d=CATMAP[k];if(state.hearts<d.p){toast(`You need ${d.p-state.hearts} more hearts. Caring for ${state.pet.name} fills the jar.`);return null}
+function spawn(k){const d=CATMAP[k];if(!(state.fown[k]>0)){goBuy(k);return null}
   if(state.items.length>=80){toast('Your room is full. Store something first.');return null}
-  state.hearts-=d.p;const it={id:uid(),k,c:d.dc||0};
+  state.fown[k]--;if(!state.fown[k])delete state.fown[k];const it={id:uid(),k,c:d.dc||0};
   if(d.wall){it.w=visibleWall();it.u=(Math.random()-.5)*2;it.y=d.y}else{it.x=(Math.random()-.5)*1.5;it.z=(Math.random()-.5)*1.5;it.r=0}
   state.items.push(it);syncScene();clampPlaced(it);select(it.id);updHUD();return it}
 
@@ -3146,18 +3328,20 @@ if(window.ResizeObserver)new ResizeObserver(()=>{if(openTab)fitSheet()}).observe
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 /* ---------- decorate catalog ---------- */
 // Built for a big catalog: search + kind + set filters, a scrolling grid, and thumbnails rendered only as cards come into view.
-let decoQ='',decoSort=0,decoSetsOpen=false,decoHolding=false,decoIO=null;
+let decoQ='',decoSort=0,decoSetsOpen=false,decoHolding=false,decoIO=null,decoMode='place',decoMine=false;
 const DECO_SORTS=[['Featured',null],['Cheapest',(a,b)=>a.p-b.p||a.n.localeCompare(b.n)],['Priciest',(a,b)=>b.p-a.p||a.n.localeCompare(b.n)],['A to Z',(a,b)=>a.n.localeCompare(b.n)]];
 const FUNCMAP={};FUNCS.forEach(f=>FUNCMAP[f[0]]=f);
 const decoText=c=>(c.n+' '+SETMAP[c.set].n+' '+FUNCMAP[c.fn][1]).toLowerCase();
 function roomCounts(){const n={};state.items.forEach(i=>n[i.k]=(n[i.k]||0)+1);return n}
 function centerChip(row){const on=row.querySelector('[aria-pressed="true"]');if(on)row.scrollLeft=Math.max(0,on.offsetLeft-row.clientWidth/2+on.offsetWidth/2)}
-function decoCard(c,n){return`<div class="card dcard${state.hearts<c.p?' poor':''}" data-k="${c.k}" role="button" tabindex="0" aria-label="Add ${esc(c.n)}, ${c.p} hearts${n?`, ${n} in your room`:''}"><span class="setb" aria-hidden="true"><img src="assets/icons/${SETMAP[c.set].img}.webp" alt=""></span><div class="thumb">${thumbs[c.k]?`<img src="${thumbs[c.k]}" alt="">`:'<i class="spin"></i>'}<span class="own"${n?'':' hidden'}>×${n||0}</span></div><b>${esc(c.n)}</b><span class="price${c.p>99?' long':''}"><i>♥</i>${c.p}</span></div>`}
+function decoCard(c,n){const own=state.fown[c.k]||0,buy=decoMode==='buy',pr=furnPrice(c.k);return`<div class="card dcard${buy?(state.hearts<pr?' poor':''):own?'':' poor'}" data-k="${c.k}" role="button" tabindex="0" aria-label="Add ${esc(c.n)}, ${c.p} hearts${n?`, ${n} in your room`:''}"><span class="setb" aria-hidden="true"><img src="assets/icons/${SETMAP[c.set].img}.webp" alt=""></span><div class="thumb">${thumbs[c.k]?`<img src="${thumbs[c.k]}" alt="">`:'<i class="spin"></i>'}<span class="own"${n?'':' hidden'}>×${n||0}</span></div><b>${esc(c.n)}</b>${buy?`<span class="price${pr>99?' long':''}${pr<c.p?' deal':''}"><i>♥</i>${pr}</span>`:own?`<span class="stock">${own}</span>`:`<span class="toshop">Shop</span>`}</div>`}
 function renderDeco(toTop){const grid=$('#tray');if(!grid)return;
   const words=decoQ.trim().toLowerCase().split(/\s+/).filter(Boolean),hit=c=>{const t=decoText(c);return words.every(w=>t.includes(w))};
-  const pool=CAT.filter(c=>(decoSet==='all'||c.set===decoSet)&&hit(c)),per={};pool.forEach(c=>per[c.fn]=(per[c.fn]||0)+1);
+  const pool=CAT.filter(c=>(decoSet==='all'||c.set===decoSet)&&hit(c)&&!(decoMode==='buy'&&c.fn==='window')&&(!decoMine||(state.fown[c.k]||0)>0)),per={};pool.forEach(c=>per[c.fn]=(per[c.fn]||0)+1);
   if(decoFn!=='all'&&!per[decoFn]&&!words.length)decoFn='all';
   let list=pool.filter(c=>decoFn==='all'||c.fn===decoFn);const sort=DECO_SORTS[decoSort][1];if(sort)list=list.slice().sort(sort);
+  // placing: what you have in storage comes first
+  if(decoMode==='place')list=list.slice().sort((a,b)=>((state.fown[b.k]||0)>0)-((state.fown[a.k]||0)>0));
   const fns=$('#decoFns');fns.innerHTML=`<button type="button" class="chip sm" data-fn="all" aria-pressed="${decoFn==='all'}">All<small>${pool.length}</small></button>`+
     FUNCS.filter(f=>per[f[0]]||f[0]===decoFn).map(([k,n,e])=>`<button type="button" class="chip sm" data-fn="${k}" aria-pressed="${decoFn===k}"><span aria-hidden="true">${e}</span>${n}<small>${per[k]||0}</small></button>`).join('');
   fns.querySelectorAll('[data-fn]').forEach(b=>b.onclick=()=>{decoFn=b.dataset.fn;renderDeco(true)});centerChip(fns);
@@ -3169,33 +3353,33 @@ function renderDeco(toTop){const grid=$('#tray');if(!grid)return;
   sets.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>{decoSet=b.dataset.set;decoSetsOpen=false;sets.hidden=true;sb.setAttribute('aria-expanded',false);renderDeco(true)});
   $('#decoCount').textContent=`${list.length} ${list.length===1?'piece':'pieces'}`;
   const filtered=words.length||decoSet!=='all'||decoFn!=='all',n=roomCounts();
-  grid.innerHTML=list.length?list.map(c=>decoCard(c,n[c.k])).join('')+`<p class="dend">Tap to add. Hold and drag to place it just so.</p>`
+  grid.innerHTML=list.length?list.map(c=>decoCard(c,n[c.k])).join('')+`<p class="dend">${decoMode==='buy'?'Tap a piece to see it and buy it.':'Tap to place from storage, or hold and drag. Buy more at Cozy Nest and Hammer & Hue.'}</p>`
     :`<div class="dempty"><p>${words.length?`Nothing called “${esc(decoQ.trim())}”${decoSet!=='all'?' in '+esc(SETMAP[decoSet].n):''}.`:'Nothing here yet.'}</p>${filtered?'<button type="button" class="chip" id="decoAll">Show everything</button>':''}</div>`;
   const all=$('#decoAll');if(all)all.onclick=()=>{decoQ='';decoFn='all';decoSet='all';const q=$('#decoQ');if(q)q.value='';$('#decoClr').hidden=true;renderDeco(true)};
   if(toTop)grid.scrollTop=0;
   if(decoIO)decoIO.disconnect();
   decoIO=window.IntersectionObserver?new IntersectionObserver(es=>{const ks=[];es.forEach(e=>{if(e.isIntersecting){ks.push(e.target.dataset.k);decoIO.unobserve(e.target)}});if(ks.length)queueThumbsFirst(ks)},{root:grid,rootMargin:'200px 0px'}):null;
-  grid.querySelectorAll('.card').forEach(c=>{bindCard(c);if(thumbs[c.dataset.k])return;if(decoIO)decoIO.observe(c);else queueThumbs([c.dataset.k])})}
+  grid.querySelectorAll('.card').forEach(c=>{if(decoMode==='buy')c.onclick=()=>openOffer(()=>offerFurn(c.dataset.k));else bindCard(c);if(thumbs[c.dataset.k])return;if(decoIO)decoIO.observe(c);else queueThumbs([c.dataset.k])})}
 /* ---------- build undo ---------- */
 // Every build change (add, move, turn, recolour, store, paint tiles) can be undone. Snapshots of items + tiles, and
 // the hearts it cost or refunded are given back or taken again (so hearts earned meanwhile are kept).
 const buildHist=[];
-function beginBuild(){return{s:JSON.stringify([state.items,state.tf,state.tw]),h:state.hearts}}
-function endBuild(U){if(!U)return;if(JSON.stringify([state.items,state.tf,state.tw])===U.s)return;buildHist.push({s:U.s,d:U.h-state.hearts});if(buildHist.length>40)buildHist.shift();updUndoBtns()}
-function undoBuild(){const e=buildHist.pop();if(!e)return;if(stroke)cancelStroke();const [items,tf,tw]=JSON.parse(e.s);state.items=items;state.tf=tf;state.tw=tw;state.hearts=Math.max(0,state.hearts+e.d);
+function beginBuild(){return{s:JSON.stringify([state.items,state.tf,state.tw,state.fown,state.door]),h:state.hearts}}
+function endBuild(U){if(!U)return;if(JSON.stringify([state.items,state.tf,state.tw,state.fown,state.door])===U.s)return;buildHist.push({s:U.s,d:U.h-state.hearts});if(buildHist.length>40)buildHist.shift();updUndoBtns()}
+function undoBuild(){const e=buildHist.pop();if(!e)return;if(stroke)cancelStroke();const [items,tf,tw,fown,door]=JSON.parse(e.s);state.items=items;state.tf=tf;state.tw=tw;if(fown)state.fown=fown;if(door)state.door=door;state.hearts=Math.max(0,state.hearts+e.d);
   select(null);syncScene();saveSoon();updHUD();renderSheetSoft();updUndoBtns();toast('Undone')}
 function updUndoBtns(){['#decoUndo','#pbUndo'].forEach(q=>{const b=$(q);if(b)b.disabled=!buildHist.length})}
 /* ---------- tile painting ---------- */
 // Pick a set in the Room tab, then drag over the floor or walls: Tile paints what you touch, Area fills the rectangle
 // (or wall stretch) you drag out, Room does the whole floor or every wall. Dragging outside the room still turns it.
 let brush=null,stroke=null;let brushHinted=false;
-function tileSwatch(kind,k){const d=TILESETS[kind][k],key=kind+':'+k,on=brush&&brush.kind===kind&&brush.k===k;
-  return`<button class="tsw" data-tile="${key}" aria-pressed="${!!on}" title="${esc(d.n)}"><span class="tsi${kind==='w'?' wall':''}${texThumb[key]?'':' loading'}" data-tk="${key}" style="${tileStyle(key)}">${d.mode!=='repeat'?`<i class="tdyn">${d.mode==='border'?'edges':'ends'}</i>`:''}</span><small>${esc(d.n)}</small></button>`}
+function tileSwatch(kind,k){const d=TILESETS[kind][k],key=kind+':'+k,on=brush&&brush.kind===kind&&brush.k===k,lock=!state.town.includes(key);
+  return`<button class="tsw${lock?' locked':''}" data-tile="${key}" aria-pressed="${!!on}" title="${esc(d.n)}"><span class="tsi${kind==='w'?' wall':''}${texThumb[key]?'':' loading'}" data-tk="${key}" style="${tileStyle(key)}">${lock?`<i class="tlock">${tilePrice(d)}♥</i>`:d.mode!=='repeat'?`<i class="tdyn">${d.mode==='border'?'edges':'ends'}</i>`:''}</span><small>${esc(d.n)}</small></button>`}
 function tileArr(kind){return kind==='f'?state.tf:state.tw}
-function startBrush(kind,k){brush={kind,k,tool:brush&&brush.kind===kind?brush.tool:'tile'};select(null);setTab(null);tileMat(kind,k);updPaintBar();
+function startBrush(kind,k){brush={kind,k,tool:brush&&brush.kind===kind?brush.tool:'tile'};select(null);setTab(null);if(kind==='d'){updPaintBar();toast('Tap a wall to move the door there.');return}tileMat(kind,k);updPaintBar();
   if(!brushHinted){brushHinted=true;toast(`Drag across the ${kind==='f'?'floor':'walls'} to paint. Drag outside the room to turn it.`)}else toast(TILESETS[kind][k].n)}
 function endBrush(){if(stroke)cancelStroke();brush=null;updPaintBar();pruneTileTex()}
-function updPaintBar(){const pb=$('#paintbar');pb.classList.toggle('on',!!brush);if(!brush)return;const key=brush.kind+':'+brush.k,th=$('#pbThumb');th.dataset.tk=key;th.style.backgroundImage=texThumb[key]?`url(${texThumb[key]})`:'';if(!texThumb[key])queueTexThumbs();
+function updPaintBar(){const pb=$('#paintbar');pb.classList.toggle('on',!!brush);if(!brush)return;pb.classList.toggle('doormode',brush.kind==='d');if(brush.kind==='d'){updUndoBtns();return}const key=brush.kind+':'+brush.k,th=$('#pbThumb');th.dataset.tk=key;th.style.backgroundImage=texThumb[key]?`url(${texThumb[key]})`:'';if(!texThumb[key])queueTexThumbs();
   $('#pbName').textContent=TILESETS[brush.kind][brush.k].n;pb.querySelectorAll('[data-tool]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tool===brush.tool));
   $('#pbAllLbl').textContent=brush.kind==='f'?'Floor':'Walls';updUndoBtns()}
 function paintHit(x,y){setRay(x,y);if(brush.kind==='f'){const q=new THREE.Vector3();if(!ray.ray.intersectPlane(floorPlane,q)||Math.abs(q.x)>=HALF||Math.abs(q.z)>=HALF)return null;return{i:clamp(Math.floor(q.x+HALF),0,GRID-1),j:clamp(Math.floor(q.z+HALF),0,GRID-1)}}
@@ -3214,11 +3398,12 @@ function moveStroke(x,y){if(brush.tool==='tile'){const dx=x-stroke.x,dy=y-stroke
 function endStroke(){const a=tileArr(stroke.kind);if(a.some((v,n)=>v!==stroke.snap[n])){endBuild(stroke.U);saveSoon()}stroke=null;dragging=false;updPaintBar()}
 function cancelStroke(){const a=tileArr(stroke.kind);stroke.snap.forEach((v,n)=>a[n]=v);stroke=null;dragging=false;syncTiles()}
 function renderSheet(){const body=$('#sheetBody');
-  $('#sheet').classList.toggle('deco',openTab==='decorate');
-  if(openTab==='decorate'){const old=$('#tray'),keep=old?old.scrollTop:0;
-    body.innerHTML=`<div class="dhead"><h2>Decorate</h2><label class="dsearch"><input id="decoQ" type="text" inputmode="search" enterkeyhint="search" placeholder="Search" autocomplete="off" spellcheck="false" aria-label="Search furniture" value="${esc(decoQ)}"><button type="button" class="dclear" id="decoClr" aria-label="Clear search"${decoQ?'':' hidden'}>×</button></label><button type="button" class="dundo" id="decoUndo" aria-label="Undo"${buildHist.length?'':' disabled'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button></div>
+  $('#sheet').classList.toggle('deco',openTab==='decorate'||openTab==='shopcat');
+  decoMode=openTab==='shopcat'?'buy':'place';
+  if(openTab==='decorate'||(openTab==='shopcat'&&away&&away.key==='furn')){const old=$('#tray'),keep=old?old.scrollTop:0;
+    body.innerHTML=`<div class="dhead"><h2>${decoMode==='buy'?'Catalog':'Decorate'}</h2><label class="dsearch"><input id="decoQ" type="text" inputmode="search" enterkeyhint="search" placeholder="Search" autocomplete="off" spellcheck="false" aria-label="Search furniture" value="${esc(decoQ)}"><button type="button" class="dclear" id="decoClr" aria-label="Clear search"${decoQ?'':' hidden'}>×</button></label><button type="button" class="dundo" id="decoUndo" aria-label="Undo"${buildHist.length?'':' disabled'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button></div>
     <div class="chips dfns" id="decoFns" role="group" aria-label="Filter by kind"></div>
-    <div class="dbar"><button type="button" class="chip sm dpick" id="decoSetBtn" aria-expanded="${decoSetsOpen}"></button><button type="button" class="chip sm dpick" id="decoSortBtn"></button><span class="dcount" id="decoCount"></span></div>
+    <div class="dbar"><button type="button" class="chip sm dpick" id="decoSetBtn" aria-expanded="${decoSetsOpen}"></button><button type="button" class="chip sm dpick" id="decoSortBtn"></button><button type="button" class="chip sm dpick" id="decoMineBtn" aria-pressed="${decoMine}">${decoMode==='buy'?'Owned':'Mine'}</button><span class="dcount" id="decoCount"></span></div>
     <div class="chips dsets" id="decoSets" role="group" aria-label="Filter by set"${decoSetsOpen?'':' hidden'}></div>
     <div class="dgrid" id="tray"></div>`;
     const q=$('#decoQ');q.oninput=()=>{decoQ=q.value;$('#decoClr').hidden=!decoQ;renderDeco(true)};
@@ -3227,6 +3412,8 @@ function renderSheet(){const body=$('#sheetBody');
     $('#decoClr').onclick=()=>{decoQ='';q.value='';$('#decoClr').hidden=true;renderDeco(true)};
     $('#decoSetBtn').onclick=()=>{decoSetsOpen=!decoSetsOpen;$('#decoSets').hidden=!decoSetsOpen;$('#decoSetBtn').setAttribute('aria-expanded',decoSetsOpen);if(decoSetsOpen)centerChip($('#decoSets'))};
     $('#decoSortBtn').onclick=()=>{decoSort=(decoSort+1)%DECO_SORTS.length;renderDeco(true)};
+    $('#decoMineBtn').onclick=()=>{decoMine=!decoMine;$('#decoMineBtn').setAttribute('aria-pressed',decoMine);renderDeco(true)};
+    if(decoMode==='buy')$('#decoUndo').hidden=true;
     const grid=$('#tray');grid.addEventListener('touchmove',e=>{if(decoHolding)e.preventDefault()},{passive:false});
     renderDeco(false);grid.scrollTop=keep}
 
@@ -3278,7 +3465,7 @@ function renderSheet(){const body=$('#sheetBody');
     <button class="gel pink" id="dbgNote">Fake partner note</button><button class="gel pink" id="dbgVisit">Fake partner visit</button></div>
     <div class="row-label">Room</div>
     <div class="dbg-grid two"><button class="gel silver" id="dbgClear">Clear furniture</button><button class="gel silver" id="dbgAll">Show next set</button>
-    <button class="gel silver" id="dbgCoach">Show intro again</button><button class="gel silver" id="dbgReconnect">Reconnect sync</button></div>
+    <button class="gel silver" id="dbgCoach">Show intro again</button><button class="gel silver" id="dbgReconnect">Reconnect sync</button><button class="gel sun" id="dbgHearts">+20 hearts</button></div>
     <div style="height:8px"></div>`;
     const sh=$('#skyh');if(sh)sh.oninput=()=>{const v=+sh.value;skyHourOverride=v<0?null:v;$('#skyhv').textContent=v<0?'auto':v;updateSky()};
     const setStage=i=>{const target=STAGE_XP[i];const before=stageOf(state.pet.xp);state.pet.xp=target;if(before===0&&i>0){state.pet.t=Date.now()}pet.key=null;buildPet();if(i>before){emote('✨')}saveSoon();updHUD();renderSheet()};
@@ -3297,25 +3484,31 @@ function renderSheet(){const body=$('#sheetBody');
     $('#dbgNote').onclick=()=>{state.feed.unshift({t:Date.now(),by:'debug-partner',k:'note',text:['miss u! fed the little guy','rearranged the couch, hope u like it','goodnight 💤'][Math.floor(Math.random()*3)]});saveSoon();updHUD();toast('Fake note added. Check Mail.')};
     $('#dbgVisit').onclick=()=>{state.visits['debug-partner']=Date.now()-3*3.6e6;saveSoon();updHUD();toast('Fake partner visit 3h ago.')};
     $('#dbgClear').onclick=()=>{state.items=[];select(null);syncScene();saveSoon();toast('Furniture cleared.')};
+    $('#dbgHearts').onclick=()=>{state.hearts+=20;updHUD();saveSoon();toast('+20 hearts')};
     $('#dbgAll').onclick=()=>{select(null);const st=SETS[dbgSetI%SETS.length];dbgSetI++;state.items=[];let fx=-3,fz=-3.1,wi=0;
       CAT.filter(d=>d.set===st.k).forEach(d=>{const it={id:uid(),k:d.k,c:d.dc||0};if(d.wall){it.w=wi%2?0:3;it.u=-2.8+Math.floor(wi/2)*1.4;it.y=d.y;wi++}else{it.x=fx;it.z=fz;it.r=0;fx+=1.6;if(fx>3.3){fx=-3;fz+=1.6}}state.items.push(it)});
       syncScene();state.items.forEach(clampPlaced);saveSoon();toast(`Showing the ${st.n} set`)};
     $('#dbgCoach').onclick=()=>{setTab(null);showCoach()};
     $('#dbgReconnect').onclick=()=>{if(db){connectShared();toast('Reconnecting…')}else toast('Shared sync is not set up for this copy yet.')};
     updDbgInfo()}
+  else if(openTab==='shopcat'){renderBuildCat(body)}
   else if(openTab==='room'){
     const stat=mode==='shared'?'<span class="status"><i></i>Shared room, synced</span>':mode==='readonly'?'<span class="status ro"><i></i>View-only, changes stay local</span>':mode==='connecting'?'<span class="status solo"><i></i>Connecting to shared room</span>':'<span class="status solo"><i></i>Solo on this device</span>';
     body.innerHTML=`<h2>Room</h2>${stat}
     <p class="hint">Pick a floor or wallpaper, then drag across the room to paint it, tile by tile. Mix as many as you like.</p>
-    <div class="row-label">Floors</div><div class="tiles tsws">${TILE_ORDER.f.map(k=>tileSwatch('f',k)).join('')}</div>
-    <div class="row-label">Walls</div><div class="tiles tsws">${TILE_ORDER.w.map(k=>tileSwatch('w',k)).join('')}</div>
+    <div class="row-label">Floors</div><div class="tiles tsws">${ownedFirst('f').map(k=>tileSwatch('f',k)).join('')}</div>
+    <div class="row-label">Walls</div><div class="tiles tsws">${ownedFirst('w').map(k=>tileSwatch('w',k)).join('')}</div>
+    <div class="row-label">Door</div><div class="tiles tsws">${state.downs.map(k=>doorSwatch(k)).join('')}<button class="tsw" id="moveDoor"><span class="tsi mv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M15 8l4 4-4 4M9 8l-4 4 4 4"/></svg></span><small>Move door</small></button></div>
+    <p class="hint">Your room is ${state.size} × ${state.size} tiles. ${state.size<ROOM_SIZES[ROOM_SIZES.length-1]?'Hammer & Hue can make it bigger, and sells more floors, walls, doors and windows.':'It can’t get any bigger!'}</p>
     ${FB?`<div class="row-label">Invite your person</div><p class="hint">Send them this link. When they open it, you'll both be in this room and see each other's changes.</p>
     <button class="gel pink" id="invite" style="width:100%">Share invite link</button>`:''}
     ${myId?`<div class="row-label">Your name</div><div class="codebox"><input id="myname" value="${esc((state.names||{})[myId]||'')}" maxlength="20" autocomplete="off" placeholder="So your person knows it's you" aria-label="Your name"><button class="gel sun" id="saveName">Save</button></div>`:''}
     <div class="row-label">Room code</div><p class="hint">${FB?'Anyone with this code can open the room, so keep it between you two. To start a separate room, type a new code together.':"Share this page with your person and you'll both land in the same room. To keep a separate room, type a new code together."}</p>
     <div class="codebox"><input id="code" value="${esc(roomCode)}" maxlength="24" autocapitalize="off" autocomplete="off" aria-label="Room code"><button class="gel lilac" id="join">Go</button></div>
     <div class="row-label">Start over</div><button class="gel silver" id="reset">Reset this room</button><div style="height:6px"></div>`;
-    body.querySelectorAll('[data-tile]').forEach(b=>b.onclick=()=>{const [kind,k]=b.dataset.tile.split(':');startBrush(kind,k)});
+    body.querySelectorAll('[data-tile]').forEach(b=>b.onclick=()=>{const [kind,k]=b.dataset.tile.split(':');if(!state.town.includes(b.dataset.tile)){goBuyTile(b.dataset.tile);return}startBrush(kind,k)});
+    body.querySelectorAll('[data-door]').forEach(b=>b.onclick=()=>{const U=beginBuild();state.door.s=b.dataset.door;syncDoor();endBuild(U);saveSoon();renderSheet()});$('#moveDoor').onclick=()=>startBrush('d','door');
+    queueThumbs(state.downs.map(k=>'door:'+k));
     queueTexThumbs();
     const inv=$('#invite');if(inv)inv.onclick=async()=>{const link=location.origin+location.pathname+'?room='+encodeURIComponent(roomCode);
       try{if(navigator.share){await navigator.share({title:'Room for Two',text:'Come hang out in our room!',url:link});return}}catch(e){if(e&&e.name==='AbortError')return}
@@ -3326,7 +3519,7 @@ function renderSheet(){const body=$('#sheetBody');
 }
 // Tap a card to add it. Hold (or mouse-drag) to pick it up and drag it into the room; a plain swipe scrolls the grid.
 function bindCard(card){const k=card.dataset.k;let st=null,ghost=null,spawned=null,holdT=0;
-  const pick=()=>{if(!st)return;st.held=true;decoHolding=true;card.classList.add('held');try{card.setPointerCapture(st.id)}catch(_){}try{navigator.vibrate&&navigator.vibrate(12)}catch(_){}
+  const pick=()=>{if(!st||!(state.fown[k]>0))return;st.held=true;decoHolding=true;card.classList.add('held');try{card.setPointerCapture(st.id)}catch(_){}try{navigator.vibrate&&navigator.vibrate(12)}catch(_){}
     ghost=document.createElement('div');ghost.className='ghost';ghost.innerHTML=thumbs[k]?`<img src="${thumbs[k]}" alt="">`:'';ghost.style.left=st.cx+'px';ghost.style.top=st.cy+'px';document.body.appendChild(ghost)};
   const reset=()=>{clearTimeout(holdT);if(ghost){ghost.remove();ghost=null}card.classList.remove('held');decoHolding=false;st=null;spawned=null};
   card.addEventListener('contextmenu',e=>e.preventDefault());
@@ -3340,7 +3533,7 @@ function bindCard(card){const k=card.dataset.k;let st=null,ghost=null,spawned=nu
   card.addEventListener('pointerup',e=>{if(!st||e.pointerId!==st.id)return;
     if(spawned){dragging=false;endBuild(st.U);toast(`${CATMAP[k].n} placed`);saveSoon();renderSheetSoft()}
     else if(st.held)toast('Drag it up into the room to place it.');
-    else if(!st.moved){const U=beginBuild(),it=spawn(k);if(it){endBuild(U);toast(`${CATMAP[k].n} added. Drag it where you like.`);saveSoon();renderSheetSoft()}}
+    else if(!st.moved){if(!(state.fown[k]>0)){reset();goBuy(k);return}const U=beginBuild(),it=spawn(k);if(it){endBuild(U);toast(`${CATMAP[k].n} added. Drag it where you like.`);saveSoon();renderSheetSoft()}}
     reset()});
   card.addEventListener('pointercancel',()=>{if(spawned){dragging=false;endBuild(st&&st.U);saveSoon();renderSheetSoft()}reset()});
   card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();const U=beginBuild();if(spawn(k)){endBuild(U);toast(`${CATMAP[k].n} added`);saveSoon();renderSheetSoft()}}})}
@@ -3356,7 +3549,7 @@ function syncBg(){const cs=getComputedStyle(document.documentElement),g=n=>cssRG
 syncBg();try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',syncBg)}catch(_){}
 function updDbgInfo(){const el=document.getElementById('dbgInfo');if(!el)return;const s=petStats();
   el.innerHTML=`sync: <b>${mode}</b>${db?'':' (no db in this view)'} &nbsp; room: <b>${esc(roomCode)}</b><br>you: ${esc(myId||'unknown')} &nbsp; rev: ${state.rev||0}<br>items: ${state.items.length} &nbsp; hearts: ${state.hearts} &nbsp; fps: ${fps}<br>pet: ${STAGE_NAMES[stageOf(state.pet.xp)]}, mode ${pet.mode}, H${s.hunger|0} F${s.fun|0} E${s.energy|0} C${s.clean|0}`}
-function renderSheetSoft(){const n=roomCounts();document.querySelectorAll('.card').forEach(c=>{const k=c.dataset.k;c.classList.toggle('poor',state.hearts<CATMAP[k].p);const o=c.querySelector('.own');if(o){o.hidden=!n[k];o.textContent='×'+(n[k]||0)}})}
+function renderSheetSoft(){const n=roomCounts();document.querySelectorAll('.card').forEach(c=>{const k=c.dataset.k;if(!CATMAP[k])return;c.classList.toggle('poor',decoMode==='buy'?state.hearts<furnPrice(k):!(state.fown[k]>0));const sk=c.querySelector('.stock');if(sk)sk.textContent=state.fown[k]||0;if(decoMode==='place'&&!(state.fown[k]>0)&&sk)renderDeco(false);const o=c.querySelector('.own');if(o){o.hidden=!n[k];o.textContent='×'+(n[k]||0)}})}
 
 /* thumbnails: rendered on demand, a few per frame */
 let thumbR=null,thumbSc=null,thumbCam=null,thumbBusy=false,thumbFail=false;const thumbQ=[];
@@ -3365,7 +3558,7 @@ function initThumbR(){if(thumbR)return true;if(thumbFail)return false;try{
   thumbSc=new THREE.Scene();const et=ctex(256,128,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#fff');g.addColorStop(.45,'#CDEBFF');g.addColorStop(.55,'#fff');g.addColorStop(1,'#B39CFF');x.fillStyle=g;x.fillRect(0,0,w,h)},null,1);
   et.mapping=THREE.EquirectangularReflectionMapping;thumbSc.environment=et;thumbSc.add(new THREE.AmbientLight(0xffffff,.3));const dl=new THREE.DirectionalLight(0xffffff,2.4);dl.position.set(3,5,4);thumbSc.add(dl);
   thumbCam=new THREE.PerspectiveCamera(30,180/160,.1,50);return true}catch(e){thumbFail=true;console.warn('thumbs',e);return false}}
-function renderThumb(k){const isToy=k.startsWith('toy:'),d=isToy?{}:CATMAP[k],g=isToy?buildProp(k.slice(4)):makePiece(k,TINTS[d.dc||0]);if(!g)return;thumbSc.add(g);
+function renderThumb(k){const isToy=k.startsWith('toy:'),isDoor=k.startsWith('door:'),d=isToy||isDoor?{}:CATMAP[k],g=isToy?buildProp(k.slice(4)):isDoor?buildDoorModel(k.slice(5)).g:makePiece(k,TINTS[d.dc||0]);if(!g)return;thumbSc.add(g);
   const b=new THREE.Box3().setFromObject(g),sph=b.getBoundingSphere(new THREE.Sphere());const dist=sph.radius/Math.sin(15*Math.PI/180)*1.02;
   const dir=d.wall?new THREE.Vector3(.35,.15,1).normalize():new THREE.Vector3(.8,.6,1).normalize();thumbCam.position.copy(sph.center).addScaledVector(dir,dist);thumbCam.lookAt(sph.center);
   thumbR.render(thumbSc,thumbCam);const url=thumbR.domElement.toDataURL('image/png');thumbSc.remove(g);thumbs[k]=url;
@@ -3415,7 +3608,7 @@ function normalize(s){const oldPal=!!s&&!(s.pv>=2);const d=defaultState();s=Obje
   s.toys=Array.isArray(s.toys)?s.toys.filter(k=>ITEMMAP[k]&&ITEMMAP[k].k==='toy'):d.toys.slice();s.daily=s.daily&&typeof s.daily==='object'?s.daily:{};
   s.pet=Object.assign({},d.pet,s.pet||{});s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
   s.feed=Array.isArray(s.feed)?s.feed.slice(0,50).map(f=>({t:+f.t||0,by:String(f.by||''),k:f.k==='note'?'note':'event',text:String(f.text||'').slice(0,160)})):[];
-  s.visits=s.visits&&typeof s.visits==='object'?s.visits:{};s.names=s.names&&typeof s.names==='object'?Object.fromEntries(Object.entries(s.names).slice(0,8).map(([k,v])=>[String(k).slice(0,64),String(v||'').slice(0,20)])):{};s.hearts=Math.max(0,+s.hearts||0);if(!FLOORS.includes(s.floor))s.floor='checker';if(!WALLS.includes(s.wall))s.wall='bubble';s.tf=Array.isArray(s.tf)&&s.tf.length===GRID*GRID?s.tf.map(k=>TILESETS.f[k]?k:s.floor):Array(GRID*GRID).fill(s.floor);s.tw=Array.isArray(s.tw)&&s.tw.length===GRID*4?s.tw.map(k=>TILESETS.w[k]?k:s.wall):Array(GRID*4).fill(s.wall);if(!SKY_KEYS.includes(s.sky))s.sky='classic';if(oldPal){const mp=[0,7,8,3,12,5,2];s.items.forEach(i=>i.c=mp[(i.c||0)%7])}s.pv=2;return s}
+  s.visits=s.visits&&typeof s.visits==='object'?s.visits:{};s.names=s.names&&typeof s.names==='object'?Object.fromEntries(Object.entries(s.names).slice(0,8).map(([k,v])=>[String(k).slice(0,64),String(v||'').slice(0,20)])):{};s.hearts=Math.max(0,+s.hearts||0);if(!FLOORS.includes(s.floor))s.floor='checker';if(!WALLS.includes(s.wall))s.wall='bubble';const RN=ROOM_SIZES.includes(s.size)?s.size:8;s.size=RN;s.tf=Array.isArray(s.tf)&&s.tf.length===RN*RN?s.tf.map(k=>TILESETS.f[k]?k:s.floor):Array(RN*RN).fill(s.floor);s.tw=Array.isArray(s.tw)&&s.tw.length===RN*4?s.tw.map(k=>TILESETS.w[k]?k:s.wall):Array(RN*4).fill(s.wall);s.fown=s.fown&&typeof s.fown==='object'?Object.fromEntries(Object.entries(s.fown).filter(([k,v])=>CATMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):{};s.town=[...new Set([...STARTER_TILES,...(Array.isArray(s.town)?s.town:[]),...s.tf.map(k=>'f:'+k),...s.tw.map(k=>'w:'+k)])].filter(k=>TILESETS[k[0]]&&TILESETS[k[0]][k.slice(2)]);s.downs=[...new Set(['classic',...(Array.isArray(s.downs)?s.downs:[])])].filter(k=>k==='classic'||(TILESETS[k[0]]&&TILESETS[k[0]][k.slice(2)]));s.door=Object.assign({s:'classic',w:3,u:-2.6},s.door&&typeof s.door==='object'?s.door:{});if(!s.downs.includes(s.door.s))s.door.s='classic';s.door.w=clamp(s.door.w|0,0,3);s.door.u=clamp(+s.door.u||0,-RN/2+.8,RN/2-.8);if(!SKY_KEYS.includes(s.sky))s.sky='classic';if(oldPal){const mp=[0,7,8,3,12,5,2];s.items.forEach(i=>i.c=mp[(i.c||0)%7])}s.pv=2;return s}
 function loadLocal(){let s=null;try{s=JSON.parse(localStorage.getItem(soloKey())||'null')}catch(_){}state=normalize(s||defaultState());if(!s)state.rev=0;syncScene();updHUD()}
 function connectShared(){
   if(!db)return;if(unsub){try{unsub()}catch(_){}unsub=null}
