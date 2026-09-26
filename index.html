@@ -2397,7 +2397,7 @@ const EYE_TEX=(()=>{let w=null,p=null;return{white(){if(w)return w;const c=mkCan
       x.strokeStyle='rgba(150,120,255,.55)';x.lineWidth=5;x.beginPath();x.ellipse(64,66,26,30,0,.35*Math.PI,.8*Math.PI);x.stroke();p=new THREE.CanvasTexture(c);p.encoding=THREE.sRGBEncoding;return p}}})();
 // a soft candy shine: a flat white oval lying on the surface
 let glossT=null;function glossTex(){if(glossT)return glossT;const c=mkCanvas(64,64),x=c.getContext('2d'),g=x.createRadialGradient(32,32,2,32,32,31);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.45,'rgba(255,255,255,.75)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,64,64);return glossT=new THREE.CanvasTexture(c)}
-function gloss(parent,r,sy,sz,x,y,w,h,a,op){const pv=onSurface(parent,r,sy,sz,x,y);const m=add(pv,new THREE.PlaneGeometry(2,2),B(0xffffff,{transparent:true,opacity:op||.55,map:glossTex(),depthWrite:false}),0,0,.006);m.scale.set(w,h,1);m.rotation.z=a||0;m.castShadow=false;m.outline=0;return m}
+function gloss(parent,r,sy,sz,x,y,w,h,a,op,ox,oy,oz){const pv=onSurface(parent,r,sy,sz,x,y,ox,oy,oz);const m=add(pv,new THREE.PlaneGeometry(2,2),B(0xffffff,{transparent:true,opacity:op||.55,map:glossTex(),depthWrite:false}),0,0,.006);m.scale.set(w,h,1);m.rotation.z=a||0;m.castShadow=false;m.outline=0;return m}
 // jelly materials (detail 4 in the shader)
 function jel(h,o){const m=M(h,Object.assign({roughness:.34},o||{}));m.detail=4;return m}
 
@@ -3150,67 +3150,207 @@ const FIX={
   sign:{n:'Sign',fn:'fixture',wall:1,build:it=>fxSign(it.txt,it.c),use:{kind:'wall',anim:'u_gaze',d:3,emo:['⭐'],w:.15}}};
 
 /* --- shopkeepers --- */
-function kFace(par,y,z,eyeR,gap){const I=M(0x3B1273,{roughness:.3}),W=M(0xFFFFFF,{roughness:.3}),f=G();f.position.set(0,y,z);par.add(f);
-  const eyes=[-gap,gap].map(x=>{const e=sp(f,eyeR,I,x,.06,0);nosh(sp(f,eyeR*.36,W,x+eyeR*.35,.06+eyeR*.4,eyeR*.8));return e});
-  [-gap*1.9,gap*1.9].forEach(x=>nosh(sp(f,eyeR*.95,M(0xFF9EC7,{roughness:.6}),x,-.05,-.03,1,.6,.4)));
-  const smile=to(f,eyeR*1.1,eyeR*.3,I,0,-.05,.02,0,0,Math.PI,Math.PI),open=nosh(sp(f,eyeR*.85,M(0xB0305C,{roughness:.4}),0,-.09,.01,1,.2,.5));
-  return{eyes,smile,open,talk(m,t){open.scale.set(1,.2+m*1.3,.5);smile.visible=m<.2;const bl=(t%3.3)<.12;eyes.forEach(e=>e.scale.y=bl?.15:1)}}}
-function kArm(par,x,y,mat,len){const a=G();a.position.set(x,y,0);par.add(a);sp(a,.09,mat,0,-len/2,0,1,len/.18,1);return a}
+/* --- shopkeeper kit: jelly skin, glossy eyes that blink and glance about, and a mouth that talks in syllables --- */
+// Face on a squashed sphere (radius r, scale sy/sz, centre cx/cy/cz): eyes at ±ex/ey (radius er), mouth at my (width mw).
+function kFace2(par,o){const F={eyes:[],pupils:[],brows:[],blink:1.5+Math.random()*2,dbl:0,look:[0,0],lookT:0,m:0,w:0},ink=M(INKC,{roughness:.3});
+  [-1,1].forEach(s=>{const pv=onSurface(par,o.r,o.sy,o.sz,s*o.ex,o.ey,o.cx,o.cy,o.cz),eg=piv(pv);
+    const w=add(eg,SPH(o.er,32,24),M(0xffffff,{roughness:.2,map:EYE_TEX.white(),emissive:0xffffff,emissiveIntensity:.2}),0,0,0);w.scale.set(1,1.12,.55);ol(w,.01);
+    const pg=piv(eg,0,0,o.er*.34),pu=add(pg,SPH(o.er*.56,24,18),M(0xffffff,{roughness:.08,map:EYE_TEX.pupil()}),0,0,0);pu.scale.set(1,1.1,.45);ol(pu,0);
+    nosh(ol(add(pg,SPH(o.er*.2,10,8),B(0xffffff),o.er*.18,o.er*.26,o.er*.25),0));nosh(ol(add(pg,SPH(o.er*.09,8,6),B(0xffffff),-o.er*.18,-o.er*.2,o.er*.25),0));
+    F.eyes.push(eg);F.pupils.push(pg);
+    if(o.brows!==false){const bp=onSurface(par,o.r,o.sy,o.sz,s*o.ex*1.04,o.ey+o.er*1.5,o.cx,o.cy,o.cz),bb=piv(bp,0,0,.004),br=add(bb,new THREE.TorusGeometry(o.er*.62,o.er*.12,8,18,Math.PI*.55),M(o.browC||INKC,{roughness:.4}),0,-o.er*.45,0);
+      br.rotation.z=Math.PI*.225;ol(br,0);bb.rotation.z=-s*.12;F.brows.push({bb,s})}
+    if(o.cheek!==false){const cp=onSurface(par,o.r,o.sy,o.sz,s*o.ex*1.62,o.ey-o.er*1.15,o.cx,o.cy,o.cz),c=nosh(add(cp,SPH(1,14,10),M(o.cheekC||0xFF7FB8,{roughness:.6,transparent:true,opacity:.75}),0,0,.002));c.scale.set(o.er*.62,o.er*.36,.01);ol(c,0)}});
+  const mp=onSurface(par,o.r,o.sy,o.sz,0,o.my,o.cx,o.cy,o.cz),mw=o.mw||o.er*1.1,arc=Math.PI*.8,sm=piv(mp,0,0,.004);sm.rotation.z=Math.PI;
+  {const t=add(sm,new THREE.TorusGeometry(mw,mw*.17,10,32,arc),ink,0,0,0);t.rotation.z=(Math.PI-arc)/2;ol(t,0);[1,-1].forEach(e=>{const a=Math.PI/2+e*arc/2;ol(add(sm,SPH(mw*.2,10,8),ink,Math.cos(a)*mw,Math.sin(a)*mw,0),0)})}
+  const mo=piv(mp,0,-mw*.25,0),mi=add(mo,SPH(mw*1.05,20,14),M(0x3A0F2E,{roughness:.6}),0,0,0);mi.scale.set(1,.8,.4);ol(mi,.008);
+  const tg=add(mo,SPH(mw*.62,14,10),M(0xFF6F9F,{roughness:.6}),0,-mw*.4,mw*.18,0);tg.scale.set(1,.5,.5);ol(tg,0);mo.scale.set(1,.01,1);mo.visible=false;
+  // st: {talk, happy, surprise}
+  F.update=(dt,t,st)=>{st=st||{};
+    // blinks every few seconds, sometimes a double blink; a slow look-around between blinks
+    F.blink-=dt;if(F.blink<-.14){F.blink=F.dbl?.18:2+Math.random()*3.2;F.dbl=!F.dbl&&Math.random()<.25}const bl=F.blink<0?Math.sin(Math.min(1,-F.blink/.14)*Math.PI):0;
+    F.lookT-=dt;if(F.lookT<0){F.lookT=.8+Math.random()*2.4;F.look=st.talk?[(Math.random()-.5)*.4,.05]:[(Math.random()-.5)*1.2,(Math.random()-.5)*.6]}
+    F.eyes.forEach(e=>e.scale.y=Math.max(.08,1-bl*.95));F.pupils.forEach(p=>{p.position.x=approach(p.position.x,F.look[0]*o.er*.22,dt*8);p.position.y=approach(p.position.y,F.look[1]*o.er*.2,dt*8)});
+    // talking: syllables of different sizes with little pauses, plus an 'oo' (narrow) or 'ee' (wide) shape
+    const syl=st.talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1)))*(Math.sin(t*1.3)>-.7?1:.2):0,tgt=Math.max(syl,st.happy?.75:0,st.surprise?.9:0);
+    F.m=approach(F.m,tgt,dt*22);F.w=approach(F.w,st.talk?Math.sin(t*3.3)*.25:0,dt*6);mo.visible=F.m>.08;mo.scale.set(1+F.w-F.m*.15,Math.max(.01,F.m),1);sm.visible=!mo.visible;
+    const up=st.talk?.08+syl*.1:st.happy||st.surprise?.18:0;F.brows.forEach(b=>{b.bb.position.y=approach(b.bb.position.y,up*o.er,dt*10);b.bb.rotation.z=approach(b.bb.rotation.z,-b.s*(st.surprise?-.05:.12),dt*8)})};
+  return F}
+// a noodle arm: tapered, with a mitten hand at the end; rotate the returned pivot to pose it
+function kArm2(par,x,y,z,mat,len,r,hand){const a=piv(par,x,y,z||0);const c=add(a,new THREE.CylinderGeometry(r*.8,r,len,16),mat,0,-len/2,0);ol(c,.012);ol(add(a,SPH(r,14,10),mat,0,0,0),.012);
+  const h=add(a,SPH(hand||r*1.45,18,14),mat,0,-len-(hand||r*1.45)*.5,0);h.scale.set(1,1.05,.9);ol(h,.012);a.userData.tip=piv(a,0,-len-(hand||r*1.45)*.9,0);return a}
+// breathing / bobbing helper
+const kBreath=(b,t,amp,sp)=>{const k=Math.sin(t*(sp||2.2))*(amp||.02);b.scale.set(1-k*.5,1+k,1-k*.5)};
 const KEEPERS={
-  // Cushy: a plump pillow with button eyes, corner tassels and a measuring tape that zips in and out
-  cushion(){const g=G(),b=G();g.add(b);const C=M(0xFFC6E0,{roughness:.8}),T=M(0xFFD21F,{roughness:.5}),Bt=M(0x9B4DF2,{roughness:.35});
-    rb(b,.95,.9,.55,.26,C,0,.62,0);[[-1,1],[1,1],[-1,-1],[1,-1]].forEach(([x,y])=>{const t=co(b,.06,.18,T,x*.47,.62+y*.45,0,8);t.rotation.z=x*y*.8+(y<0?Math.PI:0)});
-    const face=G();face.position.set(0,.72,.28);b.add(face);const eyes=[-.17,.17].map(x=>{const e=cy(face,.08,.08,.04,Bt,x,.04,0,16);e.rotation.x=Math.PI/2;[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,c])=>{const h=nosh(cy(face,.012,.012,.05,M(0xFFFFFF),x+a*.025,.04+c*.025,.005,6));h.rotation.x=Math.PI/2});return e});
-    for(let i=0;i<5;i++){const a=Math.PI*(1.15+i*.175),st=nosh(bx(face,.04,.012,.01,M(0x3B1273),Math.cos(a)*.13,-.02+Math.sin(a)*.1,.01));st.rotation.z=a+Math.PI/2}
-    const open=nosh(sp(face,.06,M(0xB0305C),0,-.1,.01,1,.2,.5));[-.33,.33].forEach(x=>nosh(sp(face,.07,M(0xFF8AB8),x,-.05,-.02,1,.6,.4)));
-    const arms=[-1,1].map(s=>kArm(b,s*.5,.6,C,.3));const tape=G();tape.position.set(0,-.34,.05);arms[1].add(tape);rb(tape,.16,.16,.08,.04,T,0,0,0);const strip=nosh(bx(tape,.5,.05,.01,M(0xFFF3B0),.33,0,0));
-    [-.25,.25].forEach(x=>sp(g,.14,C,x,.1,.05,1,.55,1.2));
-    return{g,head:face,upd(dt,t,act,p,talk){const pl=1+Math.sin(t*2.2)*.03;b.scale.set(pl,2-pl,pl);b.position.y=act==='cheer'?Math.sin(Math.min(1,p*1.4)*Math.PI)*.35:0;b.rotation.y=act==='cheer'?ease(p)*Math.PI*2:0;
-      const ext=.5+Math.sin(t*1.6)*.5;strip.scale.x=.2+ext;strip.position.x=.08+.25*(.2+ext);arms[1].rotation.set(-.5,0,1.1+Math.sin(t*1.6)*.2);
-      arms[0].rotation.set(0,0,act==='greet'?-2.6+Math.sin(t*14)*.35:act==='cheer'?-2.4:-.4);eyes.forEach(e=>e.scale.z=(t%3.6)<.12?.2:1);open.scale.set(1,.2+(talk?Math.abs(Math.sin(t*13)):act==='cheer'?.8:0)*1.3,.5)}}},
-  // Bolt: a builder in a hard hat and overalls, rolling paint up and down with a roller
-  builder(){const g=G(),b=G();g.add(b);const O=M(0xFF8A1C,{roughness:.4}),Y=M(0xFFD21F,{roughness:.35}),Bl=M(0x3E7FD8,{roughness:.6}),Pk=M(0xFF3D9A,{roughness:.5});
-    sp(b,.5,O,0,.66,0,1,1.1,1);rb(b,.62,.5,.12,.08,Bl,0,.42,.38);[-1,1].forEach(x=>{const st=rb(b,.1,.55,.06,.03,Bl,x*.22,.78,.36);st.rotation.x=-.2});[-1,1].forEach(x=>sp(b,.035,Y,x*.22,.97,.43));
-    const f=kFace(b,.86,.46,.075,.15);const hat=G();hat.position.set(0,1.12,0);b.add(hat);sp(hat,.4,Y,0,0,0,1,.6,1);cy(hat,.5,.5,.05,Y,0,-.02,.08,28);rb(hat,.1,.26,.5,.04,lighten(0xFFD21F,.3)===0?Y:M(0xFFE66E,{roughness:.35}),0,.12,0);
-    const pencil=cy(b,.025,.025,.3,Pk,.44,1.0,-.05,8);pencil.rotation.z=1.1;
-    const arms=[-1,1].map(s=>kArm(b,s*.5,.74,O,.34));const roller=G();roller.position.set(0,-.36,.04);arms[1].add(roller);cy(roller,.02,.02,.4,M(0x6B4A2E),0,-.12,0,8);
-    const rl=cy(roller,.08,.08,.34,Pk,0,-.34,.06,16);rl.rotation.z=Math.PI/2;
-    [-.22,.22].forEach(x=>rb(g,.26,.14,.34,.06,M(0x6B4A2E,{roughness:.6}),x,.07,.05));
-    return{g,head:hat,upd(dt,t,act,p,talk){b.position.y=act==='cheer'?Math.sin(Math.min(1,p*1.4)*Math.PI)*.4:Math.abs(Math.sin(t*2))*.02;
-      arms[1].rotation.set(-1.2+Math.sin(t*2.6)*.5,0,.35);hat.rotation.z=act==='greet'?Math.sin(Math.min(1,p*2)*Math.PI)*.4:0;hat.position.y=1.12+(act==='greet'?Math.sin(Math.min(1,p*2)*Math.PI)*.12:0);
-      arms[0].rotation.set(0,0,act==='greet'?-2.3+Math.sin(t*12)*.3:act==='cheer'?-2.5:-.35);if(act==='cheer')arms[1].rotation.set(0,0,2.4);rl.rotation.x+=dt*(Math.cos(t*2.6)*3);
-      f.talk(talk?Math.abs(Math.sin(t*13)):act==='cheer'?.8:0,t)}}},
-  // Bunbun the baker: a round bun in a chef's hat, forever whisking
-  baker(){const g=G(),b=G();g.add(b);const D=M(0xFFE0B0,{roughness:.5}),W=M(0xFFFFFF,{roughness:.55}),P=M(0xFF7FB8,{roughness:.5});
-    sp(b,.55,D,0,.62,0,1,.92,1);sp(b,.47,P,0,.5,.13,1,.72,.9);const f=kFace(b,.74,.47,.075,.16);
-    const hat=G();hat.position.set(0,1.08,0);b.add(hat);cy(hat,.26,.24,.26,W,0,.13,0);[[-.15,.33,0],[.15,.33,0],[0,.42,.04],[0,.36,-.12]].forEach(([x,y,z])=>sp(hat,.19,W,x,y,z));
-    const arms=[-1,1].map(s=>kArm(b,s*.52,.72,D,.34));const wh=G();wh.position.set(0,-.36,.04);arms[1].add(wh);cy(wh,.02,.02,.26,M(0xB47A4A),0,-.1,0,8);[0,1.05,2.1].forEach(r=>to(wh,.07,.012,M(0xDDE3EE,{metalness:.6,roughness:.3}),0,-.3,0,0,r,0));
-    [-.22,.22].forEach(x=>sp(g,.15,D,x,.1,.12,1,.55,1.25));
-    return{g,head:hat,upd(dt,t,act,p,talk){const hop=act==='cheer'?Math.sin(Math.min(1,p*1.4)*Math.PI)*.35:0;b.position.y=hop+Math.abs(Math.sin(t*2.4))*.025;b.scale.set(1+Math.sin(t*4.8)*.015,1-Math.sin(t*4.8)*.015,1);
-      arms[1].rotation.set(-.9+Math.sin(t*5)*.25,0,.9+Math.cos(t*5)*.25);
-      if(act==='greet')arms[0].rotation.set(0,0,-2.6+Math.sin(t*14)*.35);else if(act==='cheer'){arms[0].rotation.set(0,0,-2.5);arms[1].rotation.set(0,0,2.5)}else arms[0].rotation.set(0,0,-.35+Math.sin(t*1.7)*.05);
-      f.talk(talk?Math.abs(Math.sin(t*14)):act==='cheer'?.8:0,t)}}},
-  // Fizz the stylist: a tall jelly with a pink bouffant, glasses and a comb, trailed by bubbles
-  stylist(){const g=G(),b=G();g.add(b);const C=M(0x6FDCF5,{roughness:.22}),P=M(0xFF5FB0,{roughness:.35}),Gd=M(0xFFD21F,{metalness:.5,roughness:.3});
-    cy(b,.32,.46,.3,C,0,.15,0,24);sp(b,.4,C,0,.62,0,1,1.15,1);sp(b,.34,C,0,1.2,0);const f=kFace(b,1.24,.3,.06,.13);[-.13,.13].forEach(x=>to(f.eyes[0].parent,.1,.016,Gd,x,.06,.04));nosh(bx(f.eyes[0].parent,.08,.02,.02,Gd,0,.08,.05));
-    const hair=G();hair.position.set(0,1.45,-.04);b.add(hair);to(hair,.22,.12,P,0,.08,0,Math.PI/2);sp(hair,.24,P,0,.26,0);sp(hair,.16,P,.02,.46,.04);to(hair,.08,.04,P,.16,.52,.06);
-    const arms=[-1,1].map(s=>kArm(b,s*.4,.82,C,.3));const comb=G();comb.position.set(0,-.32,.04);arms[1].add(comb);rb(comb,.05,.26,.03,.01,Gd,0,-.08,0);for(let i=0;i<5;i++)nosh(bx(comb,.05,.012,.012,M(0x3B1273),.04,-.18+i*.05,0));
-    const bubs=[0,1,2,3,4,5].map(i=>{const m=nosh(sp(g,.05+(i%3)*.025,M(0xE8FBFF,{roughness:.05,transparent:true,opacity:.5}),0,0,0));m.outline=0;return{m,ph:i/6,x:(i%2?1:-1)*(.45+(i%3)*.12)}});
-    return{g,head:hair,upd(dt,t,act,p,talk){b.rotation.z=Math.sin(t*1.4)*.05;b.rotation.y=act==='cheer'?ease(p)*Math.PI*2:0;
-      arms[1].rotation.set(-.6+Math.sin(t*3)*.3,0,.9+Math.sin(t*3)*.4);arms[0].rotation.set(0,0,act==='greet'?-2.6+Math.sin(t*14)*.35:act==='cheer'?-2.4:-.3);
-      const sp=act==='cheer'?1.2:.35;bubs.forEach(q=>{const k=(t*sp+q.ph)%1;q.m.position.set(q.x+Math.sin(t*1.5+q.ph*6)*.08,.4+k*1.9,Math.cos(t+q.ph*6)*.2);q.m.scale.setScalar(k>.85?(1-k)/.15:1)});
-      f.talk(talk?Math.abs(Math.sin(t*12)):act==='cheer'?.7:0,t)}}},
-  // Boing the toymaker: a jack-in-the-box on a spring, with a propeller cap that never stops
-  toymaker(){const g=G(),Y=M(0xFFD21F,{roughness:.4}),Pu=M(0x9B4DF2,{roughness:.35}),R=M(0xFF3D9A,{roughness:.4}),Cy=M(0x3EC8F2,{roughness:.4}),Sp=M(0xDDE3EE,{metalness:.6,roughness:.3});
-    rb(g,.78,.62,.78,.08,Y,0,.31,0);[[0,.4,0],[.4,0,Math.PI/2],[-.4,0,-Math.PI/2]].forEach(([x,z,r])=>{const st=add(g,new THREE.ExtrudeGeometry(starShape(.15,.07,5),{depth:.02,bevelEnabled:false}),R,x,.33,z);st.rotation.y=r});
-    const lid=G();lid.position.set(0,.64,-.39);lid.rotation.x=-1.9;g.add(lid);rb(lid,.8,.06,.8,.03,Cy,0,0,.4);
-    const spring=G();spring.position.set(0,.62,0);g.add(spring);for(let i=0;i<6;i++)to(spring,.13,.025,Sp,0,.05+i*.08,0,Math.PI/2);
-    const head=G();g.add(head);sp(head,.36,Pu,0,.3,0);const f=kFace(head,.36,.3,.08,.14);sp(head,.19,Cy,0,.62,0,1,.55,1);cy(head,.015,.015,.14,Sp,0,.72,0,6);
-    const blades=G();blades.position.set(0,.8,0);head.add(blades);rb(blades,.56,.02,.1,.01,R,0,0,0);rb(blades,.1,.02,.56,.01,Y,0,0,0);
-    const arms=[-1,1].map(s=>{const a=G();a.position.set(s*.34,.3,0);head.add(a);cy(a,.018,.018,.34,Sp,0,-.17,0,6);sp(a,.08,R,0,-.36,0);return a});
-    return{g,head,upd(dt,t,act,p,talk){const bo=act==='cheer'?1+Math.sin(p*Math.PI)*1.1:1+(Math.sin(t*3)*.5+.5)*.22;spring.scale.y=bo;head.position.y=.62+.48*bo;head.rotation.z=Math.sin(t*1.3)*.12;
-      blades.rotation.y+=dt*(act==='cheer'?30:9);arms[0].rotation.set(0,0,act==='greet'?-2.4+Math.sin(t*14)*.4:act==='cheer'?-2.2:-.5+Math.sin(t*3)*.15);arms[1].rotation.set(0,0,act==='cheer'?2.2:.5+Math.sin(t*3+1)*.15);
-      f.talk(talk?Math.abs(Math.sin(t*13)):act==='cheer'?.9:0,t)}}}};
+  // Cushy: a plump quilted pillow with tufted buttons, swinging corner tassels and a measuring tape that zips in and out.
+  // Gives themself a fluff now and then, squishing like a real cushion.
+  cushion(){const g=G(),b=G();g.add(b);const C=jel(0xFFA6CF,{roughness:.55}),T=jel(0xFFD21F,{roughness:.45}),Bt=jel(0x9B4DF2,{roughness:.32}),Pp=jel(0xFF8FC0,{roughness:.5});
+    const body=piv(b,0,.72,0);ol(rb(body,.95,.9,.55,.27,C,0,0,0),.018);
+    // the seam piping around the edge
+    ol(add(body,rbox(.975,.925,.07,.03),Pp,0,0,0),.01);
+    // tufted buttons in the four quilted corners
+    [[-1,1],[1,1],[-1,-1],[1,-1]].forEach(([x,y])=>{const bp=onSurface(body,.9,1,.32,x*.3,y*.3);const bt=add(bp,SPH(.045,16,10),Bt,0,0,.005);bt.scale.set(1,1,.45);ol(bt,.008);
+      [[-1,0],[1,0]].forEach(([h])=>ol(nosh(add(bp,SPH(.009,6,4),M(0xffffff),h*.014,0,.025)),0))});
+    gloss(body,.9,1,.32,-.28,.33,.1,.045,.5,.4);
+    const F=kFace2(body,{r:.9,sy:1,sz:.32,ex:.15,ey:.07,er:.08,my:-.12,mw:.065,browC:0xD0508A,cheekC:0xFF6FA8});
+    // corner tassels that swing a beat behind the body
+    const tas=[[-1,1],[1,1],[-1,-1],[1,-1]].map(([x,y])=>{const k=piv(body,x*.47,y*.44,0);ol(sp(k,.04,T,0,0,0),.008);const sw=piv(k,0,-.02,0);sw.userData.r=x*(y>0?.35:.6);
+      ol(sp(sw,.022,Bt,0,-.03,0),.006);const c=add(sw,new THREE.CylinderGeometry(.018,.06,.15,12),T,0,-.12,0);ol(c,.008);return{sw,x}});
+    // arms and little feet
+    const armL=kArm2(body,.47,-.02,.02,C,.26,.065),armR=kArm2(body,-.47,-.02,.02,C,.26,.065);
+    const tape=piv(armR.userData.tip,0,.02,.07);tape.rotation.x=1.3;ol(rb(tape,.16,.16,.08,.04,T,0,0,0),.01);ol(sp(tape,.025,Bt,0,0,.045),.006);
+    const strip=piv(tape,-.08,0,0);strip.rotation.y=Math.PI;const sm=add(strip,new THREE.BoxGeometry(1,.05,.008),M(0xFFF3B0,{roughness:.6}),.5,0,0);ol(sm,.006);
+    for(let i=0;i<8;i++)ol(nosh(add(strip,new THREE.BoxGeometry(.006,.022,.01),M(INKC),.06+i*.12,.012,0)),0);const tipT=ol(add(strip,new THREE.BoxGeometry(.02,.07,.02),Bt,1,0,0),.006);
+    [-.22,.22].forEach(x=>{const f=add(b,SPH(.13,20,14),C,x,.14,.06);f.scale.set(1,.55,1.25);ol(f,.012)});
+    let fluffT=5,fp=9;
+    return{g,head:body,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';
+      fluffT-=dt;if(fluffT<0&&!talk&&act==='idle'){fluffT=6+Math.random()*4;fp=0}fp+=dt;
+      // squish: a soft breath, plus a big squash-and-recover when fluffed
+      const fl=fp<1.4?Math.sin(fp/1.4*Math.PI*3)*Math.exp(-fp*2)*.12:0,br=Math.sin(t*2.1)*.022+fl+(talk?Math.abs(Math.sin(t*9))*.02:0);body.scale.set(1+br*.6,1-br,1+br*.4);
+      b.position.y=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.35:0;b.rotation.y=cheer?ease(p)*Math.PI*2:0;body.rotation.z=Math.sin(t*1.2)*.04+(talk?Math.sin(t*4.4)*.03:0);
+      tas.forEach((q,i)=>q.sw.rotation.z=q.sw.userData.r+Math.sin(t*2.4-.8+i)*.15-Math.sin(t*1.2-.6)*.12);
+      // the tape zips out and snaps back
+      const ph=(t*.45)%1,ext=ph<.55?ease(ph/.55):ph<.62?1-(ph-.55)/.07:0;strip.scale.x=.08+ext*.42;tipT.scale.x=1/strip.scale.x;
+      armR.rotation.set(-.9+Math.sin(t*1.6)*.1,0,-.5-ext*.25);
+      if(greet)armL.rotation.set(0,0,2.5+Math.sin(t*13)*.35);else if(cheer){armL.rotation.set(0,0,2.5);armR.rotation.set(0,0,-2.5)}
+      else if(fp<1.4)armL.rotation.set(-.3,0,2.3-Math.abs(Math.sin(fp*9))*.35);else if(talk)armL.rotation.set(-.6+Math.sin(t*3.2)*.3,0,.5+Math.abs(Math.sin(t*2.2))*.4);
+      else armL.rotation.set(-.1+Math.sin(t*.9)*.05,0,.35);
+      F.update(dt,t,{talk,happy:cheer||greet||fp<1.4})}}},
+  // Bolt: a round builder in denim overalls and a hard hat, pencil tucked at the side, rolling pink paint on an invisible wall.
+  // Straightens the hat now and then; tips it to say hello.
+  builder(){const g=G(),b=G();g.add(b);const O=jel(0xFF9A3C,{roughness:.36}),Y=jel(0xFFD21F,{roughness:.3}),Bl=jel(0x3E7FD8,{roughness:.5}),Pk=jel(0xFF3D9A,{roughness:.4}),Wd=M(0x9A6A3E,{roughness:.6});
+    const body=piv(b,0,.72,0);const bo=add(body,SPH(.5,48,36),O,0,0,0);bo.scale.set(1,1.02,.92);ol(bo,.018);gloss(body,.5,1.02,.92,-.25,.3,.11,.055,.6,.45);
+    // overalls: the lower body, a bib with a pocket, straps and yellow buttons
+    const ov=add(body,new THREE.SphereGeometry(.508,44,20,0,Math.PI*2,1.95,Math.PI-1.95),Bl,0,0,0);ov.scale.set(1,1.02,.92);ol(ov,.01);
+    const bib=onSurface(body,.5,1.02,.92,0,-.24);ol(rb(bib,.36,.24,.04,.03,Bl,0,.02,.0),.01);ol(rb(bib,.16,.08,.02,.015,jel(0x5A95E8,{roughness:.5}),0,.0,.025),.006);
+    {const h=add(bib,heartGeo(),Pk,-.005,-.018,.035);h.scale.setScalar(.022);ol(h,0)}
+    [-1,1].forEach(s=>{const bp=onSurface(body,.5,1.02,.92,s*.15,-.08);ol(sp(bp,.03,Y,0,0,.02),.006);const st=add(body,new THREE.TorusGeometry(.5,.028,8,24,.9),Bl,0,0,0);st.rotation.set(0,s*.3-Math.PI/2,Math.PI/2-.1);st.scale.set(1.02,.95,.95);ol(st,0)});
+    const F=kFace2(body,{r:.5,sy:1.02,sz:.92,ex:.15,ey:.2,er:.085,my:.03,mw:.07,browC:0x8A3A10,cheekC:0xFF6F8F});
+    // hard hat with a ridge and a brim that sticks out in front, and a pencil at the side
+    const hat=piv(body,0,.4,0);{const d=nosh(add(hat,new THREE.SphereGeometry(.36,36,16,0,Math.PI*2,0,Math.PI/2),Y,0,0,0));d.scale.set(1,.72,1);ol(d,.016);
+      const br=nosh(add(hat,new THREE.CylinderGeometry(.4,.4,.035,32),Y,0,.01,.05));br.scale.set(1,1,1.12);ol(br,.012);ol(nosh(rb(hat,.08,.1,.62,.04,jel(0xFFE36E,{roughness:.3}),0,.2,0)),.01);
+      const st=add(hat,new THREE.ExtrudeGeometry(starShape(.07,.032,5),{depth:.02,bevelEnabled:false}),Pk,0,.12,.33);st.rotation.x=-.35;ol(st,.006);gloss(hat,.36,.72,1,-.14,.16,.07,.03,.5,.5)}
+    const pencil=piv(body,.43,.24,.05);pencil.rotation.set(0,0,1.15);ol(cy(pencil,.024,.024,.24,Y,0,0,0,6),.008);ol(add(pencil,new THREE.ConeGeometry(.024,.06,6),M(0xFFE3B8),0,-.15,0),.006).rotation.x=Math.PI;
+      ol(cy(pencil,.024,.024,.04,Pk,0,.14,0,6),.006);
+    // arms: the right rolls paint, the left is free
+    const armL=kArm2(body,.5,-.02,.03,O,.26,.07),armR=kArm2(body,-.5,-.02,.03,O,.26,.07);
+    const roller=piv(armR.userData.tip,0,0,.04);roller.rotation.x=-1.5;cy(roller,.018,.018,.34,Wd,0,-.14,0,8);const rh=piv(roller,0,-.3,.02);cy(rh,.012,.012,.06,M(0xDDE3EE,{metalness:.5,roughness:.3}),0,-.02,0,6);
+    const rl=add(rh,new THREE.CylinderGeometry(.075,.075,.3,20),Pk,0,-.08,0);rl.rotation.z=Math.PI/2;ol(rl,.01);
+    [-.22,.22].forEach(x=>{const f=add(b,SPH(.14,20,14),Wd,x,.08,.08);f.scale.set(1,.6,1.3);ol(f,.012)});
+    let fixT=6,fp=9;
+    return{g,head:hat,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';
+      fixT-=dt;if(fixT<0&&!talk&&act==='idle'){fixT=7+Math.random()*4;fp=0}fp+=dt;
+      b.position.y=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.4:Math.abs(Math.sin(t*2.6))*.018;kBreath(body,t,.016,2.6);
+      body.rotation.z=Math.sin(t*1.3)*.035+(talk?Math.sin(t*4.6)*.03:0);body.rotation.x=talk?Math.sin(t*3.8)*.03:0;
+      // paint strokes: up and down, the roller spinning with the stroke
+      const sk=talk?.4:1,st=Math.sin(t*2.6);armR.rotation.set(-1.5+st*.5*sk,0,-.65);rl.rotation.x+=dt*Math.cos(t*2.6)*6*sk;
+      // hat: tipped for hello, straightened now and then
+      const tip=greet?Math.sin(Math.min(1,p*1.6)*Math.PI):0,fx=fp<1.3?Math.sin(fp/1.3*Math.PI):0;hat.position.y=.4+tip*.14+fx*.03;hat.rotation.z=tip*.35+fx*Math.sin(fp*12)*.08;
+      if(cheer){armL.rotation.set(0,0,2.5);armR.rotation.set(0,0,-2.5)}else if(greet)armL.rotation.set(0,0,2.6-Math.sin(t*12)*.25);
+      else if(fx>0)armL.rotation.set(-.2,0,2.65-fx*.1);else if(talk)armL.rotation.set(-.6+Math.sin(t*3.1)*.3,0,.5+Math.abs(Math.sin(t*2.3))*.4);else armL.rotation.set(-.1+Math.sin(t*.9)*.05,0,.35);
+      F.update(dt,t,{talk,happy:cheer||greet})}}},
+  // Bunbun the baker: a round bun with a golden baked top and sesame seeds, in a puffy chef's hat and a heart apron,
+  // whisking batter in a bowl held in the crook of one arm (the odd puff of flour), nodding along as they talk.
+  baker(){const g=G(),b=G();g.add(b);const D=jel(0xFFE3B8,{roughness:.45}),Cr=jel(0xF0AE55,{roughness:.4}),W=jel(0xFFFFFF,{roughness:.5}),P=jel(0xFF7FB8,{roughness:.5}),
+      Se=M(0xFFF8E6,{roughness:.6}),Mt=M(0xDDE3EE,{metalness:.6,roughness:.25});
+    const body=piv(b,0,.74,0);const bun=add(body,SPH(.56,48,34),D,0,0,0);bun.scale.set(1,.88,.95);ol(bun,.018);
+    // baked top: a golden cap over the upper dome, with sesame seeds
+    const cap=add(body,new THREE.SphereGeometry(.575,48,20,0,Math.PI*2,0,.95),Cr,0,0,0);cap.scale.set(1,.88,.95);ol(cap,0);
+    for(let i=0;i<9;i++){const a=i*2.4+.4,ph=.25+(i%3)*.18,sd=add(body,SPH(.028,8,6),Se,Math.sin(ph)*Math.cos(a)*.57,Math.cos(ph)*.5,Math.sin(ph)*Math.sin(a)*.54);sd.scale.set(1.5,.6,.8);sd.rotation.y=-a;ol(sd,0)}
+    gloss(body,.56,.88,.95,-.3,.3,.14,.07,.6,.5);
+    // apron with a pocket and a little heart
+    const ap=add(body,new THREE.SphereGeometry(.565,40,20,Math.PI*.12,Math.PI*.76,1.98,.9),P,0,0,0);ap.scale.set(1,.88,.95);ol(ap,.01);
+    const pk=onSurface(body,.56,.88,.95,0,-.3);rb(pk,.2,.14,.02,.02,W,0,0,.012);{const h=add(pk,heartGeo(),P,0,.005,.024);h.scale.setScalar(.05);ol(h,0)}
+    const F=kFace2(body,{r:.56,sy:.88,sz:.95,ex:.17,ey:.17,er:.085,my:-.03,mw:.075,browC:0x9A5B2A,cheekC:0xFF8FB8});
+    // puffy chef's hat
+    const hat=piv(body,0,.42,0);cy(hat,.27,.27,.2,W,0,.08,0,32);[[-.17,.3,0],[.17,.3,0],[0,.36,.12],[0,.33,-.13],[0,.44,0]].forEach(([x,y,z],i)=>ol(sp(hat,i===4?.2:.18,W,x,y,z),.014));
+    // arms: the left cradles the bowl, the right whisks in it
+    const armL=kArm2(body,-.5,.02,.05,D,.3,.07),armR=kArm2(body,.5,.02,.05,D,.28,.07);
+    const bowl=piv(b,.6,.5,.45);const bw=add(bowl,new THREE.SphereGeometry(.2,28,12,0,Math.PI*2,Math.PI*.5,Math.PI*.5),M(0x9FE3F5,{roughness:.3,side:THREE.DoubleSide}),0,.12,0);ol(bw,.012);
+    to(bowl,.2,.018,M(0xFFFFFF,{roughness:.3}),0,.12,0,Math.PI/2);const batter=add(bowl,new THREE.CircleGeometry(.18,24),M(0xFFF1C9,{roughness:.6}),0,.09,0);batter.rotation.x=-Math.PI/2;ol(batter,0);
+    const wh=piv(bowl,0,.14,0),wr=piv(wh);cy(wr,.018,.018,.28,M(0xB47A4A,{roughness:.5}),0,.26,0,10);[0,1.05,2.1].forEach(r=>ol(to(wr,.06,.009,Mt,0,.08,0,0,r,0),0));
+    const puffs=[0,1,2,3].map(i=>{const m=nosh(add(bowl,SPH(.05,10,8),M(0xFFFFFF,{roughness:.9,transparent:true,opacity:.7}),0,.2,0));m.visible=false;ol(m,0);return{m,t:9}});let puffT=4;
+    [-.22,.22].forEach(x=>{const f=sp(g,.15,D,x,.08,.1,1,.55,1.25);ol(f,.012)});
+    return{g,head:hat,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';
+      b.position.y=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.35:0;kBreath(body,t,.018);body.rotation.z=Math.sin(t*1.1)*.03+(talk?Math.sin(t*5)*.03:0);body.rotation.x=talk?Math.sin(t*4)*.035:0;
+      // whisking: circles in the bowl, slower while talking
+      const ws=talk?4:8;wh.position.set(Math.cos(t*ws)*.07,0,Math.sin(t*ws)*.07);wr.rotation.set(Math.sin(t*ws)*.25,0,-Math.cos(t*ws)*.25-.2);
+      armR.rotation.set(-1.45+Math.sin(t*ws)*.1,0,.12+Math.cos(t*ws)*.08);
+      // the free hand: rests, talks with little gestures, waves hello
+      if(greet)armL.rotation.set(0,0,-2.5+Math.sin(t*13)*.35);else if(cheer){armL.rotation.set(0,0,-2.5);armR.rotation.set(0,0,2.5)}else if(talk)armL.rotation.set(-.7+Math.sin(t*3.1)*.3,0,-.55-Math.abs(Math.sin(t*2.3))*.35);else armL.rotation.set(-.15+Math.sin(t*.9)*.05,0,-.35);
+      // a puff of flour now and then
+      puffT-=dt;if(puffT<0){puffT=3+Math.random()*4;puffs.forEach((q,i)=>{q.t=-i*.08;q.x=(Math.random()-.5)*.2;q.z=(Math.random()-.5)*.2})}
+      puffs.forEach(q=>{q.t+=dt;const k=q.t/1.1;q.m.visible=k>0&&k<1;if(q.m.visible){q.m.position.set(q.x*k*2,.18+k*.35,q.z*k*2);q.m.scale.setScalar(.6+k*1.6);q.m.material.opacity=.7*(1-k)}});
+      F.update(dt,t,{talk,happy:cheer||greet})}}},
+  // Fizz the stylist: a tall aqua jelly drop with a pink bouffant (and a star clip), gold glasses and a bow tie.
+  // Gives the hair a proud comb every so often; bubbles drift up behind.
+  stylist(){const g=G(),b=G();g.add(b);const C=jel(0x6FDCF5,{roughness:.3}),P=jel(0xFF5FB0,{roughness:.38}),Gd=M(0xFFD21F,{metalness:.55,roughness:.28}),Pd=jel(0xFF8FC8,{roughness:.4});
+    const body=piv(b,0,.66,0);const dr=add(body,SPH(.42,48,36),C,0,0,0);dr.scale.set(1,1.45,.92);ol(dr,.018);
+    gloss(body,.42,1.45,.92,-.24,.36,.1,.06,.7,.5);gloss(body,.42,1.45,.92,-.3,.2,.035,.03,0,.45);
+    const F=kFace2(body,{r:.42,sy:1.45,sz:.92,ex:.15,ey:.3,er:.08,my:.12,mw:.06,browC:0xE0409A,cheekC:0xFF7FB8});
+    // gold glasses sitting over the eyes, with a little bridge
+    [-1,1].forEach(s=>{const pv=onSurface(body,.42,1.45,.92,s*.15,.3);ol(to(pv,.108,.013,Gd,0,0,.045),0)});
+    {const bp=onSurface(body,.42,1.45,.92,0,.33);ol(to(bp,.03,.011,Gd,0,-.012,.05,0,0,0,Math.PI),0)}
+    // bow tie
+    {const bp=onSurface(body,.42,1.45,.92,0,-.04);[-1,1].forEach(s=>{const w=add(bp,SPH(.075,18,12),Pd,s*.075,0,.03);w.scale.set(1.1,.7,.45);w.rotation.z=s*.25;ol(w,.01)});ol(add(bp,SPH(.035,12,10),P,0,0,.05),.01)}
+    // the bouffant: a big soft dome, a top poof, a front swoop and a curl, with a star clip
+    const hair=piv(body,0,.5,-.02);{const d=add(hair,SPH(.34,40,28),P,0,.1,0);d.scale.set(1.08,.8,1);ol(d,.016);
+      ol(sp(hair,.2,P,.02,.36,-.02),.014);const sw=add(hair,SPH(.16,24,16),P,-.13,.06,.24);sw.scale.set(1.3,.7,.8);sw.rotation.z=.4;ol(sw,.012);
+      ol(to(hair,.08,.04,P,.1,.52,.02,0,0,.3),.012);gloss(hair,.34,.8,1,-.14,.2,.08,.04,.5,.45,0,.1,0);
+      const st=add(hair,new THREE.ExtrudeGeometry(starShape(.08,.036,5),{depth:.025,bevelEnabled:false}),jel(0xFFD21F,{roughness:.3}),.26,.18,.18);st.rotation.set(0,.7,.2);ol(st,.008)}
+    // arms: the right holds a comb, the left is free
+    const armL=kArm2(body,-.4,.06,.04,C,.3,.065),armR=kArm2(body,.4,.06,.04,C,.3,.065);
+    const comb=piv(armR.userData.tip,0,.02,.06);comb.rotation.x=.9;rb(comb,.05,.24,.03,.012,jel(0xFFD21F,{roughness:.3}),0,-.08,0);for(let i=0;i<6;i++)ol(nosh(bx(comb,.05,.012,.012,M(INKC),.045,-.17+i*.036,0)),0);
+    const bubs=[0,1,2,3,4,5,6].map(i=>{const r=.05+(i%3)*.025,m=nosh(add(g,SPH(r,20,14),M(0xE8FBFF,{roughness:.05,transparent:true,opacity:.45}),0,0,0));ol(m,.006);
+      const sh=nosh(add(m,SPH(r*.28,8,6),B(0xffffff),-r*.35,r*.4,r*.75));ol(sh,0);return{m,ph:i/7,x:(i%2?1:-1)*(.5+(i%3)*.12)}});
+    let combT=2.5,cp=9;
+    return{g,head:hair,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';
+      kBreath(body,t,.016,2);b.rotation.z=Math.sin(t*1.3)*.045;b.rotation.y=cheer?ease(p)*Math.PI*2:0;b.position.y=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.3:0;
+      body.rotation.x=talk?Math.sin(t*4.2)*.03:0;
+      // the bouffant bounces a beat behind the body
+      const hb=Math.sin(t*2-.7)*.035+(cheer?Math.sin(t*14)*.05:0);hair.scale.set(1-hb*.5,1+hb,1-hb*.5);hair.rotation.z=-Math.sin(t*1.3-.5)*.04;
+      // a proud comb through the hair every few seconds (not mid-sentence)
+      combT-=dt;if(combT<0&&!talk&&act==='idle'){combT=6+Math.random()*4;cp=0}cp+=dt;
+      if(cheer)armR.rotation.set(0,0,2.5);else if(cp<1.8){const k=Math.min(1,cp/.3,(1.8-cp)/.3);armR.rotation.set(-.45*(1-k)+.1*k,0,.75+k*(2.3+Math.sin(cp*8)*.22))}
+      else armR.rotation.set(-.45+Math.sin(t*1.7)*.08,0,.75+Math.sin(t*1.7)*.05);
+      if(greet)armL.rotation.set(0,0,-2.5+Math.sin(t*13)*.35);else if(cheer)armL.rotation.set(0,0,-2.5);
+      else if(talk)armL.rotation.set(-.6+Math.sin(t*3.4)*.3,0,-.5-Math.abs(Math.sin(t*2.1))*.4);else armL.rotation.set(-.1+Math.sin(t*.9)*.05,0,-.3);
+      const sp=cheer?1.2:.3;bubs.forEach(q=>{const k=(t*sp*.5+q.ph)%1;q.m.position.set(q.x+Math.sin(t*1.5+q.ph*6)*.08,.6+k*1.9,-.1+Math.cos(t+q.ph*6)*.2);q.m.scale.setScalar(k>.88?(1-k)/.12:Math.min(1,k/.1))});
+      F.update(dt,t,{talk,happy:cheer||greet||(cp>.3&&cp<1.5)})}}},
+  // Boing the toymaker: a jack-in-the-box on a spring, with a ruffle collar and a propeller beanie that never stops.
+  // Bobs on the spring, turns the crank on the box, and every so often lets out a big BOING.
+  toymaker(){const og=G(),g=G();og.add(g);g.position.y=-.14;const Y=jel(0xFFD21F,{roughness:.38}),Pu=jel(0x9B4DF2,{roughness:.32}),R=jel(0xFF3D9A,{roughness:.36}),Cy=jel(0x3EC8F2,{roughness:.36}),Sp=M(0xDDE3EE,{metalness:.6,roughness:.25});
+    // the box: rounded yellow body with cyan trim, stars on three sides, a gloss and a crank
+    ol(rb(g,.78,.62,.78,.09,Y,0,.31,0),.018);ol(rb(g,.84,.08,.84,.04,Cy,0,.6,0),.012);ol(rb(g,.84,.08,.84,.04,Cy,0,.04,0),.012);
+    [[0,.4,0],[.4,0,Math.PI/2],[-.4,0,-Math.PI/2]].forEach(([x,z,r],i)=>{const st=add(g,new THREE.ExtrudeGeometry(starShape(.15,.07,5),{depth:.025,bevelEnabled:false}),[R,Cy,Pu][i],x,.32,z);st.rotation.y=r;ol(st,.01)});
+    {const gl=nosh(add(g,SPH(1,14,10),B(0xffffff,{transparent:true,opacity:.35}),-.22,.5,.395));gl.scale.set(.12,.05,.01);gl.rotation.z=.4;ol(gl,0)}
+    const crank=piv(g,.43,.34,0);cy(crank,.03,.03,.08,Sp,.04,0,0,10).rotation.z=Math.PI/2;const ca=piv(crank,.08,0,0);ol(rb(ca,.03,.2,.04,.012,Sp,0,.08,0),.008);ol(sp(ca,.05,R,.05,.17,0),.01);
+    const lid=piv(g,0,.64,-.39);lid.rotation.x=-1.9;ol(rb(lid,.8,.06,.8,.03,Cy,0,0,.4),.014);{const st=add(lid,new THREE.ExtrudeGeometry(starShape(.12,.055,5),{depth:.02,bevelEnabled:false}),Y,0,.035,.4);st.rotation.x=-Math.PI/2;ol(st,.008)}
+    // the spring
+    const spring=piv(g,0,.62,0);for(let i=0;i<8;i++)ol(to(spring,.12,.022,Sp,0,.04+i*.06,0,Math.PI/2+(i%2?.08:-.08)),.006);
+    // head: ruffle collar, face, propeller beanie
+    const head=piv(g,0,1.1,0),hb=piv(head);const hd=add(hb,SPH(.34,44,32),Pu,0,.3,0);ol(hd,.018);gloss(hb,.34,1,1,-.15,.18,.08,.045,.6,.5,0,.3,0);
+    for(let i=0;i<12;i++){const a=i/12*Math.PI*2,r=add(hb,SPH(.075,14,10),i%2?Y:R,Math.sin(a)*.27,.02,Math.cos(a)*.27);r.scale.set(1,.6,1);ol(r,.008)}
+    const F=kFace2(hb,{r:.34,sy:1,sz:1,cx:0,cy:.3,cz:0,ex:.13,ey:.05,er:.08,my:-.1,mw:.065,browC:0x3B1273,cheekC:0xFF7FB8});
+    const cap=piv(hb,0,.52,0);[R,Y,Cy,Y].forEach((m,i)=>ol(add(cap,new THREE.SphereGeometry(.24,16,12,i*Math.PI/2,Math.PI/2,0,Math.PI/2),m,0,0,0),0));
+    ol(cy(cap,.245,.245,.03,R,0,.005,0,32),.012);cy(cap,.015,.015,.14,Sp,0,.28,0,8);ol(sp(cap,.04,R,0,.24,0),.008);
+    const blades=piv(cap,0,.35,0);[0,Math.PI].forEach((r,i)=>{const bl=add(blades,SPH(1,16,10),i?Cy:Y,Math.cos(r)*.16,0,Math.sin(r)*.16);bl.scale.set(.16,.018,.06);bl.rotation.x=.25*(i?-1:1);ol(bl,.008)});ol(sp(blades,.03,R,0,.01,0),.006);
+    // springy arms with big glove hands
+    const arms=[-1,1].map(s=>{const a=piv(hb,s*.32,.24,0);for(let i=0;i<4;i++)ol(to(a,.03,.009,Sp,0,-.04-i*.05,0,Math.PI/2),0);cy(a,.012,.012,.1,Sp,0,-.25,0,6);const h=add(a,SPH(.085,18,14),R,0,-.36,0);h.scale.set(1,1.05,.85);ol(h,.012);
+      ol(sp(a,.035,R,s*-.07,-.33,.02),.008);return a});
+    let boingT=4,bp=9,y=1.1,vy=0;
+    return{g:og,head,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';
+      // a big boing every few seconds (when not chatting), otherwise a springy bob that follows the words
+      boingT-=dt;if(boingT<0&&!talk&&act==='idle'){boingT=5+Math.random()*4;bp=0}bp+=dt;
+      const base=cheer?1+Math.sin(Math.min(1,p*1.2)*Math.PI)*1.2:greet?1+Math.sin(Math.min(1,p*1.6)*Math.PI)*.6:bp<1.2?1+Math.sin(bp/1.2*Math.PI)*Math.exp(-bp*1.5)*1.3+Math.sin(bp*18)*Math.exp(-bp*3)*.08:1+(Math.sin(t*3)*.5+.5)*.16+(talk?Math.abs(Math.sin(t*9))*.08:0);
+      const tgt=.62+.48*base;vy+=(tgt-y)*dt*160;vy*=Math.exp(-dt*9);y+=vy*dt;spring.scale.set(1,(y-.62)/.48,1);head.position.y=y;
+      // squash on the way down, stretch on the way up
+      const st=clamp(vy*.06,-.14,.14);hb.scale.set(1-st*.5,1+st,1-st*.5);
+      head.rotation.z=Math.sin(t*1.3)*.1+(talk?Math.sin(t*4.5)*.05:0);head.rotation.y=cheer?ease(p)*Math.PI*2:0;head.rotation.x=talk?Math.sin(t*3.6)*.05:0;
+      blades.rotation.y+=dt*(cheer||bp<1.2?30:9);crank.rotation.x+=dt*(talk?1.5:3);lid.rotation.x=-1.9+(bp<.6?Math.sin(bp/.6*Math.PI)*.2:0);
+      arms[0].rotation.set(0,0,greet?-2.4+Math.sin(t*14)*.4:cheer||bp<.8?-2.2:talk?-.8-Math.abs(Math.sin(t*2.4))*.5:-.45+Math.sin(t*3)*.12);
+      arms[1].rotation.set(0,0,cheer||bp<.8?2.2:talk?.6+Math.sin(t*3.1)*.25:.45+Math.sin(t*3+1)*.12);
+      F.update(dt,t,{talk,happy:cheer||greet,surprise:bp<.5})}}}};
 
 /* --- the shops --- */
 function tilesWith(fill,area,box){const a=Array(GRID*GRID).fill(fill);if(area)for(let j=box[1];j<=box[3];j++)for(let i=box[0];i<=box[2];i++)a[j*GRID+i]=area;return a}
@@ -3270,15 +3410,43 @@ function fxCabinet(k){const D=GAMES[k],c=parseInt(D.c.slice(1),16),g=G(),C=M(c,{
 FIX.cabinet={n:'Arcade cabinet',fn:'fixture',build:it=>fxCabinet(it.game),use:{kind:'stand',front:1,anim:'u_peer',d:4,dist:.14,emo:['⭐','🎵','❗'],w:.8}};
 FIX.scores={n:'High scores',fn:'fixture',wall:1,build:()=>fxScores(),use:{kind:'wall',anim:'u_gaze',d:3,emo:['⭐'],w:.2}};
 // Joy: a grape jelly in big headphones with a glowing antenna, forever mashing a game pad
-KEEPERS.joy=function(){const g=G(),b=G();g.add(b);const C=M(0xB07BFF,{roughness:.22}),P=M(0xFF3D9A,{roughness:.35}),Cy=M(0x3EC8F2,{roughness:.3}),Dk=M(0x3B1273,{roughness:.4});
-  sp(b,.5,C,0,.62,0,1,1.05,1);const f=kFace(b,.74,.45,.08,.16);
-  const hp=G();hp.position.set(0,.72,0);b.add(hp);to(hp,.53,.05,Dk,0,0,0,0,0,0,Math.PI);[-1,1].forEach(s=>{const cup=cy(hp,.15,.15,.13,P,s*.52,0,0,18);cup.rotation.z=Math.PI/2;sp(hp,.06,Cy,s*.6,0,0)});
-  cy(b,.016,.016,.26,Dk,0,1.3,0,6);const ball=sp(b,.075,M(0xFFD21F,{emissive:0xFFD21F,emissiveIntensity:.8}),0,1.46,0);
-  const arms=[-1,1].map(s=>kArm(b,s*.5,.62,C,.32));const pad=G();pad.position.set(0,-.36,.06);arms[1].add(pad);rb(pad,.28,.08,.16,.04,Cy,0,0,0);cy(pad,.012,.012,.1,Dk,-.06,.08,0,6);sp(pad,.032,P,-.06,.13,0);sp(pad,.026,M(0xFFD21F),.07,.05,.03);
-  [-.22,.22].forEach(x=>sp(g,.15,C,x,.1,.08,1,.55,1.2));
-  return{g,head:hp,upd(dt,t,act,p,talk){b.position.y=act==='cheer'?Math.sin(Math.min(1,p*1.4)*Math.PI)*.4:Math.abs(Math.sin(t*4))*.03;b.rotation.z=Math.sin(t*2)*.06;ball.scale.setScalar(1+Math.sin(t*6)*.15);
-    arms[1].rotation.set(-.8,0,.6+Math.sin(t*9)*.08);pad.rotation.z=Math.sin(t*7)*.15;arms[0].rotation.set(0,0,act==='greet'?-2.6+Math.sin(t*14)*.35:act==='cheer'?-2.4:-.4);if(act==='cheer')arms[1].rotation.set(0,0,2.4);
-    f.talk(talk?Math.abs(Math.sin(t*13)):act==='cheer'?.8:0,t)}}};
+// Joy: a purple jelly in big headphones with a glowing antenna ball, bobbing to the beat and button-mashing a gamepad.
+// Now and then a win: a fist pump and a flurry of music notes.
+KEEPERS.joy=function(){const g=G(),b=G();g.add(b);const C=jel(0xB07BFF,{roughness:.3}),P=jel(0xFF3D9A,{roughness:.36}),Cy=jel(0x3EC8F2,{roughness:.34}),Dk=M(0x3B1273,{roughness:.4}),Yg=M(0xFFD21F,{emissive:0xFFD21F,emissiveIntensity:.9});
+  const body=piv(b,0,.72,0);const bo=add(body,SPH(.5,48,36),C,0,0,0);bo.scale.set(1,1.04,.94);ol(bo,.018);gloss(body,.5,1.04,.94,-.25,.3,.11,.055,.6,.45);gloss(body,.5,1.04,.94,-.32,.16,.035,.03,0,.4);
+  const F=kFace2(body,{r:.5,sy:1.04,sz:.94,ex:.15,ey:.14,er:.09,my:-.05,mw:.07,browC:0x6A2FC0,cheekC:0xFF6FB8});
+  // headphones: a band over the top and chunky cups with glowing rims
+  const hp=piv(body,0,.02,0);ol(nosh(to(hp,.54,.045,Dk,0,0,0,0,0,0,Math.PI)),.01);
+  const cups=[-1,1].map(s=>{const c=piv(hp,s*.53,0,0);const cup=add(c,new THREE.CylinderGeometry(.16,.16,.12,24),P,0,0,0);cup.rotation.z=Math.PI/2;ol(cup,.012);
+    const rim=nosh(to(c,.13,.022,Yg,s*.065,0,0,0,Math.PI/2,0));ol(rim,0);ol(sp(c,.07,Cy,s*.07,0,0,.5,1,1),.008);return c});
+  // antenna with a glowing ball that lags behind the bobbing
+  const ant=piv(body,0,.5,0);cy(ant,.016,.016,.24,Dk,0,.12,0,8);const bp=piv(ant,0,.26,0);const ball=ol(nosh(add(bp,SPH(.075,20,14),Yg,0,0,0)),.01);
+  const halo=nosh(add(bp,SPH(.13,16,12),B(0xFFE36E,{transparent:true,opacity:.25,depthWrite:false}),0,0,0));ol(halo,0);
+  // arms: the left holds a gamepad, the right is free
+  const armP=kArm2(body,-.5,-.04,.03,C,.26,.068),armF=kArm2(body,.5,-.04,.03,C,.26,.068);
+  const pad=piv(armP.userData.tip,.05,.02,0);pad.rotation.set(2.2,0,.3);ol(rb(pad,.3,.08,.17,.04,Cy,0,0,0),.012);
+  ol(bx(pad,.07,.02,.022,Dk,-.08,.045,0),0);ol(bx(pad,.022,.02,.07,Dk,-.08,.045,0),0);
+  const btns=[[.07,.03,P],[.11,-.01,M(0xFFD21F,{roughness:.4})],[.03,-.01,Cy],[.07,-.05,jel(0x7BE07B)]].map(([x,z,m])=>{const k=add(pad,SPH(.022,10,8),m,x,.045,z);k.scale.set(1,.6,1);ol(k,.005);return k});
+  // music notes that float up on a win
+  const notes=[0,1,2,3].map(i=>{const n=piv(g);const h=add(n,SPH(.04,12,8),i%2?P:Cy,0,0,0);h.scale.set(1.2,.9,.6);ol(h,.006);cy(n,.008,.008,.12,Dk,.04,.06,0,6);n.visible=false;return{n,t:9,x:0}});
+  [-.22,.22].forEach(x=>{const f=add(b,SPH(.15,20,14),C,x,.1,.08);f.scale.set(1,.55,1.2);ol(f,.012)});
+  let winT=5,wp=9,bx0=0,bv=0;
+  return{g,head:hp,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';
+    winT-=dt;if(winT<0&&!talk&&act==='idle'){winT=6+Math.random()*5;wp=0;notes.forEach((q,i)=>{q.t=-i*.18;q.x=(i%2?1:-1)*(.3+Math.random()*.25)})}wp+=dt;
+    // bob to the beat (paused while talking)
+    const beat=talk?0:Math.abs(Math.sin(t*4.2));b.position.y=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.4:wp<.6?Math.sin(wp/.6*Math.PI)*.18:beat*.03;
+    body.rotation.z=Math.sin(t*2.1)*.06*(talk?.4:1);body.rotation.x=talk?Math.sin(t*3.9)*.03:beat*.05;kBreath(body,t,.014,4.2);
+    // the antenna ball trails the bob on a little spring
+    const tgt=-body.rotation.z*1.2;bv+=(tgt-bx0)*dt*120;bv*=Math.exp(-dt*6);bx0+=bv*dt;ant.rotation.z=bx0;ball.scale.setScalar(1+Math.sin(t*6)*.1);halo.scale.setScalar(1+Math.sin(t*6)*.2);
+    cups.forEach((c,i)=>c.scale.setScalar(1+(talk?0:Math.max(0,Math.sin(t*8.4+i))*.04)));
+    // button mashing
+    btns.forEach((k,i)=>k.position.y=.045-(!talk&&Math.sin(t*(11+i*3)+i)>.6?.012:0));
+    if(cheer||wp<1.1){armP.rotation.set(-.6,0,-.9);armF.rotation.set(0,0,2.5+Math.sin(t*16)*.15)}
+    else{armP.rotation.set(-1.15+Math.sin(t*9)*.03,0,-.25);
+      if(greet)armF.rotation.set(0,0,2.5+Math.sin(t*13)*.35);else if(talk)armF.rotation.set(-.6+Math.sin(t*3.2)*.3,0,.5+Math.abs(Math.sin(t*2.2))*.4);else armF.rotation.set(-1.05+Math.sin(t*9.5)*.04,0,.35)}
+    pad.rotation.z=.3+(talk?0:Math.sin(t*7)*.1);
+    notes.forEach(q=>{q.t+=dt;const k=q.t/1.6;q.n.visible=k>0&&k<1;if(q.n.visible){q.n.position.set(q.x+Math.sin(k*9)*.06,1.3+k*.8,.1);q.n.scale.setScalar(k<.15?k/.15:k>.8?(1-k)/.2:1)}});
+    F.update(dt,t,{talk,happy:cheer||greet||wp<1.2})}}};
 SHOPS.arcade={n:'Jelly Arcade',kind:'arcade',icon:'arcade',color:'#9B4DF2',keeper:'joy',kx:2.3,kz:-3.5,
   tf:()=>tilesWith('arcade','arcaderug',[1,2,6,6]),tw:()=>wallsWith('cyber','arcadepanel'),
   layout:[{k:'counter',x:2.3,z:-2.75,c:0xB98CFF},{k:'sign',w:0,u:2.3,y:2.72,c:0x9B4DF2},
@@ -3302,7 +3470,7 @@ function buildShop(key){const S=SHOPS[key],root=G(),objs=new Map(),items=new Map
   // shopkeepers stand on a little step behind the counter so they're easy to see
   // showroom pieces and on-display doors/windows are for sale too
   objs.forEach((o,id)=>{const it=items.get(id);if(it.sale)o.userData.offer={t:it.sale,k:it.k}});
-  const K=KEEPERS[S.keeper]();K.g.position.set(S.kx,.32,S.kz);K.g.scale.setScalar(1.22);rb(root,1.1,.32,.9,.05,M(0xE9DDF7,{roughness:.6}),S.kx,.16,S.kz);K.g.userData.keeper=1;K.act='idle';K.k=0;K.d=1;root.add(K.g);
+  const K=KEEPERS[S.keeper]();K.g.position.set(S.kx,.5,S.kz);K.g.scale.setScalar(1.22);rb(root,1.1,.5,.9,.05,M(0xE9DDF7,{roughness:.6}),S.kx,.25,S.kz);K.g.userData.keeper=1;K.act='idle';K.k=0;K.d=1;root.add(K.g);
   extra.push(new THREE.Box3(new THREE.Vector3(S.kx-.6,0,S.kz-.6),new THREE.Vector3(S.kx+.6,2,S.kz+.6)));
   return{key,def:S,root,objs,items,extra,keeper:K,tf:S.tf(),tw:S.tw()}}
 function keeperReact(a,d){const K=away&&away.keeper;if(!K)return;K.act=a;K.k=0;K.d=d||1.6}
