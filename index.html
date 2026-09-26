@@ -381,6 +381,26 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px da
 .own[hidden]{display:none}
 .dend{grid-column:1/-1;margin:2px 0 0;text-align:center;font-size:12px;color:#6B4E95}
 .dempty{grid-column:1/-1;text-align:center;padding:18px 8px}.dempty p{margin:0 0 12px;font-family:var(--disp);font-size:15px;color:var(--ink)}
+
+/* tile sets + paint bar */
+.tsws{gap:12px;padding-bottom:12px}
+.tsw{flex:none;width:72px;display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;padding:0;color:var(--ink)}
+.tsi{position:relative;width:64px;height:64px;border-radius:16px 12px 17px 13px;background:#EDE6F5 center/cover;border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);transition:transform .15s}
+.tsi.wall{height:72px}
+.tsw[aria-pressed="true"] .tsi{transform:rotate(-6deg) scale(1.06);box-shadow:0 0 0 3px var(--pink),0 5px 0 3px var(--ink)}
+.tsw small{font-family:var(--disp);font-size:10.5px;line-height:1.15;text-align:center;letter-spacing:.02em;max-width:72px}
+.tdyn{position:absolute;right:-7px;bottom:-7px;font-style:normal;font-family:var(--disp);font-size:9.5px;color:#fff;background:var(--grape);border:2px solid var(--ink);border-radius:8px;padding:1px 5px 2px;transform:rotate(-6deg)}
+.paintbar{align-items:center;gap:6px;padding:6px}
+.pbsw{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:0 2px;color:#fff;max-width:64px}
+.pbsw span{width:40px;height:40px;border-radius:12px 9px 13px 10px;border:2.5px solid #fff;background:#EDE6F5 center/cover;box-shadow:0 2px 0 #000}
+.pbsw b{display:none}
+.paintbar .gel{width:auto;min-height:48px;font-size:10.5px;padding:3px 7px 2px;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1}
+.paintbar .gel svg{width:19px;height:19px;flex:none}
+.pbt{min-width:48px}
+.pbt{background:#fff;color:var(--ink);text-shadow:none}
+.pbt[aria-pressed="true"]{background:var(--sun)}
+.pbi{padding:0 10px!important}
+.pbi:disabled{opacity:.45}
 </style>
 </head>
 <body>
@@ -402,6 +422,14 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px da
   <span><b id="petname">Mochi</b><span class="minibars" id="minibars"><i style="--c:#FF7A1A"></i><i style="--c:#FF3EA5"></i><i style="--c:#8B3DFF"></i><i style="--c:#29C5FF"></i><i style="--c:#FF6FB5"></i></span></span>
 </button>
 
+<div class="seltools paintbar" id="paintbar" role="toolbar" aria-label="Paint tiles">
+  <button class="pbsw" id="pbSwatch" aria-label="Change pattern"><span id="pbThumb"></span><b id="pbName"></b></button>
+  <button class="gel pbt" data-tool="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>Tile</button>
+  <button class="gel pbt" data-tool="area"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-dasharray="3.2 2.4"><rect x="3.5" y="5" width="17" height="14" rx="2"/></svg>Area</button>
+  <button class="gel pbt" data-tool="all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9H4z"/></svg><span id="pbAllLbl">Floor</span></button>
+  <button class="gel lilac pbi" id="pbUndo" aria-label="Undo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
+  <button class="gel slime pbi" id="pbDone" aria-label="Done painting"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg></button>
+</div>
 <div class="seltools" id="seltools">
   <button class="gel sun" id="bTurn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg>Turn</button>
   <button class="gel lilac" id="bColor"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="9" r="3.4"/><circle cx="16" cy="9" r="3.4"/><circle cx="12" cy="16" r="3.4"/></svg>Paint</button>
@@ -1391,8 +1419,12 @@ const texThumb={},texThumbQ=[];let texThumbBusy=false;
 function thumbFrom(kind,src){const tw=120,th=Math.round(tw*src.height/src.width),c=mkCanvas(tw,th),x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(src,0,0,tw,th);return c.toDataURL('image/jpeg',.85)}
 function roomTexture(kind,k){const [W,H,FN,rep]=ROOMTEX[kind];const c=mkCanvas(W,H),x=c.getContext('2d');FN[k](x,W,H);if(!texThumb[kind+':'+k])texThumb[kind+':'+k]=thumbFrom(kind,c);
   const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;if(rep){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rep[0],rep[1])}return t}
-function makeThumb(kind,k){const [W,H,FN]=ROOMTEX[kind];const tw=120,th=Math.round(tw*H/W),c=mkCanvas(tw,th),x=c.getContext('2d');x.scale(tw/W,th/H);FN[k](x,W,H);return c.toDataURL('image/jpeg',.85)}
-function queueTexThumbs(){[...FLOORS.map(k=>['f',k]),...WALLS.map(k=>['w',k])].forEach(([kind,k])=>{const key=kind+':'+k;if(!(key in texThumb)&&!texThumbQ.some(q=>q[2]===key))texThumbQ.push([kind,k,key])});
+// Swatch: a small preview of how the set looks laid over 4 tiles (floors) or 4 columns (walls).
+function makeThumb(kind,k){const d=TILESETS[kind][k];if(d.img)return d.img;const [W,H]=srcSize(d),f=30/TPX,sc=mkCanvas(Math.max(1,Math.round(W*f)),Math.max(1,Math.round(H*f))),sx=sc.getContext('2d');sx.scale(sc.width/W,sc.height/H);d.paint(sx,W,H);
+  const tw=120,th=kind==='f'?120:Math.round(120*WPXH/(4*TPX)),c=mkCanvas(tw,th),x=c.getContext('2d');x.imageSmoothingQuality='high';
+  if(d.mode!=='repeat')x.drawImage(sc,0,0,tw,th);else for(let px=0;px<tw;px+=sc.width)for(let py=0;py<th;py+=sc.height)x.drawImage(sc,px,py);
+  return c.toDataURL('image/jpeg',.85)}
+function queueTexThumbs(){['f','w'].forEach(kind=>TILE_ORDER[kind].forEach(k=>{const key=kind+':'+k;if(!(key in texThumb)&&!texThumbQ.some(q=>q[2]===key))texThumbQ.push([kind,k,key])}));
   if(!texThumbBusy&&texThumbQ.length){texThumbBusy=true;requestAnimationFrame(pumpTexThumbs)}}
 function pumpTexThumbs(){const t0=performance.now();while(texThumbQ.length&&performance.now()-t0<12){const [kind,k,key]=texThumbQ.shift();if(key in texThumb)continue;try{texThumb[key]=makeThumb(kind,k)}catch(e){console.warn('thumb '+key,e);texThumb[key]=''}
     document.querySelectorAll(`[data-tk="${key}"]`).forEach(el=>{el.style.backgroundImage=`url(${texThumb[key]})`;el.classList.remove('loading')})}
@@ -1427,6 +1459,131 @@ const walls=WALLDEF.map((d,i)=>{const g=new THREE.Group();g.rotation.y=Math.atan
   const back=new THREE.Mesh(new THREE.BoxGeometry(8.1,WALLH+.05,.12),M(0xE9EAF4));back.position.set(0,WALLH/2,-.07);back.castShadow=false;back.outline=.04;g.add(back);
   scene.add(g);d.T=[Math.cos(g.rotation.y),-Math.sin(g.rotation.y)];return{g,plane:p,d}});
 const itemRoot=new THREE.Group();scene.add(itemRoot);
+
+/* ================= TILES: floors and walls are painted tile by tile ================= */
+// The floor is an 8x8 grid of 1x1 tiles (state.tf, row by row from the back wall) and each wall is 8 one-tile-wide,
+// full-height columns (state.tw, wall by wall). A tile set either repeats over span tiles, lined up to the room grid,
+// or is dynamic:
+//  - mode 'border' (floors): the source is 3x3 tiles (corners, edges, fill). Wherever a painted area ends it gets
+//    edges and corners, inner corners included. b = how much of an edge tile the border band covers.
+//  - mode 'run' (walls): the source is 3 columns (left end, middle, right end). Every run of it gets end caps.
+// Sets are canvas painters (below) or image files in TILE_ART (see tools/tiles/README.md).
+const GRID=8,TPX=256,WPXH=870;let floorAvg=[.8,.7,.6];
+const FLOOR_NAMES={checker:'Butter checker',zigzag:'Zigzag',slime:'Slime',wood:'Wood planks',shag:'Shag carpet',tile:'Bath tiles',galaxy:'Galaxy',terrazzo:'Terrazzo',sprinkle:'Sprinkles',herring:'Herringbone',concrete:'Concrete',foammat:'Foam mat'};
+const WALL_NAMES={squiggle:'Squiggles',splat:'Paint splats',bubble:'Bubbles',stripe:'Stripes',stars:'Stars',sunset:'Sunset',grid:'Blueprint grid',plain:'Plain',gingham:'Gingham',plaster:'Plaster',graffiti:'Graffiti bricks',crayonwall:'Crayon'};
+const TILESETS={f:{},w:{}},TILE_ORDER={f:[],w:[]};
+function tileset(kind,k,d){d.k=k;d.kind=kind;d.mode=d.mode||'repeat';d.span=d.span||[1,1];d.b=d.b||.3;TILESETS[kind][k]=d;TILE_ORDER[kind].push(k)}
+function cellCanvas(n,fn){const c=mkCanvas(n,n);fn(c.getContext('2d'),n);return c}
+function heartAt(x,cx,cy,r,fill){x.save();x.translate(cx,cy);x.beginPath();x.moveTo(0,r*.9);x.bezierCurveTo(-r*1.3,0,-r*.9,-r*1.05,0,-r*.35);x.bezierCurveTo(r*.9,-r*1.05,r*1.3,0,0,r*.9);x.closePath();
+  x.fillStyle=fill;x.fill();x.lineWidth=Math.max(2,r*.18);x.strokeStyle='#3B1273';x.stroke();x.restore()}
+function star5(x,cx,cy,r,fill){x.beginPath();for(let i=0;i<10;i++){const a=i/10*Math.PI*2-Math.PI/2,q=i%2?r*.45:r;i?x.lineTo(cx+Math.cos(a)*q,cy+Math.sin(a)*q):x.moveTo(cx+Math.cos(a)*q,cy+Math.sin(a)*q)}x.closePath();x.fillStyle=fill;x.fill();x.lineWidth=Math.max(2,r*.16);x.strokeStyle='#3B1273';x.stroke()}
+const TILE_PAINT={
+  // floors
+  candyborder(x,w,h){const s=w/3,f=cellCanvas(s,(c,n)=>{c.fillStyle='#FFE6F2';c.fillRect(0,0,n,n);mottle(c,n,n,41,3,.35);const R=rnd(41),cs=['#FF6FB5','#5CCBF0','#9BD62E','#FFC61F','#A77BFF'];c.lineCap='round';
+      for(let i=0;i<24;i++){const px=R()*n,py=R()*n,a=R()*6.28;c.strokeStyle=cs[i%5];c.lineWidth=n/48;wrap(n,n,px,py,n/36,(cx,cy)=>{c.beginPath();c.moveTo(cx-Math.cos(a)*n/40,cy-Math.sin(a)*n/40);c.lineTo(cx+Math.cos(a)*n/40,cy+Math.sin(a)*n/40);c.stroke()})}grain(c,5,41)});
+    for(let i=0;i<3;i++)for(let j=0;j<3;j++)x.drawImage(f,i*s,j*s,s,s);
+    const bw=s*.3,p=s/4;x.fillStyle='#7ED9C6';[[0,0,w,bw],[0,h-bw,w,bw],[0,0,bw,h],[w-bw,0,bw,h]].forEach(r=>x.fillRect(...r));
+    x.fillStyle='rgba(255,255,255,.35)';x.fillRect(0,bw*.12,w,bw*.12);x.fillRect(0,h-bw*.24,w,bw*.12);x.fillRect(bw*.12,0,bw*.12,h);x.fillRect(w-bw*.24,0,bw*.12,h);
+    x.strokeStyle='#3B1273';x.lineWidth=s/48;x.strokeRect(bw,bw,w-2*bw,h-2*bw);
+    x.fillStyle='#fff';for(let t=p/2;t<w;t+=p)[[t,bw/2],[t,h-bw/2],[bw/2,t],[w-bw/2,t]].forEach(([cx,cy])=>{if((cx<bw||cx>w-bw)&&(cy<bw||cy>h-bw))return;x.beginPath();x.arc(cx,cy,bw*.15,0,7);x.fill()});
+    [[bw/2,bw/2],[w-bw/2,bw/2],[bw/2,h-bw/2],[w-bw/2,h-bw/2]].forEach(([cx,cy])=>heartAt(x,cx,cy,bw*.3,'#FF3D9A'));grain(x,4,42)},
+  parquet(x,w,h){const s=w/3,f=cellCanvas(s,(c,n)=>{const R=rnd(51),b=n/2,pl=b/4;for(let bi=0;bi<2;bi++)for(let bj=0;bj<2;bj++){const vert=(bi+bj)%2;for(let k=0;k<4;k++){const l=R()*8-4;c.fillStyle=`hsl(${33+R()*4},${52+l}%,${62+l}%)`;
+        if(vert)c.fillRect(bi*b+k*pl,bj*b,pl,b);else c.fillRect(bi*b,bj*b+k*pl,b,pl);c.fillStyle='rgba(90,50,20,.35)';if(vert)c.fillRect(bi*b+k*pl,bj*b,1.5,b);else c.fillRect(bi*b,bj*b+k*pl,b,1.5)}}
+      c.strokeStyle='rgba(90,50,20,.5)';c.lineWidth=2;c.strokeRect(0,0,n,n);c.beginPath();c.moveTo(b,0);c.lineTo(b,n);c.moveTo(0,b);c.lineTo(n,b);c.stroke();mottle(c,n,n,52,3,.3);grain(c,10,52)});
+    for(let i=0;i<3;i++)for(let j=0;j<3;j++)x.drawImage(f,i*s,j*s,s,s);
+    const bw=s*.26;x.fillStyle='#6B3F27';[[0,0,w,bw],[0,h-bw,w,bw],[0,0,bw,h],[w-bw,0,bw,h]].forEach(r=>x.fillRect(...r));
+    x.strokeStyle='rgba(255,255,255,.08)';x.lineWidth=2;for(let k=1;k<6;k++){const o=bw*k/6;x.beginPath();for(let t=0;t<=w;t+=8){const q=o+Math.sin(t/s*Math.PI*4+k)*1.5;t?x.lineTo(t,q):x.moveTo(t,q)}x.stroke();x.beginPath();for(let t=0;t<=w;t+=8){const q=h-o+Math.sin(t/s*Math.PI*4+k)*1.5;t?x.lineTo(t,q):x.moveTo(t,q)}x.stroke();
+      x.beginPath();for(let t=0;t<=h;t+=8){const q=o+Math.sin(t/s*Math.PI*4+k)*1.5;t?x.lineTo(q,t):x.moveTo(q,t)}x.stroke();x.beginPath();for(let t=0;t<=h;t+=8){const q=w-o+Math.sin(t/s*Math.PI*4+k)*1.5;t?x.lineTo(q,t):x.moveTo(q,t)}x.stroke()}
+    x.strokeStyle='#F2D9A8';x.lineWidth=s/64;[bw*.28,bw*.72].forEach(o=>x.strokeRect(o,o,w-2*o,h-2*o));
+    x.strokeStyle='rgba(40,20,10,.6)';x.lineWidth=2;x.strokeRect(bw,bw,w-2*bw,h-2*bw);
+    [[0,0],[w-bw,0],[0,h-bw],[w-bw,h-bw]].forEach(([a,b])=>{x.fillStyle='#F2D9A8';x.fillRect(a+bw*.28,b+bw*.28,bw*.44,bw*.44);x.fillStyle='#6B3F27';x.fillRect(a+bw*.4,b+bw*.4,bw*.2,bw*.2)});grain(x,6,53)},
+  jellytile(x,w,h){x.fillStyle='#E9DDF7';x.fillRect(0,0,w,h);bevel(x,w*.035,h*.035,w*.93,h*.93,w*.13,'#C4A2FF',w*.06,'rgba(255,255,255,.8)','rgba(80,30,140,.35)');
+    const g=x.createRadialGradient(w*.3,h*.26,2,w*.3,h*.26,w*.5);g.addColorStop(0,'rgba(255,255,255,.55)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,w,h);
+    x.fillStyle='rgba(255,255,255,.7)';x.beginPath();x.ellipse(w*.28,h*.22,w*.12,h*.05,-.5,0,7);x.fill();const R=rnd(61);for(let i=0;i<14;i++){x.fillStyle=`rgba(255,255,255,${.3+R()*.4})`;x.beginPath();x.arc(w*(.15+R()*.7),h*(.15+R()*.7),1+R()*2.2,0,7);x.fill()}grain(x,5,61)},
+  harlequin(x,w,h){x.fillStyle='#FFD1E8';x.fillRect(0,0,w,h);const c=w/2;for(let i=0;i<2;i++)for(let j=0;j<2;j++){const cx=i*c+c/2,cy=j*c+c/2;x.beginPath();x.moveTo(cx,cy-c/2);x.lineTo(cx+c/2,cy);x.lineTo(cx,cy+c/2);x.lineTo(cx-c/2,cy);x.closePath();
+      x.fillStyle=(i+j)%2?'#9FE3F5':'#FFF3B0';x.fill();x.strokeStyle='#E7B95A';x.lineWidth=3;x.stroke()}mottle(x,w,h,71,4,.3);grain(x,6,71)},
+  // walls
+  ribbons(x,w,h){x.fillStyle='#FFF6EC';x.fillRect(0,0,w,h);x.fillStyle='rgba(255,170,205,.28)';for(let i=0;i<w;i+=32)x.fillRect(i+14,0,3,h);mottle(x,w,h,81,6,.25);
+    const cs=['#FF6FB5','#5CCBF0','#9BD62E'],c=w/3;x.lineCap='round';
+    [[h*.17,0],[h*.6,1]].forEach(([y0,row])=>{for(let k=0;k<3;k++){const x0=k*c+(row?c/2:0),col=cs[(k+row)%3],sw=(cx)=>{x.beginPath();x.moveTo(cx,y0);x.quadraticCurveTo(cx+c/2,y0+h*.13,cx+c,y0)};
+        wrap(w,h,x0+c/2,y0,c,(cx)=>{const a=cx-c/2;x.strokeStyle='#3B1273';x.lineWidth=20;sw(a);x.stroke();x.strokeStyle=col;x.lineWidth=13;sw(a);x.stroke();x.strokeStyle='rgba(255,255,255,.5)';x.lineWidth=3;sw(a);x.stroke();
+          x.strokeStyle='#3B1273';x.lineWidth=2.5;x.beginPath();x.moveTo(a+c/2,y0+h*.065);x.lineTo(a+c/2,y0+h*.12);x.stroke();
+          const cy=y0+h*.15;if(k===0)heartAt(x,a+c/2,cy,c*.1,'#FF3D9A');else if(k===1)star5(x,a+c/2,cy,c*.11,'#FFD21F');else{x.beginPath();x.arc(a+c/2,cy,c*.08,0,7);x.fillStyle='#A77BFF';x.fill();x.lineWidth=3;x.strokeStyle='#3B1273';x.stroke()}});
+        wrap(w,h,x0,y0,40,(bx)=>{[[-1],[1]].forEach(([d])=>{x.beginPath();x.moveTo(bx,y0);x.quadraticCurveTo(bx+d*c*.16,y0-c*.12,bx+d*c*.16,y0+c*.02);x.closePath();x.fillStyle=cs[(k+row+2)%3];x.fill();x.lineWidth=3;x.strokeStyle='#3B1273';x.stroke()});
+          x.beginPath();x.arc(bx,y0,c*.035,0,7);x.fillStyle='#fff';x.fill();x.stroke()})}});grain(x,5,81)},
+  wainscot(x,w,h){const c=w/3,rail=h*.6;x.fillStyle='#ECDDFF';x.fillRect(0,0,w,rail);mottle(x,w,rail,91,4,.25);x.fillStyle='rgba(255,255,255,.85)';for(let j=0;j*48<rail;j++)for(let i=0;i<w/32;i++){if((i+j)%2)continue;x.beginPath();x.arc(i*32+16,j*48+24,4,0,7);x.fill()}
+    x.fillStyle='#FFB8D6';x.fillRect(0,rail,w,h-rail);for(let k=0;k<3;k++)bevel(x,k*c+c*.14,rail+h*.07,c*.72,h-rail-h*.14,14,'#FFA3CB',10,'rgba(255,255,255,.7)','rgba(150,30,90,.3)');
+    x.fillStyle='#fff';x.fillRect(0,rail-10,w,22);x.fillStyle='#3B1273';x.fillRect(0,rail-12,w,3);x.fillRect(0,rail+12,w,3);x.fillStyle='rgba(59,18,115,.12)';x.fillRect(0,rail+15,w,6);
+    [[0,1],[w-24,-1]].forEach(([px,d])=>{x.fillStyle='#fff';x.fillRect(px,0,24,h);x.fillStyle='#3B1273';x.fillRect(d>0?px+22:px,0,3,h);x.fillStyle='rgba(59,18,115,.12)';x.fillRect(d>0?px+25:px-6,0,6,h);
+      x.fillStyle='#FFD21F';x.beginPath();x.arc(px+12,rail+1,7,0,7);x.fill()});grain(x,5,91)},
+  polka(x,w,h){x.fillStyle='#BFEFE2';x.fillRect(0,0,w,h);mottle(x,w,h,95,2,.25);for(let j=0;j*58<h+58;j++)for(let i=0;i<=w/64;i++){const cx=i*64+(j%2?32:0),cy=j*58+20;
+      wrap(w,h,cx,cy,14,(a)=>{x.fillStyle=(i+j)%3?'#fff':'#FF8CC6';x.beginPath();x.arc(a,cy,(i+j)%3?11:8,0,7);x.fill()})}grain(x,5,95)}
+};
+FLOORS.forEach(k=>tileset('f',k,{n:FLOOR_NAMES[k]||k,span:[4,4],paint:FLOOR_FN[k]}));
+WALLS.forEach(k=>tileset('w',k,{n:WALL_NAMES[k]||k,span:[4,1],paint:WALL_FN[k]}));
+tileset('f','jellytile',{n:'Jelly tiles',paint:TILE_PAINT.jellytile});
+tileset('f','harlequin',{n:'Harlequin',span:[2,2],paint:TILE_PAINT.harlequin});
+tileset('f','candyborder',{n:'Candy border',mode:'border',b:.3,paint:TILE_PAINT.candyborder});
+tileset('f','parquet',{n:'Parquet & walnut',mode:'border',b:.26,paint:TILE_PAINT.parquet});
+tileset('w','polka',{n:'Polka dots',paint:TILE_PAINT.polka});
+tileset('w','ribbons',{n:'Ribbon swag',span:[3,1],paint:TILE_PAINT.ribbons});
+tileset('w','wainscot',{n:'Candy wainscot',mode:'run',paint:TILE_PAINT.wainscot});
+// Image tile sets (made in ChatGPT, prepared with tools/tiles/make_tile.py). Example:
+// {kind:'f',k:'marble',n:'Pink marble',mode:'repeat',span:[2,2],img:'assets/tiles/f-marble.webp'},
+// full:1 on a wall stretches the image to the wall height; otherwise wall images repeat upwards.
+const TILE_ART=[];
+TILE_ART.forEach(a=>tileset(a.kind,a.k,Object.assign({},a)));
+
+const tileSrc={},tileTex={};let tilesSig='|',tilesDirty=true;
+function srcSize(d){const s=d.span;return d.kind==='f'?(d.mode==='border'?[3*TPX,3*TPX]:[TPX*s[0],TPX*s[1]]):[d.mode==='run'?3*TPX:TPX*s[0],WPXH]}
+function tileSource(d){const key=d.kind+':'+d.k;if(key in tileSrc)return tileSrc[key];
+  if(d.img){tileSrc[key]=null;const im=new Image();im.onload=()=>{tileSrc[key]=im;dropTileTex(key);tilesDirty=true;syncTiles()};im.onerror=()=>console.warn('tile art missing: '+d.img);im.src=d.img;return null}
+  const [w,h]=srcSize(d),c=mkCanvas(w,h);d.paint(c.getContext('2d'),w,h);return tileSrc[key]=c}
+// Dynamic sets become an atlas with a gutter round every cell so neighbouring cells never bleed into each other.
+function tileAtlas(src,d){const W=src.naturalWidth||src.width,H=src.naturalHeight||src.height,G=8,x0=mkCanvas(1,1);
+  if(d.mode==='run'){const cs=W/3,C=Math.round(cs),S=C+2*G,c=mkCanvas(3*S,H),x=c.getContext('2d');x.imageSmoothingQuality='high';
+    for(let i=0;i<3;i++){x.drawImage(src,i*cs,0,cs,H,i*S,0,S,H);x.drawImage(src,i*cs,0,cs,H,i*S+G,0,C,H)}return{c,S,G,C,w:c.width,h:c.height}}
+  const cs=W/3,ch=H/3,C=Math.round(Math.min(512,cs)),S=C+2*G,c=mkCanvas(4*S,3*S),x=c.getContext('2d');x.imageSmoothingQuality='high';
+  const cell=(sx,sy,dx,dy)=>{x.drawImage(src,sx*cs,sy*ch,cs,ch,dx*S,dy*S,S,S);x.drawImage(src,sx*cs,sy*ch,cs,ch,dx*S+G,dy*S+G,C,C)};
+  for(let i=0;i<3;i++)for(let j=0;j<3;j++)cell(i,j,i,j);
+  // inner corners: the fill, with the border's corner square in each corner of the cell
+  cell(1,1,3,0);const q=Math.round(d.b*C);[[0,0],[1,0],[0,1],[1,1]].forEach(([a,b])=>x.drawImage(src,a?W-d.b*cs:0,b?H-d.b*ch:0,d.b*cs,d.b*ch,3*S+G+(a?C-q:0),G+(b?C-q:0),q,q));
+  return{c,S,G,C,w:c.width,h:c.height}}
+function tileMat(kind,k){const key=kind+':'+k;let e=tileTex[key];if(e)return e;const d=TILESETS[kind][k],src=tileSource(d),mat=M(0xffffff,{roughness:kind==='f'?.55:.8});
+  e=tileTex[key]={mat,avg:[.8,.7,.6],vrep:1};if(!src){mat.color=col(0xEDE6F5);return e}
+  let img=src;if(d.mode!=='repeat'){e.atlas=tileAtlas(src,d);img=e.atlas.c}
+  const t=new THREE.CanvasTexture(img);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;if(d.mode==='repeat')t.wrapS=t.wrapT=THREE.RepeatWrapping;mat.map=t;mat.needsUpdate=true;e.tex=t;
+  try{e.avg=avgColor(src)}catch(_){}
+  if(kind==='w'&&d.mode==='repeat'&&d.img&&!d.full){const W=src.naturalWidth,H=src.naturalHeight;e.vrep=WALLH/(d.span[0]*H/W)}
+  return e}
+function dropTileTex(key){const e=tileTex[key];if(!e)return;if(e.tex)renderer.disposeTexture(e.tex);delete tileTex[key]}
+function pruneTileTex(){const used=new Set([...state.tf.map(k=>'f:'+k),...state.tw.map(k=>'w:'+k)]);if(brush)used.add(brush.kind+':'+brush.k);
+  Object.keys(tileTex).forEach(key=>{if(!used.has(key)){dropTileTex(key);if(!TILESETS[key[0]][key.slice(2)].img)delete tileSrc[key]}})}
+
+const floorLayers=new Map(),wallLayers=[0,1,2,3].map(()=>new Map());
+function setGeo(g,B){g.pos=new Float32Array(B.P);g.nrm=new Float32Array(B.N);g.uv=new Float32Array(B.U);g.idx=(B.P.length/3>65535?Uint32Array:Uint16Array).from(B.I);g.version++;g._bounds()}
+function tquad(B,a,b,c,d,n,uv){const o=B.P.length/3;B.P.push(...a,...b,...c,...d);for(let i=0;i<4;i++)B.N.push(...n);B.U.push(...uv);B.I.push(o,o+1,o+2,o,o+2,o+3)}
+function applyLayers(map,parent,kind,groups){groups.forEach((B,k)=>{let m=map.get(k);if(!m){m=new THREE.Mesh(new THREE.BufferGeometry([0,0,0,0,0,0,0,0,0],[0,1,0,0,1,0,0,1,0],[0,0,0,0,0,0],[0,1,2]),tileMat(kind,k).mat);m.receiveShadow=true;m.castShadow=false;parent.add(m);map.set(k,m)}
+    m.material=tileMat(kind,k).mat;setGeo(m.geometry,B)});map.forEach((m,k)=>{if(!groups.has(k)){parent.remove(m);map.delete(k)}})}
+function atlasUV(A,cx,cy,qx,qy){const h=A.C/2,px=cx*A.S+A.G+qx*h,py=cy*A.S+A.G+qy*h;return[(px+.5)/A.w,(px+h-.5)/A.w,1-(py+h-.5)/A.h,1-(py+.5)/A.h]}
+function buildFloorTiles(){const tf=state.tf,groups=new Map(),y=.002,up=[0,1,0],same=(i,j,k)=>i>=0&&j>=0&&i<GRID&&j<GRID&&tf[j*GRID+i]===k;
+  for(let j=0;j<GRID;j++)for(let i=0;i<GRID;i++){const k=tf[j*GRID+i],d=TILESETS.f[k];if(!d)continue;let B=groups.get(k);if(!B)groups.set(k,B={P:[],N:[],U:[],I:[]});const e=tileMat('f',k),x0=-HALF+i,z0=-HALF+j;
+    if(d.mode==='border'&&e.atlas){for(let qy=0;qy<2;qy++)for(let qx=0;qx<2;qx++){const dx=qx?1:-1,dz=qy?1:-1,sh=same(i+dx,j,k),sv=same(i,j+dz,k),sd=same(i+dx,j+dz,k);
+        const [cx,cy]=!sh&&!sv?[qx?2:0,qy?2:0]:sh&&!sv?[1,qy?2:0]:!sh&&sv?[qx?2:0,1]:sd?[1,1]:[3,0];
+        const [u0,u1,vb,vt]=atlasUV(e.atlas,cx,cy,qx,qy),ax=x0+qx*.5,az=z0+qy*.5;tquad(B,[ax,y,az+.5],[ax+.5,y,az+.5],[ax+.5,y,az],[ax,y,az],up,[u0,vb,u1,vb,u1,vt,u0,vt])}}
+    else{const sx=d.mode==='repeat'?d.span[0]:3,sz=d.mode==='repeat'?d.span[1]:3,u0=(i%sx)/sx,u1=u0+1/sx,vt=1-(j%sz)/sz,vb=vt-1/sz;
+      tquad(B,[x0,y,z0+1],[x0+1,y,z0+1],[x0+1,y,z0],[x0,y,z0],up,[u0,vb,u1,vb,u1,vt,u0,vt])}}
+  applyLayers(floorLayers,scene,'f',groups)}
+function buildWallTiles(){const tw=state.tw,out=[0,0,1];for(let w=0;w<4;w++){const groups=new Map(),same=(c,k)=>c>=0&&c<GRID&&tw[w*GRID+c]===k;
+  for(let c=0;c<GRID;c++){const k=tw[w*GRID+c],d=TILESETS.w[k];if(!d)continue;let B=groups.get(k);if(!B)groups.set(k,B={P:[],N:[],U:[],I:[]});const e=tileMat('w',k),x0=-HALF+c;
+    if(d.mode==='run'&&e.atlas){const A=e.atlas,hw=A.C/2;for(let q=0;q<2;q++){const cx=same(c+(q?1:-1),k)?1:q?2:0,px=cx*A.S+A.G+q*hw,u0=(px+.5)/A.w,u1=(px+hw-.5)/A.w,ax=x0+q*.5;
+        tquad(B,[ax,0,0],[ax+.5,0,0],[ax+.5,WALLH,0],[ax,WALLH,0],out,[u0,0,u1,0,u1,1,u0,1])}}
+    else{const sx=d.mode==='repeat'?d.span[0]:3,u0=(c%sx)/sx,u1=u0+1/sx,vr=e.vrep||1;tquad(B,[x0,0,0],[x0+1,0,0],[x0+1,WALLH,0],[x0,WALLH,0],out,[u0,0,u1,0,u1,vr,u0,vr])}}
+  applyLayers(wallLayers[w],walls[w].g,'w',groups)}}
+function syncTiles(){const f=state.tf.join(),w=state.tw.join(),[pf,pw]=tilesSig.split('|');if(!tilesDirty&&f===pf&&w===pw)return;
+  if(tilesDirty||f!==pf){buildFloorTiles();const n={};state.tf.forEach(k=>n[k]=(n[k]||0)+1);floorAvg=[0,0,0];Object.entries(n).forEach(([k,c])=>{const a=tileMat('f',k).avg;for(let i=0;i<3;i++)floorAvg[i]+=a[i]*c/state.tf.length});updBounce()}
+  if(tilesDirty||w!==pw)buildWallTiles();tilesSig=f+'|'+w;tilesDirty=false;pruneTileTex()}
+floor.visible=false;walls.forEach(w=>{w.plane.visible=false});
 
 /* ================= ITEM BUILDERS ================= */
 function starShape(ro,ri,n){const s=new THREE.Shape();for(let i=0;i<n*2;i++){const r=i%2?ri:ro,a=i/(n*2)*Math.PI*2+Math.PI/2;const x=Math.cos(a)*r,y=Math.sin(a)*r;i?s.lineTo(x,y):s.moveTo(x,y)}return s}
@@ -2417,7 +2574,7 @@ function updateSky(){const h=skyHourOverride??centralHour();let i=0;while(i<SKY_
 function applySky(){const L=SKY_LIGHT.daydream;sun.color.set(L.col);sun.intensity=L.si;const envTex=timeSky('daydream');scene.environment=envTex;updateSky();
   Object.assign(LIT,{exposure:L.exp,envInt:L.env,specInt:L.spec,bloom:L.bloom,caustic:0,envRot:0,lamp:L.lamp,sh:THREE.computeSH(envTex.image,0)});updBounce()}
 const LIT={exposure:1,envInt:1,specInt:1,bloom:.3,bloomThreshold:1.5,bloomKnee:.5,emisBoost:2.6,caustic:0,time:0,envRot:0,lamp:1,bounce:[0,0,0],points:[],ao:[],room:{half:HALF,height:WALLH},wallVis:[1,1,1,1],vignette:.22,sh:null};
-scene.userData.lighting=LIT;let floorAvg=[.8,.7,.6];
+scene.userData.lighting=LIT;
 function updBounce(){const c=sun.color,k=sun.intensity*.075;LIT.bounce=[floorAvg[0]*c.r*k,floorAvg[1]*c.g*k,floorAvg[2]*c.b*k]}
 function avgColor(img){const c=mkCanvas(1,1),x=c.getContext('2d');x.drawImage(img,0,0,1,1);const d=x.getImageData(0,0,1,1).data;return[0,1,2].map(i=>Math.pow(d[i]/255,2.2))}
 const _lv=new THREE.Vector3();
@@ -2428,8 +2585,7 @@ function updLighting(t){LIT.time=t;LIT.wallVis=walls.map(w=>w.g.visible?1:0);con
   if(toyPlay&&toyPlay.light&&pts.length<8)pts.push(toyPlay.light);
   if(pet.group.visible)ao.push([pet.group.position.x,pet.group.position.z,.42*(pet.scale||1),.5]);LIT.points=pts;LIT.ao=ao}
 function syncScene(){
-  if(curFloor!==state.floor){curFloor=state.floor;swapMap(floorMat,roomTexture('f',FLOOR_FN[state.floor]?state.floor:'checker'));floorAvg=avgColor(floorMat.map.image);updBounce()}
-  if(curWall!==state.wall){curWall=state.wall;swapMap(wallMat,roomTexture('w',WALL_FN[state.wall]?state.wall:'bubble'))}
+  syncTiles();
   if(!curSky){curSky='fixed';applySky()}
   const seen=new Set();
   state.items.forEach(it=>{if(!CATMAP[it.k])return;seen.add(it.id);let o=itemObjs.get(it.id);
@@ -2478,8 +2634,9 @@ function pdist(){const a=[...ptrs.values()];return Math.hypot(a[0].x-a[1].x,a[0]
 function pang(){const a=[...ptrs.values()];return Math.atan2(a[1].y-a[0].y,a[1].x-a[0].x)}
 canvas.addEventListener('pointerdown',e=>{if(!ready)return;try{canvas.setPointerCapture(e.pointerId)}catch(_){}
   ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,t:performance.now()});
-  if(ptrs.size===2){if(gest&&gest.type==='item'&&gest.started)finishDrag();gest={type:'pinch',d0:pdist(),dist0:cam.dist,a0:pang(),yaw0:cam.yaw};return}
+  if(ptrs.size===2){if(stroke)cancelStroke();if(gest&&gest.type==='item'&&gest.started)finishDrag();gest={type:'pinch',d0:pdist(),dist0:cam.dist,a0:pang(),yaw0:cam.yaw};return}
   if(ptrs.size>2)return;
+  if(brush){const th=paintHit(e.clientX,e.clientY);if(th){gest={type:'paint'};startStroke(th,e.clientX,e.clientY)}else gest={type:'orbit',yaw0:cam.yaw,pitch0:cam.pitch};return}
   const h=pick(e.clientX,e.clientY);
   if(h&&h.id){select(h.id);gest={type:'item',id:h.id,started:false}}
   else if(h&&h.pet)gest={type:'pet'};
@@ -2488,6 +2645,7 @@ canvas.addEventListener('pointerdown',e=>{if(!ready)return;try{canvas.setPointer
 canvas.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(!p||!gest)return;p.x=e.clientX;p.y=e.clientY;
   const dx=p.x-p.sx,dy=p.y-p.sy;
   if(gest.type==='pinch'&&ptrs.size===2){cam.dist=clamp(gest.dist0*gest.d0/Math.max(20,pdist()),9,28);cam.yaw=gest.yaw0-(pang()-gest.a0)}
+  else if(gest.type==='paint'){if(stroke)moveStroke(p.x,p.y)}
   else if(gest.type==='orbit'){cam.yaw=gest.yaw0-dx*.009;cam.pitch=clamp(gest.pitch0+dy*.006,.22,1.3)}
   else if(gest.type==='item'){if(!gest.started&&Math.hypot(dx,dy)>6){gest.started=true;dragging=true;const it=itemById(gest.id);
       if(it&&!CATMAP[it.k].wall){setRay(p.sx,p.sy);const q=new THREE.Vector3();ray.ray.intersectPlane(floorPlane,q);gest.off={x:it.x-q.x,z:it.z-q.z}}
@@ -2499,6 +2657,7 @@ function endPtr(e){const p=ptrs.get(e.pointerId);if(!p)return;ptrs.delete(e.poin
   if(gest.type==='orbit'&&tap)select(null);
   if(gest.type==='pet'&&tap)petTap();
   if(gest.type==='item'&&gest.started)finishDrag();
+  if(gest.type==='paint'&&stroke)endStroke();
   if(ptrs.size===0||gest.type==='pinch')gest=ptrs.size?{type:'none'}:null}
 canvas.addEventListener('pointerup',endPtr);canvas.addEventListener('pointercancel',endPtr);
 canvas.addEventListener('wheel',e=>{e.preventDefault();cam.dist=clamp(cam.dist*(1+e.deltaY*.001),9,28)},{passive:false});
@@ -2510,6 +2669,8 @@ function renderPalette(){const it=itemById(selId),pl=$('#palette');if(!it){pl.hi
 $('#bColor').onclick=()=>{const pl=$('#palette');if(!itemById(selId))return;pl.hidden=!pl.hidden;if(!pl.hidden)renderPalette()};
 $('#bStore').onclick=()=>{const it=itemById(selId);if(!it)return;const d=CATMAP[it.k];state.items=state.items.filter(i=>i!==it);state.hearts+=d.p;select(null);syncScene();updHUD();toast(`${d.n} stored. ${d.p} hearts back in the jar.`);saveSoon();if(openTab==='decorate')renderSheet()};
 $('#bDone').onclick=()=>select(null);
+document.querySelectorAll('#paintbar [data-tool]').forEach(b=>b.onclick=()=>{if(!brush)return;brush.tool=b.dataset.tool;updPaintBar()});
+$('#pbUndo').onclick=undoTiles;$('#pbDone').onclick=endBrush;$('#pbSwatch').onclick=()=>setTab('room');
 function projXY(o){const v=new THREE.Vector3();o.getWorldPosition(v);v.project(camera);return[(v.x+1)/2*W,(1-v.y)/2*H]}
 function clampPlaced(it){const o=itemObjs.get(it.id),e=o.userData.ext,d=CATMAP[it.k];
   if(d.wall){it.u=clamp(it.u,-HALF+e.x+.05,HALF-e.x-.05);it.y=clamp(it.y,e.y+.25,WALLH-e.y-.05)}
@@ -2601,7 +2762,7 @@ let openTab=null,decoSet='all',decoFn='all';const thumbs={};
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{const t=b.dataset.tab;setTab(openTab===t?null:t)});
 $('#petchip').onclick=()=>setTab(openTab==='pet'?null:'pet');
 $('#dbgBtn').onclick=()=>setTab(openTab==='debug'?null:'debug');
-function setTab(t){petView=null;openTab=t;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));$('#sheet').classList.toggle('open',!!t);
+function setTab(t){if(t&&brush)endBrush();petView=null;openTab=t;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));$('#sheet').classList.toggle('open',!!t);
   if(t){renderSheet();if(t==='mail')markRead()}requestAnimationFrame(fitSheet);updHUD()}
 // Keep the room framed above the sheet, also when its content grows or shrinks (e.g. the egg hatching).
 function fitSheet(){const sh=openTab?$('#sheet').offsetHeight:0;cam.shiftTo=sh*.5;$('#seltools').style.bottom=`calc(env(safe-area-inset-bottom,0px) + ${90+(openTab?sh+8:0)}px)`}
@@ -2639,6 +2800,35 @@ function renderDeco(toTop){const grid=$('#tray');if(!grid)return;
   if(decoIO)decoIO.disconnect();
   decoIO=window.IntersectionObserver?new IntersectionObserver(es=>{const ks=[];es.forEach(e=>{if(e.isIntersecting){ks.push(e.target.dataset.k);decoIO.unobserve(e.target)}});if(ks.length)queueThumbsFirst(ks)},{root:grid,rootMargin:'200px 0px'}):null;
   grid.querySelectorAll('.card').forEach(c=>{bindCard(c);if(thumbs[c.dataset.k])return;if(decoIO)decoIO.observe(c);else queueThumbs([c.dataset.k])})}
+/* ---------- tile painting ---------- */
+// Pick a set in the Room tab, then drag over the floor or walls: Tile paints what you touch, Area fills the rectangle
+// (or wall stretch) you drag out, Room does the whole floor or every wall. Dragging outside the room still turns it.
+let brush=null,stroke=null;const tileUndo=[];let brushHinted=false;
+function tileSwatch(kind,k){const d=TILESETS[kind][k],key=kind+':'+k,on=brush&&brush.kind===kind&&brush.k===k;
+  return`<button class="tsw" data-tile="${key}" aria-pressed="${!!on}" title="${esc(d.n)}"><span class="tsi${kind==='w'?' wall':''}${texThumb[key]?'':' loading'}" data-tk="${key}" style="${tileStyle(key)}">${d.mode!=='repeat'?`<i class="tdyn">${d.mode==='border'?'edges':'ends'}</i>`:''}</span><small>${esc(d.n)}</small></button>`}
+function tileArr(kind){return kind==='f'?state.tf:state.tw}
+function startBrush(kind,k){brush={kind,k,tool:brush&&brush.kind===kind?brush.tool:'tile'};select(null);setTab(null);tileMat(kind,k);updPaintBar();
+  if(!brushHinted){brushHinted=true;toast(`Drag across the ${kind==='f'?'floor':'walls'} to paint. Drag outside the room to turn it.`)}else toast(TILESETS[kind][k].n)}
+function endBrush(){if(stroke)cancelStroke();brush=null;updPaintBar();pruneTileTex()}
+function updPaintBar(){const pb=$('#paintbar');pb.classList.toggle('on',!!brush);if(!brush)return;const key=brush.kind+':'+brush.k,th=$('#pbThumb');th.dataset.tk=key;th.style.backgroundImage=texThumb[key]?`url(${texThumb[key]})`:'';if(!texThumb[key])queueTexThumbs();
+  $('#pbName').textContent=TILESETS[brush.kind][brush.k].n;pb.querySelectorAll('[data-tool]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tool===brush.tool));
+  $('#pbAllLbl').textContent=brush.kind==='f'?'Floor':'Walls';$('#pbUndo').disabled=!tileUndo.length}
+function paintHit(x,y){setRay(x,y);if(brush.kind==='f'){const q=new THREE.Vector3();if(!ray.ray.intersectPlane(floorPlane,q)||Math.abs(q.x)>=HALF||Math.abs(q.z)>=HALF)return null;return{i:clamp(Math.floor(q.x+HALF),0,GRID-1),j:clamp(Math.floor(q.z+HALF),0,GRID-1)}}
+  const vis=walls.filter(w=>w.g.visible).map(w=>w.plane),h=ray.intersectObjects(vis,false)[0];if(!h)return null;const wi=h.object.userData.wall,Wd=WALLDEF[wi],u=(h.point.x-Wd.c[0])*Wd.T[0]+(h.point.z-Wd.c[1])*Wd.T[1];
+  return{w:wi,c:clamp(Math.floor(u+HALF),0,GRID-1)}}
+function paintAt(h){const a=tileArr(brush.kind);if(brush.kind==='f')a[h.j*GRID+h.i]=brush.k;else a[h.w*GRID+h.c]=brush.k}
+function startStroke(h,x,y){stroke={kind:brush.kind,snap:tileArr(brush.kind).slice(),h0:h,x,y};dragging=true;strokeTo(h)}
+function strokeTo(h){const a=tileArr(stroke.kind),k=brush.k,t=brush.tool,s0=stroke.h0;
+  if(t==='all')a.fill(k);
+  else if(t==='area'){stroke.snap.forEach((v,n)=>a[n]=v);
+    if(stroke.kind==='f'){for(let j=Math.min(s0.j,h.j);j<=Math.max(s0.j,h.j);j++)for(let i=Math.min(s0.i,h.i);i<=Math.max(s0.i,h.i);i++)a[j*GRID+i]=k}
+    else if(h.w===s0.w){for(let c=Math.min(s0.c,h.c);c<=Math.max(s0.c,h.c);c++)a[s0.w*GRID+c]=k}else a[s0.w*GRID+s0.c]=k}
+  else paintAt(h);syncTiles()}
+function moveStroke(x,y){if(brush.tool==='tile'){const dx=x-stroke.x,dy=y-stroke.y,n=Math.max(1,Math.ceil(Math.hypot(dx,dy)/10));for(let i=1;i<=n;i++){const h=paintHit(stroke.x+dx*i/n,stroke.y+dy*i/n);if(h)paintAt(h)}syncTiles()}
+  else{const h=paintHit(x,y);if(h)strokeTo(h)}stroke.x=x;stroke.y=y}
+function endStroke(){const a=tileArr(stroke.kind);if(a.some((v,n)=>v!==stroke.snap[n])){tileUndo.push({kind:stroke.kind,snap:stroke.snap});if(tileUndo.length>30)tileUndo.shift();saveSoon()}stroke=null;dragging=false;updPaintBar()}
+function cancelStroke(){const a=tileArr(stroke.kind);stroke.snap.forEach((v,n)=>a[n]=v);stroke=null;dragging=false;syncTiles()}
+function undoTiles(){const u=tileUndo.pop();if(!u)return;const a=tileArr(u.kind);u.snap.forEach((v,n)=>a[n]=v);syncTiles();saveSoon();updPaintBar()}
 function renderSheet(){const body=$('#sheetBody');
   $('#sheet').classList.toggle('deco',openTab==='decorate');
   if(openTab==='decorate'){const old=$('#tray'),keep=old?old.scrollTop:0;
@@ -2731,16 +2921,16 @@ function renderSheet(){const body=$('#sheetBody');
   else if(openTab==='room'){
     const stat=mode==='shared'?'<span class="status"><i></i>Shared room, synced</span>':mode==='readonly'?'<span class="status ro"><i></i>View-only, changes stay local</span>':mode==='connecting'?'<span class="status solo"><i></i>Connecting to shared room</span>':'<span class="status solo"><i></i>Solo on this device</span>';
     body.innerHTML=`<h2>Room</h2>${stat}
-    <div class="row-label">Floor</div><div class="tiles">${FLOORS.map(f=>`<button class="tile${texThumb['f:'+f]?'':' loading'}" data-f="${f}" data-tk="f:${f}" style="${tileStyle('f:'+f)}" aria-label="${f} floor" aria-pressed="${state.floor===f}"></button>`).join('')}</div>
-    <div class="row-label">Walls</div><div class="tiles">${WALLS.map(f=>`<button class="tile${texThumb['w:'+f]?'':' loading'}" data-w="${f}" data-tk="w:${f}" style="${tileStyle('w:'+f)}" aria-label="${f} walls" aria-pressed="${state.wall===f}"></button>`).join('')}</div>
+    <p class="hint">Pick a floor or wallpaper, then drag across the room to paint it, tile by tile. Mix as many as you like.</p>
+    <div class="row-label">Floors</div><div class="tiles tsws">${TILE_ORDER.f.map(k=>tileSwatch('f',k)).join('')}</div>
+    <div class="row-label">Walls</div><div class="tiles tsws">${TILE_ORDER.w.map(k=>tileSwatch('w',k)).join('')}</div>
     ${FB?`<div class="row-label">Invite your person</div><p class="hint">Send them this link. When they open it, you'll both be in this room and see each other's changes.</p>
     <button class="gel pink" id="invite" style="width:100%">Share invite link</button>`:''}
     ${myId?`<div class="row-label">Your name</div><div class="codebox"><input id="myname" value="${esc((state.names||{})[myId]||'')}" maxlength="20" autocomplete="off" placeholder="So your person knows it's you" aria-label="Your name"><button class="gel sun" id="saveName">Save</button></div>`:''}
     <div class="row-label">Room code</div><p class="hint">${FB?'Anyone with this code can open the room, so keep it between you two. To start a separate room, type a new code together.':"Share this page with your person and you'll both land in the same room. To keep a separate room, type a new code together."}</p>
     <div class="codebox"><input id="code" value="${esc(roomCode)}" maxlength="24" autocapitalize="off" autocomplete="off" aria-label="Room code"><button class="gel lilac" id="join">Go</button></div>
     <div class="row-label">Start over</div><button class="gel silver" id="reset">Reset this room</button><div style="height:6px"></div>`;
-    body.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{state.floor=b.dataset.f;syncScene();saveSoon();renderSheet()});
-    body.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{state.wall=b.dataset.w;syncScene();saveSoon();renderSheet()});
+    body.querySelectorAll('[data-tile]').forEach(b=>b.onclick=()=>{const [kind,k]=b.dataset.tile.split(':');startBrush(kind,k)});
     queueTexThumbs();
     const inv=$('#invite');if(inv)inv.onclick=async()=>{const link=location.origin+location.pathname+'?room='+encodeURIComponent(roomCode);
       try{if(navigator.share){await navigator.share({title:'Room for Two',text:'Come hang out in our room!',url:link});return}}catch(e){if(e&&e.name==='AbortError')return}
@@ -2840,7 +3030,7 @@ function normalize(s){const oldPal=!!s&&!(s.pv>=2);const d=defaultState();s=Obje
   s.toys=Array.isArray(s.toys)?s.toys.filter(k=>ITEMMAP[k]&&ITEMMAP[k].k==='toy'):d.toys.slice();s.daily=s.daily&&typeof s.daily==='object'?s.daily:{};
   s.pet=Object.assign({},d.pet,s.pet||{});s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
   s.feed=Array.isArray(s.feed)?s.feed.slice(0,50).map(f=>({t:+f.t||0,by:String(f.by||''),k:f.k==='note'?'note':'event',text:String(f.text||'').slice(0,160)})):[];
-  s.visits=s.visits&&typeof s.visits==='object'?s.visits:{};s.names=s.names&&typeof s.names==='object'?Object.fromEntries(Object.entries(s.names).slice(0,8).map(([k,v])=>[String(k).slice(0,64),String(v||'').slice(0,20)])):{};s.hearts=Math.max(0,+s.hearts||0);if(!FLOORS.includes(s.floor))s.floor='checker';if(!WALLS.includes(s.wall))s.wall='bubble';if(!SKY_KEYS.includes(s.sky))s.sky='classic';if(oldPal){const mp=[0,7,8,3,12,5,2];s.items.forEach(i=>i.c=mp[(i.c||0)%7])}s.pv=2;return s}
+  s.visits=s.visits&&typeof s.visits==='object'?s.visits:{};s.names=s.names&&typeof s.names==='object'?Object.fromEntries(Object.entries(s.names).slice(0,8).map(([k,v])=>[String(k).slice(0,64),String(v||'').slice(0,20)])):{};s.hearts=Math.max(0,+s.hearts||0);if(!FLOORS.includes(s.floor))s.floor='checker';if(!WALLS.includes(s.wall))s.wall='bubble';s.tf=Array.isArray(s.tf)&&s.tf.length===GRID*GRID?s.tf.map(k=>TILESETS.f[k]?k:s.floor):Array(GRID*GRID).fill(s.floor);s.tw=Array.isArray(s.tw)&&s.tw.length===GRID*4?s.tw.map(k=>TILESETS.w[k]?k:s.wall):Array(GRID*4).fill(s.wall);if(!SKY_KEYS.includes(s.sky))s.sky='classic';if(oldPal){const mp=[0,7,8,3,12,5,2];s.items.forEach(i=>i.c=mp[(i.c||0)%7])}s.pv=2;return s}
 function loadLocal(){let s=null;try{s=JSON.parse(localStorage.getItem(soloKey())||'null')}catch(_){}state=normalize(s||defaultState());if(!s)state.rev=0;syncScene();updHUD()}
 function connectShared(){
   if(!db)return;if(unsub){try{unsub()}catch(_){}unsub=null}
