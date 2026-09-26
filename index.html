@@ -8,6 +8,8 @@
 <meta name="description" content="A cozy shared room for two: decorate together, raise a pet and leave each other notes.">
 <meta property="og:title" content="Room for Two"><meta property="og:image" content="https://garrettgivre.github.io/Room-For-Two/assets/logo.png">
 <link rel="icon" type="image/png" href="assets/favicon.png"><link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Room for Two"><meta name="application-name" content="Room for Two">
 <link rel="preload" as="image" href="assets/logo-sm.webp"><link rel="preload" as="font" type="font/woff2" href="assets/r42-bubble.woff2" crossorigin>
 <script src="firebase-config.js"></script>
 <style>
@@ -1863,7 +1865,7 @@ function updatePet(dt,t){
   else if(pet.mode==='idle'){pet.timer-=dt;
     if(pet.timer<=0){if(stats.energy<12&&Math.random()<.5){pet.mode='sleep';pet.sleepT=10}else petGo(randomSpot())}
     pet.fidget-=dt;if(pet.fidget<=0){pet.fidget=5+Math.random()*6;const r=Math.random();if(avg>55){if(r<.3)pet.waveT=1.4;else if(r<.55){pet.hop=1;pet.happyT=.8}}}
-    pet.chatIn-=dt;if(pet.chatIn<=0){pet.chatIn=8+Math.random()*10;pet.chatT=1.6}
+    pet.chatIn-=dt;if(pet.chatIn<=0){pet.chatIn=8+Math.random()*10;pet.chatT=1.6;if(avg>70&&Math.random()<.35)emote('🎵')}
     const h=Math.atan2(camera.position.x-pet.pos.x,camera.position.z-pet.pos.z);let dh=h-pet.heading;dh=Math.atan2(Math.sin(dh),Math.cos(dh));pet.heading+=dh*Math.min(1,dt*1.8)}
   else if(sleeping){pet.sleepT-=dt;if(pet.sleepT<=0){pet.mode='idle';pet.timer=1;pet.hop=.6}if(Math.random()<dt*.45)emote('💤')}
   else if(eating){pet.eatT-=dt;if(pet.eatT<=0){pet.mode='idle';pet.timer=2;pet.happyT=1.2;emote('😋')}}
@@ -1915,7 +1917,7 @@ function updatePet(dt,t){
   // mouths: chomp, cheer, snore, chatter, smile or frown
   R.mouths.forEach((mo,i)=>{let open=eating?Math.abs(Math.sin(t*9+i*1.3)):(pet.hop>0||pet.happyT>0||pet.waveT>0)?.9:sleeping?(i?.25+Math.sin(t*1.5)*.1:0):chat?Math.abs(Math.sin(t*14+i*2.2))*.7:0;
     mo.scale.y=approach(mo.scale.y,Math.max(.01,open),dt*20);mo.visible=mo.scale.y>.06;const sm=R.smiles[i];sm.visible=!mo.visible;sm.rotation.z=avg>=40?Math.PI:0});
-  pet.nag-=dt;if(pet.nag<=0&&!sleeping){pet.nag=9+Math.random()*6;const low=Object.entries(stats).sort((a,b)=>a[1]-b[1])[0];if(low[1]<30)emote({hunger:'🍙',fun:'🎾',energy:'😪',clean:'🫧'}[low[0]])}
+  pet.nag-=dt;if(pet.nag<=0&&!sleeping){pet.nag=9+Math.random()*6;const low=Object.entries(stats).sort((a,b)=>a[1]-b[1])[0];if(low[1]<12&&Math.random()<.4)emote('😢');else if(low[1]<30)emote({hunger:'🍙',fun:'🎾',energy:'😪',clean:'🫧'}[low[0]])}
 }
 
 /* ================= SCENE SYNC ================= */
@@ -2037,8 +2039,9 @@ function spawn(k){const d=CATMAP[k];if(state.hearts<d.p){toast(`You need ${d.p-s
 const emotes=[];
 // Emotes: a bubble (speech, thought or shout) with a symbol dropped inside. i = icon file, t = text in the bubble font, e = stand-in emoji.
 const BUBBLES={speech:[.512,.432],thought:[.511,.381],shout:[.509,.493]};
-const EMO={'💗':{b:'speech',i:'stat-happy'},'🍙':{b:'speech',i:'stat-full'},'🫧':{b:'speech',i:'stat-clean'},'😪':{b:'thought',i:'stat-energy'},'💤':{b:'thought',t:'Zzz'},
-  '🎾':{b:'speech',i:'act-play'},'😋':{b:'speech',i:'act-feed'},'⭐':{b:'speech',e:'⭐'},'✨':{b:'shout',e:'⭐'},'💥':{b:'shout',t:'Pop!'},'🐣':{b:'shout',e:'🐣'},'🎉':{b:'shout',e:'🎉'}};
+const EMO={'💗':{b:'speech',i:'stat-happy'},'🍙':{b:'speech',i:'stat-full'},'🫧':{b:'speech',i:'stat-clean'},'😪':{b:'thought',i:'emo-sleepy'},'💤':{b:'thought',i:'emo-zzz'},
+  '🎾':{b:'speech',i:'emo-ball'},'😋':{b:'speech',i:'emo-yum'},'⭐':{b:'speech',i:'emo-star'},'✨':{b:'shout',i:'emo-star'},'💥':{b:'shout',i:'emo-crack'},'🐣':{b:'shout',i:'emo-crack'},'🎉':{b:'shout',i:'emo-party'},
+  '🎵':{b:'speech',i:'emo-music'},'😢':{b:'thought',i:'emo-sad'},'❓':{b:'thought',i:'emo-question'},'❗':{b:'shout',i:'emo-exclaim'}};
 function emote(ch){const d=EMO[ch]||{b:'speech',e:ch},c=BUBBLES[d.b],el=document.createElement('div');el.className='emote b-'+d.b;
   el.innerHTML=`<img class="eb" src="assets/icons/bubble-${d.b}.webp" alt=""><span class="es" style="left:${c[0]*100}%;top:${c[1]*100}%">${d.i?`<img src="assets/icons/${d.i}.webp" alt="">`:d.t?`<b>${d.t}</b>`:`<i>${d.e}</i>`}</span>`;
   $('#emotes').appendChild(el);const e={el,born:performance.now(),dx:(Math.random()-.5)*30};emotes.push(e);setTimeout(()=>{el.remove();emotes.splice(emotes.indexOf(e),1)},1800)}
@@ -2300,6 +2303,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap the egg to warm it. Take turns caring for what hatches.</li><li><span class="ci"><img src="assets/icons/tab-mail.webp" alt=""></span>Leave notes in Mail. Your person sees them next visit.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}}}
 function withTimeout(p,ms){return Promise.race([Promise.resolve(p).catch(()=>null),new Promise(r=>setTimeout(()=>r(null),ms))])}
+if('serviceWorker' in navigator&&window.isSecureContext)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 (async function boot(){
   try{await withTimeout(document.fonts.load('40px "R42 Bubble"'),1500)}catch(_){}
   // Play immediately from this device; never block on the shared connection.
