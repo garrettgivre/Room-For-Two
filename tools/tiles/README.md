@@ -94,6 +94,16 @@ times across, each a little different."*
 
 ## Tips
 
+Lessons from the first batch of generated art:
+- ChatGPT often draws a small motif repeated 2×2 inside a "seamless" square. That's fine: crop one quarter and it
+  tiles perfectly (the Jungle and Leafy vines wallpapers were made this way).
+- For 3-part walls (end caps) it likes to draw thin divider lines between the parts. Ask for *"no lines or gaps
+  between the three parts, the wallpaper runs continuously across them"*.
+- Full-height panels often don't match at the left and right edges. Ask for *"the left and right edges line up
+  exactly so the panel repeats sideways"*, or send it to Claude to crop to its repeat.
+- Wide 1536 × 1024 swatches usually have a seam at the top and bottom. For anything that repeats up a wall or across
+  a floor, prefer square images.
+
 - Ask ChatGPT for "flat, straight-on, no perspective" every time. Any slant or lighting from one side shows up as
   stripes when it repeats.
 - If a seam still shows, run the script with `--seamless`, or regenerate asking for a simpler, more even pattern.
