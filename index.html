@@ -74,7 +74,7 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px da
 .jar{display:flex;align-items:center;gap:6px;height:46px;padding:0 14px 0 8px;background:var(--pink);color:#fff;font-weight:900;font-size:19px;
   border:3px solid var(--ink);border-radius:24px 18px 26px 16px;box-shadow:var(--stk);transform:rotate(3deg)}
 .jar span{text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink),2px 2px var(--ink)}
-.jar .heart{width:30px;height:30px;animation:beat 1.6s ease-in-out infinite}
+.jar .heart{width:34px;height:34px;filter:drop-shadow(0 2px 0 rgba(59,18,115,.35));animation:beat 1.6s ease-in-out infinite}
 @keyframes beat{0%,100%{transform:scale(1)}12%{transform:scale(1.18)}24%{transform:scale(.96)}36%{transform:scale(1.08)}}
 
 .petchip{position:fixed;right:14px;top:calc(env(safe-area-inset-top,0px) + 66px);z-index:5;display:flex;align-items:center;gap:9px;padding:7px 12px 7px 7px;text-align:left;
@@ -299,6 +299,14 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px da
 .loader .sub{font-family:var(--disp);font-weight:400;font-size:16px;letter-spacing:.02em}
 .orb{border-color:#fff;box-shadow:0 0 0 3px var(--ink);background:repeating-linear-gradient(-45deg,var(--pink) 0 10px,var(--sun) 10px 20px,var(--sky) 20px 30px,var(--slime) 30px 40px);background-size:56.57px 56.57px;animation:candy3 .9s linear infinite}
 @keyframes candy3{to{background-position:56.57px 0}}
+
+/* generated icon art */
+.tab .ic{width:44px;height:36px;background:none!important;border:0;box-shadow:none;border-radius:0}
+.tab .ic img{width:40px;height:40px;margin-top:-4px;filter:drop-shadow(0 2px 0 rgba(59,18,115,.3));transition:transform .2s cubic-bezier(.3,1.8,.5,1)}
+.tab[aria-selected="true"] .ic img{transform:scale(1.18) rotate(-6deg)}
+.gel .bi{width:34px;height:34px;margin:-8px 0 -8px -6px;flex:none;filter:drop-shadow(0 2px 0 rgba(59,18,115,.35))}
+.stat{display:block}.stat .si{width:22px;height:22px;vertical-align:-6px;margin-right:4px}
+.coach li span.ci{background:none;border:0}.coach li span.ci img{width:40px;height:40px}
 </style>
 </head>
 <body>
@@ -311,7 +319,7 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px da
     <h1 class="logo"><img src="assets/logo-sm.webp" alt="Room for Two" width="520" height="349" decoding="async"></h1>
     <span class="tag" id="presence">Opening your room</span>
   </div>
-  <div class="jar" title="Shared heart jar"><svg class="heart" viewBox="0 0 24 24"><path fill="#fff" stroke="#1B1030" stroke-width="2.2" stroke-linejoin="round" d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.5 1.2 4.4 2.5.9-1.3 2.3-2.5 4.4-2.5 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/><path d="M6.5 8.2c.6-1 1.6-1.4 2.6-1.2" stroke="#FF3EA5" stroke-width="2" fill="none" stroke-linecap="round"/></svg><span id="hearts">0</span></div>
+  <div class="jar" title="Shared heart jar"><img class="heart" src="assets/icons/stat-happy.webp" alt=""><span id="hearts">0</span></div>
 </header>
 
 <button class="dbg-btn" id="dbgBtn" aria-label="Open debug menu">🐞</button>
@@ -335,10 +343,10 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px da
 
 <div class="dock">
   <nav role="tablist">
-    <button class="tab" role="tab" data-tab="decorate" aria-selected="false"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#1B1030" stroke-width="2.4" stroke-linejoin="round"><path d="M5 11V8a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v3"/><path d="M3 12a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v5H3z" fill="#fff"/></svg></span>Decorate</button>
-    <button class="tab" role="tab" data-tab="pet" aria-selected="false"><span class="ic"><svg viewBox="0 0 24 24" fill="#fff" stroke="#1B1030" stroke-width="2"><ellipse cx="12" cy="16" rx="5" ry="4"/><circle cx="5.5" cy="10.5" r="2.2"/><circle cx="18.5" cy="10.5" r="2.2"/><circle cx="9" cy="6.3" r="2.2"/><circle cx="15" cy="6.3" r="2.2"/></svg></span>Pet</button>
-    <button class="tab" role="tab" data-tab="mail" aria-selected="false"><span class="ic"><svg viewBox="0 0 24 24" fill="#fff" stroke="#1B1030" stroke-width="2.4" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="3"/><path d="M4 7.5l8 6 8-6" fill="none"/></svg></span>Mail<span class="badge" id="mailBadge">0</span></button>
-    <button class="tab" role="tab" data-tab="room" aria-selected="false"><span class="ic"><svg viewBox="0 0 24 24" fill="#fff" stroke="#1B1030" stroke-width="2.4" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9H3z"/><path d="M10 20v-5h4v5" fill="#FFD60A"/></svg></span>Room</button>
+    <button class="tab" role="tab" data-tab="decorate" aria-selected="false"><span class="ic"><img src="assets/icons/tab-decorate.webp" alt="" width="96" height="96"></span>Decorate</button>
+    <button class="tab" role="tab" data-tab="pet" aria-selected="false"><span class="ic"><img src="assets/icons/tab-pet.webp" alt="" width="96" height="96"></span>Pet</button>
+    <button class="tab" role="tab" data-tab="mail" aria-selected="false"><span class="ic"><img src="assets/icons/tab-mail.webp" alt="" width="96" height="96"></span>Mail<span class="badge" id="mailBadge">0</span></button>
+    <button class="tab" role="tab" data-tab="room" aria-selected="false"><span class="ic"><img src="assets/icons/tab-room.webp" alt="" width="96" height="96"></span>Room</button>
   </nav>
 </div>
 
@@ -2082,8 +2090,8 @@ function renderSheet(){const body=$('#sheetBody');
     const next=STAGE_XP[st+1];
     body.innerHTML=`<div class="pet-head"><input id="pname" maxlength="16" value="${esc(p.name)}" aria-label="Pet name"><span class="stage">${STAGE_NAMES[st]}</span></div>`+
     (st===0?`<p class="hint">A mystery egg lives in your room. Warm it together to hatch it. Either of you can tap the egg or the button.</p><div class="actions"><button class="gel pink" id="warm" style="grid-column:span 2">Warm the egg (${p.xp}/3)</button></div>`:
-    `<div class="stats">${[['hunger','🍙 Full','#FF7A1A'],['fun','💗 Happy','#FF3EA5'],['energy','⚡ Energy','#8B3DFF'],['clean','🫧 Clean','#29C5FF']].map(([k,n,c])=>`<div class="stat">${n}<div class="bar"><i style="width:${s[k]|0}%;--c:${c}"></i></div></div>`).join('')}</div>
-    <div class="actions">${Object.entries(ACTS).map(([k,a])=>`<button class="gel ${a.cls}" data-act="${k}"><span aria-hidden="true">${a.emo}</span>${a.label}</button>`).join('')}</div>
+    `<div class="stats">${[['hunger','Full','#FF7A1A','full'],['fun','Happy','#FF3EA5','happy'],['energy','Energy','#8B3DFF','energy'],['clean','Clean','#29C5FF','clean']].map(([k,n,c,ic])=>`<div class="stat"><img class="si" src="assets/icons/stat-${ic}.webp" alt="">${n}<div class="bar"><i style="width:${s[k]|0}%;--c:${c}"></i></div></div>`).join('')}</div>
+    <div class="actions">${Object.entries(ACTS).map(([k,a])=>`<button class="gel ${a.cls}" data-act="${k}"><img class="bi" src="assets/icons/act-${k}.webp" alt="">${a.label}</button>`).join('')}</div>
     <p class="xp">${next?`${next-p.xp} more care moments until ${p.name} grows.`:`${p.name} is fully grown. Keep the love coming.`} Stats drain while you're away, so take turns.</p>`)+
     `<div class="row-label">Color</div><div class="swatches">${PET_PALS.map((c,i)=>`<button class="sw" data-c="${i}" style="background:linear-gradient(135deg,${hex(c.L)} 0 50%,${hex(c.R)} 50%)" aria-label="${c.n} colors" title="${c.n}" aria-pressed="${i===p.color%6}"></button>`).join('')}</div>`;
     const w=$('#warm');if(w)w.onclick=warm;body.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>doAct(b.dataset.act));
@@ -2265,8 +2273,8 @@ let loadedOnce=false;
 function finishLoad(){if(loadedOnce)return;loadedOnce=true;ready=true;bootDone=true;$('#loader').classList.add('gone');updHUD();
   let seen=false;try{seen=localStorage.getItem('r42coach')==='1'}catch(_){}if(!seen)showCoach()}
 function showCoach(){const c=document.createElement('div');c.className='coach';c.innerHTML=`<h3>How to play</h3><ul>
-<li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span>🛋️</span>Touch furniture to move it. Add more from Decorate.</li>
-<li><span>🥚</span>Tap the egg to warm it. Take turns caring for what hatches.</li><li><span>💌</span>Leave notes in Mail. Your person sees them next visit.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
+<li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span>Touch furniture to move it. Add more from Decorate.</li>
+<li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap the egg to warm it. Take turns caring for what hatches.</li><li><span class="ci"><img src="assets/icons/tab-mail.webp" alt=""></span>Leave notes in Mail. Your person sees them next visit.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}}}
 function withTimeout(p,ms){return Promise.race([Promise.resolve(p).catch(()=>null),new Promise(r=>setTimeout(()=>r(null),ms))])}
 (async function boot(){
