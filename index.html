@@ -1236,7 +1236,11 @@ const SETS=[
  {k:'snow',img:'set-snow.svg',n:'Snow Lodge',e:'❄️',c:'#8FD8FF'},
  {k:'sea',img:'set-sea.svg',n:'Seaside Shack',e:'🐚',c:'#3EC8F2'},
  {k:'studio',img:'set-studio.svg',n:'Music & Art Studio',e:'🎹',c:'#9B4DF2'},
- {k:'stars',img:'set-stars.svg',n:'Stargazer',e:'🔭',c:'#4A4458'}
+ {k:'stars',img:'set-stars.svg',n:'Stargazer',e:'🔭',c:'#4A4458'},
+ {k:'green',img:'set-green.svg',n:'Greenhouse Nook',e:'🌵',c:'#7FD08A'},
+ {k:'fort',img:'set-fort.svg',n:'Pillow Fort',e:'⛺',c:'#FF9ED0'},
+ {k:'games',img:'set-games.svg',n:'Game Den',e:'🕹️',c:'#9B4DF2'},
+ {k:'petpal',img:'set-petpal.svg',n:'Pet Palace',e:'🐾',c:'#FFC21F'}
 ];
 const SETMAP={};SETS.forEach(s=>SETMAP[s.k]=s);
 const FUNCS=[['seat','Seats','🛋️'],['bed','Beds','🛏️'],['surface','Tables','🍽️'],['storage','Storage','📦'],['light','Lights','💡'],['fun','Fun','🕹️'],['plant','Plants','🌵'],['rug','Rugs','🌀'],['deco','Decor','🗿'],['wall','Walls','🖼️'],['pet','Pet','🐾']];
@@ -1439,6 +1443,49 @@ const CAT=[
  {k:'orrery',n:'Planet orrery',set:'stars',fn:'deco',p:7,dc:8},
  {k:'cometart',n:'Comet print',set:'stars',fn:'wall',p:4,dc:8,wall:1,y:1.8},
  {k:'moonbed',n:'Crescent moon pet bed',set:'stars',fn:'pet',p:5,dc:2,flat:1,sleep:1},
+ // Greenhouse Nook
+ {k:'cacti',n:'Cactus trio',set:'green',fn:'plant',p:4,dc:0},
+ {k:'hangplanter',n:'Macramé planter stand',set:'green',fn:'plant',p:5,dc:10},
+ {k:'terrarium',n:'Glass terrarium',set:'green',fn:'deco',p:5,dc:6},
+ {k:'flowercart',n:'Flower cart',set:'green',fn:'surface',p:7,dc:7},
+ {k:'wateringlamp',n:'Watering can lamp',set:'green',fn:'light',p:5,dc:5},
+ {k:'pottingbench',n:'Potting bench',set:'green',fn:'storage',p:7,dc:10},
+ {k:'leafrug',n:'Monstera leaf rug',set:'green',fn:'rug',p:4,dc:5,flat:1},
+ {k:'fern',n:'Big fern',set:'green',fn:'plant',p:4,dc:3},
+ {k:'wallplanter',n:'Wall planter',set:'green',fn:'wall',p:4,dc:10,wall:1,y:1.6},
+ {k:'potbed',n:'Flowerpot pet bed',set:'green',fn:'pet',p:5,dc:2,flat:1,sleep:1},
+ // Pillow Fort
+ {k:'fortbed',n:'Blanket fort bed',set:'fort',fn:'bed',p:13,dc:0,perch:{y:.62,z:.3,x:[-.35,0,.35],w:.9,bz:-.8,pz:-1.0,side:1,se:1.05,kind:'bed',foot:1.4}},
+ {k:'sleepbag',n:'Sleeping bag',set:'fort',fn:'bed',p:6,dc:7,perch:{y:.24,z:.3,x:[-.35,0,.35],w:.9,bz:-.8,pz:-1.0,side:1,se:1.05,kind:'bed',foot:1.4}},
+ {k:'fairylights',n:'Fairy lights',set:'fort',fn:'light',p:5,dc:3},
+ {k:'gamestack',n:'Board game stack',set:'fort',fn:'deco',p:4,dc:0},
+ {k:'popcorn',n:'Popcorn bucket',set:'fort',fn:'storage',p:3,dc:1},
+ {k:'quiltrug',n:'Patchwork quilt rug',set:'fort',fn:'rug',p:4,dc:0,flat:1},
+ {k:'cloudlight',n:'Cloud night-light',set:'fort',fn:'light',p:5,dc:9},
+ {k:'beanbag',n:'Squishy beanbag',set:'fort',fn:'seat',p:5,dc:8,perch:{y:.4,z:.05,fe:.4}},
+ {k:'pennant',n:'Pennant garland',set:'fort',fn:'wall',p:3,dc:0,wall:1,y:1.9},
+ {k:'pillowbed',n:'Pillow pile pet bed',set:'fort',fn:'pet',p:5,dc:6,flat:1,sleep:1},
+ // Game Den
+ {k:'arcade',n:'Mini arcade cabinet',set:'games',fn:'fun',p:12,dc:8},
+ {k:'clawmini',n:'Mini claw machine',set:'games',fn:'fun',p:10,dc:0},
+ {k:'gamechair',n:'Gaming chair',set:'games',fn:'seat',p:7,dc:8,perch:{y:.5,z:.06,w:.3,bz:-.2,fe:.45}},
+ {k:'neonrug',n:'Neon grid rug',set:'games',fn:'rug',p:4,dc:8,flat:1},
+ {k:'retrotv',n:'Retro TV and console',set:'games',fn:'fun',p:9,dc:1},
+ {k:'trophyshelf',n:'Trophy shelf',set:'games',fn:'storage',p:7,dc:11},
+ {k:'pinball',n:'Pinball table',set:'games',fn:'fun',p:11,dc:6},
+ {k:'neonsign',n:'Neon star sign',set:'games',fn:'wall',p:5,dc:0,wall:1,y:1.8},
+ {k:'joylamp',n:'Joystick lamp',set:'games',fn:'light',p:5,dc:0},
+ {k:'padbed',n:'Game pad pet bed',set:'games',fn:'pet',p:5,dc:12,flat:1,sleep:1},
+ // Pet Palace
+ {k:'climbtree',n:'Climbing tree',set:'petpal',fn:'fun',p:10,dc:10},
+ {k:'teepee',n:'Pet teepee',set:'petpal',fn:'pet',p:6,dc:0,flat:1,sleep:1},
+ {k:'petswing',n:'Pet swing',set:'petpal',fn:'fun',p:8,dc:7},
+ {k:'treatstation',n:'Treat station',set:'petpal',fn:'pet',p:4,dc:3,flat:1,feed:1},
+ {k:'scratchpost',n:'Scratching post',set:'petpal',fn:'deco',p:4,dc:6},
+ {k:'petsofa',n:'Pet sofa',set:'petpal',fn:'seat',p:7,dc:8,perch:{y:.42,z:.08,w:.4,bz:-.2,fe:.4}},
+ {k:'pawrug',n:'Paw print rug',set:'petpal',fn:'rug',p:3,dc:3,flat:1},
+ {k:'toychest',n:'Toy chest',set:'petpal',fn:'storage',p:6,dc:0},
+ {k:'pawart',n:'Paw print frame',set:'petpal',fn:'wall',p:3,dc:3,wall:1,y:1.8},
  // Capsule Pals: little living figurines of the shopkeepers, only from the capsule machine
  ...[['baker','Bunbun'],['stylist','Fizz'],['toymaker','Boing'],['cushion','Cushy'],['builder','Bolt'],['joy','Joy'],['hair','Pom'],['makeup','Blush'],['tailor','Stitch']].map(([k,n],i)=>({k:'fig_'+k,n:n+' figurine',set:'gacha',fn:'deco',p:0,dc:[0,7,9,0,2,8,5,0,4][i],gacha:1})),
  {k:'fig_gold',n:'Golden gumdrop trophy',set:'gacha',fn:'deco',p:0,dc:3,gacha:1},
@@ -2963,6 +3010,154 @@ Object.assign(BUILD,{
   const cr=add(g,new THREE.TorusGeometry(.4,.17,18,40,Math.PI*1.35),Mn,0,.18,0);cr.rotation.set(-Math.PI/2,0,Math.PI*.83);ol(cr,.012);
   [Math.PI*.83,Math.PI*.83+Math.PI*1.35].forEach(a=>{const e=sp(g,.17,Mn,Math.cos(a)*.4,.18,-Math.sin(a)*.4);ol(e,.012)});
   ol(cy(g,.34,.34,.1,In,.05,.1,0,24),.006);for(let i=0;i<3;i++)s1Star(g,.05,M(0xFFD21F,{roughness:.3}),-.3+i*.12,.38,-.28+i*.14);return g}});
+/* ================= GREENHOUSE NOOK, PILLOW FORT, GAME DEN, PET PALACE ================= */
+function s2Tex(key,w,h,fn){return gcache('s2t'+key,()=>{const c=mkCanvas(w,h),x=c.getContext('2d');fn(x,w,h);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t})}
+const s2hex=v=>'#'+v.toString(16).padStart(6,'0');
+function s2Pot(g,x,y,z,r,h,col){ol(lathe(g,[[r*.75,y],[r*.8,y+.02],[r,y+h],[r*1.08,y+h+.01],[r*1.08,y+h+.05]],M(col,{roughness:.6}),x,0,z,24),.008);ol(cy(g,r*.98,r*.98,.02,M(0x6A4830,{roughness:1}),x,y+h+.02,z,20),0)}
+Object.assign(BUILD,{
+ // ---------- Greenhouse Nook ----------
+ cacti(c){const g=G(),Cg=M(0x5FAF6A,{roughness:.5}),Sp=M(0xFFFFFF,{roughness:.4});Cg.detail=3;
+  [[-.28,.14,.5,TERRA],[0,.17,.9,c],[.3,.13,.4,0xF4E8D8]].forEach(([x,r,h,col],i)=>{s2Pot(g,x,0,0,r,.26,col);const cb=piv(g,x,.3,0);
+    if(i===1){ol(lathe(cb,[[.1,0],[.12,.1],[.12,h-.1],[.08,h-.02],[0,h]],Cg,0,0,0,12),.008);[-1,1].forEach(sd=>{const a=piv(cb,sd*.1,h*.45,0);ol(cy(a,.05,.05,.14,Cg,sd*.07,0,0,10),.006).rotation.z=Math.PI/2;ol(lathe(a,[[.05,0],[.05,.2],[0,.25]],Cg,sd*.14,0,0,10),.006)});ol(sp(cb,.05,M(0xFF6FB5,{roughness:.4}),0,h,0,1,.6,1),.004)}
+    else if(i===0){ol(sp(cb,.13,Cg,0,.12,0,1,1.1,1),.008);ol(sp(cb,.09,Cg,.08,.28,0),.006)}else{for(let j=0;j<5;j++){const a=j/5*Math.PI*2;ol(sp(cb,.07,Cg,Math.cos(a)*.06,.06,Math.sin(a)*.06,.6,1.4,.6),.004)}ol(sp(cb,.04,M(0xFFD21F),0,.16,0),0)}
+    for(let j=0;j<8;j++)ol(cy(cb,.003,.003,.04,Sp,Math.cos(j)*.09,.1+j*h*.08,Math.sin(j)*.09,3),0)});return g},
+ hangplanter(c){const g=G(),Wd=M(c,{roughness:.6}),Rp=M(0xF4E6C8,{roughness:.9}),Lf=M(0x4FAF4A,{roughness:.55});Wd.detail=2;
+  ol(rb(g,.5,.05,.5,.02,Wd,0,.025,0),.008);ol(cy(g,.03,.03,1.7,Wd,0,.87,0,10),.006);ol(cy(g,.02,.02,.5,Wd,.2,1.7,0,8),.004).rotation.z=Math.PI/2;
+  const hp=piv(g,.4,1.68,0);[0,1,2,3].forEach(i=>{const a=i/4*Math.PI*2;ol(add(hp,sweepGeo([[0,0,0],[Math.cos(a)*.08,-.3,Math.sin(a)*.08],[Math.cos(a)*.14,-.6,Math.sin(a)*.14]],()=>[.008,.008],{len:10,seg:5}),Rp,0,0,0),0)});
+  s2Pot(hp,0,-.8,0,.13,.2,TERRA);for(let v=0;v<5;v++){const a=v/5*Math.PI*2,pts=[[Math.cos(a)*.08,-.58,Math.sin(a)*.08],[Math.cos(a)*.18,-.6,Math.sin(a)*.18],[Math.cos(a)*.2,-.85,Math.sin(a)*.2],[Math.cos(a)*.22,-1.1,Math.sin(a)*.22]];
+    ol(add(hp,sweepGeo(pts,()=>[.008,.008],{len:12,seg:5}),M(0x3E8A34),0,0,0),0);for(let j=1;j<6;j++){const q=crPt(pts,j/6),l=add(hp,leafGeo(.08,.06),Lf,q[0],q[1],q[2]);l.rotation.set(1,a,j);ol(l,.002)}}return g},
+ terrarium(c){const g=G(),Gl=M(0xE8FBFF,{roughness:.03,transparent:true,opacity:.28}),Br=M(0xE8C36A,{roughness:.3,metalness:.5});ol(rb(g,.62,.08,.46,.02,M(c,{roughness:.5}),0,.34,0),.008);
+  [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([x,z])=>ol(cy(g,.02,.02,.34,M(c,{roughness:.5}),x*.26,.17,z*.18,8),0));
+  const gl=add(g,new THREE.SphereGeometry(.34,32,18,0,Math.PI*2,0,Math.PI/2),Gl,0,.38,0);gl.outline=0;nosh(gl);ol(to(g,.34,.01,Br,0,.38,0,Math.PI/2),0);ol(sp(g,.03,Br,0,.73,0),0);
+  ol(cy(g,.3,.3,.05,M(0x8A6A48,{roughness:1}),0,.41,0,24),0);[[-.1,.05],[.12,-.06]].forEach(([x,z],i)=>{ol(sp(g,.06,M(0x5FAF6A),x,.47,z,1,1.4,1),.004)});for(let i=0;i<5;i++)ol(sp(g,.03,M(0xB9B2C9),-.05+i*.04,.44,.12),0);
+  ol(sp(g,.04,M(0xFF6FB5,{roughness:.4}),.02,.5,.02),.004);return g},
+ flowercart(c){const g=G(),Wd=M(c,{roughness:.5}),Ir=M(0x3A3244,{roughness:.4});Wd.detail=2;ol(rb(g,1.1,.3,.55,.03,Wd,0,.55,0),.01);ol(rb(g,1.1,.04,.55,.02,M(shade(c,.2)),0,.72,0),0);
+  [-1,1].forEach(sd=>{ol(to(g,.22,.03,Ir,sd*.4,.22,.3,0,0,0),.006);for(let i=0;i<6;i++)ol(cy(g,.01,.01,.42,Ir,sd*.4,.22,.3,4),0).rotation.z=i*Math.PI/6});ol(cy(g,.02,.02,.9,Ir,-.75,.72,0,8),.004).rotation.z=Math.PI/2+.3;
+  const R=rnd(4);for(let i=0;i<9;i++){const x=-.4+(i%3)*.4,z=-.15+Math.floor(i/3)*.15;ol(lathe(g,[[.06,.72],[.08,.74],[.09,.86]],M([0xFFFFFF,0xFFD6EA,0xCFE8FF][i%3],{roughness:.4}),x,0,z,14),.004);
+    for(let j=0;j<5;j++){const a=j/5*6.3;ol(sp(g,.035,M([0xFF5FA8,0xFFD21F,0xB07BFF,0xFF8A3D][(i+j)%4],{roughness:.5}),x+Math.cos(a)*.04,.9+R()*.06,z+Math.sin(a)*.04),0)}}return g},
+ wateringlamp(c){const g=G(),Mt=M(c,{roughness:.3,metalness:.3});const cn=piv(g,0,0,0);ol(lathe(cn,[[.22,0],[.24,.02],[.24,.5],[.2,.55],[.08,.58]],Mt,0,0,0,32),.01);
+  ol(add(cn,gcache('wl_sp',()=>sweepGeo([[.2,.1,0],[.34,.3,0],[.46,.52,0],[.5,.6,0]],t=>[.03+t*.02,.03+t*.02],{len:14,seg:10})),Mt,0,0,0),.006);ol(cy(cn,.07,.06,.04,Mt,.52,.62,0,14),.004).rotation.z=-.7;
+  ol(to(cn,.18,.025,Mt,-.1,.55,0,0,0,0,Math.PI),.006).rotation.z=Math.PI*.1;const gl=[];for(let i=0;i<5;i++){const m=ol(sp(g,.03,M(0xFFF3C0,{emissive:0xFFE08A,emissiveIntensity:1.6}),.58+i*.02,.54-i*.1,0),0);gl.push(m)}
+  ol(sp(g,.1,M(0xFFF3C0,{emissive:0xFFE08A,emissiveIntensity:1.2}),0,.6,0),0);g.userData.anim=t=>gl.forEach((m,i)=>{m.position.y=.54-(((t*.6+i/5)%1))*.5});return g},
+ pottingbench(c){const g=G(),Wd=M(c,{roughness:.6});Wd.detail=2;[[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([x,z])=>ol(rb(g,.06,.85,.06,.01,Wd,x*.55,.43,z*.2),.006));ol(rb(g,1.2,.05,.5,.02,Wd,0,.85,0),.008);ol(rb(g,1.2,.04,.46,.01,Wd,0,.25,0),.006);
+  ol(rb(g,1.2,.8,.05,.01,Wd,0,1.27,-.23),.008);for(let i=0;i<3;i++)ol(cy(g,.012,.012,.1,M(0x3A3244),-.4+i*.4,1.4,-.18,6),0).rotation.x=Math.PI/2;
+  ol(to(g,.07,.015,M(0x7FD08A,{roughness:.5}),-.4,1.3,-.16,0,0,0),.004);[[-.3,TERRA],[0,0xFFD6EA],[.3,TERRA]].forEach(([x,col])=>s2Pot(g,x,.27,0,.1,.14,col));
+  const cn=piv(g,.35,.88,.05);ol(lathe(cn,[[.1,0],[.11,.2],[.07,.23]],M(0x6FC8FF,{roughness:.3}),0,0,0,20),.006);ol(cy(cn,.02,.03,.24,M(0x6FC8FF),.14,.16,0,8),0).rotation.z=-.8;
+  ol(sp(g,.12,M(0x8A6A48,{roughness:1}),-.2,.87,.05,1.4,.4,1),.004);ol(rb(g,.04,.2,.04,.01,M(0xB57A46),-.05,.95,.1),0);return g},
+ leafrug(c){const g=G();const tx=s2Tex('leaf'+c,256,256,(x,w,h)=>{x.fillStyle=s2hex(c);x.fillRect(0,0,w,h);x.fillStyle='#FFF8EE';for(let i=0;i<6;i++){const y=40+i*32;[-1,1].forEach(sd=>{x.beginPath();x.ellipse(128+sd*(50+i%2*8),y,26,6,sd*.3,0,7);x.fill()})}
+    x.strokeStyle=s2hex(shade(c,.25));x.lineWidth=6;x.beginPath();x.moveTo(128,20);x.lineTo(128,250);x.stroke()});
+  const pl=add(g,new THREE.CircleGeometry(1,48),M(0xffffff,{map:tx,roughness:1}),0,.02,0);pl.rotation.x=-Math.PI/2;pl.scale.set(1,.88,1);ol(pl,.008);return g},
+ fern(c){const g=G(),Lf=M(0x4FAF4A,{roughness:.55});s2Pot(g,0,0,0,.22,.35,c);for(let i=0;i<11;i++){const a=i/11*Math.PI*2,fr=piv(g,0,.4,0);fr.rotation.y=a;const pts=[[0,0,0],[.2,.3,0],[.45,.35,0],[.65,.15,0]];ol(add(fr,gcache('fn_rib',()=>sweepGeo(pts,()=>[.008,.008],{len:12,seg:5})),M(0x3E8A34),0,0,0),0);
+    for(let j=1;j<10;j++){const q=crPt(pts,j/10);[-1,1].forEach(sd=>{const l=add(fr,leafGeo(.1-j*.006,.035),Lf,q[0],q[1],q[2]);l.rotation.set(sd*1.2,0,-.8+j*.12);ol(l,.001)})}}return g},
+ wallplanter(c){const g=G(),Wd=M(c,{roughness:.6}),Lf=M(0x4FAF4A,{roughness:.55});Wd.detail=2;ol(rb(g,1,.6,.05,.02,Wd,0,0,.02),.008);for(let i=0;i<3;i++)ol(rb(g,1,.02,.05,.01,M(shade(c,.15)),0,-.2+i*.2,.05),0);
+  [[-.3,-.05],[.3,.12]].forEach(([x,y],i)=>{ol(rb(g,.26,.16,.16,.03,M(i?0xFFD6EA:TERRA,{roughness:.6}),x,y,.12),.006);for(let j=0;j<7;j++){const l=add(g,leafGeo(.14,.08),Lf,x,y+.08,.14);l.rotation.set(-.6,j*.9,(j-3)*.3);ol(l,.002)}
+    for(let v=0;v<3;v++){const pts=[[x+(v-1)*.06,y-.06,.18],[x+(v-1)*.1,y-.25,.2],[x+(v-1)*.08,y-.45,.19]];ol(add(g,sweepGeo(pts,()=>[.006,.006],{len:8,seg:4}),M(0x3E8A34),0,0,0),0);for(let j=1;j<4;j++){const q=crPt(pts,j/4),l=add(g,leafGeo(.06,.05),Lf,q[0],q[1],q[2]);l.rotation.set(0,0,j*1.3);ol(l,.001)}}});return g},
+ potbed(c){const g=G(),Tc=M(c,{roughness:.6}),In=M(0x7FD08A,{roughness:.95});In.detail=1;ol(lathe(g,[[.38,0],[.42,.02],[.52,.3],[.58,.31],[.58,.38],[.54,.38],[.5,.3],[.4,.1],[0,.08]],Tc,0,0,0,40),.012);
+  ol(cy(g,.46,.46,.06,In,0,.14,0,32),.004);for(let i=0;i<6;i++){const l=add(g,leafGeo(.18,.1),M(0x4FAF4A),Math.cos(i)*.5,.34,Math.sin(i)*.5);l.rotation.set(-1.2,i,0);ol(l,.002)}return g},
+ // ---------- Pillow Fort ----------
+ fortbed(c){const g=G(),Wh=M(0xFFF6EA,{roughness:.9}),Bl=M(0xffffff,{map:s1Plaid(c),roughness:.95,side:THREE.DoubleSide}),Wd=M(0xC9A06E,{roughness:.6});Wh.detail=1;Wd.detail=2;
+  ol(rb(g,1.2,.3,2.05,.12,Wh,0,.2,0),.012);ol(rb(g,1.1,.14,1.2,.06,M(lighten(c,.35),{roughness:.95}),0,.4,.3),.008);[[-.28,0xFFD21F],[.28,0x6FC8FF]].forEach(([x,col])=>{const p=add(g,gcache('fb_pl',()=>cushionGeo(.24,.14,.07,{pinch:.1})),M(col,{roughness:.9}),x,.48,-.72);p.rotation.x=-.4;ol(p,.008)});
+  [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([x,z])=>ol(cy(g,.03,.03,1.45,Wd,x*.62,.72,z*1.02,8),.004));ol(cy(g,.03,.03,2.1,Wd,0,1.45,0,8),.004).rotation.x=Math.PI/2;
+  [-1,1].forEach(sd=>{const p=ol(rb(g,.04,.9,2.08,.02,Bl,sd*.32,1.08,0),.006);p.rotation.z=-sd*.62});
+  const R=rnd(2);const bulbs=[];for(let i=0;i<14;i++){const u=i/13,z=-1+u*2,b=ol(sp(g,.03,M(0xFFF3C0,{emissive:[0xFFD21F,0xFF6FB5,0x6FC8FF,0xA6E22E][i%4],emissiveIntensity:1.2}),.64,1.28-Math.sin(u*Math.PI*3)*.06,z),0);bulbs.push(b)}return g},
+ sleepbag(c){const g=G(),Bg=M(c,{roughness:.8}),Ln=M(0xffffff,{map:s1Plaid(0xE8384F),roughness:.95});Bg.detail=1;ol(rb(g,.9,.14,1.9,.07,Bg,0,.08,.05),.01);ol(rb(g,.86,.02,.5,.01,Ln,0,.16,-.6),0);
+  const fl=ol(rb(g,.88,.06,.5,.03,Bg,.02,.18,-.4),.006);fl.rotation.set(-.2,0,.08);ol(rb(g,.02,.02,1.4,.01,M(0xDDE3EE,{metalness:.7}),.44,.12,.25),0);
+  const pl=add(g,gcache('sb_pl',()=>cushionGeo(.3,.16,.07,{pinch:.1})),M(0xFFF6EA,{roughness:.9}),0,.2,-.85);pl.rotation.x=-.3;ol(pl,.008);return g},
+ fairylights(c){const g=G(),Wd=M(0xC9A06E,{roughness:.6});[-1,1].forEach(sd=>{ol(cy(g,.025,.03,1.6,Wd,sd*.7,.8,0,8),.004);ol(rb(g,.2,.04,.2,.01,Wd,sd*.7,.02,0),.004)});
+  const pts=[];for(let i=0;i<=16;i++){const u=i/16;pts.push([-.7+u*1.4,1.55-Math.sin(u*Math.PI)*.35,0])}ol(add(g,gcache('fl_w',()=>sweepGeo(pts,()=>[.006,.006],{len:30,seg:4})),M(0x3A3244),0,0,0),0);
+  const bl=[];for(let i=1;i<16;i++){const q=crPt(pts,i/16),col=[c,0xFF6FB5,0x6FC8FF,0xA6E22E,0xFFD21F][i%5],b=ol(sp(g,.04,M(0xFFF3C0,{emissive:col,emissiveIntensity:1.4}),q[0],q[1]-.05,q[2],1,1.3,1),0);bl.push(b)}
+  g.userData.anim=t=>bl.forEach((b,i)=>b.material.emissiveIntensity=.8+.8*Math.max(0,Math.sin(t*2+i*.9)));return g},
+ gamestack(c){const g=G();[[.62,.1,.42,0xE8384F,0],[.56,.1,.4,0x2FA39A,.25],[.6,.09,.44,0xFFD21F,-.2],[.5,.12,.36,0x7B4BD6,.1]].forEach(([w,h,d,col,ry],i)=>{const y=.05+i*.105;const b=ol(rb(g,w,h,d,.02,M(col,{roughness:.5}),0,y,0),.008);b.rotation.y=ry;ol(rb(g,w*.6,.004,d*.5,.002,M(0xFFFFFF,{roughness:.6}),0,y+h/2,0),0).rotation.y=ry});
+  [[.4,.04,.2],[.48,.04,.1]].forEach(([x,y,z],i)=>{const d=ol(rb(g,.08,.08,.08,.015,M(0xFFFFFF,{roughness:.3}),x,y,z),.004);d.rotation.y=i;for(let j=0;j<i+2;j++)ol(sp(d,.01,M(0x3A3244),-.02+j*.02,.041,0),0)});
+  ol(cy(g,.012,.012,.1,M(0xFF6FB5),-.1,.5,0,6),0);ol(sp(g,.03,M(0xFF6FB5,{roughness:.3}),-.1,.56,0),0);return g},
+ popcorn(c){const g=G();ol(lathe(g,[[.18,0],[.2,.02],[.28,.55],[.3,.56]],M(0xffffff,{map:s1Stripe(0xE8384F,0xFFFFFF,10,1),roughness:.5}),0,0,0,32),.01);const R=rnd(5),Pc=M(0xFFF6D8,{roughness:.8}),Bt=M(0xFFE27A,{roughness:.6});
+  for(let i=0;i<34;i++){const a=R()*6.3,r=R()*.26,y=.55+(.26-r)*.5+R()*.06;ol(sp(g,.045+R()*.02,i%4?Pc:Bt,Math.cos(a)*r,y,Math.sin(a)*r,1,.8,1),.003)}
+  for(let i=0;i<4;i++)ol(sp(g,.04,Pc,.35+R()*.2,.03,R()*.3-.15),.003);return g},
+ quiltrug(c){const g=G();const tx=s2Tex('quilt'+c,256,256,(x,w,h)=>{const cols=[s2hex(c),'#FFD21F','#6FC8FF','#FFF6EA','#A6E22E','#FF8A3D'];for(let i=0;i<6;i++)for(let j=0;j<6;j++){x.fillStyle=cols[(i*2+j*3)%cols.length];x.fillRect(i*43,j*43,43,43);
+    if((i+j)%3===0){x.fillStyle='rgba(255,255,255,.5)';for(let k=0;k<4;k++){x.beginPath();x.arc(i*43+10+k%2*22,j*43+10+Math.floor(k/2)*22,4,0,7);x.fill()}}}x.strokeStyle='rgba(59,18,115,.35)';x.setLineDash([4,4]);x.lineWidth=2;for(let i=1;i<6;i++){x.beginPath();x.moveTo(i*43,0);x.lineTo(i*43,256);x.moveTo(0,i*43);x.lineTo(256,i*43);x.stroke()}});
+  const m=add(g,gcache('qr_rug',()=>cushionGeo(1.1,.85,.035,{pinch:.02,n:5})),M(0xffffff,{map:tx,roughness:1}),0,.035,0);m.rotation.x=-Math.PI/2;ol(m,.008);return g},
+ cloudlight(c){const g=G();ol(lathe(g,[[.18,0],[.18,.03],[.05,.05]],M(0xFFFFFF,{roughness:.3}),0,0,0,24),.006);ol(cy(g,.015,.015,.9,M(0xFFFFFF,{roughness:.3}),0,.5,0,8),0);
+  const Cl=M(c,{emissive:c,emissiveIntensity:.6,roughness:.6});[[0,1.0,.2],[-.18,.95,.14],[.18,.96,.15],[-.08,1.12,.14],[.1,1.1,.13]].forEach(([x,y,r])=>ol(sp(g,r,Cl,x,y,0),.008));
+  const dr=[0,1,2].map(i=>{const d=ol(sp(g,.025,M(0x8FD8FF,{emissive:0x8FD8FF,emissiveIntensity:.8}),-.15+i*.15,.75,0,1,1.4,1),0);return d});g.userData.anim=t=>dr.forEach((d,i)=>{d.position.y=.8-((t*.5+i/3)%1)*.3});return g},
+ beanbag(c){const g=G(),Bb=M(c,{roughness:.85});Bb.detail=1;ol(add(g,gcache('bb_bean',()=>loftGeo(smoothProf([[0,.3],[.05,.42],[.18,.46],[.32,.4],[.44,.3],[.5,.14],[.52,0]],20).map(([y,r])=>[y,r,r,0,0]),{seg:40,mod:(th,v)=>1+.08*Math.cos(th)*v-.05*Math.cos(3*th+1)*Math.sin(v*Math.PI)})),Bb,0,0,0),.012);
+  ol(sp(g,.22,M(lighten(c,.15),{roughness:.85}),0,.4,.08,1.1,.4,1),0);return g},
+ pennant(c){const g=G(),Rp=M(0xF4E6C8,{roughness:.9});const pts=[];for(let i=0;i<=12;i++){const u=i/12;pts.push([-.7+u*1.4,-.15*Math.sin(u*Math.PI),0])}ol(add(g,gcache('pn_r',()=>sweepGeo(pts,()=>[.01,.01],{len:30,seg:5})),Rp,0,0,.02),0);
+  for(let i=1;i<9;i++){const q=crPt(pts,i/9),f=add(g,gcache('pn_f',()=>{const s_=new THREE.Shape();s_.moveTo(-.07,0);s_.lineTo(.07,0);s_.lineTo(0,-.16);s_.lineTo(-.07,0);return new THREE.ExtrudeGeometry(s_,{depth:.01})}),M([c,0xFFD21F,0x6FC8FF,0xA6E22E][i%4],{roughness:.6}),q[0],q[1],.03);ol(f,.004)}return g},
+ pillowbed(c){const g=G();[[0,.08,0,.42,c],[-.2,.2,-.2,.24,0xFFD21F],[.22,.2,-.18,.24,0x6FC8FF],[0,.24,-.34,.26,0xFF6FB5]].forEach(([x,y,z,r,col],i)=>{const p=add(g,gcache('pb_p'+r,()=>cushionGeo(r,r*.8,r*.35,{pinch:.1})),M(col,{roughness:.9}),x,y,z);p.rotation.x=i?-.6:-Math.PI/2;ol(p,.01)});return g},
+ // ---------- Game Den ----------
+ arcade(c){const g=G(),Bd=M(c,{roughness:.3}),Bk=M(0x1A1424,{roughness:.4});ol(rb(g,.72,1.7,.64,.04,Bd,0,.85,0),.012);ol(rb(g,.6,.5,.04,.02,Bk,0,1.25,.3),0);
+  const tx=s2Tex('arc',128,112,(x,w,h)=>{x.fillStyle='#120A22';x.fillRect(0,0,w,h);x.fillStyle='#FF5FA8';for(let i=0;i<6;i++)x.fillRect(8+i*20,12,12,8);x.fillStyle='#A6E22E';x.fillRect(56,86,16,10);x.fillStyle='#FFD21F';x.beginPath();x.arc(40,56,8,0,7);x.fill();x.fillStyle='#6FC8FF';for(let i=0;i<12;i++)x.fillRect((i*37)%w,30+((i*23)%40),2,2)});
+  const sc=add(g,new THREE.PlaneGeometry(.52,.44),M(0xffffff,{map:tx,emissive:0xffffff,emissiveIntensity:.08,roughness:.2}),0,1.25,.325);sc.outline=0;
+  const cp=ol(rb(g,.72,.1,.34,.03,Bd,0,.95,.44),.008);cp.rotation.x=-.3;ol(cy(g,.015,.015,.12,M(0x3A3244),-.15,1.03,.5,8),0);ol(sp(g,.04,M(0xE8384F,{roughness:.2}),-.15,1.1,.5),.004);
+  [[.05,0xFFD21F],[.14,0x6FC8FF],[.23,0xA6E22E]].forEach(([x,col])=>ol(cy(g,.03,.03,.03,M(col,{roughness:.2}),x,1.0,.5,14),.004));ol(rb(g,.72,.2,.1,.03,M(0xFFF3C0,{emissive:0xFFD27A,emissiveIntensity:.8}),0,1.62,.3),.006);
+  s1Star(g,.06,M(0xFF5FA8,{roughness:.3}),0,1.62,.36);ol(rb(g,.16,.08,.02,.01,Bk,0,.45,.33),0);return g},
+ clawmini(c){const g=G(),Bd=M(c,{roughness:.3}),Gl=M(0xE8FBFF,{roughness:.03,transparent:true,opacity:.22}),Ch=CHROME();ol(rb(g,.8,.7,.8,.05,Bd,0,.35,0),.012);ol(rb(g,.8,.16,.8,.05,Bd,0,1.52,0),.01);
+  [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([x,z])=>ol(cy(g,.02,.02,.8,Bd,x*.38,1.1,z*.38,6),0));const gl=add(g,new THREE.BoxGeometry(.76,.78,.76),Gl,0,1.1,0);gl.outline=0;nosh(gl);
+  const R=rnd(6);for(let i=0;i<14;i++)ol(sp(g,.07,M([0xFF5FA8,0xFFD21F,0x6FC8FF,0xA6E22E,0xB07BFF][i%5],{roughness:.3}),-.26+R()*.52,.76+R()*.12,-.26+R()*.52),.004);
+  const cl=piv(g,0,1.4,0);ol(cy(cl,.006,.006,.3,Ch,0,-.1,0,4),0);ol(sp(cl,.04,Ch,0,-.26,0),0);[0,1,2].forEach(i=>{const pr=piv(cl,0,-.28,0);pr.rotation.y=i*2.1;ol(cy(pr,.008,.008,.12,Ch,.04,-.05,0,4),0).rotation.z=.5});
+  ol(rb(g,.2,.12,.04,.02,M(0x1A1424),0,.35,.41),0);ol(cy(g,.015,.015,.1,M(0x3A3244),.2,.75,.42,6),0);ol(sp(g,.035,M(0xE8384F,{roughness:.2}),.2,.81,.42),.004);g.userData.anim=t=>{cl.position.x=Math.sin(t*.8)*.25;cl.position.z=Math.cos(t*.6)*.2};return g},
+ gamechair(c){const g=G(),Up=M(c,{roughness:.5}),Bk=M(0x1A1424,{roughness:.4}),Ch=CHROME();for(let i=0;i<5;i++){const a=i/5*Math.PI*2;ol(rb(g,.3,.04,.05,.02,Ch,Math.cos(a)*.15,.06,Math.sin(a)*.15),0).rotation.y=-a;ol(sp(g,.035,Bk,Math.cos(a)*.3,.035,Math.sin(a)*.3),0)}
+  ol(cy(g,.03,.035,.34,Ch,0,.24,0,10),.004);ol(rb(g,.56,.12,.52,.05,Up,0,.44,0),.01);const bk=ol(rb(g,.52,.8,.12,.06,Up,0,.9,-.26),.01);bk.rotation.x=-.12;ol(rb(g,.3,.5,.13,.04,Bk,0,.9,-.25),0).rotation.x=-.12;
+  [-1,1].forEach(sd=>{ol(rb(g,.12,.24,.48,.04,Up,sd*.32,.58,.0),.008);ol(rb(g,.05,.2,.02,.01,Bk,sd*.2,1.2,-.3),0)});ol(rb(g,.24,.1,.1,.04,M(0xFFFFFF,{roughness:.6}),0,1.18,-.2),.006);return g},
+ neonrug(c){const g=G();const tx=s2Tex('neon'+c,256,256,(x,w,h)=>{x.fillStyle='#120A22';x.fillRect(0,0,w,h);x.strokeStyle=s2hex(c);x.lineWidth=4;x.shadowColor=s2hex(c);x.shadowBlur=8;for(let i=0;i<=8;i++){x.beginPath();x.moveTo(i*32,0);x.lineTo(i*32,256);x.stroke();x.beginPath();x.moveTo(0,i*32);x.lineTo(256,i*32);x.stroke()}
+    x.strokeStyle='#6FC8FF';x.beginPath();x.arc(128,128,60,0,7);x.stroke()});
+  ol(rb(g,1.8,.03,1.4,.015,M(0x1A1424,{roughness:1}),0,.015,0),.008);const pl=add(g,new THREE.PlaneGeometry(1.7,1.3),M(0xffffff,{map:tx,roughness:1}),0,.032,0);pl.rotation.x=-Math.PI/2;pl.outline=0;return g},
+ retrotv(c){const g=G(),Cs=M(c,{roughness:.4}),Wd=M(0x9C6B48,{roughness:.6});Wd.detail=2;ol(rb(g,1.1,.5,.5,.03,Wd,0,.25,0),.01);ol(rb(g,.9,.72,.62,.14,Cs,0,.86,-.02),.012);
+  const tx=s2Tex('bars',128,96,(x,w,h)=>{['#FFFFFF','#FFD21F','#6FC8FF','#A6E22E','#FF5FA8','#E8384F','#7B4BD6'].forEach((col,i)=>{x.fillStyle=col;x.fillRect(i*w/7,0,w/7+1,h*.75)});x.fillStyle='#1A1424';x.fillRect(0,h*.75,w,h*.25)});
+  const sc=add(g,new THREE.PlaneGeometry(.62,.46),M(0xffffff,{map:tx,emissive:0xffffff,emissiveIntensity:.08,roughness:.1}),-.05,.88,.315);sc.outline=0;ol(rb(g,.7,.54,.02,.08,M(0x1A1424,{roughness:.3}),-.05,.88,.29),0);
+  [0,1].forEach(i=>ol(cy(g,.03,.03,.02,M(0xE8C36A,{metalness:.5}),.36,.95-i*.14,.3,14),0).rotation.x=Math.PI/2);[-1,1].forEach(sd=>{const an=piv(g,sd*.1,1.22,-.05);an.rotation.z=-sd*.5;ol(cy(an,.008,.008,.5,CHROME(),0,.25,0,6),0);ol(sp(an,.02,CHROME(),0,.5,0),0)});
+  ol(rb(g,.4,.08,.26,.02,M(0xE6E0F0,{roughness:.4}),-.2,.54,.08),.004);const pad=piv(g,.25,.52,.12);ol(rb(pad,.2,.04,.1,.03,M(0x3A3244,{roughness:.4}),0,0,0),.004);ol(sp(pad,.012,M(0xE8384F),.05,.025,0),0);return g},
+ trophyshelf(c){const g=G(),Wd=M(c,{roughness:.5}),Gd=M(0xFFC93A,{roughness:.25,metalness:.6}),Sv=M(0xDDE3EE,{metalness:.7,roughness:.2});Wd.detail=2;
+  [-1,1].forEach(sd=>ol(rb(g,.06,1.5,.36,.02,Wd,sd*.5,.75,0),.008));[.05,.55,1.05,1.5].forEach(y=>ol(rb(g,1.06,.05,.36,.02,Wd,0,y,0),.006));
+  [[.08,Gd,.34],[.58,Sv,.3],[1.08,Gd,.38]].forEach(([y,m,h],si)=>{[-.28,.05,.3].forEach((x,i)=>{const t=piv(g,x,y,0);if((i+si)%2){ol(rb(t,.12,.05,.1,.01,M(0x3A3244),0,.03,0),.004);ol(lathe(t,[[.02,.05],[.02,.12],[.08,.16],[.1,.24],[.1,.26]],m,0,0,0,20),.006);[-1,1].forEach(sd=>ol(to(t,.04,.01,m,sd*.1,.2,0,0,0,0,Math.PI),0).rotation.z=sd*Math.PI/2)}
+    else{ol(rb(t,.1,.04,.08,.01,M(0x3A3244),0,.03,0),.004);s1Star(t,.07,m,0,.16,0,.03)}})});return g},
+ pinball(c){const g=G(),Bd=M(c,{roughness:.3}),Ch=CHROME(),Gl=M(0xE8FBFF,{roughness:.03,transparent:true,opacity:.2});[[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([x,z])=>ol(cy(g,.03,.03,.72+(z<0?.1:0),Ch,x*.3,.36+(z<0?.05:0),z*.58,8),.004));
+  const tb=piv(g,0,.78,0);tb.rotation.x=.12;ol(rb(tb,.7,.14,1.3,.03,Bd,0,0,0),.01);const tx=s2Tex('pin'+c,128,256,(x,w,h)=>{x.fillStyle='#1E2A5E';x.fillRect(0,0,w,h);x.strokeStyle='#FFD21F';x.lineWidth=3;x.beginPath();x.arc(64,60,40,Math.PI,0);x.stroke();x.fillStyle='rgba(255,95,168,.8)';for(let i=0;i<5;i++){x.beginPath();x.arc(20+i*22,200,5,0,7);x.fill()}});
+  const pf=add(tb,new THREE.PlaneGeometry(.6,1.2),M(0xffffff,{map:tx,roughness:.4}),0,.075,0);pf.rotation.x=-Math.PI/2;pf.outline=0;[[-.15,-.3],[.15,-.25],[0,-.1]].forEach(([x,z],i)=>ol(cy(tb,.06,.06,.08,M([0xFF5FA8,0x6FC8FF,0xFFD21F][i],{emissive:[0xFF5FA8,0x6FC8FF,0xFFD21F][i],emissiveIntensity:.5}),x,.12,z,16),.004));
+  [-1,1].forEach(sd=>{const f=ol(rb(tb,.16,.03,.04,.015,M(0xFFFFFF,{roughness:.3}),sd*.1,.1,.48),.004);f.rotation.y=sd*.4});ol(sp(tb,.025,Ch,.1,.11,.2),0);const gl=add(tb,new THREE.PlaneGeometry(.66,1.26),Gl,0,.14,0);gl.rotation.x=-Math.PI/2;gl.outline=0;nosh(gl);
+  const bb=ol(rb(g,.7,.5,.12,.03,Bd,0,1.25,-.62),.01);ol(add(g,new THREE.PlaneGeometry(.6,.4),M(0xffffff,{map:s2Tex('pbb',128,96,(x,w,h)=>{x.fillStyle='#FF5FA8';x.fillRect(0,0,w,h);x.fillStyle='#FFD21F';x.beginPath();for(let k=0;k<10;k++){const r=k%2?14:32,a=-Math.PI/2+k*Math.PI/5;x.lineTo(64+Math.cos(a)*r,48+Math.sin(a)*r)}x.fill()}),emissive:0xffffff,emissiveIntensity:.08}),0,1.25,-.555),0);return g},
+ neonsign(c){const g=G();ol(rb(g,.9,.8,.03,.02,M(0x2A2340,{roughness:.6}),0,0,.01),.006);const Ne=M(c,{emissive:c,emissiveIntensity:1.6,roughness:.3});
+  const pts=[];for(let i=0;i<=10;i++){const r=i%2?.14:.32,a=Math.PI/2+i*Math.PI/5;pts.push([Math.cos(a)*r,Math.sin(a)*r,.05])}ol(add(g,sweepGeo(pts,()=>[.018,.018],{len:60,seg:8}),Ne,0,0,0),0);
+  const hp=[];for(let i=0;i<=24;i++){const a=i/24*Math.PI*2;hp.push([Math.cos(a)*.38,Math.sin(a)*.34,.05])}ol(add(g,sweepGeo(hp,()=>[.012,.012],{len:48,seg:6}),M(0x6FC8FF,{emissive:0x6FC8FF,emissiveIntensity:1.4}),0,0,0),0);
+  g.userData.anim=t=>{Ne.emissiveIntensity=1.3+Math.sin(t*3)*.3+(Math.sin(t*17)>.95?-.8:0)};return g},
+ joylamp(c){const g=G(),Bd=M(0x3A3244,{roughness:.4});ol(rb(g,.5,.2,.5,.08,Bd,0,.1,0),.01);[[.12,.12,0xFFD21F],[-.12,.12,0x6FC8FF]].forEach(([x,z,col])=>ol(cy(g,.05,.05,.05,M(col,{roughness:.2}),x,.22,z,14),.004));
+  ol(cy(g,.03,.035,1.1,M(0xDDE3EE,{metalness:.7,roughness:.2}),0,.75,0,10),.006);ol(sp(g,.22,M(c,{emissive:c,emissiveIntensity:.8,roughness:.25}),0,1.4,0),.01);ol(sp(g,.06,M(0xFFFFFF,{roughness:.1}),-.08,1.5,.12),0);return g},
+ padbed(c){const g=G(),Bd=M(c,{roughness:.6}),In=M(0xFFF6EA,{roughness:.95});Bd.detail=1;In.detail=1;ol(rb(g,1.1,.2,.6,.28,Bd,0,.1,0),.01);[-1,1].forEach(sd=>ol(sp(g,.32,Bd,sd*.45,.12,.18,1,.4,1),.01));
+  const cu=add(g,gcache('pd_cu',()=>cushionGeo(.4,.24,.06,{pinch:.05,n:3})),In,0,.24,0);cu.rotation.x=-Math.PI/2;ol(cu,.006);
+  [[.38,-.08,0xFFD21F],[.48,.02,0x6FC8FF],[.38,.12,0xE8384F],[.28,.02,0xA6E22E]].forEach(([x,z,col])=>ol(cy(g,.045,.045,.04,M(col,{roughness:.2}),x,.22,z,14),.004));ol(rb(g,.2,.04,.07,.02,M(0x3A3244),-.4,.22,.03),0);ol(rb(g,.07,.04,.2,.02,M(0x3A3244),-.4,.22,.03),0);return g},
+ // ---------- Pet Palace ----------
+ climbtree(c){const g=G(),Cp=M(c,{roughness:1}),Ss=M(0xE0C898,{roughness:1});Cp.detail=1;Ss.detail=1;ol(rb(g,.9,.08,.7,.04,Cp,0,.04,0),.008);
+  [[-.25,.8],[.25,1.4]].forEach(([x,h])=>{ol(cy(g,.07,.07,h,Ss,x,.08+h/2,0,14),.006);for(let i=0;i<Math.floor(h/.08);i++)ol(to(g,.072,.006,M(0xC9A878),x,.12+i*.08,0,Math.PI/2),0)});
+  [[-.25,.9,.28],[.25,1.5,.3],[.1,.55,.24]].forEach(([x,y,r])=>ol(cy(g,r,r,.06,Cp,x,y,0,24),.008));const cup=piv(g,.25,1.53,0);ol(lathe(cup,[[.26,0],[.3,.02],[.3,.18],[.26,.2],[.24,.06],[0,.05]],Cp,0,0,0,24),.008);
+  const ty=piv(g,-.25,.87,.24);ol(cy(ty,.004,.004,.3,M(0x3A3244),0,-.15,0,4),0);const ball=ol(sp(ty,.05,M(0xFF5FA8,{roughness:.4}),0,-.32,0),.004);g.userData.anim=t=>{ty.rotation.z=Math.sin(t*1.8)*.25};return g},
+ teepee(c){const g=G(),Cv=M(0xffffff,{map:s1Stripe(c,0xFFF6EA,6,1),roughness:.9,side:THREE.DoubleSide}),Wd=M(0xC9A06E,{roughness:.6});
+  const cn=add(g,new THREE.ConeGeometry(.6,1.3,24,1,true),Cv,0,.65,0);ol(cn,.01);ol(add(g,new THREE.ConeGeometry(.28,.6,3),M(0x2A2340,{roughness:.9}),0,.3,.44),0).rotation.x=-.44;
+  for(let i=0;i<5;i++){const a=i/5*Math.PI*2;const p=piv(g,Math.cos(a)*.56,0,Math.sin(a)*.56);p.rotation.set(-Math.sin(a)*.42,0,Math.cos(a)*.42);ol(cy(p,.02,.02,1.6,Wd,0,.8,0,6),0)}
+  ol(cy(g,.5,.5,.06,M(0xFFD6EA,{roughness:.95}),0,.03,0,24),.004);[0,1,2].forEach(i=>ol(sp(g,.03,M([0xFFD21F,0xFF6FB5,0x6FC8FF][i],{roughness:.4}),Math.cos(i*2.1)*.25,1.2,Math.sin(i*2.1)*.25),0));return g},
+ petswing(c){const g=G(),Wd=M(0xC9A06E,{roughness:.6}),St=M(c,{roughness:.8}),Rp=M(0xF4E6C8,{roughness:.9});Wd.detail=2;St.detail=1;
+  [-1,1].forEach(sd=>{[-1,1].forEach(sz=>{const l=ol(cy(g,.04,.04,1.6,Wd,sd*.6,.75,sz*.22,8),.006);l.rotation.x=sz*.28})});ol(cy(g,.045,.045,1.3,Wd,0,1.52,0,10),.006).rotation.z=Math.PI/2;
+  const sw=piv(g,0,1.5,0);[-1,1].forEach(sd=>ol(cy(sw,.008,.008,1.0,Rp,sd*.3,-.5,0,4),0));ol(rb(sw,.72,.06,.36,.03,Wd,0,-1.02,0),.008);const cu=add(sw,gcache('ps_cu',()=>cushionGeo(.34,.16,.05,{pinch:.05,n:3})),St,0,-.96,0);cu.rotation.x=-Math.PI/2;ol(cu,.006);
+  g.userData.anim=t=>{sw.rotation.x=Math.sin(t*1.3)*.08};return g},
+ treatstation(c){const g=G(),Wd=M(c,{roughness:.5}),St=M(0xDDE3EE,{metalness:.7,roughness:.2}),Gl=M(0xE8FBFF,{roughness:.03,transparent:true,opacity:.35});Wd.detail=2;ol(rb(g,.9,.18,.4,.04,Wd,0,.09,0),.01);
+  [-.22,.2].forEach((x,i)=>{ol(lathe(g,[[.1,.14],[.14,.16],[.15,.24],[.13,.24],[.1,.18],[0,.17]],St,x,0,0,24),.006);for(let j=0;j<8;j++)ol(sp(g,.022,M(i?0xC98A4A:0x8FD8FF,{roughness:.6}),x+Math.cos(j)*.06,.2,Math.sin(j)*.06,1,.7,1),0)});
+  const jr=piv(g,.36,.18,-.02);const jg=add(jr,gcache('ts_jar',()=>latheGeo([[.08,0],[.1,.02],[.1,.22],[.07,.26]],24)),Gl,0,0,0);jg.outline=0;nosh(jg);ol(cy(jr,.075,.075,.04,M(0xFF6FB5,{roughness:.4}),0,.28,0,20),.004);
+  for(let j=0;j<6;j++)ol(rb(jr,.07,.025,.03,.012,M(DOUGH,{roughness:.7}),Math.cos(j)*.03,.04+j*.03,Math.sin(j)*.03),0).rotation.y=j;return g},
+ scratchpost(c){const g=G(),Cp=M(c,{roughness:1}),Ss=M(0xE0C898,{roughness:1});Cp.detail=1;ol(rb(g,.5,.08,.5,.04,Cp,0,.04,0),.008);ol(cy(g,.08,.08,.9,Ss,0,.53,0,14),.006);for(let i=0;i<11;i++)ol(to(g,.082,.006,M(0xC9A878),0,.12+i*.08,0,Math.PI/2),0);
+  ol(cy(g,.2,.2,.06,Cp,0,1.0,0,20),.008);const ty=piv(g,.15,1.0,.1);ol(cy(ty,.004,.004,.3,M(0x3A3244),0,-.15,0,4),0);ol(sp(ty,.04,M(0xFFD21F,{roughness:.4}),0,-.3,0),.004);
+  for(let i=0;i<3;i++){const f=add(ty,leafGeo(.1,.03),M([0xFF5FA8,0x6FC8FF,0xA6E22E][i],{roughness:.6}),0,-.32,0);f.rotation.set(0,i*2,Math.PI+(i-1)*.4);ol(f,.002)}g.userData.anim=t=>{ty.rotation.z=Math.sin(t*2.2)*.3};return g},
+ petsofa(c){const g=G(),Up=M(c,{roughness:.8}),Ft=M(0xE8C36A,{metalness:.5,roughness:.3});Up.detail=1;[[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([x,z])=>ol(cy(g,.03,.02,.1,Ft,x*.4,.05,z*.22,8),0));
+  ol(rb(g,1,.2,.56,.07,Up,0,.2,0),.01);const cu=add(g,gcache('psf_cu',()=>cushionGeo(.42,.24,.06,{pinch:.03,n:3})),M(lighten(c,.2),{roughness:.8}),0,.34,.04);cu.rotation.x=-Math.PI/2;ol(cu,.006);
+  ol(rb(g,1,.42,.14,.07,Up,0,.44,-.22),.01);[-1,1].forEach(sd=>ol(cy(g,.1,.1,.56,Up,sd*.46,.36,0,16),.008).rotation.x=Math.PI/2);
+  const bone=piv(g,.2,.44,.1);ol(cy(bone,.025,.025,.16,M(0xFFF6EA,{roughness:.6}),0,0,0,10),.004).rotation.z=Math.PI/2;[-1,1].forEach(sd=>[-1,1].forEach(sz=>ol(sp(bone,.03,M(0xFFF6EA,{roughness:.6}),sd*.08,0,sz*.025),.003)));return g},
+ pawrug(c){const g=G();const tx=s2Tex('paw'+c,256,256,(x,w,h)=>{x.fillStyle=s2hex(c);x.fillRect(0,0,w,h);x.fillStyle='#FFF8EE';x.beginPath();x.ellipse(128,150,46,38,0,0,7);x.fill();
+    [[78,96],[108,74],[148,74],[178,96]].forEach(([a,b])=>{x.beginPath();x.ellipse(a,b,17,22,(a-128)/200,0,7);x.fill()})});
+  const pl=add(g,new THREE.CircleGeometry(.9,48),M(0xffffff,{map:tx,roughness:1}),0,.02,0);pl.rotation.x=-Math.PI/2;ol(pl,.008);return g},
+ toychest(c){const g=G(),Wd=M(c,{roughness:.5});Wd.detail=2;ol(rb(g,.9,.5,.5,.05,Wd,0,.25,0),.012);[-1,1].forEach(sd=>ol(rb(g,.12,.08,.52,.03,M(0xFFD21F,{roughness:.4}),sd*.3,.3,0),0));
+  const ld=piv(g,0,.5,-.25);ld.rotation.x=-.7;ol(rb(ld,.92,.08,.52,.04,Wd,0,.04,.26),.01);s1Star(ld,.08,M(0xFFD21F,{roughness:.3}),0,.09,.3).rotation.x=-Math.PI/2;
+  ol(sp(g,.1,M(0xFF5FA8,{roughness:.4}),-.2,.52,.05),.006);const bone=piv(g,.12,.52,.08);bone.rotation.y=.5;ol(cy(bone,.025,.025,.2,M(0xFFF6EA,{roughness:.6}),0,0,0,10),.004).rotation.z=Math.PI/2;[-1,1].forEach(sd=>[-1,1].forEach(sz=>ol(sp(bone,.035,M(0xFFF6EA,{roughness:.6}),sd*.1,0,sz*.03),.003)));
+  ol(sp(g,.08,M(0x6FC8FF,{roughness:.5}),.3,.5,0),.006);ol(sp(g,.05,M(0x6FC8FF,{roughness:.5}),.3,.6,.03),.004);return g},
+ pawart(c){const g=G(),Fr=M(c,{roughness:.4});ol(rb(g,.8,.8,.06,.03,Fr,0,0,0),.012);ol(add(g,new THREE.PlaneGeometry(.66,.66),M(0xffffff,{map:s2Tex('pawa'+c,128,128,(x,w,h)=>{x.fillStyle='#FFF8EE';x.fillRect(0,0,w,h);x.fillStyle=s2hex(shade(c,.1));
+   [[40,50,.3],[88,82,-.2]].forEach(([cx,cy,r])=>{x.save();x.translate(cx,cy);x.rotate(r);x.beginPath();x.ellipse(0,8,15,12,0,0,7);x.fill();[[-16,-8],[-6,-16],[6,-16],[16,-8]].forEach(([a,b])=>{x.beginPath();x.ellipse(a,b,5,7,0,0,7);x.fill()});x.restore()})}),roughness:.8}),0,0,.035),0);return g}});
 /* ================= CAPSULE CORNER: a 3D gacha machine =================
    Tokens (state.tokens) come from two-dos, granted wishes, 3-star arcade rounds and the daily treat, or 12 hearts each.
    Put one in, turn the crank (drag round), the capsules churn in the globe (real little physics), one rolls down the
@@ -3760,6 +3955,13 @@ Object.assign(USE_ITEM,{fireplace:{kind:'stand',front:1,anim:'u_warm',d:9,dist:.
   recordplayer:{kind:'stand',anim:'u_wiggle',d:5,dist:.08,emo:['🎵'],w:.8},guitarwall:{kind:'wall',anim:'u_gaze',d:3.5,emo:['🎵'],w:.4},drumbed:NAP,
   telescope:{kind:'stand',front:1,anim:'u_scope',d:7,dist:.06,emo:['⭐','❗'],w:1},rocketshelf:{kind:'stand',front:1,anim:'u_rummage',d:4.6,dist:.05,emo:['❓','🎉'],w:.6},
   orrery:{kind:'stand',anim:'u_peer',d:5,dist:.08,emo:['⭐','❗'],w:.7},cometart:{kind:'wall',anim:'u_gaze',d:4,emo:['⭐'],w:.4},moonbed:NAP});
+Object.assign(USE_ITEM,{cacti:{kind:'stand',anim:'u_peer',d:3.5,dist:.1,emo:['❗','❓'],w:.4},hangplanter:{kind:'stand',anim:'u_water',d:5,dist:.08,emo:['💗'],w:.5},terrarium:{kind:'stand',anim:'u_peer',d:5,dist:.06,emo:['❗','💗'],w:.6},
+  flowercart:{kind:'stand',anim:'u_sniff',d:3.6,then:['sneeze',.3],emo:['💗'],w:.6},pottingbench:{kind:'stand',front:1,anim:'u_water',d:5,dist:.05,emo:['💗','🎵'],w:.7},fern:{kind:'stand',anim:'u_sniff',d:3.6,emo:['💗'],w:.4},
+  wallplanter:{kind:'wall',anim:'u_gaze',d:3,emo:['💗'],w:.3},potbed:NAP,gamestack:{kind:'stand',anim:'u_peer',d:4,dist:.08,emo:['🎉','❓'],w:.6},popcorn:{kind:'stand',anim:'u_nibble',d:5,dist:.06,emo:['😋'],w:.7},
+  pennant:{kind:'wall',anim:'u_gaze',d:3,emo:['🎉'],w:.3},pillowbed:NAP,arcade:{kind:'stand',front:1,anim:'u_game',d:6,dist:.06,emo:['🎉','❗'],w:1},clawmini:{kind:'stand',front:1,anim:'u_peer',d:5,dist:.06,emo:['❗','💗'],w:.9},
+  retrotv:TV,trophyshelf:{kind:'stand',front:1,anim:'u_admire',d:4,dist:.06,emo:['⭐','🎉'],w:.6},pinball:{kind:'stand',front:1,anim:'u_game',d:6,dist:.06,emo:['🎉','❗'],w:1},neonsign:{kind:'wall',anim:'u_gaze',d:4,emo:['⭐'],w:.4},padbed:NAP,
+  climbtree:{kind:'stand',anim:'u_boop',d:4,dist:.1,emo:['🎉','💗'],w:.9},teepee:NAP,petswing:{kind:'stand',anim:'u_swing',d:6,dist:.1,emo:['🎉','💗'],w:1},treatstation:BOWL,
+  scratchpost:{kind:'stand',anim:'u_pat',d:4,dist:.08,emo:['🎉'],w:.7},toychest:{kind:'stand',front:1,anim:'u_rummage',d:4.6,dist:.05,emo:['🎉','❓'],w:.8},pawart:{kind:'wall',anim:'u_gaze',d:3,emo:['💗'],w:.3}});
 CAT.filter(c=>c.gacha).forEach(c=>USE_ITEM[c.k]={kind:'stand',anim:'u_peer',d:4.5,dist:.12,emo:['💗','❗'],w:.7});
 const useOf=d=>d.use||USE_ITEM[d.k]||USE_FN[d.fn]||null;
 // Where to stand to use o, and which way to face.
