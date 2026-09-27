@@ -377,7 +377,7 @@ body.styling .sheet{max-height:min(46%,420px)}.followpill img{width:26px;height:
 .caret{width:0;height:0;margin-left:7px;border:5px solid transparent;border-top:6px solid var(--ink);border-bottom:0;transition:transform .2s}
 .dpick[aria-expanded="true"] .caret{transform:rotate(180deg)}
 .dcount{margin-left:auto;font-family:var(--disp);font-size:12px;color:#6B4E95;white-space:nowrap}
-.dgrid{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;margin:0 -16px;padding:18px 18px 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:22px 14px;align-content:start;
+.dgrid{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;margin:0 -16px;padding:18px 18px 16px;display:grid;grid-auto-rows:max-content;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:22px 14px;align-content:start;
   touch-action:pan-y;overscroll-behavior:contain;scrollbar-width:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
   -webkit-mask-image:linear-gradient(transparent,#000 12px,#000 calc(100% - 14px),transparent);mask-image:linear-gradient(transparent,#000 12px,#000 calc(100% - 14px),transparent)}
 .dgrid::-webkit-scrollbar{display:none}
@@ -408,6 +408,45 @@ body.styling .sheet{max-height:min(46%,420px)}.followpill img{width:26px;height:
 .dgrid .tgh:first-child{margin-top:0}
 .tuse{position:absolute;left:-7px;top:-7px;width:22px;height:22px;border-radius:50%;background:var(--slime);border:2px solid var(--ink);display:grid;place-items:center;color:var(--ink)}.tuse svg{width:13px;height:13px}
 .tmore{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:4px}.tmore p{margin:0}
+/* decorate home: shelves + browse tiles; set/kind pages; Cozy Nest catalog */
+.tgh small{font-family:var(--disp);font-size:11px;padding:1px 7px 2px;border-radius:8px;background:rgba(59,18,115,.1);order:1}
+.tgh::after{order:2}.tgh .dmore{order:3}
+.tgh .chi{width:24px;height:24px;margin:-4px 0}.tgh em{font-style:normal;font-size:11px;padding:1px 7px 2px;border-radius:8px;background:var(--orange);color:#fff;order:1}
+.tgh.sm{font-size:12.5px;color:#6B4E95;margin-top:0}.tgh.sm .chi{width:20px;height:20px}
+.dmore{flex:none;border:0;background:none;padding:2px 0;font-family:var(--disp);font-size:12px;color:var(--pink);letter-spacing:.02em}
+.dshelf{grid-column:1/-1;display:flex;gap:14px;overflow-x:auto;overflow-y:visible;margin:-14px -18px -4px;padding:18px 18px 8px;scrollbar-width:none;touch-action:pan-x pan-y;scroll-snap-type:x proximity}
+.dshelf::-webkit-scrollbar{display:none}
+.dshelf .dcard{flex:none;width:96px;scroll-snap-align:start;touch-action:pan-x pan-y}
+.dnone{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:8px;margin:-6px 0 0;padding:0 8px;font-size:12.5px;color:#6B4E95;text-align:center}
+.dcard.want .thumb img{filter:grayscale(.55) opacity(.55)}.dcard.want{background:#F7F2FC;box-shadow:0 3px 0 rgba(59,18,115,.35);border-style:dashed}
+.dcard.want b{color:#6B4E95}
+.dtag{display:inline-block;margin-top:4px;font-style:normal;font-family:var(--disp);font-size:10.5px;line-height:1;padding:3px 7px 4px;border-radius:8px;background:var(--slime);color:var(--ink);border:2px solid var(--ink)}
+.dwish{position:absolute;top:-11px;right:-9px;width:28px;height:26px;z-index:2;transform:rotate(10deg);filter:drop-shadow(0 2px 0 rgba(59,18,115,.35));
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21C6 16.8 2.5 13.3 2.5 9.2 2.5 6.2 4.8 4 7.6 4c1.9 0 3.4 1 4.4 2.5C13 5 14.5 4 16.4 4c2.8 0 5.1 2.2 5.1 5.2 0 4.1-3.5 7.6-9.5 11.8z' fill='%23FF3D9A' stroke='%233B1273' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
+.dtog{grid-column:1/-1;display:flex;gap:4px;padding:4px;margin:6px 0 -6px;border-radius:14px 12px 15px 11px;background:#EDE6F5;border:2.5px solid var(--ink)}
+.dtog button{flex:1;height:32px;border:0;border-radius:10px 9px 11px 8px;background:none;color:#6B4E95;font-family:var(--disp);font-size:13px;letter-spacing:.02em;padding:0}
+.dtog button[aria-selected="true"]{background:#fff;color:var(--ink);box-shadow:inset 0 0 0 2.5px var(--ink),0 2px 0 var(--ink)}
+.dtile{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 6px 9px;border:3px solid var(--ink);border-radius:18px 14px 20px 15px;background:#fff;box-shadow:0 4px 0 var(--ink);color:var(--ink);text-align:center;min-width:0}
+.dtile:active{transform:translateY(2px);box-shadow:0 2px 0 var(--ink)}
+.dti{width:100%;aspect-ratio:1/.8;display:grid;place-items:center;border-radius:13px 10px 14px 11px;background:radial-gradient(rgba(255,255,255,.55) 1.5px,transparent 2px) 0 0/10px 10px,color-mix(in srgb,var(--sc) 45%,#fff);border:2.5px solid var(--ink);overflow:hidden}
+.dti img{width:100%;height:100%;object-fit:contain}.dti img:not(.model){width:62%;height:62%}
+.dtile b{font-family:var(--disp);font-weight:400;font-size:12.5px;line-height:1.1;margin-top:4px;letter-spacing:.02em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dtile small{font-size:11px;color:#6B4E95}
+.dbarp{width:80%;height:6px;border-radius:3px;background:#EDE6F5;overflow:hidden;margin-top:2px}.dbarp i{display:block;height:100%;border-radius:3px;background:var(--slime)}
+.dtile .dtag{position:absolute;top:-10px;right:-8px;margin:0;transform:rotate(8deg);z-index:1}
+.dcrumb{grid-column:1/-1;display:flex;align-items:center;gap:10px;margin:-6px 0 -2px;flex-wrap:wrap}
+.dcrumb>div{flex:1;min-width:0;display:flex;flex-direction:column}.dcrumb b{font-family:var(--disp);font-weight:400;font-size:17px;letter-spacing:.02em;color:var(--ink);line-height:1.1}
+.dcrumb small{font-size:11.5px;color:#6B4E95}.dcrumb .chi{width:36px;height:36px;flex:none}
+.dback{flex:none;width:38px;height:38px;border-radius:13px 11px 14px 10px;border:2.5px solid var(--ink);background:#fff;box-shadow:0 3px 0 var(--ink);color:var(--ink);display:grid;place-items:center;padding:0}.dback svg{width:20px;height:20px}
+.dnote{flex-basis:100%;font-size:12px;color:#6B4E95}.chip.dnote{flex-basis:auto;background:var(--slime)}
+.dnews{grid-column:1/-1;display:flex;align-items:center;gap:10px;margin:-4px 0 -4px;padding:8px 12px;border:3px solid var(--ink);border-radius:16px 13px 17px 12px;background:var(--sun);box-shadow:0 4px 0 var(--ink);color:var(--ink);text-align:left}
+.dnews img{width:36px;height:36px;flex:none}.dnews span{display:flex;flex-direction:column}.dnews b{font-family:var(--disp);font-weight:400;font-size:13.5px;letter-spacing:.02em}.dnews small{font-size:11px;color:#6B4E95}
+.nesthd{justify-content:space-between;align-items:baseline;padding-bottom:6px}.nesthd h2{font-size:19px;margin:0;min-width:0}.nesthd .dcount{margin:0;font-size:11px;padding:2px 8px 3px;border-radius:9px;background:var(--sun);border:2px solid var(--ink);color:var(--ink)}
+.dcard:has(.price) .dwish{top:auto;bottom:40px;right:-9px}
+.dup{display:flex;flex-direction:column;gap:6px;text-align:left}.dup .tgh{margin:4px 2px 2px}.dup>p{text-align:center;margin:6px 0 0}
+.dsoon{display:flex;align-items:center;gap:10px;padding:4px 8px;border-radius:12px;background:#F7F2FC}.dsoon b{font-family:var(--disp);font-weight:400;font-size:12.5px;color:var(--ink);width:78px;flex:none}
+.dsoon span{display:flex;gap:4px;flex-wrap:wrap}.dsoon img{width:30px;height:30px}
+.sc-wish{display:inline-flex;gap:5px;align-items:center}.sc-wish svg{width:18px;height:18px;fill:#fff;stroke:var(--ink);stroke-width:2.2;stroke-linejoin:round}.sc-wish[aria-pressed="true"]{background:#FFE0EF}.sc-wish[aria-pressed="true"] svg{fill:var(--pink)}
 .own.have{background:var(--slime);color:var(--ink);border:2px solid var(--ink);padding:2px 6px 3px}
 
 /* tile sets + paint bar */
@@ -5223,11 +5262,11 @@ const SHOPS={
 // Cozy Nest: a showroom that changes every day (three pieces on sale), and the full catalog on the lectern
 SHOPS.furn={n:'Cozy Nest',kind:'furn',icon:'tab-decorate',color:'#FF3D9A',keeper:'cushion',kx:1.7,kz:-3.5,
   tf:()=>tilesWith('herring','parquet',[1,1,6,6]),tw:()=>wallsWith('plaster','stripe'),
-  layout:()=>{const pk=dealKeys(),spots=[[-2.3,-1.4,.5],[-2.4,1.1,.9],[.2,-.5,.6],[2.4,-.3,-.6],[.2,1.8,.3],[2.5,2.3,-.8]],wallK=CAT.filter(c=>c.wall&&c.fn!=='window').map(c=>c.k),R=rnd(Math.floor(Date.now()/864e5)),wp=[wallK[R()*wallK.length|0],wallK[R()*wallK.length|0]];
+  layout:()=>{const pk=dealKeys(),spots=[[-2.3,-1.4,.5],[-2.4,1.1,.9],[.2,-.5,.6],[2.4,-.3,-.6],[.2,1.8,.3],[2.5,2.3,-.8]],st=nestStock(),wallK=st.walls.length?st.walls:CAT.filter(c=>c.wall&&c.fn!=='window'&&!c.gacha).map(c=>c.k),R=rnd(st.t),wp=[wallK[R()*wallK.length|0],wallK[R()*wallK.length|0]];
     return[{k:'counter',x:1.7,z:-2.75,c:0xFFC6E0},{k:'catalog',x:-.3,z:-2.9,c:0xFF3D9A},{k:'sign',w:0,u:1.7,y:2.72,c:0xFF3D9A},{k:'bigleaf',x:3.45,z:-2.5},{k:'arc',x:-3.3,z:-3.2},
       ...spots.map(([x,z,r],i)=>({k:pk[i],x,z,r,sale:'furn'})),{k:wp[0],w:0,u:-2.3,y:1.9,sale:'furn'},{k:wp[1],w:3,u:.6,y:1.9,sale:'furn'}]},
   lines:{hi:['Welcome to Cozy Nest! Make yourself at home.','Everything here is sittable. Mostly.','Fresh pieces on the floor today!'],buy:['It’ll look lovely at home!','Wrapped and ready. Well, sort of.','Great eye!'],
-    poor:['A few more hearts and it’s yours!'],tip:()=>`Today’s deals are the first three pieces on the floor. Or peek in the catalog!`}};
+    poor:['A few more hearts and it’s yours!'],tip:()=>{const w=wishesIn();return w.length?`Something on your wishlist came in today: ${CATMAP[w[0]].n}${w.length>1?` and ${w.length-1} more`:''}! It’s in the catalog.`:`Today’s sets: ${nestStock().sets.map(k=>SETMAP[k].n).join(', ')}. The stock changes every day!`}}};
 // Hammer & Hue: floors, walls, doors, windows and bigger rooms
 SHOPS.build={n:'Hammer & Hue',kind:'build',icon:'tab-room',color:'#FF8A1C',keeper:'builder',kx:-1.9,kz:-3.5,
   tf:()=>tilesWith('concrete','jellytile',[3,3,4,4]),tw:()=>wallsWith('grid','plain'),
@@ -5750,12 +5789,47 @@ function offerItem(id){const it=ITEMMAP[id],have=it.k==='toy'?owned(it):(state.i
   return{key:'toy:'+id,title:it.n,sub:`${itemTag(it)}${it.cat?' · '+FOOD_CATS[it.cat]:''}${it.tt?' · '+it.tt:''}${fav?' · <b>Favorite!</b>':''}`,desc:it.d,price:it.p,
     thumb:`<img data-tt="toy:${id}" src="${thumbs['toy:'+id]||'assets/icons/'+KIND_ICON[it.k]+'.webp'}" alt="">`,thumbQ:'toy:'+id,have:it.k==='toy'?(have?'You own this':'Keeps forever'):'You have '+have,
     canBuy:!(it.k==='toy'&&have),hop:id,buy(){if(it.k==='toy')state.toys.push(it.id);else state.inv[it.id]=(state.inv[it.id]||0)+1}}}
-function dealKeys(){const R=rnd(Math.floor(Date.now()/864e5)+7),pool=CAT.filter(c=>!c.gacha&&!c.wall&&c.fn!=='window'&&c.fn!=='bed'&&c.fn!=='rug').map(c=>c.k),out=[];while(out.length<9&&pool.length)out.push(pool.splice(R()*pool.length|0,1)[0]);return out}
-function furnPrice(k){const d=CATMAP[k];return dealKeys().slice(0,3).includes(k)?Math.max(1,Math.round(d.p*.75)):d.p}
-function offerFurn(k){const d=CATMAP[k],own=state.fown[k]||0,placed=state.items.filter(i=>i.k===k).length,pr=furnPrice(k);
-  return{key:k,title:d.n,sub:`${SETMAP[d.set].n} · ${FUNCMAP[d.fn][1]}${pr<d.p?' · <b>Today’s deal!</b>':''}`,desc:FN_DESC[d.fn]||'',price:pr,was:pr<d.p?d.p:0,
-    thumb:`<img data-tt="${k}" src="${thumbs[k]||'assets/icons/tab-decorate.webp'}" alt="">`,thumbQ:k,have:`In storage: ${own}${placed?` · In your room: ${placed}`:''}`,canBuy:true,
-    buy(){state.fown[k]=(state.fown[k]||0)+1;setTimeout(()=>toast(`${d.n} is in storage. Place it from Decorate at home.`),900)}}}
+// Cozy Nest's stock rotates every day (US Central day, like the two-dos, so both phones agree). The sets are shuffled
+// into a week-long cycle: 4 sets a day, and every set comes round every six days. Seasonal sets join in their season.
+// A few odd pieces from other sets fill in, and anything you already own can always be bought again.
+const SEASONS={spooky:[1001,1031],holiday:[1120,106],spring:[315,531]},NEST_CYC=6;
+function inSeason(k,t){const S=SEASONS[k];if(!S)return false;const d=new Date(t*864e5),v=(d.getUTCMonth()+1)*100+d.getUTCDate();return S[0]<=S[1]?v>=S[0]&&v<=S[1]:v>=S[0]||v<=S[1]}
+function nestDayN(off){return Math.round(Date.parse(tdDay()+'T00:00:00Z')/864e5)+(off||0)}
+function nestOrder(c){const rot=SETS.filter(x=>x.k!=='gacha'&&x.k!=='build'&&!SEASONS[x.k]).map(x=>x.k),R=rnd(c*7919+101);
+  for(let i=rot.length-1;i>0;i--){const j=R()*(i+1)|0;[rot[i],rot[j]]=[rot[j],rot[i]]}return rot}
+// day t shows every NEST_CYC-th set of its cycle's shuffle; a cycle's first day never repeats the day before
+function nestSetsOn(t){const c=Math.floor(t/NEST_CYC),o=nestOrder(c),prev=nestOrder(c-1).filter((_,j)=>j%NEST_CYC===NEST_CYC-1),mid=j=>j%NEST_CYC&&j%NEST_CYC<NEST_CYC-1;
+  o.forEach((k,j)=>{if(j%NEST_CYC||!prev.includes(k))return;const m=o.findIndex((x,q)=>mid(q)&&!prev.includes(x));if(m>-1){o[j]=o[m];o[m]=k}});
+  return SETS.filter(x=>inSeason(x.k,t)).map(x=>x.k).concat(o.filter((_,j)=>j%NEST_CYC===t%NEST_CYC))}
+let nestC=null;
+function nestStock(){const t=nestDayN();if(nestC&&nestC.t===t)return nestC;
+  const sets=nestSetsOn(t),ok=c=>!c.gacha&&c.fn!=='window'&&SETMAP[c.set],R=rnd(t*31+7),others=CAT.filter(c=>ok(c)&&!sets.includes(c.set)&&!SEASONS[c.set]),odd=[];
+  while(odd.length<6&&others.length)odd.push(others.splice(R()*others.length|0,1)[0].k);
+  const all=new Set(CAT.filter(c=>ok(c)&&sets.includes(c.set)).map(c=>c.k).concat(odd)),floor=[...all].filter(k=>{const c=CATMAP[k];return!c.wall&&c.fn!=='bed'&&c.fn!=='rug'}),deals=[];
+  while(deals.length<9&&floor.length)deals.push(floor.splice(R()*floor.length|0,1)[0]);
+  return nestC={t,sets,odd,all,deals,walls:[...all].filter(k=>CATMAP[k].wall)}}
+function inStock(k){return nestStock().all.has(k)}
+function dealKeys(){return nestStock().deals}
+function furnPrice(k){const d=CATMAP[k];return nestStock().deals.indexOf(k)>-1&&nestStock().deals.indexOf(k)<3?Math.max(1,Math.round(d.p*.75)):d.p}
+// days until a piece's set is back on the floor (0: not within a year)
+function nextStock(k){const c=CATMAP[k],t=nestDayN();for(let i=1;i<=370;i++)if(nestSetsOn(t+i).includes(c.set))return i;return 0}
+function whenLabel(i){if(!i)return'another day';const d=new Date((nestDayN()+i)*864e5),f=o=>d.toLocaleDateString('en-US',Object.assign({timeZone:'UTC'},o));
+  return i===1?'tomorrow':i<7?'on '+f({weekday:'long'}):i<45?'on '+f({month:'short',day:'numeric'}):'in '+f({month:'long'})}
+function nestLeft(){try{const p=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',hour:'numeric',minute:'numeric',hourCycle:'h23'}).formatToParts(new Date()),g=x=>+p.find(y=>y.type===x).value,m=24*60-(g('hour')%24)*60-g('minute');
+  return m>=90?`New stock in ${Math.round(m/60)}h`:`New stock in ${m} min`}catch(_){return'New stock every day'}}
+// Wishlist: pieces either of you would like (shared, with who wished). Cozy Nest calls them out when they're in.
+function wished(k){return!!(state.fwish&&state.fwish[k])}
+function toggleWish(k){state.fwish=state.fwish||{};if(state.fwish[k])delete state.fwish[k];else state.fwish[k]=pid();saveSoon()}
+function wishesIn(){return Object.keys(state.fwish||{}).filter(k=>CATMAP[k]&&inStock(k))}
+function offerFurn(k){const d=CATMAP[k],own=state.fown[k]||0,placed=state.items.filter(i=>i.k===k).length,win=d.fn==='window',sk=win?'build':'furn',here=away&&away.key===sk,
+    had=own+placed>0,stock=win||inStock(k),avail=stock||had,pr=stock?furnPrice(k):d.p,w=wished(k),by=w&&state.fwish[k]!==pid()?who(state.fwish[k]):'';
+  const have=d.gacha?(had?`In storage: ${own}${placed?` · In your room: ${placed}`:''}`:'Found in capsules at Capsule Corner.')
+    :had?`In storage: ${own}${placed?` · In your room: ${placed}`:''}`:stock?(here?'':`In at ${SHOPS[sk].n} today!`):`Back at Cozy Nest ${whenLabel(nextStock(k))}.`;
+  return{key:k,title:d.n,sub:`${SETMAP[d.set].n} · ${FUNCMAP[d.fn][1]}${stock&&pr<d.p?' · <b>Today’s deal!</b>':''}${by?` · On ${esc(by)}’s wishlist`:''}`,desc:FN_DESC[d.fn]||'',price:pr,was:pr<d.p?d.p:0,
+    thumb:`<img data-tt="${k}" src="${thumbs[k]||'assets/icons/tab-decorate.webp'}" alt="">`,thumbQ:k,have,canBuy:here&&avail&&!d.gacha,
+    go:!here&&avail&&!d.gacha?{label:had?'Buy another':'Go shop',fn:()=>{closeProduct();goBuy(k)}}:null,
+    alt:d.gacha||win||had||here&&avail?null:{label:w?'Wished':'Wish',on:w,fn:()=>{toggleWish(k);toast(w?'Taken off the wishlist':`${d.n} is on the wishlist. Cozy Nest will let you know.`)}},
+    buy(){const v=(state.fown[k]||0)+1;delete state.fown[k];state.fown[k]=v;if(state.fwish)delete state.fwish[k];setTimeout(()=>toast(`${d.n} is in storage. Place it from Decorate at home.`),900)}}}
 function offerTile(key){const d=TILESETS[key[0]][key.slice(2)],own=state.town.includes(key);
   return{key,title:d.n,sub:`${key[0]==='f'?'Floor':'Wallpaper'}${d.mode==='border'?' · Edges':d.mode==='run'?' · End caps':d.span[0]>1?` · ${d.span[0]}×${d.span[1]} repeat`:''}`,
     desc:'Unlock it once, then paint it anywhere in your room from Decorate.',price:tilePrice(d),thumb:`<span class="sc-tile${key[0]==='w'?' wall':''}" data-tk="${key}" style="${tileStyle(key)}"></span>`,tex:1,
@@ -5768,8 +5842,8 @@ function offerSize(n){const got=state.size>=n,next=state.size+2===n;return{key:'
 function makeOffer(o){return o.t==='wear'?()=>offerWear(o.k):o.t==='item'?()=>offerItem(o.k):o.t==='furn'?()=>offerFurn(o.k):o.t==='tile'?()=>offerTile(o.k):o.t==='door'?()=>offerDoor(o.k):()=>offerSize(o.k)}
 function openOffer(fn){const O=fn();cardFn=fn;const c=$('#shopcard');
   c.innerHTML=`<button class="sc-x" id="scX" aria-label="Close">×</button><div class="sc-top"><span class="sc-th">${O.thumb}</span><div><h3>${esc(O.title)}</h3><small>${O.sub}</small></div></div><p>${esc(O.desc)}</p>
-    <div class="sc-row"><span class="sc-have">${O.have}</span>${O.go?`<button class="gel pink sc-buy" id="scGo">${esc(O.go.label)}</button>`:''}${O.canBuy?`<button class="gel pink sc-buy" id="scBuy"${state.hearts<O.price?' disabled':''}>Buy <span class="cost">${O.was?`<s>${O.was}</s>`:''}${O.price}<img src="assets/icons/stat-happy.webp" alt="hearts"></span></button>`:''}</div>`;
-  c.hidden=false;requestAnimationFrame(()=>{c.classList.add('on');fitSheet()});if(O.thumbQ)queueThumbs([O.thumbQ]);if(O.tex)queueTexThumbs();$('#scX').onclick=closeProduct;const b=$('#scBuy');if(b)b.onclick=()=>buyOffer();const gb=$('#scGo');if(gb)gb.onclick=()=>O.go.fn()}
+    <div class="sc-row"><span class="sc-have">${O.have}</span>${O.alt?`<button class="chip sc-wish" id="scAlt" aria-pressed="${!!O.alt.on}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5C6 16.4 2.8 13 2.8 9.2 2.8 6.4 5 4.3 7.6 4.3c1.9 0 3.4 1 4.4 2.5 1-1.5 2.5-2.5 4.4-2.5 2.6 0 4.8 2.1 4.8 4.9 0 3.8-3.2 7.2-9.2 11.3z"/></svg>${esc(O.alt.label)}</button>`:''}${O.go?`<button class="gel pink sc-buy" id="scGo">${esc(O.go.label)}</button>`:''}${O.canBuy?`<button class="gel pink sc-buy" id="scBuy"${state.hearts<O.price?' disabled':''}>Buy <span class="cost">${O.was?`<s>${O.was}</s>`:''}${O.price}<img src="assets/icons/stat-happy.webp" alt="hearts"></span></button>`:''}</div>`;
+  c.hidden=false;requestAnimationFrame(()=>{c.classList.add('on');fitSheet()});if(O.thumbQ)queueThumbs([O.thumbQ]);if(O.tex)queueTexThumbs();$('#scX').onclick=closeProduct;const b=$('#scBuy');if(b)b.onclick=()=>buyOffer();const gb=$('#scGo');if(gb)gb.onclick=()=>O.go.fn();const ab=$('#scAlt');if(ab)ab.onclick=()=>{O.alt.fn();openOffer(cardFn);if(openTab==='decorate')renderDeco(false)}}
 function openProduct(id){openOffer(()=>offerItem(id))}
 function closeProduct(){endWearPrev();const c=$('#shopcard');c.classList.remove('on');requestAnimationFrame(fitSheet);setTimeout(()=>{if(!c.classList.contains('on'))c.hidden=true},250);cardFn=null}
 function buyOffer(){if(!cardFn||!away)return;const O=cardFn();if(!O.canBuy)return;if(state.hearts<O.price){keeperSay(pick1(away.keeper.lines.poor));return}
@@ -6763,7 +6837,7 @@ function fxScores(){const g=G();rb(g,1.9,1.24,.08,.06,M(0xB07BFF,{roughness:.4})
   const pl=add(g,new THREE.PlaneGeometry(1.76,1.1),new THREE.MeshBasicMaterial({map:scoreTex}),0,0,.045);pl.outline=0;pl.castShadow=false;return g}
 
 /* ================= SHEETS ================= */
-let openTab=null,decoSet='all',decoFn='all';const thumbs={};
+let openTab=null;const thumbs={};
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{const t=b.dataset.tab;if(away&&(t==='decorate'||t==='room')){travelTo('home',()=>setTab(t));return}setTab(openTab===t?null:t)});
 $('#petchip').onclick=()=>setTab(openTab==='pet'?null:'pet');
 $('#dbgBtn').onclick=()=>setTab(openTab==='debug'?null:'debug');
@@ -6775,7 +6849,7 @@ if(window.ResizeObserver)new ResizeObserver(()=>{if(openTab)fitSheet()}).observe
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 /* ---------- decorate catalog ---------- */
 // Built for a big catalog: search + kind + set filters, a scrolling grid, and thumbnails rendered only as cards come into view.
-let decoQ='',decoSort=0,decoSetsOpen=false,decoHolding=false,decoIO=null,decoMode='place',decoMine=false,decoView='furn';
+let decoQ='',decoHolding=false,decoIO=null,decoMode='place',decoView='furn',decoPage=null,decoBrowse='fn';
 // Decorate has four views: furniture from storage, then floors, walls and the door (only what you own; shops sell the rest).
 const DECO_VIEWS=[['furn','Furniture','<path d="M4 11V8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v3"/><path d="M3 11h18v5H3z"/><path d="M5 16v3M19 16v3"/>'],
   ['f','Floors','<path d="M12 4l9 5-9 5-9-5z"/><path d="M7.5 6.5l9 5M16.5 6.5l-9 5"/><path d="M3 9v4l9 5 9-5V9"/>'],
@@ -6805,39 +6879,76 @@ function renderTileView(body){const kind=decoView==='door'?'d':decoView,old=$('#
   if(kind==='d'){if(decoIO)decoIO.disconnect();const need=[...grid.querySelectorAll('[data-door]')].filter(b=>!thumbs['door:'+b.dataset.door]);
     if(window.IntersectionObserver){decoIO=new IntersectionObserver(es=>{const ks=[];es.forEach(e=>{if(e.isIntersecting){ks.push('door:'+e.target.dataset.door);decoIO.unobserve(e.target)}});if(ks.length)queueThumbsFirst(ks)},{root:grid,rootMargin:'200px 0px'});need.forEach(b=>decoIO.observe(b))}
     else queueThumbs(need.map(b=>'door:'+b.dataset.door))}else queueTexThumbs()}
-const DECO_SORTS=[['Featured',null],['Cheapest',(a,b)=>a.p-b.p||a.n.localeCompare(b.n)],['Priciest',(a,b)=>b.p-a.p||a.n.localeCompare(b.n)],['A to Z',(a,b)=>a.n.localeCompare(b.n)]];
 const FUNCMAP={};FUNCS.forEach(f=>FUNCMAP[f[0]]=f);
 const decoText=c=>(c.n+' '+SETMAP[c.set].n+' '+FUNCMAP[c.fn][1]).toLowerCase();
 function roomCounts(){const n={};state.items.forEach(i=>n[i.k]=(n[i.k]||0)+1);return n}
-function centerChip(row){const on=row.querySelector('[aria-pressed="true"]');if(on)row.scrollLeft=Math.max(0,on.offsetLeft-row.clientWidth/2+on.offsetWidth/2)}
-function decoCard(c,n){const own=state.fown[c.k]||0,buy=decoMode==='buy',pr=furnPrice(c.k);return`<div class="card dcard${buy?(state.hearts<pr?' poor':''):own?'':' poor'}" data-k="${c.k}" role="button" tabindex="0" aria-label="Add ${esc(c.n)}, ${c.p} hearts${n?`, ${n} in your room`:''}"><span class="setb" aria-hidden="true"><img src="assets/icons/${SETMAP[c.set].img}.webp" alt=""></span><div class="thumb">${thumbs[c.k]?`<img src="${thumbs[c.k]}" alt="">`:'<i class="spin"></i>'}${buy?`<span class="own have"${own+(n||0)?'':' hidden'}>have ${own+(n||0)}</span>`:`<span class="own"${n?'':' hidden'}>×${n||0}</span>`}</div><b>${esc(c.n)}</b>${buy?`<span class="price${pr>99?' long':''}${pr<c.p?' deal':''}"><i>♥</i>${pr}</span>`:`<span class="stock">${own}</span>`}</div>`}
+// Furniture cards. Placing: what you own (count in storage, ×n in the room). Collecting: pieces you don't have yet, faded,
+// tagged when they're in at Cozy Nest today or on the wishlist; tapping one shows where to get it. Buying: price stickers.
+function decoCard(c,n,want){const own=state.fown[c.k]||0,buy=decoMode==='buy',pr=furnPrice(c.k),w=wished(c.k),tag=want?(c.gacha?'':inStock(c.k)?'<i class="dtag in">In today</i>':''):'';
+  return`<div class="card dcard${want?' want':buy?(state.hearts<pr?' poor':''):own?'':' poor'}" data-k="${c.k}"${want?' data-peek="1"':''} role="button" tabindex="0" aria-label="${want?'See':buy?'Buy':'Add'} ${esc(c.n)}${n?`, ${n} in your room`:''}"><span class="setb" aria-hidden="true"><img src="${ico(SETMAP[c.set].img)}" alt=""></span>${w?'<i class="dwish" aria-label="On the wishlist"></i>':''}<div class="thumb">${thumbs[c.k]?`<img src="${thumbs[c.k]}" alt="">`:'<i class="spin"></i>'}${buy?`<span class="own have"${own+(n||0)?'':' hidden'}>have ${own+(n||0)}</span>`:want?'':`<span class="own"${n?'':' hidden'}>×${n||0}</span>`}</div><b>${esc(c.n)}</b>${tag}${buy?`<span class="price${pr>99?' long':''}${pr<c.p?' deal':''}"><i>♥</i>${pr}</span>`:want?'':`<span class="stock">${own}</span>`}</div>`}
+const decoOwn=(c,n)=>(state.fown[c.k]||0)>0||n[c.k]>0;
+// pieces that show up in the collection (windows only once you have one: Hammer & Hue sells them)
+const decoCol=(c,n)=>c.fn!=='window'||decoOwn(c,n);
+function decoHead(t){return`<h3 class="tgh">${t}</h3>`}
+function decoSection(list,n,want){return list.map(c=>decoCard(c,n[c.k],want)).join('')}
+function decoShelf(list,n,want){return`<div class="dshelf">${decoSection(list,n,want)}</div>`}
+function decoTile(key,img,thumbK,name,sub,pct,badge,sc){return`<button type="button" class="dtile" data-go="${key}" style="--sc:${sc||'#fff'}">${badge?`<i class="dtag in">${badge}</i>`:''}<span class="dti">${img?`<img src="${img}" alt="">`:`<img data-tt="${thumbK}" data-q="${thumbK}" src="${thumbs[thumbK]||'assets/icons/tab-decorate.webp'}" class="${thumbs[thumbK]?'model':''}" alt="">`}</span><b>${esc(name)}</b><small>${sub}</small>${pct!=null?`<span class="dbarp"><i style="width:${Math.round(pct*100)}%"></i></span>`:''}</button>`}
+// Cozy Nest's catalog: today's stock, grouped the way it sits in the shop.
+function nestCatalog(n,words,hit){const st=nestStock(),inb=c=>hit(c),out=[],seen=new Set(),take=a=>a.filter(c=>!seen.has(c.k)&&inb(c)).map(c=>(seen.add(c.k),c));
+  const deals=take(st.deals.slice(0,3).map(k=>CATMAP[k])),wish=take(wishesIn().map(k=>CATMAP[k]));
+  if(deals.length)out.push(decoHead('Today’s deals')+decoSection(deals,n));
+  if(wish.length)out.push(decoHead('On your wishlist')+decoSection(wish,n));
+  st.sets.forEach(k=>{const S=SETMAP[k],l=take(CAT.filter(c=>c.set===k&&st.all.has(c.k)));if(l.length)out.push(decoHead(`<img class="chi" src="${ico(S.img)}" alt="">${esc(S.n)}${SEASONS[k]?'<em>In season</em>':''}`)+decoSection(l,n))});
+  const odd=take(st.odd.map(k=>CATMAP[k]));if(odd.length)out.push(decoHead('Odd pieces')+decoSection(odd,n));
+  const again=take(CAT.filter(c=>c.fn!=='window'&&!c.gacha&&decoOwn(c,n)));if(again.length)out.push(decoHead('Buy again')+decoSection(again,n));
+  const cnt=seen.size;
+  if(!words.length){const up=[1,2,3].map(i=>{const t=nestDayN(i),d=new Date(t*864e5);return`<div class="dsoon"><b>${i===1?'Tomorrow':d.toLocaleDateString('en-US',{weekday:'long',timeZone:'UTC'})}</b><span>${nestSetsOn(t).map(k=>`<img src="${ico(SETMAP[k].img)}" alt="${esc(SETMAP[k].n)}" title="${esc(SETMAP[k].n)}">`).join('')}</span></div>`}).join('');
+    out.push(`<div class="dend dup"><h3 class="tgh">Coming up</h3>${up}<p>Tap a piece to see it and buy it.</p></div>`)}
+  return{html:out.join(''),cnt}}
 function renderDeco(toTop){const grid=$('#tray');if(!grid)return;
-  const words=decoQ.trim().toLowerCase().split(/\s+/).filter(Boolean),hit=c=>{const t=decoText(c);return words.every(w=>t.includes(w))};
-  const n=roomCounts(),mine=c=>(state.fown[c.k]||0)>0||n[c.k]>0,
-    pool=CAT.filter(c=>(decoSet==='all'||c.set===decoSet)&&hit(c)&&!(decoMode==='buy'&&(c.fn==='window'||c.gacha))&&(decoMode==='buy'?!decoMine||mine(c):mine(c))),per={};pool.forEach(c=>per[c.fn]=(per[c.fn]||0)+1);
-  if(decoFn!=='all'&&!per[decoFn]&&!words.length)decoFn='all';
-  let list=pool.filter(c=>decoFn==='all'||c.fn===decoFn);const sort=DECO_SORTS[decoSort][1];if(sort)list=list.slice().sort(sort);
-  // placing: what you have in storage comes first
-  if(decoMode==='place')list=list.slice().sort((a,b)=>((state.fown[b.k]||0)>0)-((state.fown[a.k]||0)>0));
-  const fns=$('#decoFns');fns.innerHTML=`<button type="button" class="chip sm" data-fn="all" aria-pressed="${decoFn==='all'}">All<small>${pool.length}</small></button>`+
-    FUNCS.filter(f=>per[f[0]]||f[0]===decoFn).map(([k,n,e])=>`<button type="button" class="chip sm" data-fn="${k}" aria-pressed="${decoFn===k}"><span aria-hidden="true">${e}</span>${n}<small>${per[k]||0}</small></button>`).join('');
-  fns.querySelectorAll('[data-fn]').forEach(b=>b.onclick=()=>{decoFn=b.dataset.fn;renderDeco(true)});centerChip(fns);
-  const S=decoSet==='all'?null:SETMAP[decoSet],sb=$('#decoSetBtn');sb.style.setProperty('--sc',S?S.c:'#fff');sb.classList.toggle('on',!!S);
-  sb.innerHTML=`<img class="chi" src="${ico(S?S.img:'heart-jar')}" alt="">${S?esc(S.n):'All sets'}<i class="caret" aria-hidden="true"></i>`;
-  $('#decoSortBtn').textContent='Sort: '+DECO_SORTS[decoSort][0];
-  const sets=$('#decoSets');sets.innerHTML=`<button type="button" class="chip sm" data-set="all" aria-pressed="${decoSet==='all'}"><img class="chi" src="assets/icons/heart-jar.webp" alt="">Everything</button>`+
-    SETS.map(t=>`<button type="button" class="chip sm setchip" data-set="${t.k}" style="--sc:${t.c}" aria-pressed="${decoSet===t.k}"><img class="chi" src="${ico(t.img)}" alt="">${esc(t.n)}</button>`).join('');
-  sets.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>{decoSet=b.dataset.set;decoSetsOpen=false;sets.hidden=true;sb.setAttribute('aria-expanded',false);renderDeco(true)});
-  $('#decoCount').textContent=`${list.length} ${list.length===1?'piece':'pieces'}`;
-  const filtered=words.length||decoSet!=='all'||decoFn!=='all',shopBtn='<button type="button" class="chip" id="decoShop">Shop at Cozy Nest</button>';
-  grid.innerHTML=list.length?list.map(c=>decoCard(c,n[c.k])).join('')+(decoMode==='buy'?'<p class="dend">Tap a piece to see it and buy it.</p>':`<div class="dend tmore"><p>Tap to place, or hold and drag it into the room.</p>${shopBtn}</div>`)
-    :`<div class="dempty"><p>${words.length?`Nothing called “${esc(decoQ.trim())}”${decoSet!=='all'?' in '+esc(SETMAP[decoSet].n):''}${decoMode==='place'?' in your things':''}.`:decoMode==='place'&&!filtered?'Your storage is empty.':'Nothing here yet.'}</p>${filtered?'<button type="button" class="chip" id="decoAll">Show everything</button>':decoMode==='place'?shopBtn:''}</div>`;
-  const shp=$('#decoShop');if(shp)shp.onclick=()=>shopFor('furn');
-  const all=$('#decoAll');if(all)all.onclick=()=>{decoQ='';decoFn='all';decoSet='all';const q=$('#decoQ');if(q)q.value='';$('#decoClr').hidden=true;renderDeco(true)};
+  const words=decoQ.trim().toLowerCase().split(/\s+/).filter(Boolean),hit=c=>{const t=decoText(c);return words.every(w=>t.includes(w))},n=roomCounts(),buy=decoMode==='buy';
+  const shopBtn='<button type="button" class="chip" id="decoShop">Shop at Cozy Nest</button>';let html='',cnt=0;
+  if(buy){const r=nestCatalog(n,words,hit);html=r.cnt?r.html:`<div class="dempty"><p>Nothing called “${esc(decoQ.trim())}” in today’s stock.</p></div>${r.html}`;cnt=r.cnt}
+  else{const pg=words.length?null:decoPage,[pk,pv]=pg?pg.split(':'):[],col=CAT.filter(c=>decoCol(c,n)),
+      mineSort=(a,b)=>((state.fown[b.k]||0)>0)-((state.fown[a.k]||0)>0);
+    if(words.length||pg){// a list: search results, a kind, a set, storage or the wishlist
+      const pool=words.length?col.filter(hit):pk==='fn'?col.filter(c=>c.fn===pv):pk==='set'?col.filter(c=>c.set===pv):pk==='wish'?CAT.filter(c=>wished(c.k)):col.filter(c=>(state.fown[c.k]||0)>0);
+      const have=pool.filter(c=>decoOwn(c,n)).sort(mineSort),want=pool.filter(c=>!decoOwn(c,n));cnt=pool.length;
+      let top='';if(pg){const S=pk==='set'?SETMAP[pv]:null,F=pk==='fn'?FUNCMAP[pv]:null,title=S?S.n:F?F[1]:pk==='wish'?'Wishlist':'In storage',
+          sub=S||F?`${have.length} of ${pool.length} collected`:`${pool.length} ${pool.length===1?'piece':'pieces'}`,
+          note=S&&pv!=='gacha'&&pv!=='build'?(nestStock().sets.includes(pv)?'<button type="button" class="chip sm dnote in" id="decoGoSet">In at Cozy Nest today</button>':`<span class="dnote">Back at Cozy Nest ${whenLabel(nextStock(CAT.find(c=>c.set===pv).k))}</span>`):'';
+        top=`<div class="dcrumb"><button type="button" class="dback" id="decoBack" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>${S?`<img class="chi" src="${ico(S.img)}" alt="">`:''}<div><b>${esc(title)}</b><small>${sub}</small></div>${note}</div>`}
+      const bySet=pk==='fn'||words.length,grp=(l,want)=>{if(!bySet||l.length<8)return decoSection(l,n,want);const g=[];l.forEach(c=>{let G=g.find(x=>x.k===c.set);if(!G)g.push(G={k:c.set,l:[]});G.l.push(c)});
+          return g.map(G=>`<h3 class="tgh sm"><img class="chi" src="${ico(SETMAP[G.k].img)}" alt="">${esc(SETMAP[G.k].n)}</h3>`+decoSection(G.l,n,want)).join('')};
+      html=top+(have.length?(pk==='wish'||!pg&&!words.length?'':decoHead(`Yours <small>${have.length}</small>`))+grp(have,false):'')+
+        (want.length?decoHead(pk==='wish'?`Wished for <small>${want.length}</small>`:`To collect <small>${want.length}</small>`)+grp(want,true):'')+
+        (pool.length?'':`<div class="dempty"><p>${words.length?`Nothing called “${esc(decoQ.trim())}”.`:pk==='wish'?'No wishes yet. Tap a piece you don’t have and wish for it.':'Your storage is empty.'}</p>${pk==='store'||pk==='wish'?shopBtn:''}</div>`)+
+        (pool.length?`<div class="dend tmore"><p>${have.length?'Tap to place, or hold and drag it into the room.':'Tap a piece to see where to get it.'}</p>${shopBtn}</div>`:'')}
+    else{// home: storage and wishes on shelves, then everything as tiles by kind or by set
+      const store=Object.keys(state.fown).reverse().map(k=>CATMAP[k]).filter(c=>c&&state.fown[c.k]>0),wl=CAT.filter(c=>wished(c.k)),wIn=wishesIn();cnt=col.filter(c=>decoOwn(c,n)).length;
+      html=(wIn.length?`<button type="button" class="dnews" id="decoNews"><img src="${ico('tab-decorate')}" alt=""><span><b>${wIn.length===1?esc(CATMAP[wIn[0]].n)+' is':wIn.length+' wishes are'} in at Cozy Nest today!</b><small>The stock changes every day.</small></span></button>`:'')+
+        `<h3 class="tgh">In storage <small>${store.reduce((a,c)=>a+state.fown[c.k],0)}</small>${store.length>3?'<button type="button" class="dmore" data-go="store:">See all</button>':''}</h3>`+
+        (store.length?decoShelf(store.slice(0,24),n):`<p class="dnone">New pieces wait here until you place them. ${shopBtn}</p>`)+
+        (wl.length?`<h3 class="tgh">Wishlist <small>${wl.length}</small>${wl.length>3?'<button type="button" class="dmore" data-go="wish:">See all</button>':''}</h3>`+decoShelf(wl.slice(0,24),n,true):'')+
+        `<div class="dtog" role="tablist"><button type="button" role="tab" data-br="fn" aria-selected="${decoBrowse==='fn'}">By kind</button><button type="button" role="tab" data-br="set" aria-selected="${decoBrowse==='set'}">By set</button></div>`;
+      if(decoBrowse==='fn')html+=FUNCS.map(([k,nm])=>{const l=col.filter(c=>c.fn===k);if(!l.length)return'';const h=l.filter(c=>decoOwn(c,n)),rep=(h.length?h:l).slice().sort((a,b)=>b.p-a.p)[0];
+          return decoTile('fn:'+k,'',rep.k,nm,`${h.length} of ${l.length}`,h.length/l.length)}).join('');
+      else{const st=nestStock();html+=SETS.filter(S=>S.k!=='build').map(S=>{const l=col.filter(c=>c.set===S.k);if(!l.length)return'';const h=l.filter(c=>decoOwn(c,n)).length;
+          return decoTile('set:'+S.k,ico(S.img),'',S.n,h===l.length?'All collected!':`${h} of ${l.length}`,h/l.length,st.sets.includes(S.k)?'In today':'',S.c)}).join('')}
+      html+=`<div class="dend tmore"><p>Cozy Nest has new stock every day.</p>${shopBtn}</div>`}}
+  const dc=$('#decoCount');if(dc)dc.textContent=buy?nestLeft():'';
+  grid.innerHTML=html;
+  const q=(id,f)=>{const e=$(id);if(e)e.onclick=f};
+  q('#decoShop',()=>shopFor('furn'));q('#decoNews',()=>shopFor('furn'));q('#decoGoSet',()=>shopFor('furn'));
+  q('#decoBack',()=>{decoPage=null;renderDeco(true)});
+  grid.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{decoPage=b.dataset.go;renderDeco(true)});
+  grid.querySelectorAll('[data-br]').forEach(b=>b.onclick=()=>{if(decoBrowse===b.dataset.br)return;decoBrowse=b.dataset.br;const y=grid.scrollTop;renderDeco(false);grid.scrollTop=y});
   if(toTop)grid.scrollTop=0;
   if(decoIO)decoIO.disconnect();
-  decoIO=window.IntersectionObserver?new IntersectionObserver(es=>{const ks=[];es.forEach(e=>{if(e.isIntersecting){ks.push(e.target.dataset.k);decoIO.unobserve(e.target)}});if(ks.length)queueThumbsFirst(ks)},{root:grid,rootMargin:'200px 0px'}):null;
-  grid.querySelectorAll('.card').forEach(c=>{if(decoMode==='buy')c.onclick=()=>openOffer(()=>offerFurn(c.dataset.k));else bindCard(c);if(thumbs[c.dataset.k])return;if(decoIO)decoIO.observe(c);else queueThumbs([c.dataset.k])})}
+  const tk=e=>e.dataset.k||e.dataset.q;
+  decoIO=window.IntersectionObserver?new IntersectionObserver(es=>{const ks=[];es.forEach(e=>{if(e.isIntersecting){ks.push(tk(e.target));decoIO.unobserve(e.target)}});if(ks.length)queueThumbsFirst(ks)},{root:grid,rootMargin:'200px 0px'}):null;
+  grid.querySelectorAll('.card,[data-q]').forEach(c=>{if(c.classList.contains('card')){if(buy||c.dataset.peek)c.onclick=()=>openOffer(()=>offerFurn(c.dataset.k));else bindCard(c)}
+    const k=tk(c);if(thumbs[k])return;if(decoIO)decoIO.observe(c);else queueThumbs([k])})}
 /* ---------- build undo ---------- */
 // Every build change (add, move, turn, recolour, store, paint tiles) can be undone. Snapshots of items + tiles, and
 // the hearts it cost or refunded are given back or taken again (so hearts earned meanwhile are kept).
@@ -6879,20 +6990,13 @@ function renderSheet(){const body=$('#sheetBody');
   $('#sheet').classList.toggle('deco',openTab==='decorate'||openTab==='shopcat');
   decoMode=openTab==='shopcat'?'buy':'place';
   if(openTab==='decorate'&&decoView!=='furn')renderTileView(body);
-  else if(openTab==='decorate'||(openTab==='shopcat'&&away&&away.key==='furn')){const old=$('#tray'),keep=old?old.scrollTop:0;
-    body.innerHTML=`${decoMode==='buy'?'':decoSeg()}<div class="dhead">${decoMode==='buy'?'<h2>Catalog</h2>':''}<label class="dsearch"><input id="decoQ" type="text" inputmode="search" enterkeyhint="search" placeholder="Search" autocomplete="off" spellcheck="false" aria-label="Search furniture" value="${esc(decoQ)}"><button type="button" class="dclear" id="decoClr" aria-label="Clear search"${decoQ?'':' hidden'}>×</button></label><button type="button" class="dundo" id="decoUndo" aria-label="Undo"${buildHist.length?'':' disabled'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button></div>
-    <div class="chips dfns" id="decoFns" role="group" aria-label="Filter by kind"></div>
-    <div class="dbar"><button type="button" class="chip sm dpick" id="decoSetBtn" aria-expanded="${decoSetsOpen}"></button><button type="button" class="chip sm dpick" id="decoSortBtn"></button>${decoMode==='buy'?`<button type="button" class="chip sm dpick" id="decoMineBtn" aria-pressed="${decoMine}">Owned</button>`:''}<span class="dcount" id="decoCount"></span></div>
-    <div class="chips dsets" id="decoSets" role="group" aria-label="Filter by set"${decoSetsOpen?'':' hidden'}></div>
+  else if(openTab==='decorate'||(openTab==='shopcat'&&away&&away.key==='furn')){const old=$('#tray'),keep=old?old.scrollTop:0,buy=decoMode==='buy';
+    body.innerHTML=`${buy?'<div class="dhead nesthd"><h2>Today at Cozy Nest</h2><span class="dcount" id="decoCount"></span></div>':decoSeg()}<div class="dhead"><label class="dsearch"><input id="decoQ" type="text" inputmode="search" enterkeyhint="search" placeholder="${buy?'Search today’s stock':'Search all furniture'}" autocomplete="off" spellcheck="false" aria-label="Search furniture" value="${esc(decoQ)}"><button type="button" class="dclear" id="decoClr" aria-label="Clear search"${decoQ?'':' hidden'}>×</button></label>${buy?'':`<button type="button" class="dundo" id="decoUndo" aria-label="Undo"${buildHist.length?'':' disabled'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>`}</div>
     <div class="dgrid" id="tray"></div>`;
     const q=$('#decoQ');q.oninput=()=>{decoQ=q.value;const cl=$('#decoClr');if(cl)cl.hidden=!decoQ;renderDeco(true)};
     q.onkeydown=e=>{if(e.key==='Enter')q.blur()};
-    $('#decoUndo').onclick=undoBuild;
     $('#decoClr').onclick=()=>{decoQ='';q.value='';const cl=$('#decoClr');if(cl)cl.hidden=true;renderDeco(true)};
-    $('#decoSetBtn').onclick=()=>{decoSetsOpen=!decoSetsOpen;$('#decoSets').hidden=!decoSetsOpen;$('#decoSetBtn').setAttribute('aria-expanded',decoSetsOpen);if(decoSetsOpen)centerChip($('#decoSets'))};
-    $('#decoSortBtn').onclick=()=>{decoSort=(decoSort+1)%DECO_SORTS.length;renderDeco(true)};
-    const mb=$('#decoMineBtn');if(mb)mb.onclick=()=>{decoMine=!decoMine;mb.setAttribute('aria-pressed',decoMine);renderDeco(true)};
-    if(decoMode==='buy')$('#decoUndo').hidden=true;else bindSeg(body);
+    if(!buy){$('#decoUndo').onclick=undoBuild;bindSeg(body)}
     const grid=$('#tray');grid.addEventListener('touchmove',e=>{if(decoHolding)e.preventDefault()},{passive:false});
     renderDeco(false);grid.scrollTop=keep}
 
@@ -7112,7 +7216,7 @@ function normalize(s){const oldPal=!!s&&!(s.pv>=2);const d=defaultState();s=Obje
   s.toys=Array.isArray(s.toys)?s.toys.filter(k=>ITEMMAP[k]&&ITEMMAP[k].k==='toy'):d.toys.slice();s.daily=s.daily&&typeof s.daily==='object'?s.daily:{};
   s.pet=Object.assign({},d.pet,s.pet||{});if(s.pet.look&&typeof s.pet.look!=='object')delete s.pet.look;if(s.pet.heads&&!(Array.isArray(s.pet.heads)&&s.pet.heads.length===2))delete s.pet.heads;else if(s.pet.heads)s.pet.heads=s.pet.heads.map(x=>String(x||'').slice(0,10));s.tokens=s.tokens==null?3:Math.max(0,Math.min(999,+s.tokens|0));s.capsdex=Array.isArray(s.capsdex)?s.capsdex.filter(k=>typeof k==='string').slice(0,64):[];s.ceil=s.ceil==null?1:clamp(+s.ceil||0,0,1);s.wish=s.wish&&typeof s.wish==='object'&&(!s.wish.k||WISH_T[s.wish.k])?s.wish:{};s.wear=[...new Set(Array.isArray(s.wear)?s.wear.filter(id=>wearDef(id)):[])];s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
   s.feed=Array.isArray(s.feed)?s.feed.slice(0,50).map(f=>({t:+f.t||0,by:String(f.by||''),k:f.k==='note'?'note':'event',text:String(f.text||'').slice(0,160)})):[];
-  s.visits=s.visits&&typeof s.visits==='object'?s.visits:{};s.names=s.names&&typeof s.names==='object'?Object.fromEntries(Object.entries(s.names).slice(0,8).map(([k,v])=>[String(k).slice(0,64),String(v||'').slice(0,20)])):{};s.hearts=Math.max(0,+s.hearts||0);if(!FLOORS.includes(s.floor))s.floor='checker';if(!WALLS.includes(s.wall))s.wall='bubble';const RN=ROOM_SIZES.includes(s.size)?s.size:8;s.size=RN;s.tf=Array.isArray(s.tf)&&s.tf.length===RN*RN?s.tf.map(k=>TILESETS.f[k]?k:s.floor):Array(RN*RN).fill(s.floor);s.tw=Array.isArray(s.tw)&&s.tw.length===RN*4?s.tw.map(k=>TILESETS.w[k]?k:s.wall):Array(RN*4).fill(s.wall);s.fown=s.fown&&typeof s.fown==='object'?Object.fromEntries(Object.entries(s.fown).filter(([k,v])=>CATMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):{};s.town=[...new Set([...STARTER_TILES,...(Array.isArray(s.town)?s.town:[]),...s.tf.map(k=>'f:'+k),...s.tw.map(k=>'w:'+k)])].filter(k=>TILESETS[k[0]]&&TILESETS[k[0]][k.slice(2)]);s.downs=[...new Set(['classic',...(Array.isArray(s.downs)?s.downs:[])])].filter(k=>k==='classic'||(TILESETS[k[0]]&&TILESETS[k[0]][k.slice(2)]));s.door=Object.assign({s:'classic',w:3,u:-2.6},s.door&&typeof s.door==='object'?s.door:{});if(!s.downs.includes(s.door.s))s.door.s='classic';s.door.w=clamp(s.door.w|0,0,3);s.door.u=clamp(+s.door.u||0,-RN/2+.8,RN/2-.8);if(!SKY_KEYS.includes(s.sky))s.sky='classic';if(oldPal){const mp=[0,7,8,3,12,5,2];s.items.forEach(i=>i.c=mp[(i.c||0)%7])}s.td=s.td&&typeof s.td==='object'&&!Array.isArray(s.td)?s.td:{};s.arc=s.arc&&typeof s.arc==='object'&&!Array.isArray(s.arc)?s.arc:{best:{},plays:0};s.pv=2;return s}
+  s.visits=s.visits&&typeof s.visits==='object'?s.visits:{};s.names=s.names&&typeof s.names==='object'?Object.fromEntries(Object.entries(s.names).slice(0,8).map(([k,v])=>[String(k).slice(0,64),String(v||'').slice(0,20)])):{};s.hearts=Math.max(0,+s.hearts||0);if(!FLOORS.includes(s.floor))s.floor='checker';if(!WALLS.includes(s.wall))s.wall='bubble';const RN=ROOM_SIZES.includes(s.size)?s.size:8;s.size=RN;s.tf=Array.isArray(s.tf)&&s.tf.length===RN*RN?s.tf.map(k=>TILESETS.f[k]?k:s.floor):Array(RN*RN).fill(s.floor);s.tw=Array.isArray(s.tw)&&s.tw.length===RN*4?s.tw.map(k=>TILESETS.w[k]?k:s.wall):Array(RN*4).fill(s.wall);s.fown=s.fown&&typeof s.fown==='object'?Object.fromEntries(Object.entries(s.fown).filter(([k,v])=>CATMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):{};s.fwish=s.fwish&&typeof s.fwish==='object'?Object.fromEntries(Object.entries(s.fwish).filter(([k])=>CATMAP[k]).slice(0,200).map(([k,v])=>[k,String(v||'').slice(0,64)])):{};s.town=[...new Set([...STARTER_TILES,...(Array.isArray(s.town)?s.town:[]),...s.tf.map(k=>'f:'+k),...s.tw.map(k=>'w:'+k)])].filter(k=>TILESETS[k[0]]&&TILESETS[k[0]][k.slice(2)]);s.downs=[...new Set(['classic',...(Array.isArray(s.downs)?s.downs:[])])].filter(k=>k==='classic'||(TILESETS[k[0]]&&TILESETS[k[0]][k.slice(2)]));s.door=Object.assign({s:'classic',w:3,u:-2.6},s.door&&typeof s.door==='object'?s.door:{});if(!s.downs.includes(s.door.s))s.door.s='classic';s.door.w=clamp(s.door.w|0,0,3);s.door.u=clamp(+s.door.u||0,-RN/2+.8,RN/2-.8);if(!SKY_KEYS.includes(s.sky))s.sky='classic';if(oldPal){const mp=[0,7,8,3,12,5,2];s.items.forEach(i=>i.c=mp[(i.c||0)%7])}s.td=s.td&&typeof s.td==='object'&&!Array.isArray(s.td)?s.td:{};s.arc=s.arc&&typeof s.arc==='object'&&!Array.isArray(s.arc)?s.arc:{best:{},plays:0};s.pv=2;return s}
 function loadLocal(){let s=null;try{s=JSON.parse(localStorage.getItem(soloKey())||'null')}catch(_){}state=normalize(s||defaultState());if(!s)state.rev=0;syncScene();updHUD()}
 function connectShared(){
   if(!db)return;if(unsub){try{unsub()}catch(_){}unsub=null}
