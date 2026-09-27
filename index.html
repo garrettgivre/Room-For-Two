@@ -3732,6 +3732,17 @@ function bubbleMesh(par,n,mat,seg){const S=SPH(1,seg||10,Math.max(6,(seg||10)*.7
   for(let b=0;b<n;b++){N.set(S.nrm,b*nv*3);Uv.set(S.uv,b*nv*2);for(let k=0;k<S.idx.length;k++)I.push(S.idx[k]+b*nv)}
   const geo=new THREE.BufferGeometry(P,N,Uv,I);geo.dyn=1;geo.bs={c:[0,.5,0],r:2};const m=add(par,geo,mat,0,0,0);
   return{m,set(i,x,y,z,r){const p=geo.pos,o=i*nv*3,q=S.pos;for(let k=0;k<nv*3;k+=3){p[o+k]=x+q[k]*r;p[o+k+1]=y+q[k+1]*r;p[o+k+2]=z+q[k+2]*r}},flush(){geo.version++}}}
+// a stuffed cushion: a rounded-square outline B(th) (superellipse n, edges pinched in by o.pinch, o.hump raises the top middle)
+// puffed out front and back to half-depth D and pinched to a crisp seam all round
+function cushionGeo(W,Hh,D,o){o=o||{};const T=o.seg||72,K=o.rings||14,P=[],U=[],I=[],n=o.n||3.2;
+  const B=th=>{const c=Math.cos(th),s=Math.sin(th),k=1-(o.pinch||.07)*Math.cos(2*th)**2+(o.lump?o.lump(th):0);return[W*Math.sign(c)*Math.abs(c)**(2/n)*k,Hh*Math.sign(s)*Math.abs(s)**(2/n)*k+(o.hump||0)*Math.max(0,s)**6]};
+  const rows=[];for(let k=0;k<=K;k++)rows.push([k/K,1]);for(let k=K;k>=0;k--)rows.push([k/K,-1]);
+  rows.forEach(([r,sd],ri)=>{const z=sd*(D*Math.pow(Math.max(0,1-Math.pow(r,2.6)),.55)+.0015);for(let j=0;j<=T;j++){const b=B(j/T*Math.PI*2);P.push(b[0]*r,b[1]*r,z);U.push(j/T,ri/(rows.length-1))}});
+  for(let i=0;i<rows.length-1;i++)for(let j=0;j<T;j++){const a=i*(T+1)+j,b=a+T+1;I.push(a,b,a+1,b,b+1,a+1)}
+  const g=meshGeo(P,U,I,[(K>>1)*(T+1)+5,[0,0,0]]);g.B=B;return g}
+// the nearest front vertex of a geometry to (x,y): a pivot there facing along its normal (for custom shapes without a formula)
+function pivAt(par,geo,x,y,off){const p=geo.pos,n=geo.nrm;let bi=0,bd=1e9;for(let i=0;i<p.length;i+=3){if(p[i+2]<=0)continue;const d=(p[i]-x)**2+(p[i+1]-y)**2-p[i+2]*1e-3;if(d<bd){bd=d;bi=i}}
+  const o=off||0,yaw=piv(par,p[bi]+n[bi]*o,p[bi+1]+n[bi+1]*o,p[bi+2]+n[bi+2]*o);yaw.rotation.y=Math.atan2(n[bi],n[bi+2]);const pt=piv(yaw);pt.rotation.x=-Math.asin(Math.max(-1,Math.min(1,n[bi+1])));return pt}
 // a profile [[y,r],...] as a lookup y -> r (linear between the samples)
 function profAt(pr,y){if(y<=pr[0][0])return pr[0][1];for(let i=1;i<pr.length;i++)if(y<=pr[i][0]){const a=pr[i-1],b=pr[i],u=(y-a[0])/((b[0]-a[0])||1);return a[1]+(b[1]-a[1])*u}return pr[pr.length-1][1]}
 // a point on a lofted surface (f(y) -> [rx,rz,cx,cz]) at (x,y) on the front, facing out; like onSurface for any loft
@@ -3755,40 +3766,54 @@ function kEyesUpd(S,E,dt,st){st=st||{};S.blink=(S.blink===undefined?2:S.blink)-d
 function kArm3(par,x,y,z,mat,l1,l2,r,hand){const sh=piv(par,x,y,z);ol(sp(sh,r*1.15,mat,0,0,0),.008);ol(cy(sh,r,r*1.1,l1,mat,0,-l1/2,0,12),.008);const el=piv(sh,0,-l1,0);ol(sp(el,r*1.05,mat,0,0,0),.006);
   ol(cy(el,r*.9,r,l2,mat,0,-l2/2,0,12),.008);const h=sp(el,hand,mat,0,-l2-hand*.6,0,1,1.05,.85);ol(h,.01);ol(sp(el,hand*.42,mat,hand*.75,-l2-hand*.35,.01),.006);const tip=piv(el,0,-l2-hand*.9,0);return{sh,el,tip}}
 const KEEPERS={
-  // Cushy: a plump quilted pillow with tufted buttons, swinging corner tassels and a measuring tape that zips in and out.
-  // Gives themself a fluff now and then, squishing like a real cushion.
-  cushion(){const g=G(),b=G();g.add(b);const C=jel(0xFFA6CF,{roughness:.55}),T=jel(0xFFD21F,{roughness:.45}),Bt=jel(0x9B4DF2,{roughness:.32}),Pp=jel(0xFF8FC0,{roughness:.5});
-    const body=piv(b,0,.72,0);ol(rb(body,.95,.9,.55,.27,C,0,0,0),.018);
-    // the seam piping around the edge
-    ol(add(body,rbox(.975,.925,.07,.03),Pp,0,0,0),.01);
-    // tufted buttons in the four quilted corners
-    [[-1,1],[1,1],[-1,-1],[1,-1]].forEach(([x,y])=>{const bp=onSurface(body,.9,1,.32,x*.3,y*.3);const bt=add(bp,SPH(.045,16,10),Bt,0,0,.005);bt.scale.set(1,1,.45);ol(bt,.008);
-      [[-1,0],[1,0]].forEach(([h])=>ol(nosh(add(bp,SPH(.009,6,4),M(0xffffff),h*.014,0,.025)),0))});
-    gloss(body,.9,1,.32,-.28,.33,.1,.045,.5,.4);
-    const F=kFace2(body,{r:.9,sy:1,sz:.32,ex:.15,ey:.07,er:.08,my:-.12,mw:.065,browC:0xD0508A,cheekC:0xFF6FA8});
-    // corner tassels that swing a beat behind the body
-    const tas=[[-1,1],[1,1],[-1,-1],[1,-1]].map(([x,y])=>{const k=piv(body,x*.47,y*.44,0);ol(sp(k,.04,T,0,0,0),.008);const sw=piv(k,0,-.02,0);sw.userData.r=x*(y>0?.35:.6);
-      ol(sp(sw,.022,Bt,0,-.03,0),.006);const c=add(sw,new THREE.CylinderGeometry(.018,.06,.15,12),T,0,-.12,0);ol(c,.008);return{sw,x}});
-    // arms and little feet
-    const armL=kArm2(body,.47,-.02,.02,C,.26,.065),armR=kArm2(body,-.47,-.02,.02,C,.26,.065);
-    const tape=piv(armR.userData.tip,0,.02,.07);tape.rotation.x=1.3;ol(rb(tape,.16,.16,.08,.04,T,0,0,0),.01);ol(sp(tape,.025,Bt,0,0,.045),.006);
-    const strip=piv(tape,-.08,0,0);strip.rotation.y=Math.PI;const sm=add(strip,new THREE.BoxGeometry(1,.05,.008),M(0xFFF3B0,{roughness:.6}),.5,0,0);ol(sm,.006);
-    for(let i=0;i<8;i++)ol(nosh(add(strip,new THREE.BoxGeometry(.006,.022,.01),M(INKC),.06+i*.12,.012,0)),0);const tipT=ol(add(strip,new THREE.BoxGeometry(.02,.07,.02),Bt,1,0,0),.006);
-    [-.22,.22].forEach(x=>{const f=add(b,SPH(.13,20,14),C,x,.14,.06);f.scale.set(1,.55,1.25);ol(f,.012)});
-    let fluffT=5,fp=9;
-    return{g,head:body,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';
+  // Cushy (after the character sheet): a plump pink plush cushion with a pinched seam, yellow tassels with beads on the corners,
+  // a stitched-on blue patch, sleepy lavender-lidded eyes and stubby feet. No arms: the top corners lift like hands to wave,
+  // and every so often they give themself a big fluff, squishing like a real cushion.
+  cushion(){const g=G(),b=G();g.add(b);const C=M(0xFF7DB9,{roughness:.78}),Pp=M(0xF0609F,{roughness:.75}),T=M(0xFFD23F,{roughness:.7}),Lv=M(0xC9A0F0,{roughness:.6}),
+      Bl=M(0x86BDF2,{roughness:.8}),Ft=M(0xB9A8B0,{roughness:.8}),Bd=[M(0xFF5FA8,{roughness:.3}),M(0x6FB6FF,{roughness:.3}),M(0xFF9A3C,{roughness:.3}),M(0xA6E22E,{roughness:.3})];
+    C.detail=1;Pp.detail=1;T.detail=1;Bl.detail=1;Ft.detail=3;
+    const W=.52,Hh=.42,D=.27,body=piv(b,0,.74,0);
+    // the cushion has its own geometry: the top corners lift (wave, cheer), so its vertices are moved each frame
+    const cg=cushionGeo(W,Hh,D,{hump:.05,pinch:.08,lump:th=>.025*Math.sin(3*th+1)});cg.dyn=1;cg.bs={c:[0,0,0],r:.9};const P0=Float32Array.from(cg.pos);
+    ol(add(body,cg,C,0,0,0),.018);
+    // piping round the seam
+    {const pts=[];for(let i=0;i<=64;i++){const q=cg.B(i/64*Math.PI*2);pts.push([q[0],q[1],0])}ol(add(body,gcache('cu_pipe',()=>sweepGeo(pts,()=>[.022,.022],{len:128,seg:8})),Pp,0,0,0),.008)}
+    // corners (the top two can lift) with a tassel and a bead each
+    const CN=[Math.PI*.75,Math.PI*.25,Math.PI*1.25,Math.PI*1.75].map(th=>cg.B(th)),lift=[0,0];
+    const tas=CN.map(([x,y],i)=>{const k=piv(body,x*1.02,y*1.02,0);ol(sp(k,.065,T,0,0,0,1,1,.9),.008);ol(sp(k,.04,Bd[i],0,.06,.02),.006);const sw=piv(k,0,-.02,0);
+      for(let j=0;j<7;j++){const a=(j/7)*Math.PI*2,c=add(sw,gcache('cu_str',()=>new THREE.CylinderGeometry(.016,.028,.26,6)),T,Math.cos(a)*.03,-.14,Math.sin(a)*.03);c.rotation.set(Math.sin(a)*.25,0,-Math.cos(a)*.25);ol(c,.004)}
+      ol(cy(sw,.045,.045,.035,Bd[(i+2)%4],0,-.02,0,12),.005);sw.userData.x=x;return{k,sw,x,y,i}});
+    // the patch with cross-stitches, a stitched seam running up to the corner, a little star button
+    {const pt=pivAt(body,cg,-.28,-.2,.004);pt.rotation.z=.18;ol(rb(pt,.2,.18,.014,.02,Bl,0,0,0),.008);const sc=[0xFF5FA8,0xFFD23F,0xA6E22E,0xFF9A3C];
+      for(let i=0;i<10;i++){const e=i%5,sd=i<5?1:-1,x=sd*.1,y=-.08+e*.04,h=i%2?.018:.0;[.7,-.7].forEach(r=>{const st=add(pt,gcache('cu_x',()=>new THREE.BoxGeometry(.034,.008,.006)),M(sc[i%4],{roughness:.6}),x,y+h*0,.009);st.rotation.z=r;ol(st,0)})}
+      for(let i=0;i<5;i++){const e=i;[.7,-.7].forEach(r=>{const st=add(pt,gcache('cu_x'),M(sc[(i+1)%4],{roughness:.6}),-.08+e*.04,.09,.009);st.rotation.z=r;ol(st,0)})}}
+    for(let i=0;i<7;i++){const x=-.36+i*.03,y=-.06+i*.05,sp_=pivAt(body,cg,x,y,.002);const st=add(sp_,gcache('cu_dash',()=>new THREE.BoxGeometry(.04,.009,.008)),M(0x9B4DF2,{roughness:.6}),0,0,0);st.rotation.z=1.0;ol(st,0);
+      const cr=add(sp_,gcache('cu_dash2',()=>new THREE.BoxGeometry(.03,.007,.008)),M(0xFFD23F,{roughness:.6}),0,0,.002);cr.rotation.z=-.5;ol(cr,0)}
+    {const sb=pivAt(body,cg,.34,.28,.004);ol(add(sb,gcache('cu_star',()=>new THREE.ExtrudeGeometry(starShape(.045,.02,5),{depth:.012})),M(0xFF9A3C,{roughness:.4}),0,0,0),.006)}
+    // sleepy face: lavender lids resting half down, a little lash flick, blush, a small open smile
+    const E=[-1,1].map(s_=>{const pv=pivAt(body,cg,s_*.16,.07,0),e=kEye(pv,.085,eyeTex('cuE',{iris:['#4F66C8','#1C2466'],ir:26,pr:12}),Lv,{open:-.05,sink:.25});
+      ol(cy(e.eg,.006,.004,.05,M(0x2A0E3E),s_*.098,.01,0,6),0).rotation.z=-s_*1.1;return e});
+    [-1,1].forEach(s_=>{const bp=pivAt(body,cg,s_*.29,-.03,.003);const c=add(bp,SPH(1,14,10),M(0xFF6FA8,{roughness:.7}),0,0,0);c.scale.set(.06,.035,.006);ol(c,0)});
+    const mp=pivAt(body,cg,0,-.07,.002),mg=piv(mp,0,0,0);
+    {const bend=geo=>{const Pq=geo.pos;for(let i=0;i<Pq.length;i+=3)Pq[i+2]-=Pq[i]*Pq[i]/(2*.6);geo.version++;return geo};
+      ol(add(mg,gcache('cu_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.04,0);m.quadraticCurveTo(0,.01,.04,0);m.bezierCurveTo(.04,-.055,-.04,-.055,-.04,0);return bend(new THREE.ExtrudeGeometry(m,{depth:.01}))}),M(0x7A1036,{roughness:.6}),0,0,0),.006);
+      const tg=add(mg,SPH(1,14,10),M(0xFF6F9F,{roughness:.6}),0,-.034,.005);tg.scale.set(.025,.012,.006);ol(tg,0)}
+    // stubby feet
+    [[-.2,.1],[.2,.1],[-.2,-.12],[.2,-.12]].forEach(([x,z])=>ol(sp(b,.15,Ft,x,.13,z,1,.62,1.1),.01));
+    let fluffT=5,fp=9;const ES={};
+    return{g,head:body,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';dt=Math.min(dt,.05);
       fluffT-=dt;if(fluffT<0&&!talk&&act==='idle'){fluffT=6+Math.random()*4;fp=0}fp+=dt;
-      // squish: a soft breath, plus a big squash-and-recover when fluffed
+      // squish: a soft breath, a bob when talking, a big squash-and-recover when fluffed, a hop to cheer
       const fl=fp<1.4?Math.sin(fp/1.4*Math.PI*3)*Math.exp(-fp*2)*.12:0,br=Math.sin(t*2.1)*.022+fl+(talk?Math.abs(Math.sin(t*9))*.02:0);body.scale.set(1+br*.6,1-br,1+br*.4);
-      b.position.y=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.35:0;b.rotation.y=cheer?ease(p)*Math.PI*2:0;body.rotation.z=Math.sin(t*1.2)*.04+(talk?Math.sin(t*4.4)*.03:0);
-      tas.forEach((q,i)=>q.sw.rotation.z=q.sw.userData.r+Math.sin(t*2.4-.8+i)*.15-Math.sin(t*1.2-.6)*.12);
-      // the tape zips out and snaps back
-      const ph=(t*.45)%1,ext=ph<.55?ease(ph/.55):ph<.62?1-(ph-.55)/.07:0;strip.scale.x=.08+ext*.42;tipT.scale.x=1/strip.scale.x;
-      armR.rotation.set(-.9+Math.sin(t*1.6)*.1,0,-.5-ext*.25);
-      if(greet)armL.rotation.set(0,0,2.5+Math.sin(t*13)*.35);else if(cheer){armL.rotation.set(0,0,2.5);armR.rotation.set(0,0,-2.5)}
-      else if(fp<1.4)armL.rotation.set(-.3,0,2.3-Math.abs(Math.sin(fp*9))*.35);else if(talk)armL.rotation.set(-.6+Math.sin(t*3.2)*.3,0,.5+Math.abs(Math.sin(t*2.2))*.4);
-      else armL.rotation.set(-.1+Math.sin(t*.9)*.05,0,.35);
-      F.update(dt,t,{talk,happy:cheer||greet||fp<1.4})}}},
+      b.position.y=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.3:0;body.rotation.z=Math.sin(t*.9)*.03+(talk?Math.sin(t*3)*.02:0);
+      // the top corners lift like hands: a wave hello (left corner), both up to cheer, a little flap while talking
+      const tl=greet?.12+Math.sin(t*12)*.06:cheer?.16:talk?Math.max(0,Math.sin(t*2.2))*.05:fp<1?.06*Math.sin(fp*Math.PI):0,tr=cheer?.16:talk?Math.max(0,Math.sin(t*2.2+2))*.05:fp<1?.06*Math.sin(fp*Math.PI):0;
+      lift[0]=approach(lift[0],tl,dt*6);lift[1]=approach(lift[1],tr,dt*6);
+      {const pp=cg.pos;for(let i=0;i<pp.length;i+=3){const x=P0[i],y=P0[i+1];let dx=0,dy=0;for(let c=0;c<2;c++){if(!lift[c])continue;const q=CN[c],d=Math.hypot(x-q[0],y-q[1]),w=Math.max(0,1-d/.42);if(w>0){const w2=w*w;dy+=w2*lift[c];dx+=w2*lift[c]*.5*Math.sign(q[0])}}pp[i]=x+dx;pp[i+1]=y+dy}cg.version++}
+      // tassels: the top two ride the corners; all of them swing a beat behind
+      tas.forEach(q=>{const l=q.i<2?lift[q.i]:0;q.k.position.set(q.x*1.02+l*.5*Math.sign(q.x),q.y*1.02+l,0);q.sw.rotation.z=Math.sin(t*2.1-.8+q.i)*.12-body.rotation.z*1.5+(q.i<2?-Math.sign(q.x)*l*2:0);q.sw.rotation.x=Math.sin(t*1.7+q.i)*.08});
+      kEyesUpd(ES,E,dt,{talk,happy:cheer||greet});
+      const syl=talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1))):0;ES.mo=approach(ES.mo||0,Math.max(syl,cheer||greet?.6:0),dt*18);mg.scale.set(1+ES.mo*.15,.8+ES.mo*.8,1)}}},
   // Bolt: a round builder in denim overalls and a hard hat, pencil tucked at the side, rolling pink paint on an invisible wall.
   // Straightens the hat now and then; tips it to say hello.
   builder(){const g=G(),b=G();g.add(b);const O=jel(0xFF9A3C,{roughness:.36}),Y=jel(0xFFD21F,{roughness:.3}),Bl=jel(0x3E7FD8,{roughness:.5}),Pk=jel(0xFF3D9A,{roughness:.4}),Wd=M(0x9A6A3E,{roughness:.6});
