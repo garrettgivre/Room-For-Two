@@ -5311,7 +5311,8 @@ const pick1=a=>a[Math.random()*a.length|0];
 
 /* --- the door --- */
 const DOOR={s:'classic',w:3,u:-2.6};
-const curDoor=()=>away?DOOR:state.door;
+// shops use their own door style (SHOPS[k].door) at the usual spot
+const curDoor=()=>away?(away.door||(away.door=Object.assign({},DOOR,{s:away.def&&away.def.door||'classic'}))):state.door;
 const doorG=G();let doorHinge=G(),doorOpen=0,doorTarget=0,doorKey='';doorG.userData.door=1;
 // little sign over the door, drawn once the bubble font is ready
 const doorSign=(function(){const c=mkCanvas(256,72),tex=new THREE.CanvasTexture(c);tex.encoding=THREE.sRGBEncoding;const g=G(),sg=add(g,new THREE.PlaneGeometry(.9,.25),M(0xffffff,{map:tex,roughness:.7}),0,2.62,.02);sg.castShadow=false;
@@ -5743,34 +5744,34 @@ const KEEPERS={
 function tilesWith(fill,area,box){const a=Array(GRID*GRID).fill(fill);if(area)for(let j=box[1];j<=box[3];j++)for(let i=box[0];i<=box[2];i++)a[j*GRID+i]=area;return a}
 function wallsWith(all,back){const a=Array(GRID*4).fill(all);if(back)for(let c=0;c<GRID;c++)a[c]=back;return a}
 const SHOPS={
-  snack:{n:'Snack Shack',kind:'food',icon:'act-feed',color:'#FF8A1C',keeper:'baker',kx:1.3,kz:-3.45,
+  snack:{n:'Snack Shack',kind:'food',door:'candy',icon:'act-feed',color:'#FF8A1C',keeper:'baker',kx:1.3,kz:-3.45,
     tf:()=>tilesWith('tile','candyborder',[2,3,5,6]),tw:()=>wallsWith('gingham','wainscot'),
     layout:[{k:'counter',x:1.3,z:-2.7,c:0xFF9EC7},{k:'shelfunit',x:-2.1,z:-3.66,c:0xFFB3D1},{k:'shelfunit',x:-3.66,z:-.9,r:Math.PI/2,c:0xFFD27F},{k:'cooler',x:3.3,z:-3.6},
-      {k:'display',x:1.3,z:.6,c:0xB5E3FF},{k:'sign',w:0,u:1.3,y:2.72,c:0xFF8A1C},{k:'lolli',x:-3.3,z:1.3},{k:'cottontree',x:3.4,z:.2},{k:'teatable',x:2.3,z:2.4},{k:'cupcake',x:3.3,z:2.4,r:-Math.PI/2}],
+      {k:'display',x:1.3,z:.6,c:0xB5E3FF},{k:'sign',w:0,u:1.3,y:2.72,c:0xFF8A1C},{k:'lolli',x:-3.3,z:1.3},{k:'cottontree',x:3.4,z:.2},{k:'teatable',x:2.3,z:2.4},{k:'cupcake',x:3.3,z:2.4,r:-Math.PI/2},{k:'win_cafe',w:0,u:-0.35,y:1.9},{k:'win_cafe',w:3,u:2.3,y:1.9}],
     lines:{hi:['Welcome to the Snack Shack!','Fresh out of the oven!','Hungry? You came to the right place.'],buy:['Enjoy every bite!','Yum, great pick!','Come back hungry!'],
       poor:['Save up a few more hearts, sweetie!'],tip:P=>P&&`Psst, ${state.pet.name} loves ${FOOD_CATS[P.fav].toLowerCase()}!`}},
-  salon:{n:'Bubble Salon',kind:'groom',icon:'act-bath',color:'#3EC8F2',keeper:'stylist',kx:2.2,kz:-3.5,
+  salon:{n:'Bubble Salon',kind:'groom',door:'bath',icon:'act-bath',color:'#3EC8F2',keeper:'stylist',kx:2.2,kz:-3.5,
     tf:()=>tilesWith('pinkterrazzo','berryborder',[2,2,5,5]),tw:()=>wallsWith('berrypanel','terrazzorun'),
     layout:[{k:'counter',x:2.2,z:-2.75,c:0x7FDDF5},{k:'shelfunit',x:-1.5,z:-3.66,c:0xC8F2FF},{k:'archmirror',w:3,u:.4,y:1.8},{k:'egg',x:-3.1,z:-.4,r:Math.PI/2,c:8},
-      {k:'display',x:.9,z:.9,c:0xFFC6E8},{k:'sign',w:0,u:2.2,y:2.72,c:0x3EC8F2},{k:'bigleaf',x:3.3,z:-.6},{k:'softserve',x:3.3,z:2.2},{k:'pouf',x:2.1,z:2.4,c:3}],
+      {k:'display',x:.9,z:.9,c:0xFFC6E8},{k:'sign',w:0,u:2.2,y:2.72,c:0x3EC8F2},{k:'bigleaf',x:3.3,z:-.6},{k:'softserve',x:3.3,z:2.2},{k:'pouf',x:2.1,z:2.4,c:3},{k:'win_candybath',w:0,u:.5,y:1.9},{k:'win_candybath',w:3,u:2.6,y:1.9}],
     lines:{hi:['Welcome to Bubble Salon, darling!','Ready for a little pampering?','Oh, that glow could use a refresh!'],buy:['Fabulous choice!','So fresh, so clean!','You two are going to sparkle.'],
       poor:['Not quite enough hearts, darling. Soon!'],tip:()=>`${state.pet.name} is looking ${tier('clean',petStats().clean).toLowerCase()} today.`}},
-  toys:{n:'Toy Box',kind:'toy',icon:'act-play',color:'#9B4DF2',keeper:'toymaker',kx:-1.6,kz:-3.5,
+  toys:{n:'Toy Box',kind:'toy',door:'play',icon:'act-play',color:'#9B4DF2',keeper:'toymaker',kx:-1.6,kz:-3.5,
     tf:()=>tilesWith('foammat','jellytile',[2,2,5,5]),tw:()=>wallsWith('polka','ribbons'),
     layout:[{k:'counter',x:-1.6,z:-2.75,c:0xFFD21F},{k:'shelfunit',x:1.8,z:-3.66,c:0x9FE3F5},{k:'shelfunit',x:-3.66,z:-.2,r:Math.PI/2,c:0xC9A8FF},
-      {k:'display',x:1.3,z:.7,c:0xFFB3D9},{k:'sign',w:0,u:-1.6,y:2.72,c:0x9B4DF2},{k:'playpen',x:2.8,z:2.5},{k:'horse',x:3.2,z:-1.3,r:-Math.PI/2},{k:'blocks',x:.2,z:2.6},{k:'bulb',x:-3.2,z:1.5},{k:'gacha',x:3.25,z:.6,r:-Math.PI/2}],
+      {k:'display',x:1.3,z:.7,c:0xFFB3D9},{k:'sign',w:0,u:-1.6,y:2.72,c:0x9B4DF2},{k:'playpen',x:2.8,z:2.5},{k:'horse',x:3.2,z:-1.3,r:-Math.PI/2},{k:'blocks',x:.2,z:2.6},{k:'bulb',x:-3.2,z:1.5},{k:'gacha',x:3.25,z:.6,r:-Math.PI/2},{k:'win_play',w:0,u:0,y:1.9},{k:'win_play',w:3,u:2.6,y:1.9}],
     lines:{hi:['Boing! Welcome to the Toy Box!','Everything here goes boing!','Toys, toys, toys!'],buy:['Have fun with it!','Play hard!','Boing boing!'],
       poor:['Almost! A few more hearts!'],tip:P=>P&&`${state.pet.name} goes wild for ${P.toy} toys!`}}};
 // Cozy Nest: a showroom that changes every day (three pieces on sale), and the full catalog on the lectern
-SHOPS.furn={n:'Cozy Nest',kind:'furn',icon:'tab-decorate',color:'#FF3D9A',keeper:'cushion',kx:1.7,kz:-3.5,
+SHOPS.furn={n:'Cozy Nest',kind:'furn',door:'fort',icon:'tab-decorate',color:'#FF3D9A',keeper:'cushion',kx:1.7,kz:-3.5,
   tf:()=>tilesWith('herring','parquet',[1,1,6,6]),tw:()=>wallsWith('plaster','stripe'),
   layout:()=>{const pk=dealKeys(),spots=[[-2.3,-1.4,.5],[-2.4,1.1,.9],[.2,-.5,.6],[2.4,-.3,-.6],[.2,1.8,.3],[2.5,2.3,-.8]],st=nestStock(),wallK=st.walls.length?st.walls:CAT.filter(c=>c.wall&&c.fn!=='window'&&!c.gacha).map(c=>c.k),R=rnd(st.t),wp=[wallK[R()*wallK.length|0],wallK[R()*wallK.length|0]];
     return[{k:'counter',x:1.7,z:-2.75,c:0xFFC6E0},{k:'catalog',x:-.3,z:-2.9,c:0xFF3D9A},{k:'sign',w:0,u:1.7,y:2.72,c:0xFF3D9A},{k:'bigleaf',x:3.45,z:-2.5},{k:'arc',x:-3.3,z:-3.2},
-      ...spots.map(([x,z,r],i)=>({k:pk[i],x,z,r,sale:'furn'})),{k:wp[0],w:0,u:-2.3,y:1.9,sale:'furn'},{k:wp[1],w:3,u:.6,y:1.9,sale:'furn'}]},
+      ...spots.map(([x,z,r],i)=>({k:pk[i],x,z,r,sale:'furn'})),{k:wp[0],w:0,u:-2.3,y:1.9,sale:'furn'},{k:wp[1],w:3,u:.6,y:1.9,sale:'furn'},{k:'win_fort',w:0,u:-1.15,y:1.9},{k:'win_fort',w:3,u:2.4,y:1.9}]},
   lines:{hi:['Welcome to Cozy Nest! Make yourself at home.','Everything here is sittable. Mostly.','Fresh pieces on the floor today!'],buy:['It’ll look lovely at home!','Wrapped and ready. Well, sort of.','Great eye!'],
     poor:['A few more hearts and it’s yours!'],tip:()=>{const w=wishesIn();return w.length?`Something on your wishlist came in today: ${CATMAP[w[0]].n}${w.length>1?` and ${w.length-1} more`:''}! It’s in the catalog.`:`Today’s sets: ${nestStock().sets.map(k=>SETMAP[k].n).join(', ')}. The stock changes every day!`}}};
 // Hammer & Hue: floors, walls, doors, windows and bigger rooms
-SHOPS.build={n:'Hammer & Hue',kind:'build',icon:'tab-room',color:'#FF8A1C',keeper:'builder',kx:-1.9,kz:-3.5,
+SHOPS.build={n:'Hammer & Hue',kind:'build',door:'calm',icon:'tab-room',color:'#FF8A1C',keeper:'builder',kx:-1.9,kz:-3.5,
   tf:()=>tilesWith('concrete','jellytile',[3,3,4,4]),tw:()=>wallsWith('grid','plain'),
   layout:()=>{const R=rnd(Math.floor(Date.now()/864e5)+3),pickOf=a=>a[R()*a.length|0],W=TILE_ORDER.w,F=TILE_ORDER.f;
     return[{k:'counter',x:-1.9,z:-2.75,c:0xFF8A1C},{k:'catalog',x:.55,z:-2.95,c:0xFF8A1C},{k:'sign',w:0,u:-1.9,y:2.72,c:0xFF8A1C},
@@ -5778,7 +5779,7 @@ SHOPS.build={n:'Hammer & Hue',kind:'build',icon:'tab-room',color:'#FF8A1C',keepe
       {k:'sample',x:1.5,z:-.9,r:.6,style:'w:'+pickOf(W)},{k:'sample',x:2.9,z:.4,r:.8,style:'w:'+pickOf(W)},{k:'sample',x:.1,z:.3,r:.5,style:'w:'+pickOf(W)},
       {k:'floorsample',x:-1.7,z:1.0,style:'f:'+pickOf(F)},{k:'floorsample',x:-.3,z:2.3,style:'f:'+pickOf(F)},
       {k:'doorstand',x:2.3,z:2.5,r:.75,style:pickOf(DOOR_KEYS.slice(1))},{k:pickOf(WIN_KEYS),w:0,u:-.2,y:1.9,sale:'furn'},{k:pickOf(WIN_KEYS),w:0,u:.65,y:1.9,sale:'furn'},
-      {k:'crate',x:3.4,z:-1.6},{k:'bulb',x:-3.3,z:1.8},{k:'barrel',x:1.0,z:2.9}]},
+      {k:'crate',x:3.4,z:-1.6},{k:'bulb',x:-3.3,z:1.8},{k:'barrel',x:1.0,z:2.9},{k:'win_work',w:3,u:2.3,y:1.9}]},
   lines:{hi:['Hammer & Hue! What are we building today?','Need a bigger room? I know a guy. It’s me.','Every wall deserves a little love.'],buy:['Nailed it!','That’s going to look sharp.','Measure twice, buy once!'],
     poor:['Not quite enough hearts yet, pal.'],tip:()=>state.size<12?`Your room’s ${state.size} × ${state.size}. Check the catalog under Room size!`:'Tap a paint can to see the whole pattern.'}};
 // Jelly Arcade: four cabinets (tap one to play), a high-score board and Joy behind the prize counter
@@ -6067,7 +6068,7 @@ Object.assign(FIX,{
   fitmirror:{n:'Mirror',fn:'fixture',build:it=>fxFitMirror(it.c),use:{kind:'stand',front:1,anim:'u_gaze',d:4,dist:.2,emo:['💗','⭐'],w:.6}}});
 
 // Glow Up Studio: Pom (antennae) and Blush (colours, patterns), each with a vanity and a lit mirror
-SHOPS.glam={n:'Glow Up Studio',kind:'glam',icon:'glam.svg',color:'#FF5FB0',keeper:'hair',kx:-1.6,kz:-3.45,
+SHOPS.glam={n:'Glow Up Studio',kind:'glam',door:'motel',icon:'glam.svg',color:'#FF5FB0',keeper:'hair',kx:-1.6,kz:-3.45,
   keepers:[{k:'hair',n:'Pom',x:-1.6,z:-3.45,svc:'hair',lines:{hi:['Hop in my chair! Let’s do something fun with those antennae.','Pom’s the name, antennae are my game!','Ooh, I have ideas for you.'],buy:['Gorgeous! Go show everyone.','Snip snip, done! You look amazing.','Now that’s a look!'],
       poor:['Almost! A few more hearts and we’ll make it happen.'],tip:()=>`Tap a style stand to try that one on.`}},
     {k:'makeup',n:'Blush',x:1.7,z:-3.45,svc:'makeup',lines:{hi:['Darling! Sit, sit. Let’s play with colour.','Blush here. Your glow is already lovely.','Spots? Stripes? Stars? Anything goes.'],buy:['Stunning, darling!','A masterpiece, if I say so myself.','You’re glowing!'],
@@ -6076,15 +6077,15 @@ SHOPS.glam={n:'Glow Up Studio',kind:'glam',icon:'glam.svg',color:'#FF5FB0',keepe
   layout:()=>{const R=rnd(Math.floor(Date.now()/864e5)+11),st=Object.keys(ANT_STYLES).filter(k=>k!=='bobble');const pick=()=>st.splice(R()*st.length|0,1)[0];
     return[{k:'vanity',x:-1.6,z:-2.75,c:0xC49BFF,set:'hair'},{k:'vanity',x:1.7,z:-2.75,c:0xFF9EB0,set:'makeup'},{k:'bulbmirror',w:0,u:-1.6,y:2.05,c:0xC49BFF},{k:'bulbmirror',w:0,u:1.7,y:2.05,c:0xFF8FC8},
       {k:'sign',w:0,u:.05,y:2.95,c:0xFF5FB0},{k:'headstand',x:-3.3,z:-1.4,style:pick(),c:0x7FE0C0},{k:'headstand',x:-3.3,z:-.3,style:pick(),c:0xFFB3DA},{k:'headstand',x:-3.3,z:.8,style:pick(),c:0xFFD21F},
-      {k:'patboard',w:1,u:0,y:1.75},{k:'dryer',x:3.2,z:-1.2,r:-Math.PI/2},{k:'dryer',x:3.2,z:1.4,r:-Math.PI/2},{k:'pouf',x:.1,z:1.2,c:3},{k:'bigleaf',x:3.4,z:3.2},{k:'bigleaf',x:.05,z:-3.4}]},
+      {k:'patboard',w:1,u:0,y:1.75},{k:'dryer',x:3.2,z:-1.2,r:-Math.PI/2},{k:'dryer',x:3.2,z:1.4,r:-Math.PI/2},{k:'pouf',x:.1,z:1.2,c:3},{k:'bigleaf',x:3.4,z:3.2},{k:'bigleaf',x:.05,z:-3.4},{k:'win_motel',w:3,u:2.4,y:1.9}]},
   lines:{hi:['Welcome to Glow Up Studio!'],buy:['Gorgeous!'],poor:['Almost!'],tip:()=>''}};
 // Jelly Threads: hands and shoes on the shelves, accessories on the tables; Stitch runs the fitting room
-SHOPS.wear={n:'Jelly Threads',kind:'wear',icon:'wear.svg',color:'#A6E22E',keeper:'tailor',kx:1.6,kz:-3.45,svc:'wardrobe',
+SHOPS.wear={n:'Jelly Threads',kind:'wear',door:'diner',icon:'wear.svg',color:'#A6E22E',keeper:'tailor',kx:1.6,kz:-3.45,svc:'wardrobe',
   tf:()=>tilesWith('diner','dinerrug',[2,2,5,5]),tw:()=>wallsWith('diner','dinerpanel'),
   layout:[{k:'counter',x:1.6,z:-2.75,c:0xA6E22E},{k:'catalog',x:-.6,z:-2.9,c:0xA6E22E},{k:'sign',w:0,u:1.6,y:2.72,c:0x7FB81E},
     {k:'shelfunit',x:-3.66,z:-.4,r:Math.PI/2,c:0xFFD27F},{k:'display',x:.2,z:.4,c:0xFFB3DA},{k:'display',x:-1.5,z:2.0,c:0xB5E3FF},
     {k:'rack',x:3.3,z:-1.0,r:-Math.PI/2,c:0xFF3D9A},{k:'rack',x:3.3,z:1.3,r:-Math.PI/2,c:0x9B4DF2},{k:'fitmirror',x:-2.8,z:-3.25,r:.45,c:0xFF8FC8},
-    {k:'bigleaf',x:3.45,z:-3.3},{k:'pouf',x:1.8,z:2.6,c:8}],
+    {k:'bigleaf',x:3.45,z:-3.3},{k:'pouf',x:1.8,z:2.6,c:8},{k:'win_diner',w:0,u:0.45,y:1.9},{k:'win_diner',w:3,u:2.3,y:1.9}],
   lines:{hi:['Welcome to Jelly Threads! Try anything on.','Stitch at your service. Fresh from the needles!','Everything here was knitted with love. Mostly by me.'],buy:['It fits like a dream!','Oh, that suits you.','Wear it in good health!'],
     poor:['A few more hearts and it’s yours, promise.'],tip:()=>`Anything you buy lives in your Wardrobe. Swap it any time from the Pet tab.`}};
 
@@ -6150,11 +6151,11 @@ function renderWardrobe(body){const L=petLook(true),inShop=away&&away.key==='wea
   body.querySelectorAll('[data-fc]').forEach(e=>e.onclick=()=>{const [k,c]=e.dataset.fc.split(':'),L2=petLook(true);L2.foot[k]=+c;setLook(L2);renderSheet()});
   const ws=$('#wShop');if(ws)ws.onclick=()=>travelTo('wear',()=>setTab('wardrobe'));queueThumbs(ids.map(id=>'wear:'+id))}
 
-SHOPS.arcade={n:'Jelly Arcade',kind:'arcade',icon:'arcade',color:'#9B4DF2',keeper:'joy',kx:2.3,kz:-3.5,
+SHOPS.arcade={n:'Jelly Arcade',kind:'arcade',door:'arcade',icon:'arcade',color:'#9B4DF2',keeper:'joy',kx:2.3,kz:-3.5,
   tf:()=>tilesWith('arcade','arcaderug',[1,2,6,6]),tw:()=>wallsWith('cyber','arcadepanel'),
   layout:[{k:'counter',x:2.3,z:-2.75,c:0xB98CFF},{k:'sign',w:0,u:2.3,y:2.72,c:0x9B4DF2},
     {k:'cabinet',x:-2.0,z:-3.45,game:'catch'},{k:'cabinet',x:-.85,z:-3.45,game:'pop'},{k:'cabinet',x:-3.45,z:-2.0,r:Math.PI/2,game:'stack'},{k:'cabinet',x:-3.45,z:-.85,r:Math.PI/2,game:'says'},{k:'dropboard',x:.3,z:-3.4,game:'drop'},{k:'gacha',x:3.2,z:.5,r:-Math.PI/2},
-    {k:'scores',w:0,u:-1.42,y:2.72},{k:'bigleaf',x:-3.35,z:-3.35},{k:'pouf',x:.2,z:.6,c:3},{k:'pouf',x:1.4,z:1.5,c:8},{k:'bulb',x:3.3,z:2.9},{k:'bigleaf',x:3.35,z:-1.2}],
+    {k:'scores',w:0,u:-1.42,y:2.72},{k:'bigleaf',x:-3.35,z:-3.35},{k:'pouf',x:.2,z:.6,c:3},{k:'pouf',x:1.4,z:1.5,c:8},{k:'bulb',x:3.3,z:2.9},{k:'bigleaf',x:3.35,z:-1.2},{k:'win_arcade',w:3,u:-.7,y:1.9}],
   lines:{hi:['Welcome to Jelly Arcade! Pick a cabinet!','High scores are made to be broken!','Free play, all day. Go on, have a go!'],buy:['Nice!'],poor:['Keep playing!'],
     tip:()=>{const T=state.td,e=T&&T.list&&T.list.find(x=>!T.done.includes(x.k)&&TD_T[x.k].c==='play');if(e)return`Your two-do list says: ${tdText(e)}. You've got this!`;
       const ks=Object.keys(GAMES),k=ks[Math.random()*ks.length|0],b=Object.entries(arcA().hi[k]||{}).sort((p,q)=>q[1]-p[1])[0];return b?`The ${gName(k)} record is ${b[1]}, held by ${who(b[0])==='You'?'you':who(b[0])}.`:`Nobody's played ${gName(k)} yet. Be the first!`}}};
