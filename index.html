@@ -7110,12 +7110,14 @@ const GAMES={
       const out=L0.slice();L0.forEach(q=>{if(!q.P.p||Math.hypot(q.b[0]-q.a[0],q.b[1]-q.a[1])<g.r*4.8)return;const P=this.prizeAt(g,q),ex=q.b[0]-q.a[0],ey=q.b[1]-q.a[1],l=Math.hypot(ex,ey)||1,dx=ex/l,dy=ey/l;let nx=dy,ny=-dx;if(ny>0){nx=-nx;ny=-ny}
         const pw=P.t==='gift'?1.45:2.2;[-1,1].forEach(sd=>{const bx=P.x+dx*sd*g.r*pw,by=P.y+dy*sd*g.r*pw;out.push({i:q.i,P:{},lip:1,a:[bx,by],b:[bx+nx*g.r*.45+dx*sd*g.r*.12,by+ny*g.r*.45+dy*sd*g.r*.12],vx:q.vx,th:g.r*.28})})});return out},
     bumps(g){return g.S.bump.map((B,i)=>{const o=B.mv&&g.lv>=3?Math.sin(g.t*B.mv.sp+i)*B.mv.dy:B.mv?Math.sin(g.t*B.mv.sp*.5+i)*B.mv.dy*.5:0;return{i,x:this.U(g,B.c[0]),y:this.V(g,B.c[1]+o),r:B.r*g.bw}})},
-    newDrop(g){g.spS=null;g.barm={};g.slid=0;g.st='aim';g.vx=0;g.vy=0;g.rot=0;g.av=0;g.fallT=0;g.restT=0;g.landT=0;g.onG=null;g.teeter=0;g.reveal=null;g.claw=g.claw||g.w/2;g.th=0;g.x=g.claw;g.y=g.by-g.bh*.05;
-      g.pop=null;g.items=[];g.S.plats.forEach(P=>{if(!P.p)return;const px=this.U(g,P.a[0]+(P.b[0]-P.a[0])*P.p.at),py=this.V(g,P.a[1]+(P.b[1]-P.a[1])*P.p.at)-g.r*1.2,R_=g.r*3.1;
-        for(let i=0;i<5;i++){const a=Math.PI*(1.12+.76*i/4);g.items.push({x:px+Math.cos(a)*R_,y:py+Math.sin(a)*R_,t:i*.4,got:0,gotT:0})}})},
+    newDrop(g){g.restA=0;g.spS=null;g.barm={};g.slid=0;g.st='aim';g.vx=0;g.vy=0;g.rot=0;g.av=0;g.fallT=0;g.restT=0;g.landT=0;g.onG=null;g.teeter=0;g.reveal=null;g.claw=g.claw||g.w/2;g.th=0;g.x=g.claw;g.y=g.by-g.bh*.05;
+      g.pop=null;g.items=[];g.S.plats.forEach(P=>{if(!P.p||P.mv)return;const px=this.U(g,P.a[0]+(P.b[0]-P.a[0])*P.p.at),py=this.V(g,P.a[1]+(P.b[1]-P.a[1])*P.p.at)-g.r*1.2,R_=g.r*3.1;
+        for(let i=0;i<5;i++){const a=Math.PI*(1.12+.76*i/4);g.items.push({x:px+Math.cos(a)*R_,y:py+Math.sin(a)*R_,t:i*.4,got:0,gotT:0})}});
+      const PL=this.plats(g),BU=this.bumps(g),cr=g.r*.4;g.items=g.items.filter(it=>it.x>g.bx+cr&&it.x<g.bx+g.bw-cr&&it.y>g.by&&!PL.some(q=>{const ex=q.b[0]-q.a[0],ey=q.b[1]-q.a[1],t=clamp(((it.x-q.a[0])*ex+(it.y-q.a[1])*ey)/(ex*ex+ey*ey||1),0,1);return Math.hypot(it.x-q.a[0]-ex*t,it.y-q.a[1]-ey*t)<q.th/2+cr+2})
+        &&!g.S.pegs.some(p=>Math.hypot(it.x-this.U(g,p[0]),it.y-this.V(g,p[1]))<g.r*.55+cr+2)&&!BU.some(b=>Math.hypot(it.x-b.x,it.y-b.y)<b.r*1.5+cr))},
     upd(g,dt){const w=g.w,h=g.h;g.cheerT=Math.max(0,g.cheerT-dt);g.sadT=Math.max(0,g.sadT-dt);g.partyT=Math.max(0,(g.partyT||0)-dt);g.flashT=Math.max(0,(g.flashT||0)-dt);if(g.pop)g.pop.t+=dt;g.items.forEach(it=>{it.t+=dt;if(it.got)it.gotT+=dt});if(g.reveal)g.reveal.t+=dt;
       if(g.st==='aim'){const nc=clamp(g.claw+(g.hold||0)*g.bw*.42*dt,g.bx+g.r*1.6,g.bx+g.bw-g.r*1.6);g.cvx=(nc-g.claw)/Math.max(dt,1e-3);g.claw=nc;const th=Math.sin(g.t*1.9)*.55;g.th=th;g.x=g.claw+Math.sin(th)*g.bh*.09;g.y=g.by-g.bh*.05+Math.cos(th)*g.bh*.09-g.bh*.09+Math.sin(g.t*2.7)*g.bh*.012;g.rot=th;return}
-      if(g.st==='land'){g.landT+=dt;if(g.landT>(g.pop?2.45:1.8)){if(--g.drops<=0){g.over=true;return}this.newDrop(g)}return}
+      if(g.st==='land'){g.landT+=dt;{const d=Math.atan2(Math.sin(g.rot-(g.restA||0)),Math.cos(g.rot-(g.restA||0)));g.rot=(g.restA||0)+d*(1-Math.min(1,dt*8))}if(g.landT>(g.pop?2.45:1.8)){if(--g.drops<=0){g.over=true;return}this.newDrop(g)}return}
       // falling / sliding: sub-steps with slow motion near a prize
       const T=dt*g.slow,sub=6,hd=T/sub,r=g.r,G=g.bh*1.5,PL=this.plats(g),BU=this.bumps(g);g.fallT+=T;g.onG=null;
       for(let s_=0;s_<sub;s_++){g.vy+=G*hd;g.x+=g.vx*hd;g.y+=g.vy*hd;
@@ -7134,6 +7136,8 @@ const GAMES={
         const nF=g.S.floor.length,fy=g.by+g.bh,cw=g.bw/nF;if(g.y>fy-g.bh*.08-r){for(let i=1;i<nF;i++){const ex=g.bx+i*cw;if(Math.abs(g.x-ex)<r*.8){g.x=ex+(g.x<ex?-r*.8:r*.8);g.vx*=-.4}}}
         if(g.y>fy-r){g.y=fy-r;if(g.vy>0)g.vy*=-.15;g.vx*=.96;g.onG={floor:1}}}
       g.rot+=g.av*T;g.av*=1-T*1.5;
+      {const q=g.onG,v_=Math.hypot(g.vx-(q&&q.vx||0),g.vy);if(q&&v_<g.bh*.35){let a=q.floor?0:Math.atan2(q.b[1]-q.a[1],q.b[0]-q.a[0]);if(a>Math.PI/2)a-=Math.PI;if(a<-Math.PI/2)a+=Math.PI;g.restA=a*.7;
+        const d=Math.atan2(Math.sin(g.rot-g.restA),Math.cos(g.rot-g.restA));g.rot=g.restA+d*(1-Math.min(1,T*(v_<g.bh*.12?7:3)));g.av*=1-Math.min(1,T*6)}}
       g.items.forEach(it=>{if(it.got)return;if(Math.hypot(g.x-it.x,g.y-it.y)<g.r*1.4){it.got=1;it.gotT=0;g.score+=1;gFx(g,it.x,it.y,'+1','#FFD21F',18);gBurst(g,it.x,it.y,7,['#FFD21F','#FFF3B0','#fff'],{shape:'star',sp:170,life:.45})}});
       // suspense: slow down near a prize, teeter at ledge edges
       const near=g.onG&&!g.onG.floor&&g.onG.P.p&&!g.won.has(g.onG.i)?this.prizeAt(g,g.onG):null,sp=Math.hypot(g.vx,g.vy);
@@ -7227,27 +7231,30 @@ const GAMES={
         return pg};
       B.prize3=prize3;
       // a gold pill pad with three stars, like a prize plinth
-      const pill=(par,x_,y_,w_,big)=>{const p=G();p.position.set(x_,y_,big?.05:0);par.add(p);ol(rb(p,w_,big?.2:.13,big?.5:.34,big?.08:.06,Gd,0,0,0),.01);nosh(rb(p,w_-.08,big?.11:.07,.03,.03,Nv,0,0,big?.25:.17));
-        [-1,0,1].forEach(j=>{const s_=star3(p,(j?.028:.038)*(big?1.3:1),Wh,j*w_*.28,0,big?.26:.18);s_.outline=0});return p};
+      // a gold pill plaque with three stars, on the front of a ledge or the floor (its top flush with the surface the pet rests on)
+      const pill=(par,x_,y_,w_,h_,z_)=>{const p=G();p.position.set(x_,y_,z_);par.add(p);ol(rb(p,w_,h_,.24,Math.min(.06,h_*.45),Gd,0,0,0),.01);nosh(rb(p,w_-.07,h_*.56,.03,Math.min(.03,h_*.25),Nv,0,0,.12));
+        [-1,0,1].forEach(j=>{const s_=star3(p,h_*(j?.17:.23),Wh,j*w_*.27,0,.135);s_.outline=0});return p};
       // ledges (with a pad, rays of light and the prize on it)
       const PL0=this.plats(g);B.plats=S.plats.map((P,i)=>{const q=PL0.find(z=>z.i===i&&!z.lip),grp=G();root.add(grp);const L=Math.hypot(q.b[0]-q.a[0],q.b[1]-q.a[1])*k,th=q.th*k,col=P.mv?0x3EC8F2:S.plc,m=jel(col,{roughness:.3});
         ol(rb(grp,L+.1,th,.7,th*.45,m,0,0,0),.012);ol(rb(grp,L+.02,th*.28,.72,th*.14,jel(lighten(col,.5),{roughness:.3}),0,th*.36,0),0);
         if(P.mv)[-1,1].forEach(sd=>{const a_=add(grp,new THREE.ConeGeometry(th*.35,th*.6,3),M(0x1E2266),sd*L*.4,0,.36);a_.rotation.z=-sd*Math.PI/2;ol(a_,0)});
         let pm=null,alt=null,rays=null;const lipped=L/k>=g.r*4.8;if(P.p){const px=(P.p.at-.5)*L*(q.b[0]<q.a[0]?-1:1),sz=g.r*1.7*k,pw3=P.p.t==='gift'?1.5:2.25;
           if(lipped)[-1,1].forEach(sd=>{const lp=rb(grp,.05,g.r*.47*k,.5,.02,m,px+sd*g.r*pw3*k,th/2+g.r*.2*k,0);lp.rotation.z=-sd*.25;ol(lp,.008)});
-          pill(grp,px,th/2+.06,g.r*(P.p.t==='gift'?2.3:2.9)*k);
-          rays=G();rays.position.set(px,th/2+.12,-.12);grp.add(rays);for(let r_=0;r_<9;r_++){const a=Math.PI*(.1+.8*r_/8),L_=g.r*k*(r_%2?2.3:3.4),w_=.055,tr=flat(rays,[[0,0],[Math.cos(a-w_)*L_,Math.sin(a-w_)*L_],[Math.cos(a+w_)*L_,Math.sin(a+w_)*L_]],.01,RayM,0,0,0);tr.outline=0;tr.castShadow=false}
-          pm=prize3(P.p.t,sz);pm.position.set(px,th/2+.13+sz*.62,.02);grp.add(pm);if(P.p.t==='gift'){alt=prize3('big',sz);alt.position.copy(pm.position);grp.add(alt)}}
+          pill(grp,px,-th*.04,g.r*(P.p.t==='gift'?2.3:2.9)*k,th*1.08,.47);
+          rays=G();rays.position.set(px,th/2+.02,-.12);grp.add(rays);for(let r_=0;r_<9;r_++){const a=Math.PI*(.1+.8*r_/8),L_=g.r*k*(r_%2?2.3:3.4),w_=.055,tr=flat(rays,[[0,0],[Math.cos(a-w_)*L_,Math.sin(a-w_)*L_],[Math.cos(a+w_)*L_,Math.sin(a+w_)*L_]],.01,RayM,0,0,0);tr.outline=0;tr.castShadow=false}
+          pm=prize3(P.p.t,sz);pm.position.set(px,th/2+.04+sz*.62,.02);grp.add(pm);if(P.p.t==='gift'){alt=prize3('big',sz);alt.position.copy(pm.position);grp.add(alt)}}
         return{grp,pm,alt,rays,i,P}});
       // bumpers: sunburst discs with a jelly face and mismatched googly eyes that follow the pet
       B.bumps=S.bump.map((Q,i)=>{const bg_=G();root.add(bg_);const R_=Q.r*g.bw*k,sm=M(0xB6F03E,{emissive:0x8FE020,emissiveIntensity:.3,roughness:.3});
         ol(add(bg_,new THREE.ExtrudeGeometry(starShape(R_*1.5,R_*1.2,16),{depth:.08,bevelEnabled:false}),sm,0,0,-.22),.012);ol(to(bg_,R_*1.06,R_*.09,M(0x3FA02A,{roughness:.35}),0,0,-.1),.008);
         const s_=add(bg_,SPH(R_,28,20),jel(0xFF5FA8,{roughness:.25}),0,0,0);s_.scale.z=.7;ol(s_,.014);
-        const eyes=[[-.34,.2,.3],[.32,.24,.21]].map(([ex,ey,er])=>{const e=G();e.position.set(ex*R_,ey*R_,R_*.58);bg_.add(e);ol(sp(e,er*R_,M(0xFFFFFF,{roughness:.2}),0,0,0,1,1,.6),.006);const p=sp(e,er*R_*.45,M(0x1E0838),0,0,er*R_*.45);p.outline=0;return{p,r:er*R_}});
-        ol(to(bg_,R_*.22,R_*.06,M(0x2A0E3E),0,-R_*.26,R_*.64,0,0,Math.PI+.4,Math.PI-.8),0);bg_.userData.sm=sm;bg_.userData.eyes=eyes;return bg_});
+        const onS=(x_,y_)=>R_*.7*Math.sqrt(Math.max(0,1-x_*x_-y_*y_)),Wt=M(0xFFFFFF,{roughness:.15}),Pu=M(0x1E0838,{roughness:.2}),Hi=M(0xFFFFFF,{emissive:0xFFFFFF,emissiveIntensity:.6});
+        const eyes=[-1,1].map(sd=>{const ex=sd*.33,ey=.12,e=G();e.position.set(ex*R_,ey*R_,onS(ex,ey)-R_*.05);bg_.add(e);ol(sp(e,R_*.28,Wt,0,0,0,1,1.12,.55),.007);const p=G();e.add(p);sp(p,R_*.15,Pu,0,0,R_*.12,1,1.1,.5).outline=0;sp(p,R_*.05,Hi,R_*.05,R_*.06,R_*.19).outline=0;return{p,r:R_*.28}});
+        [-1,1].forEach(sd=>{const c_=sp(bg_,R_*.14,M(0xFF7FB8,{roughness:.5}),sd*.58*R_,-.16*R_,onS(.58,-.16)-R_*.03,1,.6,.3);c_.outline=0});
+        ol(to(bg_,R_*.25,R_*.055,M(0x2A0E3E),0,-R_*.1,onS(0,-.35)+R_*.01,0,0,Math.PI+.55,Math.PI-1.1),0);bg_.userData.sm=sm;bg_.userData.eyes=eyes;return bg_});
       // the bottom: gold pill pads with candy and prizes, neon dividers topped with bulbs
-      {const n=S.floor.length,fy=g.by+g.bh,cw=g.bw/n,ch=g.bh*.08;S.floor.forEach((t,i)=>{const X=W(g.bx+i*cw+cw/2);pill(root,X,H(fy)+.1,cw*k-.2,1);
-          const pm=prize3(t==='small'?'candy':t,ch*.8*k);pm.position.set(X,H(fy-ch*.6),.12);root.add(pm);(B.cups||(B.cups=[])).push(pm)});
+      {const n=S.floor.length,fy=g.by+g.bh,cw=g.bw/n,ch=g.bh*.08;S.floor.forEach((t,i)=>{const X=W(g.bx+i*cw+cw/2);pill(root,X,H(fy)-.12,cw*k-.2,.24,.6);
+          const pm=prize3(t==='small'?'candy':t,ch*.8*k);pm.position.set(X,H(fy-ch*.62),-.22);root.add(pm);(B.cups||(B.cups=[])).push(pm)});
         for(let i=1;i<n;i++){const X=W(g.bx+i*cw),tb=cy(root,.04,.04,ch*k+.1,Neon,X,H(fy)+ch*k/2,.1,10);tb.outline=0;const cap=sp(root,.06,B.boff[i%5],X,H(fy)+ch*k+.12,.1);cap.outline=0;B.bulbs.push(cap)}}
       // gold coins in arcs over the prizes
       const CoinM=M(0xFFC21F,{emissive:0xFFA800,emissiveIntensity:.35,roughness:.2,metalness:.4}),CoinS=M(0xFFF3B0,{emissive:0xFFE070,emissiveIntensity:.4,roughness:.3});
@@ -7263,10 +7270,10 @@ const GAMES={
       return B},
     upd3(g,B){const k=B.k,W=B.W,H=B.H,t=g.t,party=(g.partyT||0)>0;
       this.plats(g).forEach(q=>{if(q.lip)return;const b_=B.plats[q.i];b_.grp.position.set(W((q.a[0]+q.b[0])/2),H((q.a[1]+q.b[1])/2),0);{const f=q.b[0]<q.a[0]?-1:1;b_.grp.rotation.z=-Math.atan2((q.b[1]-q.a[1])*f,(q.b[0]-q.a[0])*f)}
-        if(b_.pm){const won=g.won.has(q.i),gone=b_.P.p.t==='gift'&&!g.gift;b_.pm.visible=!won&&!gone;if(b_.alt)b_.alt.visible=!won&&gone;[b_.pm,b_.alt].forEach(m=>{if(m){m.rotation.y=Math.sin(t*1.6+q.i)*.6;m.position.y=q.th*k/2+.13+g.r*1.7*k*.62+Math.sin(t*3+q.i)*.03}})}
+        if(b_.pm){const won=g.won.has(q.i),gone=b_.P.p.t==='gift'&&!g.gift;b_.pm.visible=!won&&!gone;if(b_.alt)b_.alt.visible=!won&&gone;[b_.pm,b_.alt].forEach(m=>{if(m){m.rotation.y=Math.sin(t*1.6+q.i)*.6;m.position.y=q.th*k/2+.04+g.r*1.7*k*.62+Math.sin(t*3+q.i)*.03}})}
         if(b_.rays){b_.rays.visible=!g.won.has(q.i);b_.rays.rotation.z=Math.sin(t*1.3+q.i)*.1;b_.rays.scale.setScalar(.9+Math.sin(t*4+q.i)*.1)}});
       this.bumps(g).forEach(b=>{const m=B.bumps[b.i],f=g.bf&&g.bf[b.i]||0;if(g.bf&&f)g.bf[b.i]=Math.max(0,f-1/20);m.position.set(W(b.x),H(b.y),0);const s_=1+Math.sin(f*Math.PI*3)*f*.25;m.scale.set(s_,2-s_,1);
-        const U_=m.userData;U_.sm.emissiveIntensity=.3+f*2.5+(party?.4:0);const dx=g.x-b.x,dy=-(g.y-b.y),l=Math.hypot(dx,dy)||1;U_.eyes.forEach(e=>e.p.position.set(dx/l*e.r*.42,dy/l*e.r*.42,e.r*.45))});
+        const U_=m.userData;U_.sm.emissiveIntensity=.3+f*2.5+(party?.4:0);const dx=g.x-b.x,dy=-(g.y-b.y),l=Math.hypot(dx,dy)||1;U_.eyes.forEach(e=>e.p.position.set(dx/l*e.r*.3,dy/l*e.r*.3,0))});
       (B.cups||[]).forEach((m,i)=>{m.rotation.y=Math.sin(t*1.2+i)*.5});
       // coins spin; a grabbed one pops up and away
       B.items.forEach((m,i)=>{const it=g.items[i];m.visible=!!it&&(!it.got||it.gotT<.3);if(!m.visible)return;const p=it.got?it.gotT/.3:0;m.position.set(W(it.x),H(it.y)+p*.35,.1+p*.3);m.scale.setScalar(1+p*1.2);m.rotation.set(0,it.got?p*9:it.t*2.2,0)});
@@ -7274,7 +7281,7 @@ const GAMES={
       const ph=Math.floor(t*(party?14:7)),fl=(g.flashT||0)>0;B.bulbs.forEach((m,i)=>{const on=fl||(party?(i+ph)%2===0:(i+ph)%3===0);m.material=on?B.bon[i%5]:B.boff[i%5]});B.neon.emissiveIntensity=1.1+Math.sin(t*3)*.25+(party?.7:0);
       // the claw on its rail; the string down to the pet while it hangs
       const railY=H(g.by-g.bh*.19+8);B.claw.position.set(W(g.claw),railY-.02,0);B.prongs.forEach((p_,i)=>p_.rotation.z=(i?-1:1)*(g.st==='aim'?.25:.7));
-      const sc=2.9*g.r*k/B.petH,th=-(g.rot+(g.teeter?Math.sin(g.t*22)*.12:0)),X=W(g.x),Y=H(g.y),off=1.1*g.r*k;
+      const sc=2.9*g.r*k/B.petH,th=-(g.rot+(g.teeter?Math.sin(g.t*22)*.12:0)),X=W(g.x),Y=H(g.y),off=.97*g.r*k;
       pet.group.scale.setScalar(sc);pet.group.position.set(X+Math.sin(th)*off,Y-Math.cos(th)*off,.06);pet.group.rotation.set(0,g.st==='aim'?0:Math.sin(t*1.3)*.25,th);
       B.str.visible=g.st==='aim';if(B.str.visible){const tx=X-Math.sin(th)*g.r*1.9*k,ty=Y+Math.cos(th)*g.r*1.9*k,ax=W(g.claw),ay=railY-.14,L=Math.hypot(tx-ax,ty-ay);B.str.scale.set(1,L,1);B.str.position.set((ax+tx)/2,(ay+ty)/2,.12);B.str.rotation.z=-Math.atan2(tx-ax,ay-ty)}
       B.sh.position.set(X+.12,Y-.1,-.37);B.sh.scale.setScalar(g.r*1.5*k);
@@ -7293,13 +7300,13 @@ const GAMES={
       x.save();x.translate(w/2,h*.42);x.rotate(g.t*.12);x.fillStyle=`rgba(255,220,255,${.05+P*.08})`;for(let i=0;i<18;i+=2){x.beginPath();x.moveTo(0,0);x.arc(0,0,h,i/18*Math.PI*2,(i+1)/18*Math.PI*2);x.closePath();x.fill()}x.restore()},
     draw(g,x){const B=this.b3(g);if(!B){g.no3=0;this.draw2(g,x);return}g.no3=1;this.upd3(g,B);const d=Math.min((gm&&gm.dpr)||1,1.5),pw=Math.round(g.w*d),ph=Math.round(g.h*d),dk=pw+'x'+ph;
       if(gpR.__dk!==dk){gpR.setSize(pw,ph,false);gpR.__dk=dk}gpR.__sz=0;gpR.render(gpSc,B.cam);this.backdrop(g,x);x.drawImage(gpR.domElement,0,0,g.w,g.h);
-      const S=g.S,fy=g.by+g.bh;gText(x,S.n,g.bx+g.bw*.68,g.by-g.bh*.08,'#fff',Math.min(17,g.w*.045));
+      const S=g.S,fy=g.by+g.bh,ty=g.by-g.bh*.236;gText(x,S.n,g.bx+g.bw*.8,ty,'#fff',Math.min(15,g.w*.04));
       if(g.st==='aim'){x.strokeStyle='rgba(30,8,56,.35)';x.setLineDash([4,6]);x.lineWidth=2.5;x.beginPath();x.moveTo(g.x,g.y+g.r);x.lineTo(g.x,fy);x.stroke();x.setLineDash([])}
       if(g.slow<.8){x.save();x.globalAlpha=(1-g.slow)*.6;gText(x,'Ooh...',g.x,g.y-g.r*3.2,'#fff',20);x.restore()}
       if(g.flashT>0){x.fillStyle=`rgba(255,250,220,${Math.min(.55,g.flashT*1.8)})`;x.fillRect(0,0,g.w,g.h)}
       if(g.reveal){const R_=g.reveal;if(g.pop){const tt=g.pop.t,a=1-Math.max(0,tt-1.95)/.35;if(a>0&&tt>.25){const sc=Math.min(1,(tt-.25)*5)*(1+Math.max(0,.45-tt)*1.2);x.save();x.globalAlpha=a;x.translate(g.w/2,g.h*.42+g.w*.33);x.scale(sc,sc);gText(x,R_.label,0,0,'#FFE45C',Math.min(34,g.w*.09));x.restore()}}
         else if(R_.t<1.7){const yy=R_.y-g.r*3-R_.t*30;x.save();x.globalAlpha=1-Math.max(0,R_.t-1.3)/.4;gText(x,R_.label,R_.x,yy+g.r*.6,'#fff',18);x.restore()}}
-      for(let i=0;i<5;i++)this.peg(x,g.bx+14+i*20,g.by-g.bh*.08,7,i<g.drops?'#FFD21F':'#5A4A80');this.drawBtns(g,x)},
+      for(let i=0;i<5;i++)this.peg(x,g.bx+12+i*17,ty,6,i<g.drops?'#FFD21F':'#5A4A80');this.drawBtns(g,x)},
     art(x,w,h,pi){const g={w,h,t:1,lv:1,score:0,fx:[],pt:[],drops:5};this.init.call(this,g);g.st='fall';g.x=g.bx+g.bw*.46;g.y=g.by+g.bh*.3;g.rot=.5;g.ps=0;this.draw2.call(this,g,x);if(pi){x.save();x.translate(g.x,g.y);x.rotate(.45);x.drawImage(pi,-h*.17,-h*.2,h*.34,h*.34);x.restore()}}},
   says:{n:'{pet} Says',c:'#FF3D9A',bg:['#FFE0F0','#FFF3C4'],xp:250,stars:[60,180,360],titles:['Good Listener','Copy Cat','Echo Buddy','Memory Pal','Mind Reader','Memory Legend'],
     how:'Watch the jelly buttons light up, then tap them back in the same order. Each round adds one more. You have three hearts, and a slip just replays the tune.',
