@@ -3691,8 +3691,8 @@ function kFace2(par,o){const F={eyes:[],pupils:[],brows:[],blink:1.5+Math.random
   F.update=(dt,t,st)=>{st=st||{};
     // blinks every few seconds, sometimes a double blink; a slow look-around between blinks
     F.blink-=dt;if(F.blink<-.14){F.blink=F.dbl?.18:2+Math.random()*3.2;F.dbl=!F.dbl&&Math.random()<.25}const bl=F.blink<0?Math.sin(Math.min(1,-F.blink/.14)*Math.PI):0;
-    F.lookT-=dt;if(F.lookT<0){F.contact=Math.random()<(st.talk?.85:.65);F.lookT=F.contact?1.5+Math.random()*2.5:.5+Math.random()*1.2;F.look=[(Math.random()-.5)*1.2,(Math.random()-.5)*.6]}
-    F.eyes.forEach(e=>e.scale.y=Math.max(.08,1-bl*.95));F.pupils.forEach((p,i)=>{let L=[F.look[0]*.22,F.look[1]*.2];if(F.contact){const d=camLocal(F.eyes[i]);L=[clamp(d[0]/Math.max(.3,d[2]),-1,1)*.3,clamp(d[1]/Math.max(.3,d[2]),-1,1)*.26]}p.position.x=approach(p.position.x,L[0]*o.er,dt*8);p.position.y=approach(p.position.y,L[1]*o.er,dt*8)});
+    F.lookT-=dt;if(F.lookT<0){F.lookT=.8+Math.random()*2.4;F.look=[(Math.random()-.5)*1.2,(Math.random()-.5)*.6]}
+    F.eyes.forEach(e=>e.scale.y=Math.max(.08,1-bl*.95));F.pupils.forEach((p,i)=>{let L=[F.look[0]*.22,F.look[1]*.2];const ga=gazeAngles(F.eyes[i],F);if(ga)L=[clamp(Math.tan(ga[0]),-1,1)*.3,clamp(Math.tan(ga[1]),-1,1)*.26];p.position.x=approach(p.position.x,L[0]*o.er,dt*8);p.position.y=approach(p.position.y,L[1]*o.er,dt*8)});
     // talking: syllables of different sizes with little pauses, plus an 'oo' (narrow) or 'ee' (wide) shape
     const syl=st.talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1)))*(Math.sin(t*1.3)>-.7?1:.2):0,tgt=Math.max(syl,st.happy?.75:0,st.surprise?.9:0);
     F.m=approach(F.m,tgt,dt*22);F.w=approach(F.w,st.talk?Math.sin(t*3.3)*.25:0,dt*6);mo.visible=F.m>.08;mo.scale.set(1+F.w-F.m*.15,Math.max(.01,F.m),1);sm.visible=!mo.visible;
@@ -3732,8 +3732,18 @@ function sweepGeo(pts,prof,o){o=o||{};const L=o.len||40,S=o.seg||20,P=[],U=[],I=
   const mi=L>>1;return meshGeo(P,U,I,[mi*(S+1),C[mi]])}
 // point an arm pivot (which hangs along -y) from S at F, stretching it a little so the hand centre (ref from the pivot) lands on F; returns the unit direction
 function kAim(a,S,F,ref){const d=[F[0]-S[0],F[1]-S[1],F[2]-S[2]],l=Math.hypot(...d)||1,u=d.map(v=>v/l);a.rotation.set(Math.atan2(-u[2],-u[1]),0,Math.asin(Math.max(-1,Math.min(1,u[0]))));if(ref)a.scale.y=Math.max(.75,Math.min(1.35,l/ref));return u}
-// the camera's direction in an object's own frame (unit vector; uses last frame's matrices) - for eye contact
-function camLocal(o){const m=o.matrixWorld,p=camera.position,D=[p.x-m[12],p.y-m[13],p.z-m[14]],r=[0,1,2].map(k=>{const c0=m[k*4],c1=m[k*4+1],c2=m[k*4+2],l2=c0*c0+c1*c1+c2*c2||1;return(D[0]*c0+D[1]*c1+D[2]*c2)/l2}),l=Math.hypot(...r);return l>1e-6&&isFinite(l)?r.map(v=>v/l):[0,0,1]}
+// a world point's direction in an object's own frame (unit vector; uses last frame's matrices)
+function camLocal(o,pt){const m=o.matrixWorld,p=pt||camera.position,D=[p.x-m[12],p.y-m[13],p.z-m[14]],r=[0,1,2].map(k=>{const c0=m[k*4],c1=m[k*4+1],c2=m[k*4+2],l2=c0*c0+c1*c1+c2*c2||1;return(D[0]*c0+D[1]*c1+D[2]*c2)/l2}),l=Math.hypot(...r);return l>1e-6&&isFinite(l)?r.map(v=>v/l):[0,0,1]}
+// Keeper gaze (set per keeper by updShop in K.g.userData.gaze): mostly the pet (always while talking), now and then a glance
+// round the shop, and in a shop with two keepers, sometimes each other. Eyes read it with gazeAngles (null = no shop: wander).
+function keeperGaze(K,dt,talk){const Z=K.g.userData.gaze||(K.g.userData.gaze={mode:'pet',t:0,pt:new THREE.Vector3(),look:[0,0]});Z.t-=dt;
+  if(Z.t<0||(talk&&Z.mode!=='pet')){const other=away.keepers.length>1?away.keepers.find(q=>q!==K):null,r=Math.random();
+    Z.mode=talk?'pet':other&&r<.22?'partner':r<.7?'pet':'glance';Z.other=other;Z.t=Z.mode==='glance'?.7+Math.random()*1.3:Z.mode==='partner'?1.3+Math.random()*1.4:2+Math.random()*3.5;
+    Z.look=[(Math.random()-.5)*1.1,(Math.random()-.3)*.5]}
+  if(Z.mode==='partner'&&Z.other){Z.other.head.getWorldPosition(Z.pt);Z.pt.y-=.1}else if(pet.group){pet.group.getWorldPosition(Z.pt);Z.pt.y+=(pet.head||1)*.7}
+  return Z}
+function gazeAngles(o,S){if(S.root===undefined){let r=o;while(r&&!(r.userData&&r.userData.keeper))r=r.parent;S.root=r||null}const Z=S.root&&S.root.userData.gaze;if(!Z)return null;
+  if(Z.mode==='glance')return Z.look;const d=camLocal(o,Z.pt);return[clamp(Math.atan2(d[0],d[2]),-.6,.6),clamp(Math.atan2(d[1],d[2]),-.45,.45)]}
 // a point on a Catmull-Rom curve through pts at t (0..1)
 function crPt(pts,t){const m=pts.length-1,f=Math.min(m-1e-6,Math.max(0,t)*m),k=f|0,u=f-k,p0=pts[Math.max(0,k-1)],p1=pts[k],p2=pts[k+1],p3=pts[Math.min(m,k+2)];return[0,1,2].map(j=>.5*(2*p1[j]+(-p0[j]+p2[j])*u+(2*p0[j]-5*p1[j]+4*p2[j]-p3[j])*u*u+(-p0[j]+3*p1[j]-3*p2[j]+p3[j])*u*u*u))}
 // many bubbles as one mesh, moved by rewriting its vertices each frame (dynamic geometry): set(i,x,y,z,r) then flush()
@@ -3768,9 +3778,8 @@ function kEye(pv,r,tex,lidMat,o){o=o||{};const eg=piv(pv,0,0,-r*(o.sink===undefi
   const lid=add(eg,new THREE.SphereGeometry(r*1.06,40,14,0,Math.PI*2,0,Math.PI/2),lidMat,0,0,0);ol(lid,.008);lid.rotation.x=o.open||-1.2;return{eg,eye,lid,open:o.open||-1.2}}
 // shared eye behaviour for kEye eyes: blinks (sometimes twice), glances about; st {talk,happy,surprise}
 function kEyesUpd(S,E,dt,st){st=st||{};S.blink=(S.blink===undefined?2:S.blink)-dt;if(S.blink<-.16)S.blink=Math.random()<.2?.2:2+Math.random()*3;const cl=S.blink<0?Math.sin(Math.min(1,-S.blink/.16)*Math.PI):0;
-  S.lookT=(S.lookT||0)-dt;if(S.lookT<0){S.contact=Math.random()<(st.talk?.85:.65);S.lookT=S.contact?1.5+Math.random()*2.5:.5+Math.random()*1.2;S.look=[(Math.random()-.5)*.9,(Math.random()-.5)*.4]}
-  E.forEach(e=>{const op=e.open+(st.surprise?-.25:st.happy?.15:0);e.lid.rotation.x=op*(1-cl)+1.67*cl;let L=S.look||[0,0];
-    if(S.contact){const d=camLocal(e.eg.parent);L=[clamp(Math.atan2(d[0],d[2]),-.6,.6),clamp(Math.atan2(d[1],d[2]),-.45,.45)]}if(!isFinite(L[0])||!isFinite(L[1]))L=[0,0];e.eye.rotation.y=approach(isFinite(e.eye.rotation.y)?e.eye.rotation.y:0,L[0],dt*7);e.eye.rotation.x=approach(isFinite(e.eye.rotation.x)?e.eye.rotation.x:0,-L[1],dt*7)})}
+  S.lookT=(S.lookT||0)-dt;if(S.lookT<0){S.lookT=.8+Math.random()*2.4;S.look=[(Math.random()-.5)*.9,(Math.random()-.5)*.4]}
+  E.forEach(e=>{const op=e.open+(st.surprise?-.25:st.happy?.15:0);e.lid.rotation.x=op*(1-cl)+1.67*cl;let L=gazeAngles(e.eg.parent,S)||S.look||[0,0];if(!isFinite(L[0])||!isFinite(L[1]))L=[0,0];e.eye.rotation.y=approach(isFinite(e.eye.rotation.y)?e.eye.rotation.y:0,L[0],dt*7);e.eye.rotation.x=approach(isFinite(e.eye.rotation.x)?e.eye.rotation.x:0,-L[1],dt*7)})}
 // a two-part noodle arm (shoulder, elbow, mitten); pose with sh.rotation / el.rotation; props go on tip
 function kArm3(par,x,y,z,mat,l1,l2,r,hand){const sh=piv(par,x,y,z);ol(sp(sh,r*1.15,mat,0,0,0),.008);ol(cy(sh,r,r*1.1,l1,mat,0,-l1/2,0,12),.008);const el=piv(sh,0,-l1,0);ol(sp(el,r*1.05,mat,0,0,0),.006);
   ol(cy(el,r*.9,r,l2,mat,0,-l2/2,0,12),.008);const h=sp(el,hand,mat,0,-l2-hand*.6,0,1,1.05,.85);ol(h,.01);ol(sp(el,hand*.42,mat,hand*.75,-l2-hand*.35,.01),.006);const tip=piv(el,0,-l2-hand*.9,0);return{sh,el,tip}}
@@ -3783,7 +3792,7 @@ const KEEPERS={
     C.detail=1;Pp.detail=1;T.detail=1;Bl.detail=1;Ft.detail=3;
     const W=.52,Hh=.42,D=.27,body=piv(b,0,.74,0);
     // the cushion has its own geometry: the top corners lift (wave, cheer), so its vertices are moved each frame
-    const cg=cushionGeo(W,Hh,D,{hump:.05,pinch:.08,lump:th=>.025*Math.sin(3*th+1)});cg.dyn=1;cg.bs={c:[0,0,0],r:.9};const P0=Float32Array.from(cg.pos);
+    const cg=cushionGeo(W,Hh,D,{hump:.06,pinch:.14,n:3.4,lump:th=>.025*Math.sin(3*th+1)});cg.dyn=1;cg.bs={c:[0,0,0],r:.9};const P0=Float32Array.from(cg.pos);
     ol(add(body,cg,C,0,0,0),.018);
     // piping round the seam
     {const pts=[];for(let i=0;i<=64;i++){const q=cg.B(i/64*Math.PI*2);pts.push([q[0],q[1],0])}ol(add(body,gcache('cu_pipe',()=>sweepGeo(pts,()=>[.022,.022],{len:128,seg:8})),Pp,0,0,0),.008)}
@@ -3826,7 +3835,7 @@ const KEEPERS={
   // Bolt (after the character sheet): a squat golden egg in blue overalls (bib pocket, straps over the top, yellow buttons),
   // a ribbed yellow hard hat with a pink star, big round eyes and buck teeth, brown work boots, and a pink mallet that taps away.
   // Straightens the hat now and then; tips it to say hello.
-  builder(){const g=G(),b=G();g.add(b);const Yb=M(0xF6C933,{roughness:.42}),Hh=M(0xFFD83A,{roughness:.3}),Bl=M(0x3E86DC,{roughness:.7}),Bp=M(0x72AEF2,{roughness:.7}),Pk=M(0xFF5FA8,{roughness:.35}),
+  builder(){const g=G(),b=G();g.add(b);const Yb=M(0xF6C933,{roughness:.42}),Hh=M(0xFFBE14,{roughness:.28}),Bl=M(0x3E86DC,{roughness:.7}),Bp=M(0x72AEF2,{roughness:.7}),Pk=M(0xFF5FA8,{roughness:.35}),
       Pl=M(0xFF9AC8,{roughness:.35}),Wd=M(0xB07A46,{roughness:.55}),Bt=M(0x9A6436,{roughness:.7}),Bs=M(0x5A3A22,{roughness:.8}),Lc=M(0xF4E6C8,{roughness:.7});
     Yb.detail=3;Hh.detail=0;Bl.detail=1;Bp.detail=1;Wd.detail=2;Bt.detail=3;Bs.detail=3;
     const HY=.62,HR=.5,HSY=.95,HSZ=.9;
@@ -3837,7 +3846,7 @@ const KEEPERS={
     // overalls: the trousers, a bib with a pocket, straps over the top to the back, yellow buttons
     ol(add(body,gcache('bt_pants',()=>loftGeo(Array.from({length:14},(_,i)=>{const y=.03+i/13*.4,r=prof(y)*1.025;return[y,r,r*HSZ]}),{seg:56})),Bl,0,0,0),.01);
     ol(add(body,gcache('bt_bib',()=>loftGeo(Array.from({length:10},(_,i)=>{const y=.4+i/9*.22,r=prof(y)*1.03;return[y,r,r*HSZ]}),{seg:24,a0:-.72,a1:.72})),Bl,0,0,0),.01);
-    {const pk=onLoft(body,f,0,.5,.03);ol(rb(pk,.19,.12,.02,.02,Bp,0,0,0),.006);for(let i=0;i<5;i++)ol(add(pk,gcache('bt_st',()=>new THREE.BoxGeometry(.022,.005,.004)),Lc,-.07+i*.035,.045,.012),0)}
+    {for(let i=0;i<7;i++){const sp_=onLoft(body,f,-.15+i*.05,.595,.034);ol(add(sp_,gcache('bt_st',()=>new THREE.BoxGeometry(.022,.005,.004)),Lc,0,0,0),0)}const pk=onLoft(body,f,0,.5,.03);ol(rb(pk,.19,.12,.02,.02,Bp,0,0,0),.006);for(let i=0;i<5;i++)ol(add(pk,gcache('bt_st',()=>new THREE.BoxGeometry(.022,.005,.004)),Lc,-.07+i*.035,.045,.012),0)}
     [-1,1].forEach(s_=>{const on=(x,y,sd)=>{const r=prof(y),rz=r*HSZ;const xx=Math.min(Math.abs(x),r*1.04);return[s_*xx,y,sd*rz*1.04*Math.sqrt(Math.max(0,1-(xx/(r*1.04))**2))]};
       const pts=[on(.17,.6,1),on(.24,.7,1),on(.32,.79,1),on(.39,.85,1),on(.46,.87,0),on(.39,.84,-1),on(.31,.74,-1),on(.24,.62,-1),on(.21,.5,-1),on(.2,.4,-1)];
       ol(add(body,gcache('bt_strap'+s_,()=>sweepGeo(pts,()=>[.05,.014],{len:40,seg:8,ref:(t,c)=>[c[0],c[1]-HY,c[2]]})),Bl,0,0,0),.006);
@@ -3892,7 +3901,9 @@ const KEEPERS={
       const nx=2*x/rx/rx,nz=2*z/rz/rz,ny=(f(y+.004)-f(y-.004))/.008,l=Math.hypot(nx,ny,nz),yaw=piv(par,x+nx/l*(off||0),y+ny/l*(off||0),z+nz/l*(off||0));yaw.rotation.y=Math.atan2(nx,nz);const pt=piv(yaw);pt.rotation.x=-Math.asin(ny/l);return pt};
     const body=piv(b,0,.05,0);
     ol(add(body,gcache('bb_body',()=>loftGeo(Array.from({length:44},(_,i)=>{const y=(.5-.5*Math.cos(Math.PI*i/43))*(HY+HR*HSY),[rx,rz]=prof(y);return[y,rx,rz]}),{seg:60})),D,0,0,0),.018);
-    const F=kFace2(body,{r:HR,sy:HSY,sz:HSZ,cy:HY,ex:.21,ey:.12,er:.118,my:-.06,mw:.058,brows:false,cheekC:0xFF9CC2});
+    const E=[-1,1].map(s_=>kEye(onSurface(body,HR,HSY,HSZ,s_*.21,.12,0,HY,0),.12,eyeTex('bbE',{pr:25}),D,{sink:.22,open:-1.25}));const ES={};
+    [-1,1].forEach(s_=>{const cp=onSurface(body,HR,HSY,HSZ,s_*.33,-.02,0,HY,0);const c=add(cp,SPH(1,14,10),M(0xFF9CC2,{roughness:.7}),0,0,.002);c.scale.set(.065,.036,.006);ol(c,0)});
+    const bmp=onSurface(body,HR,HSY,HSZ,0,-.07,0,HY,0),bmg=piv(bmp,0,0,.008);ol(add(bmg,gcache('bb_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.05,0);m.quadraticCurveTo(0,-.045,.05,0);m.quadraticCurveTo(0,-.02,-.05,0);return new THREE.ExtrudeGeometry(m,{depth:.008})}),M(0x5A1030,{roughness:.6}),0,0,0),.005);
     {const np=onSurface(body,HR,HSY,HSZ,0,.02,0,HY,0);ol(sp(np,.024,M(0xF07FA6,{roughness:.5}),0,0,.006,1.3,.85,.6),.006)}
     // long floppy ears from under the hat band, resting against the sides; they sway and flap on a spring
     const earPts=[[0,0,0],[.13,-.01,.02],[.26,-.1,.05],[.35,-.28,.07],[.38,-.48,.07],[.37,-.58,.06]],
@@ -3918,7 +3929,7 @@ const KEEPERS={
     const HOLD=[.27,.47,.64],spoon=piv(body);ol(cy(spoon,.016,.021,.3,Wd,0,-.08,0,10),.006);ol(sp(spoon,.05,Wd,0,-.26,0,.8,1.2,.4),.006);
     const OFF=[-.23,.08,.04],Fs=[0,0,0],Vs=[0,-1,0];let init=0;
     const puffs=[0,1,2,3].map(i=>{const m=nosh(add(bowl,SPH(.05,10,8),M(0xFFFFFF,{roughness:.9,transparent:true,opacity:.7}),0,.2,0));m.visible=false;ol(m,0);return{m,t:9}});let puffT=4,lastY=0;
-    [-1,1].forEach(s_=>ol(sp(b,.14,D,s_*.2,.07,.24,1,.55,1.3),.012));
+    [-1,1].forEach(s_=>{ol(sp(b,.14,D,s_*.2,.07,.24,1,.55,1.3),.012);[-1,0,1].forEach(j=>{const tb=add(b,SPH(1,12,8),M(0xE9A07E,{roughness:.7}),s_*.2+j*.055,.055+(j?0:.012),.41-Math.abs(j)*.02);tb.scale.set(.026,.022,.012);ol(tb,0)})});
     return{g,head:hat,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';dt=Math.min(dt,.05);
       const jy=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.35:0,vy=(jy-lastY)/Math.max(dt,1e-3);lastY=jy;b.position.y=jy;
       kBreath(body,t,.018);body.rotation.z=Math.sin(t*1.1)*.025+(talk?Math.sin(t*5)*.025:0);body.rotation.x=talk?Math.sin(t*4)*.03:0;
@@ -3935,7 +3946,7 @@ const KEEPERS={
       // a puff of flour now and then
       puffT-=dt;if(puffT<0){puffT=3+Math.random()*4;puffs.forEach((q,i)=>{q.t=-i*.08;q.x=(Math.random()-.5)*.2;q.z=(Math.random()-.5)*.2})}
       puffs.forEach(q=>{q.t+=dt;const kk=q.t/1.1;q.m.visible=kk>0&&kk<1;if(q.m.visible){q.m.position.set(q.x*kk*2,.18+kk*.35,q.z*kk*2);q.m.scale.setScalar(.6+kk*1.6);q.m.material.opacity=.7*(1-kk)}});
-      F.update(dt,t,{talk,happy:cheer||greet})}}},
+      kEyesUpd(ES,E,dt,{talk,happy:cheer||greet});const syl=talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1))):0;ES.mo=approach(ES.mo||0,Math.max(syl,cheer||greet?.5:0),dt*18);bmg.scale.set(1,1+ES.mo*2.4,1)}}},
   // Fizz the stylist (after the character sheet): a noodly turquoise bean that bends like a macaroni (the body mesh is sheared
   // along a moving centreline every frame, and the face, arms and hair ride along), two mismatched eyes, a long open grin,
   // and hair that is a bubble bath: a swirl of pink bubbles that keep floating off and popping, and growing back.
@@ -3975,7 +3986,7 @@ const KEEPERS={
     const BB=HM.map((h,i)=>({h,i,st:0,t:0,p:[0,0,0],v:[0,0,0]})),cA=bubbleMesh(hair,Math.ceil(BB.length/2),Ba,12),cB=bubbleMesh(hair,Math.floor(BB.length/2),Bb,12),cH=bubbleMesh(hair,BB.length,B(0xffffff),6);ol(cA.m,.004);ol(cB.m,.004);ol(cH.m,0);nosh(cA.m);nosh(cB.m);nosh(cH.m);
     ol(sp(hair,.05,Or,.38,.2,.24),.008);
     // noodle arms: the right one holds a bubble wand
-    const A=[-1,1].map(s_=>{const a=kArm3(armG,s_*.3-.01,.98,.02,C,.2,.2,.036,.062);a.s=s_;return a});
+    const A=[-1,1].map(s_=>{const a=kArm3(armG,s_*.3-.01,.98,.02,C,.2,.2,.036,.062);a.s=s_;[-1,0,1].forEach(j=>ol(sp(a.el,.021,C,j*.032,-.2-.09-(j?0:.012),.01,1,1.5,1),.005));return a});
     const wand=piv(A[1].tip,0,.03,0);ol(cy(wand,.014,.014,.26,Wp,0,-.1,0,8),.006);{const rg=to(wand,.06,.013,Wp,0,-.29,0);ol(rg,.006);const fl=add(wand,new THREE.CircleGeometry(.055,20),M(0xE8FBFF,{roughness:.05,transparent:true,opacity:.35}),0,-.29,0);fl.outline=0;nosh(fl)}
     const bubs=[0,1,2,3,4,5].map(i=>{const r=.045+(i%3)*.025,m=nosh(add(g,SPH(r,20,14),M(0xFFE6F4,{roughness:.05,transparent:true,opacity:.5}),0,0,0));ol(m,.006);
       const sh=nosh(add(m,SPH(r*.28,8,6),B(0xffffff),-r*.35,r*.4,r*.75));ol(sh,0);return{m,ph:i/6,x:(i%2?1:-1)*(.5+(i%3)*.12)}});
@@ -4035,14 +4046,14 @@ const KEEPERS={
     {const bend=geo=>{const P=geo.pos;for(let i=0;i<P.length;i+=3)P[i+2]-=(P[i]*P[i]+P[i+1]*P[i+1])/(2*HR);geo.version++;return geo};
       ol(add(mg,gcache('bo_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.14,.016);m.quadraticCurveTo(0,-.014,.14,.016);m.bezierCurveTo(.13,-.095,-.13,-.095,-.14,.016);return bend(new THREE.ExtrudeGeometry(m,{depth:.012}))}),M(0x5A1030,{roughness:.6}),0,0,0),.008);
       const tg=add(mg,SPH(1,16,10),M(0xFF7FA6,{roughness:.6}),0,-.058,.004);tg.scale.set(.06,.022,.01);ol(tg,0);
-      [-1,1].forEach(s_=>ol(rb(mg,.034,.036,.014,.008,M(0xFFFFFF,{roughness:.3}),s_*.02,-.012,.008),.005))}
+      [-1,1].forEach(s_=>ol(rb(mg,.03,.03,.014,.008,M(0xFFFFFF,{roughness:.3}),s_*.03,-.058,.008),.005))}
     // the propeller: a gold dome, a stem, and four rainbow blades
     const cap=piv(hb,0,HC+HR*HSY-.02,0);ol(sp(cap,.08,Gd,0,0,0,1,.55,1),.01);ol(cy(cap,.014,.014,.08,Gd,0,.07,0,8),.006);
     const blades=piv(cap,0,.11,0);[Pk,Y,Cy,M(0x6FA8FF,{roughness:.38})].forEach((m,i)=>{const r=i*Math.PI/2,bl=add(blades,SPH(1,18,10),m,Math.cos(r)*.15,0,Math.sin(r)*.15);bl.scale.set(.15,.016,.055);bl.rotation.y=-r;bl.rotation.x=.2;ol(bl,.007)});ol(sp(blades,.032,Gd,0,.005,0),.006);
     // stick arms with an elbow and pink ball hands
     const arms=[-1,1].map(s_=>{const sh=piv(hb,s_*.34,HC-.04,0);ol(sp(sh,.03,Rod,0,0,0),.005);ol(cy(sh,.017,.017,.17,Rod,0,-.085,0,8),.005);const el=piv(sh,0,-.17,0);ol(sp(el,.022,Rod,0,0,0),.004);
       ol(cy(el,.016,.016,.15,Rod,0,-.075,0,8),.005);ol(sp(el,.062,Pk,0,-.17,0),.009);return{s:s_,sh,el}});
-    let boingT=4,bp=9,y=1.1,vy=0,blink=2,lookT=0,look=[0,0],mo=0,contact=true;
+    let boingT=4,bp=9,y=1.1,vy=0,blink=2,lookT=0,look=[0,0],mo=0;const BS={};
     return{g:og,head,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';dt=Math.min(dt,.05);
       // a big boing every few seconds (when not chatting), otherwise a springy bob that follows the words
       boingT-=dt;if(boingT<0&&!talk&&act==='idle'){boingT=5+Math.random()*4;bp=0}bp+=dt;
@@ -4057,8 +4068,8 @@ const KEEPERS={
       // the eye: blinks with its lid (sometimes twice), glances about, goes wide on a boing
       const sur=bp<.5,happy=cheer||greet;blink-=dt;if(blink<-.16)blink=Math.random()<.2?.2:2+Math.random()*3;const cl=blink<0?Math.sin(Math.min(1,-blink/.16)*Math.PI):0;
       lid.rotation.x=(sur?-1.45:happy?-1.05:-1.2)*(1-cl)+1.67*cl;
-      lookT-=dt;if(lookT<0){contact=Math.random()<(talk?.85:.65);lookT=contact?1.5+Math.random()*2.5:.5+Math.random()*1.2;look=[(Math.random()-.5)*.8,(Math.random()-.5)*.4]}
-      let L=look;if(contact){const d=camLocal(ep);L=[clamp(Math.atan2(d[0],d[2]),-.6,.6),clamp(Math.atan2(d[1],d[2]),-.45,.45)]}eye.rotation.y=approach(eye.rotation.y,L[0],dt*7);eye.rotation.x=approach(eye.rotation.x,-L[1],dt*7);
+      lookT-=dt;if(lookT<0){lookT=.8+Math.random()*2.4;look=[(Math.random()-.5)*.8,(Math.random()-.5)*.4]}
+      const L=gazeAngles(ep,BS)||look;eye.rotation.y=approach(eye.rotation.y,L[0],dt*7);eye.rotation.x=approach(eye.rotation.x,-L[1],dt*7);
       // the grin opens in syllables when talking
       const syl=talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1))):0;mo=approach(mo,Math.max(syl,happy?.45:0,sur?.8:0),dt*20);mg.scale.set(1+mo*.08,1+mo*1.1,1)}}}};
 
@@ -4159,7 +4170,7 @@ KEEPERS.joy=function(){const g=G(),b=G();g.add(b);const C=M(0xB48AF0,{roughness:
   // headphones: a dark band over the top, pink cups with orange rims and a yellow star in each
   const hp=piv(body,0,.05,0);ol(nosh(to(hp,.62,.05,Dk,0,0,0,0,0,0,Math.PI)),.01);
   const cups=[-1,1].map(s_=>{const c=piv(hp,s_*.6,0,0);const cup=add(c,new THREE.CylinderGeometry(.22,.22,.15,32),P,0,0,0);cup.rotation.z=Math.PI/2;ol(cup,.012);
-    ol(to(c,.215,.035,Or,s_*.08,0,0,0,Math.PI/2,0),.008);const face=add(c,new THREE.CircleGeometry(.185,32),M(0xFF9ED0,{roughness:.1,emissive:0xFF5FA8,emissiveIntensity:.35}),s_*.078,0,0);face.rotation.y=s_*Math.PI/2;ol(face,0);
+    ol(to(c,.215,.035,Or,s_*.08,0,0,0,Math.PI/2,0),.008);const face=add(c,new THREE.CircleGeometry(.185,32),M(0xFF9ED0,{roughness:.1,emissive:0xFF5FA8,emissiveIntensity:.35}),s_*.078,0,0);c.userData.face=face;face.rotation.y=s_*Math.PI/2;ol(face,0);
     const st=add(c,gcache('jo_star3',()=>new THREE.ExtrudeGeometry(starShape(.1,.045,5),{depth:.02})),Yl,s_*.08,0,0);st.rotation.y=s_*Math.PI/2;ol(st,.006);return c});
   // antenna with a glowing ball that lags behind the bobbing
   const ant=piv(body,0,R*SY-.03,0);cy(ant,.016,.016,.18,Dk,0,.09,0,8);const bp=piv(ant,0,.21,0);const ball=ol(nosh(add(bp,SPH(.07,20,14),Yg,0,0,0)),.01);
@@ -4182,7 +4193,7 @@ KEEPERS.joy=function(){const g=G(),b=G();g.add(b);const C=M(0xB48AF0,{roughness:
     body.rotation.z=Math.sin(t*2.1)*.06*(talk?.4:1);body.rotation.x=talk?Math.sin(t*3.9)*.03:beat*.05;kBreath(body,t,.014,4.2);
     // the antenna ball trails the bob on a little spring
     const tgt=-body.rotation.z*1.2;bv+=(tgt-bx0)*dt*120;bv*=Math.exp(-dt*6);bx0+=bv*dt;ant.rotation.z=bx0;ball.scale.setScalar(1+Math.sin(t*6)*.1);halo.scale.setScalar(1+Math.sin(t*6)*.2);
-    cups.forEach((c,i)=>c.scale.setScalar(1+(talk?0:Math.max(0,Math.sin(t*8.4+i))*.04)));
+    cups.forEach((c,i)=>{const pl=talk?0:Math.max(0,Math.sin(t*8.4+i));c.scale.setScalar(1+pl*.04);c.userData.face.material.emissiveIntensity=.25+pl*.75});
     // button mashing
     btns.forEach((k,i)=>k.position.y=.045-(!talk&&Math.sin(t*(11+i*3)+i)>.6?.012:0));
     if(cheer||wp<1.1){armP.rotation.set(-.6,0,-.9);armF.rotation.set(0,0,2.5+Math.sin(t*16)*.15)}
@@ -4230,10 +4241,10 @@ Object.assign(KEEPERS,{
     ol(add(mg,gcache('pm_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.045,0);m.quadraticCurveTo(0,-.04,.045,0);m.quadraticCurveTo(0,-.018,-.045,0);return new THREE.ExtrudeGeometry(m,{depth:.008})}),M(0x5A1030,{roughness:.6}),0,0,0),.005);
     {const sp_=onLoft(body,f,.08,.95,.004);ol(add(sp_,gcache('pm_star',()=>new THREE.ExtrudeGeometry(starShape(.045,.02,5),{depth:.006})),Pk,0,0,0),.004)}
     // the afro: a core and a cloud of curl masses (kept off the face), each with a swirl, two pin antennae and a bobby pin
-    const hair=piv(body,cxAt(1)-.01,1.56,-.06);{const c=add(hair,SPH(1,32,24),H,0,.04,0);c.scale.set(.4,.3,.34);ol(c,.014)}
+    const hair=piv(body,cxAt(1)-.01,1.56,-.06);{const c=add(hair,SPH(1,32,24),H,0,.04,0);c.scale.set(.45,.33,.38);ol(c,.014)}
     const curl=gcache('pm_curl',()=>{const pts=[];for(let i=0;i<=40;i++){const u=i/40,a=u*Math.PI*2.3,r=.62*(1-u*.85);pts.push([Math.cos(a)*r,Math.sin(a)*r,0])}return sweepGeo(pts,t=>{const r=.13*(1-t*.5)*Math.min(1,t*20);return[r,r]},{len:80,seg:8})});
-    for(let i=0;i<17;i++){const yy=1-2*(i+.5)/17,rr=Math.sqrt(1-yy*yy),th=i*2.39996,d=[Math.cos(th)*rr,yy,Math.sin(th)*rr];if(d[1]<-.3&&d[2]>.1)continue;
-      const r=.17+.05*((i*37)%5)/5,pv=piv(hair,d[0]*.36,.04+d[1]*.25,d[2]*.3);pv.rotation.y=Math.atan2(d[0],d[2]);const pt=piv(pv);pt.rotation.x=-Math.asin(clamp(d[1],-1,1));
+    for(let i=0;i<26;i++){const yy=1-2*(i+.5)/26,rr=Math.sqrt(1-yy*yy),th=i*2.39996,d=[Math.cos(th)*rr,yy,Math.sin(th)*rr];if(d[1]<-.3&&d[2]>.1)continue;
+      const r=.15+.06*((i*37)%5)/5,pv=piv(hair,d[0]*.38,.04+d[1]*.27,d[2]*.32);pv.rotation.y=Math.atan2(d[0],d[2]);const pt=piv(pv);pt.rotation.x=-Math.asin(clamp(d[1],-1,1));
       ol(sp(pt,r,i%3?H:Hd,0,0,0),.012);const cm=add(pt,curl,i%3?Hd:H,0,0,r*.9);cm.scale.setScalar(r*.9);cm.rotation.z=i*1.3;ol(cm,.004)}
     [[-.12,Gd,.5],[.1,Pk,-.3]].forEach(([x,m,rz])=>{const pn=piv(hair,x,.2,.05);pn.rotation.set(-.2,0,rz);ol(cy(pn,.009,.009,.32,Gd,0,.16,0,6),.004);ol(sp(pn,.035,m,0,.33,0),.006)});
     {const bp=piv(hair,.32,.02,.2);bp.rotation.set(0,.8,.5);ol(rb(bp,.14,.022,.012,.008,Gd,0,0,0),.004);ol(rb(bp,.12,.018,.012,.008,Gd,-.01,.03,0),.004)}
@@ -4278,8 +4289,8 @@ Object.assign(KEEPERS,{
     // slouchy beret with a band and a nub
     const hat=piv(body,.06,Y0+HH-.08,-.02);hat.rotation.z=-.3;{const bt=add(hat,SPH(.36,36,20),Be,.03,.05,0);bt.scale.set(1,.34,1);ol(bt,.014);ol(to(hat,.27,.028,Bd,0,0,0,Math.PI/2),.008);ol(sp(hat,.035,Be,.03,.17,0,1,1.4,1),.006)}
     // flower-and-tassel hair ties at the sides
-    [-1,1].forEach(s_=>{const r=profAt(PR,.78),pv=piv(body,s_*(r+.01),Y0+HH*.78,.02);[0,1,2,3,4].forEach(i=>{const a=i/5*Math.PI*2;ol(sp(pv,.028,M(0xFF5F9A,{roughness:.4}),0,Math.cos(a)*.03,Math.sin(a)*.03),.004)});ol(sp(pv,.02,Me,s_*.01,0,0),.003);
-      const ts=piv(pv,0,-.04,0);for(let j=0;j<5;j++){const a=j/5*Math.PI*2,c=add(ts,gcache('bl_str',()=>new THREE.CylinderGeometry(.008,.014,.14,5)),Gd,Math.cos(a)*.012,-.07,Math.sin(a)*.012);c.rotation.set(Math.sin(a)*.15,0,-Math.cos(a)*.15);ol(c,.003)}});
+    [-1,1].forEach(s_=>{const r=profAt(PR,.78),pv=piv(body,s_*(r+.01),Y0+HH*.78,.02);[0,1,2,3,4].forEach(i=>{const a=i/5*Math.PI*2;ol(sp(pv,.042,M(0xFF5F9A,{roughness:.4}),s_*.01,Math.cos(a)*.048,Math.sin(a)*.048),.005)});ol(sp(pv,.03,Me,s_*.03,0,0),.004);
+      const ts=piv(pv,s_*.02,-.07,0);ol(sp(ts,.03,Gd,0,0,0),.004);for(let j=0;j<7;j++){const a=j/7*Math.PI*2,c=add(ts,gcache('bl_str2',()=>new THREE.CylinderGeometry(.009,.017,.22,5)),Gd,Math.cos(a)*.016,-.11,Math.sin(a)*.016);c.rotation.set(Math.sin(a)*.15,0,-Math.cos(a)*.15);ol(c,.003)}});
     // dotted belt with a pouch of paint jars
     {const r0=profAt(PR,.4);ol(add(body,gcache('bl_belt',()=>loftGeo([[.55,r0*1.02,r0*.86*1.02],[.56,r0*1.04,r0*.86*1.04],[.61,r0*1.04,r0*.86*1.04],[.62,r0*1.02,r0*.86*1.02]],{seg:56})),Cr,0,0,0),.008);
       for(let i=0;i<14;i++){const a=i/14*Math.PI*2,d=add(body,SPH(.012,8,6),M([0xFF3D9A,0x3EC8F2,0xFFD21F,0xA6E22E][i%4],{roughness:.4}),Math.sin(a)*r0*1.045,.585,Math.cos(a)*r0*.86*1.045);d.scale.z=.5;d.rotation.y=a;ol(d,0)}
@@ -4312,7 +4323,7 @@ Object.assign(KEEPERS,{
     L.forEach(m=>m.detail=1);Fc.detail=3;
     const R=.5,body=piv(b,0,.66,0);ol(add(body,SPH(R*.985,40,30),L[2],0,0,0),.018);
     // the face peeking out: a cream patch on the front
-    ol(add(body,gcache('st_face',()=>new THREE.SphereGeometry(R*.992,32,16,Math.PI/2-.62,1.24,Math.PI/2-.5,.9)),Fc,0,0,0),0);
+    {const fc=add(body,gcache('st_face2',()=>new THREE.SphereGeometry(R*.992,48,14,0,Math.PI*2,0,.64)),Fc,0,0,0);fc.rotation.x=Math.PI/2+.04;ol(fc,0)}
     // strands: great circles round the ball, none crossing the face
     const rn=i=>{const x=Math.sin(i*12.9898+7.3)*43758.5;return x-Math.floor(x)};let k=0;
     for(let i=0;i<30;i++){let n;do{const u=rn(k++)*2-1,a=rn(k++)*Math.PI*2,q=Math.sqrt(1-u*u);n=[q*Math.cos(a),q*Math.sin(a),u]}while(Math.abs(n[2])<.5);
@@ -4514,7 +4525,8 @@ const ico=n=>'assets/icons/'+(n.includes('.')?n:n+'.webp');
 function keeperReact(a,d,K){K=K||away&&away.keeper;if(!K)return;K.act=a;K.k=0;K.d=d||1.6}
 let kbT=0;function keeperSay(txt){if(!away||!txt)return;const el=$('#kbub');el.textContent=txt;el.hidden=false;el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');kbT=3.4}
 const _kv=new THREE.Vector3();
-function updShop(dt,t){away.keepers.forEach(K=>{K.k+=dt;if(K.act!=='idle'&&K.k>=K.d)K.act='idle';const a=Math.atan2(pet.pos.x-K.g.position.x,pet.pos.z-K.g.position.z);K.g.rotation.y=approach(K.g.rotation.y,clamp(a,-.7,.7)*.6,dt*3);
+function updShop(dt,t){away.keepers.forEach(K=>{K.k+=dt;if(K.act!=='idle'&&K.k>=K.d)K.act='idle';const talking=kbT>0&&K===away.keeper,Z=keeperGaze(K,dt,talking||K.act!=='idle'),o=Z.mode==='partner'&&Z.other?Z.other.g.position:pet.pos;
+    const a=Math.atan2(o.x-K.g.position.x,o.z-K.g.position.z);K.g.rotation.y=approach(K.g.rotation.y,clamp(a,-1.1,1.1)*(Z.mode==='partner'?.55:.6),dt*3);
   K.upd(dt,t,K.act,K.act==='idle'?0:K.k/K.d,kbT>0&&K===away.keeper)});const K=away.keeper;
   if(kbT>0){kbT-=dt;K.head.getWorldPosition(_kv);_kv.y+=.55;_kv.project(camera);const el=$('#kbub');el.style.left=clamp((_kv.x+1)/2*W,104,W-104)+'px';el.style.top=((1-_kv.y)/2*H)+'px';if(kbT<=0)el.hidden=true}}
 
