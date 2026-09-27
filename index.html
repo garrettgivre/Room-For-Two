@@ -3722,11 +3722,11 @@ function loftGeo(R,o){o=o||{};const seg=o.seg||48,a0=o.a0===undefined?-Math.PI:o
   for(let j=0;j<=seg;j++){const th=a0+(a1-a0)*j/seg,sn=Math.sin(th),c=Math.cos(th);for(let i=0;i<n;i++){const[y,rx,rz,cx,cz]=R[i],m=o.mod?o.mod(th,i/(n-1)):1;P.push((cx||0)+rx*m*sn,y,(cz||0)+rz*m*c);U.push(j/seg,i/(n-1))}}
   for(let j=0;j<seg;j++)for(let i=0;i<n-1;i++){const a=j*n+i,b=(j+1)*n+i;I.push(a,b,a+1,b,b+1,a+1)}
   const mi=n>>1,r=R[mi];return meshGeo(P,U,I,[(seg>>1)*n+mi,[r[3]||0,r[0],(r[4]||0)-(o.a0===undefined?0:r[2]*.5)]])}
-// sweep: a tube along a Catmull-Rom curve through pts, elliptical section prof(t)->[w,h] (w across, facing +z); ends close when prof is 0
+// sweep: a tube along a Catmull-Rom curve through pts, elliptical section prof(t)->[w,h] (w across, facing +z, or facing o.ref(t,point)); ends close when prof is 0
 function sweepGeo(pts,prof,o){o=o||{};const L=o.len||40,S=o.seg||20,P=[],U=[],I=[],C=[],m=pts.length-1;
   const cr=t=>{const f=Math.min(m-1e-6,Math.max(0,t)*m),k=f|0,u=f-k,p0=pts[Math.max(0,k-1)],p1=pts[k],p2=pts[k+1],p3=pts[Math.min(m,k+2)];return[0,1,2].map(j=>.5*(2*p1[j]+(-p0[j]+p2[j])*u+(2*p0[j]-5*p1[j]+4*p2[j]-p3[j])*u*u+(-p0[j]+3*p1[j]-3*p2[j]+p3[j])*u*u*u))};
   for(let i=0;i<=L;i++){const t=.5-.5*Math.cos(Math.PI*i/L),c=cr(t),d=cr(t+.01),e=cr(t-.01);let T=[d[0]-e[0],d[1]-e[1],d[2]-e[2]];const tl=Math.hypot(...T)||1;T=T.map(v=>v/tl);
-    let W=[-T[1],T[0],0];const wl=Math.hypot(...W)||1;W=W.map(v=>v/wl);const H=[T[1]*W[2]-T[2]*W[1],T[2]*W[0]-T[0]*W[2],T[0]*W[1]-T[1]*W[0]],[w,h]=prof(t);C.push(c);
+    let W;if(o.ref){const q=o.ref(t,c);W=[q[1]*T[2]-q[2]*T[1],q[2]*T[0]-q[0]*T[2],q[0]*T[1]-q[1]*T[0]]}else W=[-T[1],T[0],0];const wl=Math.hypot(...W)||1;W=W.map(v=>v/wl);const H=[T[1]*W[2]-T[2]*W[1],T[2]*W[0]-T[0]*W[2],T[0]*W[1]-T[1]*W[0]],[w,h]=prof(t);C.push(c);
     for(let j=0;j<=S;j++){const a=j/S*Math.PI*2,ca=Math.cos(a)*w,sa=Math.sin(a)*h;P.push(c[0]+W[0]*ca+H[0]*sa,c[1]+W[1]*ca+H[1]*sa,c[2]+W[2]*ca+H[2]*sa);U.push(j/S,t)}}
   for(let i=0;i<L;i++)for(let j=0;j<S;j++){const a=i*(S+1)+j,b=a+S+1;I.push(a,b,a+1,b,b+1,a+1)}
   const mi=L>>1;return meshGeo(P,U,I,[mi*(S+1),C[mi]])}
@@ -3823,39 +3823,62 @@ const KEEPERS={
       tas.forEach(q=>{const l=q.i<2?lift[q.i]:0;q.k.position.set(q.x*1.02+l*.5*Math.sign(q.x),q.y*1.02+l,0);q.sw.rotation.z=Math.sin(t*2.1-.8+q.i)*.12-body.rotation.z*1.5+(q.i<2?-Math.sign(q.x)*l*2:0);q.sw.rotation.x=Math.sin(t*1.7+q.i)*.08});
       kEyesUpd(ES,E,dt,{talk,happy:cheer||greet});
       const syl=talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1))):0;ES.mo=approach(ES.mo||0,Math.max(syl,cheer||greet?.6:0),dt*18);mg.scale.set(1+ES.mo*.15,.8+ES.mo*.8,1)}}},
-  // Bolt: a round builder in denim overalls and a hard hat, pencil tucked at the side, rolling pink paint on an invisible wall.
+  // Bolt (after the character sheet): a squat golden egg in blue overalls (bib pocket, straps over the top, yellow buttons),
+  // a ribbed yellow hard hat with a pink star, big round eyes and buck teeth, brown work boots, and a pink mallet that taps away.
   // Straightens the hat now and then; tips it to say hello.
-  builder(){const g=G(),b=G();g.add(b);const O=jel(0xFF9A3C,{roughness:.36}),Y=jel(0xFFD21F,{roughness:.3}),Bl=jel(0x3E7FD8,{roughness:.5}),Pk=jel(0xFF3D9A,{roughness:.4}),Wd=M(0x9A6A3E,{roughness:.6});
-    const body=piv(b,0,.72,0);const bo=add(body,SPH(.5,48,36),O,0,0,0);bo.scale.set(1,1.02,.92);ol(bo,.018);gloss(body,.5,1.02,.92,-.25,.3,.11,.055,.6,.45);
-    // overalls: the lower body, a bib with a pocket, straps and yellow buttons
-    const ov=add(body,new THREE.SphereGeometry(.508,44,20,0,Math.PI*2,1.95,Math.PI-1.95),Bl,0,0,0);ov.scale.set(1,1.02,.92);ol(ov,.01);
-    const bib=onSurface(body,.5,1.02,.92,0,-.24);ol(rb(bib,.36,.24,.04,.03,Bl,0,.02,.0),.01);ol(rb(bib,.16,.08,.02,.015,jel(0x5A95E8,{roughness:.5}),0,.0,.025),.006);
-    {const h=add(bib,heartGeo(),Pk,-.005,-.018,.035);h.scale.setScalar(.022);ol(h,0)}
-    [-1,1].forEach(s=>{const bp=onSurface(body,.5,1.02,.92,s*.15,-.08);ol(sp(bp,.03,Y,0,0,.02),.006);const st=add(body,new THREE.TorusGeometry(.5,.028,8,24,.9),Bl,0,0,0);st.rotation.set(0,s*.3-Math.PI/2,Math.PI/2-.1);st.scale.set(1.02,.95,.95);ol(st,0)});
-    const F=kFace2(body,{r:.5,sy:1.02,sz:.92,ex:.15,ey:.2,er:.085,my:.03,mw:.07,browC:0x8A3A10,cheekC:0xFF6F8F});
-    // hard hat with a ridge and a brim that sticks out in front, and a pencil at the side
-    const hat=piv(body,0,.4,0);{const d=nosh(add(hat,new THREE.SphereGeometry(.36,36,16,0,Math.PI*2,0,Math.PI/2),Y,0,0,0));d.scale.set(1,.72,1);ol(d,.016);
-      const br=nosh(add(hat,new THREE.CylinderGeometry(.4,.4,.035,32),Y,0,.01,.05));br.scale.set(1,1,1.12);ol(br,.012);ol(nosh(rb(hat,.08,.1,.62,.04,jel(0xFFE36E,{roughness:.3}),0,.2,0)),.01);
-      const st=add(hat,new THREE.ExtrudeGeometry(starShape(.07,.032,5),{depth:.02,bevelEnabled:false}),Pk,0,.12,.33);st.rotation.x=-.35;ol(st,.006);gloss(hat,.36,.72,1,-.14,.16,.07,.03,.5,.5)}
-    const pencil=piv(body,.43,.24,.05);pencil.rotation.set(0,0,1.15);ol(cy(pencil,.024,.024,.24,Y,0,0,0,6),.008);ol(add(pencil,new THREE.ConeGeometry(.024,.06,6),M(0xFFE3B8),0,-.15,0),.006).rotation.x=Math.PI;
-      ol(cy(pencil,.024,.024,.04,Pk,0,.14,0,6),.006);
-    // arms: the right rolls paint, the left is free
-    const armL=kArm2(body,.5,-.02,.03,O,.26,.07),armR=kArm2(body,-.5,-.02,.03,O,.26,.07);
-    const roller=piv(armR.userData.tip,0,0,.04);roller.rotation.x=-1.5;cy(roller,.018,.018,.34,Wd,0,-.14,0,8);const rh=piv(roller,0,-.3,.02);cy(rh,.012,.012,.06,M(0xDDE3EE,{metalness:.5,roughness:.3}),0,-.02,0,6);
-    const rl=add(rh,new THREE.CylinderGeometry(.075,.075,.3,20),Pk,0,-.08,0);rl.rotation.z=Math.PI/2;ol(rl,.01);
-    [-.22,.22].forEach(x=>{const f=add(b,SPH(.14,20,14),Wd,x,.08,.08);f.scale.set(1,.6,1.3);ol(f,.012)});
-    let fixT=6,fp=9;
-    return{g,head:hat,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';
+  builder(){const g=G(),b=G();g.add(b);const Yb=M(0xF6C933,{roughness:.42}),Hh=M(0xFFD83A,{roughness:.3}),Bl=M(0x3E86DC,{roughness:.7}),Bp=M(0x72AEF2,{roughness:.7}),Pk=M(0xFF5FA8,{roughness:.35}),
+      Pl=M(0xFF9AC8,{roughness:.35}),Wd=M(0xB07A46,{roughness:.55}),Bt=M(0x9A6436,{roughness:.7}),Bs=M(0x5A3A22,{roughness:.8}),Lc=M(0xF4E6C8,{roughness:.7});
+    Yb.detail=3;Hh.detail=0;Bl.detail=1;Bp.detail=1;Wd.detail=2;Bt.detail=3;Bs.detail=3;
+    const HY=.62,HR=.5,HSY=.95,HSZ=.9;
+    const prof=y=>{let r;if(y>=HY)r=HR*Math.sqrt(Math.max(0,1-((y-HY)/(HR*HSY))**2));else if(y>=.32)r=.5+.06*(.5+.5*Math.cos(Math.PI*(y-.32)/(HY-.32)));else r=.56*Math.pow(Math.max(0,1-Math.pow(Math.abs(y-.32)/.32,2.6)),1/2.6);return r},
+      f=y=>{const r=prof(y);return[r,r*HSZ,0,0]};
+    const body=piv(b,0,.16,0);
+    ol(add(body,gcache('bt_body',()=>loftGeo(Array.from({length:44},(_,i)=>{const y=(.5-.5*Math.cos(Math.PI*i/43))*(HY+HR*HSY),r=prof(y);return[y,r,r*HSZ]}),{seg:60})),Yb,0,0,0),.018);
+    // overalls: the trousers, a bib with a pocket, straps over the top to the back, yellow buttons
+    ol(add(body,gcache('bt_pants',()=>loftGeo(Array.from({length:14},(_,i)=>{const y=.03+i/13*.4,r=prof(y)*1.025;return[y,r,r*HSZ]}),{seg:56})),Bl,0,0,0),.01);
+    ol(add(body,gcache('bt_bib',()=>loftGeo(Array.from({length:10},(_,i)=>{const y=.4+i/9*.22,r=prof(y)*1.03;return[y,r,r*HSZ]}),{seg:24,a0:-.72,a1:.72})),Bl,0,0,0),.01);
+    {const pk=onLoft(body,f,0,.5,.03);ol(rb(pk,.19,.12,.02,.02,Bp,0,0,0),.006);for(let i=0;i<5;i++)ol(add(pk,gcache('bt_st',()=>new THREE.BoxGeometry(.022,.005,.004)),Lc,-.07+i*.035,.045,.012),0)}
+    [-1,1].forEach(s_=>{const on=(x,y,sd)=>{const r=prof(y),rz=r*HSZ;const xx=Math.min(Math.abs(x),r*1.04);return[s_*xx,y,sd*rz*1.04*Math.sqrt(Math.max(0,1-(xx/(r*1.04))**2))]};
+      const pts=[on(.17,.6,1),on(.24,.7,1),on(.32,.79,1),on(.39,.85,1),on(.46,.87,0),on(.39,.84,-1),on(.31,.74,-1),on(.24,.62,-1),on(.21,.5,-1),on(.2,.4,-1)];
+      ol(add(body,gcache('bt_strap'+s_,()=>sweepGeo(pts,()=>[.05,.014],{len:40,seg:8,ref:(t,c)=>[c[0],c[1]-HY,c[2]]})),Bl,0,0,0),.006);
+      const bp=onLoft(body,f,s_*.17,.6,.035);ol(cy(bp,.03,.03,.02,Hh,0,0,0,16),.006).rotation.x=Math.PI/2});
+    // face: big round eyes, a smile with two buck teeth, blush
+    const E=[-1,1].map(s_=>kEye(onSurface(body,HR,HSY,HSZ,s_*.15,.19,0,HY,0),.105,eyeTex('btE',{pr:22}),Yb,{sink:.22}));
+    [-1,1].forEach(s_=>{const cp=onSurface(body,HR,HSY,HSZ,s_*.29,.08,0,HY,0);const c=add(cp,SPH(1,14,10),M(0xFF8FA8,{roughness:.7}),0,0,.002);c.scale.set(.055,.032,.006);ol(c,0)});
+    const mp=onSurface(body,HR,HSY,HSZ,0,.05,0,HY,0),mg=piv(mp,0,0,-.003);
+    {const bend=geo=>{const Pq=geo.pos;for(let i=0;i<Pq.length;i+=3)Pq[i+2]-=(Pq[i]*Pq[i]+Pq[i+1]*Pq[i+1])/(2*HR);geo.version++;return geo};
+      ol(add(mg,gcache('bt_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.075,.012);m.quadraticCurveTo(0,-.01,.075,.012);m.bezierCurveTo(.07,-.07,-.07,-.07,-.075,.012);return bend(new THREE.ExtrudeGeometry(m,{depth:.01}))}),M(0x6A1830,{roughness:.6}),0,0,0),.007);
+      const tg=add(mg,SPH(1,14,10),M(0xFF7FA0,{roughness:.6}),0,-.045,.004);tg.scale.set(.04,.016,.008);ol(tg,0);
+      [-1,1].forEach(s_=>ol(rb(mg,.028,.032,.012,.007,M(0xFFFFFF,{roughness:.3}),s_*.016,-.006,.007),.004))}
+    // hard hat: a dome with three ribs, a brim all round, a pink star on the front
+    const hat=piv(body,0,.9,0);
+    ol(nosh(lathe(hat,[[.44,-.01],[.445,0],[.43,.07],[.38,.17],[.29,.26],[.16,.315],[0,.33]],Hh,0,0,0,48)),.016);
+    ol(nosh(lathe(hat,[[.42,-.015],[.53,-.02],[.545,-.005],[.53,.012],[.44,.02]],Hh,0,0,0,48)),.012);
+    [-.42,0,.42].forEach(r=>{const rib=nosh(to(hat,.42,.025,Hh,0,0,0,0,Math.PI/2+r,0,Math.PI));rib.scale.set(1.02,.8,1);ol(rib,.008)});
+    {const st=add(hat,gcache('bt_star',()=>new THREE.ExtrudeGeometry(starShape(.085,.038,5),{depth:.02,bevelEnabled:true,bevelThickness:.005,bevelSize:.005,bevelSegments:1})),Pk,.12,.16,.37);st.rotation.set(-.45,.3,0);ol(st,.006)}
+    gloss(hat,.44,.75,1,-.16,.18,.07,.03,.5,.5);
+    // stubby arms: the left holds a pink mallet (the register is on the right)
+    const armL=kArm2(body,-.52,.36,.05,Yb,.2,.075,.1),armR=kArm2(body,.52,.36,.05,Yb,.2,.075,.1);
+    const mal=piv(armL.userData.tip,0,.06,0);ol(cy(mal,.024,.026,.42,Wd,0,0,.0,10),.008).rotation.x=Math.PI/2;
+    {const hd=piv(mal,0,0,.28);const h=add(hd,new THREE.CylinderGeometry(.095,.095,.24,24),Pk,0,0,0);ol(h,.01);[-1,1].forEach(s_=>ol(cy(hd,.1,.1,.02,Pl,0,s_*.125,0,24),.006))}
+    // work boots: brown uppers with a cuff and laces, dark soles
+    [-1,1].forEach(s_=>{const f_=piv(b,s_*.22,0,.04);ol(sp(f_,.15,Bt,0,.12,.03,1,.72,1.35),.012);ol(cy(f_,.13,.12,.1,Bt,0,.2,-.04,20),.01);ol(to(f_,.125,.022,Bs,0,.25,-.04,Math.PI/2),.006);
+      ol(rb(f_,.3,.06,.44,.03,Bs,0,.03,.03),.01);ol(sp(f_,.09,Bt,0,.1,.17,1.2,.75,.9),.008);for(let i=0;i<3;i++)ol(rb(f_,.12,.014,.022,.007,Lc,0,.22-i*.03,.08+i*.04),0)});
+    let fixT=6,fp=9,tp=0;const ES={};
+    return{g,head:hat,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';dt=Math.min(dt,.05);
       fixT-=dt;if(fixT<0&&!talk&&act==='idle'){fixT=7+Math.random()*4;fp=0}fp+=dt;
-      b.position.y=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.4:Math.abs(Math.sin(t*2.6))*.018;kBreath(body,t,.016,2.6);
-      body.rotation.z=Math.sin(t*1.3)*.035+(talk?Math.sin(t*4.6)*.03:0);body.rotation.x=talk?Math.sin(t*3.8)*.03:0;
-      // paint strokes: up and down, the roller spinning with the stroke
-      const sk=talk?.4:1,st=Math.sin(t*2.6);armR.rotation.set(-1.5+st*.5*sk,0,-.65);rl.rotation.x+=dt*Math.cos(t*2.6)*6*sk;
+      b.position.y=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.4:0;kBreath(body,t,.016,2.6);
+      body.rotation.z=Math.sin(t*1.3)*.03+(talk?Math.sin(t*4.6)*.03:0);body.rotation.x=talk?Math.sin(t*3.8)*.03:0;
+      // mallet: raised slowly, brought down with a snap (a little squash on each tap); held still-ish while talking
+      tp=(tp+dt*(talk?.4:1.1))%1;const up=tp<.75?Math.sin(tp/.75*Math.PI/2):Math.cos((tp-.75)/.25*Math.PI/2),hit=tp>.95||tp<.05?1:0;
+      if(!cheer&&!greet)armL.rotation.set(-.35-up*1.35,0,-.35);
+      if(hit&&!talk)body.scale.y*=.985;
       // hat: tipped for hello, straightened now and then
-      const tip=greet?Math.sin(Math.min(1,p*1.6)*Math.PI):0,fx=fp<1.3?Math.sin(fp/1.3*Math.PI):0;hat.position.y=.4+tip*.14+fx*.03;hat.rotation.z=tip*.35+fx*Math.sin(fp*12)*.08;
-      if(cheer){armL.rotation.set(0,0,2.5);armR.rotation.set(0,0,-2.5)}else if(greet)armL.rotation.set(0,0,2.6-Math.sin(t*12)*.25);
-      else if(fx>0)armL.rotation.set(-.2,0,2.65-fx*.1);else if(talk)armL.rotation.set(-.6+Math.sin(t*3.1)*.3,0,.5+Math.abs(Math.sin(t*2.3))*.4);else armL.rotation.set(-.1+Math.sin(t*.9)*.05,0,.35);
-      F.update(dt,t,{talk,happy:cheer||greet})}}},
+      const tip=greet?Math.sin(Math.min(1,p*1.6)*Math.PI):0,fx=fp<1.3?Math.sin(fp/1.3*Math.PI):0;hat.position.y=.9+tip*.14+fx*.03;hat.rotation.z=tip*.35+fx*Math.sin(fp*12)*.08;
+      if(cheer){armL.rotation.set(0,0,-2.5);armR.rotation.set(0,0,2.5)}else if(greet){armR.rotation.set(0,0,2.6-Math.sin(t*12)*.25);armL.rotation.set(-.4,0,-.35)}
+      else if(fx>0)armR.rotation.set(-.2,0,2.65-fx*.1);else if(talk)armR.rotation.set(-.6+Math.sin(t*3.1)*.3,0,.5+Math.abs(Math.sin(t*2.3))*.4);else armR.rotation.set(-.1+Math.sin(t*.9)*.05,0,.35);
+      kEyesUpd(ES,E,dt,{talk,happy:cheer||greet});
+      const syl=talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1))):0;ES.mo=approach(ES.mo||0,Math.max(syl,cheer||greet?.6:.1),dt*18);mg.scale.set(1+ES.mo*.1,.7+ES.mo*.8,1)}}},
   // Bunbun the baker (after the character sheet): a soft butter-cream bun of a body with long floppy ears, a lopsided puffy
   // chef's hat on a yellow band, a pink apron tied in a bow at the back, and a blue mixing bowl held in one paw and stirred
   // with a wooden spoon in the other. The upper body is exactly the face ellipsoid, so the face sits on it.
