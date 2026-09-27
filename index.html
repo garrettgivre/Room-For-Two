@@ -3246,7 +3246,7 @@ const ACTS_ANIM={
 // Lying down. The body pivots at the feet, so rx -π/2 lays it on its back (heads towards the headboard, since the pet
 // faces the foot of the bed) and rz -π/2 rolls it onto its side. y lifts it by the body's half-depth so it rests on top.
 function lieBack(e,S,t,P){const nap=P.nap,pose=P.pose||'rest',br=Math.sin(t*(nap?1.4:2))*.03,kick=pose==='kick'?Math.sin(t*5):0,arms=pose==='arms';
-  return{y:S.bw*.8*.82*e,rx:-Math.PI/2*e,sy:br*e,legs:[(-.12+kick*.35)*e,(-.12-kick*.35)*e],lid:nap?(e>.9?1:.5*e):.15*e,mouth:nap?undefined:(pose==='chat'?undefined:.0),
+  return{y:S.bw*.8*.72*e,rx:-Math.PI/2*e,sy:br*e,legs:[(.95+kick*.35)*e,(.95-kick*.35)*e],lid:nap?(e>.9?1:.5*e):.15*e,mouth:nap?undefined:(pose==='chat'?undefined:.0),
     arms:[0,1].map(i=>arms&&i===1?{rz:2.75,rx:-.25,w:e}:nap?{rz:(i?1:-1)*.35,rx:-.9,w:e}:{rz:(i?1:-1)*(.3+(pose==='kick'?.3:0)),rx:-.15,w:e}),
     heads:[0,1].map(i=>nap?{rz:(i?1:-1)*.28,rx:-.1,w:e}:{rz:(i?1:-1)*.12+Math.sin(t*.7+i)*.06,rx:-.22,w:e}),look:nap?undefined:{x:Math.sin(t*.5)*.4,y:.2,w:e}}}
 function lieSide(e,S,t,inBed){const br=Math.sin(t*1.4)*.035,len=(pet.rig?pet.rig.headY:1)*.42;
@@ -3323,7 +3323,23 @@ function updatePet(dt,t){
   const bob=walking&&!S.scoot?Math.abs(Math.sin(pet.ph))*.06:0;
   R.body.position.x=approach(R.body.position.x,A&&A.x?A.x:0,dt*8);
   R.body.position.y=approach(R.body.position.y,bob+(sleeping?-.06:0)+(A&&A.y&&A.spin===undefined?A.y:0),dt*14);
-  const sy=breathe+(A&&A.sy?A.sy:0);R.body.scale.set(2-sy,sy,2-sy);R.root.scale.setScalar(pet.scale*pop);
+  const sy=breathe+(A&&A.sy?A.sy:0);R.body.scale.set(2-sy,sy,2-sy);
+  // Jelly physics. The root (pivot at the feet) gets a springy squash along world-up and a springy lean, pushed by the
+  // pet's acceleration: it squashes when it lands, stretches as it leaves the ground, lags back when it sets off and
+  // wobbles forward when it stops. At rest it sags a little under its own weight: more sitting, most lying down
+  // (the root's y is world-up whatever the body is doing, so a lying pet spreads into the mattress).
+  {const so=pet.soft||(pet.soft={sq:0,sv:0,lx:0,lz:0,vx:0,vz:0,p:[g.position.x,g.position.y,g.position.z],u:[0,0,0]}),id=1/Math.max(dt,1e-3);
+    const P=g.position,v=[(P.x-so.p[0])*id,(P.y-so.p[1])*id,(P.z-so.p[2])*id];let a=v.map((q,i)=>q-so.u[i]);so.p=[P.x,P.y,P.z];so.u=v;
+    if(Math.hypot(...a)>12||dt>.2)a=[0,0,0];// a teleport, not a push (a = the change in velocity this frame)
+    const h=pet.heading,af=a[0]*Math.sin(h)+a[2]*Math.cos(h),ar=a[0]*Math.cos(h)-a[2]*Math.sin(h);
+    const lying=pet.lieK>.5||(pet.mode==='perch'&&pet.seat&&pet.seat.kind==='bed'&&!pet.seat.bounce&&pet.seatK>.6),sitting=!lying&&((pet.mode==='perch'&&pet.seatK>.6)||(A&&A.legs&&A.legs[0]<-1));
+    const rest=(lying?-.17:sitting?-.07:-.015)+(walking&&!S.scoot?Math.abs(Math.sin(pet.ph))*-.035:0)+clamp(Math.abs(v[1])*.05,0,.16);
+    // a jolt: velocity changes kick the springs (landing or leaping squashes; setting off leans back, stopping wobbles forward)
+    so.sv-=clamp(a[1],-8,8)*.5;so.vx-=clamp(af,-3,3)*3.4;so.vz+=clamp(ar,-3,3)*2.6;
+    const kS=140,dS=6.5,kL=100,dL=5.5,sub=Math.min(3,Math.ceil(dt/.012)),h_=dt/sub;
+    for(let k=0;k<sub;k++){so.sv+=(-(so.sq-rest)*kS-so.sv*dS)*h_;so.sq+=so.sv*h_;so.vx+=(-so.lx*kL-so.vx*dL)*h_;so.lx+=so.vx*h_;so.vz+=(-so.lz*kL-so.vz*dL)*h_;so.lz+=so.vz*h_}
+    so.sq=clamp(so.sq,-.3,.22);so.lx=clamp(so.lx,-.3,.3);so.lz=clamp(so.lz,-.3,.3);
+    const base=pet.scale*pop,sq=so.sq;R.root.scale.set(base*(1-sq*.55),base*(1+sq),base*(1-sq*.55));R.root.rotation.set(so.lx,0,so.lz)}
   R.body.rotation.x=approach(R.body.rotation.x,(A&&A.rx?A.rx:0)+(eating?.3+Math.sin(t*18)*.05:sleeping?.12:(S.elder?.12:0)+(walking?.08:0)+(S.scoot&&walking?.15:0)),dt*10);
   const sway=walking?Math.sin(pet.ph)*(S.wobble?.2:S.scoot?.1:.07):0;
   R.body.rotation.z=approach(R.body.rotation.z,(sleeping?.08:sway+(pet.waveT>0?-.07:0))+(A&&A.rz?A.rz:0),dt*(A&&A.rz?6:10));
@@ -3337,6 +3353,7 @@ function updatePet(dt,t){
     if(eating){rx=-1.2+Math.sin(t*18+i*Math.PI)*.25;rz=s*.25}
     if(sleeping){rz=s*.25;rx=-.3}
     if(avg<35&&!walking&&pet.hop<=0)rz=s*.18;
+    if(pet.soft){rz-=pet.soft.lz*1.2;rx-=pet.soft.lx*1.4-pet.soft.sv*.08}
     const o=A&&A.arms&&A.arms[i];if(o){rz+=(o.rz-rz)*o.w;rx+=(o.rx-rx)*o.w}
     Ar.p.rotation.z=approach(Ar.p.rotation.z,rz,dt*12);Ar.p.rotation.x=approach(Ar.p.rotation.x,rx,dt*12)});
   // heads: each bobs on its own, they glance at each other, and lean together to sleep
@@ -3347,6 +3364,7 @@ function updatePet(dt,t){
     if(avg<35&&!sleeping)rx+=.15;
     if(S.elder)rx+=.1;
     if(pet.hop>0)rz+=Math.sin(t*20+ph)*.12;
+    if(pet.soft){rz-=pet.soft.lz*1.6+pet.soft.vz*.05;rx-=pet.soft.lx*1.3+pet.soft.vx*.04}
     const o=A&&A.heads&&A.heads[i];if(o){rz+=((o.rz??rz)-rz)*o.w;rx+=((o.rx??rx)-rx)*o.w;ry+=((o.ry??ry)-ry)*o.w}
     H.p.rotation.z=approach(H.p.rotation.z,rz,dt*8);H.p.rotation.x=approach(H.p.rotation.x,rx,dt*8);H.p.rotation.y=approach(H.p.rotation.y,ry,dt*8)});
   // springy tufts react to bounces and turns
