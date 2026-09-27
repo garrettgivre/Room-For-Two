@@ -1243,7 +1243,10 @@ const SETS=[
  {k:'petpal',img:'set-petpal.svg',n:'Pet Palace',e:'🐾',c:'#FFC21F'},
  {k:'date',img:'set-date.svg',n:'Date Night',e:'💞',c:'#FF5FA8'},
  {k:'groovy',img:'set-groovy.svg',n:"Groovy '70s",e:'🪩',c:'#FF8A1C'},
- {k:'zen',img:'set-zen.svg',n:'Zen Tea Room',e:'🍵',c:'#A6C27A'}
+ {k:'zen',img:'set-zen.svg',n:'Zen Tea Room',e:'🍵',c:'#A6C27A'},
+ {k:'spooky',img:'set-spooky.svg',n:'Spooky Cute',e:'🎃',c:'#FF8A1C'},
+ {k:'holiday',img:'set-holiday.svg',n:'Festive Holidays',e:'🎁',c:'#E8384F'},
+ {k:'spring',img:'set-spring.svg',n:'Spring Picnic',e:'🌷',c:'#A6E22E'}
 ];
 const SETMAP={};SETS.forEach(s=>SETMAP[s.k]=s);
 const FUNCS=[['seat','Seats','🛋️'],['bed','Beds','🛏️'],['surface','Tables','🍽️'],['storage','Storage','📦'],['light','Lights','💡'],['fun','Fun','🕹️'],['plant','Plants','🌵'],['rug','Rugs','🌀'],['deco','Decor','🗿'],['wall','Walls','🖼️'],['pet','Pet','🐾']];
@@ -1522,6 +1525,39 @@ const CAT=[
  {k:'koibowl',n:'Koi bowl',set:'zen',fn:'deco',p:5,dc:7},
  {k:'tatami',n:'Tatami mat',set:'zen',fn:'rug',p:4,dc:10,flat:1},
  {k:'basketbed',n:'Woven basket pet bed',set:'zen',fn:'pet',p:4,dc:10,flat:1,sleep:1},
+ // Spooky Cute
+ {k:'pumpkinlamp',n:'Pumpkin lamp',set:'spooky',fn:'light',p:5,dc:2},
+ {k:'ghostplush',n:'Friendly ghost',set:'spooky',fn:'deco',p:4,dc:12},
+ {k:'cauldron',n:'Bubbling cauldron',set:'spooky',fn:'fun',p:8,dc:4},
+ {k:'batgarland',n:'Bat garland',set:'spooky',fn:'wall',p:3,dc:8,wall:1,y:1.9},
+ {k:'coffinshelf',n:'Coffin bookshelf',set:'spooky',fn:'storage',p:7,dc:8},
+ {k:'candybowl',n:'Candy cauldron bowl',set:'spooky',fn:'surface',p:4,dc:2},
+ {k:'webrug',n:'Spiderweb rug',set:'spooky',fn:'rug',p:4,dc:8,flat:1},
+ {k:'moonwindow',n:'Spooky moon window',set:'spooky',fn:'wall',p:5,dc:8,wall:1,y:1.7},
+ {k:'broom',n:'Witch broom',set:'spooky',fn:'deco',p:3,dc:10},
+ {k:'witchbed',n:'Witch hat pet bed',set:'spooky',fn:'pet',p:5,dc:8,flat:1,sleep:1},
+ // Festive Holidays
+ {k:'xmastree',n:'Decorated tree',set:'holiday',fn:'plant',p:10,dc:6},
+ {k:'mantel',n:'Stocking mantel',set:'holiday',fn:'deco',p:8,dc:12},
+ {k:'gingerhouse',n:'Gingerbread house',set:'holiday',fn:'deco',p:5,dc:12},
+ {k:'canelamp',n:'Candy cane lamp',set:'holiday',fn:'light',p:5,dc:1},
+ {k:'sleighbed',n:'Sleigh bed',set:'holiday',fn:'bed',p:13,dc:1,perch:{y:.62,z:.3,x:[-.35,0,.35],w:.9,bz:-.8,pz:-1.0,side:1,se:1.05,kind:'bed',foot:1.4}},
+ {k:'wreath',n:'Holiday wreath',set:'holiday',fn:'wall',p:3,dc:1,wall:1,y:1.8},
+ {k:'snowglobe',n:'Giant snow globe',set:'holiday',fn:'deco',p:6,dc:7},
+ {k:'cookietable',n:"Cookies for Santa",set:'holiday',fn:'surface',p:5,dc:10},
+ {k:'presents',n:'Present pile',set:'holiday',fn:'fun',p:6,dc:1},
+ {k:'giftbed',n:'Gift box pet bed',set:'holiday',fn:'pet',p:5,dc:6,flat:1,sleep:1},
+ // Spring Picnic
+ {k:'picnicrug',n:'Gingham picnic blanket',set:'spring',fn:'rug',p:4,dc:1,flat:1},
+ {k:'picnicbasket',n:'Picnic basket',set:'spring',fn:'storage',p:4,dc:10},
+ {k:'flowerarch',n:'Flower arch',set:'spring',fn:'deco',p:7,dc:0},
+ {k:'egglamp',n:'Egg lamp',set:'spring',fn:'light',p:5,dc:9},
+ {k:'bunnychair',n:'Bunny chair',set:'spring',fn:'seat',p:6,dc:12,perch:{y:.42,z:.06,w:.3,bz:-.2,fe:.4}},
+ {k:'tulips',n:'Tulip planter',set:'spring',fn:'plant',p:4,dc:0},
+ {k:'kite',n:'Kite',set:'spring',fn:'wall',p:3,dc:7,wall:1,y:1.9},
+ {k:'lemonade',n:'Lemonade stand',set:'spring',fn:'surface',p:7,dc:3},
+ {k:'butterflies',n:'Butterfly mobile',set:'spring',fn:'deco',p:5,dc:9},
+ {k:'eggbed',n:'Eggshell pet bed',set:'spring',fn:'pet',p:5,dc:12,flat:1,sleep:1},
  // Capsule Pals: little living figurines of the shopkeepers, only from the capsule machine
  ...[['baker','Bunbun'],['stylist','Fizz'],['toymaker','Boing'],['cushion','Cushy'],['builder','Bolt'],['joy','Joy'],['hair','Pom'],['makeup','Blush'],['tailor','Stitch']].map(([k,n],i)=>({k:'fig_'+k,n:n+' figurine',set:'gacha',fn:'deco',p:0,dc:[0,7,9,0,2,8,5,0,4][i],gacha:1})),
  {k:'fig_gold',n:'Golden gumdrop trophy',set:'gacha',fn:'deco',p:0,dc:3,gacha:1},
@@ -3283,6 +3319,109 @@ Object.assign(BUILD,{
  tatami(c){const g=G(),Tm=M(c,{roughness:1});Tm.detail=1;ol(rb(g,1.8,.04,1.0,.01,Tm,0,.02,0),.008);[-1,1].forEach(sd=>ol(rb(g,1.8,.045,.06,.005,M(0x2A3A28,{roughness:.8}),0,.022,sd*.47),0));for(let i=0;i<30;i++)ol(rb(g,1.78,.041,.004,.001,M(shade(c,.08)),0,.021,-.44+i*.03),0);return g},
  basketbed(c){const g=G(),Wk=M(c,{roughness:.8}),In=M(0xFFF6EA,{roughness:.95});Wk.detail=2;In.detail=1;ol(lathe(g,[[.42,0],[.46,.02],[.54,.26],[.56,.28],[.52,.28],[.46,.08],[0,.06]],Wk,0,0,0,40),.012);
   for(let i=0;i<4;i++)ol(to(g,.46+i*.025,.008,M(shade(c,.15)),0,.06+i*.06,0,Math.PI/2),0);const cu=add(g,gcache('bk_cu',()=>cushionGeo(.44,.44,.07,{pinch:.02,n:2})),In,0,.13,0);cu.rotation.x=-Math.PI/2;ol(cu,.006);return g}});
+/* ================= SPOOKY CUTE, FESTIVE HOLIDAYS, SPRING PICNIC ================= */
+function s4Gift(g,x,y,z,w,h,d,col,rib){ol(rb(g,w,h,d,.02,M(col,{roughness:.5}),x,y+h/2,z),.006);const R=M(rib,{roughness:.4});ol(rb(g,w*.18,h*1.01,d*1.01,.005,R,x,y+h/2,z),0);ol(rb(g,w*1.01,h*1.01,d*.18,.005,R,x,y+h/2,z),0);
+  [-1,1].forEach(sd=>{const l=add(g,SPH(1,12,8),R,x+sd*w*.1,y+h+.03,z);l.scale.set(w*.12,.04,.04);l.rotation.z=sd*.4;ol(l,.003)})}
+function s4Pumpkin(g,x,y,z,r,col,face){const p=piv(g,x,y,z),Pk=M(col,{roughness:.45});for(let i=0;i<8;i++){const a=i/8*Math.PI*2,sg=add(p,SPH(r,20,14),Pk,Math.cos(a)*r*.35,r*.85,Math.sin(a)*r*.35);sg.scale.set(.62,.86,.62);ol(sg,.006)}
+  ol(cy(p,r*.12,r*.16,r*.35,M(0x5E8A34,{roughness:.6}),0,r*1.75,0,8),.004);if(face){const Gw=M(0xFFE08A,{emissive:0xFFB23A,emissiveIntensity:1.6});[-1,1].forEach(sd=>{const e=add(p,new THREE.ConeGeometry(r*.14,r*.2,3),Gw,sd*r*.3,r*1.0,r*.83);e.rotation.x=Math.PI/2;ol(e,0)});
+    const m=add(p,new THREE.SphereGeometry(1,14,8,0,Math.PI*2,Math.PI/2,Math.PI/2),Gw,0,r*.7,r*.8);m.scale.set(r*.4,r*.18,r*.1);ol(m,0)}return p}
+Object.assign(BUILD,{
+ // ---------- Spooky Cute ----------
+ pumpkinlamp(c){const g=G();s4Pumpkin(g,0,0,0,.4,c,1);ol(sp(g,.1,M(0xFFE08A,{emissive:0xFFB23A,emissiveIntensity:1.2}),0,.36,0),0);for(let i=0;i<3;i++){const l=add(g,leafGeo(.18,.12),M(0x5E8A34,{roughness:.6}),0,.7,0);l.rotation.set(-1,i*2,0);ol(l,.003)}return g},
+ ghostplush(c){const g=G(),Gh=M(c,{roughness:.8});Gh.detail=1;const b=piv(g,0,0,0);ol(add(b,gcache('gh_body',()=>loftGeo(smoothProf([[.05,.34],[.2,.36],[.5,.34],[.72,.26],[.84,.12],[.87,0]],16).map(([y,r])=>[y,r,r*.9,0,0]),{seg:32,mod:(th,v)=>1+(v<.12?.12*Math.sin(th*6):0)})),Gh,0,0,0),.012);
+  [-1,1].forEach(sd=>{ol(sp(b,.05,M(0x1A1424),sd*.1,.62,.28,1,1.3,.5),0);ol(sp(b,.015,M(0xFFFFFF),sd*.1+.015,.64,.3),0);ol(sp(b,.1,Gh,sd*.36,.45,.05,.6,1,.6),.006)});ol(sp(b,.035,M(0x3A1030),0,.52,.3,1.2,.8,.4),0);[-1,1].forEach(sd=>ol(sp(b,.035,M(0xFF9ED0,{roughness:.7}),sd*.18,.55,.26,1,.6,.4),0));
+  g.userData.anim=t=>{b.position.y=.06+Math.sin(t*1.8)*.05;b.rotation.z=Math.sin(t*1.3)*.05};return g},
+ cauldron(c){const g=G(),Ir=M(0x2A2340,{roughness:.5}),Br=M(c,{emissive:c,emissiveIntensity:.8,roughness:.2});[0,1,2].forEach(i=>{const a=i/3*Math.PI*2;ol(cy(g,.03,.04,.2,Ir,Math.cos(a)*.3,.1,Math.sin(a)*.3,8),.004)});
+  ol(lathe(g,[[.2,.12],[.34,.18],[.44,.36],[.42,.56],[.36,.62],[.4,.64],[.4,.68],[.35,.68],[.33,.6]],Ir,0,0,0,32),.012);const br=add(g,new THREE.CircleGeometry(.34,28),Br,0,.62,0);br.rotation.x=-Math.PI/2;br.outline=0;
+  const bb=[0,1,2,3,4].map(i=>ol(sp(g,.05,M(lighten(c,.3),{emissive:c,emissiveIntensity:1,roughness:.2}),0,.64,0),0));ol(cy(g,.02,.02,.6,M(0x9C6B48),.12,.8,.05,6),0).rotation.z=-.4;
+  g.userData.anim=t=>bb.forEach((b,i)=>{const k=(t*.8+i/5)%1;b.position.set(Math.cos(i*2.4)*.18,.62+k*.3,Math.sin(i*2.4)*.18);b.scale.setScalar(k>.8?(1-k)/.2:1)});return g},
+ batgarland(c){const g=G(),Rp=M(0x3A3244,{roughness:.6}),Bt=M(c,{roughness:.5});const pts=[];for(let i=0;i<=12;i++){const u=i/12;pts.push([-.7+u*1.4,-.14*Math.sin(u*Math.PI),0])}ol(add(g,gcache('bg_r',()=>sweepGeo(pts,()=>[.008,.008],{len:30,seg:4})),Rp,0,0,.02),0);
+  const bats=[];for(let i=1;i<6;i++){const q=crPt(pts,i/6),b=piv(g,q[0],q[1]-.08,.04);ol(sp(b,.045,Bt,0,0,0),.004);[-1,1].forEach(sd=>{const w=piv(b,sd*.04,0,0);ol(add(w,gcache('bg_w',()=>{const s_=new THREE.Shape();s_.moveTo(0,0);s_.lineTo(.14,.05);s_.lineTo(.12,-.02);s_.lineTo(.08,.0);s_.lineTo(.05,-.04);s_.lineTo(0,0);return new THREE.ExtrudeGeometry(s_,{depth:.01})}),Bt,0,0,0),.003).scale.x=sd;bats.push({w,sd})});
+    [-1,1].forEach(sd=>ol(sp(b,.008,M(0xFFD21F,{emissive:0xFFD21F,emissiveIntensity:.6}),sd*.015,.01,.04),0))}g.userData.anim=t=>bats.forEach((b,i)=>b.w.rotation.y=b.sd*Math.sin(t*10+i)*.5);return g},
+ coffinshelf(c){const g=G(),Wd=M(c,{roughness:.5}),Pg=M(CREAM,{roughness:.9}),Gd=M(0xFFD21F,{roughness:.4});const O=[[-.28,0],[.28,0],[.42,1.3],[.2,1.8],[-.2,1.8],[-.42,1.3]];
+  // an open coffin: a purple back panel and six boards round the outline
+  ol(add(g,gcache('cf_back',()=>{const s_=new THREE.Shape();O.forEach(([x,y],i)=>i?s_.lineTo(x,y):s_.moveTo(x,y));s_.lineTo(O[0][0],O[0][1]);return new THREE.ExtrudeGeometry(s_,{depth:.04})}),M(0x3B1273,{roughness:.6}),0,0,-.2),.008);
+  O.forEach((a_,i)=>{const b_=O[(i+1)%O.length],L=Math.hypot(b_[0]-a_[0],b_[1]-a_[1]),bd=rb(g,L+.06,.06,.42,.02,Wd,(a_[0]+b_[0])/2,(a_[1]+b_[1])/2,0);bd.rotation.z=Math.atan2(b_[1]-a_[1],b_[0]-a_[0]);ol(bd,.008)});
+  [.5,1.0,1.4].forEach((y,si)=>{const w=.5+(y>1.2?.1:0)-(y<.6?.1:0);ol(rb(g,w,.03,.3,.01,Wd,0,y,.05),.004);for(let i=0;i<4;i++)bkBook(g,-w/2+.08+i*.09,y+.015,.08,.07,.24-((i+si)%2)*.04,.18,[0xFF8A1C,0x9B4DF2,0xA6E22E,0xFFD21F][(i+si)%4],0,Pg,Gd)});s4Pumpkin(g,0,.2,.1,.12,0xFF8A1C,0);return g},
+ candybowl(c){const g=G(),Ir=M(0x2A2340,{roughness:.4});ol(lathe(g,[[.12,0],[.16,.02],[.3,.2],[.32,.34],[.28,.36],[.26,.3]],Ir,0,0,0,28),.01);ol(to(g,.3,.02,M(0xA6E22E,{roughness:.4}),0,.34,0,Math.PI/2),0);
+  const R=rnd(3);for(let i=0;i<18;i++){const a=R()*6.3,r=R()*.22,col=[0xFF8A1C,0x9B4DF2,0xFFD21F,0xFF5FA8,0xA6E22E][i%5];const cd=ol(sp(g,.045,M(col,{roughness:.3}),Math.cos(a)*r,.34+R()*.06,Math.sin(a)*r,1.6,.8,.9),.003);cd.rotation.y=R()*3;[-1,1].forEach(sd=>ol(add(g,new THREE.ConeGeometry(.02,.04,6),M(col,{roughness:.3}),Math.cos(a)*r+sd*.07,.34,Math.sin(a)*r),0).rotation.z=sd*Math.PI/2)}return g},
+ webrug(c){const g=G();const tx=s2Tex('web'+c,256,256,(x,w,h)=>{x.fillStyle=s2hex(c);x.fillRect(0,0,w,h);x.strokeStyle='rgba(255,255,255,.85)';x.lineWidth=3;for(let i=0;i<8;i++){const a=i/8*Math.PI*2;x.beginPath();x.moveTo(128,128);x.lineTo(128+Math.cos(a)*130,128+Math.sin(a)*130);x.stroke()}
+    for(let r=20;r<130;r+=20){x.beginPath();for(let i=0;i<=8;i++){const a=i/8*Math.PI*2,m=Math.PI/8,px=128+Math.cos(a)*r,py=128+Math.sin(a)*r;if(!i)x.moveTo(px,py);else{const pa=a-Math.PI/8;x.quadraticCurveTo(128+Math.cos(pa)*r*.85,128+Math.sin(pa)*r*.85,px,py)}}x.stroke()}x.fillStyle='#1A1424';x.beginPath();x.arc(170,92,10,0,7);x.fill()});
+  const pl=add(g,new THREE.CircleGeometry(1,48),M(0xffffff,{map:tx,roughness:1}),0,.02,0);pl.rotation.x=-Math.PI/2;ol(pl,.008);return g},
+ moonwindow(c){const g=G(),Fr=M(c,{roughness:.5});ol(to(g,.44,.06,Fr,0,0,.04),.012);for(let i=0;i<2;i++){const b=ol(rb(g,.04,.86,.04,.01,Fr,0,0,.06),0);b.rotation.z=i*Math.PI/2}
+  const tx=s2Tex('mw',256,256,(x,w,h)=>{const gr=x.createLinearGradient(0,0,0,256);gr.addColorStop(0,'#3B1273');gr.addColorStop(1,'#FF8A5A');x.fillStyle=gr;x.fillRect(0,0,256,256);x.fillStyle='#FFF3C0';x.beginPath();x.arc(150,90,48,0,7);x.fill();x.fillStyle='#1A1424';x.beginPath();x.moveTo(40,256);x.lineTo(90,170);x.lineTo(140,256);x.fill();
+    [[90,70],[190,130],[60,120]].forEach(([bx,by],i)=>{x.beginPath();x.moveTo(bx,by);x.quadraticCurveTo(bx-14,by-12,bx-28,by-2);x.quadraticCurveTo(bx-14,by-2,bx,by+6);x.quadraticCurveTo(bx+14,by-2,bx+28,by-2);x.quadraticCurveTo(bx+14,by-12,bx,by);x.fill()})});
+  ol(add(g,new THREE.CircleGeometry(.42,40),M(0xffffff,{map:tx,roughness:.3,emissive:0x442244,emissiveIntensity:.2}),0,0,.02),0);return g},
+ broom(c){const g=G(),Wd=M(c,{roughness:.6}),St=M(0xE0C070,{roughness:.9});Wd.detail=2;St.detail=1;const b=piv(g,0,0,0);b.rotation.z=.18;ol(cy(b,.025,.03,1.4,Wd,0,.95,0,8),.004);
+  ol(lathe(b,[[.2,0],[.18,.1],[.1,.3],[.05,.34]],St,0,0,0,16),.006);ol(to(b,.08,.02,M(0x9B4DF2,{roughness:.5}),0,.3,0,Math.PI/2),0);return g},
+ witchbed(c){const g=G(),Ht=M(c,{roughness:.7}),Bd=M(0xFF8A1C,{roughness:.6});Ht.detail=1;ol(cy(g,.6,.6,.08,Ht,0,.04,0,40),.01);ol(lathe(g,[[.44,.08],[.46,.26],[.4,.28],[.3,.26],[.24,.14],[0,.12]],Ht,0,0,0,32),.01);
+  ol(to(g,.44,.05,Bd,0,.22,0,Math.PI/2),0);const tp=piv(g,-.1,.26,-.35);tp.rotation.set(-.8,0,.3);ol(lathe(tp,[[.2,0],[.12,.25],[.05,.45],[0,.55]],Ht,0,0,0,20),.008);ol(s1Star(g,.06,M(0xFFD21F,{roughness:.3}),.3,.3,.35),.004);return g},
+ // ---------- Festive Holidays ----------
+ xmastree(c){const g=G(),Pn=M(c,{roughness:.6});s4Gift(g,-.35,0,.3,.26,.2,.26,0xE8384F,0xFFD21F);s4Gift(g,.3,0,.32,.2,.26,.2,0x2FA39A,0xFFFFFF);s4Gift(g,.05,0,.45,.18,.14,.18,0xFFD21F,0xE8384F);
+  ol(cy(g,.08,.09,.25,M(0x7A5134,{roughness:.8}),0,.12,0,10),.004);const R=rnd(9),orn=[0xE8384F,0xFFD21F,0x6FC8FF,0xFF6FB5,0xFFFFFF];[[.62,.25,.55],[.5,.62,.5],[.38,.98,.44],[.24,1.3,.38]].forEach(([r,y,h])=>{ol(lathe(g,[[r,y],[r*.95,y+.05],[0,y+h]],Pn,0,0,0,12),.008);
+    for(let i=0;i<9;i++){const a=i/9*Math.PI*2+y;ol(sp(g,.04,M(orn[i%5],{roughness:.15,metalness:.3}),Math.cos(a)*r*.9,y+.07,Math.sin(a)*r*.9),.003)}});
+  const lts=[];for(let i=0;i<24;i++){const u=i/24,y=.35+u*1.2,r=.58*(1-u*.8),a=u*Math.PI*8;const l=ol(sp(g,.022,M(0xFFF3C0,{emissive:orn[i%4],emissiveIntensity:1.2}),Math.cos(a)*r,y,Math.sin(a)*r),0);lts.push(l)}
+  s1Star(g,.12,M(0xFFD21F,{emissive:0xFFC21F,emissiveIntensity:.8,roughness:.3}),0,1.72,0);g.userData.anim=t=>lts.forEach((l,i)=>l.material.emissiveIntensity=.6+.8*Math.max(0,Math.sin(t*2+i*.8)));return g},
+ mantel(c){const g=G(),St=M(c,{roughness:.8}),Wd=M(0x9C6B48,{roughness:.6});St.detail=3;Wd.detail=2;[-1,1].forEach(sd=>ol(rb(g,.26,1.1,.36,.03,St,sd*.6,.55,0),.01));ol(rb(g,1.5,.14,.44,.03,Wd,0,1.14,.02),.01);ol(rb(g,.94,.1,.36,.02,St,0,1.02,0),.006);
+  ol(rb(g,.94,.9,.02,.01,M(0x2A2340,{roughness:.8}),0,.5,-.16),0);const fl=[0xFF8A1C,0xFFD21F].map((col,i)=>{const f=add(g,SPH(1,12,8),M(col,{emissive:col,emissiveIntensity:1.5}),(i-.5)*.14,.22,0);f.scale.set(.1,.18,.08);ol(f,0);return f});
+  [[-.45,0xE8384F],[0,0x2FA39A],[.45,0xFFFFFF]].forEach(([x,col])=>{const sk=piv(g,x,1.08,.24);ol(rb(sk,.14,.3,.06,.04,M(col,{roughness:.9}),0,-.15,0),.006);ol(rb(sk,.22,.1,.07,.04,M(col,{roughness:.9}),.05,-.32,0),.006);ol(rb(sk,.16,.06,.07,.03,M(0xFFFFFF,{roughness:.95}),0,-.02,0),.004)});
+  for(let i=0;i<9;i++){const x=-.65+i*.16;ol(sp(g,.05,M(0x2F8A48,{roughness:.6}),x,1.22,.1,1,.6,1),.003);if(i%2)ol(sp(g,.025,M(0xE8384F,{roughness:.3}),x,1.25,.14),0)}g.userData.anim=t=>fl.forEach((f,i)=>f.scale.set(.1,.18*(1+Math.sin(t*9+i*2)*.15),.08));return g},
+ gingerhouse(c){const g=G(),Gb=M(0xC9803A,{roughness:.7}),Ic=M(0xFFFFFF,{roughness:.5});Gb.detail=3;ol(rb(g,.6,.4,.5,.03,Gb,0,.2,0),.01);[-1,1].forEach(sd=>{const r=ol(rb(g,.4,.04,.6,.02,Gb,sd*.16,.5,0),.008);r.rotation.z=-sd*.72;ol(rb(g,.4,.03,.6,.01,Ic,sd*.17,.52,0),0).rotation.z=-sd*.72});
+  ol(rb(g,.12,.2,.02,.02,M(0xFF5FA8,{roughness:.4}),0,.1,.26),0);[-1,1].forEach(sd=>ol(rb(g,.1,.1,.02,.01,M(0xFFD21F,{emissive:0xFFB23A,emissiveIntensity:.6}),sd*.18,.26,.26),0));
+  const R=rnd(4);for(let i=0;i<10;i++)ol(sp(g,.025,M([0xE8384F,0x6FC8FF,0xA6E22E,0xFFD21F][i%4],{roughness:.3}),-.25+i*.055,.41,.26),0);for(let i=0;i<4;i++){const cc=piv(g,-.36+i*.24,0,.4);ol(cy(cc,.012,.012,.2,M(0xFFFFFF),0,.1,0,6),0);ol(to(cc,.035,.012,M(0xE8384F),.035,.2,0,0,0,0,Math.PI),0)}return g},
+ canelamp(c){const g=G(),St=M(0xffffff,{map:s1Stripe(c,0xFFFFFF,10,0),roughness:.3});ol(cy(g,.2,.22,.06,M(0x2F8A48,{roughness:.5}),0,.03,0,24),.006);ol(cy(g,.05,.05,1.3,St,0,.7,0,16),.008);
+  ol(add(g,gcache('cl_hook',()=>{const pts=[];for(let i=0;i<=12;i++){const a=i/12*Math.PI;pts.push([.16-Math.cos(a)*.16,1.35+Math.sin(a)*.16,0])}return sweepGeo(pts,()=>[.05,.05],{len:24,seg:14})}),St,0,0,0),.008);
+  ol(sp(g,.09,M(0xFFF3C0,{emissive:0xFFE08A,emissiveIntensity:1.6}),.32,1.28,0),0);ol(add(g,new THREE.ConeGeometry(.12,.1,20,1,true),M(c,{roughness:.4,side:THREE.DoubleSide}),.32,1.34,0),.006);return g},
+ sleighbed(c){const g=G(),Wd=M(c,{roughness:.35}),Gd=M(0xFFD21F,{metalness:.5,roughness:.3}),Wh=M(0xFFF6EA,{roughness:.9});Wh.detail=1;
+  ol(add(g,gcache('sl_head',()=>{const s_=new THREE.Shape();s_.moveTo(-.65,0);s_.lineTo(.65,0);s_.lineTo(.65,.9);s_.bezierCurveTo(.65,1.3,.2,1.1,0,1.2);s_.bezierCurveTo(-.2,1.1,-.65,1.3,-.65,.9);s_.lineTo(-.65,0);return new THREE.ExtrudeGeometry(s_,{depth:.12,bevelEnabled:true,bevelThickness:.04,bevelSize:.04,bevelSegments:2})}),Wd,0,0,-1.1),.012);
+  ol(add(g,gcache('sl_foot',()=>{const s_=new THREE.Shape();s_.moveTo(-.65,0);s_.lineTo(.65,0);s_.lineTo(.65,.5);s_.bezierCurveTo(.65,.75,.3,.62,0,.68);s_.bezierCurveTo(-.3,.62,-.65,.75,-.65,.5);s_.lineTo(-.65,0);return new THREE.ExtrudeGeometry(s_,{depth:.12,bevelEnabled:true,bevelThickness:.04,bevelSize:.04,bevelSegments:2})}),Wd,0,0,.98),.012);
+  [-1,1].forEach(sd=>{ol(rb(g,.08,.26,2.1,.04,Wd,sd*.64,.3,0),.008);ol(add(g,gcache('sl_run2',()=>sweepGeo([[0,.06,-1.1],[0,.03,-.8],[0,.03,.9],[0,.12,1.18],[0,.3,1.22]],()=>[.025,.025],{len:30,seg:8})),Gd,sd*.64,0,0),.004)});
+  ol(rb(g,1.2,.2,2,.08,Wh,0,.44,0),.008);ol(rb(g,1.16,.08,1.3,.04,M(0xffffff,{map:s1Plaid(0x2F8A48),roughness:.95}),0,.56,.3),.006);[-.28,.28].forEach(x=>{const p=add(g,gcache('sl_pl',()=>cushionGeo(.24,.14,.07,{pinch:.1})),Wh,x,.6,-.78);p.rotation.x=-.4;ol(p,.006)});return g},
+ wreath(c){const g=G(),Pn=M(0x2F8A48,{roughness:.6});for(let i=0;i<22;i++){const a=i/22*Math.PI*2;ol(sp(g,.1,Pn,Math.cos(a)*.3,Math.sin(a)*.3,.06,1,1,.6),.004)}for(let i=0;i<8;i++){const a=i/8*Math.PI*2+.2;ol(sp(g,.03,M([0xE8384F,0xFFD21F][i%2],{roughness:.2}),Math.cos(a)*.3,Math.sin(a)*.3,.14),0)}
+  const bw=piv(g,0,-.3,.14);[-1,1].forEach(sd=>{const l=add(bw,SPH(1,12,8),M(c,{roughness:.5}),sd*.08,0,0);l.scale.set(.1,.06,.03);l.rotation.z=sd*.3;ol(l,.004);const t=ol(rb(bw,.04,.16,.02,.01,M(c,{roughness:.5}),sd*.05,-.1,0),.003);t.rotation.z=sd*.25});ol(sp(bw,.03,M(c,{roughness:.5})),.003);return g},
+ snowglobe(c){const g=G(),Bs=M(c,{roughness:.4}),Gl=M(0xE8FBFF,{roughness:.03,transparent:true,opacity:.25});ol(lathe(g,[[.36,0],[.38,.02],[.34,.24],[.3,.26]],Bs,0,0,0,32),.01);ol(to(g,.34,.02,M(0xFFD21F,{metalness:.5}),0,.14,0,Math.PI/2),0);
+  ol(cy(g,.28,.28,.04,M(0xFFFFFF,{roughness:.8}),0,.28,0,24),0);const pn=piv(g,0,.3,0);ol(lathe(pn,[[.14,0],[0,.4]],M(0x2F8A48,{roughness:.6}),0,0,0,10),.006);ol(rb(pn,.16,.12,.14,.02,M(0xE8384F),.12,.06,.05),.004);
+  const gl=add(g,SPH(.44,32,24),Gl,0,.66,0);gl.outline=0;nosh(gl);const fl=[];const R=rnd(2);for(let i=0;i<24;i++){const f=ol(sp(g,.015,M(0xFFFFFF,{emissive:0xFFFFFF,emissiveIntensity:.4}),0,.6,0),0);f.userData.p=[R()*6.3,R()*.3,R()];fl.push(f)}
+  g.userData.anim=t=>fl.forEach(f=>{const[a,r,ph]=f.userData.p,k=(t*.15+ph)%1;f.position.set(Math.cos(a+t*.5)*r,1-k*.68,Math.sin(a+t*.5)*r)});return g},
+ cookietable(c){const g=G(),Wd=M(c,{roughness:.5});Wd.detail=2;ol(cy(g,.3,.3,.05,Wd,0,.58,0,24),.008);ol(cy(g,.04,.05,.55,Wd,0,.3,0,10),.004);ol(cy(g,.2,.22,.04,Wd,0,.02,0,20),.004);
+  ol(cy(g,.16,.16,.012,M(0xFFFFFF,{roughness:.2}),-.08,.61,0,24),.004);for(let i=0;i<5;i++){const a=i/5*Math.PI*2;ol(cy(g,.04,.04,.015,M(DOUGH,{roughness:.7}),-.08+Math.cos(a)*.08,.625+i*.004,Math.sin(a)*.08,14),.003);ol(sp(g,.008,M(0x6A3B2A),-.08+Math.cos(a)*.08,.635,Math.sin(a)*.08),0)}
+  ol(lathe(g,[[.035,.6],[.045,.61],[.045,.76]],M(0xFFFFFF,{roughness:.2,transparent:true,opacity:.7}),.15,0,.05,14),0);ol(cy(g,.043,.043,.12,M(0xFFFFFF,{roughness:.5}),.15,.66,.05,14),0);
+  const nt=ol(rb(g,.1,.008,.07,.003,M(0xFFF6EA,{roughness:.9}),.05,.61,.18),0);nt.rotation.y=.3;return g},
+ presents(c){const g=G();s4Gift(g,-.2,0,0,.4,.3,.4,c,0xFFD21F);s4Gift(g,.25,0,.05,.3,.22,.3,0x2FA39A,0xFFFFFF);s4Gift(g,-.12,.3,.02,.26,.2,.26,0xFFD21F,0xE8384F);s4Gift(g,.3,0,-.3,.22,.34,.22,0x9B4DF2,0xFF6FB5);s4Gift(g,.02,0,.35,.18,.12,.18,0xFF6FB5,0xFFFFFF);return g},
+ giftbed(c){const g=G(),Bx=M(c,{roughness:.5}),Rb=M(0xE8384F,{roughness:.4}),In=M(0xFFF6EA,{roughness:.95});In.detail=1;ol(rb(g,1,.3,.8,.04,Bx,0,.15,0),.01);ol(rb(g,.9,.02,.7,.01,In,0,.3,0),0);
+  const cu=add(g,gcache('gb_cu',()=>cushionGeo(.42,.32,.07,{pinch:.02,n:3})),In,0,.34,0);cu.rotation.x=-Math.PI/2;ol(cu,.006);ol(rb(g,1.02,.32,.14,.01,Rb,0,.15,0),0);ol(rb(g,.14,.32,.82,.01,Rb,0,.15,0),0);
+  const ld=piv(g,0,.32,-.42);ld.rotation.x=-1.9;ol(rb(ld,1.04,.08,.84,.03,Bx,0,.04,.42),.008);ol(rb(ld,1.05,.09,.14,.01,Rb,0,.04,.42),0);[-1,1].forEach(sd=>{const l=add(ld,SPH(1,12,8),Rb,sd*.1,.12,.42);l.scale.set(.14,.06,.08);l.rotation.z=sd*.4;ol(l,.004)});return g},
+ // ---------- Spring Picnic ----------
+ picnicrug(c){const g=G();const tx=s2Tex('ging'+c,256,256,(x,w,h)=>{x.fillStyle='#FFFFFF';x.fillRect(0,0,w,h);x.fillStyle='rgba('+[(c>>16)&255,(c>>8)&255,c&255].join(',')+',.5)';for(let i=0;i<8;i++){x.fillRect(i*32,0,16,256);x.fillRect(0,i*32,256,16)}});
+  ol(rb(g,1.8,.02,1.5,.01,M(0xffffff,{map:tx,roughness:1}),0,.01,0),.006);const pl=piv(g,.35,.02,.3);ol(cy(pl,.14,.14,.012,M(0xFFFFFF,{roughness:.2}),0,.006,0,20),.003);[[0,0xE8384F],[.06,0xFFD21F]].forEach(([x,col])=>ol(sp(pl,.035,M(col,{roughness:.4}),x-.03,.04,0),0));
+  const lf=ol(rb(g,.2,.1,.12,.04,M(DOUGH,{roughness:.7}),-.4,.06,-.35),.004);lf.rotation.y=.4;return g},
+ picnicbasket(c){const g=G(),Wk=M(c,{roughness:.8});Wk.detail=2;ol(rb(g,.6,.34,.4,.05,Wk,0,.17,0),.01);for(let i=0;i<4;i++)ol(rb(g,.62,.02,.42,.01,M(shade(c,.15)),0,.06+i*.08,0),0);
+  const ld=piv(g,0,.34,-.2);ld.rotation.x=-.5;ol(rb(ld,.6,.05,.2,.02,Wk,0,.02,.1),.006);ol(rb(g,.56,.04,.2,.02,Wk,0,.36,.1),.006);ol(to(g,.26,.025,M(shade(c,.2),{roughness:.8}),0,.36,0,0,0,0,Math.PI),.006);
+  const cl=ol(rb(g,.3,.08,.2,.03,M(0xffffff,{map:s2Tex('ging'+0xE8384F,64,64,(x)=>{x.fillStyle='#fff';x.fillRect(0,0,64,64);x.fillStyle='rgba(232,56,79,.5)';for(let i=0;i<4;i++){x.fillRect(i*16,0,8,64);x.fillRect(0,i*16,64,8)}}),roughness:.9}),.1,.4,.1),.004);cl.rotation.z=.3;
+  ol(sp(g,.07,M(0xE8384F,{roughness:.3}),-.12,.42,.1),.004);ol(cy(g,.03,.04,.25,M(0x7FD08A,{roughness:.1,transparent:true,opacity:.7}),.2,.46,-.02,12),0);return g},
+ flowerarch(c){const g=G(),Wd=M(0xF4F0E8,{roughness:.5}),Lf=M(0x4FAF4A,{roughness:.55});const pts=[];for(let i=0;i<=16;i++){const a=i/16*Math.PI;pts.push([-.7*Math.cos(a),1.3+Math.sin(a)*.5,0])}
+  [-1,1].forEach(sd=>ol(cy(g,.03,.03,1.3,Wd,sd*.7,.65,0,8),.004));ol(add(g,gcache('fa_arc',()=>sweepGeo(pts,()=>[.03,.03],{len:30,seg:8})),Wd,0,0,0),.004);
+  const R=rnd(5);for(let i=0;i<44;i++){const u=i/43,q=u<.25?[-.7,u/.25*1.3,0]:u>.75?[.7,(1-u)/.25*1.3,0]:crPt(pts,(u-.25)/.5);ol(sp(g,.1,Lf,q[0]+(R()-.5)*.08,q[1],q[2]+(R()-.5)*.08,1,.7,.8),.003);
+    if(i%2)ol(sp(g,.05,M([c,0xFFD21F,0xFFFFFF,0xB07BFF][i%4],{roughness:.4}),q[0],q[1]+.03,q[2]+.07),0)}return g},
+ egglamp(c){const g=G();ol(cy(g,.2,.22,.06,M(0xFFF6EA,{roughness:.4}),0,.03,0,24),.006);ol(cy(g,.02,.02,.9,M(0xFFF6EA),0,.5,0,8),0);
+  const eg=add(g,SPH(.26,32,24),M(c,{emissive:c,emissiveIntensity:.55,roughness:.3}),0,1.12,0);eg.scale.y=1.3;ol(eg,.01);for(let i=0;i<3;i++)ol(to(g,.262,.02,M([0xFFFFFF,0xFFD21F,0xFF6FB5][i],{roughness:.4}),0,1.0+i*.12,0,Math.PI/2),0);return g},
+ bunnychair(c){const g=G(),Up=M(c,{roughness:.85}),Pk=M(0xFFB3D6,{roughness:.8});Up.detail=1;[[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([x,z])=>ol(sp(g,.06,Up,x*.26,.04,z*.22,1,.6,1),0));ol(rb(g,.64,.34,.56,.14,Up,0,.24,0),.01);
+  const bk=ol(sp(g,.34,Up,0,.62,-.22),.01);bk.scale.set(1,1,.45);[-1,1].forEach(sd=>{const e=piv(g,sd*.16,.9,-.24);e.rotation.z=-sd*.15;ol(sp(e,.1,Up,0,.26,0,.8,2.6,.5),.008);ol(sp(e,.06,Pk,0,.26,.03,.7,2.4,.3),0)});ol(sp(g,.1,M(0xFFFFFF,{roughness:.9}),0,.3,-.34),.006);return g},
+ tulips(c){const g=G(),Pl=M(0xFFFFFF,{roughness:.4});ol(rb(g,.9,.26,.32,.04,Pl,0,.13,0),.008);ol(rb(g,.86,.02,.28,.01,M(0x6A4830,{roughness:1}),0,.26,0),0);
+  const R=rnd(2);for(let i=0;i<9;i++){const x=-.36+i*.09,h=.3+R()*.14,st=piv(g,x,.26,(R()-.5)*.14);st.rotation.z=(R()-.5)*.2;ol(cy(st,.008,.008,h,M(0x4FAF4A),0,h/2,0,5),0);const l=add(st,leafGeo(.16,.05),M(0x4FAF4A,{roughness:.5}),0,.02,0);l.rotation.y=i;ol(l,.002);
+    const col=[c,0xFFD21F,0xFFFFFF,0xB07BFF][i%4];for(let j=0;j<3;j++){const pt=add(st,SPH(.04,12,8),M(col,{roughness:.4}),Math.cos(j*2.1)*.018,h+.03,Math.sin(j*2.1)*.018);pt.scale.set(.8,1.4,.8);ol(pt,.003)}}return g},
+ kite(c){const g=G(),Kt=M(c,{roughness:.5}),Kt2=M(lighten(c,.35),{roughness:.5});const k=piv(g,0,.1,.03);k.rotation.z=-.3;[[0,1,Kt],[1,0,Kt2],[0,-1,Kt2],[-1,0,Kt]].forEach(([a,b],i)=>{const s_=add(k,gcache('kt_q'+i,()=>{const sh=new THREE.Shape(),p=[[0,.34],[.24,0],[0,-.5],[-.24,0]];sh.moveTo(0,0);sh.lineTo(...p[i]);sh.lineTo(...p[(i+1)%4]);sh.lineTo(0,0);return new THREE.ExtrudeGeometry(sh,{depth:.01})}),i%2?Kt2:Kt,0,0,0);ol(s_,.004)});
+  const tl=[];for(let i=0;i<=6;i++)tl.push([Math.sin(i*1.2)*.08,-.5-i*.1,.01]);ol(add(k,sweepGeo(tl,()=>[.005,.005],{len:20,seg:4}),M(0x3A3244),0,0,0),0);for(let i=1;i<6;i++){const q=crPt(tl,i/6),b=ol(rb(k,.06,.03,.01,.005,M([0xFFD21F,0xFF5FA8,0x6FC8FF][i%3]),q[0],q[1],q[2]),0);b.rotation.z=.6}return g},
+ lemonade(c){const g=G(),Wd=M(0xFFF6EA,{roughness:.5}),Aw=M(0xffffff,{map:s1Stripe(c,0xFFFFFF,8,1),roughness:.6});ol(rb(g,1.1,.8,.5,.04,M(0xFFD21F,{roughness:.5}),0,.4,0),.01);ol(rb(g,1.2,.05,.56,.02,Wd,0,.82,0),.006);
+  [-1,1].forEach(sd=>ol(cy(g,.025,.025,.7,Wd,sd*.55,1.17,-.2,8),.004));const aw=ol(rb(g,1.24,.05,.6,.02,Aw,0,1.52,-.02),.008);aw.rotation.x=.2;for(let i=0;i<8;i++){const sc=add(g,new THREE.SphereGeometry(.078,12,8,0,Math.PI*2,Math.PI/2,Math.PI/2),M(i%2?c:0xFFFFFF,{roughness:.6}),-.55+i*.157,1.52,.27);ol(sc,.003)}
+  const jg=piv(g,-.2,.85,.05);ol(lathe(jg,[[.08,0],[.1,.02],[.1,.24],[.08,.26]],M(0xFFF3A0,{roughness:.05,transparent:true,opacity:.75}),0,0,0,16),.004);[[0,.12],[.1,.05]].forEach(([x,y])=>ol(cy(jg,.04,.04,.008,M(0xFFD21F),x-.02,y+.06,.06,12),0).rotation.x=Math.PI/2);
+  [[.15,0],[.3,-.05]].forEach(([x,z])=>ol(lathe(g,[[.035,.845],[.04,.85],[.04,.95]],M(0xFFF3A0,{roughness:.1,transparent:true,opacity:.8}),x,0,z,12),0));ol(rb(g,.5,.14,.02,.02,M(0xFFFFFF,{roughness:.8}),0,.5,.26),0);return g},
+ butterflies(c){const g=G(),Wd=M(0xF4F0E8,{roughness:.5});ol(cy(g,.2,.22,.05,Wd,0,.025,0,20),.004);ol(cy(g,.015,.015,1.4,Wd,0,.72,0,8),0);ol(to(g,.3,.012,Wd,0,1.42,0,Math.PI/2),0);
+  const bf=[c,0xFF6FB5,0xFFD21F,0x6FC8FF].map((col,i)=>{const a=i/4*Math.PI*2,h=piv(g,Math.cos(a)*.3,1.42,Math.sin(a)*.3);ol(cy(h,.003,.003,.3,M(0x3A3244),0,-.15,0,3),0);const b=piv(h,0,-.32,0);const ws=[-1,1].map(sd=>{const w=piv(b,0,0,0);const m=add(w,SPH(1,12,8),M(col,{roughness:.4,side:THREE.DoubleSide}),sd*.07,0,0);m.scale.set(.07,.06,.008);ol(m,.003);return{w,sd}});ol(sp(b,.012,M(0x3A3244),0,0,0,1,3,1),0);return{h,ws,i}});
+  g.userData.anim=t=>bf.forEach(q=>{q.h.rotation.y=Math.sin(t*.6+q.i)*.4;q.ws.forEach(w=>w.w.rotation.y=w.sd*Math.sin(t*12+q.i)*.7)});return g},
+ eggbed(c){const g=G(),Sh=M(c,{roughness:.4}),In=M(0xFFF3A0,{roughness:.95});In.detail=1;const e=add(g,new THREE.SphereGeometry(.55,32,16,0,Math.PI*2,Math.PI*.45,Math.PI*.55),M(c,{roughness:.4,side:THREE.DoubleSide}),0,.5,0);e.scale.y=.95;ol(e,.012);
+  for(let i=0;i<14;i++){const a=i/14*Math.PI*2;const z=ol(add(g,new THREE.ConeGeometry(.07,.12,4),Sh,Math.cos(a)*.54,.54,Math.sin(a)*.54),.004);z.rotation.y=-a}
+  const cu=add(g,gcache('eg_cu',()=>cushionGeo(.4,.4,.07,{pinch:.02,n:2})),In,0,.2,0);cu.rotation.x=-Math.PI/2;ol(cu,.004);[0x6FC8FF,0xFF6FB5].forEach((col,i)=>ol(to(g,.53-i*.03,.02,M(col,{roughness:.4}),0,.3+i*.1,0,Math.PI/2),0));return g}});
 /* ================= CAPSULE CORNER: a 3D gacha machine =================
    Tokens (state.tokens) come from two-dos, granted wishes, 3-star arcade rounds and the daily treat, or 12 hearts each.
    Put one in, turn the crank (drag round), the capsules churn in the globe (real little physics), one rolls down the
@@ -4093,6 +4232,12 @@ Object.assign(USE_ITEM,{dinnertable:{kind:'stand',anim:'u_sip',d:6,dist:.05,emo:
   recordcrate:{kind:'stand',front:1,anim:'u_rummage',d:4.6,dist:.05,emo:['🎵','❓'],w:.6},beadcurtain:{kind:'stand',anim:'u_boop',d:3,dist:.1,emo:['🎉'],w:.5},lavalamp:{kind:'stand',anim:'u_peer',d:5,dist:.08,emo:['💗','❗'],w:.6},poufbed:NAP,
   teatable:{kind:'stand',anim:'u_sip',d:6,dist:.05,emo:['💗'],w:.7},bonsai:{kind:'stand',anim:'u_water',d:5,dist:.08,emo:['💗'],w:.5},sandgarden:{kind:'stand',front:1,anim:'u_rake',d:6,dist:.06,emo:['💗','🎵'],w:.8},
   fountain:{kind:'stand',anim:'u_peer',d:5,dist:.08,emo:['💗'],w:.6},koibowl:{kind:'stand',anim:'u_peer',d:6,dist:.06,emo:['❗','💗'],w:.8},shoji:{kind:'stand',anim:'u_boop',d:3,dist:.12,emo:['❓'],w:.3},basketbed:NAP});
+Object.assign(USE_ITEM,{ghostplush:{kind:'stand',anim:'u_pat',d:4,dist:.08,emo:['❗','💗'],w:.7},cauldron:{kind:'stand',front:1,anim:'u_stir',d:6,dist:.06,emo:['❓','🎉'],w:.9},batgarland:{kind:'wall',anim:'u_gaze',d:3,emo:['❗'],w:.3},
+  coffinshelf:{kind:'stand',front:1,anim:'u_rummage',d:4.6,dist:.05,emo:['❓'],w:.5},candybowl:{kind:'stand',anim:'u_nibble',d:5,dist:.06,emo:['😋'],w:.8},moonwindow:{kind:'wall',anim:'u_gaze',d:5,emo:['⭐'],w:.4},broom:{kind:'stand',anim:'u_boop',d:3,dist:.1,emo:['❓'],w:.3},witchbed:NAP,
+  xmastree:{kind:'stand',anim:'u_admire',d:5,dist:.12,emo:['⭐','💗'],w:.8},mantel:{kind:'stand',front:1,anim:'u_warm',d:8,dist:.2,emo:['💗'],w:.8},gingerhouse:{kind:'stand',anim:'u_nibble',d:5,dist:.06,emo:['😋'],w:.7},wreath:{kind:'wall',anim:'u_gaze',d:3,emo:['💗'],w:.3},
+  snowglobe:{kind:'stand',anim:'u_spin',d:4,dist:.08,emo:['⭐','❗'],w:.8},cookietable:{kind:'stand',anim:'u_nibble',d:5,dist:.05,emo:['😋','💗'],w:.7},presents:{kind:'stand',front:1,anim:'u_unwrap',d:5,dist:.06,emo:['🎉','❗'],w:1},giftbed:NAP,
+  picnicbasket:{kind:'stand',anim:'u_nibble',d:5,dist:.06,emo:['😋','💗'],w:.8},flowerarch:{kind:'stand',anim:'u_sniff',d:3.6,then:['sneeze',.3],emo:['💗'],w:.6},tulips:{kind:'stand',anim:'u_water',d:5,dist:.08,emo:['💗'],w:.5},
+  kite:{kind:'wall',anim:'u_gaze',d:3,emo:['🎉'],w:.3},lemonade:{kind:'stand',front:1,anim:'u_sip',d:6,dist:.05,emo:['😋','💗'],w:.8},butterflies:{kind:'stand',anim:'u_peer',d:5,dist:.1,emo:['💗','❗'],w:.8},eggbed:NAP});
 CAT.filter(c=>c.gacha).forEach(c=>USE_ITEM[c.k]={kind:'stand',anim:'u_peer',d:4.5,dist:.12,emo:['💗','❗'],w:.7});
 const useOf=d=>d.use||USE_ITEM[d.k]||USE_FN[d.fn]||null;
 // Where to stand to use o, and which way to face.
@@ -4211,6 +4356,8 @@ const ACTS_ANIM={
   u_snuggle:{d:6,f:(p,t)=>{const k=bell(p,.1,.9),b=Math.sin(t*1.6)*.03;return{rz:b*k,arms:[0,1].map(i=>({rz:(i?1:-1)*.9,rx:-1.2,w:k})),heads:[0,1].map(i=>({rz:(i?-1:1)*(.34+b),rx:.08,w:k})),lid:.85*k,mouth:.1}}},
   u_dance:{d:6,f:(p,t)=>{const k=bell(p,.06,.94),b=Math.sin(t*8);return{y:Math.abs(b)*.05*k,rz:Math.sin(t*4)*.15*k,arms:[0,1].map(i=>({rz:(i?1:-1)*(1.6+Math.sin(t*4+i*Math.PI)*.8),rx:-.2,w:k})),heads:[0,1].map(i=>({rz:(i?1:-1)*.1+Math.sin(t*4)*.12,w:k})),mouth:.7*k,lid:.3*k}}},
   u_rake:{d:6,f:(p,t)=>{const k=bell(p,.08,.92),s_=Math.sin(t*2.2);return{rx:.2*k,rz:s_*.05*k,arms:[{rz:-.5+s_*.3,rx:-1.1,w:k},{rz:.5+s_*.3,rx:-1.1,w:k}],heads:[0,1].map(i=>({rx:.35,rz:s_*.08,w:k})),mouth:.1,lid:.5*k}}},
+  // tugging a present open
+  u_unwrap:{d:5,f:(p,t)=>{const k=bell(p,.06,.94),s_=Math.sin(t*10),done=p>.75?(p-.75)/.25:0;return{rx:.15*k*(1-done),y:done*.05,arms:[0,1].map(i=>({rz:(i?1:-1)*(.5+done*2),rx:-1.2+(i?s_:-s_)*.3*(1-done),w:k})),heads:[0,1].map(i=>({rx:.25*(1-done)-.15*done,rz:(i?1:-1)*.1,w:k})),mouth:.4+done*.5,lid:.2}}},
   u_sip:{d:6,f:(p,t)=>{const k=bell(p,.1,.9),sip=Math.max(0,Math.sin(t*1.4));return{arms:[{rz:-.4,rx:0,w:0},{rz:.5,rx:-1.5-sip*.25,w:k}],heads:[0,1].map(i=>({rx:-.1-sip*.2,rz:(i?1:-1)*.12,w:k})),lid:.6*k+.3*sip,mouth:.15+.2*sip}}},
   u_scope:{d:7,f:(p,t)=>{const k=bell(p,.1,.9);return{rx:-.1*k,arms:[0,1].map(i=>({rz:(i?1:-1)*.5,rx:-1.5,w:k})),heads:[{rx:-.35,rz:.2,w:k},{rx:-.35,rz:.05,w:k}],look:{x:Math.sin(t*.8)*.2,y:.8,w:k},lid:.2*k,mouth:bell(p,.6,.9)*.8}}},
   spinjump:{d:1.4,f:p=>({spin:ease(p/.8)*Math.PI*2,y:Math.sin(Math.min(1,p/.8)*Math.PI)*.6,arms:[0,1].map(i=>({rz:(i?1:-1)*2.6,rx:0,w:bell(p,.1,.85)})),mouth:.9,lid:.5})}
