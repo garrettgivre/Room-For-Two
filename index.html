@@ -1107,10 +1107,12 @@ class WebGLRenderer{
     if(gl.checkFramebufferStatus(gl.FRAMEBUFFER)!==gl.FRAMEBUFFER_COMPLETE){gl.bindFramebuffer(gl.FRAMEBUFFER,null);if(this.hdr){this.hdr=false;this._T=T;this._freeTargets();return this._ensureTargets(w,h)}this.post=false;this._T=T;this._freeTargets();return null}
     T.scene=this._colorTex(w,h);if(this.hdr){T.mips=[];let mw=w,mh=h;for(let i=0;i<6;i++){mw=Math.max(1,mw>>1);mh=Math.max(1,mh>>1);T.mips.push(this._colorTex(mw,mh));if(Math.min(mw,mh)<12)break}}
     gl.bindFramebuffer(gl.FRAMEBUFFER,null);return this._T=T}
-  _geo(g){const gl=this.gl;let e=this._vao.get(g);if(e&&e.v===g.version)return e;if(e){gl.deleteVertexArray(e.vao);e.bufs.forEach(b=>gl.deleteBuffer(b))}
-    const vao=gl.createVertexArray();gl.bindVertexArray(vao);const bufs=[];[[g.pos,3],[g.nrm,3],[g.uv,2],[smoothNormals(g),3]].forEach(([d,n],i)=>{const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,d,gl.STATIC_DRAW);gl.enableVertexAttribArray(i);gl.vertexAttribPointer(i,n,gl.FLOAT,false,0,0);bufs.push(b)});
+  _geo(g){const gl=this.gl;let e=this._vao.get(g);if(e&&e.v===g.version)return e;
+    if(e&&g.dyn&&e.nv===g.pos.length){[[0,g.pos],[1,g.nrm],[3,g.nrm]].forEach(([i,d])=>{gl.bindBuffer(gl.ARRAY_BUFFER,e.bufs[i]);gl.bufferSubData(gl.ARRAY_BUFFER,0,d)});e.v=g.version;return e}
+    if(e){gl.deleteVertexArray(e.vao);e.bufs.forEach(b=>gl.deleteBuffer(b))}
+    const vao=gl.createVertexArray();gl.bindVertexArray(vao);const bufs=[];[[g.pos,3],[g.nrm,3],[g.uv,2],[g.dyn?g.nrm:smoothNormals(g),3]].forEach(([d,n],i)=>{const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,d,g.dyn?gl.DYNAMIC_DRAW:gl.STATIC_DRAW);gl.enableVertexAttribArray(i);gl.vertexAttribPointer(i,n,gl.FLOAT,false,0,0);bufs.push(b)});
     const ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,g.idx,gl.STATIC_DRAW);bufs.push(ib);gl.bindVertexArray(null);
-    e={vao,bufs,n:g.idx.length,type:g.idx instanceof Uint32Array?gl.UNSIGNED_INT:gl.UNSIGNED_SHORT,v:g.version};this._vao.set(g,e);return e}
+    e={vao,bufs,n:g.idx.length,type:g.idx instanceof Uint32Array?gl.UNSIGNED_INT:gl.UNSIGNED_SHORT,v:g.version,nv:g.pos.length};this._vao.set(g,e);return e}
   _texture(t,env){const gl=this.gl;let e=this._tex.get(t);if(e)return e;e=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,e);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
     gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,t.image);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);gl.generateMipmap(gl.TEXTURE_2D);
     const rep=env||t.wrapS===1000;gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,rep?gl.REPEAT:gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,!env&&t.wrapT===1000?gl.REPEAT:gl.CLAMP_TO_EDGE);
@@ -3680,8 +3682,8 @@ function kFace2(par,o){const F={eyes:[],pupils:[],brows:[],blink:1.5+Math.random
   F.update=(dt,t,st)=>{st=st||{};
     // blinks every few seconds, sometimes a double blink; a slow look-around between blinks
     F.blink-=dt;if(F.blink<-.14){F.blink=F.dbl?.18:2+Math.random()*3.2;F.dbl=!F.dbl&&Math.random()<.25}const bl=F.blink<0?Math.sin(Math.min(1,-F.blink/.14)*Math.PI):0;
-    F.lookT-=dt;if(F.lookT<0){F.lookT=.8+Math.random()*2.4;F.look=st.talk?[(Math.random()-.5)*.4,.05]:[(Math.random()-.5)*1.2,(Math.random()-.5)*.6]}
-    F.eyes.forEach(e=>e.scale.y=Math.max(.08,1-bl*.95));F.pupils.forEach(p=>{p.position.x=approach(p.position.x,F.look[0]*o.er*.22,dt*8);p.position.y=approach(p.position.y,F.look[1]*o.er*.2,dt*8)});
+    F.lookT-=dt;if(F.lookT<0){F.contact=Math.random()<(st.talk?.85:.65);F.lookT=F.contact?1.5+Math.random()*2.5:.5+Math.random()*1.2;F.look=[(Math.random()-.5)*1.2,(Math.random()-.5)*.6]}
+    F.eyes.forEach(e=>e.scale.y=Math.max(.08,1-bl*.95));F.pupils.forEach((p,i)=>{let L=[F.look[0]*.22,F.look[1]*.2];if(F.contact){const d=camLocal(F.eyes[i]);L=[clamp(d[0]/Math.max(.3,d[2]),-1,1)*.3,clamp(d[1]/Math.max(.3,d[2]),-1,1)*.26]}p.position.x=approach(p.position.x,L[0]*o.er,dt*8);p.position.y=approach(p.position.y,L[1]*o.er,dt*8)});
     // talking: syllables of different sizes with little pauses, plus an 'oo' (narrow) or 'ee' (wide) shape
     const syl=st.talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1)))*(Math.sin(t*1.3)>-.7?1:.2):0,tgt=Math.max(syl,st.happy?.75:0,st.surprise?.9:0);
     F.m=approach(F.m,tgt,dt*22);F.w=approach(F.w,st.talk?Math.sin(t*3.3)*.25:0,dt*6);mo.visible=F.m>.08;mo.scale.set(1+F.w-F.m*.15,Math.max(.01,F.m),1);sm.visible=!mo.visible;
@@ -3721,6 +3723,15 @@ function sweepGeo(pts,prof,o){o=o||{};const L=o.len||40,S=o.seg||20,P=[],U=[],I=
   const mi=L>>1;return meshGeo(P,U,I,[mi*(S+1),C[mi]])}
 // point an arm pivot (which hangs along -y) from S at F, stretching it a little so the hand centre (ref from the pivot) lands on F; returns the unit direction
 function kAim(a,S,F,ref){const d=[F[0]-S[0],F[1]-S[1],F[2]-S[2]],l=Math.hypot(...d)||1,u=d.map(v=>v/l);a.rotation.set(Math.atan2(-u[2],-u[1]),0,Math.asin(Math.max(-1,Math.min(1,u[0]))));if(ref)a.scale.y=Math.max(.75,Math.min(1.35,l/ref));return u}
+// the camera's direction in an object's own frame (unit vector; uses last frame's matrices) - for eye contact
+function camLocal(o){const m=o.matrixWorld,p=camera.position,D=[p.x-m[12],p.y-m[13],p.z-m[14]],r=[0,1,2].map(k=>{const c0=m[k*4],c1=m[k*4+1],c2=m[k*4+2],l2=c0*c0+c1*c1+c2*c2||1;return(D[0]*c0+D[1]*c1+D[2]*c2)/l2}),l=Math.hypot(...r)||1;return r.map(v=>v/l)}
+// a point on a Catmull-Rom curve through pts at t (0..1)
+function crPt(pts,t){const m=pts.length-1,f=Math.min(m-1e-6,Math.max(0,t)*m),k=f|0,u=f-k,p0=pts[Math.max(0,k-1)],p1=pts[k],p2=pts[k+1],p3=pts[Math.min(m,k+2)];return[0,1,2].map(j=>.5*(2*p1[j]+(-p0[j]+p2[j])*u+(2*p0[j]-5*p1[j]+4*p2[j]-p3[j])*u*u+(-p0[j]+3*p1[j]-3*p2[j]+p3[j])*u*u*u))}
+// many bubbles as one mesh, moved by rewriting its vertices each frame (dynamic geometry): set(i,x,y,z,r) then flush()
+function bubbleMesh(par,n,mat,seg){const S=SPH(1,seg||10,Math.max(6,(seg||10)*.75|0)),nv=S.pos.length/3,P=new Float32Array(nv*3*n),N=new Float32Array(nv*3*n),Uv=new Float32Array(nv*2*n),I=[];
+  for(let b=0;b<n;b++){N.set(S.nrm,b*nv*3);Uv.set(S.uv,b*nv*2);for(let k=0;k<S.idx.length;k++)I.push(S.idx[k]+b*nv)}
+  const geo=new THREE.BufferGeometry(P,N,Uv,I);geo.dyn=1;geo.bs={c:[0,.5,0],r:2};const m=add(par,geo,mat,0,0,0);
+  return{m,set(i,x,y,z,r){const p=geo.pos,o=i*nv*3,q=S.pos;for(let k=0;k<nv*3;k+=3){p[o+k]=x+q[k]*r;p[o+k+1]=y+q[k+1]*r;p[o+k+2]=z+q[k+2]*r}},flush(){geo.version++}}}
 // a profile [[y,r],...] as a lookup y -> r (linear between the samples)
 function profAt(pr,y){if(y<=pr[0][0])return pr[0][1];for(let i=1;i<pr.length;i++)if(y<=pr[i][0]){const a=pr[i-1],b=pr[i],u=(y-a[0])/((b[0]-a[0])||1);return a[1]+(b[1]-a[1])*u}return pr[pr.length-1][1]}
 // a point on a lofted surface (f(y) -> [rx,rz,cx,cz]) at (x,y) on the front, facing out; like onSurface for any loft
@@ -3737,8 +3748,9 @@ function kEye(pv,r,tex,lidMat,o){o=o||{};const eg=piv(pv,0,0,-r*(o.sink===undefi
   const lid=add(eg,new THREE.SphereGeometry(r*1.06,40,14,0,Math.PI*2,0,Math.PI/2),lidMat,0,0,0);ol(lid,.008);lid.rotation.x=o.open||-1.2;return{eg,eye,lid,open:o.open||-1.2}}
 // shared eye behaviour for kEye eyes: blinks (sometimes twice), glances about; st {talk,happy,surprise}
 function kEyesUpd(S,E,dt,st){st=st||{};S.blink=(S.blink===undefined?2:S.blink)-dt;if(S.blink<-.16)S.blink=Math.random()<.2?.2:2+Math.random()*3;const cl=S.blink<0?Math.sin(Math.min(1,-S.blink/.16)*Math.PI):0;
-  S.lookT=(S.lookT||0)-dt;if(S.lookT<0){S.lookT=.8+Math.random()*2.4;S.look=st.talk?[(Math.random()-.5)*.2,.05]:[(Math.random()-.5)*.8,(Math.random()-.5)*.4]}const L=S.look||[0,0];
-  E.forEach(e=>{const op=e.open+(st.surprise?-.25:st.happy?.15:0);e.lid.rotation.x=op*(1-cl)+1.67*cl;e.eye.rotation.y=approach(e.eye.rotation.y,L[0],dt*6);e.eye.rotation.x=approach(e.eye.rotation.x,-L[1],dt*6)})}
+  S.lookT=(S.lookT||0)-dt;if(S.lookT<0){S.contact=Math.random()<(st.talk?.85:.65);S.lookT=S.contact?1.5+Math.random()*2.5:.5+Math.random()*1.2;S.look=[(Math.random()-.5)*.9,(Math.random()-.5)*.4]}
+  E.forEach(e=>{const op=e.open+(st.surprise?-.25:st.happy?.15:0);e.lid.rotation.x=op*(1-cl)+1.67*cl;let L=S.look||[0,0];
+    if(S.contact){const d=camLocal(e.eg.parent);L=[clamp(Math.atan2(d[0],d[2]),-.6,.6),clamp(Math.atan2(d[1],d[2]),-.45,.45)]}e.eye.rotation.y=approach(e.eye.rotation.y,L[0],dt*7);e.eye.rotation.x=approach(e.eye.rotation.x,-L[1],dt*7)})}
 // a two-part noodle arm (shoulder, elbow, mitten); pose with sh.rotation / el.rotation; props go on tip
 function kArm3(par,x,y,z,mat,l1,l2,r,hand){const sh=piv(par,x,y,z);ol(sp(sh,r*1.15,mat,0,0,0),.008);ol(cy(sh,r,r*1.1,l1,mat,0,-l1/2,0,12),.008);const el=piv(sh,0,-l1,0);ol(sp(el,r*1.05,mat,0,0,0),.006);
   ol(cy(el,r*.9,r,l2,mat,0,-l2/2,0,12),.008);const h=sp(el,hand,mat,0,-l2-hand*.6,0,1,1.05,.85);ol(h,.01);ol(sp(el,hand*.42,mat,hand*.75,-l2-hand*.35,.01),.006);const tip=piv(el,0,-l2-hand*.9,0);return{sh,el,tip}}
@@ -3867,53 +3879,68 @@ const KEEPERS={
       puffT-=dt;if(puffT<0){puffT=3+Math.random()*4;puffs.forEach((q,i)=>{q.t=-i*.08;q.x=(Math.random()-.5)*.2;q.z=(Math.random()-.5)*.2})}
       puffs.forEach(q=>{q.t+=dt;const kk=q.t/1.1;q.m.visible=kk>0&&kk<1;if(q.m.visible){q.m.position.set(q.x*kk*2,.18+kk*.35,q.z*kk*2);q.m.scale.setScalar(.6+kk*1.6);q.m.material.opacity=.7*(1-kk)}});
       F.update(dt,t,{talk,happy:cheer||greet})}}},
-  // Fizz the stylist (after the character sheet): a curved turquoise bean with two mismatched eyes (a big white one and a small
-  // lime one), a long open-mouthed grin, a pink foam crest with an S-swirl on top, noodle arms and big flat feet.
-  // Waves a bubble wand every so often and sends up a stream of bubbles.
-  stylist(){const g=G(),b=G();g.add(b);const C=M(0x5ED6E0,{roughness:.4}),P=M(0xFF62B4,{roughness:.5}),Pl=M(0xFF9ED2,{roughness:.3}),Or=M(0xFF9A3C,{roughness:.35}),Wp=M(0xFF5FA8,{roughness:.35});
-    C.detail=3;P.detail=3;Pl.detail=0;
-    // the bean: rings along a gentle curve (the top leans left), with the profile smoothed
-    const Y0=.2,H=1.3,PR=smoothProf([[0,0],[.02,.17],[.08,.25],[.2,.3],[.4,.33],[.6,.33],[.75,.31],[.87,.27],[.95,.19],[.99,.09],[1,0]],60),cxAt=v=>.06*Math.cos(Math.PI*v),
+  // Fizz the stylist (after the character sheet): a noodly turquoise bean that bends like a macaroni (the body mesh is sheared
+  // along a moving centreline every frame, and the face, arms and hair ride along), two mismatched eyes, a long open grin,
+  // and hair that is a bubble bath: a swirl of pink bubbles that keep floating off and popping, and growing back.
+  stylist(){const g=G(),b=G();g.add(b);const C=M(0x5ED6E0,{roughness:.4}),P=M(0xFF62B4,{roughness:.28}),Pl=M(0xFF9ED2,{roughness:.2}),Or=M(0xFF9A3C,{roughness:.35}),Wp=M(0xFF5FA8,{roughness:.35});
+    C.detail=3;P.detail=0;Pl.detail=0;
+    const Y0=.28,H=1.26,PR=smoothProf([[0,0],[.03,.2],[.1,.27],[.25,.29],[.45,.29],[.65,.31],[.8,.32],[.9,.29],[.96,.21],[.99,.1],[1,0]],60),cxAt=v=>.1*Math.cos(Math.PI*v),
       f=y=>{const v=Math.max(0,Math.min(1,(y-Y0)/H)),r=profAt(PR,v);return[r,r*.86,cxAt(v),0]};
     const body=piv(b,0,0,0);
-    ol(add(body,gcache('fz_body',()=>loftGeo(PR.map(([v,r])=>[Y0+v*H,r,r*.86,cxAt(v),0]),{seg:56})),C,0,0,0),.018);
+    // the body has its own geometry (it's reshaped every frame): a shear x+=dA(v), z+=dZ(v) with normals fixed up to match
+    const bg=loftGeo(PR.map(([v,r])=>[Y0+v*H,r,r*.86,cxAt(v),0]),{seg:48});bg.dyn=1;bg.bs={c:[0,Y0+H/2,0],r:H*.8};const P0=Float32Array.from(bg.pos),N0=Float32Array.from(bg.nrm);
+    ol(add(body,bg,C,0,0,0),.018);
+    const bend={a:0,b:0,z:0},dA=v=>v*v*bend.a+4*v*(1-v)*bend.b,dA1=v=>2*v*bend.a+4*(1-2*v)*bend.b,dZ=v=>v*v*bend.z,dZ1=v=>2*v*bend.z;
+    const reshape=()=>{const p=bg.pos,n=bg.nrm;for(let i=0;i<p.length;i+=3){const v=Math.max(0,Math.min(1,(P0[i+1]-Y0)/H)),a1=dA1(v)/H,b1=dZ1(v)/H;p[i]=P0[i]+dA(v);p[i+2]=P0[i+2]+dZ(v);
+      const nx=N0[i],ny=N0[i+1]-a1*N0[i]-b1*N0[i+2],nz=N0[i+2],l=Math.hypot(nx,ny,nz)||1;n[i]=nx/l;n[i+1]=ny/l;n[i+2]=nz/l}bg.version++};
+    // followers: groups that ride the bend at a height (things are built inside them at their rest positions)
+    const fol=[],follow=y0=>{const fg=piv(body,0,y0,0);fg.userData.v=(y0-Y0)/H;fg.userData.y0=y0;fol.push(fg);return piv(fg,0,-y0,0)};
+    const headG=follow(1.12),armG=follow(.98);
     // legs and big flat feet
-    [-1,1].forEach(s_=>{ol(cy(b,.065,.075,.18,C,s_*.12+.05,.16,.02,14),.012);ol(sp(b,.12,C,s_*.15+.05,.06,.09,1.05,.5,1.5),.012)});
+    [-1,1].forEach(s_=>{ol(cy(b,.06,.07,.3,C,s_*.11+.09,.18,.02,14),.012);ol(sp(b,.12,C,s_*.14+.09,.06,.1,1.05,.5,1.5),.012)});
     // eyes: a big white one and a small lime one on the edge of the face
-    const E=[];{const pv=onLoft(body,f,-.1,1.13);E.push(kEye(pv,.125,eyeTex('fzW',{pr:20}),C))}
-    {const pv=onLoft(body,f,.19,1.08);E.push(kEye(pv,.078,eyeTex('fzL',{bg:'#DDF25A',edge:'#A9C92B',pr:17}),C,{sink:.05,sz:.75}))}
+    const E=[];{const pv=onLoft(headG,f,-.13,1.14);E.push(kEye(pv,.125,eyeTex('fzW2',{pr:25}),C))}
+    {const pv=onLoft(headG,f,.17,1.09);E.push(kEye(pv,.078,eyeTex('fzL2',{bg:'#DDF25A',edge:'#A9C92B',pr:21}),C,{sink:.05,sz:.75}))}
     // the long open grin: bent to the surface, with a tongue and one tooth; it opens wider in syllables
-    const mp=onLoft(body,f,-.02,.93),mg=piv(mp,0,0,-.004);
-    {const bend=geo=>{const Pp=geo.pos;for(let i=0;i<Pp.length;i+=3)Pp[i+2]-=Pp[i]*Pp[i]/(2*.3);geo.version++;return geo};
-      ol(add(mg,gcache('fz_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.11,0);m.quadraticCurveTo(0,.025,.11,0);m.bezierCurveTo(.12,-.21,-.12,-.21,-.11,0);return bend(new THREE.ExtrudeGeometry(m,{depth:.012}))}),M(0x7A1036,{roughness:.6}),0,0,0),.009);
+    const mp=onLoft(headG,f,-.05,.94),mg=piv(mp,0,0,-.004);
+    {const bend_=geo=>{const Pp=geo.pos;for(let i=0;i<Pp.length;i+=3)Pp[i+2]-=Pp[i]*Pp[i]/(2*.3);geo.version++;return geo};
+      ol(add(mg,gcache('fz_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.11,0);m.quadraticCurveTo(0,.025,.11,0);m.bezierCurveTo(.12,-.21,-.12,-.21,-.11,0);return bend_(new THREE.ExtrudeGeometry(m,{depth:.012}))}),M(0x7A1036,{roughness:.6}),0,0,0),.009);
       const tg=add(mg,SPH(1,18,12),M(0xFF6F9F,{roughness:.6}),.01,-.13,.006);tg.scale.set(.07,.04,.01);ol(tg,0);
       ol(rb(mg,.035,.04,.012,.008,M(0xFFFFFF,{roughness:.3}),-.04,-.02,.008),.005)}
-    // the foam crest: a lumpy dome of foam, bubbles in it, an S-swirl on top and an orange bead
-    const hair=piv(body,-.07,1.3,0);
-    ol(add(hair,gcache('fz_foam',()=>loftGeo(smoothProf([[0,.24],[.06,.36],[.16,.46],[.28,.49],[.39,.45],[.49,.35],[.55,.21],[.575,0]],24).map(([y,r])=>[y,r,r*.95,-y*.08,.02]),
-      {seg:64,mod:(th,v)=>1+.1*Math.cos(6*th+.4+v*2.5)*Math.sin(Math.PI*Math.min(1,v*1.15))+.06*Math.cos(11*th+v*9)*Math.sin(Math.PI*v)})),P,0,0,0),.016);
-    ol(add(hair,gcache('fz_swirl',()=>sweepGeo([[.02,.38,0],[-.1,.54,.03],[-.04,.7,.02],[.13,.76,0],[.2,.9,-.02],[.09,1.0,0],[-.04,.97,.02]],
-      t=>{const r=.17*(1-t*.65)*Math.min(1,Math.sqrt(Math.max(0,(1-t)/.08)));return[r,r*.9]},{len:48,seg:16})),P,0,0,0),.014);
-    for(let i=0;i<18;i++){const a=i*2.39+.3,h=.05+(i%6)*.075,rr=profAt(smoothProf([[0,.3],[.07,.42],[.17,.49],[.29,.5],[.4,.46],[.5,.36]],12),h)*1.02,sz=.035+(i%3)*.016;
-      ol(sp(hair,sz,Pl,Math.sin(a)*rr-h*.08,h,Math.cos(a)*rr*.95+.02),.006)}
-    ol(sp(hair,.05,Or,.36,.22,.24),.008);
-    for(let i=0;i<13;i++){const a=i/13*Math.PI*2+.2,r=.1+(i%3)*.022;ol(sp(hair,r,P,Math.sin(a)*.36,.05+(i%2)*.03,Math.cos(a)*.34+.02),.012)}
+    // bubble-bath hair: a soft pink core (so gaps never show the head) covered in bubbles on a foam cloud and an S-swirl
+    const hair=piv(headG,-.1,1.3,0),DS=smoothProf([[0,.24],[.06,.36],[.16,.46],[.28,.49],[.39,.45],[.49,.35],[.55,.21],[.575,0]],24),
+      SW=[[.02,.38,0],[-.1,.54,.03],[-.04,.7,.02],[.13,.76,0],[.2,.9,-.02],[.09,1.0,0],[-.04,.97,.02]];
+    ol(add(hair,gcache('fz_core',()=>loftGeo(DS.map(([y,r])=>[y,r*.82,r*.78,-y*.08,.02]),{seg:40})),P,0,0,0),.012);
+    ol(add(hair,gcache('fz_swcore',()=>sweepGeo(SW,t=>{const r=.09*(1-t*.65)*Math.min(1,Math.sqrt(Math.max(0,(1-t)/.08)));return[r,r]},{len:40,seg:12})),P,0,0,0),.01);
+    const HM=[];for(let i=0;i<48;i++){const v=(i+.5)/48,y=v*.54,th=i*2.39996,r=profAt(DS,y)*.9;HM.push([Math.sin(th)*r-y*.08,y,Math.cos(th)*r*.95+.02,.1-v*.035+((i*37)%7)/7*.035])}
+    for(let i=0;i<12;i++){const a=i/12*Math.PI*2+.2;HM.push([Math.sin(a)*.37,.03+(i%2)*.03,Math.cos(a)*.35+.02,.1+(i%3)*.02])}
+    for(let i=0;i<26;i++){const t=i/25,c=crPt(SW,t);HM.push([c[0]+Math.sin(i*2.1)*.02,c[1],c[2]+Math.cos(i*2.1)*.02,.125*(1-t*.6)])}
+    const BB=HM.map((h,i)=>({h,i,st:0,t:0,p:[0,0,0],v:[0,0,0]})),cA=bubbleMesh(hair,Math.ceil(BB.length/2),P,10),cB=bubbleMesh(hair,Math.floor(BB.length/2),Pl,10);ol(cA.m,.006);ol(cB.m,.006);
+    ol(sp(hair,.05,Or,.38,.2,.24),.008);
     // noodle arms: the right one holds a bubble wand
-    const A=[-1,1].map(s_=>{const x=s_*.31+(s_<0?.02:.0);const a=kArm3(body,x,.98,.02,C,.2,.2,.036,.062);a.s=s_;return a});
+    const A=[-1,1].map(s_=>{const a=kArm3(armG,s_*.3-.01,.98,.02,C,.2,.2,.036,.062);a.s=s_;return a});
     const wand=piv(A[1].tip,0,.03,0);ol(cy(wand,.014,.014,.26,Wp,0,-.1,0,8),.006);{const rg=to(wand,.06,.013,Wp,0,-.29,0);ol(rg,.006);const fl=add(wand,new THREE.CircleGeometry(.055,20),M(0xE8FBFF,{roughness:.05,transparent:true,opacity:.35}),0,-.29,0);fl.outline=0;nosh(fl)}
-    const bubs=[0,1,2,3,4,5,6,7].map(i=>{const r=.045+(i%3)*.025,m=nosh(add(g,SPH(r,20,14),M(0xFFE6F4,{roughness:.05,transparent:true,opacity:.5}),0,0,0));ol(m,.006);
-      const sh=nosh(add(m,SPH(r*.28,8,6),B(0xffffff),-r*.35,r*.4,r*.75));ol(sh,0);return{m,ph:i/8,x:(i%2?1:-1)*(.5+(i%3)*.12)}});
-    let wT=2.5,wp=9;const ES={};
+    const bubs=[0,1,2,3,4,5].map(i=>{const r=.045+(i%3)*.025,m=nosh(add(g,SPH(r,20,14),M(0xFFE6F4,{roughness:.05,transparent:true,opacity:.5}),0,0,0));ol(m,.006);
+      const sh=nosh(add(m,SPH(r*.28,8,6),B(0xffffff),-r*.35,r*.4,r*.75));ol(sh,0);return{m,ph:i/6,x:(i%2?1:-1)*(.5+(i%3)*.12)}});
+    let wT=2.5,wp=9,flyT=0;const ES={};
     return{g,head:hair,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';dt=Math.min(dt,.05);
-      kBreath(body,t,.016,2);b.rotation.z=Math.sin(t*1.3)*.045;b.rotation.y=cheer?ease(p)*Math.PI*2:0;b.position.y=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.3:0;
-      body.rotation.x=talk?Math.sin(t*4.2)*.03:0;
-      // the foam bounces a beat behind the body, the swirl a beat behind that
-      const hb=Math.sin(t*2-.7)*.035+(cheer?Math.sin(t*14)*.05:0);hair.scale.set(1-hb*.5,1+hb,1-hb*.5);hair.rotation.z=-Math.sin(t*1.3-.5)*.05;
-      // a flourish of the bubble wand every few seconds (not mid-sentence)
+      kBreath(body,t,.014,2);b.rotation.y=cheer?ease(p)*Math.PI*2:0;b.position.y=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.3:0;
       wT-=dt;if(wT<0&&!talk&&act==='idle'){wT=6+Math.random()*4;wp=0}wp+=dt;const wv=wp<2.2?Math.min(1,wp/.3,(2.2-wp)/.3):0;
-      const pose=(a,i,sa,sx,e)=>{a.sh.rotation.x=approach(a.sh.rotation.x,sx,dt*10);a.sh.rotation.z=approach(a.sh.rotation.z,a.s*sa,dt*10);a.el.rotation.z=approach(a.el.rotation.z,a.s*e,dt*10)};
-      if(greet)pose(A[0],0,2.4+Math.sin(t*13)*.3,0,.5+Math.sin(t*13)*.3);else if(cheer)pose(A[0],0,2.6,0,.2);else if(talk)pose(A[0],0,.6+Math.abs(Math.sin(t*2.1))*.6,-.3,.8+Math.sin(t*3.4)*.3);else pose(A[0],0,.35+Math.sin(t*.9)*.05,0,.3);
-      if(cheer)pose(A[1],1,2.6,0,.2);else if(wv>0)pose(A[1],1,.9+wv*.7+Math.sin(wp*7)*.25*wv,-.5*wv,1.2+wv*.4);else pose(A[1],1,.5+Math.sin(t*1.7)*.06,0,1.2);
+      // macaroni: a slow sway of the top against a counter-bend in the middle, livelier when talking, wild when cheering
+      bend.a=.13*Math.sin(t*1.5)+(talk?.06*Math.sin(t*5.5):0)+(cheer?.24*Math.sin(t*9):0)+(greet?.1*Math.sin(t*6):0)+wv*.08*Math.sin(wp*6);
+      bend.b=-.07*Math.sin(t*1.5+1.1)+.03*Math.sin(t*2.7)+(talk?.03*Math.sin(t*4.4+1):0);bend.z=.05*Math.sin(t*1.1)+(talk?.03*Math.sin(t*4.2):0);
+      reshape();fol.forEach(fg=>{const v=fg.userData.v;fg.position.set(dA(v),fg.userData.y0,dZ(v));fg.rotation.set(Math.atan(dZ1(v)/H),0,-Math.atan(dA1(v)/H))});
+      // the hair lags the head a little
+      const hb=Math.sin(t*2-.7)*.03+(cheer?Math.sin(t*14)*.04:0);hair.scale.set(1-hb*.5,1+hb,1-hb*.5);hair.rotation.z=-bend.a*.6;
+      // bubbles: one floats off every so often (a flurry when talking or cheering), drifts up and pops; a new one grows in its place
+      flyT-=dt;if(flyT<0){flyT=(cheer||wv>0?.05:talk?.14:.26)*(.5+Math.random());const q=BB[Math.random()*BB.length|0];if(q.st===0){q.st=1;q.t=0;q.p=q.h.slice(0,3);const l=Math.hypot(q.h[0],q.h[2])||1;
+        q.v=[q.h[0]/l*.14+(Math.random()-.5)*.1,.28+Math.random()*.25,q.h[2]/l*.14+(Math.random()-.5)*.1]}}
+      BB.forEach(q=>{q.t+=dt;const h=q.h;let x,y,z,r;if(q.st===1){q.v[1]+=.06*dt;q.p[0]+=q.v[0]*dt+Math.sin(q.t*5+q.i)*.004;q.p[1]+=q.v[1]*dt;q.p[2]+=q.v[2]*dt;const k=q.t/1.8;r=h[3]*(1-k*.45)*(k>.9?Math.max(0,(1-k)/.1):1);x=q.p[0];y=q.p[1];z=q.p[2];if(q.t>1.8){q.st=2;q.t=0}}
+        else{const k=q.st===2?Math.min(1,q.t/.45):1;if(q.st===2&&q.t>.45)q.st=0;x=h[0]+Math.sin(t*3+q.i*1.7)*.008;y=h[1]+Math.cos(t*2.6+q.i)*.008;z=h[2];r=h[3]*k*(1+Math.sin(t*4+q.i)*.04)}
+        (q.i%2?cB:cA).set(q.i>>1,x,y,z,Math.max(0,r))});cA.flush();cB.flush();
+      const pose=(a,sa,sx,e)=>{a.sh.rotation.x=approach(a.sh.rotation.x,sx,dt*10);a.sh.rotation.z=approach(a.sh.rotation.z,a.s*sa,dt*10);a.el.rotation.z=approach(a.el.rotation.z,a.s*e,dt*10)};
+      if(greet)pose(A[0],2.4+Math.sin(t*13)*.3,0,.5+Math.sin(t*13)*.3);else if(cheer)pose(A[0],2.6,0,.2);else if(talk)pose(A[0],.6+Math.abs(Math.sin(t*2.1))*.6,-.3,.8+Math.sin(t*3.4)*.3);else pose(A[0],.35+Math.sin(t*1.5+.5)*.1,0,.3+Math.sin(t*1.5)*.15);
+      if(cheer)pose(A[1],2.6,0,.2);else if(wv>0)pose(A[1],.9+wv*.7+Math.sin(wp*7)*.25*wv,-.5*wv,1.2+wv*.4);else pose(A[1],.5+Math.sin(t*1.5)*.1,0,1.2+Math.sin(t*1.5+.8)*.15);
       const sp_=cheer||wv>0?1.3:.3;bubs.forEach(q=>{const k=(t*sp_*.5+q.ph)%1;q.m.position.set(q.x+Math.sin(t*1.5+q.ph*6)*.08,.7+k*1.9,-.1+Math.cos(t+q.ph*6)*.2);q.m.scale.setScalar(k>.88?(1-k)/.12:Math.min(1,k/.1))});
       const happy=cheer||greet||wv>.3;kEyesUpd(ES,E,dt,{talk,happy});
       const syl=talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1))):0;ES.mo=approach(ES.mo||0,Math.max(syl,happy?.6:0),dt*18);mg.scale.set(1.25+ES.mo*.08,.95+ES.mo*.5,1)}}},
@@ -3958,7 +3985,7 @@ const KEEPERS={
     // stick arms with an elbow and pink ball hands
     const arms=[-1,1].map(s_=>{const sh=piv(hb,s_*.34,HC-.04,0);ol(sp(sh,.03,Rod,0,0,0),.005);ol(cy(sh,.017,.017,.17,Rod,0,-.085,0,8),.005);const el=piv(sh,0,-.17,0);ol(sp(el,.022,Rod,0,0,0),.004);
       ol(cy(el,.016,.016,.15,Rod,0,-.075,0,8),.005);ol(sp(el,.062,Pk,0,-.17,0),.009);return{s:s_,sh,el}});
-    let boingT=4,bp=9,y=1.1,vy=0,blink=2,lookT=0,look=[0,0],mo=0;
+    let boingT=4,bp=9,y=1.1,vy=0,blink=2,lookT=0,look=[0,0],mo=0,contact=true;
     return{g:og,head,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';dt=Math.min(dt,.05);
       // a big boing every few seconds (when not chatting), otherwise a springy bob that follows the words
       boingT-=dt;if(boingT<0&&!talk&&act==='idle'){boingT=5+Math.random()*4;bp=0}bp+=dt;
@@ -3973,8 +4000,8 @@ const KEEPERS={
       // the eye: blinks with its lid (sometimes twice), glances about, goes wide on a boing
       const sur=bp<.5,happy=cheer||greet;blink-=dt;if(blink<-.16)blink=Math.random()<.2?.2:2+Math.random()*3;const cl=blink<0?Math.sin(Math.min(1,-blink/.16)*Math.PI):0;
       lid.rotation.x=(sur?-1.45:happy?-1.05:-1.2)*(1-cl)+1.67*cl;
-      lookT-=dt;if(lookT<0){lookT=.8+Math.random()*2.4;look=talk?[(Math.random()-.5)*.2,.05]:[(Math.random()-.5)*.8,(Math.random()-.5)*.4]}
-      eye.rotation.y=approach(eye.rotation.y,look[0],dt*6);eye.rotation.x=approach(eye.rotation.x,-look[1],dt*6);
+      lookT-=dt;if(lookT<0){contact=Math.random()<(talk?.85:.65);lookT=contact?1.5+Math.random()*2.5:.5+Math.random()*1.2;look=[(Math.random()-.5)*.8,(Math.random()-.5)*.4]}
+      let L=look;if(contact){const d=camLocal(ep);L=[clamp(Math.atan2(d[0],d[2]),-.6,.6),clamp(Math.atan2(d[1],d[2]),-.45,.45)]}eye.rotation.y=approach(eye.rotation.y,L[0],dt*7);eye.rotation.x=approach(eye.rotation.x,-L[1],dt*7);
       // the grin opens in syllables when talking
       const syl=talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1))):0;mo=approach(mo,Math.max(syl,happy?.45:0,sur?.8:0),dt*20);mg.scale.set(1+mo*.08,1+mo*1.1,1)}}}};
 
