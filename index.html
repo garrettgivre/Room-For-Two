@@ -3112,7 +3112,7 @@ function randomSpot(){const blk=navGrid(),free=[];for(let n=0;n<blk.length;n++)i
 function perchSpots(o){const d=defOf(o.userData.k),P=d&&d.perch;if(!P)return[];const D=petDim(),hw=D.w/2,hd=D.d/2,hs=D.h-D.leg;
   if(P.w!=null&&hw*.8>P.w+.1)return[];if(P.top&&hs>P.top)return[];const zc=Math.max(P.z,(P.bz??-9)+hd*.9);if(P.fz!=null&&zc+hd*.8>P.fz)return[];
   const lim=Math.max(0,(P.w??9)-hw*.8),xs=[...new Set((P.x||[0]).map(x=>+clamp(x,-lim,lim).toFixed(2)))],out=[];
-  const lieZ=P.kind==='bed'&&pet.rig?Math.min((P.pz??(P.bz??-.8)-.28)+pet.rig.headY*(pet.scale||1)*.95,(P.foot??1.5)-.25):null,zz=lieZ??zc;
+  const pzz=P.pz??(P.bz??-.8)-.28,hb=P.hb??(o.userData.ext?-o.userData.ext.z+.36:pzz-.32),lieZ=P.kind==='bed'&&pet.rig?Math.min(Math.max(pzz+pet.rig.headY*(pet.scale||1)*.95,hb+(pet.head||1.6)*.86),(P.foot??1.5)-.2):null,zz=lieZ??zc;
   xs.forEach(x=>{const zc=zz,aps=P.side?[[-(P.se+hd+.12),zc],[P.se+hd+.12,zc]]:[[x,(P.fe??.55)+hd+.1]];if(P.foot)aps.push([x,P.foot+hd+.1]);aps.forEach(([ax,az])=>{const v=toWorld(o,ax,az);if(inRoom(v,hw*.6)&&spotClear(v,hd*.8,o.userData.id))out.push({id:o.userData.id,x,z:zc,y:P.y,kind:P.kind||'sit',ax,az})})});return out}
 function seatWorld(sp){const o=roomObjs().get(sp.id);if(!o||!defOf(o.userData.k).perch)return null;const c=toWorld(o,sp.x,sp.z),f=toWorld(o,sp.ax,sp.az);
   return{x:c.x,z:c.z,y:sp.y,h:o.rotation.y,front:f,ha:Math.atan2(c.x-f.x,c.z-f.z),o}}
@@ -3232,6 +3232,22 @@ const ACTS_ANIM={
   u_tick:{d:4.5,f:(p,t)=>{const k=bell(p,.15,.85),tk=Math.sign(Math.sin(t*Math.PI*2))*Math.min(1,Math.abs(Math.sin(t*Math.PI*2))*4);return{rz:tk*.08*k,heads:[0,1].map(i=>({rx:-.3,rz:tk*.22,w:k})),look:{x:tk*.4,y:.55,w:k},mouth:.2*k}}},
   u_admire:{d:4.6,f:(p,t)=>{const k=bell(p,.1,.9);return{sway:Math.sin(t*3)*.25*k,arms:[{rz:-.4,rx:0,w:0},{rz:2.4+Math.sin(t*10)*.4,rx:-.2,w:k}],heads:[0,1].map(i=>({rz:(i?1:-1)*.22,w:k})),mouth:.7*k,lid:.45*k}}},
   u_wiggle:{d:3.8,f:(p,t,S)=>{const k=bell(p,.12,.88);return{y:-(S.leg*.95+.02)*k+Math.abs(Math.sin(t*5))*S.bw*.25*k,legs:[-1.35*k,-1.35*k],rz:Math.sin(t*5)*.45*k,arms:[0,1].map(i=>({rz:(i?1:-1)*2.3,rx:0,w:k})),mouth:.85*k,lid:.5*k}}},
+  // idle fidgets
+  yawn:{d:2.6,f:p=>{const k=bell(p,.15,.8),o=bell(p,.25,.7);return{sy:.06*o,rx:-.08*o,arms:[0,1].map(i=>({rz:(i?1:-1)*(.9+1.2*o),rx:-.3,w:k})),heads:[0,1].map(i=>({rx:-.38*o,rz:(i?1:-1)*.14,w:k})),mouth:.2+.85*o,lid:.4+.6*o}}},
+  lookaround:{d:4,f:(p,t)=>{const k=bell(p,.1,.9),ph=p*Math.PI*2;return{heads:[0,1].map(i=>({ry:Math.sin(ph+i*.4)*.5,rx:-.08,rz:(i?1:-1)*.06,w:k})),look:{x:Math.sin(ph)*1,y:.15,w:k},arms:[0,1].map(i=>({rz:(i?1:-1)*.4,rx:-.15,w:k})),rz:Math.sin(ph)*.05*k}}},
+  bicker:{d:4.4,f:(p,t)=>{const k=bell(p,.08,.85),huff=bell(p,.78,.98),turn=(t*2.2)%2<1?0:1;return{heads:[0,1].map(i=>({ry:(i?-1:1)*(.55-huff*.9),rz:(i?1:-1)*(.12+huff*.2),rx:.05,w:Math.max(k,huff)})),mouth:k*(Math.abs(Math.sin(t*14))*.7)+.2*huff,lid:.35*k,
+    arms:[{rz:-.6-(turn?.9:0)*k,rx:-.6,w:k},{rz:.6+(turn?0:.9)*k,rx:-.6,w:k}],shake:huff*.3}}},
+  headbonk:{d:2.6,f:(p,t)=>{const k=bell(p,.1,.35),dz=bell(p,.35,.95);return{heads:[0,1].map(i=>({rz:(i?-1:1)*(.34*k)+Math.sin(t*14+i)*.18*dz,rx:.1*dz,w:Math.max(k,dz)})),lid:.8*k+.3*dz,mouth:.7*k,rz:Math.sin(t*9)*.06*dz,look:{x:Math.sin(t*12)*.8*dz,y:Math.cos(t*12)*.5*dz,w:dz}}}},
+  hula:{d:5,f:(p,t)=>{const k=bell(p,.1,.9);return{rz:Math.sin(t*5)*.14*k,sway:Math.sin(t*5)*.25*k,y:Math.abs(Math.sin(t*5))*.02*k,arms:[0,1].map(i=>({rz:(i?1:-1)*(1.2+Math.sin(t*5+i*Math.PI)*.5),rx:Math.sin(t*5+i)*.4,w:k})),heads:[0,1].map(i=>({rz:-Math.sin(t*5)*.14,w:k})),mouth:.5*k,lid:.55*k}}},
+  scratch:{d:3,f:(p,t)=>{const k=bell(p,.12,.85);return{arms:[{rz:-.4,rx:0,w:0},{rz:2.55+Math.sin(t*16)*.12,rx:-.55,w:k}],heads:[{rz:.1,rx:.05,w:k},{rz:.3,rx:.15,w:k}],lid:.5*k,look:{x:-.5,y:.4,w:k}}}},
+  jiggle:{d:1.8,f:(p,t)=>{const k=bell(p,.1,.8);return{shake:k,sy:Math.sin(t*38)*.06*k,arms:[0,1].map(i=>({rz:(i?1:-1)*(.9+Math.sin(t*38+i)*.4),rx:0,w:k})),lid:.9*k,mouth:.4*k}}},
+  clap:{d:2.6,f:(p,t)=>{const k=bell(p,.1,.9),c=Math.abs(Math.sin(t*9));return{y:Math.abs(Math.sin(t*4.5))*.03*k,arms:[0,1].map(i=>({rz:(i?1:-1)*(.35+c*.35),rx:-1.35,w:k})),heads:[0,1].map(i=>({rz:(i?1:-1)*.1,rx:-.1,w:k})),mouth:.9*k,lid:.5*k}}},
+  peekaboo:{d:3.4,f:p=>{const hide=bell(p,.08,.55),boo=bell(p,.58,.95);return{arms:[0,1].map(i=>({rz:(i?1:-1)*(.5*hide+2.4*boo),rx:-1.65*hide-.2*boo,w:Math.max(hide,boo)})),heads:[0,1].map(i=>({rx:.2*hide-.2*boo,rz:(i?1:-1)*.12*boo,w:Math.max(hide,boo)})),lid:.9*hide,mouth:.95*boo,y:.12*boo}}},
+  balance:{d:4,f:(p,t)=>{const k=bell(p,.12,.85),wob=Math.sin(t*3.2)*.12+Math.sin(t*7.1)*.04;return{legs:[-1.1*k,0],rz:wob*k,arms:[0,1].map(i=>({rz:(i?1:-1)*(1.45-wob*(i?1:-1)*1.5),rx:0,w:k})),heads:[0,1].map(i=>({rz:-wob*1.4,w:k})),look:{x:-wob*3,y:-.2,w:k},mouth:.25*k}}},
+  twirl:{d:2.8,f:p=>{const k=bell(p,.08,.92);return{spin:ease(p)*Math.PI*2,y:0,arms:[0,1].map(i=>({rz:(i?1:-1)*1.55,rx:0,w:k})),heads:[0,1].map(i=>({rz:(i?1:-1)*.2,rx:-.15,w:k})),lid:.6*k,mouth:.4*k}}},
+  sniffair:{d:3,f:(p,t)=>{const k=bell(p,.15,.85),sn=Math.max(0,Math.sin(t*15));return{rx:-.12*k,heads:[0,1].map(i=>({rx:-.35+sn*.05,ry:Math.sin(t*1.3+i)*.2,w:k})),lid:.45*k,look:{x:0,y:.9,w:k},sy:.03*k}}},
+  daydream:{d:6,f:(p,t)=>{const k=bell(p,.1,.9);return{sway:Math.sin(t*1.4)*.2*k,rz:Math.sin(t*1.4)*.06*k,heads:[0,1].map(i=>({rz:(i?1:-1)*.25+Math.sin(t*1.4)*.1,rx:-.2,w:k})),arms:[0,1].map(i=>({rz:(i?1:-1)*.8,rx:-1.1,w:k})),lid:.7*k,look:{x:0,y:.8,w:k},mouth:.15*k}}},
+  hiccup:{d:3,f:(p,t)=>{const hc=[.2,.5,.8].reduce((a,c)=>Math.max(a,bell(p,c,c+.08)),0);return{y:.1*hc,sy:.08*hc,lid:.4+.5*hc,mouth:.5*hc,heads:[0,1].map(i=>({rx:-.25*hc,w:1})),arms:[0,1].map(i=>({rz:(i?1:-1)*(.5+hc*.8),rx:-.3,w:1}))}}},
   // new sets: blow a dandelion, paint, play piano, read, spin a globe, warm up by the fire, sip cocoa, look through a telescope
   u_blow:{d:4,f:(p,t)=>{const k=bell(p,.1,.9),inh=bell(p,.12,.42),blow=bell(p,.46,.8);return{rx:(-.1*inh+.24*blow)*k,heads:[0,1].map(i=>({rx:-.22*inh+.32*blow,rz:(i?1:-1)*.08,w:k})),mouth:.2*inh+.95*blow,lid:.25*inh+.65*blow,sy:(.07*inh-.05*blow)*k,arms:[0,1].map(i=>({rz:(i?1:-1)*(.45+1.3*inh),rx:-.5,w:k}))}}},
   u_paint:{d:7,f:(p,t)=>{const k=bell(p,.08,.92),st=Math.sin(t*5);return{rx:.1*k,rz:Math.sin(t*2.5)*.05*k,arms:[{rz:-.9,rx:-.9,w:k},{rz:1.1+st*.35,rx:-1.25+Math.cos(t*5)*.3,w:k}],heads:[0,1].map(i=>({rz:.12+Math.sin(t*1.3+i)*.1,rx:.06,w:k})),look:{x:st*.3,y:.1,w:k},mouth:.2*k,lid:.25*k}}},
@@ -3248,20 +3264,23 @@ const ACTS_ANIM={
 function lieBack(e,S,t,P){const nap=P.nap,pose=P.pose||'rest',br=Math.sin(t*(nap?1.4:2))*.03,kick=pose==='kick'?Math.sin(t*5):0,arms=pose==='arms';
   return{y:S.bw*.8*.72*e,rx:-Math.PI/2*e,sy:br*e,legs:[(.95+kick*.35)*e,(.95-kick*.35)*e],lid:nap?(e>.9?1:.5*e):.15*e,mouth:nap?undefined:(pose==='chat'?undefined:.0),
     arms:[0,1].map(i=>arms&&i===1?{rz:2.75,rx:-.25,w:e}:nap?{rz:(i?1:-1)*.35,rx:-.9,w:e}:{rz:(i?1:-1)*(.3+(pose==='kick'?.3:0)),rx:-.15,w:e}),
-    heads:[0,1].map(i=>nap?{rz:(i?1:-1)*.28,rx:-.1,w:e}:{rz:(i?1:-1)*.12+Math.sin(t*.7+i)*.06,rx:-.22,w:e}),look:nap?undefined:{x:Math.sin(t*.5)*.4,y:.2,w:e}}}
+    heads:[0,1].map(i=>nap?{rz:(i?1:-1)*.3,rx:.32,w:e}:{rz:(i?1:-1)*.14+Math.sin(t*.7+i)*.06,rx:.28,w:e}),look:nap?undefined:{x:Math.sin(t*.5)*.4,y:-.3,w:e}}}
 function lieSide(e,S,t,inBed){const br=Math.sin(t*1.4)*.035,len=(pet.rig?pet.rig.headY:1)*.42;
   return{y:(S.bw*.9+(inBed?.1:0))*e,x:-len*e,rz:-Math.PI/2*e*.96,sy:br*e,legs:[-1.05*e,-.85*e],lid:e>.8?1:undefined,
     arms:[0,1].map(i=>({rz:(i?1:-1)*.2,rx:-1.0,w:e})),heads:[0,1].map(i=>({rz:(i?-.18:.18),rx:.32,w:e}))}}
 function petAct(k){const R=pet.rig;if(!R||pet.stage<1||!ACTS_ANIM[k]||styling())return false;if(k==='sit'&&R.S.leg<.06)return false;if(k==='tumble'&&pet.stage>2)k='curious';
   pet.act={k,t:0,d:ACTS_ANIM[k].d};if(pet.mode!=='toy'){pet.mode='idle';pet.target=null;pet.timer=ACTS_ANIM[k].d+1.5}
   if(k==='nuzzle'&&state.pet.s)state.pet.s.affection=clamp((state.pet.s.affection??40)+1,0,100);
-  const e={dance:'🎵',stretch:'😪',nuzzle:'💗',curious:'❓',tumble:'❗',sneeze:'🫧',slump:'😢',spinjump:'🎉'}[k];if(e)setTimeout(()=>emote(e),k==='sneeze'?900:150);return true}
+  const e={dance:'🎵',stretch:'😪',nuzzle:'💗',curious:'❓',tumble:'❗',sneeze:'🫧',slump:'😢',spinjump:'🎉',yawn:'😪',bicker:'❗',headbonk:'💥',hula:'🎵',clap:'🎉',peekaboo:'❗',daydream:'🎵',hiccup:'❓',twirl:'✨'}[k];if(e)setTimeout(()=>emote(e),k==='sneeze'?900:150);return true}
 function idleAct(avg,stats){const st=pet.stage,S=pet.rig.S,r=Math.random(),P=persOf();
   if(P&&P.acts&&avg>=35&&stats.energy>=30&&stats.clean>=30&&Math.random()<.55){const e=Object.entries(P.acts),tot=e.reduce((a,b)=>a+b[1],0);let q=Math.random()*tot;for(const [k,w] of e){q-=w;if(q<=0){if(petAct(k))return true;break}}}
   if(stats.hunger>105&&r<.5)return petAct('slump');
   if(stats.clean<30&&r<.3)return petAct('sneeze');if(avg<30)return petAct('slump');if(stats.energy<30)return petAct(S.elder&&r<.6?'doze':'stretch');
   if(S.elder)return petAct(r<.4?'doze':r<.7?'sit':'curious');if(st<=2&&r<.25)return petAct('tumble');if(S.moody&&r<.35)return petAct('shrug');
-  if(avg>70)return petAct(r<.35?'dance':r<.55?'nuzzle':r<.75?'spinjump':'curious');return petAct(r<.4?'curious':r<.7?'sit':'nuzzle')}
+  if(stats.energy<45&&r<.4)return petAct(r<.2?'yawn':'daydream');
+  const q=Math.random(),pk=a=>a[Math.random()*a.length|0];
+  if(avg>70)return petAct(q<.45?pk(['dance','nuzzle','spinjump','curious']):pk(['hula','clap','twirl','peekaboo','headbonk','balance','jiggle']));
+  return petAct(q<.4?pk(['curious','sit','nuzzle']):pk(['lookaround','bicker','scratch','sniffair','daydream','balance','jiggle','yawn',Math.random()<.3?'hiccup':'lookaround']))}
 function updatePet(dt,t){
   const R=pet.rig;if(!R)return;const g=pet.group,st=pet.stage;
   pet.popT=Math.max(0,pet.popT-dt*1.5);const pop=1+Math.sin(pet.popT*Math.PI*3)*.28*pet.popT;
@@ -3320,7 +3339,7 @@ function updatePet(dt,t){
   g.position.set(pet.pos.x,hopY+scootY+(A&&A.spin!==undefined?A.y:0)+(pet.lift||0)+(pet.seat?pet.seatY||0:0),pet.pos.z);
   g.rotation.y=pet.heading+(A&&A.spin?A.spin:0)+(A&&A.sway?A.sway:0)+(A&&A.shake?Math.sin(t*40)*.12*A.shake:0)+(pet.spinT>0?(1-pet.spinT/1.2)*Math.PI*4:0)+(pet.shakeT>0?Math.sin(t*38)*.35*Math.min(1,pet.shakeT):0);
   const land=pet.hop>0&&pet.hop<.12?1:0,breathe=1+Math.sin(t*(sleeping?1.5:2.4))*(sleeping?.04:.018)-land*.12;
-  const bob=walking&&!S.scoot?Math.abs(Math.sin(pet.ph))*.06:0;
+  const bob=walking&&!S.scoot?Math.abs(Math.sin(pet.ph))*(avg>75?.13:avg<35?.025:.06):0;
   R.body.position.x=approach(R.body.position.x,A&&A.x?A.x:0,dt*8);
   R.body.position.y=approach(R.body.position.y,bob+(sleeping?-.06:0)+(A&&A.y&&A.spin===undefined?A.y:0),dt*14);
   const sy=breathe+(A&&A.sy?A.sy:0);R.body.scale.set(2-sy,sy,2-sy);
@@ -3347,7 +3366,7 @@ function updatePet(dt,t){
   R.legs.forEach((L,i)=>{const a=walking&&!S.scoot?Math.sin(pet.ph+(i?Math.PI:0)):0;L.rotation.x=approach(L.rotation.x,A&&A.legs?A.legs[i]:sleeping?-.9:a*.7,dt*16)});
   // arms: counter-swing, cheer, wave, nom, snooze
   R.arms.forEach((Ar,i)=>{const s=Ar.s;let rz=s*.55,rx=Math.sin(t*1.6+i)*.06;
-    if(walking)rx=-Math.sin(pet.ph+(i?Math.PI:0))*(S.scoot?.3:.85);
+    if(walking)rx=-Math.sin(pet.ph+(i?Math.PI:0))*(S.scoot?.3:avg>75?1.15:avg<35?.35:.85);if(walking&&avg>75)rz=s*(.75+Math.abs(Math.sin(pet.ph))*.3);
     if(pet.hop>0||pet.happyT>0){rz=s*2.5+Math.sin(t*22+i)*.25*s;rx=0}
     if(pet.waveT>0&&s>0){rz=2.7+Math.sin(t*15)*.45;rx=-.2}
     if(eating){rx=-1.2+Math.sin(t*18+i*Math.PI)*.25;rz=s*.25}
@@ -4116,12 +4135,16 @@ function updateSky(){const h=skyHourOverride??centralHour();let i=0;while(i<SKY_
 // Lighting is fixed to the Daydream look at every hour; only the sky outside changes.
 function applySky(){const L=SKY_LIGHT.daydream;sun.color.set(L.col);sun.intensity=L.si;const envTex=timeSky('daydream');scene.environment=envTex;updateSky();
   Object.assign(LIT,{exposure:L.exp,envInt:L.env,specInt:L.spec,bloom:L.bloom,caustic:0,envRot:0,lamp:L.lamp,sh:THREE.computeSH(envTex.image,0)});updBounce()}
+const CEIL_LEVELS=[[0,'Off'],[.3,'Low'],[.65,'Medium'],[1,'Full']];
 const LIT={exposure:1,envInt:1,specInt:1,bloom:.3,bloomThreshold:1.5,bloomKnee:.5,emisBoost:2.6,caustic:0,time:0,envRot:0,lamp:1,bounce:[0,0,0],points:[],ao:[],room:{half:HALF,height:WALLH},wallVis:[1,1,1,1],vignette:.22,sh:null};
 scene.userData.lighting=LIT;
 function updBounce(){const c=sun.color,k=sun.intensity*.075;LIT.bounce=[floorAvg[0]*c.r*k,floorAvg[1]*c.g*k,floorAvg[2]*c.b*k]}
 function avgColor(img){const c=mkCanvas(1,1),x=c.getContext('2d');x.drawImage(img,0,0,1,1);const d=x.getImageData(0,0,1,1).data;return[0,1,2].map(i=>Math.pow(d[i]/255,2.2))}
 const _lv=new THREE.Vector3();
-function updLighting(t){LIT.time=t;LIT.wallVis=walls.map(w=>w.g.visible?1:0);const pts=[],ao=[];
+function updLighting(t){LIT.time=t;
+  // ceiling light dimmer (state.ceil 0..1, home only): the ceiling light and the sky fill fade, lamps get brighter
+  {const L=SKY_LIGHT.daydream,cl=LIT.ceil=approach(LIT.ceil??1,away?1:(state.ceil??1),.06);sun.intensity=L.si*(.04+.96*cl);ambient.intensity=.18*(.3+.7*cl);LIT.envInt=L.env*(.2+.8*cl);LIT.specInt=L.spec*(.45+.55*cl);LIT.lamp=L.lamp*(1+(1-cl)*.8);LIT.bloom=L.bloom*(1+(1-cl)*.6);updBounce()}
+  LIT.wallVis=walls.map(w=>w.g.visible?1:0);const pts=[],ao=[];
   roomObjs().forEach(o=>{const it=roomItem(o.userData.id);if(!it)return;const d=defOf(it.k),e=o.userData.ext;
     if(o.userData.glow&&pts.length<8){_lv.copy(o.userData.glow.off);o.localToWorld(_lv);const g=o.userData.glow.color,k=2.6*LIT.lamp*(o.userData.flick??1);pts.push({pos:[_lv.x,_lv.y,_lv.z],color:[g[0]*k,g[1]*k,g[2]*k],range:4.2})}
     if(!d.wall&&!d.flat&&e&&ao.length<23)ao.push([o.position.x,o.position.z,Math.max(e.x,e.z)*1.05+.12,.55])});
@@ -5079,11 +5102,13 @@ function renderSheet(){const body=$('#sheetBody');
   else if(openTab==='studio')renderStudio(body);
   else if(openTab==='wardrobe')renderWardrobe(body);
   else if(openTab==='todo')renderTodo(body);
-  else if(openTab==='room'){
+  else if(openTab==='room'){setTimeout(()=>document.querySelectorAll('[data-ceil]').forEach(b=>b.onclick=()=>{state.ceil=+b.dataset.ceil;logEvent(state.ceil<.1?'turned the ceiling light off':state.ceil<1?'dimmed the ceiling light':'turned the ceiling light up');saveSoon();renderSheet()}));
     const stat=mode==='shared'?'<span class="status"><i></i>Shared room, synced</span>':mode==='readonly'?'<span class="status ro"><i></i>View-only, changes stay local</span>':mode==='connecting'?'<span class="status solo"><i></i>Connecting to shared room</span>':'<span class="status solo"><i></i>Solo on this device</span>';
     body.innerHTML=`<h2>Room</h2>${stat}
     <div class="row-label">Floors, walls & door</div><p class="hint">They’re in Decorate now, next to your furniture.</p>
     <div class="dbg-grid two" style="margin-bottom:12px"><button class="gel sun" id="toFloors">Floors</button><button class="gel sun" id="toWalls">Walls</button></div>
+    <div class="row-label">Ceiling light</div><p class="hint">Dim it to let your lamps and glowing things set the mood. It changes for both of you.</p>
+    <div class="chips" style="margin-bottom:6px">${CEIL_LEVELS.map(([v,n])=>`<button class="chip" data-ceil="${v}" aria-pressed="${Math.abs((state.ceil??1)-v)<.01}">${n}</button>`).join('')}</div>
     <p class="hint">Your room is ${state.size} × ${state.size} tiles. ${state.size<ROOM_SIZES[ROOM_SIZES.length-1]?'Hammer & Hue can make it bigger, and sells more floors, walls, doors and windows.':'It can’t get any bigger!'}</p>
     ${FB?`<div class="row-label">Invite your person</div><p class="hint">Send them this link. When they open it, you'll both be in this room and see each other's changes.</p>
     <button class="gel pink" id="invite" style="width:100%">Share invite link</button>`:''}
@@ -5199,7 +5224,7 @@ function tryRemote(){if(sandbox||!remote||dirty||writing||dragging)return;if((re
 function normalize(s){const oldPal=!!s&&!(s.pv>=2);const d=defaultState();s=Object.assign({},d,s||{});s.items=Array.isArray(s.items)?s.items.filter(i=>i&&CATMAP[i.k]&&typeof i.id==='string').slice(0,80):[];
   s.inv=s.inv&&typeof s.inv==='object'?Object.fromEntries(Object.entries(s.inv).filter(([k,v])=>ITEMMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):Object.assign({},d.inv);
   s.toys=Array.isArray(s.toys)?s.toys.filter(k=>ITEMMAP[k]&&ITEMMAP[k].k==='toy'):d.toys.slice();s.daily=s.daily&&typeof s.daily==='object'?s.daily:{};
-  s.pet=Object.assign({},d.pet,s.pet||{});if(s.pet.look&&typeof s.pet.look!=='object')delete s.pet.look;s.wish=s.wish&&typeof s.wish==='object'&&(!s.wish.k||WISH_T[s.wish.k])?s.wish:{};s.wear=[...new Set(Array.isArray(s.wear)?s.wear.filter(id=>wearDef(id)):[])];s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
+  s.pet=Object.assign({},d.pet,s.pet||{});if(s.pet.look&&typeof s.pet.look!=='object')delete s.pet.look;s.ceil=s.ceil==null?1:clamp(+s.ceil||0,0,1);s.wish=s.wish&&typeof s.wish==='object'&&(!s.wish.k||WISH_T[s.wish.k])?s.wish:{};s.wear=[...new Set(Array.isArray(s.wear)?s.wear.filter(id=>wearDef(id)):[])];s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
   s.feed=Array.isArray(s.feed)?s.feed.slice(0,50).map(f=>({t:+f.t||0,by:String(f.by||''),k:f.k==='note'?'note':'event',text:String(f.text||'').slice(0,160)})):[];
   s.visits=s.visits&&typeof s.visits==='object'?s.visits:{};s.names=s.names&&typeof s.names==='object'?Object.fromEntries(Object.entries(s.names).slice(0,8).map(([k,v])=>[String(k).slice(0,64),String(v||'').slice(0,20)])):{};s.hearts=Math.max(0,+s.hearts||0);if(!FLOORS.includes(s.floor))s.floor='checker';if(!WALLS.includes(s.wall))s.wall='bubble';const RN=ROOM_SIZES.includes(s.size)?s.size:8;s.size=RN;s.tf=Array.isArray(s.tf)&&s.tf.length===RN*RN?s.tf.map(k=>TILESETS.f[k]?k:s.floor):Array(RN*RN).fill(s.floor);s.tw=Array.isArray(s.tw)&&s.tw.length===RN*4?s.tw.map(k=>TILESETS.w[k]?k:s.wall):Array(RN*4).fill(s.wall);s.fown=s.fown&&typeof s.fown==='object'?Object.fromEntries(Object.entries(s.fown).filter(([k,v])=>CATMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):{};s.town=[...new Set([...STARTER_TILES,...(Array.isArray(s.town)?s.town:[]),...s.tf.map(k=>'f:'+k),...s.tw.map(k=>'w:'+k)])].filter(k=>TILESETS[k[0]]&&TILESETS[k[0]][k.slice(2)]);s.downs=[...new Set(['classic',...(Array.isArray(s.downs)?s.downs:[])])].filter(k=>k==='classic'||(TILESETS[k[0]]&&TILESETS[k[0]][k.slice(2)]));s.door=Object.assign({s:'classic',w:3,u:-2.6},s.door&&typeof s.door==='object'?s.door:{});if(!s.downs.includes(s.door.s))s.door.s='classic';s.door.w=clamp(s.door.w|0,0,3);s.door.u=clamp(+s.door.u||0,-RN/2+.8,RN/2-.8);if(!SKY_KEYS.includes(s.sky))s.sky='classic';if(oldPal){const mp=[0,7,8,3,12,5,2];s.items.forEach(i=>i.c=mp[(i.c||0)%7])}s.td=s.td&&typeof s.td==='object'&&!Array.isArray(s.td)?s.td:{};s.arc=s.arc&&typeof s.arc==='object'&&!Array.isArray(s.arc)?s.arc:{best:{},plays:0};s.pv=2;return s}
 function loadLocal(){let s=null;try{s=JSON.parse(localStorage.getItem(soloKey())||'null')}catch(_){}state=normalize(s||defaultState());if(!s)state.rev=0;syncScene();updHUD()}
