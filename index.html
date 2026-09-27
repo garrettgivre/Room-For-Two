@@ -2418,6 +2418,21 @@ const SET_TILES=[['space','Rivet deck plates','Planet wallpaper'],['candy','Bubb
   ['zen','Tatami mats','Shoji screen'],['spooky','Midnight checker','Ghosts & pumpkins'],['holiday','Tartan carpet','Gift wrap wallpaper'],['spring','Picnic gingham','Tulip wallpaper'],['dino','Dig site sand','Dino tracks'],
   ['carnival','Big top checker','Circus tent stripes'],['work','Carpet tiles','Pinboard wall'],['gym','Rubber gym floor','Padded gym wall']];
 SET_TILES.forEach(([s,fn,wn])=>{const g=SETMAP[s].n;tileset('f','s_'+s,{n:fn,g,fs:s,span:[2,2],paint:SET_TILE_PAINT['f_'+s]});tileset('w','s_'+s,{n:wn,g,fs:s,span:[2,1],paint:SET_TILE_PAINT['w_'+s]})});
+// shop walls: a workshop pegboard with tools on hooks (Hammer & Hue) and tailor's tape with buttons and spools (Jelly Threads)
+tileset('w','pegboard',{n:'Pegboard',g:'Workshop',span:[2,1],paint(x,w,h){fillBg(x,w,h,'#D9B07A',601,.35);x.fillStyle='rgba(90,55,20,.55)';for(let j=16;j<h;j+=32)for(let i=16;i<w;i+=32){x.beginPath();x.arc(i,j,3.2,0,7);x.fill()}
+  x.fillStyle='rgba(255,240,210,.25)';for(let j=14;j<h;j+=32)for(let i=14;i<w;i+=32){x.beginPath();x.arc(i,j,1.6,0,7);x.fill()}
+  const tool=(x,k)=>{const t=k%5,c=['#FF8A1C','#3EC8F2','#FF3D9A','#A6E22E','#9B4DF2'][k%5];x.fillStyle=INK;x.beginPath();x.arc(0,-46,5,0,7);x.fill();
+    if(t===0){x.beginPath();rr(x,-6,-40,12,70,5);fillInk(x,'#C98A5A',3);x.beginPath();rr(x,-26,-44,52,20,6);fillInk(x,c,3)}
+    else if(t===1){x.beginPath();rr(x,-6,-30,12,64,5);fillInk(x,c,3);x.beginPath();x.arc(0,-34,14,0,7);x.arc(0,-40,7,0,7,true);fillInk(x,c,3)}
+    else if(t===2){x.beginPath();rr(x,-9,-40,18,34,4);fillInk(x,c,3);x.beginPath();rr(x,-4,-6,8,40,3);fillInk(x,'#C98A5A',3);x.beginPath();rr(x,-10,-44,20,12,3);fillInk(x,'#F2F2F2',3)}
+    else if(t===3){x.beginPath();rr(x,-10,-40,20,80,4);fillInk(x,'#FFD21F',3);x.strokeStyle=INK;x.lineWidth=2;for(let i=0;i<9;i++){x.beginPath();x.moveTo(-10,-34+i*9);x.lineTo(i%2?-3:0,-34+i*9);x.stroke()}}
+    else{x.beginPath();x.moveTo(-22,-38);x.lineTo(22,-38);x.lineTo(0,30);x.closePath();fillInk(x,c,3);x.beginPath();x.arc(0,-38,4,0,7);fillInk(x,'#F2F2F2',2)}};
+  lattice(x,w,h,3,4,40,tool,{seed:602,rot:.25});grain(x,6,601)}});
+tileset('w','tailor',{n:'Tailor tape wallpaper',g:'Workshop',span:[2,1],paint(x,w,h){fillBg(x,w,h,'#DFF4EA',611,.25);
+  for(let i=0;i<w;i+=128){const X=i+50;x.fillStyle='#FFE27A';x.fillRect(X,0,26,h);x.strokeStyle=INK;x.lineWidth=2.5;x.strokeRect(X,-2,26,h+4);x.lineWidth=2;for(let y=0;y<h;y+=12){x.beginPath();x.moveTo(X,y);x.lineTo(X+(y%60?7:14),y);x.stroke()}}
+  lattice(x,w,h,2,4,30,(x,k)=>{if(k%2){x.beginPath();x.arc(0,0,20,0,7);fillInk(x,['#FF7FB8','#9B4DF2','#3EC8F2','#FF8A1C'][k%4],3);x.fillStyle=INK;[[-6,-6],[6,-6],[-6,6],[6,6]].forEach(([a,b])=>{x.beginPath();x.arc(a,b,3,0,7);x.fill()})}
+    else{x.beginPath();rr(x,-18,-24,36,8,3);fillInk(x,'#C98A5A',3);x.beginPath();rr(x,-18,16,36,8,3);fillInk(x,'#C98A5A',3);x.beginPath();x.rect(-13,-16,26,32);fillInk(x,['#FF3D9A','#A6E22E','#FFD21F','#3EC8F2'][(k>>1)%4],3);
+      x.strokeStyle='rgba(255,255,255,.55)';x.lineWidth=2;for(let i=-12;i<16;i+=5){x.beginPath();x.moveTo(-12,i);x.lineTo(12,i+3);x.stroke()}}},{seed:612,rot:.4,jit:.2});grain(x,5,611)}});
 // keep each theme together (in order of first appearance) so lists can show it under one heading
 ['f','w'].forEach(kind=>{const gs=[];TILE_ORDER[kind].forEach(k=>{const g=TILESETS[kind][k].g;if(!gs.includes(g))gs.push(g)});TILE_ORDER[kind].sort((a,b)=>gs.indexOf(TILESETS[kind][a].g)-gs.indexOf(TILESETS[kind][b].g))});
 
@@ -2736,7 +2751,7 @@ function tileMat(kind,k){const key=kind+':'+k;let e=tileTex[key];if(e)return e;c
   if(kind==='w'&&d.mode==='repeat'&&d.img&&!d.full){const W=src.naturalWidth,H=src.naturalHeight;e.vrep=WALLH/(d.span[0]*H/W)}
   return e}
 function dropTileTex(key){const e=tileTex[key];if(!e)return;if(e.tex)renderer.disposeTexture(e.tex);delete tileTex[key]}
-function pruneTileTex(){const used=new Set([...curTF().map(k=>'f:'+k),...curTW().map(k=>'w:'+k)]);if(brush)used.add(brush.kind+':'+brush.k);
+function pruneTileTex(){const used=new Set([...curTF().map(k=>'f:'+k),...curTW().map(k=>'w:'+k),...(away&&away.archTiles||[])]);if(brush)used.add(brush.kind+':'+brush.k);
   Object.keys(tileTex).forEach(key=>{if(!used.has(key)){dropTileTex(key);if(!TILESETS[key[0]][key.slice(2)].img)delete tileSrc[key]}})}
 
 const floorLayers=new Map(),wallLayers=[0,1,2,3].map(()=>new Map());
@@ -2761,7 +2776,9 @@ function buildWallTiles(){const tw=curTW(),out=[0,0,1];for(let w=0;w<4;w++){cons
   applyLayers(wallLayers[w],walls[w].g,'w',groups)}}
 function syncTiles(){const f=curTF().join(),w=curTW().join(),[pf,pw]=tilesSig.split('|');if(!tilesDirty&&f===pf&&w===pw)return;
   if(tilesDirty||f!==pf){buildFloorTiles();const n={};curTF().forEach(k=>n[k]=(n[k]||0)+1);floorAvg=[0,0,0];Object.entries(n).forEach(([k,c])=>{const a=tileMat('f',k).avg;for(let i=0;i<3;i++)floorAvg[i]+=a[i]*c/curTF().length});updBounce()}
-  if(tilesDirty||w!==pw)buildWallTiles();tilesSig=f+'|'+w;tilesDirty=false;pruneTileTex()}
+  if(tilesDirty||w!==pw)buildWallTiles();tilesSig=f+'|'+w;tilesDirty=false;
+  // shop wall blocks share the wall tiles (their texture may have only just loaded)
+  if(away&&away.archFaces)away.archFaces.forEach(m=>{m.material=tileMat('w',m.userData.tk).mat;m.geometry=m.userData.geo()});pruneTileTex()}
 floor.visible=false;walls.forEach(w=>{w.plane.visible=false});
 
 /* ================= ITEM BUILDERS ================= */
@@ -5744,42 +5761,49 @@ const KEEPERS={
 function tilesWith(fill,area,box){const a=Array(GRID*GRID).fill(fill);if(area)for(let j=box[1];j<=box[3];j++)for(let i=box[0];i<=box[2];i++)a[j*GRID+i]=area;return a}
 function wallsWith(all,back){const a=Array(GRID*4).fill(all);if(back)for(let c=0;c<GRID;c++)a[c]=back;return a}
 const SHOPS={
-  snack:{n:'Snack Shack',kind:'food',door:'candy',icon:'act-feed',color:'#FF8A1C',keeper:'baker',kx:1.3,kz:-3.45,
-    tf:()=>tilesWith('tile','candyborder',[2,3,5,6]),tw:()=>wallsWith('gingham','wainscot'),
-    layout:[{k:'counter',x:1.3,z:-2.7,c:0xFF9EC7},{k:'shelfunit',x:-2.1,z:-3.66,c:0xFFB3D1},{k:'shelfunit',x:-3.66,z:-.9,r:Math.PI/2,c:0xFFD27F},{k:'cooler',x:3.3,z:-3.6},
-      {k:'display',x:1.3,z:.6,c:0xB5E3FF},{k:'sign',w:0,u:1.3,y:2.72,c:0xFF8A1C},{k:'lolli',x:-3.3,z:1.3},{k:'cottontree',x:3.4,z:.2},{k:'teatable',x:2.3,z:2.4},{k:'cupcake',x:3.3,z:2.4,r:-Math.PI/2},{k:'win_cafe',w:0,u:-0.35,y:1.9},{k:'win_cafe',w:3,u:2.3,y:1.9}],
+  snack:{n:'Snack Shack',kind:'food',door:'candy',icon:'act-feed',color:'#FF8A1C',keeper:'baker',kx:1.6,kz:-3.4,archTile:'s_cafe',arch:[{b:[-4,-4,-1.4,-2.2]}],
+    tf:()=>tilesWith('s_cafe','candyborder',[4,4,7,7]),tw:()=>wallsWith('s_cafe'),
+    layout:[{k:'counter',x:1.6,z:-2.2,c:0xFF9EC7},{k:'awning',w:0,u:1.6,y:2.72,c:0xFF7FB8,len:2.8},{k:'sign',at:[-2.7,-2.18,0],y:2.95,c:0xFF8A1C,blk:0},{k:'potrack',at:[-3.25,-2.18,0],y:1.9,blk:0},
+      {k:'cakecounter',x:-.5,z:-3.45},{k:'breadshelf',x:3.45,z:-3.5},{k:'stove',x:-3.3,z:-1.8},{k:'cooler',x:-2.15,z:-1.85},{k:'herbcrate',x:-1.05,z:-1.75},
+      {k:'shelfunit',x:-3.66,z:.3,r:Math.PI/2,c:0xFFD27F},{k:'display',x:.3,z:.1,c:0xB5E3FF},
+      {k:'bistrotable',x:2.3,z:1.9},{k:'bistrochair',x:1.45,z:1.9,r:Math.PI/2},{k:'bistrochair',x:3.15,z:1.9,r:-Math.PI/2},
+      {k:'cottontree',x:3.45,z:.1},{k:'lolli',x:-1.1,z:3.3},{k:'cuplamp',x:3.5,z:3.35},{k:'win_cafe',w:0,u:-.5,y:2.25}],
     lines:{hi:['Welcome to the Snack Shack!','Fresh out of the oven!','Hungry? You came to the right place.'],buy:['Enjoy every bite!','Yum, great pick!','Come back hungry!'],
       poor:['Save up a few more hearts, sweetie!'],tip:P=>P&&`Psst, ${state.pet.name} loves ${FOOD_CATS[P.fav].toLowerCase()}!`}},
-  salon:{n:'Bubble Salon',kind:'groom',door:'bath',icon:'act-bath',color:'#3EC8F2',keeper:'stylist',kx:2.2,kz:-3.5,
-    tf:()=>tilesWith('pinkterrazzo','berryborder',[2,2,5,5]),tw:()=>wallsWith('berrypanel','terrazzorun'),
-    layout:[{k:'counter',x:2.2,z:-2.75,c:0x7FDDF5},{k:'shelfunit',x:-1.5,z:-3.66,c:0xC8F2FF},{k:'archmirror',w:3,u:.4,y:1.8},{k:'egg',x:-3.1,z:-.4,r:Math.PI/2,c:8},
-      {k:'display',x:.9,z:.9,c:0xFFC6E8},{k:'sign',w:0,u:2.2,y:2.72,c:0x3EC8F2},{k:'bigleaf',x:3.3,z:-.6},{k:'softserve',x:3.3,z:2.2},{k:'pouf',x:2.1,z:2.4,c:3},{k:'win_candybath',w:0,u:.5,y:1.9},{k:'win_candybath',w:3,u:2.6,y:1.9}],
+  salon:{n:'Bubble Salon',kind:'groom',door:'bath',icon:'act-bath',color:'#3EC8F2',keeper:'stylist',kx:0,kz:-3.4,archTile:'s_bath',arch:[{b:[-4,-4,-1.5,-2.5]},{b:[1.5,-4,4,-2.5]}],
+    tf:()=>tilesWith('s_bath','candybathrug',[2,3,5,6]),tw:()=>wallsWith('s_bath'),
+    layout:[{k:'counter',x:0,z:-2.25,c:0x7FDDF5},{k:'sign',w:0,u:0,y:3.0,c:0x3EC8F2},
+      {k:'clawtub',x:-2.7,z:-1.75},{k:'bubbleart',at:[-2.75,-2.48,0],y:2.35,blk:0},{k:'sinkvanity',x:2.75,z:-2.15},{k:'bathmirror',at:[2.75,-2.48,0],y:2.15,blk:1},
+      {k:'shelfunit',x:-3.66,z:.4,r:Math.PI/2,c:0xC8F2FF},{k:'display',x:.9,z:.9,c:0xFFC6E8},{k:'towelrack',x:3.4,z:-1.3,r:-Math.PI/2},
+      {k:'ducklamp',x:3.4,z:.5},{k:'bathstool',x:2.6,z:2.6},{k:'pouf',x:1.6,z:2.9,c:5},{k:'bamboo',x:3.45,z:3.3},{k:'soapbowl',x:-1.8,z:-.6},{k:'win_candybath',w:3,u:1.85,y:1.95}],
     lines:{hi:['Welcome to Bubble Salon, darling!','Ready for a little pampering?','Oh, that glow could use a refresh!'],buy:['Fabulous choice!','So fresh, so clean!','You two are going to sparkle.'],
       poor:['Not quite enough hearts, darling. Soon!'],tip:()=>`${state.pet.name} is looking ${tier('clean',petStats().clean).toLowerCase()} today.`}},
-  toys:{n:'Toy Box',kind:'toy',door:'play',icon:'act-play',color:'#9B4DF2',keeper:'toymaker',kx:-1.6,kz:-3.5,
-    tf:()=>tilesWith('foammat','jellytile',[2,2,5,5]),tw:()=>wallsWith('polka','ribbons'),
-    layout:[{k:'counter',x:-1.6,z:-2.75,c:0xFFD21F},{k:'shelfunit',x:1.8,z:-3.66,c:0x9FE3F5},{k:'shelfunit',x:-3.66,z:-.2,r:Math.PI/2,c:0xC9A8FF},
-      {k:'display',x:1.3,z:.7,c:0xFFB3D9},{k:'sign',w:0,u:-1.6,y:2.72,c:0x9B4DF2},{k:'playpen',x:2.8,z:2.5},{k:'horse',x:3.2,z:-1.3,r:-Math.PI/2},{k:'blocks',x:.2,z:2.6},{k:'bulb',x:-3.2,z:1.5},{k:'gacha',x:3.25,z:.6,r:-Math.PI/2},{k:'win_play',w:0,u:0,y:1.9},{k:'win_play',w:3,u:2.6,y:1.9}],
+  toys:{n:'Toy Box',kind:'toy',door:'play',icon:'act-play',color:'#9B4DF2',keeper:'toymaker',kx:.4,kz:-3.4,archTile:'s_play',arch:[{b:[-4,-4,-2,-2.6]},{b:[-2,-4,-1.2,-3.2]},{b:[2,-4,4,-3.0]}],
+    tf:()=>tilesWith('s_play','jellytile',[2,3,5,6]),tw:()=>wallsWith('s_play'),
+    layout:[{k:'counter',x:.4,z:-2.25,c:0xFFD21F},{k:'bunting',w:0,u:.4,y:3.02},{k:'sign',at:[-3,-2.58,0],y:2.85,c:0x9B4DF2,blk:0},{k:'kiddrawing',at:[-1.6,-3.18,0],y:2.2,blk:1},
+      {k:'shelfunit',x:2.9,z:-2.72,c:0x9FE3F5},{k:'shelfunit',x:-3.66,z:.2,r:Math.PI/2,c:0xC9A8FF},{k:'display',x:.7,z:.8,c:0xFFB3D9},
+      {k:'horse',x:-3.0,z:-2.0,r:.4},{k:'robot',x:-1.6,z:-2.8},{k:'rocket',x:-2.05,z:-1.6},{k:'playpen',x:2.8,z:2.6},{k:'blocks',x:1.2,z:2.8},{k:'ball',x:-.6,z:2.9},
+      {k:'ballpit',x:-1.6,z:1.4},{k:'gacha',x:3.25,z:.4,r:-Math.PI/2},{k:'crayon',x:3.45,z:-1.7},{k:'win_play',w:3,u:1.9,y:1.9}],
     lines:{hi:['Boing! Welcome to the Toy Box!','Everything here goes boing!','Toys, toys, toys!'],buy:['Have fun with it!','Play hard!','Boing boing!'],
       poor:['Almost! A few more hearts!'],tip:P=>P&&`${state.pet.name} goes wild for ${P.toy} toys!`}}};
 // Cozy Nest: a showroom that changes every day (three pieces on sale), and the full catalog on the lectern
-SHOPS.furn={n:'Cozy Nest',kind:'furn',door:'fort',icon:'tab-decorate',color:'#FF3D9A',keeper:'cushion',kx:1.7,kz:-3.5,
-  tf:()=>tilesWith('herring','parquet',[1,1,6,6]),tw:()=>wallsWith('plaster','stripe'),
-  layout:()=>{const pk=dealKeys(),spots=[[-2.3,-1.4,.5],[-2.4,1.1,.9],[.2,-.5,.6],[2.4,-.3,-.6],[.2,1.8,.3],[2.5,2.3,-.8]],st=nestStock(),wallK=st.walls.length?st.walls:CAT.filter(c=>c.wall&&c.fn!=='window'&&!c.gacha).map(c=>c.k),R=rnd(st.t),wp=[wallK[R()*wallK.length|0],wallK[R()*wallK.length|0]];
-    return[{k:'counter',x:1.7,z:-2.75,c:0xFFC6E0},{k:'catalog',x:-.3,z:-2.9,c:0xFF3D9A},{k:'sign',w:0,u:1.7,y:2.72,c:0xFF3D9A},{k:'bigleaf',x:3.45,z:-2.5},{k:'arc',x:-3.3,z:-3.2},
-      ...spots.map(([x,z,r],i)=>({k:pk[i],x,z,r,sale:'furn'})),{k:wp[0],w:0,u:-2.3,y:1.9,sale:'furn'},{k:wp[1],w:3,u:.6,y:1.9,sale:'furn'},{k:'win_fort',w:0,u:-1.15,y:1.9},{k:'win_fort',w:3,u:2.4,y:1.9}]},
+SHOPS.furn={n:'Cozy Nest',kind:'furn',door:'fort',icon:'tab-decorate',color:'#FF3D9A',keeper:'cushion',kx:1.9,kz:-3.4,archTile:'stripe',arch:[{b:[-4,-4,-3.1,-2.5]},{b:[-.75,-4,.3,-2.6],h:1.25}],
+  tf:()=>tilesWith('herring','parquet',[1,2,6,6]),tw:()=>wallsWith('s_calm'),
+  layout:()=>{const pk=dealKeys(),spots=[[-1.9,-3.3,0],[-2.7,.7,1.2],[.2,-.5,.6],[2.5,-.2,-.7],[.3,1.9,.3],[2.5,2.5,-.8]],st=nestStock(),wallK=st.walls.length?st.walls:CAT.filter(c=>c.wall&&c.fn!=='window'&&!c.gacha).map(c=>c.k),R=rnd(st.t),wp=[wallK[R()*wallK.length|0],wallK[R()*wallK.length|0]];
+    return[{k:'counter',x:1.9,z:-2.25,c:0xFFC6E0},{k:'catalog',x:-.15,z:-1.95,c:0xFF3D9A},{k:'sign',w:0,u:1.9,y:3.0,c:0xFF3D9A},{k:'bigleaf',x:3.55,z:-3.4},{k:'pampas',x:-3.5,z:-1.9},{k:'lantern',x:-2.85,z:-3.65},{k:'bonsai',x:-.22,z:-3.3,y:1.25},
+      ...spots.map(([x,z,r],i)=>({k:pk[i],x,z,r,sale:'furn'})),{k:wp[0],at:[-3.55,-2.48,0],y:2.1,sale:'furn',blk:0},{k:wp[1],w:3,u:-.8,y:2.1,sale:'furn'},{k:'win_fort',w:0,u:-1.9,y:2.3}]},
   lines:{hi:['Welcome to Cozy Nest! Make yourself at home.','Everything here is sittable. Mostly.','Fresh pieces on the floor today!'],buy:['It’ll look lovely at home!','Wrapped and ready. Well, sort of.','Great eye!'],
     poor:['A few more hearts and it’s yours!'],tip:()=>{const w=wishesIn();return w.length?`Something on your wishlist came in today: ${CATMAP[w[0]].n}${w.length>1?` and ${w.length-1} more`:''}! It’s in the catalog.`:`Today’s sets: ${nestStock().sets.map(k=>SETMAP[k].n).join(', ')}. The stock changes every day!`}}};
 // Hammer & Hue: floors, walls, doors, windows and bigger rooms
-SHOPS.build={n:'Hammer & Hue',kind:'build',door:'calm',icon:'tab-room',color:'#FF8A1C',keeper:'builder',kx:-1.9,kz:-3.5,
-  tf:()=>tilesWith('concrete','jellytile',[3,3,4,4]),tw:()=>wallsWith('grid','plain'),
+SHOPS.build={n:'Hammer & Hue',kind:'build',door:'calm',icon:'tab-room',color:'#FF8A1C',keeper:'builder',kx:-.9,kz:-3.4,archTile:'grid',arch:[{b:[1.7,-4,4,-1.9]}],
+  tf:()=>tilesWith('concrete','jellytile',[2,4,4,6]),tw:()=>wallsWith('pegboard'),
   layout:()=>{const R=rnd(Math.floor(Date.now()/864e5)+3),pickOf=a=>a[R()*a.length|0],W=TILE_ORDER.w,F=TILE_ORDER.f;
-    return[{k:'counter',x:-1.9,z:-2.75,c:0xFF8A1C},{k:'catalog',x:.55,z:-2.95,c:0xFF8A1C},{k:'sign',w:0,u:-1.9,y:2.72,c:0xFF8A1C},
-      {k:'shelfunit',x:-3.66,z:-.4,r:Math.PI/2,c:0xFFD27F},{k:'shelfunit',x:2.45,z:-3.66,c:0x9FE3F5},
-      {k:'sample',x:1.5,z:-.9,r:.6,style:'w:'+pickOf(W)},{k:'sample',x:2.9,z:.4,r:.8,style:'w:'+pickOf(W)},{k:'sample',x:.1,z:.3,r:.5,style:'w:'+pickOf(W)},
-      {k:'floorsample',x:-1.7,z:1.0,style:'f:'+pickOf(F)},{k:'floorsample',x:-.3,z:2.3,style:'f:'+pickOf(F)},
-      {k:'doorstand',x:2.3,z:2.5,r:.75,style:pickOf(DOOR_KEYS.slice(1))},{k:pickOf(WIN_KEYS),w:0,u:-.2,y:1.9,sale:'furn'},{k:pickOf(WIN_KEYS),w:0,u:.65,y:1.9,sale:'furn'},
-      {k:'crate',x:3.4,z:-1.6},{k:'bulb',x:-3.3,z:1.8},{k:'barrel',x:1.0,z:2.9},{k:'win_work',w:3,u:2.3,y:1.9}]},
+    return[{k:'counter',x:-.9,z:-2.25,c:0xFF8A1C},{k:'catalog',x:1.05,z:-3.3,c:0xFF8A1C},{k:'sign',w:0,u:-.9,y:3.0,c:0xFF8A1C},
+      {k:'rollerdoor',at:[2.85,-1.88,0],y:0,c:0xFFB347,len:1.8,blk:0},{k:'shelfunit',x:-3.66,z:-1.2,r:Math.PI/2,c:0xFFD27F},
+      {k:'sample',x:1.2,z:-.3,r:.6,style:'w:'+pickOf(W)},{k:'sample',x:2.9,z:.6,r:.8,style:'w:'+pickOf(W)},{k:'sample',x:-.4,z:.6,r:.5,style:'w:'+pickOf(W)},
+      {k:'floorsample',x:-2.0,z:1.1,style:'f:'+pickOf(F)},{k:'floorsample',x:-.7,z:2.4,style:'f:'+pickOf(F)},
+      {k:'doorstand',x:2.2,z:2.5,r:.75,style:pickOf(DOOR_KEYS.slice(1))},{k:pickOf(WIN_KEYS),w:3,u:-.7,y:1.95,sale:'furn'},{k:pickOf(WIN_KEYS),w:0,u:-3.0,y:1.95,sale:'furn'},
+      {k:'crate',x:3.45,z:.4},{k:'crate',x:3.4,z:1.2,r:.4},{k:'barrel',x:1.1,z:2.9},{k:'bulb',x:-3.4,z:1.4}]},
   lines:{hi:['Hammer & Hue! What are we building today?','Need a bigger room? I know a guy. It’s me.','Every wall deserves a little love.'],buy:['Nailed it!','That’s going to look sharp.','Measure twice, buy once!'],
     poor:['Not quite enough hearts yet, pal.'],tip:()=>state.size<12?`Your room’s ${state.size} × ${state.size}. Check the catalog under Room size!`:'Tap a paint can to see the whole pattern.'}};
 // Jelly Arcade: four cabinets (tap one to play), a high-score board and Joy behind the prize counter
@@ -6068,24 +6092,26 @@ Object.assign(FIX,{
   fitmirror:{n:'Mirror',fn:'fixture',build:it=>fxFitMirror(it.c),use:{kind:'stand',front:1,anim:'u_gaze',d:4,dist:.2,emo:['💗','⭐'],w:.6}}});
 
 // Glow Up Studio: Pom (antennae) and Blush (colours, patterns), each with a vanity and a lit mirror
-SHOPS.glam={n:'Glow Up Studio',kind:'glam',door:'motel',icon:'glam.svg',color:'#FF5FB0',keeper:'hair',kx:-1.6,kz:-3.45,
-  keepers:[{k:'hair',n:'Pom',x:-1.6,z:-3.45,svc:'hair',lines:{hi:['Hop in my chair! Let’s do something fun with those antennae.','Pom’s the name, antennae are my game!','Ooh, I have ideas for you.'],buy:['Gorgeous! Go show everyone.','Snip snip, done! You look amazing.','Now that’s a look!'],
+SHOPS.glam={n:'Glow Up Studio',kind:'glam',door:'motel',icon:'glam.svg',color:'#FF5FB0',keeper:'hair',kx:-2.3,kz:-3.4,archTile:'motelpanel',arch:[{b:[-.8,-4,.8,-2.3]}],
+  keepers:[{k:'hair',n:'Pom',x:-2.3,z:-3.4,svc:'hair',lines:{hi:['Hop in my chair! Let’s do something fun with those antennae.','Pom’s the name, antennae are my game!','Ooh, I have ideas for you.'],buy:['Gorgeous! Go show everyone.','Snip snip, done! You look amazing.','Now that’s a look!'],
       poor:['Almost! A few more hearts and we’ll make it happen.'],tip:()=>`Tap a style stand to try that one on.`}},
-    {k:'makeup',n:'Blush',x:1.7,z:-3.45,svc:'makeup',lines:{hi:['Darling! Sit, sit. Let’s play with colour.','Blush here. Your glow is already lovely.','Spots? Stripes? Stars? Anything goes.'],buy:['Stunning, darling!','A masterpiece, if I say so myself.','You’re glowing!'],
+    {k:'makeup',n:'Blush',x:2.3,z:-3.4,svc:'makeup',lines:{hi:['Darling! Sit, sit. Let’s play with colour.','Blush here. Your glow is already lovely.','Spots? Stripes? Stars? Anything goes.'],buy:['Stunning, darling!','A masterpiece, if I say so myself.','You’re glowing!'],
       poor:['Not quite enough hearts, darling. Soon!'],tip:()=>`Signature looks are a quick way to try a whole new palette.`}}],
-  tf:()=>tilesWith('motel'),tw:()=>wallsWith('motel','motelpanel'),
+  tf:()=>tilesWith('motel','motelrug',[2,3,5,6]),tw:()=>wallsWith('motel'),
   layout:()=>{const R=rnd(Math.floor(Date.now()/864e5)+11),st=Object.keys(ANT_STYLES).filter(k=>k!=='bobble');const pick=()=>st.splice(R()*st.length|0,1)[0];
-    return[{k:'vanity',x:-1.6,z:-2.75,c:0xC49BFF,set:'hair'},{k:'vanity',x:1.7,z:-2.75,c:0xFF9EB0,set:'makeup'},{k:'bulbmirror',w:0,u:-1.6,y:2.05,c:0xC49BFF},{k:'bulbmirror',w:0,u:1.7,y:2.05,c:0xFF8FC8},
-      {k:'sign',w:0,u:.05,y:2.95,c:0xFF5FB0},{k:'headstand',x:-3.3,z:-1.4,style:pick(),c:0x7FE0C0},{k:'headstand',x:-3.3,z:-.3,style:pick(),c:0xFFB3DA},{k:'headstand',x:-3.3,z:.8,style:pick(),c:0xFFD21F},
-      {k:'patboard',w:1,u:0,y:1.75},{k:'dryer',x:3.2,z:-1.2,r:-Math.PI/2},{k:'dryer',x:3.2,z:1.4,r:-Math.PI/2},{k:'pouf',x:.1,z:1.2,c:3},{k:'bigleaf',x:3.4,z:3.2},{k:'bigleaf',x:.05,z:-3.4},{k:'win_motel',w:3,u:2.4,y:1.9}]},
+    return[{k:'vanity',x:-2.3,z:-2.25,c:0xC49BFF,set:'hair'},{k:'vanity',x:2.3,z:-2.25,c:0xFF9EB0,set:'makeup'},{k:'bulbmirror',w:0,u:-2.3,y:2.05,c:0xC49BFF},{k:'bulbmirror',w:0,u:2.3,y:2.05,c:0xFF8FC8},
+      {k:'sign',at:[0,-2.28,0],y:2.95,c:0xFF5FB0,blk:0},{k:'patboard',at:[0,-2.28,0],y:1.6,blk:0},
+      {k:'headstand',x:-3.3,z:-1.1,style:pick(),c:0x7FE0C0},{k:'headstand',x:-3.3,z:0,style:pick(),c:0xFFB3DA},{k:'headstand',x:-3.3,z:1.1,style:pick(),c:0xFFD21F},
+      {k:'dryer',x:3.2,z:-.9,r:-Math.PI/2},{k:'dryer',x:3.2,z:1.3,r:-Math.PI/2},{k:'loveseat',x:.3,z:2.7},{k:'rosevase',x:-1.1,z:-1.95},{k:'heartlamp',x:1.15,z:-1.95},{k:'bigleaf',x:3.4,z:3.2},{k:'win_motel',w:3,u:2.35,y:1.95}]},
   lines:{hi:['Welcome to Glow Up Studio!'],buy:['Gorgeous!'],poor:['Almost!'],tip:()=>''}};
 // Jelly Threads: hands and shoes on the shelves, accessories on the tables; Stitch runs the fitting room
-SHOPS.wear={n:'Jelly Threads',kind:'wear',door:'diner',icon:'wear.svg',color:'#A6E22E',keeper:'tailor',kx:1.6,kz:-3.45,svc:'wardrobe',
-  tf:()=>tilesWith('diner','dinerrug',[2,2,5,5]),tw:()=>wallsWith('diner','dinerpanel'),
-  layout:[{k:'counter',x:1.6,z:-2.75,c:0xA6E22E},{k:'catalog',x:-.6,z:-2.9,c:0xA6E22E},{k:'sign',w:0,u:1.6,y:2.72,c:0x7FB81E},
-    {k:'shelfunit',x:-3.66,z:-.4,r:Math.PI/2,c:0xFFD27F},{k:'display',x:.2,z:.4,c:0xFFB3DA},{k:'display',x:-1.5,z:2.0,c:0xB5E3FF},
-    {k:'rack',x:3.3,z:-1.0,r:-Math.PI/2,c:0xFF3D9A},{k:'rack',x:3.3,z:1.3,r:-Math.PI/2,c:0x9B4DF2},{k:'fitmirror',x:-2.8,z:-3.25,r:.45,c:0xFF8FC8},
-    {k:'bigleaf',x:3.45,z:-3.3},{k:'pouf',x:1.8,z:2.6,c:8},{k:'win_diner',w:0,u:0.45,y:1.9},{k:'win_diner',w:3,u:2.3,y:1.9}],
+SHOPS.wear={n:'Jelly Threads',kind:'wear',door:'date',icon:'wear.svg',color:'#A6E22E',keeper:'tailor',kx:1.8,kz:-3.4,svc:'wardrobe',archTile:'tailor',arch:[{b:[-4,-4,-1.9,-2.1]}],
+  tf:()=>tilesWith('herring','berryborder',[3,4,4,7]),tw:()=>wallsWith('tailor'),
+  layout:[{k:'counter',x:1.8,z:-2.25,c:0xA6E22E},{k:'catalog',x:-.6,z:-3.3,c:0xA6E22E},{k:'sign',w:0,u:1.8,y:3.0,c:0x7FB81E},
+    {k:'fitcurtain',at:[-2.95,-2.08,0],y:0,c:0xFF7FB8,len:1.6,blk:0},{k:'fitmirror',x:-1.3,z:-1.55,r:.5,c:0xFF8FC8},
+    {k:'shelfunit',x:-3.66,z:-.2,r:Math.PI/2,c:0xFFD27F},{k:'display',x:.4,z:-.4,c:0xFFB3DA},{k:'display',x:2.3,z:2.7,c:0xB5E3FF},
+    {k:'rack',x:3.3,z:-.9,r:-Math.PI/2,c:0xFF3D9A},{k:'rack',x:3.3,z:1.1,r:-Math.PI/2,c:0x9B4DF2},
+    {k:'mannequin',x:-1.6,z:1.3,c:0xFFC6E0},{k:'mannequin',x:1.6,z:1.3,c:0xC9A8FF},{k:'bigleaf',x:3.55,z:-3.4},{k:'win_date',w:0,u:-.6,y:2.3}],
   lines:{hi:['Welcome to Jelly Threads! Try anything on.','Stitch at your service. Fresh from the needles!','Everything here was knitted with love. Mostly by me.'],buy:['It fits like a dream!','Oh, that suits you.','Wear it in good health!'],
     poor:['A few more hearts and it’s yours, promise.'],tip:()=>`Anything you buy lives in your Wardrobe. Swap it any time from the Pet tab.`}};
 
@@ -6151,19 +6177,64 @@ function renderWardrobe(body){const L=petLook(true),inShop=away&&away.key==='wea
   body.querySelectorAll('[data-fc]').forEach(e=>e.onclick=()=>{const [k,c]=e.dataset.fc.split(':'),L2=petLook(true);L2.foot[k]=+c;setLook(L2);renderSheet()});
   const ws=$('#wShop');if(ws)ws.onclick=()=>travelTo('wear',()=>setTab('wardrobe'));queueThumbs(ids.map(id=>'wear:'+id))}
 
-SHOPS.arcade={n:'Jelly Arcade',kind:'arcade',door:'arcade',icon:'arcade',color:'#9B4DF2',keeper:'joy',kx:2.3,kz:-3.5,
-  tf:()=>tilesWith('arcade','arcaderug',[1,2,6,6]),tw:()=>wallsWith('cyber','arcadepanel'),
-  layout:[{k:'counter',x:2.3,z:-2.75,c:0xB98CFF},{k:'sign',w:0,u:2.3,y:2.72,c:0x9B4DF2},
-    {k:'cabinet',x:-2.0,z:-3.45,game:'catch'},{k:'cabinet',x:-.85,z:-3.45,game:'pop'},{k:'cabinet',x:-3.45,z:-2.0,r:Math.PI/2,game:'stack'},{k:'cabinet',x:-3.45,z:-.85,r:Math.PI/2,game:'says'},{k:'dropboard',x:.3,z:-3.4,game:'drop'},{k:'gacha',x:3.2,z:.5,r:-Math.PI/2},
-    {k:'scores',w:0,u:-1.42,y:2.72},{k:'bigleaf',x:-3.35,z:-3.35},{k:'pouf',x:.2,z:.6,c:3},{k:'pouf',x:1.4,z:1.5,c:8},{k:'bulb',x:3.3,z:2.9},{k:'bigleaf',x:3.35,z:-1.2},{k:'win_arcade',w:3,u:-.7,y:1.9}],
+SHOPS.arcade={n:'Jelly Arcade',kind:'arcade',door:'arcade',icon:'arcade',color:'#9B4DF2',keeper:'joy',kx:2.4,kz:-3.4,archTile:'arcade',arch:[{tri:[[-4,-1.7],[-1.7,-4],[-4,-4]]}],
+  tf:()=>tilesWith('arcade','arcaderug',[2,3,6,6]),tw:()=>wallsWith('cyber'),
+  layout:[{k:'counter',x:2.4,z:-2.25,c:0xB98CFF},{k:'sign',w:0,u:2.4,y:3.0,c:0x9B4DF2},
+    {k:'cabinet',x:-1.05,z:-3.45,game:'catch'},{k:'cabinet',x:.05,z:-3.45,game:'pop'},{k:'cabinet',x:-3.45,z:-1.05,r:Math.PI/2,game:'stack'},{k:'cabinet',x:-3.45,z:.05,r:Math.PI/2,game:'says'},{k:'dropboard',x:-3.3,z:1.15,r:Math.PI/2,game:'drop'},
+    {k:'scores',at:[-2.83,-2.83,Math.PI/4],y:2.25,blk:0},{k:'neonbar',at:[-2.83,-2.83,Math.PI/4],y:3.15,c:0x3EE8FF,len:2.6,blk:0},{k:'neonbar',w:0,u:-.5,y:3.15,c:0xFF3DDB,len:2.4},{k:'neonbar',w:3,u:.5,y:3.15,c:0xA6E22E,len:2.4},
+    {k:'gacha',x:3.2,z:.6,r:-Math.PI/2},{k:'pouf',x:.4,z:.6,c:3},{k:'pouf',x:.9,z:1.6,c:8},{k:'pinball',x:2.3,z:2.7,r:-.4},{k:'bulb',x:3.4,z:3.2},{k:'bigleaf',x:3.5,z:-1.3}],
   lines:{hi:['Welcome to Jelly Arcade! Pick a cabinet!','High scores are made to be broken!','Free play, all day. Go on, have a go!'],buy:['Nice!'],poor:['Keep playing!'],
     tip:()=>{const T=state.td,e=T&&T.list&&T.list.find(x=>!T.done.includes(x.k)&&TD_T[x.k].c==='play');if(e)return`Your two-do list says: ${tdText(e)}. You've got this!`;
       const ks=Object.keys(GAMES),k=ks[Math.random()*ks.length|0],b=Object.entries(arcA().hi[k]||{}).sort((p,q)=>q[1]-p[1])[0];return b?`The ${gName(k)} record is ${b[1]}, held by ${who(b[0])==='You'?'you':who(b[0])}.`:`Nobody's played ${gName(k)} yet. Be the first!`}}};
 const SHOP_FOR={food:'snack',groom:'salon',toy:'toys'};
+/* --- shop architecture: wall blocks, angled corners and bays, so shops aren't all square boxes --- */
+// S.arch: {b:[x0,z0,x1,z1]} is a solid wall block (full height unless h), {tri:[[x,z],[x,z],[x,z]]} an angled corner whose
+// open face runs from the 1st to the 2nd point. Faces that look into the room get a wall tile (A.tile or S.archTile, repeat
+// sets only) with the same baseboard and chrome trim as the room walls; the top is the grey wall cap. Blocks that only touch
+// walls the camera has cut away shrink to a stub like those walls do (updArch), and items placed on them (blk) hide.
+function buildArch(S,root){const blocks=[],faces=[],boxes=[],tiles=new Set(),E=HALF-.01;
+  (S.arch||[]).forEach(A=>{const g=G();root.add(g);const h=A.h||WALLH,tk=A.tile||S.archTile,body=M(0xE9EAF4,{roughness:.8}),bb=M(0xffffff,{roughness:.3}),tr=chromeMat(),wl=new Set();tiles.add('w:'+tk);
+    const face=(a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz),n=[-dz/L,dx/L],o=.006;
+      const geo=()=>{const e=tileMat('w',tk),d=TILESETS.w[tk],sx=d&&d.mode==='repeat'?d.span[0]:2,vr=(e.vrep||1)*h/WALLH,B={P:[],N:[],U:[],I:[]},A0=[a[0]+n[0]*o,0,a[1]+n[1]*o],B0=[b[0]+n[0]*o,0,b[1]+n[1]*o];
+        tquad(B,A0,B0,[B0[0],h,B0[2]],[A0[0],h,A0[2]],[n[0],0,n[1]],[0,0,L/sx,0,L/sx,vr,0,vr]);return new THREE.BufferGeometry(B.P,B.N,B.U,B.I)};
+      const m=new THREE.Mesh(geo(),tileMat('w',tk).mat);m.receiveShadow=true;m.castShadow=false;m.outline=0;m.userData.tk=tk;m.userData.geo=geo;g.add(m);faces.push(m);
+      const p=G();p.position.set((a[0]+b[0])/2,0,(a[1]+b[1])/2);p.rotation.y=Math.atan2(n[0],n[1]);g.add(p);nosh(add(p,new THREE.BoxGeometry(L,.2,.06),bb,0,.1,.03));nosh(add(p,new THREE.BoxGeometry(L+.04,.1,.22),tr,0,h,-.06))};
+    const touch=(x,z)=>{if(z<=-E)wl.add(0);if(x>=E)wl.add(1);if(z>=E)wl.add(2);if(x<=-E)wl.add(3)};
+    if(A.b){const [x0,z0,x1,z1]=A.b,bd=add(g,new THREE.BoxGeometry(x1-x0,h,z1-z0),body,(x0+x1)/2,h/2,(z0+z1)/2);bd.outline=.04;
+      if(z1<E)face([x0,z1],[x1,z1]);if(x1<E)face([x1,z1],[x1,z0]);if(x0>-E)face([x0,z0],[x0,z1]);if(z0>-E)face([x1,z0],[x0,z0]);
+      touch(x0,z0);touch(x1,z1);boxes.push(new THREE.Box3(new THREE.Vector3(x0,0,z0),new THREE.Vector3(x1,h,z1)))}
+    else if(A.tri){const P=A.tri,bd=flat(g,P.map(([x,z])=>[x,-z]),h,body,0,0,0);bd.rotation.x=-Math.PI/2;bd.outline=.04;
+      let a=P[0],b=P[1];const n=[-(b[1]-a[1]),b[0]-a[0]],c=P[2];if(n[0]*((a[0]+b[0])/2-c[0])+n[1]*((a[1]+b[1])/2-c[1])<0)[a,b]=[b,a];face(a,b);P.forEach(([x,z])=>touch(x,z));
+      const xs=P.map(p=>p[0]),zs=P.map(p=>p[1]);boxes.push(new THREE.Box3(new THREE.Vector3(Math.min(...xs),0,Math.min(...zs)),new THREE.Vector3(Math.max(...xs),h,Math.max(...zs))))}
+    blocks.push({g,walls:[...wl]})});
+  return{blocks,faces,boxes,tiles:[...tiles]}}
+function updArch(){if(!away||!away.arch)return;const on=away.arch.map(b=>!b.walls.length||b.walls.some(i=>walls[i].g.visible));away.arch.forEach((b,i)=>{b.g.scale.y=on[i]?1:.06});
+  away.items.forEach((it,id)=>{if(it.blk!=null){const o=away.objs.get(id);if(o)o.visible=on[it.blk]!==false}})}
+// keepers never stand inside their counter: a counter or vanity in front of a keeper is pushed forward until it clears the keeper and its step
+function clearKeepers(S,KS,objs,items){const Q=S.keepers||[{x:S.kx,z:S.kz}];KS.forEach((K,i)=>{const q=Q[i];if(!q)return;const kb=new THREE.Box3().setFromObject(K.g),front=Math.max(kb.max.z+.12,q.z+.5);
+  objs.forEach((o,id)=>{const it=items.get(id);if(it.k!=='counter'&&it.k!=='vanity'&&!it.desk)return;const ob=new THREE.Box3().setFromObject(o);if(ob.max.x<kb.min.x+.05||ob.min.x>kb.max.x-.05||ob.max.z<q.z||ob.min.z>front+.6)return;
+    const d=front-ob.min.z;if(d>0){o.position.z+=d;it.z+=d}})})}
+
+/* --- shop decor: an awning, a fitting-room curtain, a dress form, a roller door and a neon bar --- */
+function fxAwning(c,w){const g=G();awning(g,w||2.6,0,.16,c||0xFF7FB8,0xFFFFFF,8);return g}
+function fxFitCurtain(c,w){const g=G(),C=jel(c||0xFF7FB8,{roughness:.8}),wd=w||1.7;const r=cy(g,.03,.03,wd+.2,GOLDM(),0,2.45,.14,10);r.rotation.z=Math.PI/2;
+  for(let i=0;i<12;i++){if(i===5||i===6)continue;const x=-wd/2+.08+i*(wd-.16)/11;ol(cy(g,.075,.095,2.35,C,x,1.2,.14+(i%2)*.04,10),.01)}ol(rb(g,wd+.3,.34,.2,.06,C,0,2.62,.12),.012);
+  [-1,1].forEach(s=>ol(to(g,.1,.02,GOLDM(),s*(wd/2-.28),1.0,.2,Math.PI/2),0));const st=star3(g,.12,GOLDM(),0,2.62,.23);st.outline=0;return g}
+function fxMannequin(c){const g=G(),C=jel(c||0xFFC6E0,{roughness:.5}),Wd=M(0x8A6A45,{roughness:.5});ol(cy(g,.28,.32,.06,Wd,0,.03,0,20),.008);ol(cy(g,.03,.03,1.0,GOLDM(),0,.55,0,8),.004);
+  ol(lathe(g,[[.001,0],[.26,.02],[.3,.2],[.23,.45],[.28,.7],[.2,.86],[.08,.92],[.07,1.0],[.001,1.02]],C,0,1.0,0,24),.012);sp(g,.07,GOLDM(),0,2.04,0);to(g,.24,.028,M(0xFFD21F,{roughness:.4}),0,1.45,0,Math.PI/2);
+  for(let i=0;i<3;i++)sp(g,.035,M(0xFF3D9A,{roughness:.3}),0,1.25+i*.14,.27,1,1,.5);return g}
+function fxRollerDoor(c,w){const g=G(),C=M(c||0xFFB347,{roughness:.45,metalness:.2}),F=M(0x3B3F4A,{roughness:.5}),wd=w||1.9;ol(rb(g,wd+.24,.3,.35,.05,F,0,2.55,.15),.012);[-1,1].forEach(s=>ol(rb(g,.12,2.5,.18,.03,F,s*(wd/2+.06),1.25,.09),.01));
+  for(let i=0;i<10;i++)ol(rb(g,wd,.22,.06,.03,C,0,.13+i*.235,.04),.006);ol(rb(g,.4,.06,.06,.02,F,0,.5,.1),.004);[0,1].forEach(i=>{const s=rb(g,wd*.3,.08,.02,.01,M(i?0x222222:0xFFD21F),-wd*.25+i*wd*.12,2.2,.08);s.rotation.z=.6;s.outline=0});return g}
+function fxNeonBar(c,len){const g=G(),N=M(c||0xFF3DDB,{emissive:c||0xFF3DDB,emissiveIntensity:1.4,roughness:.2}),L=len||2.4,t=cy(g,.035,.035,L,N,0,0,.08,10);t.rotation.z=Math.PI/2;t.outline=0;
+  [-1,1].forEach(s=>{const b=cy(g,.05,.05,.1,M(0x333344),s*L/2,0,.04,8);b.rotation.x=Math.PI/2});return g}
+Object.assign(FIX,{awning:{n:'Awning',fn:'fixture',wall:1,build:it=>fxAwning(it.c,it.len)},fitcurtain:{n:'Fitting room',fn:'fixture',wall:1,build:it=>fxFitCurtain(it.c,it.len)},
+  mannequin:{n:'Dress form',fn:'fixture',build:it=>fxMannequin(it.c),use:{kind:'stand',front:1,anim:'u_gaze',d:3.5,dist:.2,emo:['💗'],w:.5}},
+  rollerdoor:{n:'Roller door',fn:'fixture',wall:1,build:it=>fxRollerDoor(it.c,it.len)},neonbar:{n:'Neon',fn:'fixture',wall:1,build:it=>fxNeonBar(it.c,it.len)}});
 function buildShop(key){const S=SHOPS[key],root=G(),objs=new Map(),items=new Map(),extra=[];scene.add(root);
-  (typeof S.layout==='function'?S.layout():S.layout).forEach((q,i)=>{const it=Object.assign({id:'s'+i,r:0,c:0},q);if(it.k==='sign')it.txt=S.n;items.set(it.id,it);let o;
+  (typeof S.layout==='function'?S.layout():S.layout).forEach((q,i)=>{const it=Object.assign({id:'s'+i,r:0,c:CATMAP[q.k]&&CATMAP[q.k].dc||0},q);if(it.k==='sign')it.txt=S.n;items.set(it.id,it);let o;
     if(CATMAP[it.k])o=buildItem(it);else{o=FIX[it.k].build(it);o.userData.id=it.id;o.userData.k=it.k;const box=new THREE.Box3().setFromObject(o),sz=new THREE.Vector3();box.getSize(sz);o.userData.ext={x:sz.x/2,z:sz.z/2,y:sz.y/2,cx:0,cy:(box.min.y+box.max.y)/2}}
     placeObj(o,it);root.add(o);objs.set(it.id,o)});
+  const AR=buildArch(S,root);AR.boxes.forEach(b=>extra.push(b));
   // stock the shelves: this shop's goods, round and round until every slot is full
   const R=rnd(Math.floor(Date.now()/864e5)+S.n.length),daily=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=R()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a},cans=daily([...TILE_ORDER.f.map(k=>'f:'+k),...TILE_ORDER.w.map(k=>'w:'+k)]);let ci=0;
   const goods=ITEMS.filter(i=>i.k===S.kind&&i.p>0),drinks=goods.filter(i=>i.cat==='drinks'),rest=drinks.length?goods.filter(i=>i.cat!=='drinks'):goods;let gi=0,di=0;
@@ -6182,7 +6253,8 @@ function buildShop(key){const S=SHOPS[key],root=G(),objs=new Map(),items=new Map
   // a shop can have more than one keeper (S.keepers); tapping one with a service (svc) opens it
   const KS=(S.keepers||[{k:S.keeper,x:S.kx,z:S.kz}]).map((q,i)=>{const K=KEEPERS[q.k]();K.g.userData.keeper=i+1;bakeKeeper(K,q.k);K.g.position.set(q.x,.5,q.z);K.g.scale.setScalar(1.22);rb(root,1.1,.5,.9,.05,M(0xE9DDF7,{roughness:.6}),q.x,.25,q.z);K.g.userData.keeper=i+1;{const L=G();K.g.children.slice().forEach(c=>L.add(c));K.g.add(L);K.layer=L}
     Object.assign(K,{act:'idle',k:0,d:1,svc:q.svc||S.svc,lines:q.lines||S.lines,n:q.n||'',kind:q.k});root.add(K.g);extra.push(new THREE.Box3(new THREE.Vector3(q.x-.6,0,q.z-.6),new THREE.Vector3(q.x+.6,2,q.z+.6)));return K});
-  return{key,def:S,root,objs,items,extra,keeper:KS[0],keepers:KS,tf:S.tf(),tw:S.tw()}}
+  clearKeepers(S,KS,objs,items);
+  return{key,def:S,root,objs,items,extra,keeper:KS[0],keepers:KS,tf:S.tf(),tw:S.tw(),arch:AR.blocks,archFaces:AR.faces,archTiles:AR.tiles}}
 const ico=n=>'assets/icons/'+(n.includes('.')?n:n+'.webp');
 function keeperReact(a,d,K){K=K||away&&away.keeper;if(!K)return;K.act=a;K.k=0;K.d=d||1.6}
 let kbT=0;function keeperSay(txt){if(!away||!txt)return;const el=$('#kbub');el.textContent=txt;el.hidden=false;el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');kbT=3.4}
@@ -6381,8 +6453,10 @@ function townTap(h){if(h.game){openGame(h.game);return}if(h.gacha){openGacha();r
 /* ================= SCENE SYNC ================= */
 const itemObjs=new Map();
 function placeObj(o,it){const d=defOf(it.k);
+  // at:[x,z,rotation] puts anything (wall pieces too) at an exact spot, e.g. on a shop's wall block
+  if(it.at){o.rotation.set(0,it.at[2]||0,0);o.position.set(it.at[0],d.wall?it.y:it.y||0,it.at[1]);return}
   if(d.wall){const W=WALLDEF[it.w||0];o.rotation.set(0,Math.atan2(W.n[0],W.n[1]),0);o.position.set(W.c[0]+W.T[0]*it.u+W.n[0]*.02,it.y,W.c[1]+W.T[1]*it.u+W.n[1]*.02)}
-  else{o.rotation.set(0,it.r||0,0);o.position.set(it.x,0,it.z)}}
+  else{o.rotation.set(0,it.r||0,0);o.position.set(it.x,it.y||0,it.z)}}
 let curFloor='',curWall='',curSky='';
 function swapMap(mat,t){const old=mat.map;mat.map=t;mat.needsUpdate=true;if(old&&old!==t)renderer.disposeTexture(old)}
 const skyTexCache={};function timeSky(k){return skyTexCache[k]||(skyTexCache[k]=roomTexture('s',k))}
@@ -7832,7 +7906,7 @@ setInterval(()=>{if(ready){updHUD();wishTick()}const ae=document.activeElement;i
 /* ================= LOOP ================= */
 let skyTick=0;const clock=new THREE.Clock();let tAcc=0,fpsN=0,fpsT=0;const tmp=new THREE.Vector3();
 function loop(){requestAnimationFrame(loop);const raw=clock.getDelta(),dt=Math.min(raw,.05);if(gm&&!$('#game').hidden)return;if(gc&&gc.open)return;tAcc+=dt;fpsN++;fpsT+=raw;if(fpsT>1){fps=Math.round(fpsN/fpsT);fpsN=0;fpsT=0;if(openTab==='debug')updDbgInfo()}updCam();
-  walls.forEach((w,i)=>{const d=WALLDEF[i];w.g.visible=(camera.position.x-d.c[0])*d.n[0]+(camera.position.z-d.c[1])*d.n[1]>2.5});
+  walls.forEach((w,i)=>{const d=WALLDEF[i];w.g.visible=(camera.position.x-d.c[0])*d.n[0]+(camera.position.z-d.c[1])*d.n[1]>2.5});updArch();
   roomObjs().forEach(o=>{const it=roomItem(o.userData.id);if(it&&defOf(it.k).wall)o.visible=walls[it.w||0].g.visible;if(o.userData.anim)o.userData.anim(tAcc)});
   updDoor(dt);if(away)updShop(dt,tAcc);
   updateToyPlay(dt,tAcc);updatePet(dt,tAcc);if(selHelper)selHelper.update();
