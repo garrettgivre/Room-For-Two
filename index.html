@@ -3881,40 +3881,66 @@ const KEEPERS={
       else if(talk)armL.rotation.set(-.6+Math.sin(t*3.4)*.3,0,-.5-Math.abs(Math.sin(t*2.1))*.4);else armL.rotation.set(-.1+Math.sin(t*.9)*.05,0,-.3);
       const sp=cheer?1.2:.3;bubs.forEach(q=>{const k=(t*sp*.5+q.ph)%1;q.m.position.set(q.x+Math.sin(t*1.5+q.ph*6)*.08,.6+k*1.9,-.1+Math.cos(t+q.ph*6)*.2);q.m.scale.setScalar(k>.88?(1-k)/.12:Math.min(1,k/.1))});
       F.update(dt,t,{talk,happy:cheer||greet||(cp>.3&&cp<1.5)})}}},
-  // Boing the toymaker: a jack-in-the-box on a spring, with a ruffle collar and a propeller beanie that never stops.
-  // Bobs on the spring, turns the crank on the box, and every so often lets out a big BOING.
-  toymaker(){const og=G(),g=G();og.add(g);g.position.y=-.14;const Y=jel(0xFFD21F,{roughness:.38}),Pu=jel(0x9B4DF2,{roughness:.32}),R=jel(0xFF3D9A,{roughness:.36}),Cy=jel(0x3EC8F2,{roughness:.36}),Sp=M(0xDDE3EE,{metalness:.6,roughness:.25});
-    // the box: rounded yellow body with cyan trim, stars on three sides, a gloss and a crank
-    ol(rb(g,.78,.62,.78,.09,Y,0,.31,0),.018);ol(rb(g,.84,.08,.84,.04,Cy,0,.6,0),.012);ol(rb(g,.84,.08,.84,.04,Cy,0,.04,0),.012);
-    [[0,.4,0],[.4,0,Math.PI/2],[-.4,0,-Math.PI/2]].forEach(([x,z,r],i)=>{const st=add(g,new THREE.ExtrudeGeometry(starShape(.15,.07,5),{depth:.025,bevelEnabled:false}),[R,Cy,Pu][i],x,.32,z);st.rotation.y=r;ol(st,.01)});
-    {const gl=nosh(add(g,SPH(1,14,10),B(0xffffff,{transparent:true,opacity:.35}),-.22,.5,.395));gl.scale.set(.12,.05,.01);gl.rotation.z=.4;ol(gl,0)}
-    const crank=piv(g,.43,.34,0);cy(crank,.03,.03,.08,Sp,.04,0,0,10).rotation.z=Math.PI/2;const ca=piv(crank,.08,0,0);ol(rb(ca,.03,.2,.04,.012,Sp,0,.08,0),.008);ol(sp(ca,.05,R,.05,.17,0),.01);
-    const lid=piv(g,0,.64,-.39);lid.rotation.x=-1.9;ol(rb(lid,.8,.06,.8,.03,Cy,0,0,.4),.014);{const st=add(lid,new THREE.ExtrudeGeometry(starShape(.12,.055,5),{depth:.02,bevelEnabled:false}),Y,0,.035,.4);st.rotation.x=-Math.PI/2;ol(st,.008)}
-    // the spring
-    const spring=piv(g,0,.62,0);for(let i=0;i<8;i++)ol(to(spring,.12,.022,Sp,0,.04+i*.06,0,Math.PI/2+(i%2?.08:-.08)),.006);
-    // head: ruffle collar, face, propeller beanie
-    const head=piv(g,0,1.1,0),hb=piv(head);const hd=add(hb,SPH(.34,44,32),Pu,0,.3,0);ol(hd,.018);gloss(hb,.34,1,1,-.15,.18,.08,.045,.6,.5,0,.3,0);
-    for(let i=0;i<12;i++){const a=i/12*Math.PI*2,r=add(hb,SPH(.075,14,10),i%2?Y:R,Math.sin(a)*.27,.02,Math.cos(a)*.27);r.scale.set(1,.6,1);ol(r,.008)}
-    const F=kFace2(hb,{r:.34,sy:1,sz:1,cx:0,cy:.3,cz:0,ex:.13,ey:.05,er:.08,my:-.1,mw:.065,browC:0x3B1273,cheekC:0xFF7FB8});
-    const cap=piv(hb,0,.52,0);[R,Y,Cy,Y].forEach((m,i)=>ol(add(cap,new THREE.SphereGeometry(.24,16,12,i*Math.PI/2,Math.PI/2,0,Math.PI/2),m,0,0,0),0));
-    ol(cy(cap,.245,.245,.03,R,0,.005,0,32),.012);cy(cap,.015,.015,.14,Sp,0,.28,0,8);ol(sp(cap,.04,R,0,.24,0),.008);
-    const blades=piv(cap,0,.35,0);[0,Math.PI].forEach((r,i)=>{const bl=add(blades,SPH(1,16,10),i?Cy:Y,Math.cos(r)*.16,0,Math.sin(r)*.16);bl.scale.set(.16,.018,.06);bl.rotation.x=.25*(i?-1:1);ol(bl,.008)});ol(sp(blades,.03,R,0,.01,0),.006);
-    // springy arms with big glove hands
-    const arms=[-1,1].map(s=>{const a=piv(hb,s*.32,.24,0);for(let i=0;i<4;i++)ol(to(a,.03,.009,Sp,0,-.04-i*.05,0,Math.PI/2),0);cy(a,.012,.012,.1,Sp,0,-.25,0,6);const h=add(a,SPH(.085,18,14),R,0,-.36,0);h.scale.set(1,1.05,.85);ol(h,.012);
-      ol(sp(a,.035,R,s*-.07,-.33,.02),.008);return a});
-    let boingT=4,bp=9,y=1.1,vy=0;
-    return{g:og,head,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';
+  // Boing the toymaker (after the character sheet): a purple head with one big eye and a buck-toothed grin on a real coiled
+  // spring, a rainbow propeller on a gold dome, stick arms with pink ball hands, popping out of a yellow toy box with a cyan
+  // frame, a big pink star and stickers. Bobs on the spring, turns the crank, and every so often lets out a big BOING.
+  toymaker(){const og=G(),g=G();og.add(g);g.position.y=-.14;
+    const Y=M(0xFFD84A,{roughness:.42}),Cy=M(0x3EC8F2,{roughness:.4}),Pk=M(0xFF4FA3,{roughness:.38}),Pu=M(0xA05AE0,{roughness:.33}),Pv=M(0x8B4FE0,{roughness:.4}),
+      Gd=M(0xFFC93A,{metalness:.5,roughness:.3}),Sp=M(0xC9CFDA,{metalness:.75,roughness:.25}),Rod=M(0xA8703E,{roughness:.45}),Ink=M(0x2A0E3E,{roughness:.6});
+    Y.detail=3;Cy.detail=3;Pu.detail=3;Pk.detail=3;Sp.detail=0;Gd.detail=0;
+    // the box: yellow panels in a cyan frame, a big pink star, a smiley sticker, little purple stars, and the crank
+    ol(rb(g,.76,.54,.76,.05,Y,0,.33,0),.016);ol(rb(g,.86,.08,.86,.035,Cy,0,.62,0),.012);ol(rb(g,.86,.09,.86,.035,Cy,0,.045,0),.012);
+    [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([x,z])=>ol(rb(g,.085,.52,.085,.03,Cy,x*.4,.33,z*.4),.01));
+    {const st=add(g,gcache('bo_star',()=>new THREE.ExtrudeGeometry(starShape(.19,.085,5),{depth:.03,bevelEnabled:true,bevelThickness:.012,bevelSize:.012,bevelSegments:2})),Pk,.04,.35,.375);ol(st,.01);const bs=add(g,gcache('bo_star'),Pk,0,.35,-.375);bs.rotation.y=Math.PI;ol(bs,.01)}
+    {const T=gcache('bo_smile',()=>{const c=mkCanvas(128,128),x=c.getContext('2d');x.fillStyle='#FFE45C';x.beginPath();x.arc(64,64,58,0,7);x.fill();x.lineWidth=8;x.strokeStyle='#3B1273';x.stroke();x.fillStyle='#3B1273';[46,82].forEach(ex=>{x.beginPath();x.ellipse(ex,52,7,11,0,0,7);x.fill()});
+        x.beginPath();x.arc(64,66,30,.3,Math.PI-.3);x.lineCap='round';x.stroke();const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t});
+      const sm=add(g,new THREE.CircleGeometry(.075,28),M(0xffffff,{map:T,roughness:.5}),-.23,.17,.382);ol(sm,.006);sm.rotation.z=.2;
+      [[-.21,.5,.13],[.24,.16,.1]].forEach(([x,y,r])=>{const q=add(g,gcache('bo_st2'+r,()=>new THREE.ExtrudeGeometry(starShape(r*.5,r*.22,5),{depth:.012})),Pv,x,y,.377);ol(q,.006)});
+      [[.1,.45,.1],[-.12,.2,.07],[.14,.2,.08]].forEach(([z,y,r])=>{const q=add(g,gcache('bo_st2'+r,()=>new THREE.ExtrudeGeometry(starShape(r*.5,r*.22,5),{depth:.012})),Pv,-.377,y,z);q.rotation.y=-Math.PI/2;ol(q,.006)})}
+    const crank=piv(g,.4,.34,0);cy(crank,.03,.03,.1,Sp,.05,0,0,10).rotation.z=Math.PI/2;const ca=piv(crank,.1,0,0);ol(rb(ca,.03,.2,.04,.012,Sp,0,.08,0),.008);ol(sp(ca,.05,Pk,.05,.17,0),.01);
+    // the spring: one continuous coil of wire (scaled to stretch)
+    const spring=piv(g,0,.62,0);ol(add(spring,gcache('bo_spring',()=>{const turns=4.5,N=90,pts=[];for(let i=0;i<=N;i++){const a=i/N*turns*Math.PI*2;pts.push([Math.sin(a)*.16,.02+i/N*.44,Math.cos(a)*.16])}
+      return sweepGeo(pts,t=>{const c=Math.min(1,t*60,(1-t)*60);const r=.024*Math.sqrt(Math.max(0,c));return[r,r]},{len:220,seg:10})}),Sp,0,0,0),.006);
+    // head: one big eye with a lid, a grin with two teeth
+    const head=piv(g,0,1.1,0),hb=piv(head),HR=.36,HSY=.92,HSZ=.95,HC=.34;const hd=add(hb,SPH(HR,48,34),Pu,0,HC,0);hd.scale.set(1,HSY,HSZ);ol(hd,.018);
+    gloss(hb,HR,HSY,HSZ,-.2,.2,.07,.04,.6,.45,0,HC,0);
+    const ep=onSurface(hb,HR,HSY,HSZ,0,.05,0,HC,0),eg=piv(ep,0,0,-.035);eg.scale.set(1,1.08,.62);
+    const eye=add(eg,SPH(.165,40,30),M(0xffffff,{roughness:.18,map:gcache('bo_eye',()=>{const c=mkCanvas(256,128),x=c.getContext('2d');
+      const w=x.createRadialGradient(64,64,10,64,64,90);w.addColorStop(0,'#FFFFFF');w.addColorStop(.55,'#FFFFFF');w.addColorStop(1,'#E6DDF7');x.fillStyle=w;x.fillRect(0,0,256,128);
+      const ir=x.createRadialGradient(64,70,4,64,64,31);ir.addColorStop(0,'#7FC4FF');ir.addColorStop(.7,'#2F7FD8');ir.addColorStop(1,'#1B3F96');x.fillStyle=ir;x.beginPath();x.ellipse(64,64,31,33,0,0,7);x.fill();
+      x.lineWidth=3;x.strokeStyle='#14224F';x.stroke();x.fillStyle='#0E0B24';x.beginPath();x.ellipse(64,64,15,16,0,0,7);x.fill();
+      x.fillStyle='#fff';x.beginPath();x.ellipse(56,54,6,6.5,0,0,7);x.fill();x.beginPath();x.arc(73,74,3,0,7);x.fill();const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t})}),0,0,0);ol(eye,.012);
+    const lid=add(eg,gcache('bo_lid',()=>new THREE.SphereGeometry(.175,40,14,0,Math.PI*2,0,Math.PI/2)),Pu,0,0,0);ol(lid,.008);lid.rotation.x=-1.2;
+    const mp=onSurface(hb,HR,HSY,HSZ,0,-.13,0,HC,0),mg=piv(mp,0,0,-.004);
+    {const bend=geo=>{const P=geo.pos;for(let i=0;i<P.length;i+=3)P[i+2]-=(P[i]*P[i]+P[i+1]*P[i+1])/(2*HR);geo.version++;return geo};
+      ol(add(mg,gcache('bo_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.14,.016);m.quadraticCurveTo(0,-.014,.14,.016);m.bezierCurveTo(.13,-.095,-.13,-.095,-.14,.016);return bend(new THREE.ExtrudeGeometry(m,{depth:.012}))}),M(0x5A1030,{roughness:.6}),0,0,0),.008);
+      const tg=add(mg,SPH(1,16,10),M(0xFF7FA6,{roughness:.6}),0,-.058,.004);tg.scale.set(.06,.022,.01);ol(tg,0);
+      [-1,1].forEach(s_=>ol(rb(mg,.034,.036,.014,.008,M(0xFFFFFF,{roughness:.3}),s_*.02,-.012,.008),.005))}
+    // the propeller: a gold dome, a stem, and four rainbow blades
+    const cap=piv(hb,0,HC+HR*HSY-.02,0);ol(sp(cap,.08,Gd,0,0,0,1,.55,1),.01);ol(cy(cap,.014,.014,.08,Gd,0,.07,0,8),.006);
+    const blades=piv(cap,0,.11,0);[Pk,Y,Cy,M(0x6FA8FF,{roughness:.38})].forEach((m,i)=>{const r=i*Math.PI/2,bl=add(blades,SPH(1,18,10),m,Math.cos(r)*.15,0,Math.sin(r)*.15);bl.scale.set(.15,.016,.055);bl.rotation.y=-r;bl.rotation.x=.2;ol(bl,.007)});ol(sp(blades,.032,Gd,0,.005,0),.006);
+    // stick arms with an elbow and pink ball hands
+    const arms=[-1,1].map(s_=>{const sh=piv(hb,s_*.34,HC-.04,0);ol(sp(sh,.03,Rod,0,0,0),.005);ol(cy(sh,.017,.017,.17,Rod,0,-.085,0,8),.005);const el=piv(sh,0,-.17,0);ol(sp(el,.022,Rod,0,0,0),.004);
+      ol(cy(el,.016,.016,.15,Rod,0,-.075,0,8),.005);ol(sp(el,.062,Pk,0,-.17,0),.009);return{s:s_,sh,el}});
+    let boingT=4,bp=9,y=1.1,vy=0,blink=2,lookT=0,look=[0,0],mo=0;
+    return{g:og,head,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';dt=Math.min(dt,.05);
       // a big boing every few seconds (when not chatting), otherwise a springy bob that follows the words
       boingT-=dt;if(boingT<0&&!talk&&act==='idle'){boingT=5+Math.random()*4;bp=0}bp+=dt;
       const base=cheer?1+Math.sin(Math.min(1,p*1.2)*Math.PI)*1.2:greet?1+Math.sin(Math.min(1,p*1.6)*Math.PI)*.6:bp<1.2?1+Math.sin(bp/1.2*Math.PI)*Math.exp(-bp*1.5)*1.3+Math.sin(bp*18)*Math.exp(-bp*3)*.08:1+(Math.sin(t*3)*.5+.5)*.16+(talk?Math.abs(Math.sin(t*9))*.08:0);
-      const tgt=.62+.48*base;vy+=(tgt-y)*dt*160;vy*=Math.exp(-dt*9);y+=vy*dt;spring.scale.set(1,(y-.62)/.48,1);head.position.y=y;
+      const tgt=.62+.48*base;vy+=(tgt-y)*dt*160;vy*=Math.exp(-dt*9);y+=vy*dt;spring.scale.set(1,Math.max(.3,(y-.62)/.48),1);head.position.y=y;
       // squash on the way down, stretch on the way up
       const st=clamp(vy*.06,-.14,.14);hb.scale.set(1-st*.5,1+st,1-st*.5);
       head.rotation.z=Math.sin(t*1.3)*.1+(talk?Math.sin(t*4.5)*.05:0);head.rotation.y=cheer?ease(p)*Math.PI*2:0;head.rotation.x=talk?Math.sin(t*3.6)*.05:0;
-      blades.rotation.y+=dt*(cheer||bp<1.2?30:9);crank.rotation.x+=dt*(talk?1.5:3);lid.rotation.x=-1.9+(bp<.6?Math.sin(bp/.6*Math.PI)*.2:0);
-      arms[0].rotation.set(0,0,greet?-2.4+Math.sin(t*14)*.4:cheer||bp<.8?-2.2:talk?-.8-Math.abs(Math.sin(t*2.4))*.5:-.45+Math.sin(t*3)*.12);
-      arms[1].rotation.set(0,0,cheer||bp<.8?2.2:talk?.6+Math.sin(t*3.1)*.25:.45+Math.sin(t*3+1)*.12);
-      F.update(dt,t,{talk,happy:cheer||greet,surprise:bp<.5})}}}};
+      blades.rotation.y+=dt*(cheer||bp<1.2?30:9);crank.rotation.x+=dt*(talk?1.5:3);
+      arms.forEach((A,i)=>{let a,e;if(greet&&i===0){a=2.3+Math.sin(t*14)*.3;e=.5+Math.sin(t*14)*.3}else if(cheer||bp<.8){a=2.5;e=.2}else if(talk){a=.8+Math.abs(Math.sin(t*2.4+i*1.3))*.5;e=.9}else{a=1+Math.sin(t*3+i)*.1;e=.7}
+        A.sh.rotation.z=approach(A.sh.rotation.z,A.s*a,dt*12);A.el.rotation.z=approach(A.el.rotation.z,A.s*e,dt*12)});
+      // the eye: blinks with its lid (sometimes twice), glances about, goes wide on a boing
+      const sur=bp<.5,happy=cheer||greet;blink-=dt;if(blink<-.16)blink=Math.random()<.2?.2:2+Math.random()*3;const cl=blink<0?Math.sin(Math.min(1,-blink/.16)*Math.PI):0;
+      lid.rotation.x=(sur?-1.45:happy?-1.05:-1.2)*(1-cl)+1.67*cl;
+      lookT-=dt;if(lookT<0){lookT=.8+Math.random()*2.4;look=talk?[(Math.random()-.5)*.2,.05]:[(Math.random()-.5)*.8,(Math.random()-.5)*.4]}
+      eye.rotation.y=approach(eye.rotation.y,look[0],dt*6);eye.rotation.x=approach(eye.rotation.x,-look[1],dt*6);
+      // the grin opens in syllables when talking
+      const syl=talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1))):0;mo=approach(mo,Math.max(syl,happy?.45:0,sur?.8:0),dt*20);mg.scale.set(1+mo*.08,1+mo*1.1,1)}}}};
 
 /* --- the shops --- */
 function tilesWith(fill,area,box){const a=Array(GRID*GRID).fill(fill);if(area)for(let j=box[1];j<=box[3];j++)for(let i=box[0];i<=box[2];i++)a[j*GRID+i]=area;return a}
