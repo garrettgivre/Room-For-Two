@@ -1109,7 +1109,7 @@ class WebGLRenderer{
     T.scene=this._colorTex(w,h);if(this.hdr){T.mips=[];let mw=w,mh=h;for(let i=0;i<6;i++){mw=Math.max(1,mw>>1);mh=Math.max(1,mh>>1);T.mips.push(this._colorTex(mw,mh));if(Math.min(mw,mh)<12)break}}
     gl.bindFramebuffer(gl.FRAMEBUFFER,null);return this._T=T}
   _geo(g){const gl=this.gl;let e=this._vao.get(g);if(e&&e.v===g.version)return e;
-    if(e&&g.dyn&&e.nv===g.pos.length){[[0,g.pos],[1,g.nrm],[3,g.nrm]].forEach(([i,d])=>{gl.bindBuffer(gl.ARRAY_BUFFER,e.bufs[i]);gl.bufferSubData(gl.ARRAY_BUFFER,0,d)});e.v=g.version;return e}
+    if(e&&g.dyn&&e.nv===g.pos.length){(g.dyn===2?[[0,g.pos]]:[[0,g.pos],[1,g.nrm],[3,g.nrm]]).forEach(([i,d])=>{gl.bindBuffer(gl.ARRAY_BUFFER,e.bufs[i]);gl.bufferSubData(gl.ARRAY_BUFFER,0,d)});e.v=g.version;return e}
     if(e){gl.deleteVertexArray(e.vao);e.bufs.forEach(b=>gl.deleteBuffer(b))}
     const vao=gl.createVertexArray();gl.bindVertexArray(vao);const bufs=[];[[g.pos,3],[g.nrm,3],[g.uv,2],[g.dyn?g.nrm:smoothNormals(g),3]].forEach(([d,n],i)=>{const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,d,g.dyn?gl.DYNAMIC_DRAW:gl.STATIC_DRAW);gl.enableVertexAttribArray(i);gl.vertexAttribPointer(i,n,gl.FLOAT,false,0,0);bufs.push(b)});
     const ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,g.idx,gl.STATIC_DRAW);bufs.push(ib);gl.bindVertexArray(null);
@@ -2523,7 +2523,7 @@ const vlerp=(a,b,t)=>{a.x+=(b.x-a.x)*t;a.y+=(b.y-a.y)*t;a.z+=(b.z-a.z)*t;return 
 const CAP_COL={c:0x5FC8FF,u:0xFF5FB0,r:0xFFC21F},CAP_NAME={c:'Common',u:'Uncommon',r:'Rare!'},CAP_CSS={c:'#3EB0F0',u:'#FF3D9A',r:'#F2A900'},TOKEN_HEARTS=12;
 const FIG_KEEPERS=['baker','stylist','toymaker','cushion','builder','joy','hair','makeup','tailor'];
 FIG_KEEPERS.forEach(k=>{BUILD['fig_'+k]=c=>{const g=G(),B=jel(c,{roughness:.35}),W=M(0xFFFFFF,{roughness:.4});lathe(g,[[.24,0],[.26,.03],[.24,.09],[.2,.11],[0,.12]],B,0,0,0,32);ol(to(g,.24,.018,W,0,.09,0,Math.PI/2),0);
-  const K=KEEPERS[k]();K.g.scale.setScalar(.44);K.g.position.y=.12;g.add(K.g);try{K.upd(1/60,1,'idle',0,false)}catch(_){}g.userData.anim=t=>{try{K.upd(1/60,t,'idle',0,false)}catch(_){}};return g}});
+  const K=bakeKeeper(KEEPERS[k](),k);K.g.scale.setScalar(.44);K.g.position.y=.12;g.add(K.g);try{K.upd(1/60,1,'idle',0,false)}catch(_){}g.userData.anim=t=>{try{K.upd(1/60,t,'idle',0,false)}catch(_){}};return g}});
 BUILD.fig_gold=c=>{const g=G(),Gd=M(0xFFC21F,{metalness:.7,roughness:.2}),B=jel(0xFF5FB0,{roughness:.35});lathe(g,[[.32,0],[.34,.04],[.28,.1],[.12,.14],[.1,.3],[.2,.34],[0,.35]],Gd,0,0,0,36);
   const gd=lathe(g,[[.26,.35],[.28,.4],[.24,.55],[.15,.64],[0,.67]],Gd,0,0,0,36);ol(gd,.012);for(let i=0;i<10;i++){const a=i*2.4,y=.42+(i%4)*.05,r=.24-(i%4)*.03;ol(nosh(bx(g,.03,.03,.03,M(0xFFF3B0),Math.cos(a)*r,y,Math.sin(a)*r)),0)}
   const st=add(g,new THREE.ExtrudeGeometry(starShape(.12,.055,5),{depth:.03,bevelEnabled:false}),B,0,.82,0);ol(st,.008);g.userData.anim=t=>{st.rotation.y=t*1.5};return g};
@@ -2631,7 +2631,7 @@ function buildItem(it){const def=CATMAP[it.k];const g=makePiece(it.k,TINTS[(it.c
     g.traverse(m=>{if(!m.isMesh)return;const mt=m.material,w=(mt.emissive.r+mt.emissive.g+mt.emissive.b)*mt.emissiveIntensity;if(w<=0)return;m.geometry.bs&&v.set(m.geometry.bs.c[0],m.geometry.bs.c[1],m.geometry.bs.c[2]);v.applyMatrix4(m.matrixWorld);acc.addScaledVector(v,w);col[0]+=mt.emissive.r*w;col[1]+=mt.emissive.g*w;col[2]+=mt.emissive.b*w;wsum+=w});
     if(wsum>0){acc.multiplyScalar(1/wsum);const mx=Math.max(col[0],col[1],col[2])||1;g.userData.glow={off:acc,color:col.map(c=>.35+.65*c/mx)}}
     else g.userData.glow={off:new THREE.Vector3(0,box.max.y*.8,0),color:[1,.85,.6]}}
-  return g}
+  bakeStatic(g);return g}
 
 /* ================= PET =================
    A two-headed jelly buddy: a lime head and a blue head share one splotchy body. Each head has one big eye,
@@ -3672,32 +3672,7 @@ const FIX={
 
 FIX.gacha={n:'Capsule machine',fn:'fixture',build:()=>{const w=G(),m=buildGachaMachine(true);m.g.scale.setScalar(.62);w.add(m.g);w.userData.gacha=1;return w},use:{kind:'stand',front:1,anim:'u_peer',d:4,dist:.1,emo:['❗','💗'],w:.9}};
 /* --- shopkeepers --- */
-/* --- shopkeeper kit: jelly skin, glossy eyes that blink and glance about, and a mouth that talks in syllables --- */
-// Face on a squashed sphere (radius r, scale sy/sz, centre cx/cy/cz): eyes at ±ex/ey (radius er), mouth at my (width mw).
-function kFace2(par,o){const F={eyes:[],pupils:[],brows:[],blink:1.5+Math.random()*2,dbl:0,look:[0,0],lookT:0,m:0,w:0},ink=M(INKC,{roughness:.3});
-  [-1,1].forEach(s=>{const pv=onSurface(par,o.r,o.sy,o.sz,s*o.ex,o.ey,o.cx,o.cy,o.cz),eg=piv(pv);
-    const w=add(eg,SPH(o.er,32,24),M(0xffffff,{roughness:.2,map:EYE_TEX.white(),emissive:0xffffff,emissiveIntensity:.2}),0,0,0);w.scale.set(1,1.12,.55);ol(w,.01);
-    const pg=piv(eg,0,0,o.er*.34),pu=add(pg,SPH(o.er*.56,24,18),M(0xffffff,{roughness:.08,map:EYE_TEX.pupil()}),0,0,0);pu.scale.set(1,1.1,.45);ol(pu,0);
-    nosh(ol(add(pg,SPH(o.er*.2,10,8),B(0xffffff),o.er*.18,o.er*.26,o.er*.25),0));nosh(ol(add(pg,SPH(o.er*.09,8,6),B(0xffffff),-o.er*.18,-o.er*.2,o.er*.25),0));
-    F.eyes.push(eg);F.pupils.push(pg);
-    if(o.brows!==false){const bp=onSurface(par,o.r,o.sy,o.sz,s*o.ex*1.04,o.ey+o.er*1.5,o.cx,o.cy,o.cz),bb=piv(bp,0,0,.004),br=add(bb,new THREE.TorusGeometry(o.er*.62,o.er*.12,8,18,Math.PI*.55),M(o.browC||INKC,{roughness:.4}),0,-o.er*.45,0);
-      br.rotation.z=Math.PI*.225;ol(br,0);bb.rotation.z=-s*.12;F.brows.push({bb,s})}
-    if(o.cheek!==false){const cp=onSurface(par,o.r,o.sy,o.sz,s*o.ex*1.62,o.ey-o.er*1.15,o.cx,o.cy,o.cz),c=nosh(add(cp,SPH(1,14,10),M(o.cheekC||0xFF7FB8,{roughness:.6,transparent:true,opacity:.75}),0,0,.002));c.scale.set(o.er*.62,o.er*.36,.01);ol(c,0)}});
-  const mp=onSurface(par,o.r,o.sy,o.sz,0,o.my,o.cx,o.cy,o.cz),mw=o.mw||o.er*1.1,arc=Math.PI*.8,sm=piv(mp,0,0,.004);sm.rotation.z=Math.PI;
-  {const t=add(sm,new THREE.TorusGeometry(mw,mw*.17,10,32,arc),ink,0,0,0);t.rotation.z=(Math.PI-arc)/2;ol(t,0);[1,-1].forEach(e=>{const a=Math.PI/2+e*arc/2;ol(add(sm,SPH(mw*.2,10,8),ink,Math.cos(a)*mw,Math.sin(a)*mw,0),0)})}
-  const mo=piv(mp,0,-mw*.25,0),mi=add(mo,SPH(mw*1.05,20,14),M(0x3A0F2E,{roughness:.6}),0,0,0);mi.scale.set(1,.8,.4);ol(mi,.008);
-  const tg=add(mo,SPH(mw*.62,14,10),M(0xFF6F9F,{roughness:.6}),0,-mw*.4,mw*.18,0);tg.scale.set(1,.5,.5);ol(tg,0);mo.scale.set(1,.01,1);mo.visible=false;
-  // st: {talk, happy, surprise}
-  F.update=(dt,t,st)=>{st=st||{};
-    // blinks every few seconds, sometimes a double blink; a slow look-around between blinks
-    F.blink-=dt;if(F.blink<-.14){F.blink=F.dbl?.18:2+Math.random()*3.2;F.dbl=!F.dbl&&Math.random()<.25}const bl=F.blink<0?Math.sin(Math.min(1,-F.blink/.14)*Math.PI):0;
-    F.lookT-=dt;if(F.lookT<0){F.lookT=.8+Math.random()*2.4;F.look=[(Math.random()-.5)*1.2,(Math.random()-.5)*.6]}
-    F.eyes.forEach(e=>e.scale.y=Math.max(.08,1-bl*.95));F.pupils.forEach((p,i)=>{let L=[F.look[0]*.22,F.look[1]*.2];const ga=gazeAngles(F.eyes[i],F);if(ga)L=[clamp(Math.tan(ga[0]),-1,1)*.3,clamp(Math.tan(ga[1]),-1,1)*.26];p.position.x=approach(p.position.x,L[0]*o.er,dt*8);p.position.y=approach(p.position.y,L[1]*o.er,dt*8)});
-    // talking: syllables of different sizes with little pauses, plus an 'oo' (narrow) or 'ee' (wide) shape
-    const syl=st.talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1)))*(Math.sin(t*1.3)>-.7?1:.2):0,tgt=Math.max(syl,st.happy?.75:0,st.surprise?.9:0);
-    F.m=approach(F.m,tgt,dt*22);F.w=approach(F.w,st.talk?Math.sin(t*3.3)*.25:0,dt*6);mo.visible=F.m>.08;mo.scale.set(1+F.w-F.m*.15,Math.max(.01,F.m),1);sm.visible=!mo.visible;
-    const up=st.talk?.08+syl*.1:st.happy||st.surprise?.18:0;F.brows.forEach(b=>{b.bb.position.y=approach(b.bb.position.y,up*o.er,dt*10);b.bb.rotation.z=approach(b.bb.rotation.z,-b.s*(st.surprise?-.05:.12),dt*8)})};
-  return F}
+/* --- shopkeeper kit: noodle arms and breathing (the eyes, bodies and props are in the mesh kit just below) --- */
 // a noodle arm: tapered, with a mitten hand at the end; rotate the returned pivot to pose it
 function kArm2(par,x,y,z,mat,len,r,hand){const a=piv(par,x,y,z||0);const c=add(a,new THREE.CylinderGeometry(r*.8,r,len,16),mat,0,-len/2,0);ol(c,.012);ol(add(a,SPH(r,14,10),mat,0,0,0),.012);
   const h=add(a,SPH(hand||r*1.45,18,14),mat,0,-len-(hand||r*1.45)*.5,0);h.scale.set(1,1.05,.9);ol(h,.012);a.userData.tip=piv(a,0,-len-(hand||r*1.45)*.9,0);return a}
@@ -3749,7 +3724,7 @@ function crPt(pts,t){const m=pts.length-1,f=Math.min(m-1e-6,Math.max(0,t)*m),k=f
 // many bubbles as one mesh, moved by rewriting its vertices each frame (dynamic geometry): set(i,x,y,z,r) then flush()
 function bubbleMesh(par,n,mat,seg){const S=SPH(1,seg||10,Math.max(6,(seg||10)*.75|0)),nv=S.pos.length/3,P=new Float32Array(nv*3*n),N=new Float32Array(nv*3*n),Uv=new Float32Array(nv*2*n),I=[];
   for(let b=0;b<n;b++){N.set(S.nrm,b*nv*3);Uv.set(S.uv,b*nv*2);for(let k=0;k<S.idx.length;k++)I.push(S.idx[k]+b*nv)}
-  const geo=new THREE.BufferGeometry(P,N,Uv,I);geo.dyn=1;geo.bs={c:[0,.5,0],r:2};const m=add(par,geo,mat,0,0,0);
+  const geo=new THREE.BufferGeometry(P,N,Uv,I);geo.dyn=2;geo.bs={c:[0,.5,0],r:2};const m=add(par,geo,mat,0,0,0);
   return{m,set(i,x,y,z,r){const p=geo.pos,o=i*nv*3,q=S.pos;for(let k=0;k<nv*3;k+=3){p[o+k]=x+q[k]*r;p[o+k+1]=y+q[k+1]*r;p[o+k+2]=z+q[k+2]*r}},flush(){geo.version++}}}
 // a stuffed cushion: a rounded-square outline B(th) (superellipse n, edges pinched in by o.pinch, o.hump raises the top middle)
 // puffed out front and back to half-depth D and pinched to a crisp seam all round
@@ -3983,7 +3958,7 @@ const KEEPERS={
     const rn=i=>{const x=Math.sin(i*12.9898+4.1)*43758.5;return x-Math.floor(x)},HM=[];for(let i=0;i<64;i++){const v=(i+.5)/64,y=v*.54,th=i*2.39996,rr=.028+.1*Math.pow(rn(i),1.6),r=profAt(DS,y)*.93+rr*.25;HM.push([Math.sin(th)*r-y*.08,y,Math.cos(th)*r*.95+.02,rr])}
     for(let i=0;i<14;i++){const a=i/14*Math.PI*2+.2;HM.push([Math.sin(a)*.38,.03+(i%2)*.03,Math.cos(a)*.36+.02,.04+.08*rn(i+80)])}
     for(let i=0;i<34;i++){const t=i/33,c=crPt(SW,t),k=.6+.6*rn(i+140);HM.push([c[0]+Math.sin(i*2.1)*.03,c[1],c[2]+Math.cos(i*2.1)*.03,.11*(1-t*.6)*k])}
-    const BB=HM.map((h,i)=>({h,i,st:0,t:0,p:[0,0,0],v:[0,0,0]})),cA=bubbleMesh(hair,Math.ceil(BB.length/2),Ba,12),cB=bubbleMesh(hair,Math.floor(BB.length/2),Bb,12),cH=bubbleMesh(hair,BB.length,B(0xffffff),6);ol(cA.m,.004);ol(cB.m,.004);ol(cH.m,0);nosh(cA.m);nosh(cB.m);nosh(cH.m);
+    const BB=HM.map((h,i)=>({h,i,st:0,t:0,p:[0,0,0],v:[0,0,0]})),cA=bubbleMesh(hair,Math.ceil(BB.length/2),Ba,10),cB=bubbleMesh(hair,Math.floor(BB.length/2),Bb,10),cH=bubbleMesh(hair,BB.length,B(0xffffff),5);ol(cA.m,.004);ol(cB.m,.004);ol(cH.m,0);nosh(cA.m);nosh(cB.m);nosh(cH.m);
     ol(sp(hair,.05,Or,.38,.2,.24),.008);
     // noodle arms: the right one holds a bubble wand
     const A=[-1,1].map(s_=>{const a=kArm3(armG,s_*.3-.01,.98,.02,C,.2,.2,.036,.062);a.s=s_;[-1,0,1].forEach(j=>ol(sp(a.el,.021,C,j*.032,-.2-.09-(j?0:.012),.01,1,1.5,1),.005));return a});
@@ -4217,12 +4192,6 @@ function wearModel(id){const t=id[0],k=id.slice(2),g=G(),S=PST[5];
   if(t==='f'){[-1,1].forEach(s=>{const lp=piv(g,s*S.foot*1.35,0,0);(FOOT_STYLES[k]||FOOT_STYLES.nub).build(lp,S,jel(s<0?0x3EC8F2:0xFF8FC8,{roughness:.4}),s,0)});return g}
   g.add(ACCS[k].build(.2));return g}
 function antModel(k){const g=G(),m=jel(0xFF5FA8,{roughness:.35});P(g,new THREE.CylinderGeometry(.03,.042,.07,12),m,0,.035,0,.012);ANT_STYLES[k].tip(piv(g,0,.07,0),PST[5],m,1.7);return g}
-let yarnT=null;function yarnTex(){if(yarnT)return yarnT;const W=512,H=256,c=mkCanvas(W,H),x=c.getContext('2d'),R=rnd(21);x.fillStyle='#8CCB1C';x.fillRect(0,0,W,H);x.lineCap='round';
-  // strands wound round the ball: great circles, which are waves on the unwrapped sphere
-  for(let k=0;k<16;k++){const al=.25+R()*1.15,ph=R()*Math.PI*2;for(let j=-1;j<=1;j++){x.strokeStyle=j?(R()<.5?'#D6F98A':'#6FA814'):'#B6EC45';x.lineWidth=4.5;x.beginPath();
-    for(let i=0;i<=128;i++){const u=i/128,lat=Math.atan(Math.tan(al)*Math.sin(u*Math.PI*2-ph)),v=.5-lat/Math.PI+j*.02;i?x.lineTo(u*W,v*H):x.moveTo(u*W,v*H)}x.stroke()}}
-  yarnT=new THREE.CanvasTexture(c);yarnT.encoding=THREE.sRGBEncoding;return yarnT}
-
 Object.assign(KEEPERS,{
   // Pom (after the character sheet): a slender curved turquoise body under a huge lilac afro of curl masses (each with a swirl),
   // pin antennae, half-lidded eyes with lilac lids and amber irises, a pink star marking, a tool belt of pouches, and a comb.
@@ -4517,14 +4486,50 @@ function buildShop(key){const S=SHOPS[key],root=G(),objs=new Map(),items=new Map
   // shopkeepers stand on a little step behind the counter so they're easy to see
   // showroom pieces and on-display doors/windows are for sale too
   objs.forEach((o,id)=>{const it=items.get(id);if(it.sale)o.userData.offer={t:it.sale,k:it.k}});
+  objs.forEach(o=>bakeStatic(o));
   // a shop can have more than one keeper (S.keepers); tapping one with a service (svc) opens it
-  const KS=(S.keepers||[{k:S.keeper,x:S.kx,z:S.kz}]).map((q,i)=>{const K=KEEPERS[q.k]();K.g.position.set(q.x,.5,q.z);K.g.scale.setScalar(1.22);rb(root,1.1,.5,.9,.05,M(0xE9DDF7,{roughness:.6}),q.x,.25,q.z);K.g.userData.keeper=i+1;{const L=G();K.g.children.slice().forEach(c=>L.add(c));K.g.add(L);K.layer=L}
+  const KS=(S.keepers||[{k:S.keeper,x:S.kx,z:S.kz}]).map((q,i)=>{const K=KEEPERS[q.k]();K.g.userData.keeper=i+1;bakeKeeper(K,q.k);K.g.position.set(q.x,.5,q.z);K.g.scale.setScalar(1.22);rb(root,1.1,.5,.9,.05,M(0xE9DDF7,{roughness:.6}),q.x,.25,q.z);K.g.userData.keeper=i+1;{const L=G();K.g.children.slice().forEach(c=>L.add(c));K.g.add(L);K.layer=L}
     Object.assign(K,{act:'idle',k:0,d:1,svc:q.svc||S.svc,lines:q.lines||S.lines,n:q.n||'',kind:q.k});root.add(K.g);extra.push(new THREE.Box3(new THREE.Vector3(q.x-.6,0,q.z-.6),new THREE.Vector3(q.x+.6,2,q.z+.6)));return K});
   return{key,def:S,root,objs,items,extra,keeper:KS[0],keepers:KS,tf:S.tf(),tw:S.tw()}}
 const ico=n=>'assets/icons/'+(n.includes('.')?n:n+'.webp');
 function keeperReact(a,d,K){K=K||away&&away.keeper;if(!K)return;K.act=a;K.k=0;K.d=d||1.6}
 let kbT=0;function keeperSay(txt){if(!away||!txt)return;const el=$('#kbub');el.textContent=txt;el.hidden=false;el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');kbT=3.4}
 const _kv=new THREE.Vector3();
+// Merge a keeper's static meshes to cut draw calls (each mesh is drawn up to three times: colour, outline, shadow).
+// Sibling meshes that share a material and outline and never move on their own become one mesh. Which meshes move is found
+// once per keeper kind by running its animation for a while (idle, talking, hello, cheer) and watching; cached by tree index.
+const BAKE_MOVING={};
+// snapshot of what can move: transforms, visibility and (for meshes) animated material values
+const bakeSnap=o=>{const q=[o.position.x,o.position.y,o.position.z,o.rotation.x,o.rotation.y,o.rotation.z,o.scale.x,o.scale.y,o.scale.z,o.visible?1:0];if(o.isMesh){const mt=o.material;q.push(mt.emissiveIntensity||0,mt.opacity,mt.color.r,mt.color.g,mt.color.b)}return q.map(v=>Math.round(v*1e4)).join(',')};
+function bakeWatch(nodes,steps,run){const s0=nodes.map(bakeSnap),mv=new Set();for(let i=0;i<steps;i++){try{run(i)}catch(_){}nodes.forEach((m,j)=>{if(!mv.has(j)&&bakeSnap(m)!==s0[j])mv.add(j)})}return mv}
+function bakeKeeper(K,kind){const nodes=[];K.g.traverse(o=>nodes.push(o));let mv=BAKE_MOVING[kind];
+  if(!mv){let t=0;const plan=[['idle',0,320],['idle',1,60],['greet',0,30],['cheer',0,30],['idle',0,40]],seq=[];plan.forEach(([a,talk,n])=>{for(let i=0;i<n;i++)seq.push([a,talk,i/n])});
+    mv=BAKE_MOVING[kind]=bakeWatch(nodes,seq.length,i=>{t+=.1;const[a,talk,p]=seq[i];K.upd(.1,t,a,a==='idle'?0:p,!!talk)})}
+  bakeCore(K.g,nodes,mv,()=>false);return K}
+// a shop fixture (with its stock): its own animation (userData.anim / use) is run to find what moves; merges stop at anything
+// you can tap (a product, an offer, a game, a service...) so picking still finds it
+const BAKE_STOP=n=>{const u=n.userData;return!!(u.product||u.offer||u.game||u.gacha||u.svc||u.catalog||u.door||u.keeper)};
+function bakeStatic(o){const nodes=[];o.traverse(q=>nodes.push(q));const U=o.userData;let mv=new Set();
+  if(U.anim||U.use)mv=bakeWatch(nodes,120,i=>{const t=i*.1;if(U.use)U.use(t,(t%4)/4);if(U.anim)U.anim(t)});if(U.use)try{U.use(-1,-1)}catch(_){}
+  bakeCore(o,nodes,mv,n=>n!==o&&BAKE_STOP(n));return o}
+function bakeCore(root,nodes,mv,stop){const moving=new Set([...mv].map(j=>nodes[j])),groups=new Map(),id=o=>o.bk_||(o.bk_=Math.random().toString(36).slice(2)),
+    mkey=mt=>{const c=mt.color,e=mt.emissive||{r:0,g:0,b:0};return[c.r,c.g,c.b,mt.roughness,mt.metalness,e.r,e.g,e.b,mt.emissiveIntensity||0,mt.detail|0,mt.side|0,mt.basic?1:0].map(v=>Math.round(v*1e3)).join(',')+(mt.map?id(mt.map):'')};
+  // each static mesh merges into its nearest ancestor that moves (or is tappable, or the root), through static pivots in between
+  nodes.forEach(m=>{if(!m.isMesh||moving.has(m)||!m.visible||m.children.length||m.geometry.dyn||m.material.transparent||!m.parent||stop(m))return;
+    const chain=[m];let an=m.parent;while(an!==root&&an.parent&&!moving.has(an)&&an.visible&&!stop(an)){chain.push(an);an=an.parent}if(!an.visible)return;
+    const k2=[id(an),mkey(m.material),m.outline,m.castShadow?1:0,m.receiveShadow?1:0,m.renderOrder].join('|');if(!groups.has(k2))groups.set(k2,{an,list:[]});groups.get(k2).list.push({m,chain})});
+  const mul=(A,B)=>{const o=new Float32Array(16);for(let c=0;c<4;c++)for(let r=0;r<4;r++)o[c*4+r]=A[r]*B[c*4]+A[4+r]*B[c*4+1]+A[8+r]*B[c*4+2]+A[12+r]*B[c*4+3];return o};
+  groups.forEach(({an,list})=>{if(list.length<2)return;const P=[],N=[],U=[],I=[];let base=0;
+    list.forEach(({m,chain})=>{let a=null;for(let i=chain.length-1;i>=0;i--){chain[i]._upd();const l=Float32Array.from(chain[i]._local);a=a?mul(a,l):l}const g=m.geometry,p=g.pos,n=g.nrm;
+      // normals: inverse-transpose of the upper 3x3
+      const a00=a[0],a01=a[1],a02=a[2],a10=a[4],a11=a[5],a12=a[6],a20=a[8],a21=a[9],a22=a[10],det=a00*(a11*a22-a12*a21)-a01*(a10*a22-a12*a20)+a02*(a10*a21-a11*a20),iv=1/(det||1);
+      const c=[(a11*a22-a12*a21)*iv,-(a10*a22-a12*a20)*iv,(a10*a21-a11*a20)*iv,-(a01*a22-a02*a21)*iv,(a00*a22-a02*a20)*iv,-(a00*a21-a01*a20)*iv,(a01*a12-a02*a11)*iv,-(a00*a12-a02*a10)*iv,(a00*a11-a01*a10)*iv];
+      for(let i=0;i<p.length;i+=3){const x=p[i],y=p[i+1],z=p[i+2];P.push(a[0]*x+a[4]*y+a[8]*z+a[12],a[1]*x+a[5]*y+a[9]*z+a[13],a[2]*x+a[6]*y+a[10]*z+a[14]);
+        const nx=n[i],ny=n[i+1],nz=n[i+2],X=c[0]*nx+c[3]*ny+c[6]*nz,Y=c[1]*nx+c[4]*ny+c[7]*nz,Z=c[2]*nx+c[5]*ny+c[8]*nz,l=Math.hypot(X,Y,Z)||1;N.push(X/l,Y/l,Z/l)}
+      for(let i=0;i<g.uv.length;i++)U.push(g.uv[i]);const flip=det<0;for(let i=0;i<g.idx.length;i+=3)I.push(g.idx[i]+base,g.idx[flip?i+2:i+1]+base,g.idx[flip?i+1:i+2]+base);base+=p.length/3});
+    const f=list[0].m,mm=add(an,new THREE.BufferGeometry(P,N,U,I),f.material,0,0,0);mm.outline=f.outline;mm.castShadow=f.castShadow;mm.receiveShadow=f.receiveShadow;mm.renderOrder=f.renderOrder;
+    list.forEach(({m})=>m.parent.remove(m))});
+}
 /* --- keeper body language: idle moves and talking styles on a layer over each keeper's own animation --- */
 // Idle moves (u 0..1 over d seconds; e = in-out envelope). Each keeper has their own set (KEEPER_IDLES); their own quirks
 // (flour puffs, the BOING, the fluff...) keep running on their own timers alongside.
