@@ -1246,7 +1246,11 @@ const SETS=[
  {k:'zen',img:'set-zen.svg',n:'Zen Tea Room',e:'🍵',c:'#A6C27A'},
  {k:'spooky',img:'set-spooky.svg',n:'Spooky Cute',e:'🎃',c:'#FF8A1C'},
  {k:'holiday',img:'set-holiday.svg',n:'Festive Holidays',e:'🎁',c:'#E8384F'},
- {k:'spring',img:'set-spring.svg',n:'Spring Picnic',e:'🌷',c:'#A6E22E'}
+ {k:'spring',img:'set-spring.svg',n:'Spring Picnic',e:'🌷',c:'#A6E22E'},
+ {k:'dino',img:'set-dino.svg',n:'Dino Dig',e:'🦕',c:'#7FC04A'},
+ {k:'carnival',img:'set-carnival.svg',n:'Carnival',e:'🎪',c:'#E8384F'},
+ {k:'work',img:'set-work.svg',n:'Work Nook for Two',e:'💻',c:'#4FC3F7'},
+ {k:'gym',img:'set-gym.svg',n:'Pet Gym',e:'🏋️',c:'#FF8A1C'}
 ];
 const SETMAP={};SETS.forEach(s=>SETMAP[s.k]=s);
 const FUNCS=[['seat','Seats','🛋️'],['bed','Beds','🛏️'],['surface','Tables','🍽️'],['storage','Storage','📦'],['light','Lights','💡'],['fun','Fun','🕹️'],['plant','Plants','🌵'],['rug','Rugs','🌀'],['deco','Decor','🗿'],['wall','Walls','🖼️'],['pet','Pet','🐾']];
@@ -1558,6 +1562,50 @@ const CAT=[
  {k:'lemonade',n:'Lemonade stand',set:'spring',fn:'surface',p:7,dc:3},
  {k:'butterflies',n:'Butterfly mobile',set:'spring',fn:'deco',p:5,dc:9},
  {k:'eggbed',n:'Eggshell pet bed',set:'spring',fn:'pet',p:5,dc:12,flat:1,sleep:1},
+ // Dino Dig
+ {k:'dinorocker',n:'Dino rocker',set:'dino',fn:'fun',p:9,dc:4,perch:{y:.84,z:-.02,fz:.3,side:1,se:.3,kind:'ride'}},
+ {k:'volcanolamp',n:'Volcano lamp',set:'dino',fn:'light',p:6,dc:11},
+ {k:'fossilshelf',n:'Fossil shelf',set:'dino',fn:'storage',p:7,dc:10},
+ {k:'digbox',n:'Dig site sandbox',set:'dino',fn:'fun',p:7,dc:10},
+ {k:'dinofern',n:'Prehistoric fern',set:'dino',fn:'plant',p:4,dc:10},
+ {k:'caverug',n:'Cave rock rug',set:'dino',fn:'rug',p:4,dc:11,flat:1},
+ {k:'bonexylo',n:'Bone xylophone',set:'dino',fn:'fun',p:6,dc:12},
+ {k:'dinoprint',n:'Footprint poster',set:'dino',fn:'wall',p:3,dc:4,wall:1,y:1.8},
+ {k:'nestbed',n:'Egg nest pet bed',set:'dino',fn:'pet',p:5,dc:10,flat:1,sleep:1},
+ {k:'bonebowl',n:'Bone food bowl',set:'dino',fn:'pet',p:2,dc:4,flat:1,feed:1},
+ // Carnival
+ {k:'carousel',n:'Carousel horse',set:'carnival',fn:'fun',p:11,dc:0,perch:{y:.9,z:-.02,fz:.3,side:1,se:.3,kind:'ride'}},
+ {k:'ballpit',n:'Ball pit',set:'carnival',fn:'fun',p:9,dc:5},
+ {k:'tentrobe',n:'Circus tent wardrobe',set:'carnival',fn:'storage',p:8,dc:1},
+ {k:'cottonlamp',n:'Cotton candy lamp',set:'carnival',fn:'light',p:5,dc:0},
+ {k:'ticketbooth',n:'Ticket booth',set:'carnival',fn:'surface',p:7,dc:1},
+ {k:'ringtoss',n:'Ring toss',set:'carnival',fn:'fun',p:5,dc:3},
+ {k:'strongbell',n:'Strongman bell',set:'carnival',fn:'fun',p:7,dc:1},
+ {k:'balloons',n:'Balloon bunch',set:'carnival',fn:'deco',p:3,dc:0},
+ {k:'starrug2',n:'Big top rug',set:'carnival',fn:'rug',p:4,dc:1,flat:1},
+ {k:'ringbed',n:'Circus ring pet bed',set:'carnival',fn:'pet',p:5,dc:1,flat:1,sleep:1},
+ // Work Nook for Two
+ {k:'doubledesk',n:'Double desk',set:'work',fn:'surface',p:10,dc:10},
+ {k:'deskchair',n:'Desk chair',set:'work',fn:'seat',p:5,dc:7,perch:{y:.52,z:.04,w:.28,bz:-.2,fe:.45}},
+ {k:'coffeemaker',n:'Coffee station',set:'work',fn:'surface',p:6,dc:11},
+ {k:'cubeshelf',n:'Cube shelves',set:'work',fn:'storage',p:6,dc:12},
+ {k:'deskplant',n:'Snake plant',set:'work',fn:'plant',p:3,dc:12},
+ {k:'arclamp',n:'Arc floor lamp',set:'work',fn:'light',p:6,dc:11},
+ {k:'officerug',n:'Round office rug',set:'work',fn:'rug',p:3,dc:7,flat:1},
+ {k:'pinboard',n:'Pin board',set:'work',fn:'wall',p:3,dc:10,wall:1,y:1.7},
+ {k:'whiteboard',n:'Doodle whiteboard',set:'work',fn:'wall',p:4,dc:12,wall:1,y:1.7},
+ {k:'cablebed',n:'Under-desk basket bed',set:'work',fn:'pet',p:4,dc:12,flat:1,sleep:1},
+ // Pet Gym
+ {k:'runwheel',n:'Exercise wheel',set:'gym',fn:'fun',p:10,dc:2},
+ {k:'trampoline',n:'Trampoline',set:'gym',fn:'fun',p:8,dc:7},
+ {k:'yogamat',n:'Yoga mat',set:'gym',fn:'rug',p:3,dc:9,flat:1},
+ {k:'balanceball',n:'Balance ball',set:'gym',fn:'deco',p:4,dc:0},
+ {k:'crawltunnel',n:'Crawl tunnel',set:'gym',fn:'fun',p:6,dc:5},
+ {k:'treadmill',n:'Mini treadmill',set:'gym',fn:'fun',p:9,dc:11},
+ {k:'dumbbells',n:'Dumbbell rack',set:'gym',fn:'deco',p:5,dc:0},
+ {k:'gymlamp',n:'Stopwatch lamp',set:'gym',fn:'light',p:5,dc:2},
+ {k:'waterstation',n:'Water station',set:'gym',fn:'pet',p:3,dc:7,flat:1,feed:1},
+ {k:'bandbed',n:'Sweatband pet bed',set:'gym',fn:'pet',p:5,dc:0,flat:1,sleep:1},
  // Capsule Pals: little living figurines of the shopkeepers, only from the capsule machine
  ...[['baker','Bunbun'],['stylist','Fizz'],['toymaker','Boing'],['cushion','Cushy'],['builder','Bolt'],['joy','Joy'],['hair','Pom'],['makeup','Blush'],['tailor','Stitch']].map(([k,n],i)=>({k:'fig_'+k,n:n+' figurine',set:'gacha',fn:'deco',p:0,dc:[0,7,9,0,2,8,5,0,4][i],gacha:1})),
  {k:'fig_gold',n:'Golden gumdrop trophy',set:'gacha',fn:'deco',p:0,dc:3,gacha:1},
@@ -3422,6 +3470,127 @@ Object.assign(BUILD,{
  eggbed(c){const g=G(),Sh=M(c,{roughness:.4}),In=M(0xFFF3A0,{roughness:.95});In.detail=1;const e=add(g,new THREE.SphereGeometry(.55,32,16,0,Math.PI*2,Math.PI*.45,Math.PI*.55),M(c,{roughness:.4,side:THREE.DoubleSide}),0,.5,0);e.scale.y=.95;ol(e,.012);
   for(let i=0;i<14;i++){const a=i/14*Math.PI*2;const z=ol(add(g,new THREE.ConeGeometry(.07,.12,4),Sh,Math.cos(a)*.54,.54,Math.sin(a)*.54),.004);z.rotation.y=-a}
   const cu=add(g,gcache('eg_cu',()=>cushionGeo(.4,.4,.07,{pinch:.02,n:2})),In,0,.2,0);cu.rotation.x=-Math.PI/2;ol(cu,.004);[0x6FC8FF,0xFF6FB5].forEach((col,i)=>ol(to(g,.53-i*.03,.02,M(col,{roughness:.4}),0,.3+i*.1,0,Math.PI/2),0));return g}});
+/* ================= DINO DIG, CARNIVAL, WORK NOOK FOR TWO, PET GYM ================= */
+function s5Bone(g,x,y,z,l,r,m){const b=piv(g,x,y,z);ol(cy(b,r,r,l,m,0,0,0,10),.004).rotation.z=Math.PI/2;[-1,1].forEach(sd=>[-1,1].forEach(sz=>ol(sp(b,r*1.4,m,sd*l/2,0,sz*r),.003)));return b}
+Object.assign(BUILD,{
+ // ---------- Dino Dig ----------
+ dinorocker(c){const g=G(),Dn=M(c,{roughness:.45}),Wd=M(0xC9A06E,{roughness:.6}),Pl=M(0xFFD21F,{roughness:.4});Wd.detail=2;const p=G();g.add(p);
+  [-.22,.22].forEach(x=>{const h=G();h.position.set(x,1.02,0);h.rotation.y=Math.PI/2;p.add(h);to(h,1.0,.04,Wd,0,0,0,0,0,-Math.PI/2-.45,.9)});[[-.22,-.2],[.22,-.2],[-.22,.2],[.22,.2]].forEach(([x,z])=>cy(p,.035,.035,.4,Wd,x,.22,z,8));
+  const bd=ol(add(p,SPH(.3,24,18),Dn,0,.62,0),.012);bd.scale.set(.85,.8,1.4);const nk=piv(p,0,.72,.3);nk.rotation.x=-.6;ol(cy(nk,.1,.12,.4,Dn,0,.2,0,14),.01);ol(sp(nk,.16,Dn,0,.45,.05,1,.85,1.3),.01);
+  [-1,1].forEach(sd=>{ol(sp(nk,.03,M(0x1A1424),sd*.1,.52,.14),0);ol(sp(nk,.012,M(0xFFFFFF),sd*.1+.01,.53,.16),0)});ol(add(p,new THREE.ConeGeometry(.12,.45,12),Dn,0,.62,-.55),.008).rotation.x=-Math.PI/2+.3;
+  for(let i=0;i<6;i++){const sp_=ol(add(p,new THREE.ConeGeometry(.05,.1,4),Pl,0,.87-i*.01,.24-i*.13),.004);sp_.rotation.x=-.2}ol(rb(p,.36,.05,.34,.02,M(0xE8384F,{roughness:.5}),0,.84,-.02),.006);
+  [-1,1].forEach(sd=>ol(cy(p,.03,.03,.14,Wd,sd*.18,.9,.2,6),0).rotation.z=Math.PI/2);g.userData.anim=t=>{p.rotation.x=Math.sin(t*1.6)*.07};return g},
+ volcanolamp(c){const g=G(),Rk=M(c,{roughness:.9}),Lv=M(0xFF6A1C,{emissive:0xFF5A10,emissiveIntensity:1.6,roughness:.4});Rk.detail=3;ol(lathe(g,[[.45,0],[.42,.1],[.3,.5],[.16,.9],[.18,.94]],Rk,0,0,0,16),.012);
+  const cr=add(g,new THREE.CircleGeometry(.15,16),Lv,0,.93,0);cr.rotation.x=-Math.PI/2;ol(cr,0);[[0,.3],[2.2,.5],[4.1,.4]].forEach(([a,l])=>{const s_=ol(rb(g,.06,l,.03,.015,Lv,Math.sin(a)*.26,.9-l/2,Math.cos(a)*.26),0);s_.rotation.set(Math.cos(a)*.35,0,-Math.sin(a)*.35)});
+  const pf=[0,1,2].map(i=>ol(sp(g,.08,M(0xB9B2C9,{roughness:1,transparent:true,opacity:.6}),0,1.1,0),0));g.userData.anim=t=>pf.forEach((m,i)=>{const k=(t*.35+i/3)%1;m.position.set(Math.sin(i*2)*k*.2,1.0+k*.7,0);m.scale.setScalar(.6+k*1.4);m.material.opacity=.6*(1-k)});return g},
+ fossilshelf(c){const g=G(),Wd=M(c,{roughness:.6}),Bn=M(0xF4E8D0,{roughness:.8}),St=M(0xB9B2C9,{roughness:.9});Wd.detail=2;St.detail=3;[-1,1].forEach(sd=>ol(rb(g,.06,1.5,.4,.02,Wd,sd*.55,.75,0),.008));[.05,.55,1.05,1.5].forEach(y=>ol(rb(g,1.16,.05,.4,.02,Wd,0,y,0),.006));
+  const sk=piv(g,-.22,.62,0);ol(sp(sk,.14,Bn,0,.12,0,1.3,.8,1),.006);ol(sp(sk,.05,M(0x3A3244),.08,.14,.1),0);for(let i=0;i<5;i++)ol(add(sk,new THREE.ConeGeometry(.018,.05,5),Bn,.1+i*.025,.04,.08),0).rotation.x=Math.PI;
+  const am=piv(g,.25,.6,0);am.rotation.x=Math.PI/2;for(let i=0;i<18;i++){const a=i*.45,r=.03+i*.008;ol(sp(am,.03+i*.003,M(0xE0B070,{roughness:.5}),Math.cos(a)*r,0,Math.sin(a)*r),0)}
+  ol(sp(g,.14,St,-.2,1.14,0,1.3,.6,1),.006);s5Bone(g,-.2,1.2,.05,.18,.02,Bn);ol(add(g,new THREE.ConeGeometry(.08,.2,6),M(0xFFFFFF,{roughness:.6}),.25,1.18,0),.004);
+  [0x9B4DF2,0x6FC8FF,0xFF6FB5].forEach((col,i)=>ol(add(g,new THREE.ConeGeometry(.04,.14,6),M(col,{roughness:.1,emissive:col,emissiveIntensity:.3}),-.3+i*.12,.15,.05),.003));return g},
+ digbox(c){const g=G(),Wd=M(c,{roughness:.6}),Sd=M(0xF2D38A,{roughness:1}),Bn=M(0xF4E8D0,{roughness:.8});Wd.detail=2;Sd.detail=3;ol(rb(g,1.3,.2,.9,.03,Wd,0,.1,0),.01);ol(rb(g,1.2,.04,.8,.02,Sd,0,.2,0),0);
+  for(let i=0;i<5;i++)ol(sp(g,.12,Sd,-.4+i*.2,.2,-.15+(i%2)*.2,1,.35,1),0);s5Bone(g,.2,.22,.05,.3,.035,Bn);ol(sp(g,.1,Bn,-.3,.24,.1,1.2,.6,.9),.004);ol(to(g,.08,.03,Bn,.35,.22,-.2,Math.PI/2,0,0,Math.PI*1.3),.004);
+  const sh=piv(g,-.5,.25,.3);sh.rotation.set(.3,0,.8);ol(cy(sh,.012,.012,.3,M(0xFF5FA8,{roughness:.4}),0,.15,0,6),0);ol(sp(sh,.05,M(0xFF5FA8,{roughness:.4}),0,-.02,0,1,1.3,.4),0);
+  ol(cy(g,.08,.1,.12,M(0x6FC8FF,{roughness:.3}),.52,.28,.28,14),.004);return g},
+ dinofern(c){const g=G(),Lf=M(0x5FAF4A,{roughness:.55});ol(lathe(g,[[.2,0],[.24,.1],[.24,.2],[.1,.22]],M(0x8A8498,{roughness:.9}),0,0,0,10),.008);
+  for(let i=0;i<8;i++){const a=i/8*Math.PI*2,fr=piv(g,0,.2,0);fr.rotation.y=a;const pts=[[0,0,0],[.2,.5,0],[.4,.75,0],[.6,.7,0]];ol(add(fr,gcache('df_rib',()=>sweepGeo(pts,()=>[.012,.012],{len:12,seg:5})),M(0x3E7A30),0,0,0),0);
+    for(let j=1;j<10;j++){const q=crPt(pts,j/10);[-1,1].forEach(sd=>{const l=add(fr,leafGeo(.14-j*.008,.05),Lf,q[0],q[1],q[2]);l.rotation.set(sd*1.1,0,-.3+j*.1);ol(l,.001)})}}const co=ol(add(g,new THREE.ConeGeometry(.1,.2,8),M(0x7A5134),0,.3,0),.004);return g},
+ caverug(c){const g=G(),Rk=M(c,{roughness:1});Rk.detail=3;const m=add(g,gcache('cv_rug',()=>cushionGeo(1.1,.8,.04,{pinch:.05,n:2.4,lump:th=>.08*Math.sin(th*5+1)})),Rk,0,.04,0);m.rotation.x=-Math.PI/2;ol(m,.01);
+  const R=rnd(3);for(let i=0;i<9;i++){const a=R()*6.3,r=R()*.7;ol(sp(g,.05+R()*.05,M(lighten(c,.15),{roughness:1}),Math.cos(a)*r,.07,Math.sin(a)*r*.7,1,.4,1),0)}[0,1,2].forEach(i=>{const fp=add(g,SPH(1,12,8),M(shade(c,.25)),-.4+i*.35,.075,-.2+i*.2);fp.scale.set(.1,.01,.14);ol(fp,0)});return g},
+ bonexylo(c){const g=G(),Wd=M(0x9C6B48,{roughness:.6}),Bn=M(0xF4E8D0,{roughness:.6});Wd.detail=2;[-1,1].forEach(sd=>ol(rb(g,.9,.08,.06,.02,Wd,0,.4,sd*.2),.006));[[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([x,z])=>ol(cy(g,.025,.025,.4,Wd,x*.4,.2,z*.2,8),.004));
+  for(let i=0;i<7;i++){const b=s5Bone(g,-.36+i*.12,.47,0,.28+i*.03,.025,Bn);b.rotation.y=Math.PI/2}[-1,1].forEach(sd=>{const m=piv(g,sd*.2,.5,.35);m.rotation.set(.8,0,sd*.3);ol(cy(m,.008,.008,.3,Wd,0,.15,0,6),0);ol(sp(m,.035,M(c,{roughness:.4}),0,.3,0),.003)});return g},
+ dinoprint(c){const g=G(),Fr=M(0x9C6B48,{roughness:.5});ol(rb(g,.8,1,.05,.03,Fr,0,0,0),.01);ol(add(g,new THREE.PlaneGeometry(.68,.88),M(0xffffff,{map:s2Tex('dfp'+c,128,160,(x,w,h)=>{x.fillStyle='#FFF3D8';x.fillRect(0,0,w,h);x.fillStyle=s2hex(c);
+   [[40,40,-.3],[80,95,.2],[45,140,-.2]].forEach(([cx,cy,r])=>{x.save();x.translate(cx,cy);x.rotate(r);x.beginPath();x.ellipse(0,6,12,15,0,0,7);x.fill();[-14,0,14].forEach(dx=>{x.beginPath();x.moveTo(dx*.7,-4);x.lineTo(dx,-22);x.lineTo(dx*.7+4,-4);x.fill()});x.restore()})}),roughness:.8}),0,0,.03),0);return g},
+ nestbed(c){const g=G(),Tw=M(c,{roughness:.9}),Eg=M(0xFFF6EA,{roughness:.5});Tw.detail=2;const R=rnd(5);for(let i=0;i<40;i++){const a=R()*6.3,r=.45+R()*.1,t_=ol(cy(g,.018,.018,.4,Tw,Math.cos(a)*r,.12+R()*.12,Math.sin(a)*r,5),0);t_.rotation.set(R()*1.5,a,Math.PI/2+R()*.4)}
+  ol(lathe(g,[[.4,0],[.55,.08],[.56,.2],[.45,.24],[.4,.1],[0,.08]],Tw,0,0,0,32),.01);ol(cy(g,.42,.42,.06,M(0xFFD6A0,{roughness:.95}),0,.12,0,24),0);[[-.15,0],[.2,.1]].forEach(([x,z],i)=>{const e=ol(sp(g,.1,Eg,x,.22,z,.85,1.15,.85),.004);ol(sp(g,.02,M(0x7FC04A),x+.04,.28,z+.07),0)});return g},
+ bonebowl(c){const g=G(),Bw=M(c,{roughness:.3});ol(lathe(g,[[.14,0],[.18,.02],[.24,.1],[.25,.11],[.22,.11],[.16,.05],[0,.04]],Bw,0,0,0,32),.008);const R=rnd(2);for(let i=0;i<12;i++){const a=R()*6.3,r=R()*.13;ol(sp(g,.025,M(0xC98A4A,{roughness:.8}),Math.cos(a)*r,.08,Math.sin(a)*r,1,.7,1),0)}
+  s5Bone(g,.26,.03,.12,.16,.02,M(0xF4E8D0,{roughness:.6}));return g},
+ // ---------- Carnival ----------
+ carousel(c){const g=G(),Gd=M(0xFFD21F,{metalness:.5,roughness:.3}),Hs=M(0xFFFFFF,{roughness:.35}),Sd=M(c,{roughness:.4});ol(cy(g,.5,.55,.12,M(0xE8384F,{roughness:.4}),0,.06,0,32),.01);ol(cy(g,.03,.03,2.1,Gd,0,1.05,0,10),.006);
+  const cn=add(g,new THREE.ConeGeometry(.6,.4,16),M(0xffffff,{map:s1Stripe(0xE8384F,0xFFFFFF,8,1),roughness:.5}),0,2.2,0);ol(cn,.01);ol(sp(g,.06,Gd,0,2.44,0),.004);for(let i=0;i<16;i++){const a=i/16*Math.PI*2;ol(sp(g,.03,M(0xFFF3C0,{emissive:0xFFD27A,emissiveIntensity:1}),Math.cos(a)*.58,2.0,Math.sin(a)*.58),0)}
+  const hp=piv(g,0,0,0),hb=piv(hp,0,.5,0);const bd=ol(add(hb,SPH(.28,24,16),Hs,0,.3,0),.01);bd.scale.set(.7,.7,1.4);const hd=piv(hb,0,.45,.32);hd.rotation.x=-.5;ol(rb(hd,.18,.4,.2,.08,Hs,0,.1,0),.008);ol(rb(hd,.16,.16,.26,.06,Hs,0,.24,.08),.006);
+  [-1,1].forEach(sd=>ol(sp(hd,.025,M(0x1A1424),sd*.08,.28,.06),0));for(let i=0;i<5;i++)ol(sp(hd,.05,M(c,{roughness:.4}),0,.26-i*.07,-.1),0);ol(rb(hb,.28,.05,.3,.02,Sd,0,.52,0),.006);[[-.1,-.2],[.1,-.2],[-.1,.2],[.1,.2]].forEach(([x,z])=>ol(cy(hb,.025,.025,.3,Hs,x,.05,z,6),0));
+  for(let i=0;i<4;i++)ol(sp(hb,.04,M(c,{roughness:.4}),0,.34-i*.05,-.4-i*.03),0);g.userData.anim=t=>{hb.position.y=.4+Math.sin(t*1.6)*.08};return g},
+ ballpit(c){const g=G(),Wl=M(c,{roughness:.4}),R=rnd(7);ol(lathe(g,[[.6,0],[.62,.02],[.62,.4],[.66,.42],[.66,.46],[.56,.46],[.56,.06],[0,.05]],Wl,0,0,0,40),.012);
+  const cols=[0xFF5FA8,0xFFD21F,0x6FC8FF,0xA6E22E,0xB07BFF,0xFF8A1C];for(let i=0;i<60;i++){const a=R()*6.3,r=Math.sqrt(R())*.5;ol(sp(g,.06,M(cols[i%6],{roughness:.2}),Math.cos(a)*r,.36+R()*.1,Math.sin(a)*r),.003)}return g},
+ tentrobe(c){const g=G(),St=M(0xffffff,{map:s1Stripe(c,0xFFFFFF,10,1),roughness:.6}),Gd=M(0xFFD21F,{roughness:.4});ol(cy(g,.55,.6,1.1,St,0,.55,0,20),.012);const rf=add(g,new THREE.ConeGeometry(.66,.6,20),M(c,{roughness:.5}),0,1.4,0);ol(rf,.012);
+  ol(cy(g,.02,.02,.3,Gd,0,1.85,0,6),0);const fl=ol(add(g,gcache('tr_fl',()=>{const s_=new THREE.Shape();s_.moveTo(0,0);s_.lineTo(.2,-.05);s_.lineTo(0,-.12);return new THREE.ExtrudeGeometry(s_,{depth:.01})}),M(0xFFD21F,{roughness:.4}),0,2.0,0),.004);
+  for(let i=0;i<10;i++){const a=i/10*Math.PI*2;const sc=add(g,new THREE.SphereGeometry(.09,12,8,0,Math.PI*2,Math.PI/2,Math.PI/2),M(i%2?c:0xFFD21F,{roughness:.5}),Math.cos(a)*.6,1.1,Math.sin(a)*.6);ol(sc,.003)}
+  const dr=ol(add(g,new THREE.ConeGeometry(.25,.7,3),M(0x3B1273,{roughness:.8}),0,.35,.5),0);dr.rotation.x=-.1;ol(to(g,.05,.012,Gd,.12,.5,.58,0,0,0),0);return g},
+ cottonlamp(c){const g=G(),Cn=M(0xFFFFFF,{roughness:.4});ol(cy(g,.2,.22,.06,M(0xFFD21F,{roughness:.4}),0,.03,0,24),.006);ol(cy(g,.02,.02,.8,Cn,0,.45,0,8),0);ol(add(g,new THREE.ConeGeometry(.08,.4,16,1,true),M(0xffffff,{map:s1Stripe(0xFF6FB5,0xFFFFFF,6,1),roughness:.5,side:THREE.DoubleSide}),0,.95,0),.004).rotation.x=Math.PI;
+  const Ct=M(c,{emissive:c,emissiveIntensity:.6,roughness:.9});[[0,1.35,.3],[-.2,1.3,.2],[.2,1.3,.2],[0,1.55,.22],[-.12,1.5,.18],[.14,1.5,.18]].forEach(([x,y,r])=>ol(sp(g,r,Ct,x,y,0),.008));return g},
+ ticketbooth(c){const g=G(),Bd=M(c,{roughness:.4}),Wh=M(0xFFFFFF,{roughness:.4}),Gd=M(0xFFD21F,{roughness:.3,metalness:.3});ol(rb(g,.9,1.0,.7,.04,Bd,0,.5,0),.012);ol(rb(g,.7,.4,.02,.02,M(0x2A2340,{roughness:.1}),0,.8,.35),0);
+  ol(rb(g,.96,.06,.76,.02,Wh,0,1.03,0),.006);ol(rb(g,1.0,.5,.8,.05,M(0xffffff,{map:s1Stripe(c,0xFFFFFF,8,1),roughness:.5}),0,1.4,0),.01);for(let i=0;i<8;i++){const sc=add(g,new THREE.SphereGeometry(.07,12,8,0,Math.PI*2,Math.PI/2,Math.PI/2),M(i%2?c:0xFFFFFF,{roughness:.5}),-.44+i*.126,1.15,.4);ol(sc,.003)}
+  s1Star(g,.12,Gd,0,1.72,0);const tk=piv(g,.3,1.05,.3);for(let i=0;i<4;i++){const t_=ol(rb(tk,.16,.008,.08,.003,M(0xFFD21F,{roughness:.6}),0,i*.012,0),0);t_.rotation.y=i*.2}return g},
+ ringtoss(c){const g=G(),Wd=M(0xFFFFFF,{roughness:.4});ol(rb(g,1,.1,.8,.03,M(0xffffff,{map:s1Plaid(c),roughness:.8}),0,.05,0),.008);
+  [[-.3,-.2],[0,-.2],[.3,-.2],[-.15,.15],[.15,.15]].forEach(([x,z],i)=>{ol(cy(g,.025,.03,.36,Wd,x,.28,z,8),.004);ol(sp(g,.035,M([0xE8384F,0x6FC8FF,0xFFD21F][i%3],{roughness:.3}),x,.47,z),0)});
+  [[-.3,-.2,.2,0xFF5FA8],[.15,.15,.12,0xA6E22E],[.4,.3,.03,0xB07BFF]].forEach(([x,z,y,col])=>ol(to(g,.09,.02,M(col,{roughness:.3}),x,y+.1,z,Math.PI/2),.004));return g},
+ strongbell(c){const g=G(),Wd=M(0xFFFFFF,{roughness:.4}),Bd=M(c,{roughness:.4}),Gd=M(0xFFD21F,{metalness:.6,roughness:.25});ol(rb(g,.5,.12,.5,.03,Bd,0,.06,0),.008);ol(rb(g,.2,1.9,.1,.03,Wd,0,1.05,-.1),.01);
+  for(let i=0;i<6;i++)ol(rb(g,.22,.02,.02,.005,M([0xA6E22E,0xFFD21F,0xFF8A1C,0xE8384F,0xFF5FA8,0x9B4DF2][i]),0,.4+i*.28,-.04),0);ol(add(g,new THREE.SphereGeometry(.12,20,12,0,Math.PI*2,0,Math.PI/2),Gd,0,2.02,-.08),.006);
+  const pk=piv(g,0,.3,-.02);ol(cy(pk,.04,.04,.06,M(0xE8384F,{roughness:.3}),0,0,0,12),.004);ol(cy(g,.1,.1,.04,Bd,0,.13,.15,16),.004);
+  const ml=piv(g,.35,0,.15);ml.rotation.z=.4;ol(cy(ml,.02,.02,.7,M(0x9C6B48),0,.35,0,8),0);ol(cy(ml,.08,.08,.24,M(0xE8384F,{roughness:.4}),0,.72,0,16),.006).rotation.z=Math.PI/2;g.userData.anim=t=>{const k=(t*.4)%1;pk.position.y=.3+Math.sin(Math.min(1,k*3)*Math.PI)*(k<.33?1.5:0)};return g},
+ balloons(c){const g=G(),cols=[c,0xFFD21F,0x6FC8FF,0xA6E22E,0xB07BFF],bs=[];ol(cy(g,.1,.12,.12,M(0xE8384F,{roughness:.4}),0,.06,0,14),.004);
+  cols.forEach((col,i)=>{const a=i/5*Math.PI*2,b=piv(g,0,.12,0);const tip=[Math.cos(a)*.22,1.5+(i%2)*.2,Math.sin(a)*.18];ol(add(b,sweepGeo([[0,0,0],[tip[0]*.4,.7,tip[2]*.4],tip.map((v,j)=>j===1?v-.2:v)],()=>[.004,.004],{len:10,seg:4}),M(0xFFFFFF),0,0,0),0);
+    const bl=add(b,SPH(.17,20,16),M(col,{roughness:.15}),tip[0],tip[1],tip[2]);bl.scale.y=1.2;ol(bl,.008);ol(add(b,new THREE.ConeGeometry(.03,.05,8),M(col,{roughness:.2}),tip[0],tip[1]-.21,tip[2]),0).rotation.x=Math.PI;ol(sp(b,.035,M(0xFFFFFF,{roughness:.1}),tip[0]-.05,tip[1]+.08,tip[2]+.12),0);bs.push(b)});
+  g.userData.anim=t=>bs.forEach((b,i)=>{b.rotation.z=Math.sin(t*.9+i)*.04;b.rotation.x=Math.cos(t*.7+i)*.03});return g},
+ starrug2(c){const g=G();const tx=s2Tex('bt'+c,256,256,(x,w,h)=>{for(let i=0;i<16;i++){x.fillStyle=i%2?s2hex(c):'#FFF8EE';x.beginPath();x.moveTo(128,128);x.arc(128,128,130,i/16*Math.PI*2,(i+1)/16*Math.PI*2);x.fill()}x.fillStyle='#FFD21F';x.beginPath();for(let k=0;k<10;k++){const r=k%2?16:36,a=-Math.PI/2+k*Math.PI/5;x.lineTo(128+Math.cos(a)*r,128+Math.sin(a)*r)}x.fill()});
+  const pl=add(g,new THREE.CircleGeometry(1,48),M(0xffffff,{map:tx,roughness:1}),0,.02,0);pl.rotation.x=-Math.PI/2;ol(pl,.008);ol(to(g,1,.03,M(0xFFD21F,{roughness:.5}),0,.03,0,Math.PI/2),0);return g},
+ ringbed(c){const g=G(),Rn=M(c,{roughness:.4}),In=M(0xFFF6EA,{roughness:.95});In.detail=1;ol(cy(g,.55,.55,.26,Rn,0,.13,0,40),.01);ol(cy(g,.47,.47,.28,M(0xffffff,{map:s1Stripe(c,0xFFFFFF,16,1),roughness:.5}),0,.14,0,40),0);
+  ol(to(g,.53,.04,M(0xFFD21F,{roughness:.4}),0,.27,0,Math.PI/2),.004);const cu=add(g,gcache('rg_cu',()=>cushionGeo(.44,.44,.07,{pinch:.02,n:2})),In,0,.25,0);cu.rotation.x=-Math.PI/2;ol(cu,.004);for(let i=0;i<8;i++){const a=i/8*Math.PI*2;s1Star(g,.035,M(0xFFD21F,{roughness:.3}),Math.cos(a)*.56,.14,Math.sin(a)*.56).rotation.y=-a+Math.PI/2}return g},
+ // ---------- Work Nook for Two ----------
+ doubledesk(c){const g=G(),Wd=M(c,{roughness:.5}),Mt=M(0x3A3244,{roughness:.4});Wd.detail=2;ol(rb(g,2.1,.06,.8,.02,Wd,0,.76,0),.012);[-1,1].forEach(sd=>{ol(rb(g,.06,.73,.7,.02,Mt,sd*1.0,.37,0),.006)});
+  [-.5,.5].forEach((x,i)=>{const mn=piv(g,x,.79,-.2);ol(cy(mn,.1,.12,.02,Mt,0,0,0,16),.004);ol(cy(mn,.02,.02,.2,Mt,0,.1,0,8),0);ol(rb(mn,.62,.38,.03,.02,Mt,0,.38,0),.008);
+    const tx=s2Tex('scr'+i,128,80,(x_,w,h)=>{const gr=x_.createLinearGradient(0,0,w,h);gr.addColorStop(0,i?'#FFB3D6':'#8FD8FF');gr.addColorStop(1,i?'#B07BFF':'#A6E22E');x_.fillStyle=gr;x_.fillRect(0,0,w,h);x_.fillStyle='#fff';for(let k=0;k<3;k++)x_.fillRect(10,14+k*16,60-k*12,6);x_.fillStyle='rgba(255,255,255,.7)';x_.beginPath();x_.arc(100,50,14,0,7);x_.fill()});
+    const sc=add(mn,new THREE.PlaneGeometry(.56,.32),M(0xffffff,{map:tx,emissive:0xffffff,emissiveIntensity:.08,roughness:.2}),0,.38,.017);sc.outline=0;ol(rb(g,.4,.02,.14,.01,M(0xEDEAF5,{roughness:.4}),x,.8,.12),.004);ol(rb(g,.07,.02,.1,.03,M(0xEDEAF5),x+.3,.8,.14),.003)});
+  const mg=piv(g,-.9,.79,.1);ol(lathe(mg,[[.04,0],[.045,.1]],M(0xFF6FB5,{roughness:.3}),0,0,0,16),.003);ol(cy(g,.04,.04,.12,M(0x7FD08A,{roughness:.1,transparent:true,opacity:.6}),.95,.85,.1,12),0);return g},
+ deskchair(c){const g=G(),Up=M(c,{roughness:.6}),Mt=M(0x3A3244,{roughness:.4});for(let i=0;i<5;i++){const a=i/5*Math.PI*2;ol(rb(g,.28,.04,.05,.02,Mt,Math.cos(a)*.14,.06,Math.sin(a)*.14),0).rotation.y=-a;ol(sp(g,.03,Mt,Math.cos(a)*.28,.03,Math.sin(a)*.28),0)}
+  ol(cy(g,.025,.03,.36,Mt,0,.25,0,10),.004);const st=add(g,gcache('dc_st',()=>cushionGeo(.24,.22,.06,{pinch:.02,n:3})),Up,0,.48,0);st.rotation.x=-Math.PI/2;ol(st,.008);ol(rb(g,.46,.5,.08,.1,Up,0,.86,-.24),.01);ol(cy(g,.02,.02,.3,Mt,0,.62,-.24,6),0);return g},
+ coffeemaker(c){const g=G(),Bd=M(c,{roughness:.35}),Ch=M(0xDDE3EE,{metalness:.7,roughness:.2}),Wd=M(0xC9A06E,{roughness:.6});Wd.detail=2;ol(rb(g,.7,.72,.44,.03,Wd,0,.36,0),.01);ol(rb(g,.66,.04,.4,.01,M(0xFFFFFF,{roughness:.3}),0,.74,0),0);
+  const mc=piv(g,-.1,.76,0);ol(rb(mc,.3,.36,.28,.05,Bd,0,.18,0),.008);ol(rb(mc,.22,.05,.22,.02,Ch,0,.37,0),.004);ol(cy(mc,.02,.02,.06,Ch,0,.24,.1,8),0);ol(cy(mc,.1,.1,.02,Ch,0,.02,.06,16),0);ol(lathe(mc,[[.035,.03],[.045,.1]],M(0xFFFFFF,{roughness:.2}),0,0,.06,14),.003);
+  [[0xFF5FA8,.18],[0x6FC8FF,.26]].forEach(([col,x])=>ol(lathe(g,[[.035,.76],[.045,.86]],M(col,{roughness:.3}),x,0,.05,14),.003));ol(rb(g,.12,.16,.08,.02,M(0x7A5134,{roughness:.6}),.22,.84,-.1),.003);
+  const st=[0,1].map(i=>ol(sp(g,.03,M(0xFFFFFF,{roughness:.9,transparent:true,opacity:.5}),-.1,1,.06),0));g.userData.anim=t=>st.forEach((m,i)=>{const k=(t*.5+i/2)%1;m.position.y=.9+k*.3;m.scale.setScalar(.6+k*1.2);m.material.opacity=.5*(1-k)});return g},
+ cubeshelf(c){const g=G(),Wd=M(c,{roughness:.5});Wd.detail=2;for(let r=0;r<4;r++)ol(rb(g,1.2,.04,.4,.01,Wd,0,.02+r*.4,0),.006);for(let i=0;i<4;i++)ol(rb(g,.04,1.24,.4,.01,Wd,-.6+i*.4,.62,0),.006);
+  const cols=[0xFF6FB5,0x6FC8FF,0xFFD21F,0xA6E22E,0xB07BFF,0xFF8A1C];[[0,0,'bin'],[1,0,'books'],[2,0,'bin'],[0,1,'plant'],[1,1,'bin'],[2,1,'books'],[0,2,'books'],[1,2,'box'],[2,2,'bin']].forEach(([i,r,k],n)=>{const x=-.4+i*.4,y=.04+r*.4;
+    if(k==='bin')ol(rb(g,.32,.3,.34,.04,M(cols[n%6],{roughness:.8}),x,y+.15,.02),.004);else if(k==='books')for(let j=0;j<5;j++)bkBook(g,x-.13+j*.065,y,.02,.055,.26-(j%2)*.04,.26,BK_COL[(j+n)%BK_COL.length],0,M(CREAM,{roughness:.9}),M(0xE8C36A));
+    else if(k==='plant'){s2Pot(g,x,y,.0,.08,.12,0xFFFFFF);for(let j=0;j<6;j++){const l=add(g,leafGeo(.12,.06),M(0x4FAF4A),x,y+.16,0);l.rotation.set(-.5,j,.2);ol(l,.002)}}else ol(rb(g,.26,.18,.26,.02,M(0xE8C890,{roughness:.8}),x,y+.09,0),.004)});return g},
+ deskplant(c){const g=G();ol(lathe(g,[[.13,0],[.15,.02],[.16,.3],[.17,.31]],M(c,{roughness:.4}),0,0,0,24),.008);ol(cy(g,.15,.15,.02,M(0x6A4830,{roughness:1}),0,.3,0,20),0);
+  for(let i=0;i<8;i++){const l=piv(g,Math.cos(i*2.4)*.05,.3,Math.sin(i*2.4)*.05);l.rotation.set(Math.sin(i)*.15,i*2.4,Math.cos(i)*.15);const lf=add(l,leafGeo(.6+(i%3)*.12,.09),M(i%2?0x4F8A3A:0x6FA84A,{roughness:.5}),0,0,0);ol(lf,.003)}return g},
+ arclamp(c){const g=G(),Mt=M(c,{roughness:.3,metalness:.4});ol(rb(g,.4,.08,.3,.03,M(0xEDEAF5,{roughness:.2}),0,.04,0),.006);ol(add(g,gcache('al_arc2',()=>{const pts=[];for(let i=0;i<=16;i++){const u=i/16,m=1-u;pts.push([u*u*.95,m*m*.08+2*m*u*2.3+u*u*1.4,0])}return sweepGeo(pts,()=>[.02,.02],{len:30,seg:8})}),Mt,0,0,0),.004);
+  const hd=piv(g,.95,1.3,0);ol(add(hd,new THREE.SphereGeometry(.2,24,12,0,Math.PI*2,0,Math.PI/2),M(c,{roughness:.3,side:THREE.DoubleSide}),0,0,0),.008);ol(sp(hd,.07,M(0xFFF3C0,{emissive:0xFFE08A,emissiveIntensity:1.6}),0,.02,0),0);return g},
+ officerug(c){const g=G(),Rg=M(c,{roughness:1});Rg.detail=1;ol(cy(g,1.05,1.05,.03,Rg,0,.015,0,48),.008);for(let i=1;i<4;i++)ol(to(g,1.05-i*.24,.02,M(lighten(c,.25),{roughness:1}),0,.03,0,Math.PI/2),0);return g},
+ pinboard(c){const g=G(),Fr=M(c,{roughness:.5});ol(rb(g,1,.7,.05,.02,Fr,0,0,0),.01);ol(rb(g,.9,.6,.03,.01,M(0xC9A06E,{roughness:1}),0,0,.02),0);
+  [[-.3,.12,0xFFF3B0],[.0,.1,0xFFD6EA],[.28,.14,0xCFE8FF],[-.18,-.14,0xFFFFFF],[.2,-.12,0xB5F0B0]].forEach(([x,y,col],i)=>{const n=ol(rb(g,.2,.16,.006,.003,M(col,{roughness:.9}),x,y,.04),0);n.rotation.z=(i%2?.1:-.08);ol(sp(g,.015,M([0xE8384F,0x6FC8FF,0xFFD21F][i%3]),x,y+.06,.05),0)});
+  ol(add(g,new THREE.PlaneGeometry(.18,.14),M(0xffffff,{map:s2Tex('photo',64,48,(x)=>{x.fillStyle='#8FD8FF';x.fillRect(0,0,64,48);x.fillStyle='#A6E22E';x.fillRect(0,30,64,18);x.fillStyle='#FF6FB5';x.beginPath();x.arc(22,26,7,0,7);x.arc(40,26,7,0,7);x.fill()}),roughness:.6}),.36,-.18,.045),0);return g},
+ whiteboard(c){const g=G(),Fr=M(0xDDE3EE,{metalness:.5,roughness:.3});ol(rb(g,1.2,.8,.04,.02,Fr,0,0,0),.008);ol(add(g,new THREE.PlaneGeometry(1.12,.72),M(0xffffff,{map:s2Tex('wb',256,160,(x,w,h)=>{x.fillStyle='#FDFDFF';x.fillRect(0,0,w,h);x.lineWidth=4;x.lineCap='round';x.strokeStyle='#FF5FA8';x.beginPath();x.moveTo(30,110);x.quadraticCurveTo(60,40,90,100);x.quadraticCurveTo(120,150,150,70);x.stroke();
+    x.strokeStyle='#6FC8FF';x.strokeRect(170,30,60,40);x.strokeStyle='#A6E22E';x.beginPath();x.arc(200,115,22,0,7);x.stroke();x.fillStyle='#FFD21F';x.beginPath();for(let k=0;k<10;k++){const r=k%2?7:16,a=-Math.PI/2+k*Math.PI/5;x.lineTo(60+Math.cos(a)*r,40+Math.sin(a)*r)}x.fill()}),roughness:.3}),0,0,.025),0);
+  ol(rb(g,1.1,.04,.08,.02,Fr,0,-.42,.04),.004);[0xFF5FA8,0x6FC8FF,0xA6E22E].forEach((col,i)=>ol(cy(g,.012,.012,.1,M(col),-.3+i*.12,-.39,.05,6),0).rotation.z=Math.PI/2);return g},
+ cablebed(c){const g=G(),Wk=M(c,{roughness:.8}),In=M(0xFFD6EA,{roughness:.95});Wk.detail=2;In.detail=1;ol(rb(g,.8,.26,.6,.08,Wk,0,.13,0),.01);ol(rb(g,.7,.22,.5,.06,In,0,.18,0),0);
+  const cu=add(g,gcache('cb_cu',()=>cushionGeo(.34,.24,.06,{pinch:.03,n:3})),In,0,.28,0);cu.rotation.x=-Math.PI/2;ol(cu,.004);ol(to(g,.12,.02,M(shade(c,.2)),0,.26,.3,0,0,0,Math.PI),.004);return g},
+ // ---------- Pet Gym ----------
+ runwheel(c){const g=G(),Wh=M(c,{roughness:.35}),St=M(0xDDE3EE,{metalness:.6,roughness:.25});ol(rb(g,.9,.08,.6,.03,M(0x3A3244,{roughness:.4}),0,.04,0),.006);[-1,1].forEach(sd=>{const l=ol(rb(g,.06,1.1,.06,.02,St,0,.6,sd*.26),.004);l.rotation.x=sd*.08});
+  const wh=piv(g,0,.72,0);[-1,1].forEach(sd=>{ol(to(wh,.62,.04,Wh,0,0,sd*.22,0),.008);for(let i=0;i<6;i++){const s_=ol(rb(wh,.02,1.2,.02,.01,Wh,0,0,sd*.22),0);s_.rotation.z=i*Math.PI/6}});
+  for(let i=0;i<24;i++){const a=i/24*Math.PI*2;ol(cy(wh,.018,.018,.44,M(0xFFFFFF,{roughness:.3}),Math.cos(a)*.6,Math.sin(a)*.6,0,6),0).rotation.x=Math.PI/2}ol(cy(wh,.05,.05,.5,St,0,0,0,12),.004).rotation.x=Math.PI/2;
+  g.userData.anim=t=>{wh.rotation.z=-t*.6};return g},
+ trampoline(c){const g=G(),Fr=M(0x3A3244,{roughness:.4}),Mt=M(0x1A1424,{roughness:.8}),Pd=M(c,{roughness:.6});for(let i=0;i<6;i++){const a=i/6*Math.PI*2;ol(cy(g,.02,.02,.26,Fr,Math.cos(a)*.55,.13,Math.sin(a)*.55,6),0)}
+  ol(to(g,.6,.06,Pd,0,.28,0,Math.PI/2),.008);const mt=add(g,new THREE.CircleGeometry(.54,40),Mt,0,.27,0);mt.rotation.x=-Math.PI/2;ol(mt,0);
+  for(let i=0;i<24;i++){const a=i/24*Math.PI*2;ol(cy(g,.006,.006,.08,M(0xDDE3EE,{metalness:.6}),Math.cos(a)*.57,.27,Math.sin(a)*.57,4),0).rotation.set(0,-a,Math.PI/2)}return g},
+ yogamat(c){const g=G(),Mt=M(c,{roughness:.9});Mt.detail=1;ol(rb(g,.7,.02,1.8,.01,Mt,0,.01,0),.006);const rl=ol(cy(g,.1,.1,.7,Mt,0,.1,-.95,20),.006);rl.rotation.z=Math.PI/2;ol(cy(g,.03,.03,.72,M(shade(c,.2)),0,.1,-.95,12),0).rotation.z=Math.PI/2;
+  ol(to(g,.07,.025,M(0xFFD21F,{roughness:.4}),.2,.04,.6,Math.PI/2),.003);return g},
+ balanceball(c){const g=G(),Bl=M(c,{roughness:.2});ol(sp(g,.4,Bl,0,.4,0),.012);for(let i=0;i<3;i++)ol(to(g,.402,.01,M(lighten(c,.35),{roughness:.2}),0,.4,0,0,i*Math.PI/3,0),0);ol(sp(g,.1,M(0xFFFFFF,{roughness:.1}),-.15,.62,.2,1,1,.5),0);return g},
+ crawltunnel(c){const g=G(),Tn=M(c,{roughness:.8,side:THREE.DoubleSide});Tn.detail=1;const tn=add(g,new THREE.CylinderGeometry(.34,.34,1.6,24,1,true),Tn,0,.34,0);tn.rotation.z=Math.PI/2;ol(tn,.01);
+  for(let i=0;i<9;i++)ol(to(g,.345,.02,M(lighten(c,.3),{roughness:.6}),-.76+i*.19,.34,0,0,Math.PI/2,0),0);[-1,1].forEach(sd=>ol(to(g,.34,.04,M(0xFFD21F,{roughness:.5}),sd*.8,.34,0,0,Math.PI/2,0),.004));return g},
+ treadmill(c){const g=G(),Bd=M(c,{roughness:.4}),Bt=M(0x2A2340,{roughness:.8});ol(rb(g,.6,.14,1.3,.05,Bd,0,.08,0),.008);ol(rb(g,.46,.02,1.15,.01,Bt,0,.16,0),0);[-1,1].forEach(sd=>ol(cy(g,.03,.03,1,Bd,sd*.28,.6,-.55,8),.004));
+  ol(rb(g,.64,.1,.16,.04,Bd,0,1.08,-.55),.006);ol(rb(g,.3,.12,.02,.02,M(0x6FC8FF,{emissive:0x6FC8FF,emissiveIntensity:.4}),0,1.1,-.46),0);const st=[];for(let i=0;i<6;i++){const s_=ol(rb(g,.46,.005,.03,.002,M(0x4A4458),0,.172,-.5+i*.2),0);st.push(s_)}
+  g.userData.anim=t=>st.forEach((s_,i)=>s_.position.z=-.55+((i*.2+t*.4)%1.1));return g},
+ dumbbells(c){const g=G(),Mt=M(0x3A3244,{roughness:.4});ol(rb(g,.9,.06,.4,.02,Mt,0,.4,0),.006);[-1,1].forEach(sd=>ol(rb(g,.05,.4,.05,.01,Mt,sd*.4,.2,0),.004));
+  [[-.25,.12],[0,.16],[.25,.2]].forEach(([x,r],i)=>{const d=piv(g,x,.5,0);ol(cy(d,.02,.02,.3,M(0xDDE3EE,{metalness:.7}),0,0,0,8),0).rotation.x=Math.PI/2;[-1,1].forEach(sd=>ol(cy(d,r*.5,r*.5,.08,M([c,0x6FC8FF,0xA6E22E][i],{roughness:.4}),0,0,sd*.13,16),.004).rotation.x=Math.PI/2)});return g},
+ gymlamp(c){const g=G(),Bd=M(c,{roughness:.35});ol(cy(g,.2,.22,.06,M(0x3A3244),0,.03,0,20),.004);ol(cy(g,.02,.02,.9,M(0x3A3244),0,.5,0,8),0);const w=piv(g,0,1.18,0);ol(cy(w,.26,.26,.1,Bd,0,0,0,32),.01).rotation.x=Math.PI/2;
+  ol(add(w,new THREE.CircleGeometry(.22,32),M(0xFFF8E8,{emissive:0xFFF3C0,emissiveIntensity:.9}),0,0,.052),0);ol(cy(w,.04,.04,.08,Bd,0,.3,0,10),.004);ol(to(w,.06,.015,Bd,0,.38,0),0);
+  const hand=piv(w,0,0,.06);ol(rb(hand,.015,.18,.01,.005,M(0xE8384F),0,.08,0),0);for(let i=0;i<12;i++){const a=i/12*Math.PI*2;ol(rb(w,.012,.04,.01,.004,M(0x3A3244),Math.sin(a)*.18,Math.cos(a)*.18,.056),0).rotation.z=-a}g.userData.anim=t=>{hand.rotation.z=-t*1.5};return g},
+ waterstation(c){const g=G(),Bd=M(c,{roughness:.3}),Wt=M(0x8FD8FF,{roughness:.05,transparent:true,opacity:.6});ol(lathe(g,[[.2,0],[.26,.02],[.3,.1],[.3,.12],[.26,.12],[.22,.05],[0,.04]],Bd,0,0,0,32),.008);const wt=add(g,new THREE.CircleGeometry(.25,24),Wt,0,.1,0);wt.rotation.x=-Math.PI/2;wt.outline=0;
+  const jg=add(g,gcache('ws_jug',()=>latheGeo([[.1,.12],[.12,.2],[.12,.55],[.06,.6]],24)),Wt,0,0,-.1);jg.outline=0;nosh(jg);ol(cy(g,.06,.06,.04,Bd,0,.62,-.1,16),.004);return g},
+ bandbed(c){const g=G(),Bd=M(c,{roughness:.9}),In=M(0xFFF6EA,{roughness:.95});Bd.detail=1;In.detail=1;const r=add(g,new THREE.TorusGeometry(.45,.14,16,40),Bd,0,.14,0);r.rotation.x=Math.PI/2;r.scale.set(1,1,.8);ol(r,.012);
+  ol(cy(g,.36,.36,.06,In,0,.08,0,24),.004);[-1,1].forEach(sd=>ol(to(g,.45,.03,M(0xFFFFFF,{roughness:.9}),0,.14+sd*.06,0,Math.PI/2),0));return g}});
 /* ================= CAPSULE CORNER: a 3D gacha machine =================
    Tokens (state.tokens) come from two-dos, granted wishes, 3-star arcade rounds and the daily treat, or 12 hearts each.
    Put one in, turn the crank (drag round), the capsules churn in the globe (real little physics), one rolls down the
@@ -4238,6 +4407,14 @@ Object.assign(USE_ITEM,{ghostplush:{kind:'stand',anim:'u_pat',d:4,dist:.08,emo:[
   snowglobe:{kind:'stand',anim:'u_spin',d:4,dist:.08,emo:['⭐','❗'],w:.8},cookietable:{kind:'stand',anim:'u_nibble',d:5,dist:.05,emo:['😋','💗'],w:.7},presents:{kind:'stand',front:1,anim:'u_unwrap',d:5,dist:.06,emo:['🎉','❗'],w:1},giftbed:NAP,
   picnicbasket:{kind:'stand',anim:'u_nibble',d:5,dist:.06,emo:['😋','💗'],w:.8},flowerarch:{kind:'stand',anim:'u_sniff',d:3.6,then:['sneeze',.3],emo:['💗'],w:.6},tulips:{kind:'stand',anim:'u_water',d:5,dist:.08,emo:['💗'],w:.5},
   kite:{kind:'wall',anim:'u_gaze',d:3,emo:['🎉'],w:.3},lemonade:{kind:'stand',front:1,anim:'u_sip',d:6,dist:.05,emo:['😋','💗'],w:.8},butterflies:{kind:'stand',anim:'u_peer',d:5,dist:.1,emo:['💗','❗'],w:.8},eggbed:NAP});
+Object.assign(USE_ITEM,{dinorocker:{kind:'perch',w:1.1},carousel:{kind:'perch',w:1.1},fossilshelf:{kind:'stand',front:1,anim:'u_admire',d:4,dist:.05,emo:['❗','⭐'],w:.6},digbox:{kind:'stand',front:1,anim:'u_dig',d:5,dist:.08,emo:['❗','🎉'],w:.9},
+  dinofern:{kind:'stand',anim:'u_sniff',d:3.6,emo:['💗'],w:.4},bonexylo:{kind:'stand',front:1,anim:'u_drum',d:5,dist:.08,emo:['🎵'],w:.8},dinoprint:{kind:'wall',anim:'u_gaze',d:3,emo:['❗'],w:.3},nestbed:NAP,bonebowl:BOWL,
+  ballpit:{kind:'stand',anim:'u_dive',d:5,dist:.1,emo:['🎉','💗'],w:1},tentrobe:{kind:'stand',front:1,anim:'u_rummage',d:4.6,dist:.05,emo:['❓','🎉'],w:.6},ticketbooth:{kind:'stand',front:1,anim:'u_peer',d:4,dist:.05,emo:['❓'],w:.5},
+  ringtoss:{kind:'stand',front:1,anim:'u_game',d:5,dist:.08,emo:['🎉','⭐'],w:.8},strongbell:{kind:'stand',front:1,anim:'u_drum',d:4,dist:.1,emo:['❗','🎉'],w:.8},balloons:{kind:'stand',anim:'u_boop',d:3,dist:.1,emo:['🎉'],w:.5},ringbed:NAP,
+  doubledesk:{kind:'stand',front:1,anim:'u_type',d:6,dist:.05,emo:['❓','💗'],w:.8},coffeemaker:{kind:'stand',front:1,anim:'u_sip',d:6,dist:.05,emo:['😋','💗'],w:.7},cubeshelf:{kind:'stand',front:1,anim:'u_rummage',d:4.6,dist:.05,emo:['❓'],w:.5},
+  deskplant:{kind:'stand',anim:'u_water',d:5,dist:.08,emo:['💗'],w:.4},pinboard:{kind:'wall',anim:'u_gaze',d:3,emo:['💗'],w:.3},whiteboard:{kind:'wall',anim:'u_gaze',d:4,emo:['❓','⭐'],w:.4},cablebed:NAP,
+  runwheel:{kind:'stand',anim:'u_run',d:6,dist:.08,emo:['🎉','❗'],w:1},trampoline:{kind:'stand',anim:'u_bounce',d:5,dist:.02,emo:['🎉','💗'],w:1},balanceball:{kind:'stand',anim:'u_bounce',d:4,dist:.1,emo:['🎉'],w:.6},
+  crawltunnel:{kind:'stand',anim:'u_dive',d:4,dist:.1,emo:['🎉','❗'],w:.8},treadmill:{kind:'stand',front:1,anim:'u_run',d:6,dist:.05,emo:['🎉'],w:.9},dumbbells:{kind:'stand',anim:'u_pat',d:4,dist:.08,emo:['❗'],w:.5},waterstation:BOWL,bandbed:NAP});
 CAT.filter(c=>c.gacha).forEach(c=>USE_ITEM[c.k]={kind:'stand',anim:'u_peer',d:4.5,dist:.12,emo:['💗','❗'],w:.7});
 const useOf=d=>d.use||USE_ITEM[d.k]||USE_FN[d.fn]||null;
 // Where to stand to use o, and which way to face.
@@ -4358,6 +4535,12 @@ const ACTS_ANIM={
   u_rake:{d:6,f:(p,t)=>{const k=bell(p,.08,.92),s_=Math.sin(t*2.2);return{rx:.2*k,rz:s_*.05*k,arms:[{rz:-.5+s_*.3,rx:-1.1,w:k},{rz:.5+s_*.3,rx:-1.1,w:k}],heads:[0,1].map(i=>({rx:.35,rz:s_*.08,w:k})),mouth:.1,lid:.5*k}}},
   // tugging a present open
   u_unwrap:{d:5,f:(p,t)=>{const k=bell(p,.06,.94),s_=Math.sin(t*10),done=p>.75?(p-.75)/.25:0;return{rx:.15*k*(1-done),y:done*.05,arms:[0,1].map(i=>({rz:(i?1:-1)*(.5+done*2),rx:-1.2+(i?s_:-s_)*.3*(1-done),w:k})),heads:[0,1].map(i=>({rx:.25*(1-done)-.15*done,rz:(i?1:-1)*.1,w:k})),mouth:.4+done*.5,lid:.2}}},
+  // digging; diving into the ball pit; typing; running; bouncing
+  u_dig:{d:5,f:(p,t)=>{const k=bell(p,.08,.92),s_=Math.sin(t*9);return{rx:.3*k,arms:[0,1].map(i=>({rz:(i?1:-1)*.5,rx:-1.5+(i?s_:-s_)*.5,w:k})),heads:[0,1].map(i=>({rx:.3,rz:(i?1:-1)*.1,w:k})),mouth:.4*k,lid:.2*k}}},
+  u_dive:{d:5,f:(p,t)=>{const k=bell(p,.06,.94),s_=Math.sin(t*9);return{y:Math.abs(Math.sin(t*4.5))*.08*k,rz:Math.sin(t*3)*.1*k,arms:[0,1].map(i=>({rz:(i?1:-1)*(2+(i?s_:-s_)*.5),rx:-.2,w:k})),heads:[0,1].map(i=>({rz:(i?1:-1)*.15,rx:-.15,w:k})),mouth:.9*k,lid:.35*k}}},
+  u_type:{d:6,f:(p,t)=>{const k=bell(p,.08,.92),s_=Math.sin(t*18);return{rx:.08*k,arms:[0,1].map(i=>({rz:(i?1:-1)*.4,rx:-1.4+(i?s_:-s_)*.05,w:k})),heads:[0,1].map(i=>({rx:.12,rz:(i?1:-1)*.06+Math.sin(t*.8)*.08,w:k})),look:{x:Math.sin(t*1.3)*.4,y:-.2,w:k},mouth:.1,lid:.3*k}}},
+  u_run:{d:6,f:(p,t)=>{const k=bell(p,.06,.94),s_=Math.sin(t*14);return{y:Math.abs(s_)*.04*k,rx:.12*k,legs:[s_*.9*k,-s_*.9*k],arms:[0,1].map(i=>({rz:(i?1:-1)*.5,rx:(i?s_:-s_)*.8,w:k})),heads:[0,1].map(i=>({rx:.05,rz:(i?1:-1)*.1,w:k})),mouth:.6*k,lid:.2*k}}},
+  u_bounce:{d:5,f:(p,t)=>{const k=bell(p,.06,.94),c=(t*2.2)%1,up=Math.sin(c*Math.PI);return{y:up*.45*k,sy:(c<.12||c>.88?-.18:up*.06)*k,arms:[0,1].map(i=>({rz:(i?1:-1)*(1+up*1.6),rx:-.1,w:k})),heads:[0,1].map(i=>({rz:(i?1:-1)*.12,w:k})),mouth:.4+up*.5,lid:.2}}},
   u_sip:{d:6,f:(p,t)=>{const k=bell(p,.1,.9),sip=Math.max(0,Math.sin(t*1.4));return{arms:[{rz:-.4,rx:0,w:0},{rz:.5,rx:-1.5-sip*.25,w:k}],heads:[0,1].map(i=>({rx:-.1-sip*.2,rz:(i?1:-1)*.12,w:k})),lid:.6*k+.3*sip,mouth:.15+.2*sip}}},
   u_scope:{d:7,f:(p,t)=>{const k=bell(p,.1,.9);return{rx:-.1*k,arms:[0,1].map(i=>({rz:(i?1:-1)*.5,rx:-1.5,w:k})),heads:[{rx:-.35,rz:.2,w:k},{rx:-.35,rz:.05,w:k}],look:{x:Math.sin(t*.8)*.2,y:.8,w:k},lid:.2*k,mouth:bell(p,.6,.9)*.8}}},
   spinjump:{d:1.4,f:p=>({spin:ease(p/.8)*Math.PI*2,y:Math.sin(Math.min(1,p/.8)*Math.PI)*.6,arms:[0,1].map(i=>({rz:(i?1:-1)*2.6,rx:0,w:bell(p,.1,.85)})),mouth:.9,lid:.5})}
