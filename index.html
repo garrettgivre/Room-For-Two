@@ -1229,7 +1229,8 @@ const SETS=[
  {k:'monster',img:'set-monster',n:'Dumpster Den',e:'👾',c:'#B5E03A'},
  {k:'play',img:'set-play',n:'Toybox',e:'🧸',c:'#F2C230'},
  {k:'garden',img:'set-garden.svg',n:'Fairy Garden',e:'🍄',c:'#7FD08A'},
- {k:'gacha',img:'set-gacha.svg',n:'Capsule Pals',e:'🥚',c:'#FFC21F'}
+ {k:'gacha',img:'set-gacha.svg',n:'Capsule Pals',e:'🥚',c:'#FFC21F'},
+ {k:'books',img:'set-books.svg',n:'Bookworm Nook',e:'📚',c:'#C98A5A'}
 ];
 const SETMAP={};SETS.forEach(s=>SETMAP[s.k]=s);
 const FUNCS=[['seat','Seats','🛋️'],['bed','Beds','🛏️'],['surface','Tables','🍽️'],['storage','Storage','📦'],['light','Lights','💡'],['fun','Fun','🕹️'],['plant','Plants','🌵'],['rug','Rugs','🌀'],['deco','Decor','🗿'],['wall','Walls','🖼️'],['pet','Pet','🐾']];
@@ -1349,6 +1350,21 @@ const CAT=[
  {k:'leafbowl',n:'Leaf bowl',set:'garden',fn:'pet',p:2,dc:1,flat:1,feed:1},
  {k:'butterflyart',n:'Butterfly frame',set:'garden',fn:'wall',p:4,dc:0,wall:1,y:1.9},
  {k:'trellis',n:'Rose trellis',set:'garden',fn:'wall',p:4,dc:1,wall:1,y:1.7},
+ // Bookworm Nook: a cosy reading corner
+ {k:'bookcase',n:'Tall bookcase',set:'books',fn:'storage',p:9,dc:5},
+ {k:'readchair',n:'Wingback reading chair',set:'books',fn:'seat',p:9,dc:6,perch:{y:.5,z:.1,w:.34,bz:-.26,fe:.45}},
+ {k:'floorcush',n:'Floor cushion stack',set:'books',fn:'seat',p:5,dc:0,perch:{y:.44,z:0,fe:.4}},
+ {k:'writedesk',n:'Writing desk',set:'books',fn:'surface',p:8,dc:10},
+ {k:'bankerlamp',n:"Banker's desk lamp",set:'books',fn:'light',p:5,dc:6},
+ {k:'globe',n:'Spinning globe',set:'books',fn:'deco',p:6,dc:7},
+ {k:'teacart',n:'Tea trolley',set:'books',fn:'surface',p:7,dc:0},
+ {k:'pothos',n:'Pothos on books',set:'books',fn:'plant',p:4,dc:3},
+ {k:'braidrug',n:'Braided oval rug',set:'books',fn:'rug',p:4,dc:1,flat:1},
+ {k:'grandclock',n:'Grandfather clock',set:'books',fn:'deco',p:10,dc:10},
+ {k:'wallshelf',n:'Floating bookshelf',set:'books',fn:'wall',p:4,dc:8,wall:1,y:1.5},
+ {k:'starmap',n:'Framed star map',set:'books',fn:'wall',p:4,dc:8,wall:1,y:1.8},
+ {k:'bookbed',n:'Open-book pet bed',set:'books',fn:'pet',p:5,dc:4,flat:1,sleep:1},
+ {k:'teabowl',n:'Teacup food bowl',set:'books',fn:'pet',p:2,dc:0,flat:1,feed:1},
  // Capsule Pals: little living figurines of the shopkeepers, only from the capsule machine
  ...[['baker','Bunbun'],['stylist','Fizz'],['toymaker','Boing'],['cushion','Cushy'],['builder','Bolt'],['joy','Joy'],['hair','Pom'],['makeup','Blush'],['tailor','Stitch']].map(([k,n],i)=>({k:'fig_'+k,n:n+' figurine',set:'gacha',fn:'deco',p:0,dc:[0,7,9,0,2,8,5,0,4][i],gacha:1})),
  {k:'fig_gold',n:'Golden gumdrop trophy',set:'gacha',fn:'deco',p:0,dc:3,gacha:1},
@@ -2514,6 +2530,108 @@ Object.assign(BUILD,{
   const vine=[];for(let i=0;i<=18;i++){const u=i/18;vine.push([Math.sin(u*9)*.35,-.75+u*1.6])}tube(g,vine,.018,Vn,false,.08);
   vine.forEach(([x,y],i)=>{if(i%2)return;const l=add(g,leafGeo(.13,.07),Lf,x,y,.09);l.rotation.z=i*1.3;ol(l,.005)});
   [[-.3,.55],[.28,.3],[-.2,-.1],[.3,-.45],[0,.85]].forEach(([x,y],i)=>{const r=piv(g,x,y,.12);ol(sp(r,.075,Rd),.008);for(let k=0;k<6;k++){const a=k/6*Math.PI*2;const pe=add(r,SPH(.055,12,8),Rs,Math.cos(a)*.06,Math.sin(a)*.06,.02);pe.scale.z=.5;ol(pe,.005)}ol(nosh(sp(r,.04,Rs,0,0,.06)),0)});return g}});
+/* ================= BOOKWORM NOOK: a cosy reading corner =================
+   Built with the keeper kit: turned lathe profiles (always bottom to top), sweeps for vines and handles, stuffed cushion
+   shapes, painted canvas textures (globe, star map, clock face), fabric and wood detail. */
+const BK_COL=[0xE8384F,0x2FA39A,0xF2C230,0x7B4BD6,0xFF8A3D,0x4FC3F7,0xFF6FB5,0x4A4458,0xB5E03A];
+// a book standing on a shelf: coloured boards with the page block peeking out at the top and a gold band on the spine
+function bkBook(g,x,y,z,w,h,d,c,rz,Pg,Gd){const b=piv(g,x,y,z);b.rotation.z=rz||0;ol(rb(b,w,h*.97,d,Math.min(.012,w*.25),M(c,{roughness:.6}),0,h*.485,0),.006);
+  ol(rb(b,w*.78,h,d*.86,.004,Pg,0,h*.5,-d*.05),0);ol(rb(b,w*1.02,h*.05,d*.02,.002,Gd,0,h*.78,d/2),0);return b}
+let bkGlobeT=null;function bkGlobeTex(){if(bkGlobeT)return bkGlobeT;const c=mkCanvas(512,256),x=c.getContext('2d'),R=rnd(9);x.fillStyle='#5FB8E8';x.fillRect(0,0,512,256);
+  x.fillStyle='rgba(255,255,255,.25)';for(let i=0;i<9;i++){x.fillRect(0,i*32,512,1)}for(let i=0;i<16;i++)x.fillRect(i*32,0,1,256);
+  [['#8FD16A',[[70,70,60,40],[110,110,40,55],[150,80,30,25]]],['#F2D38A',[[250,90,55,38],[280,150,40,50]]],['#A6E27A',[[360,70,70,40],[420,120,40,30],[400,190,38,20]]],['#FFFFFF',[[256,12,300,14],[256,246,300,12]]]].forEach(([col,bl])=>{x.fillStyle=col;bl.forEach(([cx,cy,rx,ry])=>{x.beginPath();for(let i=0;i<=24;i++){const a=i/24*Math.PI*2,k=1+.25*Math.sin(a*3+R()*6);x.lineTo(cx+Math.cos(a)*rx*k,cy+Math.sin(a)*ry*k)}x.fill()})});
+  bkGlobeT=new THREE.CanvasTexture(c);bkGlobeT.encoding=THREE.sRGBEncoding;return bkGlobeT}
+let bkStarT=null;function bkStarTex(){if(bkStarT)return bkStarT;const c=mkCanvas(256,320),x=c.getContext('2d'),R=rnd(4);const gr=x.createLinearGradient(0,0,0,320);gr.addColorStop(0,'#1E2A5E');gr.addColorStop(1,'#3B1273');x.fillStyle=gr;x.fillRect(0,0,256,320);
+  x.fillStyle='rgba(255,255,255,.7)';for(let i=0;i<120;i++){x.beginPath();x.arc(R()*256,R()*320,R()*1.2+.3,0,7);x.fill()}
+  const star=(cx,cy,r,col)=>{x.fillStyle=col;x.beginPath();for(let i=0;i<10;i++){const rr=i%2?r*.45:r,a=-Math.PI/2+i*Math.PI/5;x.lineTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr)}x.closePath();x.fill()};
+  [[[40,60],[80,40],[120,70],[160,50]],[[60,200],[100,170],[140,210],[110,250],[70,240]],[[180,120],[210,160],[190,200]]].forEach(con=>{x.strokeStyle='rgba(255,230,160,.7)';x.lineWidth=1.5;x.beginPath();con.forEach(([a,b],i)=>i?x.lineTo(a,b):x.moveTo(a,b));x.stroke();con.forEach(([a,b])=>star(a,b,6,'#FFE27A'))});
+  x.strokeStyle='rgba(255,230,160,.5)';x.lineWidth=2;x.beginPath();x.arc(128,160,118,0,7);x.stroke();star(128,160,14,'#FFD21F');
+  bkStarT=new THREE.CanvasTexture(c);bkStarT.encoding=THREE.sRGBEncoding;return bkStarT}
+let bkFaceT=null;function bkFaceTex(){if(bkFaceT)return bkFaceT;const c=mkCanvas(256,256),x=c.getContext('2d');x.fillStyle='#FFF8E8';x.beginPath();x.arc(128,128,124,0,7);x.fill();x.strokeStyle='#3B1273';x.lineWidth=5;x.stroke();
+  for(let i=0;i<60;i++){const a=i/60*Math.PI*2,l=i%5?8:18;x.lineWidth=i%5?2:5;x.beginPath();x.moveTo(128+Math.sin(a)*(112-l),128-Math.cos(a)*(112-l));x.lineTo(128+Math.sin(a)*112,128-Math.cos(a)*112);x.stroke()}
+  x.fillStyle='#FFD21F';x.beginPath();x.arc(128,128,10,0,7);x.fill();bkFaceT=new THREE.CanvasTexture(c);bkFaceT.encoding=THREE.sRGBEncoding;return bkFaceT}
+Object.assign(BUILD,{
+ bookcase(c){const g=G(),Wd=M(OAK,{roughness:.6}),Bk=M(c,{roughness:.7}),Pg=M(CREAM,{roughness:.9}),Gd=M(0xE8C36A,{roughness:.35,metalness:.4});Wd.detail=2;
+  const W=1.3,H=2.1,D=.44;[-1,1].forEach(sd=>ol(rb(g,.07,H,D,.02,Wd,sd*(W/2-.035),H/2,0),.012));ol(rb(g,W+.08,.08,D+.06,.03,Wd,0,H+.02,.01),.012);ol(rb(g,W,.1,D,.02,Wd,0,.05,0),.01);
+  ol(rb(g,W-.1,H-.12,.03,.01,Bk,0,H/2,-D/2+.03),0);ol(rb(g,W+.14,.05,D+.1,.02,Wd,0,H+.08,.02),.01);
+  const R=rnd(11);[.1,.58,1.06,1.54].forEach((y,si)=>{ol(rb(g,W-.1,.04,D-.02,.01,Wd,0,y,0),.008);let x=-W/2+.1;const lim=W/2-.1;
+    while(x<lim-.08){const w=.05+R()*.05,h=.3+R()*.14;if(si===2&&x>.2&&x<.45){x+=.26;continue}const lean=x>lim-.2&&R()<.5?-.2:0;bkBook(g,x+w/2,y+.02,.02,w,h,.28+R()*.06,BK_COL[(R()*BK_COL.length)|0],lean,Pg,Gd);x+=w+.004}
+    if(si===2){for(let i=0;i<3;i++){const b=bkBook(g,0,0,0,.05,.28,.24,BK_COL[(i*3+2)%BK_COL.length],0,Pg,Gd);b.rotation.set(0,.15*(i-1),Math.PI/2);b.position.set(.33+.14,y+.045+i*.052,0)}}});
+  // a little sprig in a pot on top
+  const pt=lathe(g,[[.06,0],[.075,.02],[.085,.12],[.09,.13]],M(TERRA,{roughness:.7}),.4,H+.1,0,24);ol(pt,.008);for(let i=0;i<5;i++){const l=add(g,leafGeo(.12,.06),M(0x5FAF4A,{roughness:.6}),.4,H+.22,0);l.rotation.set((i%2?.4:-.4),i*1.3,(i-2)*.35);ol(l,.004)}
+  return g},
+ readchair(c){const g=G(),Up=M(c,{roughness:.85}),Ul=M(lighten(c,.25),{roughness:.85}),Wd=M(CHOC,{roughness:.55}),Bt=M(shade(c,.25),{roughness:.5}),Kn=M(0xFFF2DC,{roughness:.95});Up.detail=1;Ul.detail=1;Wd.detail=2;Kn.detail=1;
+  [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([x,z])=>ol(lathe(g,[[.035,0],[.04,.03],[.03,.1],[.045,.16],[.05,.2]],Wd,x*.32,0,z*.26,16),.006));
+  ol(rb(g,.82,.2,.72,.08,Up,0,.3,0),.014);ol(rb(g,.62,.12,.58,.06,Ul,0,.45,.05),.012);
+  const bk=ol(rb(g,.78,.78,.16,.1,Up,0,.82,-.3),.014);bk.rotation.x=-.1;for(let i=0;i<3;i++)for(let j=0;j<2;j++)ol(sp(g,.018,Bt,-.22+i*.22,.7+j*.22,-.21+j*.02),0);
+  [-1,1].forEach(sd=>{const wg=ol(rb(g,.13,.52,.52,.07,Up,sd*.38,.72,-.12),.012);wg.rotation.y=sd*.12;const arm=ol(cy(g,.075,.075,.62,Ul,sd*.4,.5,.02,20),.012);arm.rotation.x=Math.PI/2;ol(cy(g,.078,.078,.02,Bt,sd*.4,.5,.33,20),0).rotation.x=Math.PI/2});
+  // a knit throw draped over the arm, and a cushion
+  const th=piv(g,.4,.56,.0);ol(rb(th,.2,.03,.5,.015,Kn,0,.02,0),.006);const hang=ol(rb(th,.03,.3,.5,.015,Kn,.1,-.13,0),.006);for(let i=0;i<5;i++)ol(rb(th,.215,.012,.02,.006,M(0xE8D2B0,{roughness:.9}),0,.037,-.2+i*.1),0);
+  const cu=add(g,gcache('rc_cush',()=>cushionGeo(.2,.17,.07,{pinch:.1})),M(0xF2C230,{roughness:.85}),-.12,.66,-.13);cu.rotation.set(-.25,.25,.15);ol(cu,.01);return g},
+ floorcush(c){const g=G();[[c,0,.0],[lighten(c,.3),.35,.14],[shade(c,.15),-.25,.28]].forEach(([col,ry,y],i)=>{const m=add(g,gcache('fc_cush',()=>cushionGeo(.4,.4,.08,{pinch:.12,n:3.6})),M(col,{roughness:.9}),0,y+.08,0);m.rotation.set(-Math.PI/2,0,ry);ol(m,.012);
+    [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([x,z])=>{const q=piv(g,0,y+.08,0);q.rotation.y=ry;ol(sp(q,.03,M(0xF2C230,{roughness:.8}),x*.36,0,z*.36),.004)});ol(sp(g,.03,M(shade(col,.3),{roughness:.5}),0,y+.165,0,1,.4,1),0)});
+  const b=bkBook(g,0,0,0,.05,.32,.24,0x2FA39A,0,M(CREAM,{roughness:.9}),M(0xE8C36A,{roughness:.4}));b.rotation.set(0,.4,Math.PI/2);b.position.set(.16,.405,0);return g},
+ writedesk(c){const g=G(),Wd=M(c,{roughness:.55}),Dk=M(shade(c,.25),{roughness:.55}),Br=M(0xE8C36A,{roughness:.3,metalness:.5}),Pg=M(CREAM,{roughness:.9});Wd.detail=2;Dk.detail=2;
+  ol(rb(g,1.3,.07,.66,.03,Wd,0,.78,0),.012);ol(rb(g,1.22,.16,.6,.02,Dk,0,.66,0),.01);
+  [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([x,z])=>ol(cy(g,.03,.045,.6,Wd,x*.58,.3,z*.27,12),.008));
+  [-.35,0,.35].forEach(x=>{ol(rb(g,.32,.11,.02,.01,Wd,x,.66,.305),.006);ol(sp(g,.018,Br,x,.66,.32),0)});
+  // an open book, an inkwell and quill, a little stack
+  [-1,1].forEach(sd=>{const pg=ol(rb(g,.2,.02,.28,.01,Pg,sd*.1+.05,.83,.05),.004);pg.rotation.z=-sd*.08});ol(rb(g,.42,.012,.3,.005,M(0xE8384F,{roughness:.6}),.05,.817,.05),0);
+  ol(lathe(g,[[.04,0],[.055,.02],[.055,.06],[.03,.08],[.025,.1]],M(0x2A2340,{roughness:.1}),-.42,.815,-.1,16),.006);const q=add(g,leafGeo(.3,.07),M(0xFFFFFF,{roughness:.8}),-.42,.88,-.1);q.rotation.set(.1,.4,-.35);ol(q,.004);
+  for(let i=0;i<3;i++){const b=bkBook(g,0,0,0,.05,.3,.22,BK_COL[(i*2+1)%BK_COL.length],0,Pg,Br);b.rotation.set(0,.12*(i-1),Math.PI/2);b.position.set(.45+.15,.84+i*.05,-.15)}return g},
+ bankerlamp(c){const g=G(),Br=M(0xE8C36A,{roughness:.28,metalness:.55}),Gl=M(c,{roughness:.15,side:THREE.DoubleSide});
+  // a floor reading lamp with a green glass banker's shade on a curved brass arm
+  ol(lathe(g,[[.26,0],[.26,.03],[.18,.06],[.06,.09],[.04,.12]],Br,0,0,0,32),.01);ol(cy(g,.022,.026,1.3,Br,0,.77,0,12),.006);
+  ol(add(g,gcache('bl_arm',()=>sweepGeo([[0,1.4,0],[0,1.5,.02],[.08,1.56,.05],[.22,1.56,.08]],()=>[.02,.02],{len:20,seg:8})),Br,0,0,0),.006);
+  const hd=piv(g,.3,1.52,.08);const sh=add(hd,gcache('bl_shade',()=>loftGeo([[-.2,.1,.09],[.2,.1,.09]],{a0:0,a1:Math.PI,seg:24})),Gl,0,0,0);sh.rotation.z=Math.PI/2;ol(sh,.01);
+  [-1,1].forEach(sd=>ol(cy(hd,.1,.1,.01,Br,sd*.2,0,0,24),0).rotation.z=Math.PI/2);ol(sp(hd,.045,M(0xFFF3C0,{emissive:0xFFE08A,emissiveIntensity:1.6}),0,-.03,0,2.5,.8,.8),0);
+  ol(cy(hd,.005,.005,.14,Br,.07,-.1,.04,6),0);ol(sp(hd,.014,Br,.07,-.17,.04),0);
+  const tb=ol(lathe(g,[[.22,.6],[.22,.62],[.2,.64]],M(OAK,{roughness:.6}),0,0,0,32),.008);return g},
+ globe(c){const g=G(),Wd=M(CHOC,{roughness:.55}),Br=M(0xE8C36A,{roughness:.3,metalness:.5});Wd.detail=2;
+  ol(lathe(g,[[.28,0],[.28,.04],[.16,.08],[.07,.14],[.05,.4],[.07,.46],[.04,.52]],Wd,0,0,0,32),.012);
+  const hd=piv(g,0,.82,0);hd.rotation.z=.4;const sph=add(hd,SPH(.28,40,30),M(0xffffff,{map:bkGlobeTex(),roughness:.35}),0,0,0);ol(sph,.012);
+  ol(to(hd,.32,.014,Br,0,0,0,0,Math.PI/2,0,Math.PI*1.3),.004);ol(cy(hd,.012,.012,.7,Br,0,0,0,8),0);
+  g.userData.anim=t=>{sph.rotation.y=t*.35};return g},
+ teacart(c){const g=G(),Br=M(0xE8C36A,{roughness:.3,metalness:.5}),Tr=M(c,{roughness:.45}),Wh=M(0xFFFFFF,{roughness:.3}),Ck=M(DOUGH,{roughness:.8});
+  [.25,.72].forEach(y=>{ol(rb(g,.9,.04,.5,.02,Tr,0,y,0),.01);ol(to(g,.46,.015,Br,0,y+.03,0,Math.PI/2,0,0),0).scale.set(1,.55,1)});
+  [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([x,z])=>{ol(cy(g,.016,.016,.78,Br,x*.42,.45,z*.22,8),.004);const w=ol(cy(g,.05,.05,.03,M(0x4A4458,{roughness:.6}),x*.42,.05,z*.22,16),.004);w.rotation.z=Math.PI/2});
+  ol(to(g,.14,.014,Br,-.52,.82,0,0,Math.PI/2,0,Math.PI),.004);
+  // the teapot: a turned body, lid and knob, a swept spout and a handle
+  const tp=piv(g,-.12,.74,0);ol(lathe(tp,[[.07,0],[.13,.03],[.15,.09],[.13,.16],[.07,.19],[.075,.2],[.03,.22],[.02,.25],[0,.26]],Wh,0,0,0,32),.01);
+  ol(add(tp,gcache('tc_spout',()=>sweepGeo([[.12,.07,0],[.19,.1,0],[.24,.17,0],[.27,.2,0]],t=>{const r=.03-.015*t;return[r,r]},{len:16,seg:10})),Wh,0,0,0),.006);
+  ol(to(tp,.06,.014,Wh,-.14,.11,0,0,0,0,Math.PI*1.1),.006).rotation.z=Math.PI*.5;[0,1,2].forEach(i=>ol(sp(tp,.02,M(0xFF6FB5,{roughness:.4}),Math.cos(i*2)*.13,.1,Math.sin(i*2)*.13,1,1,.4),0));
+  [[.2,.08],[.35,-.1]].forEach(([x,z])=>{ol(cy(g,.07,.07,.01,Wh,x,.745,z,24),.004);ol(lathe(g,[[.03,0],[.045,.01],[.055,.06],[.057,.065]],Wh,x,.75,z,24),.006);ol(cy(g,.048,.048,.004,M(0xB5673A,{roughness:.2}),x,.8,z,20),0)});
+  ol(cy(g,.13,.13,.012,Wh,.1,.275,0,24),.004);for(let i=0;i<5;i++){ol(cy(g,.045,.045,.018,Ck,.1+Math.cos(i*1.26)*.07,.29+(i%2)*.01,Math.sin(i*1.26)*.07,16),.003)}return g},
+ pothos(c){const g=G(),Pg=M(CREAM,{roughness:.9}),Gd=M(0xE8C36A,{roughness:.4}),Lf=M(0x4FAF4A,{roughness:.55}),Lf2=M(0xB5E03A,{roughness:.55}),Vn=M(0x3E8A34,{roughness:.6});
+  [[.36,.06,0x7B4BD6,0,0],[.32,.055,0xE8384F,.3,.06],[.28,.05,0x2FA39A,-.2,.115]].forEach(([len,th,col,ry,y])=>{const b=bkBook(g,0,0,0,th,len,.26,col,0,Pg,Gd);b.rotation.set(0,ry,Math.PI/2);b.position.set(len/2,y+th/2,0)});
+  ol(lathe(g,[[.09,.17],[.12,.19],[.14,.36],[.15,.37]],M(c,{roughness:.45}),0,0,0,32),.01);ol(cy(g,.13,.13,.02,M(0x6A4830,{roughness:1}),0,.355,0,24),0);
+  const R=rnd(3);for(let v=0;v<5;v++){const a=v/5*Math.PI*2+.4,len=.3+R()*.35,pts=[[Math.cos(a)*.06,.37,Math.sin(a)*.06],[Math.cos(a)*.16,.4,Math.sin(a)*.16],[Math.cos(a)*.22,.3,Math.sin(a)*.22],[Math.cos(a)*.26,.37-len*.6,Math.sin(a)*.26],[Math.cos(a)*.28,.37-len,Math.sin(a)*.28]];
+    ol(add(g,sweepGeo(pts,()=>[.01,.01],{len:20,seg:6}),Vn,0,0,0),.003);for(let i=1;i<9;i++){const q=crPt(pts,i/9),l=add(g,leafGeo(.09,.07),i%3?Lf:Lf2,q[0],q[1],q[2]);l.rotation.set(R()*1.2-.6,a+Math.PI/2,R()*2);ol(l,.003)}}
+  for(let i=0;i<6;i++){const l=add(g,leafGeo(.12,.09),Lf,0,.38,0);l.rotation.set(-.5+R()*.3,i*1.05,.2);ol(l,.003)}return g},
+ braidrug(c){const g=G();const cols=[c,lighten(c,.35),0xFFF2DC,shade(c,.2),lighten(c,.5),c];for(let i=0;i<6;i++){const r=1.15-i*.19;const t=add(g,new THREE.TorusGeometry(r,.075,8,64),M(cols[i],{roughness:.95}),0,.035,0);t.rotation.x=Math.PI/2;t.scale.set(1,.72,.5);t.material.detail=1;ol(t,0)}
+  ol(cy(g,.2,.2,.03,M(cols[0],{roughness:.95}),0,.02,0,24),0).scale.set(1,1,.72);return g},
+ grandclock(c){const g=G(),Wd=M(c,{roughness:.5}),Dk=M(shade(c,.3),{roughness:.5}),Br=M(0xE8C36A,{roughness:.28,metalness:.55}),Gl=M(0xE8F6FF,{roughness:.05,transparent:true,opacity:.25});Wd.detail=2;Dk.detail=2;
+  ol(rb(g,.62,.18,.4,.04,Dk,0,.09,0),.012);ol(rb(g,.46,1.3,.32,.03,Wd,0,.83,0),.012);ol(rb(g,.6,.56,.38,.05,Wd,0,1.76,0),.012);
+  ol(lathe(g,[[0,0],[.3,0],[.3,.02],[.25,.1],[.14,.17],[0,.19]],Dk,0,2.02,0,32),.01).scale.z=.65;ol(sp(g,.04,Br,0,2.25,0),.006);
+  ol(add(g,new THREE.CircleGeometry(.2,40),M(0xffffff,{map:bkFaceTex(),roughness:.4}),0,1.76,.195),0);ol(to(g,.205,.018,Br,0,1.76,.195),.004);
+  const hh=piv(g,0,1.76,.2),mh=piv(g,0,1.76,.205);ol(rb(hh,.018,.1,.008,.004,M(0x3B1273),0,.045,0),0);ol(rb(mh,.012,.15,.008,.004,M(0x3B1273),0,.07,0),0);hh.rotation.z=-.9;mh.rotation.z=1.4;
+  ol(rb(g,.34,.9,.02,.02,M(0x2A2340,{roughness:.6}),0,.9,.15),0);const pd=piv(g,0,1.34,.16);ol(cy(pd,.008,.008,.66,Br,0,-.33,0,6),0);ol(cy(pd,.09,.09,.02,Br,0,-.66,0,24),.004).rotation.x=Math.PI/2;
+  const gl=add(g,new THREE.PlaneGeometry(.36,.92),Gl,0,.9,.162);gl.outline=0;nosh(gl);
+  g.userData.anim=t=>{pd.rotation.z=Math.sin(t*2.4)*.22;mh.rotation.z=-t*.05;hh.rotation.z=-.9-t*.004};return g},
+ wallshelf(c){const g=G(),Wd=M(c,{roughness:.55}),Pg=M(CREAM,{roughness:.9}),Gd=M(0xE8C36A,{roughness:.35,metalness:.4});Wd.detail=2;
+  ol(rb(g,1.1,.05,.26,.02,Wd,0,-.2,.13),.01);[-1,1].forEach(sd=>ol(rb(g,.04,.14,.2,.01,M(0x4A4458,{roughness:.4}),sd*.4,-.28,.1),.004));
+  const R=rnd(5);let x=-.48;while(x<.18){const w=.05+R()*.04,h=.24+R()*.12;bkBook(g,x+w/2,-.175,.13,w,h,.2,BK_COL[(R()*BK_COL.length)|0],0,Pg,Gd);x+=w+.004}
+  bkBook(g,.24,-.175,.13,.06,.26,.2,BK_COL[3],-.35,Pg,Gd);ol(lathe(g,[[.05,0],[.06,.02],[.065,.09]],M(0xFFFFFF,{roughness:.4}),.42,-.175,.13,20),.006);
+  for(let i=0;i<7;i++){const a=i/7*Math.PI*2;const l=ol(sp(g,.03,M(0x7FD08A,{roughness:.5}),.42+Math.cos(a)*.03,-.06,.13+Math.sin(a)*.03,.6,1.3,.6),.003);l.rotation.set(Math.sin(a)*.5,0,-Math.cos(a)*.5)}return g},
+ starmap(c){const g=G(),Fr=M(c,{roughness:.5});Fr.detail=2;ol(rb(g,.9,1.1,.07,.03,Fr,0,0,0),.012);ol(rb(g,.78,.98,.03,.01,M(CREAM,{roughness:.9}),0,0,.03),0);
+  ol(add(g,new THREE.PlaneGeometry(.68,.85),M(0xffffff,{map:bkStarTex(),roughness:.6,emissive:0x22203A,emissiveIntensity:.2}),0,0,.05),0);return g},
+ bookbed(c){const g=G(),Cv=M(c,{roughness:.6}),Pg=M(CREAM,{roughness:.9}),Rb=M(0xE8384F,{roughness:.5});Pg.detail=1;
+  ol(rb(g,1.12,.08,.78,.04,Cv,0,.04,0),.012);[-1,1].forEach(sd=>{const m=add(g,gcache('bb_page',()=>cushionGeo(.26,.35,.09,{pinch:.05,n:4})),Pg,sd*.27,.14,0);m.rotation.set(-Math.PI/2,0,sd*.06);ol(m,.01);
+    for(let i=0;i<5;i++)ol(rb(g,.36,.004,.006,.002,M(0xD8CCB0),sd*.27,.235,-.2+i*.1),0)});
+  ol(cy(g,.03,.03,.74,Pg,0,.12,0,12),.006).rotation.x=Math.PI/2;const rb_=ol(rb(g,.05,.012,.5,.004,Rb,.1,.25,.2),0);rb_.rotation.set(.2,0,-.1);ol(rb(g,.05,.3,.012,.004,Rb,.12,.1,.4),0);return g},
+ teabowl(c){const g=G(),Wh=M(0xFFFFFF,{roughness:.25}),Cp=M(c,{roughness:.35});ol(cy(g,.26,.26,.02,Wh,0,.01,0,32),.008);ol(to(g,.22,.012,Cp,0,.025,0,Math.PI/2),0);
+  ol(lathe(g,[[.1,.02],[.12,.03],[.16,.08],[.19,.16],[.2,.17],[.19,.175],[.17,.15],[.14,.09],[.1,.05],[0,.045]],Cp,0,0,0,40),.01);ol(to(g,.195,.01,Wh,0,.172,0,Math.PI/2),0);
+  ol(to(g,.06,.018,Cp,.22,.11,0,0,0,0,Math.PI*1.2),.006).rotation.z=-Math.PI*.55;const R=rnd(2);for(let i=0;i<14;i++){const a=R()*6.3,r=R()*.11;ol(sp(g,.025,M(0xC98A4A,{roughness:.8}),Math.cos(a)*r,.13+R()*.02,Math.sin(a)*r,1,.7,1),0)}return g}});
 /* ================= CAPSULE CORNER: a 3D gacha machine =================
    Tokens (state.tokens) come from two-dos, granted wishes, 3-star arcade rounds and the daily treat, or 12 hearts each.
    Put one in, turn the crank (drag round), the capsules churn in the globe (real little physics), one rolls down the
@@ -3292,6 +3410,10 @@ Object.assign(USE_ITEM,{
   dandelion:{kind:'stand',anim:'u_blow',d:4,dist:.12,emo:['✨','🎉'],w:.9},acornbed:NAP,leafbowl:BOWL,
   butterflyart:{kind:'wall',anim:'u_gaze',d:5,emo:['💗','✨'],w:.6},trellis:{kind:'wall',anim:'u_sniff',d:3.6,then:['sneeze',.3],emo:['💗'],w:.5},
   stumptable:{kind:'stand',anim:'u_sip',d:6,dist:.05,emo:['😋','💗'],w:.6}});
+Object.assign(USE_ITEM,{bookcase:{kind:'stand',front:1,anim:'u_read',d:6,dist:.06,emo:['💗','❓'],w:.8},writedesk:{kind:'stand',front:1,anim:'u_read',d:6,dist:.05,emo:['💗'],w:.7},
+  globe:{kind:'stand',anim:'u_spin',d:4,dist:.08,emo:['❗','🎉'],w:.8},teacart:{kind:'stand',anim:'u_sip',d:6,dist:.05,emo:['😋','💗'],w:.7},pothos:{kind:'stand',anim:'u_sniff',d:3.6,emo:['💗'],w:.5},
+  grandclock:{kind:'stand',front:1,anim:'u_peer',d:4,dist:.08,emo:['❓','🎵'],w:.5},wallshelf:{kind:'wall',anim:'u_gaze',d:4,emo:['💗'],w:.4},starmap:{kind:'wall',anim:'u_gaze',d:5,emo:['⭐','💗'],w:.5},
+  bookbed:NAP,teabowl:BOWL});
 CAT.filter(c=>c.gacha).forEach(c=>USE_ITEM[c.k]={kind:'stand',anim:'u_peer',d:4.5,dist:.12,emo:['💗','❗'],w:.7});
 const useOf=d=>d.use||USE_ITEM[d.k]||USE_FN[d.fn]||null;
 // Where to stand to use o, and which way to face.
