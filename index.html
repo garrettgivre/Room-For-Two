@@ -1065,6 +1065,7 @@ const LDEF={exposure:1,envInt:1,specInt:1,bloom:.3,bloomThreshold:1,bloomKnee:.5
 class WebGLRenderer{
   constructor(o){o=o||{};this.domElement=o.canvas||document.createElement('canvas');this.post=!!o.post;this.background=!!o.background;
     const gl=this.domElement.getContext('webgl2',{antialias:this.post?false:!!o.antialias,alpha:this.post?false:o.alpha!==false,premultipliedAlpha:false,preserveDrawingBuffer:!!o.preserveDrawingBuffer,powerPreference:'high-performance'});
+    this.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();window.dispatchEvent(new Event('r42gllost'))});
     if(!gl)throw new Error('This device or browser does not support WebGL2, which the 3D room needs.');
     this.gl=gl;this.pixelRatio=1;this.shadowMap={enabled:false,type:0};this.outputEncoding=3000;this._vao=new WeakMap();this._tex=new WeakMap();
     const mk=(vs,fs)=>{const p=gl.createProgram();for(const [t,s] of [[gl.VERTEX_SHADER,vs],[gl.FRAGMENT_SHADER,fs]]){const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw new Error('Shader: '+gl.getShaderInfoLog(sh));gl.attachShader(p,sh)}
@@ -1468,6 +1469,14 @@ function petStats(){
 const canvas=$('#c');
 const renderer=new THREE.WebGLRenderer({canvas,post:true,background:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+// Android drops the GPU context of an app in the background, which left the UI up but the room gone. The engine can't rebuild
+// its GPU resources, so when a context is lost we save and reload as soon as the app is visible again (location isn't saved anyway).
+let glLost=false,glReloading=false;
+function glReload(){if(glReloading||document.visibilityState!=='visible')return;let last=0;try{last=+sessionStorage.r42glr||0}catch(_){}if(Date.now()-last<8000)return;glReloading=true;try{sessionStorage.r42glr=Date.now()}catch(_){}
+  Promise.resolve().then(()=>typeof flush==='function'&&flush()).catch(()=>{}).finally(()=>location.reload())}
+window.addEventListener('r42gllost',()=>{if(renderer.gl&&renderer.gl.isContextLost()){glLost=true;glReload()}});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&(glLost||renderer.gl&&renderer.gl.isContextLost()))glReload()});
+window.addEventListener('pageshow',()=>{if(glLost||renderer.gl&&renderer.gl.isContextLost())glReload()});
 renderer.outputEncoding=THREE.sRGBEncoding;
 renderer.shadowMap.enabled=true;
 renderer.shadowMap.type=THREE.PCFSoftShadowMap;
@@ -3751,7 +3760,7 @@ function onLoft(par,f,x,y,off){const q=f(y),cx=q[2]||0,cz=q[3]||0,dx=x-cx,z=cz+q
 // eye texture on sphere UVs (front u=.25): o.bg/o.edge white, optional iris o.iris [inner,outer] radius o.ir (px), pupil o.pupil radius o.pr, two highlights
 function eyeTex(key,o){return gcache('eyetex'+key,()=>{const c=mkCanvas(256,128),x=c.getContext('2d'),w=x.createRadialGradient(64,64,10,64,64,90);w.addColorStop(0,o.bg||'#FFFFFF');w.addColorStop(.55,o.bg||'#FFFFFF');w.addColorStop(1,o.edge||'#E6DDF7');x.fillStyle=w;x.fillRect(0,0,256,128);
   if(o.iris){const ir=x.createRadialGradient(64,70,4,64,64,o.ir);ir.addColorStop(0,o.iris[0]);ir.addColorStop(1,o.iris[1]);x.fillStyle=ir;x.beginPath();x.ellipse(64,64,o.ir,o.ir*1.06,0,0,7);x.fill()}
-  x.fillStyle=o.pupil||'#120A22';x.beginPath();x.ellipse(64,64,o.pr,o.pr*1.07,0,0,7);x.fill();x.fillStyle='#fff';x.beginPath();x.ellipse(64-o.pr*.45,64-o.pr*.6,o.pr*.36,o.pr*.4,0,0,7);x.fill();x.beginPath();x.arc(64+o.pr*.5,64+o.pr*.55,o.pr*.17,0,7);x.fill();
+  x.fillStyle=o.pupil||'#120A22';x.beginPath();if(o.star){for(let i=0;i<10;i++){const r=i%2?o.pr*.45:o.pr,a=-Math.PI/2+i*Math.PI/5;x.lineTo(64+Math.cos(a)*r,64+Math.sin(a)*r*1.05)}x.closePath()}else x.ellipse(64,64,o.pr,o.pr*1.07,0,0,7);x.fill();x.fillStyle='#fff';x.beginPath();x.ellipse(64-o.pr*.45,64-o.pr*.6,o.pr*.36,o.pr*.4,0,0,7);x.fill();x.beginPath();x.arc(64+o.pr*.5,64+o.pr*.55,o.pr*.17,0,7);x.fill();
   const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t})}
 // one eyeball: a painted sphere that turns to look, in a squashed group, under a lid hemisphere that rotates shut to blink
 function kEye(pv,r,tex,lidMat,o){o=o||{};const eg=piv(pv,0,0,-r*(o.sink===undefined?.2:o.sink));eg.scale.set(1,o.sy||1.08,o.sz||.62);
@@ -3907,8 +3916,8 @@ const KEEPERS={
   // Fizz the stylist (after the character sheet): a noodly turquoise bean that bends like a macaroni (the body mesh is sheared
   // along a moving centreline every frame, and the face, arms and hair ride along), two mismatched eyes, a long open grin,
   // and hair that is a bubble bath: a swirl of pink bubbles that keep floating off and popping, and growing back.
-  stylist(){const g=G(),b=G();g.add(b);const C=M(0x5ED6E0,{roughness:.4}),P=M(0xFF62B4,{roughness:.28}),Pl=M(0xFF9ED2,{roughness:.2}),Or=M(0xFF9A3C,{roughness:.35}),Wp=M(0xFF5FA8,{roughness:.35});
-    C.detail=3;P.detail=0;Pl.detail=0;
+  stylist(){const g=G(),b=G();g.add(b);const C=M(0x5ED6E0,{roughness:.4}),P=M(0xFF6FBC,{roughness:.35}),Ba=M(0xFF7CC4,{roughness:.04,transparent:true,opacity:.55}),Bb=M(0xFFC6E6,{roughness:.04,transparent:true,opacity:.42}),Or=M(0xFF9A3C,{roughness:.35}),Wp=M(0xFF5FA8,{roughness:.35});
+    C.detail=3;P.detail=0;Ba.detail=0;Bb.detail=0;
     const Y0=.28,H=1.26,PR=smoothProf([[0,0],[.03,.2],[.1,.27],[.25,.29],[.45,.29],[.65,.31],[.8,.32],[.9,.29],[.96,.21],[.99,.1],[1,0]],60),cxAt=v=>.1*Math.cos(Math.PI*v),
       f=y=>{const v=Math.max(0,Math.min(1,(y-Y0)/H)),r=profAt(PR,v);return[r,r*.86,cxAt(v),0]};
     const body=piv(b,0,0,0);
@@ -3935,12 +3944,12 @@ const KEEPERS={
     // bubble-bath hair: a soft pink core (so gaps never show the head) covered in bubbles on a foam cloud and an S-swirl
     const hair=piv(headG,-.1,1.3,0),DS=smoothProf([[0,.24],[.06,.36],[.16,.46],[.28,.49],[.39,.45],[.49,.35],[.55,.21],[.575,0]],24),
       SW=[[.02,.38,0],[-.1,.54,.03],[-.04,.7,.02],[.13,.76,0],[.2,.9,-.02],[.09,1.0,0],[-.04,.97,.02]];
-    ol(add(hair,gcache('fz_core',()=>loftGeo(DS.map(([y,r])=>[y,r*.82,r*.78,-y*.08,.02]),{seg:40})),P,0,0,0),.012);
+    ol(add(hair,gcache('fz_core',()=>loftGeo(DS.map(([y,r])=>[y,r*.78,r*.74,-y*.08,.02]),{seg:40})),P,0,0,0),.012);
     ol(add(hair,gcache('fz_swcore',()=>sweepGeo(SW,t=>{const r=.09*(1-t*.65)*Math.min(1,Math.sqrt(Math.max(0,(1-t)/.08)));return[r,r]},{len:40,seg:12})),P,0,0,0),.01);
-    const HM=[];for(let i=0;i<48;i++){const v=(i+.5)/48,y=v*.54,th=i*2.39996,r=profAt(DS,y)*.9;HM.push([Math.sin(th)*r-y*.08,y,Math.cos(th)*r*.95+.02,.1-v*.035+((i*37)%7)/7*.035])}
-    for(let i=0;i<12;i++){const a=i/12*Math.PI*2+.2;HM.push([Math.sin(a)*.37,.03+(i%2)*.03,Math.cos(a)*.35+.02,.1+(i%3)*.02])}
-    for(let i=0;i<26;i++){const t=i/25,c=crPt(SW,t);HM.push([c[0]+Math.sin(i*2.1)*.02,c[1],c[2]+Math.cos(i*2.1)*.02,.125*(1-t*.6)])}
-    const BB=HM.map((h,i)=>({h,i,st:0,t:0,p:[0,0,0],v:[0,0,0]})),cA=bubbleMesh(hair,Math.ceil(BB.length/2),P,10),cB=bubbleMesh(hair,Math.floor(BB.length/2),Pl,10);ol(cA.m,.006);ol(cB.m,.006);
+    const rn=i=>{const x=Math.sin(i*12.9898+4.1)*43758.5;return x-Math.floor(x)},HM=[];for(let i=0;i<64;i++){const v=(i+.5)/64,y=v*.54,th=i*2.39996,rr=.028+.1*Math.pow(rn(i),1.6),r=profAt(DS,y)*.93+rr*.25;HM.push([Math.sin(th)*r-y*.08,y,Math.cos(th)*r*.95+.02,rr])}
+    for(let i=0;i<14;i++){const a=i/14*Math.PI*2+.2;HM.push([Math.sin(a)*.38,.03+(i%2)*.03,Math.cos(a)*.36+.02,.04+.08*rn(i+80)])}
+    for(let i=0;i<34;i++){const t=i/33,c=crPt(SW,t),k=.6+.6*rn(i+140);HM.push([c[0]+Math.sin(i*2.1)*.03,c[1],c[2]+Math.cos(i*2.1)*.03,.11*(1-t*.6)*k])}
+    const BB=HM.map((h,i)=>({h,i,st:0,t:0,p:[0,0,0],v:[0,0,0]})),cA=bubbleMesh(hair,Math.ceil(BB.length/2),Ba,12),cB=bubbleMesh(hair,Math.floor(BB.length/2),Bb,12),cH=bubbleMesh(hair,BB.length,B(0xffffff),6);ol(cA.m,.004);ol(cB.m,.004);ol(cH.m,0);nosh(cA.m);nosh(cB.m);nosh(cH.m);
     ol(sp(hair,.05,Or,.38,.2,.24),.008);
     // noodle arms: the right one holds a bubble wand
     const A=[-1,1].map(s_=>{const a=kArm3(armG,s_*.3-.01,.98,.02,C,.2,.2,.036,.062);a.s=s_;return a});
@@ -3962,7 +3971,7 @@ const KEEPERS={
         q.v=[q.h[0]/l*.14+(Math.random()-.5)*.1,.28+Math.random()*.25,q.h[2]/l*.14+(Math.random()-.5)*.1]}}
       BB.forEach(q=>{q.t+=dt;const h=q.h;let x,y,z,r;if(q.st===1){q.v[1]+=.06*dt;q.p[0]+=q.v[0]*dt+Math.sin(q.t*5+q.i)*.004;q.p[1]+=q.v[1]*dt;q.p[2]+=q.v[2]*dt;const k=q.t/1.8;r=h[3]*(1-k*.45)*(k>.9?Math.max(0,(1-k)/.1):1);x=q.p[0];y=q.p[1];z=q.p[2];if(q.t>1.8){q.st=2;q.t=0}}
         else{const k=q.st===2?Math.min(1,q.t/.45):1;if(q.st===2&&q.t>.45)q.st=0;x=h[0]+Math.sin(t*3+q.i*1.7)*.008;y=h[1]+Math.cos(t*2.6+q.i)*.008;z=h[2];r=h[3]*k*(1+Math.sin(t*4+q.i)*.04)}
-        (q.i%2?cB:cA).set(q.i>>1,x,y,z,Math.max(0,r))});cA.flush();cB.flush();
+        r=Math.max(0,r);(q.i%2?cB:cA).set(q.i>>1,x,y,z,r);cH.set(q.i,x-r*.38,y+r*.42,z+r*.62,r*.2)});cA.flush();cB.flush();cH.flush();
       const pose=(a,sa,sx,e)=>{a.sh.rotation.x=approach(a.sh.rotation.x,sx,dt*10);a.sh.rotation.z=approach(a.sh.rotation.z,a.s*sa,dt*10);a.el.rotation.z=approach(a.el.rotation.z,a.s*e,dt*10)};
       if(greet)pose(A[0],2.4+Math.sin(t*13)*.3,0,.5+Math.sin(t*13)*.3);else if(cheer)pose(A[0],2.6,0,.2);else if(talk)pose(A[0],.6+Math.abs(Math.sin(t*2.1))*.6,-.3,.8+Math.sin(t*3.4)*.3);else pose(A[0],.35+Math.sin(t*1.5+.5)*.1,0,.3+Math.sin(t*1.5)*.15);
       if(cheer)pose(A[1],2.6,0,.2);else if(wv>0)pose(A[1],.9+wv*.7+Math.sin(wp*7)*.25*wv,-.5*wv,1.2+wv*.4);else pose(A[1],.5+Math.sin(t*1.5)*.1,0,1.2+Math.sin(t*1.5+.8)*.15);
@@ -4103,29 +4112,47 @@ function fxDropBoard(k){const D=GAMES[k],c=parseInt(D.c.slice(1),16),g=G(),C=jel
 FIX.dropboard={n:'Drop machine',fn:'fixture',build:it=>fxDropBoard(it.game),use:{kind:'stand',front:1,anim:'u_peer',d:4,dist:.14,emo:['⭐','❗'],w:.8}};
 FIX.cabinet={n:'Arcade cabinet',fn:'fixture',build:it=>fxCabinet(it.game),use:{kind:'stand',front:1,anim:'u_peer',d:4,dist:.14,emo:['⭐','🎵','❗'],w:.8}};
 FIX.scores={n:'High scores',fn:'fixture',wall:1,build:()=>fxScores(),use:{kind:'wall',anim:'u_gaze',d:3,emo:['⭐'],w:.2}};
-// Joy: a grape jelly in big headphones with a glowing antenna, forever mashing a game pad
-// Joy: a purple jelly in big headphones with a glowing antenna ball, bobbing to the beat and button-mashing a gamepad.
-// Now and then a win: a fist pump and a flurry of music notes.
-KEEPERS.joy=function(){const g=G(),b=G();g.add(b);const C=jel(0xB07BFF,{roughness:.3}),P=jel(0xFF3D9A,{roughness:.36}),Cy=jel(0x3EC8F2,{roughness:.34}),Dk=M(0x3B1273,{roughness:.4}),Yg=M(0xFFD21F,{emissive:0xFFD21F,emissiveIntensity:.9});
-  const body=piv(b,0,.72,0);const bo=add(body,SPH(.5,48,36),C,0,0,0);bo.scale.set(1,1.04,.94);ol(bo,.018);gloss(body,.5,1.04,.94,-.25,.3,.11,.055,.6,.45);gloss(body,.5,1.04,.94,-.32,.16,.035,.03,0,.4);
-  const F=kFace2(body,{r:.5,sy:1.04,sz:.94,ex:.15,ey:.14,er:.09,my:-.05,mw:.07,browC:0x6A2FC0,cheekC:0xFF6FB8});
-  // headphones: a band over the top and chunky cups with glowing rims
-  const hp=piv(body,0,.02,0);ol(nosh(to(hp,.54,.045,Dk,0,0,0,0,0,0,Math.PI)),.01);
-  const cups=[-1,1].map(s=>{const c=piv(hp,s*.53,0,0);const cup=add(c,new THREE.CylinderGeometry(.16,.16,.12,24),P,0,0,0);cup.rotation.z=Math.PI/2;ol(cup,.012);
-    const rim=nosh(to(c,.13,.022,Yg,s*.065,0,0,0,Math.PI/2,0));ol(rim,0);ol(sp(c,.07,Cy,s*.07,0,0,.5,1,1),.008);return c});
+// Joy (after the character sheet): a round lavender game-console of a body with starry eyes, a big open smile, a speaker grille and
+// a star sticker on the belly, pink headphones with orange rims and stars in the cups, a glowing antenna, a rear hatch, chunky
+// sneakers, and a white controller forever being button-mashed. Bobs to the beat; now and then a win: a fist pump and music notes.
+KEEPERS.joy=function(){const g=G(),b=G();g.add(b);const C=M(0xB48AF0,{roughness:.38}),P=M(0xFF6FB5,{roughness:.32}),Or=M(0xFF9A3C,{roughness:.35}),Dk=M(0x2E1F4A,{roughness:.45}),
+    Wt=M(0xF6F4FB,{roughness:.35}),Yl=M(0xFFD84A,{roughness:.4}),Yg=M(0xFFD21F,{emissive:0xFFD21F,emissiveIntensity:.9}),Cy=M(0x6FC8FF,{roughness:.35}),Gr=M(0x8FE36A,{roughness:.35});
+  C.detail=3;P.detail=0;Wt.detail=3;
+  const R=.5,SY=1,SZ=.92,body=piv(b,0,.78,0);const bo=add(body,SPH(R,56,40),C,0,0,0);bo.scale.set(1,SY,SZ);ol(bo,.018);gloss(body,R,SY,SZ,-.26,.3,.1,.05,.6,.35);
+  // starry eyes and a big open smile
+  const E=[-1,1].map(s_=>kEye(onSurface(body,R,SY,SZ,s_*.155,.12),.1,eyeTex('joyE',{bg:'#FFF5C4',edge:'#F2D98A',pr:22,star:1}),C,{sink:.25}));
+  const mp=onSurface(body,R,SY,SZ,0,-.06),mg=piv(mp,0,0,-.004);
+  {const bend=geo=>{const Pq=geo.pos;for(let i=0;i<Pq.length;i+=3)Pq[i+2]-=(Pq[i]*Pq[i]+Pq[i+1]*Pq[i+1])/(2*R);geo.version++;return geo};
+    ol(add(mg,gcache('jo_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.085,0);m.quadraticCurveTo(0,.02,.085,0);m.bezierCurveTo(.08,-.13,-.08,-.13,-.085,0);return bend(new THREE.ExtrudeGeometry(m,{depth:.01}))}),M(0x7A1036,{roughness:.6}),0,0,0),.008);
+    const tg=add(mg,SPH(1,16,10),M(0xFF6F9F,{roughness:.6}),0,-.07,.005);tg.scale.set(.05,.028,.008);ol(tg,0)}
+  [-1,1].forEach(s_=>{const cp=onSurface(body,R,SY,SZ,s_*.27,.0);const c=add(cp,SPH(1,14,10),M(0xFF8FC4,{roughness:.7}),0,0,.002);c.scale.set(.055,.032,.006);ol(c,0)});
+  // belly: a speaker grille and a star sticker
+  {const gp=onSurface(body,R,SY,SZ,.2,-.25);ol(cy(gp,.1,.1,.03,Dk,0,0,0,28),.008).rotation.x=Math.PI/2;
+    const T=gcache('jo_grille',()=>{const c=mkCanvas(128,128),x=c.getContext('2d');x.fillStyle='#3A2A5E';x.fillRect(0,0,128,128);x.fillStyle='#120A22';for(let j=-4;j<=4;j++)for(let i=-4;i<=4;i++){const X=64+i*13+(j%2?6:0),Y=64+j*12;if(Math.hypot(X-64,Y-64)<54){x.beginPath();x.arc(X,Y,4,0,7);x.fill()}}const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t});
+    const gf=add(gp,new THREE.CircleGeometry(.085,28),M(0xffffff,{map:T,roughness:.6}),0,0,.017);ol(gf,0);
+    const st=add(onSurface(body,R,SY,SZ,-.2,-.24),gcache('jo_star',()=>new THREE.ExtrudeGeometry(starShape(.085,.038,5),{depth:.02,bevelEnabled:true,bevelThickness:.006,bevelSize:.006,bevelSegments:1})),Yl,0,0,-.004);st.rotation.z=-.15;ol(st,.008)}
+  // rear hatch with four screws
+  {const hp=piv(body,0,.02,-R*SZ+.012);hp.rotation.y=Math.PI;ol(rb(hp,.26,.22,.02,.02,M(0x9C74DC,{roughness:.4}),0,0,0),.008);[[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([x,y])=>ol(sp(hp,.014,Dk,x*.1,y*.08,.012),0))}
+  // headphones: a dark band over the top, pink cups with orange rims and a yellow star in each
+  const hp=piv(body,0,.03,0);ol(nosh(to(hp,.55,.04,Dk,0,0,0,0,0,0,Math.PI)),.01);
+  const cups=[-1,1].map(s_=>{const c=piv(hp,s_*.52,0,0);const cup=add(c,new THREE.CylinderGeometry(.17,.17,.13,28),P,0,0,0);cup.rotation.z=Math.PI/2;ol(cup,.012);
+    ol(to(c,.165,.03,Or,s_*.07,0,0,0,Math.PI/2,0),.008);const face=add(c,new THREE.CircleGeometry(.14,28),M(0xFF9ED0,{roughness:.15}),s_*.068,0,0);face.rotation.y=s_*Math.PI/2;ol(face,0);
+    const st=add(c,gcache('jo_star2',()=>new THREE.ExtrudeGeometry(starShape(.07,.032,5),{depth:.015})),Yl,s_*.07,0,0);st.rotation.y=s_*Math.PI/2;ol(st,.006);return c});
   // antenna with a glowing ball that lags behind the bobbing
-  const ant=piv(body,0,.5,0);cy(ant,.016,.016,.24,Dk,0,.12,0,8);const bp=piv(ant,0,.26,0);const ball=ol(nosh(add(bp,SPH(.075,20,14),Yg,0,0,0)),.01);
-  const halo=nosh(add(bp,SPH(.13,16,12),B(0xFFE36E,{transparent:true,opacity:.25,depthWrite:false}),0,0,0));ol(halo,0);
-  // arms: the left holds a gamepad, the right is free
-  const armP=kArm2(body,-.5,-.04,.03,C,.26,.068),armF=kArm2(body,.5,-.04,.03,C,.26,.068);
-  const pad=piv(armP.userData.tip,.05,.02,0);pad.rotation.set(2.2,0,.3);ol(rb(pad,.3,.08,.17,.04,Cy,0,0,0),.012);
-  ol(bx(pad,.07,.02,.022,Dk,-.08,.045,0),0);ol(bx(pad,.022,.02,.07,Dk,-.08,.045,0),0);
-  const btns=[[.07,.03,P],[.11,-.01,M(0xFFD21F,{roughness:.4})],[.03,-.01,Cy],[.07,-.05,jel(0x7BE07B)]].map(([x,z,m])=>{const k=add(pad,SPH(.022,10,8),m,x,.045,z);k.scale.set(1,.6,1);ol(k,.005);return k});
+  const ant=piv(body,0,R*SY-.03,0);cy(ant,.014,.014,.22,Dk,0,.11,0,8);const bp=piv(ant,0,.25,0);const ball=ol(nosh(add(bp,SPH(.07,20,14),Yg,0,0,0)),.01);
+  const halo=nosh(add(bp,SPH(.12,16,12),B(0xFFE36E,{transparent:true,opacity:.25,depthWrite:false}),0,0,0));ol(halo,0);
+  // arms: the left holds a white controller, the right is free
+  const armP=kArm2(body,-.47,-.08,.05,C,.22,.07,.09),armF=kArm2(body,.47,-.08,.05,C,.22,.07,.09);
+  const pad=piv(armP.userData.tip,.05,.02,0);pad.rotation.set(2.2,0,.3);ol(rb(pad,.32,.08,.17,.045,Wt,0,0,0),.012);[-1,1].forEach(s_=>ol(sp(pad,.06,Wt,s_*.13,0,.05,1,.7,1),.01));
+  ol(bx(pad,.075,.022,.024,C,-.085,.045,0),0);ol(bx(pad,.024,.022,.075,C,-.085,.045,0),0);
+  const btns=[[.08,.03,P],[.12,-.01,Yl],[.04,-.01,Cy],[.08,-.05,Gr]].map(([x,z,m])=>{const k=add(pad,SPH(.022,10,8),m,x,.045,z);k.scale.set(1,.6,1);ol(k,.005);return k});
   // music notes that float up on a win
   const notes=[0,1,2,3].map(i=>{const n=piv(g);const h=add(n,SPH(.04,12,8),i%2?P:Cy,0,0,0);h.scale.set(1.2,.9,.6);ol(h,.006);cy(n,.008,.008,.12,Dk,.04,.06,0,6);n.visible=false;return{n,t:9,x:0}});
-  [-.22,.22].forEach(x=>{const f=add(b,SPH(.15,20,14),C,x,.1,.08);f.scale.set(1,.55,1.2);ol(f,.012)});
-  let winT=5,wp=9,bx0=0,bv=0;
-  return{g,head:hp,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';
+  // chunky sneakers: lavender uppers, pink laces, white midsoles on yellow soles
+  [-1,1].forEach(s_=>{const f=piv(b,s_*.22,0,.06);ol(cy(f,.07,.08,.16,C,0,.2,-.04,14),.01);ol(sp(f,.14,C,0,.12,.02,1,.62,1.35),.012);ol(rb(f,.27,.07,.4,.03,Wt,0,.04,.02),.01);ol(rb(f,.27,.025,.4,.012,Yl,0,.005,.02),.008);
+    ol(sp(f,.07,Wt,0,.1,.18,1.2,.7,.8),.006);for(let i=0;i<3;i++)ol(rb(f,.12,.014,.022,.007,P,0,.2-i*.022,.03+i*.045),0)});
+  let winT=5,wp=9,bx0=0,bv=0;const ES={};
+  return{g,head:hp,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';dt=Math.min(dt,.05);
     winT-=dt;if(winT<0&&!talk&&act==='idle'){winT=6+Math.random()*5;wp=0;notes.forEach((q,i)=>{q.t=-i*.18;q.x=(i%2?1:-1)*(.3+Math.random()*.25)})}wp+=dt;
     // bob to the beat (paused while talking)
     const beat=talk?0:Math.abs(Math.sin(t*4.2));b.position.y=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.4:wp<.6?Math.sin(wp/.6*Math.PI)*.18:beat*.03;
@@ -4139,8 +4166,9 @@ KEEPERS.joy=function(){const g=G(),b=G();g.add(b);const C=jel(0xB07BFF,{roughnes
     else{armP.rotation.set(-1.15+Math.sin(t*9)*.03,0,-.25);
       if(greet)armF.rotation.set(0,0,2.5+Math.sin(t*13)*.35);else if(talk)armF.rotation.set(-.6+Math.sin(t*3.2)*.3,0,.5+Math.abs(Math.sin(t*2.2))*.4);else armF.rotation.set(-1.05+Math.sin(t*9.5)*.04,0,.35)}
     pad.rotation.z=.3+(talk?0:Math.sin(t*7)*.1);
-    notes.forEach(q=>{q.t+=dt;const k=q.t/1.6;q.n.visible=k>0&&k<1;if(q.n.visible){q.n.position.set(q.x+Math.sin(k*9)*.06,1.3+k*.8,.1);q.n.scale.setScalar(k<.15?k/.15:k>.8?(1-k)/.2:1)}});
-    F.update(dt,t,{talk,happy:cheer||greet||wp<1.2})}}};
+    notes.forEach(q=>{q.t+=dt;const k=q.t/1.6;q.n.visible=k>0&&k<1;if(q.n.visible){q.n.position.set(q.x+Math.sin(k*9)*.06,1.4+k*.8,.1);q.n.scale.setScalar(k<.15?k/.15:k>.8?(1-k)/.2:1)}});
+    const happy=cheer||greet||wp<1.2;kEyesUpd(ES,E,dt,{talk,happy});
+    const syl=talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1))):0;ES.mo=approach(ES.mo||0,Math.max(syl,happy?.6:.25),dt*18);mg.scale.set(1+ES.mo*.1,.6+ES.mo*.6,1)}}};
 /* ================= GLOW UP STUDIO (hair + makeup) and JELLY THREADS (clothes) ================= */
 const BLANK='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 const DYES=[0xFF3D9A,0xFF7FB8,0xFFB3DA,0xFF4F7A,0xFF8A1C,0xFFB22E,0xFFD21F,0xFFF3A0,0xA6E22E,0x5FD68A,0x7FE0C0,0x3EC8F2,0x8FD8FF,0x4A7FF2,0x9B4DF2,0xC6A6FF,0xFFFFFF,0x3A3158];
