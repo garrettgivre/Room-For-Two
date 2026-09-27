@@ -646,6 +646,84 @@ body.away .tag{visibility:hidden}
 .rw-card h3{margin:0 0 8px;font-family:var(--disp);font-weight:400;font-size:26px;line-height:1.1;color:var(--pink);text-shadow:2.5px 0 var(--ink),-2.5px 0 var(--ink),0 2.5px var(--ink),0 -2.5px var(--ink),2px 2px var(--ink),-2px 2px var(--ink),2px -2px var(--ink),-2px -2px var(--ink)}
 .rw-card p{margin:6px 0;font-size:14px;line-height:1.35}.rw-card b{font-family:var(--disp);font-weight:400;font-size:15px}.rwsub{font-family:var(--disp);color:#6B4E95}
 .rw-card .gel{width:100%;margin-top:12px}
+
+/* ---------- HUD (Sept 2026): a small logo, the heart jar, and one dock: Pet · Explore · Menu ---------- */
+.logo img{width:min(30vw,124px)}
+.storechip{margin:6px 0 0 4px;display:flex;align-items:center;gap:6px;padding:4px 11px 4px 6px;background:#fff;border:2.5px solid var(--ink);border-radius:14px 11px 15px 12px;box-shadow:var(--stk);transform:rotate(-2deg)}
+.storechip[hidden]{display:none}.storechip img{width:26px;height:26px;flex:none}
+.storechip b{font-family:var(--disp);font-weight:400;font-size:14px;color:var(--sc);text-shadow:1.5px 0 var(--ink),-1.5px 0 var(--ink),0 1.5px var(--ink),0 -1.5px var(--ink);white-space:nowrap}
+body.styling .storechip{opacity:0}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:9;display:flex;justify-content:center;align-items:flex-end;gap:22px;padding:0 14px calc(env(safe-area-inset-bottom,0px) + 10px);pointer-events:none}
+.dock::before{content:"";position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 6px);transform:translateX(-50%) rotate(-.6deg);width:min(88%,316px);height:54px;border-radius:30px 24px 32px 24px;
+  background:radial-gradient(rgba(255,255,255,.12) 1.4px,transparent 1.6px) 0 0/12px 12px,var(--ink);box-shadow:0 6px 0 #22084A,0 6px 0 3px #fff,0 0 0 3px #fff;pointer-events:none}
+.dk{position:relative;pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:11px;background:none;border:0;padding:0;margin:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.dk b{font-family:var(--disp);font-weight:400;font-size:13.5px;letter-spacing:.03em;color:#fff;line-height:1;text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink),1.5px 1.5px var(--ink),-1.5px 1.5px var(--ink),1.5px -1.5px var(--ink),-1.5px -1.5px var(--ink)}
+.dk-ic{position:relative;display:grid;place-items:center;border-radius:50%;border:3px solid var(--ink);box-shadow:0 5px 0 var(--ink),0 5px 0 3px #fff,0 0 0 3px #fff;transition:transform .12s,box-shadow .12s}
+.dk-ic::after{content:"";position:absolute;left:18%;top:9%;width:38%;height:22%;border-radius:50%;background:rgba(255,255,255,.6);transform:rotate(-20deg);pointer-events:none}
+.dk:active .dk-ic{transform:translateY(4px);box-shadow:0 1px 0 var(--ink),0 1px 0 3px #fff,0 0 0 3px #fff}
+.dk-side{margin-bottom:3px}.dk-side .dk-ic{width:58px;height:58px}
+.dk-side .dk-ic img,.dk-side .dk-ic svg{width:40px;height:40px;position:relative;z-index:1}
+#dkPet .dk-ic{background:linear-gradient(180deg,#9DF0FF,var(--sky))}#dkMenu .dk-ic{background:linear-gradient(180deg,#FFF0A8,var(--sun))}
+#dkPet[aria-expanded="true"] .dk-ic,#dkMenu[aria-expanded="true"] .dk-ic{background:linear-gradient(180deg,#FFC4E3,#FF7FC0);transform:translateY(2px)}
+.dk-main .dk-ic{width:86px;height:86px;background:linear-gradient(180deg,#FF9BD0,var(--pink));animation:dkBob 3.2s ease-in-out infinite}
+.dk-main .dk-ic svg{width:56px;height:56px;position:relative;z-index:1;filter:drop-shadow(0 2px 0 rgba(59,18,115,.35))}
+.dk-main b{font-size:17px;margin-top:1px}
+.dk-main .dk-ic{transition:width .2s,height .2s}body.sheet-open .dk-main .dk-ic{width:70px;height:70px}body.sheet-open .dk-main .dk-ic svg{width:46px;height:46px}
+@keyframes dkBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-3px) rotate(2deg)}}
+.dk-ring{position:absolute;z-index:2;left:50%;top:-10px;transform:translateX(-50%);width:78px;height:78px;border-radius:50%;pointer-events:none;
+  background:conic-gradient(var(--rc,#A6E22E) calc(var(--rv,100)*1%),rgba(255,255,255,.28) 0);-webkit-mask:radial-gradient(circle,transparent 33px,#000 34px,#000 38px,transparent 39px);mask:radial-gradient(circle,transparent 33px,#000 34px,#000 38px,transparent 39px)}
+#dkPet.low .dk-ic{animation:wig 1.2s ease-in-out infinite}
+.dk .badge{top:-8px;right:-10px;z-index:3}.dk .badge.on{display:flex}
+.dk .wishdot{top:-16px;right:-16px;z-index:3}
+#dkMenu.nudge .dk-ic{animation:wig .5s ease-in-out 6}
+.sheet{bottom:calc(env(safe-area-inset-bottom,0px) + 108px)}
+.followpill{bottom:calc(env(safe-area-inset-bottom,0px) + 118px)}
+.sheet.hasback{padding-top:44px}
+.sback{position:absolute;left:14px;top:9px;z-index:2;display:flex;align-items:center;gap:4px;height:32px;padding:0 13px 0 9px;border-radius:12px 10px 13px 9px;border:2.5px solid var(--ink);background:#fff;box-shadow:0 3px 0 var(--ink);
+  font-family:var(--disp);font-size:14px;color:var(--ink);letter-spacing:.02em}
+.sback[hidden]{display:none}.sback svg{width:16px;height:16px}.sback:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+/* the menu: big labelled tiles, one tap to each place */
+.mn-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 2px 12px}.mn-head h2{margin:0}
+.mn-who{font-family:var(--disp);font-size:12px;color:#6B4E95;text-align:right}
+.mn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 12px;padding:4px 2px 6px}
+.mn-t{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px 10px;border-radius:20px 16px 22px 17px;border:3px solid var(--ink);background:var(--tc,#fff);
+  box-shadow:0 5px 0 var(--ink);color:var(--ink);font-family:var(--disp);font-size:14px;letter-spacing:.02em;transition:transform .1s}
+.mn-t:nth-child(odd){transform:rotate(-1.2deg)}.mn-t:nth-child(even){transform:rotate(1.2deg)}
+.mn-t:active{transform:translateY(3px);box-shadow:0 2px 0 var(--ink)}
+.mn-t .mi{width:62px;height:62px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.7);border:2.5px solid var(--ink)}
+.mn-t .mi img,.mn-t .mi svg{width:46px;height:46px}
+.mn-t small{font-family:system-ui,sans-serif;font-size:11px;color:#6B4E95;line-height:1.2;text-align:center;min-height:2.4em}
+.mn-t .badge{display:flex;top:-10px;right:-8px}
+/* the pet wheel: the pet in the middle, its needs round it */
+.petwheel{position:fixed;inset:0;z-index:8;background:radial-gradient(circle at 50% 56%,rgba(40,12,80,.18),rgba(30,8,60,.62));opacity:0;transition:opacity .18s}
+.petwheel.on{opacity:1}.petwheel[hidden]{display:none}
+.pw{position:absolute;left:50%;top:var(--cy,56%);width:0;height:0}
+.pw-c,.pw-n,.pw-w{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;border:0;padding:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.pw-c{left:-62px;top:-62px;width:124px;height:124px;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff 0 18%,transparent 19%),linear-gradient(180deg,#FFF6FC,#FFD6EC);border:3.5px solid var(--ink);
+  box-shadow:0 6px 0 var(--ink),0 6px 0 4px #fff,0 0 0 4px #fff;transform:scale(.3);transition:transform .28s cubic-bezier(.3,1.7,.5,1)}
+.petwheel.on .pw-c{transform:scale(1)}
+.pw-c img{width:58px;height:58px;margin-top:-4px}
+.pw-c b{font-family:var(--disp);font-weight:400;font-size:17px;color:var(--pink);text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink),1.5px 1.5px var(--ink),-1.5px 1.5px var(--ink),1.5px -1.5px var(--ink),-1.5px -1.5px var(--ink);line-height:1}
+.pw-c small{font-family:var(--disp);font-size:11px;color:#6B4E95;margin-top:3px}
+.pw-n{left:-40px;top:-40px;width:80px;height:80px;transform:translate(0,0) scale(.2);opacity:0;transition:transform .32s cubic-bezier(.3,1.6,.5,1) var(--d),opacity .2s var(--d)}
+.petwheel.on .pw-n{transform:translate(var(--x),var(--y)) scale(1);opacity:1}
+.pw-n .ring{position:absolute;inset:0;border-radius:50%;background:#fff;border:3px solid var(--ink);box-shadow:0 5px 0 var(--ink),0 5px 0 3px #fff,0 0 0 3px #fff}
+.pw-n svg{position:absolute;inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);transform:rotate(-90deg)}
+.pw-n .tr{fill:none;stroke:#EDE6F5;stroke-width:9}.pw-n .pr{fill:none;stroke:var(--c);stroke-width:9;stroke-linecap:round}
+.pw-n img{position:relative;width:40px;height:40px;margin-top:-2px}
+.pw-n b{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%) rotate(-2deg);white-space:nowrap;font-family:var(--disp);font-weight:400;font-size:13px;color:var(--ink);background:var(--c);padding:2px 9px 3px;border-radius:9px;border:2.5px solid var(--ink);box-shadow:0 3px 0 var(--ink)}
+.pw-n.low .ring{animation:wig 1s ease-in-out infinite}.pw-n.low b::after{content:" !"}
+.pw-n:active .ring{transform:translateY(3px)}
+.pw-hint{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 140px);white-space:nowrap;font-family:var(--disp);font-size:14px;color:#fff;text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink);opacity:0;transition:opacity .3s .25s}
+.petwheel.on .pw-hint{opacity:1}
+.pw-w{left:-27px;top:80px;width:54px;height:50px;border-radius:50% 50% 50% 18%;background:#fff;border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);animation:wig 1.8s ease-in-out infinite}
+.pw-w img{width:32px;height:32px}
+.map-home{margin:-2px auto 10px;min-height:44px;padding:0 20px}.map-home[hidden]{display:none}
+.stats.rings{display:flex;justify-content:space-between;gap:4px;margin:6px 0 10px}
+.stats.rings .sr{display:flex;flex-direction:column;align-items:center;gap:3px;font-family:var(--disp);font-size:12px;color:var(--ink)}
+.stats.rings .sr span{position:relative;width:56px;height:56px;display:grid;place-items:center}
+.stats.rings svg{position:absolute;inset:0;transform:rotate(-90deg)}.stats.rings .tr{fill:none;stroke:#EDE6F5;stroke-width:8}.stats.rings .pr{fill:none;stroke:var(--c);stroke-width:8;stroke-linecap:round}
+.stats.rings img{width:30px;height:30px;position:relative}.stats.rings small{font-family:system-ui,sans-serif;font-size:10.5px;color:#6B4E95}
 </style>
 </head>
 <body>
@@ -656,24 +734,18 @@ body.away .tag{visibility:hidden}
 <header class="top">
   <div class="brand">
     <h1 class="logo"><img src="assets/logo-sm.webp" alt="Room for Two" width="520" height="349" decoding="async"></h1>
-    <span class="tag" id="presence">Opening your room</span>
+    <div class="storechip" id="storebar" hidden><img id="sbIcon" alt=""><b id="sbName"></b></div>
   </div>
   <div class="jar" title="Shared heart jar"><img class="heart" src="assets/icons/stat-happy.webp" alt=""><span id="hearts">0</span></div>
 </header>
 
-<button class="dbg-btn" id="dbgBtn" aria-label="Open debug menu">🐞</button>
-<button class="tdpill" id="tdBtn" aria-label="Open the two-do list"><img class="tdpi" src="assets/icons/twodo.webp" alt=""><b id="tdLbl">Two-dos</b><i id="tdCnt">0/3</i></button>
-<button class="petchip" id="petchip" aria-label="Open pet"><i class="wishdot" id="wishDot" hidden><img alt=""></i>
-  <span class="face" id="petface">🥚</span>
-  <span><b id="petname">Mochi</b><span class="minibars" id="minibars"><i style="--c:#FF7A1A"></i><i style="--c:#FF3EA5"></i><i style="--c:#8B3DFF"></i><i style="--c:#29C5FF"></i><i style="--c:#FF6FB5"></i></span></span>
-</button>
+<span id="presence" hidden>Opening your room</span>
 
 <div class="sandbar" id="sandbar" hidden title="Everything unlocked. Nothing saves."><b>Sandbox</b><button class="gel lilac" id="sandX">Exit</button></div>
-<div class="storebar" id="storebar" hidden><img id="sbIcon" alt=""><b id="sbName"></b><button class="gel lilac" id="sbHome">Home</button></div>
 <div class="kbub" id="kbub" hidden></div>
 <div class="shopcard" id="shopcard" hidden></div>
 <div class="map" id="map" hidden><div class="map-card" role="dialog" aria-label="Town map">
-  <button class="map-x" id="mapX" aria-label="Close map">×</button><h2>Where to?</h2>
+  <button class="map-x" id="mapX" aria-label="Close map">×</button><h2 id="mapTitle">Where to?</h2><button class="gel pink map-home" id="mapHome" hidden><img src="assets/icons/tab-room.webp" alt="" width="30" height="30">Go home</button>
   <div class="map-land">
     <svg class="map-art" viewBox="0 0 300 420" preserveAspectRatio="none" aria-hidden="true">
       <defs><pattern id="mgr" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="1.6" fill="#fff" opacity=".35"/><circle cx="12" cy="12" r="1.2" fill="#6CC23A" opacity=".45"/></pattern>
@@ -728,17 +800,16 @@ body.away .tag{visibility:hidden}
 <button class="followpill" id="followPill" hidden><img src="assets/icons/tab-pet.webp" alt="">Following <b id="fpName">Mochi</b><i aria-hidden="true">×</i></button>
 <section class="sheet" id="sheet" aria-live="polite">
   <div class="grab" role="button" aria-label="Close" title="Drag down to close"></div>
+  <button class="sback" id="sback" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg><span id="sbackL">Menu</span></button>
   <div class="sheet-body" id="sheetBody"></div>
 </section>
 
-<div class="dock">
-  <nav role="tablist">
-    <button class="tab" role="tab" data-tab="decorate" aria-selected="false"><span class="ic"><img src="assets/icons/tab-decorate.webp" alt="" width="96" height="96"></span>Decorate</button>
-    <button class="tab" role="tab" data-tab="pet" aria-selected="false"><span class="ic"><img src="assets/icons/tab-pet.webp" alt="" width="96" height="96"></span>Pet</button>
-    <button class="tab" role="tab" data-tab="mail" aria-selected="false"><span class="ic"><img src="assets/icons/tab-mail.webp" alt="" width="96" height="96"></span>Mail<span class="badge" id="mailBadge">0</span></button>
-    <button class="tab" role="tab" data-tab="room" aria-selected="false"><span class="ic"><img src="assets/icons/tab-room.webp" alt="" width="96" height="96"></span>Room</button>
-  </nav>
+<div class="dock" id="dock">
+  <button class="dk dk-side" id="dkPet" aria-label="Pet" aria-expanded="false"><span class="dk-ring" id="dkRing"></span><span class="dk-ic"><img src="assets/icons/tab-pet.webp" alt=""></span><b>Pet</b><i class="wishdot" id="wishDot" hidden><img alt=""></i></button>
+  <button class="dk dk-main" id="dkExplore" aria-label="Explore the town"><span class="dk-ic"><svg viewBox="0 0 48 48" aria-hidden="true"><g stroke="#3B1273" stroke-width="3" stroke-linejoin="round"><path d="M5 12l13-5 12 5 13-5v29l-13 5-12-5-13 5z" fill="#A6E22E"/><path d="M18 7l12 5v29l-12-5z" fill="#7FD8F5"/></g><path d="M24 31c-5.5-6.5-8-9.5-8-13a8 8 0 0 1 16 0c0 3.5-2.5 6.5-8 13z" fill="#FFD21F" stroke="#3B1273" stroke-width="3" stroke-linejoin="round"/><circle cx="24" cy="18" r="3" fill="#fff" stroke="#3B1273" stroke-width="2"/></svg></span><b>Explore</b></button>
+  <button class="dk dk-side" id="dkMenu" aria-label="Menu" aria-expanded="false"><span class="dk-ic"><svg viewBox="0 0 48 48" aria-hidden="true"><g stroke="#3B1273" stroke-width="3"><rect x="6" y="6" width="16" height="16" rx="5" fill="#FF3D9A"/><rect x="26" y="6" width="16" height="16" rx="5" fill="#3EC8F2"/><rect x="6" y="26" width="16" height="16" rx="5" fill="#A6E22E"/><rect x="26" y="26" width="16" height="16" rx="5" fill="#9B4DF2"/></g><g fill="#fff" opacity=".65"><rect x="9.5" y="9.5" width="7" height="3" rx="1.5"/><rect x="29.5" y="9.5" width="7" height="3" rx="1.5"/><rect x="9.5" y="29.5" width="7" height="3" rx="1.5"/><rect x="29.5" y="29.5" width="7" height="3" rx="1.5"/></g></svg></span><b>Menu</b><span class="badge" id="mailBadge">0</span></button>
 </div>
+<div class="petwheel" id="petwheel" hidden></div>
 
 <div class="toast" id="toast"></div>
 
@@ -6342,7 +6413,7 @@ function updShop(dt,t){const CH=keeperChat(dt);away.keepers.forEach((K,i)=>{K.k+
 
 /* --- going places --- */
 function openDoor(){if(traveling)return;doorTarget=1;setTab(null);if(pet.stage>0&&pet.mode!=='toy'&&!toyPlay){endUse(false);pet.act=null;pet.seat=null;petGo(doorFront())}setTimeout(()=>showMap(),350)}
-function showMap(){const m=$('#map'),here=away?away.key:'home';m.querySelectorAll('[data-go]').forEach(b=>b.classList.toggle('here',b.dataset.go===here));m.hidden=false;requestAnimationFrame(()=>m.classList.add('on'))}
+function showMap(){const m=$('#map'),here=away?away.key:'home';$('#mapHome').hidden=!away;$('#mapTitle').textContent=away?'Where next?':'Where to?';m.querySelectorAll('[data-go]').forEach(b=>b.classList.toggle('here',b.dataset.go===here));m.hidden=false;requestAnimationFrame(()=>m.classList.add('on'))}
 function closeMap(){const m=$('#map');m.classList.remove('on');setTimeout(()=>{m.hidden=true},250);if(!traveling)doorTarget=0}
 function travelTo(dest,then,focus){if(traveling)return;const here=away?away.key:'home';if(dest===here){closeMap();then&&then();return}traveling=true;closeMap();closeProduct();setTab(null);select(null);if(brush)endBrush();
   const tv=$('#travel');$('#tvText').textContent=dest==='home'?'Heading home…':`Off to ${SHOPS[dest].n}…`;$('#tvIcon').src=ico(dest==='home'?'tab-room':SHOPS[dest].icon);tv.hidden=false;requestAnimationFrame(()=>tv.classList.add('on'));
@@ -6582,7 +6653,7 @@ canvas.addEventListener('pointerup',endPtr);canvas.addEventListener('pointercanc
 canvas.addEventListener('wheel',e=>{e.preventDefault();if(styling()){cam.sz=clamp((cam.sz||1)*(1+e.deltaY*.001),.6,1.6);return}cam.dist=clamp(cam.dist*(1+e.deltaY*.001),camMin(),camMax())},{passive:false});
 // A tap on nothing in particular: closes a product card or a menu first, otherwise stops following the pet.
 // (Decorate stays open: taps there are for building. Styling stays open too: drags there turn the pet.)
-function emptyTap(){if(styling())return;const c=$('#shopcard');if(c&&!c.hidden){closeProduct();return}if(openTab&&openTab!=='decorate'){setTab(null);return}setFollow(false)}
+function emptyTap(){if(wheelOn()){closeWheel();return}if(styling())return;const c=$('#shopcard');if(c&&!c.hidden){closeProduct();return}if(openTab&&openTab!=='decorate'){setTab(null);return}setFollow(false)}
 // Menus with a handle: drag the handle down (or tap it) to close. Escape closes the top-most thing on a keyboard.
 {const sh=$('#sheet'),gr=sh.querySelector('.grab');let d=null;
   const reset=()=>{sh.style.transition='';sh.style.transform='';d=null};
@@ -6590,7 +6661,7 @@ function emptyTap(){if(styling())return;const c=$('#shopcard');if(c&&!c.hidden){
   gr.addEventListener('pointermove',e=>{if(!d||e.pointerId!==d.id)return;d.dy=Math.max(-12,e.clientY-d.y);sh.style.transform=`translateY(${d.dy<0?d.dy*.3:d.dy}px)`});
   gr.addEventListener('pointerup',e=>{if(!d||e.pointerId!==d.id)return;const ms=performance.now()-d.t,tap=Math.abs(d.dy)<6&&ms<350,close=tap||d.dy>60||(d.dy>20&&d.dy/ms>.5);if(close)setTab(null);reset()});
   gr.addEventListener('pointercancel',reset)}
-window.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('#game').hidden||!$('#reward').hidden)return;if(!$('#map').hidden){closeMap();return}const c=$('#shopcard');if(!c.hidden){closeProduct();return}if(openTab){setTab(null);return}setFollow(false)});
+window.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(wheelOn()){closeWheel();return}if(!$('#game').hidden||!$('#reward').hidden)return;if(!$('#map').hidden){closeMap();return}const c=$('#shopcard');if(!c.hidden){closeProduct();return}if(openTab){setTab(null);return}setFollow(false)});
 function finishDrag(){dragging=false;if(gest&&gest.U){const n=buildHist.length;endBuild(gest.U);gest.U=null;if(buildHist.length>n)td('move')}saveSoon()}
 
 function renderPalette(){const it=itemById(selId),pl=$('#palette');if(!it){pl.hidden=true;return}
@@ -6599,7 +6670,7 @@ function renderPalette(){const it=itemById(selId),pl=$('#palette');if(!it){pl.hi
 $('#bColor').onclick=()=>{const pl=$('#palette');if(!itemById(selId))return;pl.hidden=!pl.hidden;if(!pl.hidden)renderPalette()};
 $('#bStore').onclick=()=>{const it=itemById(selId);if(!it)return;const U=beginBuild();setTimeout(()=>endBuild(U));const d=CATMAP[it.k];state.items=state.items.filter(i=>i!==it);state.fown[it.k]=(state.fown[it.k]||0)+1;select(null);syncScene();updHUD();toast(`${d.n} put in storage.`);saveSoon();if(openTab==='decorate')renderSheet()};
 $('#bDone').onclick=()=>select(null);
-$('#mapX').onclick=closeMap;$('#followPill').onclick=()=>setFollow(false);$('#map').onclick=e=>{if(e.target.id==='map')closeMap()};document.querySelectorAll('#map [data-go]').forEach(b=>b.onclick=()=>travelTo(b.dataset.go));$('#sbHome').onclick=()=>travelTo('home');
+$('#mapX').onclick=closeMap;$('#followPill').onclick=()=>setFollow(false);$('#map').onclick=e=>{if(e.target.id==='map')closeMap()};document.querySelectorAll('#map [data-go]').forEach(b=>b.onclick=()=>travelTo(b.dataset.go));$('#mapHome').onclick=()=>{closeMap();travelTo('home')};
 document.querySelectorAll('#paintbar [data-tool]').forEach(b=>b.onclick=()=>{if(!brush)return;brush.tool=b.dataset.tool;updPaintBar()});
 $('#pbUndo').onclick=undoBuild;$('#sandX').onclick=()=>setSandbox(false);$('#pbDone').onclick=endBrush;$('#pbSwatch').onclick=()=>openDecorate(brush?(brush.kind==='d'?'door':brush.kind):'f');
 function projXY(o){const v=new THREE.Vector3();o.getWorldPosition(v);v.project(camera);return[(v.x+1)/2*W,(1-v.y)/2*H]}
@@ -6632,10 +6703,13 @@ function updEmotes(){if(!emotes.length)return;const v=new THREE.Vector3(pet.grou
     e.el.style.left=ex+e.dx+'px';e.el.style.top=ey+'px'})}
 let toastT=0;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600)}
 function moodFace(){const st=stageOf(state.pet.xp);if(st===0)return'🥚';const s=petStats(),a=spiritOf(s);if(pet.mode==='sleep')return'😴';return a>75?'😊':a>50?'🙂':a>30?'😕':'😢'}
-function updHUD(){updWish();$('#hearts').textContent=state.hearts;$('#petname').textContent=state.pet.name;$('#petface').textContent=moodFace();
-  const s=petStats(),bars=$('#minibars').children;['hunger','fun','energy','clean','affection'].forEach((k,i)=>bars[i]&&bars[i].style.setProperty('--v',Math.min(100,s[k])+'%'));
-  $('#petface').style.backgroundColor=hex(lighten(PET_COLORS[state.pet.color%6],.35));
-  const un=unread();const b=$('#mailBadge');b.textContent=un;b.classList.toggle('on',un>0&&openTab!=='mail');updPresence();tdUI()}
+function updHUD(){updWish();$('#hearts').textContent=state.hearts;
+  // the ring round the Pet button is the pet's overall mood; it wiggles when a need runs low
+  const s=petStats(),st=stageOf(state.pet.xp),avg=st?NEEDS.reduce((a,n)=>a+Math.min(100,s[n[0]]),0)/NEEDS.length:100,r=$('#dkRing');
+  r.style.setProperty('--rv',avg|0);r.style.setProperty('--rc',avg<35?'#FF5A5A':avg<65?'#FFD21F':'#A6E22E');$('#dkPet').classList.toggle('low',!!st&&NEEDS.some(n=>n[0]!=='affection'&&s[n[0]]<25));
+  updPresence();tdUI();if(wheelOn())renderWheel()}
+// the Menu button's badge: unread mail, plus a "!" when the two-do treat is waiting
+function updMenuBadge(){if(!state||!state.td)return;const un=unread(),T=state.td,treat=T.done.length>=T.list.length&&!T.gift,n=un+(treat?1:0),b=$('#mailBadge');b.textContent=treat&&!un?'!':n;b.classList.toggle('on',n>0&&openTab!=='menu')}
 
 /* ================= PEOPLE ================= */
 let userCap=null,myId=null;const names={};
@@ -6811,7 +6885,7 @@ function tdComplete(e){const T=state.td,t=TD_T[e.k],P=T.prog[e.k]||{},helpers=Ob
   if(T.done.length===T.list.length)T.lists=(T.lists|0)+1;
   const s=tdText(e);logEvent(`checked off a two-do: ${s[0].toLowerCase()+s.slice(1)}`);
   toast(T.done.length===T.list.length?`All three done! Your treat is waiting. +${h+bonus} hearts, +1 token`:`Two-do done! +${h+bonus} hearts, +1 capsule token${bonus?' (team bonus!)':''}`);setTimeout(()=>emote('🎉'),300);if(pet.stage>0)pet.hop=1;
-  const b=$('#tdBtn');if(b){b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop')}
+  const b=$('#dkMenu');if(b){b.classList.remove('nudge');void b.offsetWidth;b.classList.add('nudge');setTimeout(()=>b.classList.remove('nudge'),3200)}
   tdWeekly();tdLevels();updHUD()}
 // this week's sticker card
 const TD_WEEK=[{at:4,n:'A handful of hearts',ic:'heart-jar',give(){state.hearts+=8;return'+8 hearts in the jar.'}},
@@ -6868,10 +6942,9 @@ function nextReward(){const r=rewardQ[0],el=$('#reward');if(!r){el.hidden=true;r
   $('#rwT').textContent=r.t;$('#rwI').src=`assets/icons/${r.ic}.webp`;$('#rwB').innerHTML=r.html;el.hidden=false;el.classList.remove('on');void el.offsetWidth;el.classList.add('on')}
 $('#rwOk').onclick=()=>{const el=$('#reward');el.classList.remove('on');rewardQ.shift();setTimeout(()=>{if(rewardQ.length)nextReward();else el.hidden=true},220)};
 // the sticker button under the room name: how many are done, and a wiggle when there's something new
-function tdUI(){if(!state)return;if(tdEnsure()&&ready)saveSoon();const T=state.td,b=$('#tdBtn');if(!b)return;const n=T.done.length,m=T.list.length,treat=n>=m&&!T.gift;
-  $('#tdCnt').textContent=treat?'!':n>=m?'✓':`${n}/${m}`;$('#tdLbl').textContent=treat?'Treat!':n>=m?'All done':'Two-dos';b.classList.toggle('treat',treat);b.classList.toggle('alldone',n>=m&&!!T.gift)}
+function tdUI(){if(!state)return;if(tdEnsure()&&ready)saveSoon();updMenuBadge()}
 function tdNudge(){const d=tdDay();let seen='';try{seen=localStorage.getItem('r42td:'+roomCode)||''}catch(_){}if(seen===d)return;try{localStorage.setItem('r42td:'+roomCode,d)}catch(_){}
-  tdEnsure();const T=state.td,e=T.list.find(x=>!T.done.includes(x.k)),b=$('#tdBtn');b.classList.add('nudge');setTimeout(()=>b.classList.remove('nudge'),4200);
+  tdEnsure();const T=state.td,e=T.list.find(x=>!T.done.includes(x.k)),b=$('#dkMenu');b.classList.add('nudge');setTimeout(()=>b.classList.remove('nudge'),4200);
   if(e)toast(`Today's two-dos are up! Maybe: ${tdText(e)}`);tdMilestones()}
 function tdGo(g){closeProduct();
   if(g==='feed'||g==='bath'||g==='play'){setTab('pet');doAct(g);return}
@@ -6908,7 +6981,6 @@ function renderTodo(body){tdEnsure();const T=state.td,dl=new Date(T.day+'T12:00:
     <p class="hint tdfoot">A new list every day at midnight (Central). Unfinished two-dos just drift away. No streaks, no pressure.</p><div style="height:6px"></div>`;
   body.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>tdGo(b.dataset.go));body.querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>tdSwap(b.dataset.sw));
   const tr=$('#tdTreat');if(tr)tr.onclick=tdTreat;$('#tdMs').onclick=()=>{tdAllMs=!tdAllMs;renderSheet()}}
-$('#tdBtn').onclick=()=>setTab(openTab==='todo'?null:'todo');
 
 /* ================= JELLY ARCADE: minigames ================= */
 // Four short games drawn on a 2D canvas over the room (the 3D room pauses). The pet in them is the real 3D pet: its rig
@@ -7475,13 +7547,36 @@ function fxScores(){const g=G();rb(g,1.9,1.24,.08,.06,M(0xB07BFF,{roughness:.4})
 
 /* ================= SHEETS ================= */
 let openTab=null;const thumbs={};
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{const t=b.dataset.tab;if(away&&(t==='decorate'||t==='room')){travelTo('home',()=>setTab(t));return}setTab(openTab===t?null:t)});
-$('#petchip').onclick=()=>setTab(openTab==='pet'?null:'pet');
-$('#dbgBtn').onclick=()=>setTab(openTab==='debug'?null:'debug');
-function setTab(t){if(t&&brush)endBrush();if((t==='studio'||t==='wardrobe')&&toyPlay)endToyPlay(true);if(t==='decorate')setFollow(false);if(openTab!==t&&(openTab==='studio'||openTab==='wardrobe')){endPreview();if(t!=='studio')studio=null}$('#tdBtn').setAttribute('aria-expanded',t==='todo');if(t)closeProduct();if(t!=='decorate')select(null);petView=null;openTab=t;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));$('#sheet').classList.toggle('open',!!t);
+// the dock: Explore (the town map; the way home from a shop), Pet (the care wheel) and Menu (everything else)
+$('#dkExplore').onclick=()=>{closeWheel();setTab(null);showMap()};
+$('#dkMenu').onclick=()=>{closeWheel();setTab(openTab==='menu'?null:'menu')};
+$('#dkPet').onclick=()=>{if(wheelOn()){closeWheel();return}setTab(null);openWheel()};
+$('#sback').onclick=()=>{if(openTab==='pet'){setTab(null);openWheel();return}setTab('menu')};
+$('#petwheel').onclick=e=>{if(e.target.id==='petwheel')closeWheel()};
+/* ---------- Menu and the pet wheel ---------- */
+// Menu: one screen of big labelled tiles; each opens its page with a "Menu" back button in the same corner.
+const NEEDS=[['hunger','Full','#FF8A1C','stat-full','feed'],['fun','Happy','#FF3D9A','stat-happy','play'],['energy','Energy','#9B4DF2','stat-energy','nap'],['clean','Clean','#3EC8F2','stat-clean','bath'],['affection','Love','#FF7FB8','heart-jar','pat']];
+const BUG_SVG='<svg viewBox="0 0 48 48" aria-hidden="true"><g stroke="#3B1273" stroke-width="3"><circle cx="24" cy="13" r="7" fill="#3B1273"/><ellipse cx="24" cy="29" rx="15" ry="14" fill="#FF5A5A"/><path d="M24 15v28"/></g><g fill="#3B1273"><circle cx="16" cy="25" r="3"/><circle cx="32" cy="25" r="3"/><circle cx="18" cy="35" r="2.6"/><circle cx="30" cy="35" r="2.6"/></g></svg>';
+const MENU_ITEMS=[['decorate','Decorate','tab-decorate','#FFB35C','Furniture, floors and walls'],['todo','Two-dos','twodo','#FFD6EA','Today’s list and rewards'],['mail','Mail','tab-mail','#BDEBFF','Notes for each other'],
+  ['wardrobe','Wardrobe','wear.svg','#D6F5A8','Dress up your pet'],['room','Room','tab-room','#E3D4FF','Lights, sharing, names'],['debug','Debug','','#EDE6F5','Testing tools']],MENU_KIDS=MENU_ITEMS.map(m=>m[0]);
+function ringSvg(v,sz,w){const r=(sz-w)/2-1,c=2*Math.PI*r;return`<svg viewBox="0 0 ${sz} ${sz}" aria-hidden="true"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" class="tr"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" class="pr" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c*(1-Math.max(.02,Math.min(1,v)))).toFixed(1)}"/></svg>`}
+function renderMenu(body){const T=state.td,n=T.done.length,m=T.list.length,treat=n>=m&&!T.gift,un=unread();
+  const extra={todo:treat?'<i class="badge">!</i>':`<i class="badge" style="background:#fff">${n}/${m}</i>`,mail:un?`<i class="badge">${un}</i>`:''};
+  body.innerHTML=`<div class="mn-head"><h2>Menu</h2><span class="mn-who">${esc($('#presence').textContent)}</span></div><div class="mn-grid">${MENU_ITEMS.map(([k,nm,ic,c,sub])=>`<button class="mn-t" data-mn="${k}" style="--tc:${c}"><span class="mi">${ic?`<img src="${ico(ic)}" alt="">`:BUG_SVG}</span>${nm}<small>${sub}</small>${extra[k]||''}</button>`).join('')}</div>`;
+  body.querySelectorAll('[data-mn]').forEach(b=>b.onclick=()=>{const t=b.dataset.mn;if(away&&(t==='decorate'||t==='room')){travelTo('home',()=>setTab(t));return}setTab(t)})}
+// Pet wheel: tap Pet and the pet's needs fan out round it; tap a need to help with it, tap the middle for the pet's page.
+const wheelOn=()=>!$('#petwheel').hidden;
+function openWheel(){const w=$('#petwheel');renderWheel();w.hidden=false;$('#dkPet').setAttribute('aria-expanded',true);requestAnimationFrame(()=>w.classList.add('on'))}
+function closeWheel(){const w=$('#petwheel');if(w.hidden)return;w.classList.remove('on');$('#dkPet').setAttribute('aria-expanded',false);setTimeout(()=>{if(!w.classList.contains('on'))w.hidden=true},200)}
+function renderWheel(){const w=$('#petwheel'),p=state.pet,st=stageOf(p.xp),s=petStats(),R=Math.min(128,innerWidth*.32),Wd=state.wish,wish=Wd&&Wd.k&&WISH_T[Wd.k]&&st>0;
+  const needs=st?NEEDS.map(([k,nm,c,ic],i)=>{const a=-Math.PI/2+i*Math.PI*2/NEEDS.length,v=Math.min(100,s[k]);return`<button class="pw-n${k!=='affection'&&v<25?' low':''}" data-need="${k}" style="--x:${(Math.cos(a)*R).toFixed(0)}px;--y:${(Math.sin(a)*R).toFixed(0)}px;--c:${c};--d:${(i*.04).toFixed(2)}s" aria-label="${nm}: ${tier(k,s[k])}"><span class="ring"></span>${ringSvg(v/100,74,9)}<img src="${ico(ic)}" alt=""><b>${nm}</b></button>`}).join(''):'';
+  w.innerHTML=`<div class="pw" style="--cy:${Math.round(innerHeight*.5)}px"><button class="pw-c" id="pwC"><img src="assets/icons/tab-pet.webp" alt=""><b>${esc(p.name)}</b><small>${st?STAGE_NAMES[st]:`Warm the egg (${p.xp}/3)`}</small></button>${needs}${wish?`<button class="pw-w" id="pwW" aria-label="Wish"><img src="${ico(WISH_T[Wd.k].ic)}" alt=""></button>`:''}</div><div class="pw-hint">${st?'Tap a need to help':'Tap the egg to warm it'}</div>`;
+  $('#pwC').onclick=()=>{if(!st){warm();renderWheel();return}setTab('pet')};const ww=$('#pwW');if(ww)ww.onclick=()=>{closeWheel();wishGo()};
+  w.querySelectorAll('[data-need]').forEach(b=>b.onclick=()=>{const n=NEEDS.find(x=>x[0]===b.dataset.need),act=n[4];closeWheel();if(act==='pat'){petTap();return}if(act==='nap'){doAct('nap');return}setTab('pet');doAct(act)})}
+function setTab(t){if(t&&brush)endBrush();if((t==='studio'||t==='wardrobe')&&toyPlay)endToyPlay(true);if(t==='decorate')setFollow(false);if(openTab!==t&&(openTab==='studio'||openTab==='wardrobe')){endPreview();if(t!=='studio')studio=null}closeWheel();{const kid=MENU_KIDS.includes(t),sb=$('#sback');$('#dkMenu').setAttribute('aria-expanded',!!t&&(t==='menu'||kid));sb.hidden=!(kid||t==='pet');$('#sbackL').textContent=t==='pet'?'Pet':'Menu';$('#sheet').classList.toggle('hasback',!sb.hidden);document.body.classList.toggle('sheet-open',!!t)}if(t)closeProduct();if(t!=='decorate')select(null);petView=null;openTab=t;$('#sheet').classList.toggle('open',!!t);
   if(t){renderSheet();if(t==='mail')markRead()}requestAnimationFrame(fitSheet);updHUD();updFollowPill()}
 // Keep the room framed above the sheet, also when its content grows or shrinks (e.g. the egg hatching).
-function fitSheet(){const c=$('#shopcard'),sh=Math.max(openTab?$('#sheet').offsetHeight:0,c&&!c.hidden&&c.classList.contains('on')?c.offsetHeight:0);cam.shiftTo=sh*.5;$('#seltools').style.bottom=`calc(env(safe-area-inset-bottom,0px) + ${90+(openTab?sh+8:0)}px)`}
+function fitSheet(){const c=$('#shopcard'),sh=Math.max(openTab?$('#sheet').offsetHeight:0,c&&!c.hidden&&c.classList.contains('on')?c.offsetHeight:0);cam.shiftTo=sh*.5;$('#seltools').style.bottom=`calc(env(safe-area-inset-bottom,0px) + ${112+(openTab?sh+8:0)}px)`}
 if(window.ResizeObserver)new ResizeObserver(()=>{if(openTab)fitSheet()}).observe($('#sheet'));
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 /* ---------- decorate catalog ---------- */
@@ -7639,6 +7734,7 @@ function renderSheet(){const body=$('#sheetBody');
     const grid=$('#tray');grid.addEventListener('touchmove',e=>{if(decoHolding)e.preventDefault()},{passive:false});
     renderDeco(false);grid.scrollTop=keep}
 
+  else if(openTab==='menu')renderMenu(body);
   else if(openTab==='pet'){const p=state.pet,st=stageOf(p.xp),s=petStats(),P=persOf();
     const next=STAGE_XP[st+1];
     if(st>0&&petView){const kind=petView,title={food:'Pantry',groom:'Grooming',toy:'Toy box'}[kind],act={food:'feed',groom:'bath',toy:'play'}[kind];
@@ -7655,7 +7751,7 @@ function renderSheet(){const body=$('#sheetBody');
     (st===0?`<p class="hint">A mystery egg lives in your room. Warm it together to hatch it. Either of you can tap the egg or the button.</p><div class="actions"><button class="gel pink" id="warm" style="grid-column:span 2">Warm the egg (${p.xp}/3)</button></div>`:
     `${P?`<p class="pers"><b>${P.n}</b> ${P.d}</p>`:''}<div class="minds">${petMinds().map(m=>`<label class="mind m${m.i}"><input data-hn="${m.i}" maxlength="10" value="${esc(m.name)}" aria-label="${m.i?'Right':'Left'} head’s name"><small>${st>=5?(m.i?'Right head, ':'Left head, ')+m.T.n:(m.i?'Right':'Left')+' head, still finding itself'}</small></label>`).join('')}</div>
     <div class="spirit"><span>Spirit</span><b>${tier('spirit',sp)}</b><div class="bar"><i style="width:${sp|0}%;--c:#A6E22E"></i></div></div>
-    <div class="stats">${[['hunger','Full','#FF7A1A','stat-full'],['fun','Happy','#FF3EA5','stat-happy'],['energy','Energy','#8B3DFF','stat-energy'],['clean','Clean','#29C5FF','stat-clean'],['affection','Love','#FF6FB5','heart-jar']].map(([k,n,c,ic])=>`<div class="stat${k==='hunger'&&s.hunger>100?' over':''}"><img class="si" src="assets/icons/${ic}.webp" alt="">${n}<small>${tier(k,s[k])}</small><div class="bar"><i style="width:${Math.min(100,s[k])|0}%;--c:${c}"></i></div></div>`).join('')}</div>
+    <div class="stats rings">${NEEDS.map(([k,n,c,ic])=>`<div class="sr" style="--c:${c}"><span>${ringSvg(Math.min(100,s[k])/100,56,8)}<img src="assets/icons/${ic}.webp" alt=""></span>${n}<small>${tier(k,s[k])}</small></div>`).join('')}</div>
     <div class="actions">${Object.entries(ACTS).map(([k,a])=>`<button class="gel ${a.cls}" data-act="${k}"><img class="bi" src="assets/icons/act-${k}.webp" alt="">${a.label}</button>`).join('')}</div>
     <p class="xp">${next?`${next-p.xp} more care moments until ${esc(p.name)} grows.`:`${esc(p.name)} is fully grown. Keep the love coming.`} ${bag} ${bag===1?'item':'items'} in your bag. Stats drain while you're away, so take turns.</p>`)+
     (st?`<div class="row-label">Style</div><div class="actions"><button class="gel" id="goWard">Wardrobe</button><button class="gel" id="goGlam">Glow Up Studio</button></div>`:'');
@@ -7879,8 +7975,7 @@ let loadedOnce=false;
 function finishLoad(){if(loadedOnce)return;loadedOnce=true;setTimeout(checkDaily,4500);ready=true;bootDone=true;$('#loader').classList.add('gone');updHUD();
   let seen=false;try{seen=localStorage.getItem('r42coach')==='1'}catch(_){}if(!seen)showCoach();else setTimeout(tdNudge,2600)}
 function showCoach(){const c=document.createElement('div');c.className='coach';c.innerHTML=`<h3>How to play</h3><ul>
-<li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span>Touch furniture to move it. Add more from Decorate.</li>
-<li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap the egg to warm it. Take turns caring for what hatches.</li><li><span class="ci"><img src="assets/icons/tab-mail.webp" alt=""></span>Leave notes in Mail. Your person sees them next visit.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span>Not sure what to do? Check the Two-Do List. Three little things a day, no pressure.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
+<li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await flush()}catch(_){}
