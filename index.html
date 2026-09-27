@@ -481,6 +481,18 @@ body.away .tag{visibility:hidden}
 .studiobar{position:sticky;bottom:0;z-index:2;margin:12px -16px 0;padding:10px 16px 4px;background:#fff;border-top:2.5px dashed #E4D6F7;display:flex;gap:10px;align-items:center}
 .studiobar .gel{flex:1}.studiobar .cost{display:inline-flex;align-items:center;gap:3px}.studiobar .cost img{width:20px;height:20px}
 .seg{display:inline-flex;gap:5px;margin-left:8px;vertical-align:middle}.seg .chip{height:30px;padding:0 10px;font-size:12px}
+.gacha{position:fixed;inset:0;z-index:60;background:radial-gradient(circle at 50% 30%,#FFF3F9,#FFD6EA 55%,#C9A8FF);opacity:0;transition:opacity .3s}.gacha.on{opacity:1}.gacha[hidden]{display:none}
+#gcc{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.gc-top{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 10px);display:flex;align-items:center;gap:10px;padding:0 12px;pointer-events:none}.gc-top>*{pointer-events:auto}
+.gc-top b{flex:1;font-family:var(--disp);font-weight:400;font-size:24px;color:#fff;letter-spacing:.02em;text-shadow:2.5px 0 var(--ink),-2.5px 0 var(--ink),0 2.5px var(--ink),0 -2.5px var(--ink),2px 2px var(--ink),-2px 2px var(--ink),2px -2px var(--ink),-2px -2px var(--ink)}
+.gc-tok{display:flex;align-items:center;gap:6px;height:40px;padding:0 12px;background:#fff;border:2.5px solid var(--ink);border-radius:14px;box-shadow:0 3px 0 var(--ink);font-family:var(--disp);font-size:17px;color:var(--ink)}
+.gc-tok i{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFF3B0,#FFC21F 60%,#D99A00);border:2.5px solid var(--ink)}
+.gc-hint{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 62px);transform:translateX(-50%);padding:6px 14px;background:rgba(255,255,255,.92);border:2.5px solid var(--ink);border-radius:14px;font-family:var(--disp);font-size:15px;color:var(--ink);white-space:nowrap;pointer-events:none}.gc-hint:empty{display:none}
+.gc-bar[hidden]{display:none!important}.gc-bar{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%);display:flex;gap:10px;width:min(calc(100% - 24px),440px)}.gc-bar .gel{flex:1;min-height:52px;font-size:15px;padding:0 10px}
+.gc-prize{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%);width:min(calc(100% - 24px),400px);padding:14px 16px;text-align:center;background:var(--paper);border:3px solid var(--ink);border-radius:24px 18px 26px 18px;box-shadow:0 6px 0 var(--ink);animation:kpop .4s cubic-bezier(.3,1.8,.5,1)}
+.gc-prize .rar{display:inline-block;padding:3px 12px 4px;border:2.5px solid var(--ink);border-radius:10px;font-family:var(--disp);font-size:14px;color:#fff}.gc-prize h3{margin:8px 0 4px;font-family:var(--disp);font-weight:400;font-size:24px;color:var(--ink)}.gc-prize p{margin:0 0 10px;font-size:13px;color:#5B3C86}.gc-prize .gel{width:100%}
+.gc-dex{position:absolute;inset:auto 12px calc(env(safe-area-inset-bottom,0px) + 84px);margin:0 auto;max-width:440px;padding:12px;background:var(--paper);border:3px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink)}
+.gc-dex h3{margin:0 0 8px;font-family:var(--disp);font-weight:400;font-size:18px;color:var(--ink)}.gc-dex .dx{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.gc-dex .dx span{aspect-ratio:1;display:grid;place-items:center;background:#fff;border:2.5px solid var(--ink);border-radius:14px;overflow:hidden;font-family:var(--disp);font-size:22px;color:#C9B8E6}.gc-dex .dx img{width:100%;height:100%;object-fit:contain}
 .kbub[hidden]{display:none}.kbub.pop{animation:kpop .35s cubic-bezier(.3,1.8,.5,1)}
 @keyframes kpop{from{transform:translate(-50%,-100%) scale(.4)}}
 .shopcard{position:fixed;z-index:9;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 96px);width:min(calc(100% - 20px),420px);padding:14px 14px 12px;background:var(--paper);border:3px solid var(--ink);
@@ -654,6 +666,7 @@ body.away .tag{visibility:hidden}
     <button class="pin" data-go="wear" style="left:81.7%;top:58.1%;--c:#7FC21E"><span class="house"><i class="door"></i><img src="assets/icons/wear.svg" alt=""></span><b>Jelly Threads</b></button>
     <button class="pin" data-go="salon" style="left:81.7%;top:76.7%;--c:#3EC8F2"><span class="house"><i class="door"></i><img src="assets/icons/act-bath.webp" alt=""></span><b>Bubble Salon</b></button>
   </div></div></div>
+<div class="gacha" id="gacha" hidden><canvas id="gcc"></canvas><div class="gc-top"><button class="gm-x" id="gcX" aria-label="Leave">×</button><b>Capsule Corner</b><span class="gc-tok" id="gcTok"></span></div><div class="gc-hint" id="gcHint"></div><div class="gc-bar" id="gcBar"></div><div class="gc-prize" id="gcPrize" hidden></div><div class="gc-dex" id="gcDex" hidden></div></div>
 <div class="travel" id="travel" hidden><img id="tvIcon" alt=""><b id="tvText"></b></div>
 <div class="game" id="game" hidden><div class="gm-bar"><button class="gm-x" id="gmX" aria-label="Leave the game">×</button><b class="gm-title" id="gmTitle"></b><span class="gm-stat gm-lv" id="gmLv"></span><span class="gm-stat" id="gmTime"></span><span class="gm-score" id="gmScore"></span></div><canvas id="gmc"></canvas><div class="gm-card" id="gmCard" hidden></div></div>
 <div class="reward" id="reward" hidden><div class="rw-card" role="dialog" aria-live="polite"><span class="rw-burst"></span><img class="rwi" id="rwI" alt=""><h3 id="rwT"></h3><div id="rwB"></div><button class="gel pink" id="rwOk">Yay!</button></div></div>
@@ -1212,7 +1225,8 @@ const SETS=[
  {k:'calm',img:'set-calm',n:'Oat & Linen',e:'🌾',c:'#E8D8BC'},
  {k:'monster',img:'set-monster',n:'Dumpster Den',e:'👾',c:'#B5E03A'},
  {k:'play',img:'set-play',n:'Toybox',e:'🧸',c:'#F2C230'},
- {k:'garden',img:'set-garden.svg',n:'Fairy Garden',e:'🍄',c:'#7FD08A'}
+ {k:'garden',img:'set-garden.svg',n:'Fairy Garden',e:'🍄',c:'#7FD08A'},
+ {k:'gacha',img:'set-gacha.svg',n:'Capsule Pals',e:'🥚',c:'#FFC21F'}
 ];
 const SETMAP={};SETS.forEach(s=>SETMAP[s.k]=s);
 const FUNCS=[['seat','Seats','🛋️'],['bed','Beds','🛏️'],['surface','Tables','🍽️'],['storage','Storage','📦'],['light','Lights','💡'],['fun','Fun','🕹️'],['plant','Plants','🌵'],['rug','Rugs','🌀'],['deco','Decor','🗿'],['wall','Walls','🖼️'],['pet','Pet','🐾']];
@@ -1332,6 +1346,9 @@ const CAT=[
  {k:'leafbowl',n:'Leaf bowl',set:'garden',fn:'pet',p:2,dc:1,flat:1,feed:1},
  {k:'butterflyart',n:'Butterfly frame',set:'garden',fn:'wall',p:4,dc:0,wall:1,y:1.9},
  {k:'trellis',n:'Rose trellis',set:'garden',fn:'wall',p:4,dc:1,wall:1,y:1.7},
+ // Capsule Pals: little living figurines of the shopkeepers, only from the capsule machine
+ ...[['baker','Bunbun'],['stylist','Fizz'],['toymaker','Boing'],['cushion','Cushy'],['builder','Bolt'],['joy','Joy'],['hair','Pom'],['makeup','Blush'],['tailor','Stitch']].map(([k,n],i)=>({k:'fig_'+k,n:n+' figurine',set:'gacha',fn:'deco',p:0,dc:[0,7,9,0,2,8,5,0,4][i],gacha:1})),
+ {k:'fig_gold',n:'Golden gumdrop trophy',set:'gacha',fn:'deco',p:0,dc:3,gacha:1},
 ];
 const CATMAP={}; CAT.forEach(c=>CATMAP[c.k]=c);
 const FLOORS=['checker','zigzag','slime','wood','shag','tile','galaxy','terrazzo','sprinkle','herring','concrete','foammat'];
@@ -2486,6 +2503,109 @@ Object.assign(BUILD,{
   const vine=[];for(let i=0;i<=18;i++){const u=i/18;vine.push([Math.sin(u*9)*.35,-.75+u*1.6])}tube(g,vine,.018,Vn,false,.08);
   vine.forEach(([x,y],i)=>{if(i%2)return;const l=add(g,leafGeo(.13,.07),Lf,x,y,.09);l.rotation.z=i*1.3;ol(l,.005)});
   [[-.3,.55],[.28,.3],[-.2,-.1],[.3,-.45],[0,.85]].forEach(([x,y],i)=>{const r=piv(g,x,y,.12);ol(sp(r,.075,Rd),.008);for(let k=0;k<6;k++){const a=k/6*Math.PI*2;const pe=add(r,SPH(.055,12,8),Rs,Math.cos(a)*.06,Math.sin(a)*.06,.02);pe.scale.z=.5;ol(pe,.005)}ol(nosh(sp(r,.04,Rs,0,0,.06)),0)});return g}});
+/* ================= CAPSULE CORNER: a 3D gacha machine =================
+   Tokens (state.tokens) come from two-dos, granted wishes, 3-star arcade rounds and the daily treat, or 12 hearts each.
+   Put one in, turn the crank (drag round), the capsules churn in the globe (real little physics), one rolls down the
+   chute into the tray, tap it and it twists open. Blue = common (hearts, snacks, a lucky token), pink = uncommon (a
+   Capsule Pal figurine of a shopkeeper), gold = rare (a Wardrobe accessory, or the golden trophy). */
+const vlerp=(a,b,t)=>{a.x+=(b.x-a.x)*t;a.y+=(b.y-a.y)*t;a.z+=(b.z-a.z)*t;return a};
+const CAP_COL={c:0x5FC8FF,u:0xFF5FB0,r:0xFFC21F},CAP_NAME={c:'Common',u:'Uncommon',r:'Rare!'},CAP_CSS={c:'#3EB0F0',u:'#FF3D9A',r:'#F2A900'},TOKEN_HEARTS=12;
+const FIG_KEEPERS=['baker','stylist','toymaker','cushion','builder','joy','hair','makeup','tailor'];
+FIG_KEEPERS.forEach(k=>{BUILD['fig_'+k]=c=>{const g=G(),B=jel(c,{roughness:.35}),W=M(0xFFFFFF,{roughness:.4});lathe(g,[[.24,0],[.26,.03],[.24,.09],[.2,.11],[0,.12]],B,0,0,0,32);ol(to(g,.24,.018,W,0,.09,0,Math.PI/2),0);
+  const K=KEEPERS[k]();K.g.scale.setScalar(.44);K.g.position.y=.12;g.add(K.g);try{K.upd(1/60,1,'idle',0,false)}catch(_){}g.userData.anim=t=>{try{K.upd(1/60,t,'idle',0,false)}catch(_){}};return g}});
+BUILD.fig_gold=c=>{const g=G(),Gd=M(0xFFC21F,{metalness:.7,roughness:.2}),B=jel(0xFF5FB0,{roughness:.35});lathe(g,[[.32,0],[.34,.04],[.28,.1],[.12,.14],[.1,.3],[.2,.34],[0,.35]],Gd,0,0,0,36);
+  const gd=lathe(g,[[.26,.35],[.28,.4],[.24,.55],[.15,.64],[0,.67]],Gd,0,0,0,36);ol(gd,.012);for(let i=0;i<10;i++){const a=i*2.4,y=.42+(i%4)*.05,r=.24-(i%4)*.03;ol(nosh(bx(g,.03,.03,.03,M(0xFFF3B0),Math.cos(a)*r,y,Math.sin(a)*r)),0)}
+  const st=add(g,new THREE.ExtrudeGeometry(starShape(.12,.055,5),{depth:.03,bevelEnabled:false}),B,0,.82,0);ol(st,.008);g.userData.anim=t=>{st.rotation.y=t*1.5};return g};
+function capRoll(){const r=Math.random();
+  if(r<.08){const acc=Object.keys(ACCS).map(k=>'a:'+k).filter(id=>!ownsWear(id));if(acc.length&&Math.random()<.75)return{rar:'r',t:'wear',id:acc[Math.random()*acc.length|0]};return{rar:'r',t:'fig',id:'fig_gold'}}
+  if(r<.4)return{rar:'u',t:'fig',id:'fig_'+FIG_KEEPERS[Math.random()*FIG_KEEPERS.length|0]};
+  const q=Math.random();if(q<.42)return{rar:'c',t:'hearts',n:6};if(q<.6)return{rar:'c',t:'hearts',n:12};if(q<.92){const f=ITEMS.filter(i=>i.k==='food'&&i.p>0),it=f[Math.random()*f.length|0];return{rar:'c',t:'item',id:it.id}}return{rar:'c',t:'token'}}
+const capName=P=>P.t==='hearts'?`${P.n} hearts`:P.t==='token'?'A lucky token':P.t==='item'?ITEMMAP[P.id].n:P.t==='wear'?wearDef(P.id).n:CATMAP[P.id].n;
+const capDesc=P=>P.t==='hearts'?'Straight into the heart jar.':P.t==='token'?'Another go, on the house!':P.t==='item'?'A treat for the pantry.':P.t==='wear'?'It’s in your Wardrobe now.':(state.capsdex||[]).includes(P.id)?'Another one! It’s in storage; place it from Decorate.':'A new Capsule Pal! It’s in storage; place it from Decorate.';
+function capGrant(P){if(P.t==='hearts')state.hearts+=P.n;else if(P.t==='token')state.tokens=(state.tokens|0)+1;else if(P.t==='item')state.inv[P.id]=(state.inv[P.id]||0)+1;else if(P.t==='wear'){if(!state.wear.includes(P.id))state.wear.push(P.id)}else state.fown[P.id]=(state.fown[P.id]||0)+1;
+  if(P.t==='fig')state.capsdex=[...new Set([...(state.capsdex||[]),P.id])];logEvent(`got ${capName(P).toLowerCase()} from a capsule`);saveSoon();updHUD()}
+function tokenModel(){const g=G(),gd=M(0xFFC21F,{metalness:.6,roughness:.25});const c=cy(g,.3,.3,.07,gd,0,0,0,36);c.rotation.x=Math.PI/2;ol(c,.01);const st=add(g,new THREE.ExtrudeGeometry(starShape(.15,.07,5),{depth:.03,bevelEnabled:false}),M(0xFFF3B0,{roughness:.3}),0,0,.03);ol(st,.006);return g}
+function capPrizeModel(P){let g;if(P.t==='fig')g=makePiece(P.id,TINTS[CATMAP[P.id].dc||0]);else if(P.t==='wear')g=wearModel(P.id);else if(P.t==='item')g=buildProp(P.id)||G();else if(P.t==='token')g=tokenModel();
+  else{g=G();const h=add(g,heartGeo(),jel(0xFF5FA8,{roughness:.25}),0,0,0);h.scale.setScalar(.55);ol(h,.012)}
+  const w=G();w.add(g);const b=new THREE.Box3().setFromObject(g),sz=new THREE.Vector3();b.getSize(sz);const k=.62/Math.max(sz.x,sz.y,sz.z,.01);g.scale.multiplyScalar(k);const b2=new THREE.Box3().setFromObject(g);g.position.set(-(b2.min.x+b2.max.x)/2,-(b2.min.y+b2.max.y)/2,-(b2.min.z+b2.max.z)/2);w.userData.anim=g.userData.anim;return w}
+function capsuleMesh(rar){const g=G(),r=.15,col=CAP_COL[rar];const top=add(g,new THREE.SphereGeometry(r,22,12,0,Math.PI*2,0,Math.PI/2),jel(col,{roughness:.18}),0,0,0);ol(top,.008);
+  const bot=add(g,new THREE.SphereGeometry(r,22,12,0,Math.PI*2,Math.PI/2,Math.PI/2),M(0xFFFFFF,{roughness:.25}),0,0,0);ol(bot,.008);ol(to(g,r*1.01,.014,M(shade(col,.15),{roughness:.3}),0,0,0,Math.PI/2),0);
+  const gl=nosh(add(top,SPH(r*.3,10,8),B(0xffffff,{transparent:true,opacity:.7}),-r*.35,r*.55,r*.35));gl.scale.set(1,.5,.5);ol(gl,0);g.userData.top=top;g.userData.bot=bot;return g}
+// the machine: plinth, body with coin slot / crank / chute and tray, a glass globe of capsules and a chrome top
+function buildGachaMachine(small){const g=G(),Bd=jel(0xFF5FB0,{roughness:.3}),Bl=jel(0xFFD6EA,{roughness:.4}),Ch=M(0xF4F2FA,{metalness:.8,roughness:.18}),Dk=M(0x2A1450,{roughness:.7}),Gd=M(0xFFC21F,{metalness:.55,roughness:.22}),Y=jel(0xFFD21F,{roughness:.3});
+  ol(rb(g,1.72,.14,1.42,.06,Ch,0,.07,0),.012);ol(rb(g,1.6,1.3,1.3,.16,Bd,0,.79,0),.018);ol(rb(g,1.66,.1,1.36,.05,Y,0,1.45,0),.012);
+  [-1,1].forEach(s_=>{const st=add(g,new THREE.ExtrudeGeometry(starShape(.18,.08,5),{depth:.03,bevelEnabled:false}),Y,s_*.81,.9,0);st.rotation.y=s_*Math.PI/2;ol(st,.008)});
+  const F=piv(g,0,0,.65);ol(rb(F,1.3,.72,.04,.1,Bl,0,1.03,0),.01);
+  ol(rb(F,.2,.36,.03,.05,Gd,-.36,1.05,.02),.008);ol(rb(F,.06,.24,.03,.02,Dk,-.36,1.05,.035),0);{const h=add(F,heartGeo(),Bd,-.36,.8,.03);h.scale.setScalar(.14);ol(h,.006)}
+  const crank=piv(F,.33,1.02,.07);{const d=cy(crank,.2,.2,.07,Ch,0,0,0,32);d.rotation.x=Math.PI/2;ol(d,.01);ol(rb(crank,.42,.09,.06,.035,Ch,.12,0,.06),.008);const kb=sp(crank,.075,Y,.3,0,.12);ol(kb,.008);ol(sp(crank,.07,Bd,0,0,.06,1,1,.6),.006)}
+  ol(rb(F,.5,.34,.05,.12,Dk,0,.42,.01),0);const tray=piv(F,0,.24,.18);ol(rb(tray,.62,.05,.4,.02,Ch,0,0,0),.008);[-1,1].forEach(s_=>ol(rb(tray,.04,.12,.4,.015,Ch,s_*.3,.05,0),.006));ol(rb(tray,.62,.12,.04,.015,Ch,0,.05,.19),.006);
+  const flap=piv(F,0,.59,.04);ol(rb(flap,.46,.3,.03,.1,M(0xFFFFFF,{transparent:true,opacity:.35,roughness:.05}),0,-.15,0),.004);
+  const Gc=new THREE.Vector3(0,2.36,0),Rg=.86;ol(lathe(g,[[.6,1.5],[.62,1.56],[.56,1.62],[.5,1.66]],Ch,0,0,0,40),.01);
+  const glass=add(g,SPH(Rg,44,30),M(0xEAF6FF,{transparent:true,opacity:.2,roughness:.04,metalness:.1}),0,Gc.y,0);ol(glass,.014);glass.castShadow=false;
+  [[-.45,.35,.2,.09,.6],[-.62,.05,.06,.05,0]].forEach(([x,y,w,h,a])=>{const m=nosh(add(g,SPH(1,14,10),B(0xffffff,{transparent:true,opacity:.75}),x,Gc.y+y,.66));m.scale.set(w,h,.01);m.rotation.z=a;ol(m,0)});
+  ol(lathe(g,[[.34,0],[.36,.05],[.3,.14],[.12,.2],[0,.21]],Ch,0,Gc.y+Rg-.08,0,36),.01);ol(sp(g,.1,Bd,0,Gc.y+Rg+.16,0),.008);
+  const caps=[],N=small?16:26,cols=['c','c','u','c','u','r'];for(let i=0;i<N;i++){const rar=cols[i%6],o=capsuleMesh(rar);g.add(o);const a=i*2.4,rr_=Math.sqrt((i%9)/9)*.5,p=new THREE.Vector3(Math.cos(a)*rr_,Gc.y-.55+Math.floor(i/9)*.28,Math.sin(a)*rr_);o.position.copy(p);o.rotation.set(i,i*2,0);caps.push({o,rar,p,v:new THREE.Vector3()})}
+  return{g,crank,caps,Gc,Rg,F,tray,flap}}
+
+let gc=null;
+function gcInit(){if(gc)return gc;try{const cv=$('#gcc'),R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});R.outputEncoding=THREE.sRGBEncoding;const sc=new THREE.Scene();
+    const et=ctex(256,128,(x,w,h)=>{const q=x.createLinearGradient(0,0,0,h);q.addColorStop(0,'#fff');q.addColorStop(.45,'#FFE6F4');q.addColorStop(.55,'#fff');q.addColorStop(1,'#C9B3FF');x.fillStyle=q;x.fillRect(0,0,w,h)},null,1);et.mapping=THREE.EquirectangularReflectionMapping;sc.environment=et;
+    sc.add(new THREE.AmbientLight(0xffffff,.4));const dl=new THREE.DirectionalLight(0xffffff,2.4);dl.position.set(3,6,7);sc.add(dl);const cam=new THREE.PerspectiveCamera(32,1,.1,60);
+    const M_=buildGachaMachine(false);sc.add(M_.g);const floor=add(sc,new THREE.CylinderGeometry(2.4,2.4,.08,48),jel(0xFFFFFF,{roughness:.6}),0,-.04,0);ol(floor,.014);
+    const coin=tokenModel();coin.visible=false;sc.add(coin);gc={R,sc,cam,M:M_,coin,st:'idle',t:0,crankA:0,crankV:0,camT:new THREE.Vector3(0,1.6,0),camD:7.2,open:false};return gc}catch(e){console.warn('gacha',e);toast('The capsule machine needs a moment. Try again!');return null}}
+function openGacha(){const G_=gcInit();if(!G_)return;closeProduct();setTab(null);const el=$('#gacha');el.hidden=false;requestAnimationFrame(()=>el.classList.add('on'));G_.open=true;G_.st='idle';gcUI();gcLast=performance.now();requestAnimationFrame(gcTick);
+  if(away)keeperReact('greet',1.4)}
+function closeGacha(){if(!gc)return;if(gc.st==='reveal'&&gc.prize)gcKeep();gc.open=false;const el=$('#gacha');el.classList.remove('on');setTimeout(()=>{if(!gc.open)el.hidden=true},300);$('#gcDex').hidden=true}
+function gcUI(){if(!gc)return;$('#gcTok').innerHTML=`<i></i>${state.tokens|0}`;const bar=$('#gcBar'),hint=$('#gcHint'),st=gc.st;$('#gcPrize').hidden=st!=='reveal';
+  hint.textContent=st==='idle'?(state.tokens?'Pop in a token!':'You need a token. Earn them from two-dos, wishes and 3-star rounds.'):st==='crank'?'Turn the crank! Drag round and round':st==='tray'?'Tap the capsule!':'';
+  bar.hidden=st!=='idle';bar.innerHTML=`<button class="gel pink" id="gcIn"${state.tokens?'':' disabled'}>Insert token</button><button class="gel sun" id="gcBuy"${state.hearts>=TOKEN_HEARTS?'':' disabled'}>Buy one · ${TOKEN_HEARTS} ♥</button><button class="gel lilac" id="gcBook">Pals</button>`;
+  const a=$('#gcIn'),b=$('#gcBuy'),c=$('#gcBook');if(a)a.onclick=gcInsert;if(b)b.onclick=()=>{if(state.hearts<TOKEN_HEARTS)return;state.hearts-=TOKEN_HEARTS;state.tokens=(state.tokens|0)+1;saveSoon();updHUD();gcUI()};if(c)c.onclick=gcDex}
+function gcDex(){const d=$('#gcDex');if(!d.hidden){d.hidden=true;return}const ids=[...FIG_KEEPERS.map(k=>'fig_'+k),'fig_gold'],got=new Set(state.capsdex||[]);queueThumbs(ids.filter(k=>got.has(k)));
+  d.innerHTML=`<h3>Capsule Pals · ${ids.filter(k=>got.has(k)).length}/${ids.length}</h3><div class="dx">${ids.map(k=>got.has(k)?`<span title="${esc(CATMAP[k].n)}"><img data-tt="${k}" src="${thumbs[k]||BLANK}" alt="${esc(CATMAP[k].n)}"></span>`:'<span>?</span>').join('')}</div>`;d.hidden=false}
+function gcInsert(){if(!gc||gc.st!=='idle'||!(state.tokens>0))return;state.tokens--;saveSoon();gc.st='coin';gc.t=0;gc.coin.visible=true;$('#gcDex').hidden=true;gcUI()}
+// capsules churn inside the globe: gravity, the glass, each other, and a swirl while the crank turns
+function gcPhys(dt){const M_=gc.M,C=M_.caps.filter(q=>!q.out),Gc=M_.Gc,lim=M_.Rg-.16,sw=Math.min(3,gc.crankV);
+  for(let s_=0;s_<2;s_++){const h=dt/2;C.forEach(q=>{q.v.y-=6*h;if(sw>.05){const dx=q.p.x-Gc.x,dz=q.p.z-Gc.z;q.v.x+=(-dz*2.6*sw+(Math.random()-.5)*2*sw)*h;q.v.z+=(dx*2.6*sw+(Math.random()-.5)*2*sw)*h;if(q.p.y<Gc.y-.3)q.v.y+=(4+Math.random()*6)*sw*h}
+      q.p.addScaledVector(q.v,h);const d=q.p.clone().sub(Gc),L=d.length();if(L>lim){d.multiplyScalar(1/L);q.p.copy(Gc).addScaledVector(d,lim);const vn=q.v.dot(d);if(vn>0)q.v.addScaledVector(d,-1.35*vn)}q.v.multiplyScalar(1-h*.6)});
+    for(let i=0;i<C.length;i++)for(let j=i+1;j<C.length;j++){const a=C[i],b=C[j],d=b.p.clone().sub(a.p),L=d.length();if(L<.3&&L>1e-4){d.multiplyScalar(1/L);const o=(.3-L)/2;a.p.addScaledVector(d,-o);b.p.addScaledVector(d,o);const rv=b.v.clone().sub(a.v).dot(d);if(rv<0){a.v.addScaledVector(d,rv*.7);b.v.addScaledVector(d,-rv*.7)}}}}
+  C.forEach(q=>{q.o.position.copy(q.p);q.o.rotation.x+=q.v.z*dt*4;q.o.rotation.z-=q.v.x*dt*4})}
+let gcLast=0;
+function gcTick(ts){if(!gc||!gc.open)return;requestAnimationFrame(gcTick);const dt=Math.min(.05,(ts-gcLast)/1000);gcLast=ts;gc.t+=dt;const M_=gc.M,W_=innerWidth,H_=innerHeight;
+  if(gc.R.__w!==W_||gc.R.__h!==H_){gc.R.setPixelRatio(Math.min(2,devicePixelRatio||1));gc.R.setSize(W_,H_,false);gc.R.__w=W_;gc.R.__h=H_;gc.cam.aspect=W_/H_;gc.cam.updateProjectionMatrix()}
+  const st=gc.st;
+  if(st==='coin'){const k=Math.min(1,gc.t/.9),sl=M_.F.localToWorld(new THREE.Vector3(-.36,1.05,.2));gc.coin.position.set(sl.x+.9*(1-k),sl.y-.9*(1-k)+Math.sin(k*Math.PI)*.5,sl.z+.8*(1-k));gc.coin.rotation.set(0,k*9,0);gc.coin.scale.setScalar(k<.85?1:(1-k)/.15);
+    if(gc.t>.95){gc.coin.visible=false;gc.st='crank';gc.crankA=0;gc.t=0;gcUI()}}
+  if(st==='crank'){M_.crank.rotation.z=-gc.crankA;if(gc.crankA>=Math.PI*2){gc.st='drop';gc.t=0;gc.crankV=1.5;gc.prize=capRoll();const C=M_.caps.filter(q=>!q.out),pick=C.filter(q=>q.rar===gc.prize.rar).sort((a,b)=>a.p.y-b.p.y)[0]||C.sort((a,b)=>a.p.y-b.p.y)[0];gc.cap=pick;pick.out=true;
+      // swap the colour so the capsule matches the prize
+      if(pick.rar!==gc.prize.rar){const n=capsuleMesh(gc.prize.rar);n.position.copy(pick.o.position);M_.g.add(n);M_.g.remove(pick.o);pick.o=n;pick.rar=gc.prize.rar}gcUI()}}
+  gc.crankV=Math.max(0,gc.crankV-dt*(st==='crank'?2.2:1.2));gcPhys(dt);
+  if(st==='drop'&&gc.cap){const q=gc.cap,k=gc.t;
+    if(k<.5){vlerp(q.p,new THREE.Vector3(0,M_.Gc.y-M_.Rg+.1,0),Math.min(1,dt*8));q.o.position.copy(q.p)}
+    else if(k<.9){q.o.visible=false}
+    else{if(!q.o.visible){q.o.visible=true;const e=M_.F.localToWorld(new THREE.Vector3(0,.5,.1));q.p.copy(e);q.v.set((Math.random()-.5)*.4,-.5,1.4);M_.flap.rotation.x=-.9}
+      const ty=M_.tray.localToWorld(new THREE.Vector3(0,.18,0)).y,tz=M_.tray.localToWorld(new THREE.Vector3(0,0,.12)).z;q.v.y-=7*dt;q.p.addScaledVector(q.v,dt);if(q.p.y<ty){q.p.y=ty;q.v.y=Math.abs(q.v.y)*.45;q.v.x*=.8;q.v.z*=.7}if(q.p.z>tz){q.p.z=tz;q.v.z=-Math.abs(q.v.z)*.4}
+      q.o.position.copy(q.p);q.o.rotation.x+=q.v.z*dt*6;M_.flap.rotation.x=approach(M_.flap.rotation.x,0,dt*3);if(k>2.4&&Math.hypot(q.v.x,q.v.y,q.v.z)<.3){gc.st='tray';gc.t=0;gcUI()}}}
+  if(st==='tray'&&gc.cap)gc.cap.o.rotation.z=Math.sin(gc.t*6)*.12*Math.max(0,1-gc.t*.3);
+  if(st==='open'&&gc.cap){const q=gc.cap,k=gc.t,fp=new THREE.Vector3(0,1.25,1.9);vlerp(q.o.position,fp,Math.min(1,dt*5));q.o.rotation.set(0,0,k<1.1?Math.sin(k*22)*.25*Math.min(1,k*2):0);q.o.scale.setScalar(approach(q.o.scale.x,1.9,dt*5));
+    const T=q.o.userData.top,Bo=q.o.userData.bot;if(k>1.1){const e=Math.min(1,(k-1.1)*2.2);T.position.y=e*.35;T.rotation.z=e*1.2;T.position.x=-e*.15;Bo.position.y=-e*.28;Bo.rotation.z=-e*.6;T.children.forEach(c=>c.visible=e<.9)}
+    if(k>1.3&&!gc.pm){gc.pm=capPrizeModel(gc.prize);gc.pm.position.copy(fp);gc.pm.scale.setScalar(.01);gc.sc.add(gc.pm);gc.burst=gcBurst(fp,CAP_COL[gc.prize.rar])}
+    if(gc.pm){const e=Math.min(1,(k-1.3)*2.5);gc.pm.scale.setScalar(Math.max(.01,e*(1+Math.sin(e*Math.PI)*.25)));gc.pm.position.y=fp.y+.35*e;gc.pm.rotation.y=gc.t*1.2;if(gc.pm.userData.anim)gc.pm.userData.anim(gc.t)}
+    if(k>2.2){q.o.visible=false;gc.st='reveal';gc.t=0;gcShowPrize()}}
+  if(st==='reveal'&&gc.pm){gc.pm.rotation.y+=dt*1.1;gc.pm.position.y=1.6+Math.sin(gc.t*2)*.05;if(gc.pm.userData.anim)gc.pm.userData.anim(gc.t+3)}
+  if(gc.burst)gc.burst.forEach(b=>{b.t+=dt;b.o.position.addScaledVector(b.v,dt);b.v.y-=2.5*dt;b.o.rotation.z+=dt*4;b.o.scale.setScalar(Math.max(.001,1-b.t/1.4));b.o.visible=b.t<1.4});
+  // camera: the whole machine, leaning in for the tray and the opening
+  const near=st==='tray'||st==='open'||st==='reveal';vlerp(gc.camT,new THREE.Vector3(0,near?1.3:1.75,near?.9:0),Math.min(1,dt*3));gc.camD=approach(gc.camD,near?4.6:(W_<H_?8.4:7),dt*3);
+  const ya=Math.sin(gc.t*.35)*.12;gc.cam.position.set(gc.camT.x+Math.sin(ya)*gc.camD,gc.camT.y+gc.camD*.18,gc.camT.z+Math.cos(ya)*gc.camD);gc.cam.lookAt(gc.camT);gc.R.render(gc.sc,gc.cam)}
+function gcBurst(at,col){const out=[];for(let i=0;i<22;i++){const o=i%2?add(gc.sc,new THREE.ExtrudeGeometry(starShape(.07,.03,5),{depth:.02,bevelEnabled:false}),jel(i%4?col:0xFFFFFF,{roughness:.3}),at.x,at.y,at.z):add(gc.sc,SPH(.04,8,6),M(0xFFFFFF,{emissive:0xFFFFFF,emissiveIntensity:.8}),at.x,at.y,at.z);
+  const a=Math.random()*6.28,e=Math.random()*1.2;out.push({o,t:0,v:new THREE.Vector3(Math.cos(a)*1.6*Math.cos(e),1.4+Math.sin(e)*1.5,Math.sin(a)*.8)})}return out}
+function gcShowPrize(){const P=gc.prize,el=$('#gcPrize');el.innerHTML=`<span class="rar" style="background:${CAP_CSS[P.rar]}">${CAP_NAME[P.rar]}</span><h3>${esc(capName(P))}</h3><p>${esc(capDesc(P))}</p><button class="gel pink" id="gcKeep">Keep it!</button>`;el.hidden=false;
+  $('#gcKeep').onclick=gcKeep;if(P.rar!=='c'&&pet.stage>0)setTimeout(()=>emote('🎉'),200);$('#gcHint').textContent=''}
+function gcKeep(){if(!gc||!gc.prize)return;capGrant(gc.prize);gc.prize=null;if(gc.pm){gc.sc.remove(gc.pm);gc.pm=null}if(gc.burst){gc.burst.forEach(b=>gc.sc.remove(b.o));gc.burst=null}
+  // refill the globe with a fresh capsule dropping in from the top
+  const q=gc.cap;if(q){gc.M.g.remove(q.o);const rar=['c','c','u','c','u','r'][Math.random()*6|0],o=capsuleMesh(rar);gc.M.g.add(o);q.o=o;q.rar=rar;q.out=false;q.p.set((Math.random()-.5)*.3,gc.M.Gc.y+.5,(Math.random()-.5)*.3);q.v.set(0,0,0)}gc.cap=null;gc.pm=null;gc.st='idle';gc.t=0;gcUI()}
+{const cv=$('#gcc');let last=null;cv.addEventListener('pointerdown',e=>{if(!gc)return;last=[e.clientX,e.clientY];try{cv.setPointerCapture(e.pointerId)}catch(_){}if(gc.st==='tray'){gc.st='open';gc.t=0;gc.pm=null;gcUI()}});
+  cv.addEventListener('pointermove',e=>{if(!gc||!last||gc.st!=='crank')return;const d=Math.hypot(e.clientX-last[0],e.clientY-last[1]);last=[e.clientX,e.clientY];gc.crankA+=d*.011;gc.crankV=Math.min(3,gc.crankV+d*.02)});
+  cv.addEventListener('pointerup',()=>{last=null});$('#gcX').onclick=closeGacha}
 function makePiece(k,c){const OB=THREE.BoxGeometry,OS=THREE.SphereGeometry;THREE.BoxGeometry=function(w,h,d){return rbox(w,h,d,Math.min(.03,Math.min(w,h,d)*.22))};
   THREE.SphereGeometry=function(r,a,b,...rest){return OS(r,Math.max(a||16,20),Math.max(b||12,14),...rest)};let g;try{g=BUILD[k](c)}finally{THREE.BoxGeometry=OB;THREE.SphereGeometry=OS}
   g.traverse(m=>{if(m.isMesh)autoDetail(m.material)});return g}
@@ -3161,6 +3281,7 @@ Object.assign(USE_ITEM,{
   dandelion:{kind:'stand',anim:'u_blow',d:4,dist:.12,emo:['✨','🎉'],w:.9},acornbed:NAP,leafbowl:BOWL,
   butterflyart:{kind:'wall',anim:'u_gaze',d:5,emo:['💗','✨'],w:.6},trellis:{kind:'wall',anim:'u_sniff',d:3.6,then:['sneeze',.3],emo:['💗'],w:.5},
   stumptable:{kind:'stand',anim:'u_sip',d:6,dist:.05,emo:['😋','💗'],w:.6}});
+CAT.filter(c=>c.gacha).forEach(c=>USE_ITEM[c.k]={kind:'stand',anim:'u_peer',d:4.5,dist:.12,emo:['💗','❗'],w:.7});
 const useOf=d=>d.use||USE_ITEM[d.k]||USE_FN[d.fn]||null;
 // Where to stand to use o, and which way to face.
 function useSpot(o,u){const it=roomItem(o.userData.id),d=defOf(it.k),D=petDim(),hd=D.d/2,e=o.userData.ext||{x:.4,z:.4};
@@ -3538,6 +3659,7 @@ const FIX={
   cooler:{n:'Cooler',fn:'fixture',build:()=>fxCooler(),slots:[.28,.88,1.48].flatMap(y=>[-.2,.2].map(x=>[x,y,.02,.36])),use:{kind:'stand',front:1,anim:'u_peer',d:4,dist:.05,emo:['😋'],w:.7}},
   sign:{n:'Sign',fn:'fixture',wall:1,build:it=>fxSign(it.txt,it.c),use:{kind:'wall',anim:'u_gaze',d:3,emo:['⭐'],w:.15}}};
 
+FIX.gacha={n:'Capsule machine',fn:'fixture',build:()=>{const w=G(),m=buildGachaMachine(true);m.g.scale.setScalar(.62);w.add(m.g);w.userData.gacha=1;return w},use:{kind:'stand',front:1,anim:'u_peer',d:4,dist:.1,emo:['❗','💗'],w:.9}};
 /* --- shopkeepers --- */
 /* --- shopkeeper kit: jelly skin, glossy eyes that blink and glance about, and a mouth that talks in syllables --- */
 // Face on a squashed sphere (radius r, scale sy/sz, centre cx/cy/cz): eyes at ±ex/ey (radius er), mouth at my (width mw).
@@ -3760,7 +3882,7 @@ const SHOPS={
   toys:{n:'Toy Box',kind:'toy',icon:'act-play',color:'#9B4DF2',keeper:'toymaker',kx:-1.6,kz:-3.5,
     tf:()=>tilesWith('foammat','jellytile',[2,2,5,5]),tw:()=>wallsWith('polka','ribbons'),
     layout:[{k:'counter',x:-1.6,z:-2.75,c:0xFFD21F},{k:'shelfunit',x:1.8,z:-3.66,c:0x9FE3F5},{k:'shelfunit',x:-3.66,z:-.2,r:Math.PI/2,c:0xC9A8FF},
-      {k:'display',x:1.3,z:.7,c:0xFFB3D9},{k:'sign',w:0,u:-1.6,y:2.72,c:0x9B4DF2},{k:'playpen',x:2.8,z:2.5},{k:'horse',x:3.2,z:-1.3,r:-Math.PI/2},{k:'blocks',x:.2,z:2.6},{k:'bulb',x:-3.2,z:1.5}],
+      {k:'display',x:1.3,z:.7,c:0xFFB3D9},{k:'sign',w:0,u:-1.6,y:2.72,c:0x9B4DF2},{k:'playpen',x:2.8,z:2.5},{k:'horse',x:3.2,z:-1.3,r:-Math.PI/2},{k:'blocks',x:.2,z:2.6},{k:'bulb',x:-3.2,z:1.5},{k:'gacha',x:3.25,z:.6,r:-Math.PI/2}],
     lines:{hi:['Boing! Welcome to the Toy Box!','Everything here goes boing!','Toys, toys, toys!'],buy:['Have fun with it!','Play hard!','Boing boing!'],
       poor:['Almost! A few more hearts!'],tip:P=>P&&`${state.pet.name} goes wild for ${P.toy} toys!`}}};
 // Cozy Nest: a showroom that changes every day (three pieces on sale), and the full catalog on the lectern
@@ -4061,7 +4183,7 @@ function renderWardrobe(body){const L=petLook(true),inShop=away&&away.key==='wea
 SHOPS.arcade={n:'Jelly Arcade',kind:'arcade',icon:'arcade',color:'#9B4DF2',keeper:'joy',kx:2.3,kz:-3.5,
   tf:()=>tilesWith('arcade','arcaderug',[1,2,6,6]),tw:()=>wallsWith('cyber','arcadepanel'),
   layout:[{k:'counter',x:2.3,z:-2.75,c:0xB98CFF},{k:'sign',w:0,u:2.3,y:2.72,c:0x9B4DF2},
-    {k:'cabinet',x:-2.0,z:-3.45,game:'catch'},{k:'cabinet',x:-.85,z:-3.45,game:'pop'},{k:'cabinet',x:-3.45,z:-2.0,r:Math.PI/2,game:'stack'},{k:'cabinet',x:-3.45,z:-.85,r:Math.PI/2,game:'says'},{k:'cabinet',x:.3,z:-3.45,game:'drop'},
+    {k:'cabinet',x:-2.0,z:-3.45,game:'catch'},{k:'cabinet',x:-.85,z:-3.45,game:'pop'},{k:'cabinet',x:-3.45,z:-2.0,r:Math.PI/2,game:'stack'},{k:'cabinet',x:-3.45,z:-.85,r:Math.PI/2,game:'says'},{k:'cabinet',x:.3,z:-3.45,game:'drop'},{k:'gacha',x:3.2,z:.5,r:-Math.PI/2},
     {k:'scores',w:0,u:-1.42,y:2.72},{k:'bigleaf',x:-3.35,z:-3.35},{k:'pouf',x:.2,z:.6,c:3},{k:'pouf',x:1.4,z:1.5,c:8},{k:'bulb',x:3.3,z:2.9},{k:'bigleaf',x:3.35,z:-1.2}],
   lines:{hi:['Welcome to Jelly Arcade! Pick a cabinet!','High scores are made to be broken!','Free play, all day. Go on, have a go!'],buy:['Nice!'],poor:['Keep playing!'],
     tip:()=>{const T=state.td,e=T&&T.list&&T.list.find(x=>!T.done.includes(x.k)&&TD_T[x.k].c==='play');if(e)return`Your two-do list says: ${tdText(e)}. You've got this!`;
@@ -4121,7 +4243,7 @@ function offerItem(id){const it=ITEMMAP[id],have=it.k==='toy'?owned(it):(state.i
   return{key:'toy:'+id,title:it.n,sub:`${itemTag(it)}${it.cat?' · '+FOOD_CATS[it.cat]:''}${it.tt?' · '+it.tt:''}${fav?' · <b>Favorite!</b>':''}`,desc:it.d,price:it.p,
     thumb:`<img data-tt="toy:${id}" src="${thumbs['toy:'+id]||'assets/icons/'+KIND_ICON[it.k]+'.webp'}" alt="">`,thumbQ:'toy:'+id,have:it.k==='toy'?(have?'You own this':'Keeps forever'):'You have '+have,
     canBuy:!(it.k==='toy'&&have),hop:id,buy(){if(it.k==='toy')state.toys.push(it.id);else state.inv[it.id]=(state.inv[it.id]||0)+1}}}
-function dealKeys(){const R=rnd(Math.floor(Date.now()/864e5)+7),pool=CAT.filter(c=>!c.wall&&c.fn!=='window'&&c.fn!=='bed'&&c.fn!=='rug').map(c=>c.k),out=[];while(out.length<9&&pool.length)out.push(pool.splice(R()*pool.length|0,1)[0]);return out}
+function dealKeys(){const R=rnd(Math.floor(Date.now()/864e5)+7),pool=CAT.filter(c=>!c.gacha&&!c.wall&&c.fn!=='window'&&c.fn!=='bed'&&c.fn!=='rug').map(c=>c.k),out=[];while(out.length<9&&pool.length)out.push(pool.splice(R()*pool.length|0,1)[0]);return out}
 function furnPrice(k){const d=CATMAP[k];return dealKeys().slice(0,3).includes(k)?Math.max(1,Math.round(d.p*.75)):d.p}
 function offerFurn(k){const d=CATMAP[k],own=state.fown[k]||0,placed=state.items.filter(i=>i.k===k).length,pr=furnPrice(k);
   return{key:k,title:d.n,sub:`${SETMAP[d.set].n} · ${FUNCMAP[d.fn][1]}${pr<d.p?' · <b>Today’s deal!</b>':''}`,desc:FN_DESC[d.fn]||'',price:pr,was:pr<d.p?d.p:0,
@@ -4168,8 +4290,8 @@ function renderBuildCat(body){if(!away||away.key!=='build'){setTab(null);return}
   grid.querySelectorAll('.card').forEach(c=>c.onclick=()=>{const k=c.dataset.k;openOffer(k.startsWith('door:')?()=>offerDoor(k.slice(5)):k.startsWith('size:')?()=>offerSize(+k.slice(5)):CATMAP[k]?()=>offerFurn(k):()=>offerTile(k))})}
 // What was tapped out in town: the door, a product, a shopkeeper (the pet takes priority)
 function townHit(x,y){setRay(x,y);const list=[doorG,pet.group];if(away)list.push(away.root);const hits=ray.intersectObjects(list,true);
-  for(const h of hits){if(!visDeep(h.object))continue;let o=h.object;while(o){if(o.userData.pet)return null;if(o.userData.door)return{door:1};if(o.userData.game)return{game:o.userData.game};if(o.userData.product)return{product:o.userData.product};if(o.userData.offer)return{offer:o.userData.offer};if(o.userData.catalog)return{catalog:1};if(o.userData.svc)return{svc:o.userData.svc};if(o.userData.keeper)return{keeper:o.userData.keeper};o=o.parent}if(away)continue;return null}return null}
-function townTap(h){if(h.game){openGame(h.game);return}if(h.door)openDoor();else if(h.product)openProduct(h.product);else if(h.offer){if(h.offer.t==='wear'&&!ownsWear(h.offer.k))openWearOffer(h.offer.k);else openOffer(makeOffer(h.offer))}else if(h.catalog){closeProduct();setTab(away.key==='wear'?'wardrobe':'shopcat')}else if(h.svc)openService(h.svc.k,h.svc.style);
+  for(const h of hits){if(!visDeep(h.object))continue;let o=h.object;while(o){if(o.userData.pet)return null;if(o.userData.door)return{door:1};if(o.userData.game)return{game:o.userData.game};if(o.userData.product)return{product:o.userData.product};if(o.userData.offer)return{offer:o.userData.offer};if(o.userData.catalog)return{catalog:1};if(o.userData.gacha)return{gacha:1};if(o.userData.svc)return{svc:o.userData.svc};if(o.userData.keeper)return{keeper:o.userData.keeper};o=o.parent}if(away)continue;return null}return null}
+function townTap(h){if(h.game){openGame(h.game);return}if(h.gacha){openGacha();return}if(h.door)openDoor();else if(h.product)openProduct(h.product);else if(h.offer){if(h.offer.t==='wear'&&!ownsWear(h.offer.k))openWearOffer(h.offer.k);else openOffer(makeOffer(h.offer))}else if(h.catalog){closeProduct();setTab(away.key==='wear'?'wardrobe':'shopcat')}else if(h.svc)openService(h.svc.k,h.svc.style);
   else if(h.keeper){const K=away.keepers[h.keeper-1]||away.keeper;away.keeper=K;if(K.svc){openService(K.svc);return}keeperReact('greet',1.8);const L=K.lines,P=persOf(),r=Math.random();keeperSay(r<.4&&L.tip(P)||pick1(L.hi))}}
 
 /* ================= SCENE SYNC ================= */
@@ -4451,9 +4573,9 @@ function wishTick(){if(!ready||sandbox||!state)return;if(!stageOf(state.pet.xp))
   if(pet.mode==='idle'&&!openTab&&pet.rig&&!toyPlay)startConfer(pro.map(q=>WISH_T[q.k].ic),win,say,{agree,d:3.2});else say()}
 function wishEmote(){const W=state.wish;if(!W||!W.k||pet.stage<1)return;EMO.wish={b:'thought',i:WISH_T[W.k].ic};emote('wish')}
 function wishHit(ev){const W=state.wish;if(!W||!W.k||W.ev!==ev)return;W.got=(W.got|0)+1;if(W.got<W.n){saveSoon();updWish();if(openTab==='pet')renderSheet();return}
-  state.wish={next:Date.now()+(WISH_GAP[0]+Math.random()*(WISH_GAP[1]-WISH_GAP[0]))*6e4};state.hearts+=3;
+  state.wish={next:Date.now()+(WISH_GAP[0]+Math.random()*(WISH_GAP[1]-WISH_GAP[0]))*6e4};state.hearts+=3;state.tokens=(state.tokens|0)+1;
   commitPet(st=>{st.affection=clamp((st.affection??40)+6,0,100);st.fun=clamp(st.fun+5,0,100)});logEvent(`granted ${PN()}’s wish`);saveSoon();updHUD();
-  toast(`Wish granted! ${PN()} is thrilled. +3 hearts`);setTimeout(()=>{emote('🎉');pet.happyT=1.5;petAct('spinjump')},600);if(openTab==='pet')renderSheet()}
+  toast(`Wish granted! ${PN()} is thrilled. +3 hearts, +1 capsule token`);setTimeout(()=>{emote('🎉');pet.happyT=1.5;petAct('spinjump')},600);if(openTab==='pet')renderSheet()}
 function updWish(){const W=state&&state.wish,on=!!(W&&W.k&&WISH_T[W.k])&&stageOf(state.pet.xp)>0,d=$('#wishDot');if(!d)return;d.hidden=!on;if(on)d.querySelector('img').src=`assets/icons/${WISH_T[W.k].ic}.webp`}
 function wishRow(){const W=state.wish;if(!W||!W.k||!WISH_T[W.k])return'';const T=WISH_T[W.k];
   const nm=headNames(),who=W.agree?`${esc(nm[0])} & ${esc(nm[1])} both want`:W.alt&&WISH_T[W.alt.k]?`${esc(nm[W.win])} won the vote (${esc(nm[1-W.win])} wanted ${esc(WISH_T[W.alt.k].txt(WISH_T[W.alt.k].n||1,W.alt.shop))})`:`${esc(PN())} wishes for`;
@@ -4526,18 +4648,18 @@ function td(ev,amt,val){if(!state)return;wishHit(ev);tdEnsure();const T=state.td
     if(t.score){if(!((val|0)>(P[id]|0)))return;P[id]=val|0}else P[id]=(P[id]|0)+(amt||1);hit=true;if(tdCount(e)>=e.n)tdComplete(e)});
   tdMilestones();if(hit||ev==='note')saveSoon();tdUI();if(hit&&openTab==='todo')renderSheet()}
 function tdComplete(e){const T=state.td,t=TD_T[e.k],P=T.prog[e.k]||{},helpers=Object.keys(P).filter(k=>P[k]>0),h=TD_CAT[t.c].h,bonus=t.c==='together'&&helpers.length>1?3:0;
-  T.done.push(e.k);state.hearts+=h+bonus;T.stamps++;T.total++;
+  T.done.push(e.k);state.hearts+=h+bonus;T.stamps++;T.total++;state.tokens=(state.tokens|0)+1;
   const all=new Set();Object.values(T.prog).forEach(Q=>Object.keys(Q).forEach(k=>{if(Q[k]>0)all.add(k)}));if(all.size>1&&T.teamDay!==T.day){T.teamDay=T.day;T.teamDays=(T.teamDays|0)+1}
   if(T.done.length===T.list.length)T.lists=(T.lists|0)+1;
   const s=tdText(e);logEvent(`checked off a two-do: ${s[0].toLowerCase()+s.slice(1)}`);
-  toast(T.done.length===T.list.length?`All three done! Your treat is waiting. +${h+bonus} hearts`:`Two-do done! +${h+bonus} hearts${bonus?' (team bonus!)':''}`);setTimeout(()=>emote('🎉'),300);if(pet.stage>0)pet.hop=1;
+  toast(T.done.length===T.list.length?`All three done! Your treat is waiting. +${h+bonus} hearts, +1 token`:`Two-do done! +${h+bonus} hearts, +1 capsule token${bonus?' (team bonus!)':''}`);setTimeout(()=>emote('🎉'),300);if(pet.stage>0)pet.hop=1;
   const b=$('#tdBtn');if(b){b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop')}
   tdWeekly();tdLevels();updHUD()}
 // this week's sticker card
 const TD_WEEK=[{at:4,n:'A handful of hearts',ic:'heart-jar',give(){state.hearts+=8;return'+8 hearts in the jar.'}},
   {at:8,n:'A surprise piece',ic:'tab-decorate',give(){const k=tdFurnGift();if(!k){state.hearts+=12;return'+12 hearts.'}state.fown[k]=(state.fown[k]||0)+1;return`${CATMAP[k].n} is waiting in storage. Place it from Decorate.`}},
   {at:12,n:'A new pattern',ic:'tab-room',give(){const key=tdTileGift();if(!key){state.hearts+=20;return'+20 hearts.'}state.town.push(key);return`${TILESETS[key[0]][key.slice(2)].n} is unlocked. Paint it from Decorate.`}}];
-function tdFurnGift(){const ok=c=>c.fn!=='window'&&c.p<=16,pool=CAT.filter(c=>ok(c)&&!(state.fown[c.k]>0)&&!state.items.some(i=>i.k===c.k)),P=pool.length?pool:CAT.filter(ok);return P.length?P[Math.random()*P.length|0].k:null}
+function tdFurnGift(){const ok=c=>c.fn!=='window'&&!c.gacha&&c.p<=16,pool=CAT.filter(c=>ok(c)&&!(state.fown[c.k]>0)&&!state.items.some(i=>i.k===c.k)),P=pool.length?pool:CAT.filter(ok);return P.length?P[Math.random()*P.length|0].k:null}
 function tdTileGift(){const L=['f','w'].flatMap(kd=>TILE_ORDER[kd].map(k=>kd+':'+k)).filter(k=>!state.town.includes(k));return L.length?L[Math.random()*L.length|0]:null}
 function tdWeekly(){const T=state.td;TD_WEEK.forEach(w=>{if(T.stamps>=w.at&&!T.wclaim.includes(w.at)){T.wclaim.push(w.at);const msg=w.give();logEvent(`filled ${w.at} stickers on this week's card`);showReward('Sticker card prize!',w.ic,`<b>${w.n}</b><p>${esc(msg)}</p>`)}})}
 // your story: levels from every sticker ever earned
@@ -4579,7 +4701,7 @@ function tdMilestones(){const T=state.td;if(!T||!Array.isArray(T.ms))return;cons
 function tdTreat(){const T=state.td;if(T.gift||T.done.length<T.list.length)return;T.gift=1;state.hearts+=5;let msg='';
   if(Math.random()<.35){const k=tdFurnGift();if(k){state.fown[k]=(state.fown[k]||0)+1;msg=`${CATMAP[k].n} for your room. It's in storage.`}}
   if(!msg){const pool=ITEMS.filter(i=>i.p>0&&(i.k!=='toy'||(!state.toys.includes(i.id)&&i.p<=10))),it=pool[Math.random()*pool.length|0];if(it.k==='toy')state.toys.push(it.id);else state.inv[it.id]=(state.inv[it.id]||0)+1;msg=`${it.n} for ${PN()}. It's in your bag.`}
-  logEvent('opened the daily treat');saveSoon();updHUD();emote('🎉');showReward('Today’s treat!','emo-party',`<p>${esc(msg)}</p><p class="rwsub">+5 hearts</p>`);if(openTab==='todo')renderSheet()}
+  state.tokens=(state.tokens|0)+2;logEvent('opened the daily treat');saveSoon();updHUD();emote('🎉');showReward('Today’s treat!','emo-party',`<p>${esc(msg)}</p><p class="rwsub">+5 hearts</p>`);if(openTab==='todo')renderSheet()}
 function tdSwap(k){const T=state.td,id=pid();if(T.swap[id]||T.done.includes(k))return;const i=T.list.findIndex(e=>e.k===k);if(i<0)return;const not=T.list.map(e=>e.k),nk=tdPick(Math.random,[TD_T[k].c],not)||tdPick(Math.random,['home','town','play'],not);
   if(!nk){toast('Nothing else to swap in right now.');return}T.list[i]={k:nk,n:TD_T[nk].n};delete T.prog[k];T.swap[id]=1;saveSoon();renderSheet();toast('Swapped! One swap a day each.')}
 // the little celebration card (rewards queue up and wait while a game is running)
@@ -5036,7 +5158,7 @@ function gmTick(ts){if(!gm){gmRaf=0;return}gmRaf=requestAnimationFrame(gmTick);c
   const sc=gm.play||g.over?String(g.score):'',tm=gm.play&&g.time!=null?Math.ceil(g.time)+'s':'',lv=gm.play?'Lv '+g.lv:'';if(gm._sc!==sc){gm._sc=sc;$('#gmScore').textContent=sc}if(gm._tm!==tm){gm._tm=tm;$('#gmTime').textContent=tm}if(gm._lv!==lv){gm._lv=lv;$('#gmLv').textContent=lv}
   if(gm.play&&g.over&&!gm.ended){gm.ended=true;setTimeout(gmEnd,450)}}
 function gmEnd(){if(!gm)return;gm.play=false;const k=gm.k,D=GAMES[k],g=gm.s,s=g.score,id=pid(),A=arcA(),stars=D.stars.filter(v=>s>=v).length,prev=arcGet('hi',k),prevSt=arcGet('st',k),top=Object.entries(A.hi[k]||{}).filter(([i])=>i!==id).sort((p,q)=>q[1]-p[1])[0];
-  const nb=s>prev,h=Math.min(STAR_H[stars]+(nb&&prev>0?2:0),arcLeft());A.earned[id]=(A.earned[id]|0)+h;state.hearts+=h;A.plays++;
+  const nb=s>prev,h=Math.min(STAR_H[stars]+(nb&&prev>0?2:0),arcLeft());if(stars===3){state.tokens=(state.tokens|0)+1;setTimeout(()=>toast('Three stars! +1 capsule token'),1200)}A.earned[id]=(A.earned[id]|0)+h;state.hearts+=h;A.plays++;
   if(nb){(A.hi[k]=A.hi[k]||{})[id]=s;if(prev>0)logEvent(`set a new best in ${gName(k)}: ${s}`)}if(stars>prevSt)(A.st[k]=A.st[k]||{})[id]=stars;
   const x0=arcGet('xp',k),L0=mLevel(k,x0),x1=x0+s;(A.xp[k]=A.xp[k]||{})[id]=x1;const L1=mLevel(k,x1),lo=L1>1?mNeed(k,L1-1):0,hi=mNeed(k,L1);
   if(L1>L0){state.hearts+=5*(L1-L0);logEvent(`reached ${gName(k)} level ${L1}: ${mTitle(k,L1).toLowerCase()}`);showReward(`${gName(k)} level ${L1}!`,'arcade',`<p>You're now a <b>${esc(mTitle(k,L1))}</b>.</p><p class="rwsub">+${5*(L1-L0)} hearts</p>`)}
@@ -5117,7 +5239,7 @@ function decoCard(c,n){const own=state.fown[c.k]||0,buy=decoMode==='buy',pr=furn
 function renderDeco(toTop){const grid=$('#tray');if(!grid)return;
   const words=decoQ.trim().toLowerCase().split(/\s+/).filter(Boolean),hit=c=>{const t=decoText(c);return words.every(w=>t.includes(w))};
   const n=roomCounts(),mine=c=>(state.fown[c.k]||0)>0||n[c.k]>0,
-    pool=CAT.filter(c=>(decoSet==='all'||c.set===decoSet)&&hit(c)&&!(decoMode==='buy'&&c.fn==='window')&&(decoMode==='buy'?!decoMine||mine(c):mine(c))),per={};pool.forEach(c=>per[c.fn]=(per[c.fn]||0)+1);
+    pool=CAT.filter(c=>(decoSet==='all'||c.set===decoSet)&&hit(c)&&!(decoMode==='buy'&&(c.fn==='window'||c.gacha))&&(decoMode==='buy'?!decoMine||mine(c):mine(c))),per={};pool.forEach(c=>per[c.fn]=(per[c.fn]||0)+1);
   if(decoFn!=='all'&&!per[decoFn]&&!words.length)decoFn='all';
   let list=pool.filter(c=>decoFn==='all'||c.fn===decoFn);const sort=DECO_SORTS[decoSort][1];if(sort)list=list.slice().sort(sort);
   // placing: what you have in storage comes first
@@ -5409,7 +5531,7 @@ function tryRemote(){if(sandbox||!remote||dirty||writing||dragging)return;if((re
 function normalize(s){const oldPal=!!s&&!(s.pv>=2);const d=defaultState();s=Object.assign({},d,s||{});s.items=Array.isArray(s.items)?s.items.filter(i=>i&&CATMAP[i.k]&&typeof i.id==='string').slice(0,80):[];
   s.inv=s.inv&&typeof s.inv==='object'?Object.fromEntries(Object.entries(s.inv).filter(([k,v])=>ITEMMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):Object.assign({},d.inv);
   s.toys=Array.isArray(s.toys)?s.toys.filter(k=>ITEMMAP[k]&&ITEMMAP[k].k==='toy'):d.toys.slice();s.daily=s.daily&&typeof s.daily==='object'?s.daily:{};
-  s.pet=Object.assign({},d.pet,s.pet||{});if(s.pet.look&&typeof s.pet.look!=='object')delete s.pet.look;if(s.pet.heads&&!(Array.isArray(s.pet.heads)&&s.pet.heads.length===2))delete s.pet.heads;else if(s.pet.heads)s.pet.heads=s.pet.heads.map(x=>String(x||'').slice(0,10));s.ceil=s.ceil==null?1:clamp(+s.ceil||0,0,1);s.wish=s.wish&&typeof s.wish==='object'&&(!s.wish.k||WISH_T[s.wish.k])?s.wish:{};s.wear=[...new Set(Array.isArray(s.wear)?s.wear.filter(id=>wearDef(id)):[])];s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
+  s.pet=Object.assign({},d.pet,s.pet||{});if(s.pet.look&&typeof s.pet.look!=='object')delete s.pet.look;if(s.pet.heads&&!(Array.isArray(s.pet.heads)&&s.pet.heads.length===2))delete s.pet.heads;else if(s.pet.heads)s.pet.heads=s.pet.heads.map(x=>String(x||'').slice(0,10));s.tokens=s.tokens==null?3:Math.max(0,Math.min(999,+s.tokens|0));s.capsdex=Array.isArray(s.capsdex)?s.capsdex.filter(k=>typeof k==='string').slice(0,64):[];s.ceil=s.ceil==null?1:clamp(+s.ceil||0,0,1);s.wish=s.wish&&typeof s.wish==='object'&&(!s.wish.k||WISH_T[s.wish.k])?s.wish:{};s.wear=[...new Set(Array.isArray(s.wear)?s.wear.filter(id=>wearDef(id)):[])];s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
   s.feed=Array.isArray(s.feed)?s.feed.slice(0,50).map(f=>({t:+f.t||0,by:String(f.by||''),k:f.k==='note'?'note':'event',text:String(f.text||'').slice(0,160)})):[];
   s.visits=s.visits&&typeof s.visits==='object'?s.visits:{};s.names=s.names&&typeof s.names==='object'?Object.fromEntries(Object.entries(s.names).slice(0,8).map(([k,v])=>[String(k).slice(0,64),String(v||'').slice(0,20)])):{};s.hearts=Math.max(0,+s.hearts||0);if(!FLOORS.includes(s.floor))s.floor='checker';if(!WALLS.includes(s.wall))s.wall='bubble';const RN=ROOM_SIZES.includes(s.size)?s.size:8;s.size=RN;s.tf=Array.isArray(s.tf)&&s.tf.length===RN*RN?s.tf.map(k=>TILESETS.f[k]?k:s.floor):Array(RN*RN).fill(s.floor);s.tw=Array.isArray(s.tw)&&s.tw.length===RN*4?s.tw.map(k=>TILESETS.w[k]?k:s.wall):Array(RN*4).fill(s.wall);s.fown=s.fown&&typeof s.fown==='object'?Object.fromEntries(Object.entries(s.fown).filter(([k,v])=>CATMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):{};s.town=[...new Set([...STARTER_TILES,...(Array.isArray(s.town)?s.town:[]),...s.tf.map(k=>'f:'+k),...s.tw.map(k=>'w:'+k)])].filter(k=>TILESETS[k[0]]&&TILESETS[k[0]][k.slice(2)]);s.downs=[...new Set(['classic',...(Array.isArray(s.downs)?s.downs:[])])].filter(k=>k==='classic'||(TILESETS[k[0]]&&TILESETS[k[0]][k.slice(2)]));s.door=Object.assign({s:'classic',w:3,u:-2.6},s.door&&typeof s.door==='object'?s.door:{});if(!s.downs.includes(s.door.s))s.door.s='classic';s.door.w=clamp(s.door.w|0,0,3);s.door.u=clamp(+s.door.u||0,-RN/2+.8,RN/2-.8);if(!SKY_KEYS.includes(s.sky))s.sky='classic';if(oldPal){const mp=[0,7,8,3,12,5,2];s.items.forEach(i=>i.c=mp[(i.c||0)%7])}s.td=s.td&&typeof s.td==='object'&&!Array.isArray(s.td)?s.td:{};s.arc=s.arc&&typeof s.arc==='object'&&!Array.isArray(s.arc)?s.arc:{best:{},plays:0};s.pv=2;return s}
 function loadLocal(){let s=null;try{s=JSON.parse(localStorage.getItem(soloKey())||'null')}catch(_){}state=normalize(s||defaultState());if(!s)state.rev=0;syncScene();updHUD()}
@@ -5461,7 +5583,7 @@ setInterval(()=>{if(ready){updHUD();wishTick()}const ae=document.activeElement;i
 
 /* ================= LOOP ================= */
 let skyTick=0;const clock=new THREE.Clock();let tAcc=0,fpsN=0,fpsT=0;const tmp=new THREE.Vector3();
-function loop(){requestAnimationFrame(loop);const raw=clock.getDelta(),dt=Math.min(raw,.05);if(gm&&!$('#game').hidden)return;tAcc+=dt;fpsN++;fpsT+=raw;if(fpsT>1){fps=Math.round(fpsN/fpsT);fpsN=0;fpsT=0;if(openTab==='debug')updDbgInfo()}updCam();
+function loop(){requestAnimationFrame(loop);const raw=clock.getDelta(),dt=Math.min(raw,.05);if(gm&&!$('#game').hidden)return;if(gc&&gc.open)return;tAcc+=dt;fpsN++;fpsT+=raw;if(fpsT>1){fps=Math.round(fpsN/fpsT);fpsN=0;fpsT=0;if(openTab==='debug')updDbgInfo()}updCam();
   walls.forEach((w,i)=>{const d=WALLDEF[i];w.g.visible=(camera.position.x-d.c[0])*d.n[0]+(camera.position.z-d.c[1])*d.n[1]>2.5});
   roomObjs().forEach(o=>{const it=roomItem(o.userData.id);if(it&&defOf(it.k).wall)o.visible=walls[it.w||0].g.visible;if(o.userData.anim)o.userData.anim(tAcc)});
   updDoor(dt);if(away)updShop(dt,tAcc);
