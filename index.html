@@ -3733,7 +3733,7 @@ function sweepGeo(pts,prof,o){o=o||{};const L=o.len||40,S=o.seg||20,P=[],U=[],I=
 // point an arm pivot (which hangs along -y) from S at F, stretching it a little so the hand centre (ref from the pivot) lands on F; returns the unit direction
 function kAim(a,S,F,ref){const d=[F[0]-S[0],F[1]-S[1],F[2]-S[2]],l=Math.hypot(...d)||1,u=d.map(v=>v/l);a.rotation.set(Math.atan2(-u[2],-u[1]),0,Math.asin(Math.max(-1,Math.min(1,u[0]))));if(ref)a.scale.y=Math.max(.75,Math.min(1.35,l/ref));return u}
 // the camera's direction in an object's own frame (unit vector; uses last frame's matrices) - for eye contact
-function camLocal(o){const m=o.matrixWorld,p=camera.position,D=[p.x-m[12],p.y-m[13],p.z-m[14]],r=[0,1,2].map(k=>{const c0=m[k*4],c1=m[k*4+1],c2=m[k*4+2],l2=c0*c0+c1*c1+c2*c2||1;return(D[0]*c0+D[1]*c1+D[2]*c2)/l2}),l=Math.hypot(...r)||1;return r.map(v=>v/l)}
+function camLocal(o){const m=o.matrixWorld,p=camera.position,D=[p.x-m[12],p.y-m[13],p.z-m[14]],r=[0,1,2].map(k=>{const c0=m[k*4],c1=m[k*4+1],c2=m[k*4+2],l2=c0*c0+c1*c1+c2*c2||1;return(D[0]*c0+D[1]*c1+D[2]*c2)/l2}),l=Math.hypot(...r);return l>1e-6&&isFinite(l)?r.map(v=>v/l):[0,0,1]}
 // a point on a Catmull-Rom curve through pts at t (0..1)
 function crPt(pts,t){const m=pts.length-1,f=Math.min(m-1e-6,Math.max(0,t)*m),k=f|0,u=f-k,p0=pts[Math.max(0,k-1)],p1=pts[k],p2=pts[k+1],p3=pts[Math.min(m,k+2)];return[0,1,2].map(j=>.5*(2*p1[j]+(-p0[j]+p2[j])*u+(2*p0[j]-5*p1[j]+4*p2[j]-p3[j])*u*u+(-p0[j]+3*p1[j]-3*p2[j]+p3[j])*u*u*u))}
 // many bubbles as one mesh, moved by rewriting its vertices each frame (dynamic geometry): set(i,x,y,z,r) then flush()
@@ -3770,7 +3770,7 @@ function kEye(pv,r,tex,lidMat,o){o=o||{};const eg=piv(pv,0,0,-r*(o.sink===undefi
 function kEyesUpd(S,E,dt,st){st=st||{};S.blink=(S.blink===undefined?2:S.blink)-dt;if(S.blink<-.16)S.blink=Math.random()<.2?.2:2+Math.random()*3;const cl=S.blink<0?Math.sin(Math.min(1,-S.blink/.16)*Math.PI):0;
   S.lookT=(S.lookT||0)-dt;if(S.lookT<0){S.contact=Math.random()<(st.talk?.85:.65);S.lookT=S.contact?1.5+Math.random()*2.5:.5+Math.random()*1.2;S.look=[(Math.random()-.5)*.9,(Math.random()-.5)*.4]}
   E.forEach(e=>{const op=e.open+(st.surprise?-.25:st.happy?.15:0);e.lid.rotation.x=op*(1-cl)+1.67*cl;let L=S.look||[0,0];
-    if(S.contact){const d=camLocal(e.eg.parent);L=[clamp(Math.atan2(d[0],d[2]),-.6,.6),clamp(Math.atan2(d[1],d[2]),-.45,.45)]}e.eye.rotation.y=approach(e.eye.rotation.y,L[0],dt*7);e.eye.rotation.x=approach(e.eye.rotation.x,-L[1],dt*7)})}
+    if(S.contact){const d=camLocal(e.eg.parent);L=[clamp(Math.atan2(d[0],d[2]),-.6,.6),clamp(Math.atan2(d[1],d[2]),-.45,.45)]}if(!isFinite(L[0])||!isFinite(L[1]))L=[0,0];e.eye.rotation.y=approach(isFinite(e.eye.rotation.y)?e.eye.rotation.y:0,L[0],dt*7);e.eye.rotation.x=approach(isFinite(e.eye.rotation.x)?e.eye.rotation.x:0,-L[1],dt*7)})}
 // a two-part noodle arm (shoulder, elbow, mitten); pose with sh.rotation / el.rotation; props go on tip
 function kArm3(par,x,y,z,mat,l1,l2,r,hand){const sh=piv(par,x,y,z);ol(sp(sh,r*1.15,mat,0,0,0),.008);ol(cy(sh,r,r*1.1,l1,mat,0,-l1/2,0,12),.008);const el=piv(sh,0,-l1,0);ol(sp(el,r*1.05,mat,0,0,0),.006);
   ol(cy(el,r*.9,r,l2,mat,0,-l2/2,0,12),.008);const h=sp(el,hand,mat,0,-l2-hand*.6,0,1,1.05,.85);ol(h,.01);ol(sp(el,hand*.42,mat,hand*.75,-l2-hand*.35,.01),.006);const tip=piv(el,0,-l2-hand*.9,0);return{sh,el,tip}}
@@ -4213,81 +4213,146 @@ let yarnT=null;function yarnTex(){if(yarnT)return yarnT;const W=512,H=256,c=mkCa
   yarnT=new THREE.CanvasTexture(c);yarnT.encoding=THREE.sRGBEncoding;return yarnT}
 
 Object.assign(KEEPERS,{
-  // Pom the hairstylist: a mint jelly under a huge lilac cloud of curls with rollers in, snipping the air with silver scissors.
-  // Gives the curls a fluff now and then.
-  hair(){const g=G(),b=G();g.add(b);const C=jel(0x7FE0C0,{roughness:.32}),H=jel(0xC49BFF,{roughness:.42}),Hd=jel(0xA982F5,{roughness:.42}),St=M(0xDDE3EE,{metalness:.65,roughness:.2}),Pk=jel(0xFF5FB0,{roughness:.35});
-    const body=piv(b,0,.7,0);const bo=add(body,SPH(.48,48,36),C,0,0,0);bo.scale.set(1,1.02,.92);ol(bo,.018);gloss(body,.48,1.02,.92,-.28,.2,.1,.05,.6,.45);
-    const F=kFace2(body,{r:.48,sy:1.02,sz:.92,ex:.15,ey:.06,er:.085,my:-.14,mw:.065,browC:0x7B4BD6,cheekC:0xFF7FB8});
-    const hair=piv(body,0,.42,-.03);
-    for(let i=0;i<18;i++){const a=i*2.4,y=((i*.618)%1)*1.5-.5,q=Math.sqrt(Math.max(.2,1-y*y)),r=.16+(i%3)*.035;ol(add(hair,SPH(r,22,16),i%3?H:Hd,Math.cos(a)*q*.3,.12+y*.2,Math.sin(a)*q*.24-.04),.012)}
-    [[-.15,-.02,.3],[.15,-.02,.3],[0,.02,.34]].forEach(([x,y,z])=>ol(sp(hair,.1,H,x,y,z),.01));gloss(hair,.34,1,1,-.12,.24,.07,.035,.6,.4,0,.12,0);
-    [[-.22,.22,.12,.5,Pk],[.2,.28,.1,-.4,jel(0xFFD21F,{roughness:.4})],[.02,.4,.02,.1,jel(0x3EC8F2,{roughness:.4})]].forEach(([x,y,z,rz,m])=>{const r=cy(hair,.055,.055,.2,m,x,y,z,16);r.rotation.set(.3,0,Math.PI/2+rz);ol(r,.008)});
-    const armS=kArm2(body,-.46,-.06,.03,C,.26,.065),armF=kArm2(body,.46,-.06,.03,C,.26,.065);
-    const sc=piv(armS.userData.tip,0,0,.05);sc.rotation.x=-1.5;const blades=[1,-1].map(s=>{const bl=piv(sc);ol(rb(bl,.028,.2,.012,.006,St,s*.004,-.12,0),.006);ol(to(bl,.034,.01,Pk,s*.032,.03,0),.004);return bl});
-    let fluffT=5,fp=9;
-    return{g,head:hair,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';
+  // Pom (after the character sheet): a slender curved turquoise body under a huge lilac afro of curl masses (each with a swirl),
+  // pin antennae, half-lidded eyes with lilac lids and amber irises, a pink star marking, a tool belt of pouches, and a comb.
+  // Gives the curls a fluff with the comb now and then; otherwise a hand on the hip.
+  hair(){const g=G(),b=G();g.add(b);const C=M(0x6FDCD4,{roughness:.4}),H=M(0xC7A2F5,{roughness:.55}),Hd=M(0xA982EA,{roughness:.55}),Lv=M(0xB58AE6,{roughness:.5}),Br=M(0x8A5A3A,{roughness:.7}),
+      Brd=M(0x6E4428,{roughness:.7}),Gd=M(0xFFC93A,{metalness:.5,roughness:.3}),Pk=M(0xFF5FA8,{roughness:.35}),Pu=M(0x9B6CE0,{roughness:.35});
+    C.detail=3;H.detail=3;Hd.detail=3;Br.detail=1;Brd.detail=1;
+    const Y0=.3,HH=1.2,PR=smoothProf([[0,0],[.03,.14],[.1,.19],[.3,.215],[.5,.205],[.62,.19],[.74,.2],[.86,.22],[.94,.19],[.985,.1],[1,0]],60),cxAt=v=>.05*Math.cos(Math.PI*v)-.02,
+      f=y=>{const v=clamp((y-Y0)/HH,0,1),r=profAt(PR,v);return[r,r*.88,cxAt(v),0]};
+    const body=piv(b,0,0,0);ol(add(body,gcache('pm_body',()=>loftGeo(PR.map(([v,r])=>[Y0+v*HH,r,r*.88,cxAt(v),0]),{seg:48})),C,0,0,0),.016);
+    [-1,1].forEach(s_=>{ol(cy(b,.045,.05,.3,C,s_*.08+.03,.17,.02,12),.01);ol(sp(b,.09,C,s_*.1+.03,.05,.08,1,.5,1.5),.01)});
+    // face: half-lidded eyes with a lash flick, a small smile; a pink star marking on the chest
+    const E=[-1,1].map(s_=>{const e=kEye(onLoft(body,f,cxAt(.78)+s_*.088,1.23),.072,eyeTex('pmE',{iris:['#E8A04A','#8A4516'],ir:26,pr:11}),Lv,{open:-.42,sink:.2});
+      ol(cy(e.eg,.005,.003,.04,M(0x2A0E3E),s_*.078,.012,0,6),0).rotation.z=-s_*1.1;return e});
+    const mp=onLoft(body,f,cxAt(.7)+.01,1.12),mg=piv(mp,0,0,-.002);
+    ol(add(mg,gcache('pm_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.045,0);m.quadraticCurveTo(0,-.04,.045,0);m.quadraticCurveTo(0,-.018,-.045,0);return new THREE.ExtrudeGeometry(m,{depth:.008})}),M(0x5A1030,{roughness:.6}),0,0,0),.005);
+    {const sp_=onLoft(body,f,.08,.95,.004);ol(add(sp_,gcache('pm_star',()=>new THREE.ExtrudeGeometry(starShape(.045,.02,5),{depth:.006})),Pk,0,0,0),.004)}
+    // the afro: a core and a cloud of curl masses (kept off the face), each with a swirl, two pin antennae and a bobby pin
+    const hair=piv(body,cxAt(1)-.01,1.56,-.06);{const c=add(hair,SPH(1,32,24),H,0,.04,0);c.scale.set(.4,.3,.34);ol(c,.014)}
+    const curl=gcache('pm_curl',()=>{const pts=[];for(let i=0;i<=40;i++){const u=i/40,a=u*Math.PI*2.3,r=.62*(1-u*.85);pts.push([Math.cos(a)*r,Math.sin(a)*r,0])}return sweepGeo(pts,t=>{const r=.13*(1-t*.5)*Math.min(1,t*20);return[r,r]},{len:80,seg:8})});
+    for(let i=0;i<17;i++){const yy=1-2*(i+.5)/17,rr=Math.sqrt(1-yy*yy),th=i*2.39996,d=[Math.cos(th)*rr,yy,Math.sin(th)*rr];if(d[1]<-.3&&d[2]>.1)continue;
+      const r=.17+.05*((i*37)%5)/5,pv=piv(hair,d[0]*.36,.04+d[1]*.25,d[2]*.3);pv.rotation.y=Math.atan2(d[0],d[2]);const pt=piv(pv);pt.rotation.x=-Math.asin(clamp(d[1],-1,1));
+      ol(sp(pt,r,i%3?H:Hd,0,0,0),.012);const cm=add(pt,curl,i%3?Hd:H,0,0,r*.9);cm.scale.setScalar(r*.9);cm.rotation.z=i*1.3;ol(cm,.004)}
+    [[-.12,Gd,.5],[.1,Pk,-.3]].forEach(([x,m,rz])=>{const pn=piv(hair,x,.2,.05);pn.rotation.set(-.2,0,rz);ol(cy(pn,.009,.009,.32,Gd,0,.16,0,6),.004);ol(sp(pn,.035,m,0,.33,0),.006)});
+    {const bp=piv(hair,.32,.02,.2);bp.rotation.set(0,.8,.5);ol(rb(bp,.14,.022,.012,.008,Gd,0,0,0),.004);ol(rb(bp,.12,.018,.012,.008,Gd,-.01,.03,0),.004)}
+    // tool belt: a strap with three pouches, scissors, a comb and a spray bottle sticking out
+    {const bf=v=>{const r=profAt(PR,v);return[r,r*.88,cxAt(v)]},[r0,rz0,c0]=bf(.36);ol(add(body,gcache('pm_belt',()=>loftGeo([[.7,r0*1.04,rz0*1.04,c0],[.76,r0*1.06,rz0*1.06,c0],[.8,r0*1.06,rz0*1.06,c0],[.84,r0*1.04,rz0*1.04,c0]],{seg:40})),Br,0,0,0),.008);
+      [-.9,-.25,.45].forEach((a,i)=>{const pv=piv(body,c0+Math.sin(a)*r0*1.12,.7,Math.cos(a)*rz0*1.12);pv.rotation.y=a;ol(rb(pv,.11,.13,.06,.02,i%2?Brd:Br,0,0,0),.008);ol(rb(pv,.115,.035,.065,.012,Brd,0,.06,0),.005);
+        if(i===0)[-1,1].forEach(s_=>ol(to(pv,.022,.007,Pk,s_*.022,.12,0,0,0,0),.004));
+        if(i===1){ol(rb(pv,.03,.16,.012,.006,Pk,0,.1,0),.004)}
+        if(i===2){ol(cy(pv,.022,.024,.1,Pu,0,.09,0,12),.005);ol(cy(pv,.012,.012,.04,M(0xFFFFFF,{roughness:.3}),0,.16,0,8),.004)}});
+      const st=add(body,gcache('pm_bstar',()=>new THREE.ExtrudeGeometry(starShape(.02,.009,5),{depth:.004})),Gd,c0+Math.sin(-.25)*r0*1.12*1.02,.7,Math.cos(-.25)*rz0*1.15);st.rotation.y=-.25;ol(st,0)}
+    // long thin arms: the left holds a comb, the right rests on the hip
+    const A=[-1,1].map(s_=>{const a=kArm3(body,cxAt(.6)+s_*.2,1.0,.02,C,.22,.2,.028,.05);a.s=s_;return a});
+    const comb=piv(A[0].tip,0,.03,0);ol(rb(comb,.035,.2,.014,.006,Pk,0,-.08,0),.005);for(let i=0;i<7;i++)ol(add(comb,gcache('pm_tooth',()=>new THREE.BoxGeometry(.03,.007,.01)),Pk,.03,-.15+i*.022,0),0);
+    let fluffT=5,fp=9;const ES={};
+    return{g,head:hair,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';dt=Math.min(dt,.05);
       fluffT-=dt;if(fluffT<0&&!talk&&act==='idle'){fluffT=6+Math.random()*4;fp=0}fp+=dt;
-      kBreath(body,t,.016,2.2);b.position.y=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.35:0;b.rotation.y=cheer?ease(p)*Math.PI*2:0;body.rotation.z=Math.sin(t*1.2)*.04+(talk?Math.sin(t*4.6)*.03:0);body.rotation.x=talk?Math.sin(t*3.8)*.03:0;
-      // the curls bounce a beat behind (and a lot more when fluffed)
-      const fl=fp<1.4?Math.sin(fp*14)*Math.exp(-fp*2)*.08:0,hb=Math.sin(t*2.2-.8)*.025+fl;hair.scale.set(1-hb*.5,1+hb,1-hb*.5);
-      // snip snip: bursts in the air, faster while talking
-      const burst=talk||((t%3.2)<1.3),op=burst?.15+Math.abs(Math.sin(t*(talk?11:8)))*.35:.12;blades[0].rotation.z=op;blades[1].rotation.z=-op;
-      armS.rotation.set(-1.25+Math.sin(t*1.5)*.08+(talk?Math.sin(t*3.2)*.15:0),0,-.4-(burst?Math.sin(t*2.4)*.1:0));
-      if(greet)armF.rotation.set(0,0,2.5+Math.sin(t*13)*.35);else if(cheer){armF.rotation.set(0,0,2.5);armS.rotation.set(0,0,-2.5)}
-      else if(fp<1.4)armF.rotation.set(-.2,0,2.55-Math.abs(Math.sin(fp*9))*.3);else if(talk)armF.rotation.set(-.6+Math.sin(t*3.1)*.3,0,.5+Math.abs(Math.sin(t*2.3))*.4);else armF.rotation.set(-.1+Math.sin(t*.9)*.05,0,.35);
-      F.update(dt,t,{talk,happy:cheer||greet||fp<1.4})}}},
-  // Blush the makeup artist: a peachy jelly in a grape beret, with long lashes and a beauty mark, holding a palette and a
-  // big fluffy brush. Dabs the palette as they go, and now and then powders their own cheek in a little pink cloud.
-  makeup(){const g=G(),b=G();g.add(b);const C=jel(0xFFA3B5,{roughness:.32}),Be=jel(0x9B4DF2,{roughness:.45}),Hd=jel(0xFF3D9A,{roughness:.35}),Gd=M(0xFFD21F,{metalness:.55,roughness:.22}),Fl=jel(0xFFE0EC,{roughness:.85}),ink=M(INKC,{roughness:.3});
-    const body=piv(b,0,.7,0);const bo=add(body,SPH(.48,48,36),C,0,0,0);bo.scale.set(1,1.02,.92);ol(bo,.018);gloss(body,.48,1.02,.92,-.26,.24,.1,.05,.6,.45);
-    const F=kFace2(body,{r:.48,sy:1.02,sz:.92,ex:.15,ey:.12,er:.09,my:-.08,mw:.065,browC:0x6A2FC0,cheekC:0xFF5F9A});
-    // lashes: three flicks on the outer top of each eye (they close with the blink)
-    F.eyes.forEach((eg,i)=>{const s=i?1:-1,er=.09;[0,1,2].forEach(j=>{const th=Math.PI/2-s*(.3+.38*j),dx=Math.cos(th),dy=Math.sin(th),l=add(eg,new THREE.CylinderGeometry(.004,.011,.055,6),ink,dx*(er*1.02+.022),dy*(er*1.14+.022),er*.18);l.rotation.z=th-Math.PI/2;ol(l,0)})});
-    {const bm=onSurface(body,.48,1.02,.92,.19,-.12);ol(add(bm,SPH(.014,8,6),M(0x6A2FC0),0,0,.004),0)}
-    const hat=piv(body,.08,.43,-.02);hat.rotation.z=-.32;{const bt=add(hat,SPH(.34,32,18),Be,0,0,0);bt.scale.set(1,.32,1);ol(bt,.014);ol(sp(hat,.045,Be,0,.11,0),.008);gloss(hat,.34,.32,1,-.12,.08,.07,.025,.3,.4)}
-    const armB=kArm2(body,-.46,-.06,.03,C,.26,.065),armP=kArm2(body,.46,-.06,.03,C,.26,.065);
-    // the brush (built pointing down the hand, turned up by the grip) and the palette
-    const br=piv(armB.userData.tip,0,0,.04);br.rotation.x=-1.5;ol(cy(br,.018,.024,.26,Hd,0,-.13,0,10),.008);ol(cy(br,.026,.022,.06,Gd,0,-.28,0,12),.006);const fluff=add(br,SPH(.07,16,12),Fl,0,-.36,0);fluff.scale.set(1,1.3,1);ol(fluff,.01);
-    const pal=piv(armP.userData.tip,0,.02,0);pal.rotation.set(2.2,0,-.2);ol(cy(pal,.12,.12,.03,M(0xFFFFFF,{roughness:.35}),0,0,0,24),.01);
-    [0xFF3D9A,0xFF8FB8,0xFFB22E,0x9B4DF2,0x3EC8F2,0xA6E22E].forEach((c,i)=>{const a=i/6*Math.PI*2;ol(cy(pal,.03,.03,.012,jel(c,{roughness:.3}),Math.cos(a)*.07,.02,Math.sin(a)*.07,14),0)});
+      kBreath(body,t,.014,2.2);b.position.y=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.35:0;b.rotation.y=cheer?ease(p)*Math.PI*2:0;body.rotation.z=Math.sin(t*1.2)*.035+(talk?Math.sin(t*4.6)*.025:0);body.rotation.x=talk?Math.sin(t*3.8)*.025:0;
+      // the afro bounces a beat behind (and a lot more when fluffed)
+      const fl=fp<1.6?Math.sin(fp*14)*Math.exp(-fp*2)*.08:0,hb=Math.sin(t*2.2-.8)*.022+fl;hair.scale.set(1-hb*.5,1+hb,1-hb*.5);hair.rotation.z=-body.rotation.z*.8;
+      const pose=(a,sa,sx,e)=>{a.sh.rotation.x=approach(a.sh.rotation.x,sx,dt*10);a.sh.rotation.z=approach(a.sh.rotation.z,a.s*sa,dt*10);a.el.rotation.z=approach(a.el.rotation.z,a.s*e,dt*10)};
+      if(cheer){pose(A[0],2.6,0,.2);pose(A[1],2.6,0,.2)}
+      else{if(fp<1.6)pose(A[0],2.5,0,.9+Math.sin(fp*12)*.3);else if(talk)pose(A[0],.5,-.6,1.5+Math.sin(t*3)*.2);else pose(A[0],.35,-.5,1.7+Math.sin(t*1.4)*.08);
+        if(greet)pose(A[1],2.4+Math.sin(t*13)*.3,0,.5+Math.sin(t*13)*.3);else if(talk)pose(A[1],.6+Math.abs(Math.sin(t*2.3))*.5,-.3,.9+Math.sin(t*3.1)*.3);else pose(A[1],.75,0,-1.5)}
+      kEyesUpd(ES,E,dt,{talk,happy:cheer||greet||fp<1.4});
+      const syl=talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1))):0;ES.mo=approach(ES.mo||0,Math.max(syl,cheer||greet?.5:0),dt*18);mg.scale.set(1,1+ES.mo*2.2,1)}}},
+  // Blush (after the character sheet): a pink pear of a body flecked with paint, big lashed eyes and pouty lips, a slouchy purple
+  // beret, flower-and-tassel hair ties, a dotted belt with a pouch of paint jars, a fluffy brush and a flower palette.
+  // Dabs the palette as they go, and now and then powders their own cheek in a little pink cloud.
+  makeup(){const g=G(),b=G();g.add(b);const C=M(0xFFA3C0,{roughness:.55}),Be=M(0x8A4FD6,{roughness:.75}),Bd=M(0x7440C0,{roughness:.75}),Lp=M(0xFF4F86,{roughness:.3}),Gd=M(0xF2B53A,{roughness:.55}),
+      Cr=M(0xFFF3DC,{roughness:.7}),Fl=M(0xE8D6FF,{roughness:.9}),Hd=M(0x9B6CE0,{roughness:.35}),Me=M(0xFFD21F,{metalness:.5,roughness:.25}),ink=M(0x2A0E3E,{roughness:.4});
+    C.detail=3;Be.detail=1;Bd.detail=1;Cr.detail=1;Gd.detail=1;
+    const Y0=.1,HH=1.18,PR=smoothProf([[0,0],[.03,.3],[.12,.45],[.3,.52],[.5,.5],[.68,.44],[.82,.36],[.92,.26],[.98,.13],[1,0]],60),f=y=>{const v=clamp((y-Y0)/HH,0,1),r=profAt(PR,v);return[r,r*.86,0,0]};
+    const body=piv(b,0,0,0);ol(add(body,gcache('bl_body',()=>loftGeo(PR.map(([v,r])=>[Y0+v*HH,r,r*.86]),{seg:56})),C,0,0,0),.018);
+    // paint flecks on the lower body (the face stays clean)
+    [[-.3,.3,0xFF3D9A],[.22,.22,0x3EC8F2],[-.1,.18,0xFFD21F],[.36,.4,0x9B4DF2],[-.4,.46,0xA6E22E],[.05,.36,0xFF8A1C],[.3,.14,0xFF3D9A],[-.24,.12,0x9B4DF2],[.16,.5,0xFFD21F]].forEach(([x,y,c],i)=>{const pv=onLoft(body,f,x,y,.002);
+      const d=add(pv,SPH(1,12,8),M(c,{roughness:.4}),0,0,0);d.scale.set(.03+(i%3)*.01,.022+(i%2)*.012,.004);d.rotation.z=i;ol(d,0)});
+    // face: big lashed eyes, pouty lips, blush
+    const E=[-1,1].map(s_=>{const e=kEye(onLoft(body,f,s_*.14,.96),.1,eyeTex('blE',{iris:['#6F8CE0','#23357A'],ir:24,pr:12}),C,{sink:.2,open:-1.05});
+      [0,1,2].forEach(j=>{const th=Math.PI/2-s_*(.35+.36*j),l=add(e.eg,gcache('bl_lash',()=>new THREE.CylinderGeometry(.004,.011,.05,6)),ink,Math.cos(th)*.115,Math.sin(th)*.12,.02);l.rotation.z=th-Math.PI/2;ol(l,0)});return e});
+    [-1,1].forEach(s_=>{const cp=onLoft(body,f,s_*.28,.86,.002);const c=add(cp,SPH(1,14,10),M(0xFF6F9F,{roughness:.7}),0,0,0);c.scale.set(.06,.035,.006);ol(c,0)});
+    const mp=onLoft(body,f,0,.8),mg=piv(mp,0,0,.004);[-1,1].forEach(s_=>{const u=add(mg,SPH(1,14,10),Lp,s_*.02,.01,0);u.scale.set(.03,.02,.018);ol(u,.004)});{const lw=add(mg,SPH(1,14,10),Lp,0,-.018,0);lw.scale.set(.036,.022,.02);ol(lw,.004)}
+    // slouchy beret with a band and a nub
+    const hat=piv(body,.06,Y0+HH-.08,-.02);hat.rotation.z=-.3;{const bt=add(hat,SPH(.36,36,20),Be,.03,.05,0);bt.scale.set(1,.34,1);ol(bt,.014);ol(to(hat,.27,.028,Bd,0,0,0,Math.PI/2),.008);ol(sp(hat,.035,Be,.03,.17,0,1,1.4,1),.006)}
+    // flower-and-tassel hair ties at the sides
+    [-1,1].forEach(s_=>{const r=profAt(PR,.78),pv=piv(body,s_*(r+.01),Y0+HH*.78,.02);[0,1,2,3,4].forEach(i=>{const a=i/5*Math.PI*2;ol(sp(pv,.028,M(0xFF5F9A,{roughness:.4}),0,Math.cos(a)*.03,Math.sin(a)*.03),.004)});ol(sp(pv,.02,Me,s_*.01,0,0),.003);
+      const ts=piv(pv,0,-.04,0);for(let j=0;j<5;j++){const a=j/5*Math.PI*2,c=add(ts,gcache('bl_str',()=>new THREE.CylinderGeometry(.008,.014,.14,5)),Gd,Math.cos(a)*.012,-.07,Math.sin(a)*.012);c.rotation.set(Math.sin(a)*.15,0,-Math.cos(a)*.15);ol(c,.003)}});
+    // dotted belt with a pouch of paint jars
+    {const r0=profAt(PR,.4);ol(add(body,gcache('bl_belt',()=>loftGeo([[.55,r0*1.02,r0*.86*1.02],[.56,r0*1.04,r0*.86*1.04],[.61,r0*1.04,r0*.86*1.04],[.62,r0*1.02,r0*.86*1.02]],{seg:56})),Cr,0,0,0),.008);
+      for(let i=0;i<14;i++){const a=i/14*Math.PI*2,d=add(body,SPH(.012,8,6),M([0xFF3D9A,0x3EC8F2,0xFFD21F,0xA6E22E][i%4],{roughness:.4}),Math.sin(a)*r0*1.045,.585,Math.cos(a)*r0*.86*1.045);d.scale.z=.5;d.rotation.y=a;ol(d,0)}
+      const pv=onLoft(body,f,-.2,.46,.035);ol(rb(pv,.22,.14,.06,.02,Cr,0,0,0),.008);[[0xFF3D9A,-.06],[0x3EC8F2,0],[0xA6E22E,.06]].forEach(([c,x])=>{ol(cy(pv,.022,.022,.06,M(0xE8FBFF,{roughness:.15}),x,.09,0,12),.004);ol(cy(pv,.024,.024,.02,M(c,{roughness:.4}),x,.13,0,12),.004)})}
+    // arms: the left holds the brush, the right the palette
+    const armB=kArm2(body,-.46,.66,.05,C,.24,.06,.08),armP=kArm2(body,.46,.66,.05,C,.24,.06,.08);
+    const br=piv(armB.userData.tip,0,0,.04);br.rotation.x=-1.5;ol(cy(br,.018,.024,.26,Hd,0,-.13,0,10),.008);ol(cy(br,.026,.022,.06,Me,0,-.28,0,12),.006);const fluff=add(br,SPH(.07,16,12),Fl,0,-.36,0);fluff.scale.set(1,1.3,1);ol(fluff,.01);
+    const pal=piv(armP.userData.tip,0,.02,0);pal.rotation.set(2.2,0,-.2);[0,1,2,3,4].forEach(i=>{const a=i/5*Math.PI*2;ol(cy(pal,.07,.07,.025,M(0xF6F0FF,{roughness:.35}),Math.cos(a)*.065,0,Math.sin(a)*.065,20),.006)});
+    [0xFF3D9A,0xFF8FB8,0xFFB22E,0x9B4DF2,0x3EC8F2].forEach((c,i)=>{const a=i/5*Math.PI*2;ol(cy(pal,.028,.028,.012,M(c,{roughness:.3}),Math.cos(a)*.075,.018,Math.sin(a)*.075,14),0)});
+    [-1,1].forEach(s_=>ol(sp(b,.1,C,s_*.18,.06,.14,1,.5,1.3),.01));
     const puffs=[0,1,2,3,4].map(i=>{const m=nosh(add(body,SPH(.05,10,8),M(0xFFB3D1,{roughness:.9,transparent:true,opacity:.6}),0,0,0));m.visible=false;ol(m,0);return{m,t:9}});
-    let dabT=5,dp=9;
-    return{g,head:hat,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';
+    let dabT=5,dp=9;const ES={};
+    return{g,head:hat,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';dt=Math.min(dt,.05);
       dabT-=dt;if(dabT<0&&!talk&&act==='idle'){dabT=6+Math.random()*4;dp=0;puffs.forEach((q,i)=>{q.t=-.35-i*.07;q.a=Math.random()*6.3})}dp+=dt;
-      kBreath(body,t,.016,2.1);b.position.y=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.35:0;b.rotation.y=cheer?ease(p)*Math.PI*2:0;body.rotation.z=Math.sin(t*1.1)*.04+(talk?Math.sin(t*4.2)*.035:0);body.rotation.x=talk?Math.sin(t*3.6)*.03:0;
-      hat.rotation.z=-.32+Math.sin(t*1.1-.6)*.03;
+      kBreath(body,t,.016,2.1);b.position.y=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.35:0;b.rotation.y=cheer?ease(p)*Math.PI*2:0;body.rotation.z=Math.sin(t*1.1)*.035+(talk?Math.sin(t*4.2)*.03:0);body.rotation.x=talk?Math.sin(t*3.6)*.03:0;
+      hat.rotation.z=-.3+Math.sin(t*1.1-.6)*.03;
       // brush: dips in the palette every couple of seconds, swishes in the air while talking, powders a cheek on the quirk
       const dip=(t%2.6)<.5?Math.sin((t%2.6)/.5*Math.PI):0;
       if(cheer)armB.rotation.set(0,0,-2.5);else if(dp<1.5){const k=Math.min(1,dp/.3,(1.5-dp)/.3);armB.rotation.set(-1.25-k*.55,0,-.4+k*.95+Math.sin(dp*14)*.06*k)}
       else if(talk)armB.rotation.set(-1.3+Math.sin(t*3.4)*.25,0,-.45+Math.sin(t*2.2)*.2);else armB.rotation.set(-1.25+dip*.1,0,-.4+dip*.5);
       if(greet)armP.rotation.set(0,0,2.5+Math.sin(t*13)*.3);else if(cheer)armP.rotation.set(0,0,2.5);else armP.rotation.set(-1.15+Math.sin(t*1.3)*.04,0,.28);
-      puffs.forEach(q=>{q.t+=dt;const k=q.t/1;q.m.visible=k>0&&k<1;if(q.m.visible){q.m.position.set(-.24+Math.cos(q.a)*k*.12,-.02+k*.2,.4+Math.sin(q.a)*k*.08);q.m.scale.setScalar(.5+k*1.4);q.m.material.opacity=.6*(1-k)}});
-      F.update(dt,t,{talk,happy:cheer||greet||(dp>.3&&dp<1.4)})}}},
-  // Stitch the tailor: a ball of lime yarn with a tape measure over one shoulder, always knitting. The striped scarf grows
-  // row by row, and when it's done Stitch holds it up to show you.
-  tailor(){const g=G(),b=G();g.add(b);const Y=jel(0xFFFFFF,{roughness:.62,map:yarnTex()}),A=jel(0xA6E22E,{roughness:.5}),Tp=jel(0xFFD21F,{roughness:.45}),ink=M(INKC,{roughness:.4});
-    const body=piv(b,0,.7,0);const bo=add(body,SPH(.48,48,36),Y,0,0,0);bo.scale.set(1,1.02,.92);ol(bo,.018);gloss(body,.48,1.02,.92,-.26,.26,.1,.05,.6,.4);
-    {const tl=piv(body,.45,-.2,-.12);tl.rotation.z=-.4;ol(to(tl,.07,.022,A,.06,-.03,0,0,0,0,Math.PI*1.4),.006);ol(sp(tl,.024,A,.12,-.05,0),.004)}
-    const F=kFace2(body,{r:.48,sy:1.02,sz:.92,ex:.15,ey:.12,er:.085,my:-.08,mw:.065,browC:0x4F7F12,cheekC:0xFF7FB8});
-    // tape measure draped over the right shoulder, with ticks on the front end
-    const tp=piv(body,.32,0,0);{const arc=add(tp,new THREE.TorusGeometry(.4,.014,6,36,Math.PI),Tp,0,0,0);arc.rotation.y=Math.PI/2;arc.scale.set(1,1,.9);ol(arc,.004);
-      const end=piv(tp,.02,0,.37);end.rotation.x=-.25;ol(rb(end,.05,.34,.012,.005,Tp,0,-.17,0),.004);for(let i=0;i<6;i++)ol(nosh(bx(end,.024,.006,.016,ink,-.012,-.04-i*.05,0)),0)}
-    // knitting: two needles and the scarf hanging from them
-    const armL=kArm2(body,-.46,-.08,.04,A,.24,.065),armR=kArm2(body,.46,-.08,.04,A,.24,.065);
-    const kn=piv(body,-.26,-.1,.45),nd=[jel(0xFF3D9A,{roughness:.3}),jel(0x3EC8F2,{roughness:.3})].map((m,i)=>{const n=piv(kn);ol(cy(n,.01,.01,.36,m,0,0,0,8),.004);ol(sp(n,.022,m,0,.18,0),.004);n.rotation.z=(i?-1:1)*1.1;return n});
-    const scarf=piv(kn,0,-.02,0),rows=[];for(let i=0;i<10;i++){const r=rb(scarf,.2,.05,.035,.012,jel([0xFF3D9A,0xFFD21F,0x3EC8F2,0xFFFFFF][i%4],{roughness:.7}),0,-.03-i*.048,0);ol(r,.006);r.visible=false;rows.push(r)}
-    let knit=0,shown=-1,showT=9;
-    return{g,head:body,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';
+      puffs.forEach(q=>{q.t+=dt;const k=q.t/1;q.m.visible=k>0&&k<1;if(q.m.visible){q.m.position.set(-.26+Math.cos(q.a)*k*.12,.86+k*.2,.4+Math.sin(q.a)*k*.08);q.m.scale.setScalar(.5+k*1.4);q.m.material.opacity=.6*(1-k)}});
+      const happy=cheer||greet||(dp>.3&&dp<1.4);kEyesUpd(ES,E,dt,{talk,happy});
+      const syl=talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1))):0;ES.mo=approach(ES.mo||0,syl,dt*18);mg.scale.set(1-ES.mo*.25,1+ES.mo*.6,1+ES.mo*.3)}}},
+  // Stitch (after the character sheet): a ball of lime yarn wound from many strands, the cream face peeking out between them,
+  // a loose loop on top, a big pink button, pins and a crochet hook stuck in, a measuring tape round the middle, a flowered
+  // pouch with scissors, little cream hands and feet. Always knitting: the striped scarf grows row by row, then gets held up.
+  tailor(){const g=G(),b=G();g.add(b);const L=[M(0x9ED64A,{roughness:.85}),M(0xB8E65A,{roughness:.85}),M(0x86C23C,{roughness:.85}),M(0xC9EE7A,{roughness:.85})],Fc=M(0xFFE3BE,{roughness:.7}),
+      Pk=M(0xFF6FA8,{roughness:.4}),Tp=M(0xFFFFFF,{roughness:.6}),Wd=M(0xC8874A,{roughness:.5}),St=M(0xDDE3EE,{metalness:.6,roughness:.25}),ink=M(INKC,{roughness:.4});
+    L.forEach(m=>m.detail=1);Fc.detail=3;
+    const R=.5,body=piv(b,0,.66,0);ol(add(body,SPH(R*.985,40,30),L[2],0,0,0),.018);
+    // the face peeking out: a cream patch on the front
+    ol(add(body,gcache('st_face',()=>new THREE.SphereGeometry(R*.992,32,16,Math.PI/2-.62,1.24,Math.PI/2-.5,.9)),Fc,0,0,0),0);
+    // strands: great circles round the ball, none crossing the face
+    const rn=i=>{const x=Math.sin(i*12.9898+7.3)*43758.5;return x-Math.floor(x)};let k=0;
+    for(let i=0;i<30;i++){let n;do{const u=rn(k++)*2-1,a=rn(k++)*Math.PI*2,q=Math.sqrt(1-u*u);n=[q*Math.cos(a),q*Math.sin(a),u]}while(Math.abs(n[2])<.5);
+      const tr=add(body,gcache('st_str'+(i%3),()=>new THREE.TorusGeometry(R*(1+.012*(i%3)),.022+.006*(i%3),6,72)),L[i%4],0,0,0);tr.rotation.set(Math.atan2(-n[1],n[2]),Math.asin(clamp(n[0],-1,1)),0);ol(tr,.004)}
+    // a loose loop of yarn on top, and a dangling end
+    ol(add(body,gcache('st_loop',()=>sweepGeo([[-.04,.44,.05],[-.06,.6,.06],[.04,.7,.04],[.14,.62,.02],[.1,.47,.04]],()=>[.026,.026],{len:30,seg:8})),L[1],0,0,0),.006);
+    ol(add(body,gcache('st_end',()=>sweepGeo([[.44,-.2,.12],[.54,-.3,.14],[.56,-.44,.1],[.5,-.52,.12]],t=>{const r=.022*Math.min(1,(1-t)*12+.3);return[r,r]},{len:20,seg:8})),L[0],0,0,0),.005);
+    // face: little dark eyes, blush, a small smile
+    const E=[-1,1].map(s_=>kEye(onSurface(body,R,1,1,s_*.1,.03),.05,eyeTex('stE',{pr:30,pupil:'#1A1030'}),Fc,{sink:.1,sz:.7}));
+    [-1,1].forEach(s_=>{const cp=onSurface(body,R,1,1,s_*.18,-.05);const c=add(cp,SPH(1,12,8),M(0xFF8FB8,{roughness:.7}),0,0,.002);c.scale.set(.045,.026,.005);ol(c,0)});
+    const mp=onSurface(body,R,1,1,0,-.08),mg=piv(mp,0,0,.001);
+    ol(add(mg,gcache('st_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.035,0);m.quadraticCurveTo(0,-.035,.035,0);m.quadraticCurveTo(0,-.016,-.035,0);return new THREE.ExtrudeGeometry(m,{depth:.006})}),M(0x5A1030,{roughness:.6}),0,0,0),.004);
+    // a big pink button, pins and a crochet hook stuck in
+    {const bp=onSurface(body,R,1,1,-.3,.28,0,0,.0);bp.position.z+=.035;ol(cy(bp,.075,.075,.03,Pk,0,0,.01,24),.008).rotation.x=Math.PI/2;ol(to(bp,.06,.008,M(0xFF4F90,{roughness:.4}),0,0,.026),0);[[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([x,y])=>ol(cy(bp,.01,.01,.035,ink,x*.02,y*.02,.012,8),0).rotation.x=Math.PI/2)}
+    [[-.14,M(0xFF5FA8,{roughness:.3}),.4],[-.05,M(0x6FB6FF,{roughness:.3}),.15]].forEach(([x,m,rz])=>{const pn=piv(body,x,.46,.1);pn.rotation.set(-.3,0,rz);ol(cy(pn,.006,.006,.2,St,0,.05,0,6),0);ol(sp(pn,.028,m,0,.15,0),.005)});
+    {const hk=piv(body,.2,.42,.02);hk.rotation.set(0,0,-.45);ol(cy(hk,.016,.016,.42,Wd,0,.12,0,8),.005);ol(to(hk,.025,.01,Wd,.02,.33,0,0,0,0,Math.PI),.004)}
+    // measuring tape round the middle (ticks painted on) and a flowered pouch with scissors
+    const tt=gcache('st_tape',()=>{const c=mkCanvas(512,32),x=c.getContext('2d');x.fillStyle='#FFEFD2';x.fillRect(0,0,512,32);x.fillStyle='#FF6FA8';for(let i=0;i<96;i++)x.fillRect(i*512/96,0,2,i%4?9:16);x.fillRect(0,28,512,4);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t});
+    {const tp=piv(body,0,-.25,0);tp.rotation.set(.1,0,.12);const tr_=Math.sqrt(R*R-.25*.25)*1.07;ol(add(tp,gcache('st_tapeg2',()=>loftGeo([[-.04,tr_,tr_],[.04,tr_,tr_]],{seg:72})),M(0xffffff,{map:tt,roughness:.6}),0,0,0),.006);
+      const end=piv(tp,.1,-.02,tr_);end.rotation.z=.25;ol(rb(end,.08,.2,.012,.006,M(0xffffff,{map:tt,roughness:.6}),0,-.1,0),.004);ol(rb(end,.09,.03,.02,.006,M(0xB0B6C4,{metalness:.5,roughness:.3}),0,-.21,0),.004)}
+    {const pv=onSurface(body,R,1,1,.26,-.12);pv.position.z+=.03;ol(rb(pv,.2,.17,.05,.03,Fc,0,0,.02),.008);[0,1,2,3,4].forEach(i=>{const a=i/5*Math.PI*2;ol(sp(pv,.02,Pk,Math.cos(a)*.024,Math.sin(a)*.024-.01,.05),.003)});ol(sp(pv,.015,M(0xFFD21F),0,-.01,.055),0);
+      [-1,1].forEach(s_=>ol(to(pv,.024,.008,Pk,.05+s_*.024,.11,.02,0,0,0),.003))}
+    // little cream hands (knitting) and feet
+    const armL=kArm2(body,-.46,-.12,.06,Fc,.12,.045,.07),armR=kArm2(body,.46,-.12,.06,Fc,.12,.045,.07);
+    [-1,1].forEach(s_=>ol(sp(b,.1,Fc,s_*.17,.07,.12,1,.55,1.3),.01));
+    const kn=piv(body,-.24,-.3,.42),nd=[M(0xFF3D9A,{roughness:.3}),M(0x3EC8F2,{roughness:.3})].map((m,i)=>{const n=piv(kn);ol(cy(n,.01,.01,.36,m,0,0,0,8),.004);ol(sp(n,.022,m,0,.18,0),.004);n.rotation.z=(i?-1:1)*1.1;return n});
+    const scarf=piv(kn,0,-.02,0),rows=[];for(let i=0;i<10;i++){const r=rb(scarf,.2,.05,.035,.012,M([0xFF3D9A,0xFFD21F,0x3EC8F2,0xFFFFFF][i%4],{roughness:.7}),0,-.03-i*.048,0);ol(r,.006);r.visible=false;rows.push(r)}
+    let knit=0,shown=-1,showT=9;const ES={};
+    return{g,head:body,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';dt=Math.min(dt,.05);
       kBreath(body,t,.018,2.3);b.position.y=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.35:0;b.rotation.y=cheer?ease(p)*Math.PI*2:0;body.rotation.z=Math.sin(t*1.25)*.04+(talk?Math.sin(t*4.4)*.03:0);body.rotation.x=talk?Math.sin(t*3.9)*.03:0;
       // a row every so often (slower while chatting); ten rows and it's finished: hold it up, then start again
       if(showT<2.2){showT+=dt;if(showT>=2.2){knit=0}}else{knit+=dt*(talk?.25:.6);if(knit>=10&&act==='idle'){knit=10;showT=0}}
       const n=Math.min(10,Math.floor(knit)+1);if(n!==shown){shown=n;rows.forEach((r,i)=>r.visible=i<n)}
-      const up=showT<2.2?Math.sin(Math.min(1,showT/.4,(2.2-showT)/.4)*Math.PI/2):0;kn.position.set(-.26+up*.26,-.1+up*.42,.45+up*.1);kn.rotation.z=up*Math.sin(t*6)*.08;
+      const up=showT<2.2?Math.sin(Math.min(1,showT/.4,(2.2-showT)/.4)*Math.PI/2):0;kn.position.set(-.24+up*.24,-.3+up*.55,.42+up*.12);kn.rotation.z=up*Math.sin(t*6)*.08;
       const click=showT<2.2?0:Math.sin(t*(talk?5:9));nd[0].rotation.z=1.1+click*.12;nd[1].rotation.z=-1.1-click*.12;
       if(cheer||up>.05){armL.rotation.set(0,0,2.4*Math.max(up,cheer?1:0));armR.rotation.set(0,0,-2.4*Math.max(up,cheer?1:0))}
       else if(greet){armR.rotation.set(0,0,2.5+Math.sin(t*13)*.35);armL.rotation.set(-1.1,0,.25)}
       else{armL.rotation.set(-1.1+click*.08,0,.25);armR.rotation.set(-1.25-click*.08,0,-1.05)}
-      F.update(dt,t,{talk,happy:cheer||greet||up>.5})}}}});
+      kEyesUpd(ES,E,dt,{talk,happy:cheer||greet||up>.5});
+      const syl=talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1))):0;ES.mo=approach(ES.mo||0,Math.max(syl,cheer||greet?.5:0),dt*18);mg.scale.set(1,1+ES.mo*2.2,1)}}}});
 
 // salon + boutique fixtures
 function fxVanity(c,set){const g=G(),C=M(c,{roughness:.42}),L=M(lighten(c,.45),{roughness:.5}),W=M(0xFFFFFF,{roughness:.35}),Gd=M(0xFFD21F,{metalness:.5,roughness:.25});
