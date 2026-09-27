@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 - `index.html` — the whole app (~565 KB): CSS, a custom WebGL2 engine, game logic, UI. No build step, no framework.
 - `firebase-config.js` — Firebase web config (public by design). Shared rooms sync through Firestore doc `rooms/<code>`; rules in `firestore.rules`. `null` config = solo mode.
 - `vendor/` — Firebase compat SDK 10.14.1 (loaded only when a config exists).
-- `sw.js` + `manifest.webmanifest` — offline cache (stale-while-revalidate) and install metadata. Debug menu "Refresh app" unregisters the SW and clears caches.
+- `sw.js` + `manifest.webmanifest` — offline cache (the page is network-first with `cache:'no-cache'` and a 4 s fallback to the cache, so a deploy shows on the next open; other files stale-while-revalidate; registered with `updateViaCache:'none'`; bump `CACHE` when changing it) and install metadata. Debug menu "Refresh app" unregisters the SW and clears caches.
 - `assets/` — logo, app icons (from the two-heads pet icon, never crop the logo's door), `r42-bubble.woff2` font, `icons/*.webp` (UI icons, set icons, emote bubbles + symbols).
 - `tools/font/` — scripts that traced the user's bubble-letter specimen into the font.
 - `tools/art/WISHLIST.md` — images the app wants next, with ChatGPT prompts (shop icons, wardrobe/salon icons, keeper portraits).

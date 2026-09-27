@@ -4118,38 +4118,38 @@ FIX.scores={n:'High scores',fn:'fixture',wall:1,build:()=>fxScores(),use:{kind:'
 KEEPERS.joy=function(){const g=G(),b=G();g.add(b);const C=M(0xB48AF0,{roughness:.38}),P=M(0xFF6FB5,{roughness:.32}),Or=M(0xFF9A3C,{roughness:.35}),Dk=M(0x2E1F4A,{roughness:.45}),
     Wt=M(0xF6F4FB,{roughness:.35}),Yl=M(0xFFD84A,{roughness:.4}),Yg=M(0xFFD21F,{emissive:0xFFD21F,emissiveIntensity:.9}),Cy=M(0x6FC8FF,{roughness:.35}),Gr=M(0x8FE36A,{roughness:.35});
   C.detail=3;P.detail=0;Wt.detail=3;
-  const R=.5,SY=1,SZ=.92,body=piv(b,0,.78,0);const bo=add(body,SPH(R,56,40),C,0,0,0);bo.scale.set(1,SY,SZ);ol(bo,.018);gloss(body,R,SY,SZ,-.26,.3,.1,.05,.6,.35);
+  const R=.58,SY=.8,SZ=.78,body=piv(b,0,.74,0);const bo=add(body,SPH(R,56,40),C,0,0,0);bo.scale.set(1,SY,SZ);ol(bo,.018);gloss(body,R,SY,SZ,-.3,.26,.1,.05,.6,.35);
   // starry eyes and a big open smile
-  const E=[-1,1].map(s_=>kEye(onSurface(body,R,SY,SZ,s_*.155,.12),.1,eyeTex('joyE',{bg:'#FFF5C4',edge:'#F2D98A',pr:22,star:1}),C,{sink:.25}));
-  const mp=onSurface(body,R,SY,SZ,0,-.06),mg=piv(mp,0,0,-.004);
+  const E=[-1,1].map(s_=>kEye(onSurface(body,R,SY,SZ,s_*.2,.13),.135,eyeTex('joyE3',{bg:'#FFF1B5',edge:'#EFCF78',pr:17,star:1}),C,{sink:.25,sy:1.12}));
+  const mp=onSurface(body,R,SY,SZ,0,-.04),mg=piv(mp,0,0,-.004);
   {const bend=geo=>{const Pq=geo.pos;for(let i=0;i<Pq.length;i+=3)Pq[i+2]-=(Pq[i]*Pq[i]+Pq[i+1]*Pq[i+1])/(2*R);geo.version++;return geo};
-    ol(add(mg,gcache('jo_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.085,0);m.quadraticCurveTo(0,.02,.085,0);m.bezierCurveTo(.08,-.13,-.08,-.13,-.085,0);return bend(new THREE.ExtrudeGeometry(m,{depth:.01}))}),M(0x7A1036,{roughness:.6}),0,0,0),.008);
-    const tg=add(mg,SPH(1,16,10),M(0xFF6F9F,{roughness:.6}),0,-.07,.005);tg.scale.set(.05,.028,.008);ol(tg,0)}
-  [-1,1].forEach(s_=>{const cp=onSurface(body,R,SY,SZ,s_*.27,.0);const c=add(cp,SPH(1,14,10),M(0xFF8FC4,{roughness:.7}),0,0,.002);c.scale.set(.055,.032,.006);ol(c,0)});
+    ol(add(mg,gcache('jo_mouth2',()=>{const m=new THREE.Shape();m.moveTo(-.1,0);m.quadraticCurveTo(0,.025,.1,0);m.bezierCurveTo(.1,-.2,-.1,-.2,-.1,0);return bend(new THREE.ExtrudeGeometry(m,{depth:.01}))}),M(0x7A1036,{roughness:.6}),0,0,0),.008);
+    const tg=add(mg,SPH(1,16,10),M(0xFF6F9F,{roughness:.6}),0,-.11,.005);tg.scale.set(.065,.04,.008);ol(tg,0)}
+  [-1,1].forEach(s_=>{const cp=onSurface(body,R,SY,SZ,s_*.34,-.02);const c=add(cp,SPH(1,14,10),M(0xFF8FC4,{roughness:.7}),0,0,.002);c.scale.set(.055,.032,.006);ol(c,0)});
   // belly: a speaker grille and a star sticker
-  {const gp=onSurface(body,R,SY,SZ,.2,-.25);ol(cy(gp,.1,.1,.03,Dk,0,0,0,28),.008).rotation.x=Math.PI/2;
+  {const gp=onSurface(body,R,SY,SZ,.22,-.29);gp.scale.set(1.25,1,1);ol(cy(gp,.1,.1,.03,Dk,0,0,0,28),.008).rotation.x=Math.PI/2;ol(rb(onSurface(body,R,SY,SZ,.04,-.35),.06,.03,.025,.012,P,0,0,.004),.005);
     const T=gcache('jo_grille',()=>{const c=mkCanvas(128,128),x=c.getContext('2d');x.fillStyle='#3A2A5E';x.fillRect(0,0,128,128);x.fillStyle='#120A22';for(let j=-4;j<=4;j++)for(let i=-4;i<=4;i++){const X=64+i*13+(j%2?6:0),Y=64+j*12;if(Math.hypot(X-64,Y-64)<54){x.beginPath();x.arc(X,Y,4,0,7);x.fill()}}const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t});
     const gf=add(gp,new THREE.CircleGeometry(.085,28),M(0xffffff,{map:T,roughness:.6}),0,0,.017);ol(gf,0);
-    const st=add(onSurface(body,R,SY,SZ,-.2,-.24),gcache('jo_star',()=>new THREE.ExtrudeGeometry(starShape(.085,.038,5),{depth:.02,bevelEnabled:true,bevelThickness:.006,bevelSize:.006,bevelSegments:1})),Yl,0,0,-.004);st.rotation.z=-.15;ol(st,.008)}
+    const st=add(onSurface(body,R,SY,SZ,-.24,-.28),gcache('jo_star',()=>new THREE.ExtrudeGeometry(starShape(.085,.038,5),{depth:.02,bevelEnabled:true,bevelThickness:.006,bevelSize:.006,bevelSegments:1})),Yl,0,0,-.004);st.rotation.z=-.15;ol(st,.008)}
   // rear hatch with four screws
   {const hp=piv(body,0,.02,-R*SZ+.012);hp.rotation.y=Math.PI;ol(rb(hp,.26,.22,.02,.02,M(0x9C74DC,{roughness:.4}),0,0,0),.008);[[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([x,y])=>ol(sp(hp,.014,Dk,x*.1,y*.08,.012),0))}
   // headphones: a dark band over the top, pink cups with orange rims and a yellow star in each
-  const hp=piv(body,0,.03,0);ol(nosh(to(hp,.55,.04,Dk,0,0,0,0,0,0,Math.PI)),.01);
-  const cups=[-1,1].map(s_=>{const c=piv(hp,s_*.52,0,0);const cup=add(c,new THREE.CylinderGeometry(.17,.17,.13,28),P,0,0,0);cup.rotation.z=Math.PI/2;ol(cup,.012);
-    ol(to(c,.165,.03,Or,s_*.07,0,0,0,Math.PI/2,0),.008);const face=add(c,new THREE.CircleGeometry(.14,28),M(0xFF9ED0,{roughness:.15}),s_*.068,0,0);face.rotation.y=s_*Math.PI/2;ol(face,0);
-    const st=add(c,gcache('jo_star2',()=>new THREE.ExtrudeGeometry(starShape(.07,.032,5),{depth:.015})),Yl,s_*.07,0,0);st.rotation.y=s_*Math.PI/2;ol(st,.006);return c});
+  const hp=piv(body,0,.05,0);ol(nosh(to(hp,.62,.05,Dk,0,0,0,0,0,0,Math.PI)),.01);
+  const cups=[-1,1].map(s_=>{const c=piv(hp,s_*.6,0,0);const cup=add(c,new THREE.CylinderGeometry(.22,.22,.15,32),P,0,0,0);cup.rotation.z=Math.PI/2;ol(cup,.012);
+    ol(to(c,.215,.035,Or,s_*.08,0,0,0,Math.PI/2,0),.008);const face=add(c,new THREE.CircleGeometry(.185,32),M(0xFF9ED0,{roughness:.1,emissive:0xFF5FA8,emissiveIntensity:.35}),s_*.078,0,0);face.rotation.y=s_*Math.PI/2;ol(face,0);
+    const st=add(c,gcache('jo_star3',()=>new THREE.ExtrudeGeometry(starShape(.1,.045,5),{depth:.02})),Yl,s_*.08,0,0);st.rotation.y=s_*Math.PI/2;ol(st,.006);return c});
   // antenna with a glowing ball that lags behind the bobbing
-  const ant=piv(body,0,R*SY-.03,0);cy(ant,.014,.014,.22,Dk,0,.11,0,8);const bp=piv(ant,0,.25,0);const ball=ol(nosh(add(bp,SPH(.07,20,14),Yg,0,0,0)),.01);
+  const ant=piv(body,0,R*SY-.03,0);cy(ant,.016,.016,.18,Dk,0,.09,0,8);const bp=piv(ant,0,.21,0);const ball=ol(nosh(add(bp,SPH(.07,20,14),Yg,0,0,0)),.01);
   const halo=nosh(add(bp,SPH(.12,16,12),B(0xFFE36E,{transparent:true,opacity:.25,depthWrite:false}),0,0,0));ol(halo,0);
   // arms: the left holds a white controller, the right is free
-  const armP=kArm2(body,-.47,-.08,.05,C,.22,.07,.09),armF=kArm2(body,.47,-.08,.05,C,.22,.07,.09);
+  const armP=kArm2(body,-.55,-.08,.05,C,.26,.045,.085),armF=kArm2(body,.55,-.08,.05,C,.26,.045,.085);
   const pad=piv(armP.userData.tip,.05,.02,0);pad.rotation.set(2.2,0,.3);ol(rb(pad,.32,.08,.17,.045,Wt,0,0,0),.012);[-1,1].forEach(s_=>ol(sp(pad,.06,Wt,s_*.13,0,.05,1,.7,1),.01));
   ol(bx(pad,.075,.022,.024,C,-.085,.045,0),0);ol(bx(pad,.024,.022,.075,C,-.085,.045,0),0);
   const btns=[[.08,.03,P],[.12,-.01,Yl],[.04,-.01,Cy],[.08,-.05,Gr]].map(([x,z,m])=>{const k=add(pad,SPH(.022,10,8),m,x,.045,z);k.scale.set(1,.6,1);ol(k,.005);return k});
   // music notes that float up on a win
   const notes=[0,1,2,3].map(i=>{const n=piv(g);const h=add(n,SPH(.04,12,8),i%2?P:Cy,0,0,0);h.scale.set(1.2,.9,.6);ol(h,.006);cy(n,.008,.008,.12,Dk,.04,.06,0,6);n.visible=false;return{n,t:9,x:0}});
   // chunky sneakers: lavender uppers, pink laces, white midsoles on yellow soles
-  [-1,1].forEach(s_=>{const f=piv(b,s_*.22,0,.06);ol(cy(f,.07,.08,.16,C,0,.2,-.04,14),.01);ol(sp(f,.14,C,0,.12,.02,1,.62,1.35),.012);ol(rb(f,.27,.07,.4,.03,Wt,0,.04,.02),.01);ol(rb(f,.27,.025,.4,.012,Yl,0,.005,.02),.008);
+  [-1,1].forEach(s_=>{const f=piv(b,s_*.24,0,.06);ol(cy(f,.05,.055,.2,C,0,.24,-.04,12),.01);[[.1,.13,.08,0x6FC8FF],[-.1,.14,-.02,0xFF8FC4],[.09,.16,-.12,0xFFD84A]].forEach(([x,y,z,c])=>ol(sp(f,.035,M(c,{roughness:.5}),x*s_*1.3,y,z,.4,1,1),0));ol(sp(f,.14,C,0,.12,.02,1,.62,1.35),.012);ol(rb(f,.27,.07,.4,.03,Wt,0,.04,.02),.01);ol(rb(f,.27,.025,.4,.012,Yl,0,.005,.02),.008);
     ol(sp(f,.07,Wt,0,.1,.18,1.2,.7,.8),.006);for(let i=0;i<3;i++)ol(rb(f,.12,.014,.022,.007,P,0,.2-i*.022,.03+i*.045),0)});
   let winT=5,wp=9,bx0=0,bv=0;const ES={};
   return{g,head:hp,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';dt=Math.min(dt,.05);
@@ -5775,7 +5775,7 @@ async function hardRefresh(){toast('Getting the latest version…');try{dirty=tr
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
   const u=new URL(location.href);u.searchParams.set('v',Date.now());location.replace(u.toString())}
 function withTimeout(p,ms){return Promise.race([Promise.resolve(p).catch(()=>null),new Promise(r=>setTimeout(()=>r(null),ms))])}
-if('serviceWorker' in navigator&&window.isSecureContext)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+if('serviceWorker' in navigator&&window.isSecureContext)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).catch(()=>{}));
 (async function boot(){
   try{await withTimeout(document.fonts.load('40px "R42 Bubble"'),1500)}catch(_){}
   // Play immediately from this device; never block on the shared connection.
