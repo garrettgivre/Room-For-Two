@@ -2602,7 +2602,8 @@ const HAND_STYLES={
     const pd=P(ap,SPH(S.hand*.42,10,8),bean,0,y-S.hand*.25,S.hand*.85,0);pd.scale.set(1.1,.8,.35);[-1,0,1].forEach(k=>{const b=P(ap,SPH(S.hand*.2,8,6),bean,k*S.hand*.42,y+S.hand*.32,S.hand*.82,0);b.scale.set(1,1,.35)})}}};
 // feet: (leg pivot, stage, material, side, ground y); 'auto' = the stage's own feet (sneakers for young adults)
 const FOOT_STYLES={
-  nub:{n:'Jelly feet',build(lp,S,m,s,gy){const f=P(lp,new THREE.SphereGeometry(S.foot*1.1,24,12,0,Math.PI*2,0,Math.PI/2),m,0,gy,S.foot*.25,.014);f.scale.set(1.05,.75,1.35)}},
+  nub:{n:'Jelly feet',build(lp,S,m,s,gy){const f=P(lp,new THREE.SphereGeometry(S.foot*1.1,24,12,0,Math.PI*2,0,Math.PI/2),m,0,gy,S.foot*.25,.014);f.scale.set(1.05,.75,1.35);
+    const sole=P(lp,new THREE.CircleGeometry(S.foot*1.1,24),m,0,gy+.002,S.foot*.25,0);sole.rotation.x=Math.PI/2;sole.scale.set(1.05,1.35,1)}},
   sneaker:{n:'Sneakers',build(lp,S,m,s,gy){const white=M(0xffffff,{roughness:.18});P(lp,rbox(S.foot*1.7,.05,S.foot*2.7,.02),white,0,gy+.025,S.foot*.35,.012);P(lp,rbox(S.foot*1.5,S.foot*.85,S.foot*2.3,.07),m,0,gy+.05+S.foot*.42,S.foot*.3,.012);
     P(lp,SPH(S.foot*.6,12,8),white,0,gy+.05+S.foot*.3,S.foot*1.3,0).scale.set(1.15,.7,.7);for(let k=0;k<3;k++)P(lp,new THREE.BoxGeometry(S.foot*.9,.012,.02),white,0,gy+.05+S.foot*.78,S.foot*(.1+k*.28),0)}},
   boot:{n:'Rain boots',build(lp,S,m,s,gy){P(lp,rbox(S.foot*1.6,.04,S.foot*2.4,.02),M(0x3B1273,{roughness:.5}),0,gy+.02,S.foot*.3,.01);P(lp,rbox(S.foot*1.45,S.foot*.8,S.foot*2.2,.08),m,0,gy+.04+S.foot*.4,S.foot*.28,.012);
@@ -2763,7 +2764,7 @@ function buildPet(){
     const er=S.hr*.68,eg=piv(hp,s*S.hr*.06,S.hr*.15,S.hr*.5);eg.rotation.y=s*.14;
     const w=P(eg,SPH(er,40,30),M(0xffffff,{roughness:.22,map:EYE_TEX.white(),emissive:0xFFFFFF,emissiveIntensity:.22}),0,0,0,.011);w.scale.set(1,1.06,.62);
     const pg=piv(eg,0,0,er*.42),pu=P(pg,SPH(er*.48,28,20),M(0xffffff,{roughness:.08,map:EYE_TEX.pupil()}),0,0,0,0);pu.scale.set(1,1.12,.5);
-    P(pg,SPH(er*.17,10,8),B(0xffffff),er*.16,er*.22,er*.26,0);P(pg,SPH(er*.08,8,6),B(0xffffff),-er*.16,-er*.2,er*.26,0);
+    (R.glints||(R.glints=[])).push([P(pg,SPH(er*.17,10,8),B(0xffffff),er*.16,er*.22,er*.26,0),P(pg,SPH(er*.08,8,6),B(0xffffff),-er*.16,-er*.2,er*.26,0)]);
     const ls=piv(eg);ls.scale.set(1,1.06,.66);const lp=piv(ls);P(lp,new THREE.SphereGeometry(er*1.07,24,12,0,Math.PI*2,0,Math.PI/2),T[hk+'lid'],0,0,0,.008);{const rim=P(lp,new THREE.TorusGeometry(er*1.07,.012,8,36,Math.PI),ink,0,0,0,0);rim.rotation.x=Math.PI/2;rim.castShadow=false}
     if(S.elder){const br=P(eg,SPH(er*.3,10,8),M(0xF4EEFF,{roughness:.9}),s*er*.1,er*1.08,er*.15,.008);br.scale.set(2.3,.42,.6);br.rotation.z=-s*.2}
     {const bl=P(hp,SPH(S.hr*.15,16,10),M(0xFF6FB5,{roughness:.6}),s*S.hr*.5,-S.hr*.36,S.hr*.74,0);bl.scale.set(1.35,.7,.3);bl.lookAt(hp.position.x*0,0,0);bl.rotation.y+=Math.PI}
@@ -3445,7 +3446,7 @@ function updatePet(dt,t){
   let lid=0;if(tired)lid=.45;if(pet.happyT>0||pet.waveT>0)lid=.5;if(A&&A.lid!==undefined)lid=Math.max(lid,A.lid);
   pet.blink=pet.blink.map((b,i)=>{b-=dt;if(b<-.13){b=1.8+Math.random()*3.5;if(Math.random()<.4)pet.blink[1-i]=Math.min(pet.blink[1-i],.05)}return b});
   R.lids.forEach((L,i)=>{let c=pet.blink[i]<0?1:lid;if(sleeping)c=1;if(S.moody&&i===1&&!sleeping)c=Math.max(c,.42);if(S.elder&&!sleeping)c=Math.max(c,.38);if(avg<35&&!sleeping)c=Math.max(c,.3);
-    L.userData.c=approach(L.userData.c||0,c,dt*26);L.rotation.x=-1.25+L.userData.c*2.82});
+    L.userData.c=approach(L.userData.c||0,c,dt*26);L.rotation.x=-1.25+L.userData.c*2.82;if(R.glints&&R.glints[i])R.glints[i].forEach(m=>m.visible=L.userData.c<.5)});
   pet.lookT-=dt;if(pet.lookT<0){pet.lookT=.8+Math.random()*2.6;pet.lookTo={x:(Math.random()-.5)*2,y:(Math.random()-.5)*1.4}}
   if(smartAge()){pet.lookH=pet.lookH||[{x:0,y:0,t:0},{x:0,y:0,t:1}];pet.lookH.forEach((L,i)=>{L.t-=dt;if(L.t<0){L.t=.6+Math.random()*3;const other=pet.lookH[1-i];if(Math.random()<.3){L.x=other.x;L.y=other.y}else if(Math.random()<.2){L.x=i?-1:1;L.y=0}else{L.x=(Math.random()-.5)*2;L.y=(Math.random()-.5)*1.4}}})}
   R.pupils.forEach((p,i)=>{const m=R.eyes[i].er*.26,s=R.heads[i].s,LT=pet.lookH&&smartAge()?pet.lookH[i]:pet.lookTo,tx=chat?-s*m*1.1:A&&A.look?A.look.x*m:LT.x*m,ty=chat?0:A&&A.look?A.look.y*m:LT.y*m;p.position.x=approach(p.position.x,tx,dt*9);p.position.y=approach(p.position.y,ty,dt*9)});
@@ -4060,7 +4061,7 @@ function renderWardrobe(body){const L=petLook(true),inShop=away&&away.key==='wea
 SHOPS.arcade={n:'Jelly Arcade',kind:'arcade',icon:'arcade',color:'#9B4DF2',keeper:'joy',kx:2.3,kz:-3.5,
   tf:()=>tilesWith('arcade','arcaderug',[1,2,6,6]),tw:()=>wallsWith('cyber','arcadepanel'),
   layout:[{k:'counter',x:2.3,z:-2.75,c:0xB98CFF},{k:'sign',w:0,u:2.3,y:2.72,c:0x9B4DF2},
-    {k:'cabinet',x:-2.0,z:-3.45,game:'catch'},{k:'cabinet',x:-.85,z:-3.45,game:'pop'},{k:'cabinet',x:-3.45,z:-2.0,r:Math.PI/2,game:'stack'},{k:'cabinet',x:-3.45,z:-.85,r:Math.PI/2,game:'says'},
+    {k:'cabinet',x:-2.0,z:-3.45,game:'catch'},{k:'cabinet',x:-.85,z:-3.45,game:'pop'},{k:'cabinet',x:-3.45,z:-2.0,r:Math.PI/2,game:'stack'},{k:'cabinet',x:-3.45,z:-.85,r:Math.PI/2,game:'says'},{k:'cabinet',x:.3,z:-3.45,game:'drop'},
     {k:'scores',w:0,u:-1.42,y:2.72},{k:'bigleaf',x:-3.35,z:-3.35},{k:'pouf',x:.2,z:.6,c:3},{k:'pouf',x:1.4,z:1.5,c:8},{k:'bulb',x:3.3,z:2.9},{k:'bigleaf',x:3.35,z:-1.2}],
   lines:{hi:['Welcome to Jelly Arcade! Pick a cabinet!','High scores are made to be broken!','Free play, all day. Go on, have a go!'],buy:['Nice!'],poor:['Keep playing!'],
     tip:()=>{const T=state.td,e=T&&T.list&&T.list.find(x=>!T.done.includes(x.k)&&TD_T[x.k].c==='play');if(e)return`Your two-do list says: ${tdText(e)}. You've got this!`;
@@ -4491,6 +4492,8 @@ const TD_T={
   g_catch:{c:'play',n:2,ev:'stars:catch',score:1,ic:'arcade',go:'g:catch',txt:n=>`Earn ${n} stars in Snack Catch`},
   g_pop:{c:'play',n:2,ev:'stars:pop',score:1,ic:'arcade',go:'g:pop',txt:n=>`Earn ${n} stars in Bubble Pop`},
   g_stack:{c:'play',n:2,ev:'stars:stack',score:1,ic:'arcade',go:'g:stack',txt:n=>`Earn ${n} stars in Jelly Stack`},
+  g_drop:{c:'play',n:2,ev:'stars:drop',score:1,ic:'arcade',go:'g:drop',txt:n=>`Earn ${n} stars in Gumdrop Drop`},
+  l_drop:{c:'play',n:3,ev:'lvl:drop',score:1,ic:'arcade',go:'g:drop',txt:n=>`Reach level ${n} in Gumdrop Drop`},
   g_says:{c:'play',n:2,ev:'stars:says',score:1,ic:'arcade',go:'g:says',txt:n=>`Earn ${n} stars in ${PN()} Says`},
   l_catch:{c:'play',n:3,ev:'lvl:catch',score:1,ic:'arcade',go:'g:catch',txt:n=>`Reach level ${n} in Snack Catch`},
   l_pop:{c:'play',n:3,ev:'lvl:pop',score:1,ic:'arcade',go:'g:pop',txt:n=>`Reach level ${n} in Bubble Pop`},
@@ -4563,6 +4566,7 @@ const TD_MS=[
   {k:'catch3',n:()=>'Earn 3 stars in Snack Catch',get:()=>[Math.min(3,bestOf('catch')),3],h:10},
   {k:'pop3',n:()=>'Earn 3 stars in Bubble Pop',get:()=>[Math.min(3,bestOf('pop')),3],h:10},
   {k:'stack3',n:()=>'Earn 3 stars in Jelly Stack',get:()=>[Math.min(3,bestOf('stack')),3],h:10},
+  {k:'drop3',n:()=>'Earn 3 stars in Gumdrop Drop',get:()=>[Math.min(3,bestOf('drop')),3],h:10},
   {k:'says3',n:()=>`Earn 3 stars in ${PN()} Says`,get:()=>[Math.min(3,bestOf('says')),3],h:10},
   {k:'mast5',n:()=>'Reach level 5 in any arcade game',get:()=>[Math.min(5,bestMast()),5],h:20},
   {k:'lv5',n:()=>'Reach story level 5',get:()=>[Math.min(5,state.td.lvl|0),5],h:25},
@@ -4673,7 +4677,7 @@ function gpApply(A,dt,t){const R=pet.rig,g=pet.group;if(!R||!gpOn)return;const k
   const yy=R.root.position.y,vy=(yy-(gpS.ly||0))/Math.max(dt,1e-3);gpS.ly=yy;gpS.tv=(gpS.tv||0)+((-vy*.08-(gpS.ta||0))*95-(gpS.tv||0)*7)*dt;gpS.ta=clamp((gpS.ta||0)+gpS.tv*dt,-.9,1);
   R.tufts.forEach(F=>{const wig=Math.sin(t*2.4+F.a*5)*.05;F.chain.forEach((p,j)=>{if(j)p.rotation.z=F.base-F.s*gpS.ta*.5+wig;else p.rotation.x=-.12+gpS.ta*.2})});
   gpS.bl=(gpS.bl??2)-dt;if(gpS.bl<-.12)gpS.bl=1.4+Math.random()*3;
-  R.lids.forEach(L=>{const c=gpS.bl<0?1:(A.lid||0);L.userData.c=approach(L.userData.c||0,c,k(26));L.rotation.x=-1.25+L.userData.c*2.82});
+  R.lids.forEach((L,i)=>{const c=gpS.bl<0?1:(A.lid||0);L.userData.c=approach(L.userData.c||0,c,k(26));L.rotation.x=-1.25+L.userData.c*2.82;if(R.glints&&R.glints[i])R.glints[i].forEach(m=>m.visible=L.userData.c<.5)});
   R.pupils.forEach((p,i)=>{const m=R.eyes[i].er*.26,l=A.look||{x:0,y:0};p.position.x=approach(p.position.x,clamp(l.x,-1,1)*m,k(10));p.position.y=approach(p.position.y,clamp(l.y,-1,1)*m,k(10))});
   R.mouths.forEach((mo,i)=>{mo.scale.y=approach(mo.scale.y,Math.max(.01,A.mouth||0),k(20));mo.visible=mo.scale.y>.06;const sm=R.smiles[i];sm.visible=!mo.visible;sm.rotation.z=A.frown?0:Math.PI})}
 const PZ={
@@ -4685,6 +4689,7 @@ const PZ={
 function gCirc(x,cx,cy,r,f,lw){x.beginPath();x.arc(cx,cy,r,0,7);x.fillStyle=f;x.fill();x.lineWidth=lw||Math.max(2.5,r*.12);x.strokeStyle=GINK;x.stroke()}
 function gGloss(x,cx,cy,r,a){x.save();x.globalAlpha=a||.6;x.fillStyle='#fff';x.beginPath();x.ellipse(cx-r*.35,cy-r*.42,r*.34,r*.17,-.6,0,7);x.fill();x.beginPath();x.arc(cx+r*.38,cy-r*.12,r*.07,0,7);x.fill();x.restore()}
 function gText(x,t,cx,cy,f,sz){x.font=`${sz||24}px "R42 Bubble"`;x.textAlign='center';x.textBaseline='middle';x.lineJoin='round';x.lineWidth=Math.max(4,(sz||24)*.24);x.strokeStyle=GINK;x.strokeText(t,cx,cy);x.fillStyle=f;x.fillText(t,cx,cy)}
+function lighten2(c,a){const n=parseInt(c.slice(1),16),r=n>>16,g_=n>>8&255,b=n&255,f=v=>Math.round(v+(255-v)*a);return`rgb(${f(r)},${f(g_)},${f(b)})`}
 function gFx(g,px,py,txt,c,sz){g.fx.push({x:px,y:py,txt,c,t:0,sz})}
 function gGrad(x,x0,y0,x1,y1,st){const g=x.createLinearGradient(x0,y0,x1,y1);st.forEach((c,i)=>g.addColorStop(i/(st.length-1),c));return g}
 function gRad(x,cx,cy,r,st){const g=x.createRadialGradient(cx-r*.35,cy-r*.4,r*.05,cx,cy,r);st.forEach((c,i)=>g.addColorStop(i/(st.length-1),c));return g}
@@ -4854,6 +4859,68 @@ const GAMES={
       if(g.streak>=2)gMult(x,g,Math.min(5,g.streak),g.streak>=3?1:(g.streak-2)/1,g.streak>=3?'growing!':'perfect streak','#FFB300')},
     art(x,w,h,pi){const g={w,h,t:1,bh:h*.11,bl:[0,1,2,3,4].map(i=>({x:w*.28+(i%2?5:-5),w:w*.44,c:i,j:0})),cur:{x:w*.3,w:w*.44,c:5},cam:0,fall:[],st:[],cl:[{x:w*.8,y:h*.2,s:16}],ps:0,streak:0,lv:1,fx:[],pt:[],end:0,over:0};
       g.y=this.y;this.draw(g,x);if(pi)x.drawImage(pi,w*.02,h*.4,h*.55,h*.55)}},
+  // Gumdrop Drop (a drop game in the Miitomo Drop spirit): the real pet dangles from a gumdrop balloon; drag to line up,
+  // let go to drop. It tumbles through gumdrop pegs (grabbing candy and stars) and lands in a bucket. Five drops a game.
+  drop:{n:'Gumdrop Drop',c:'#FF5FB0',bg:['#FFE3F3','#D9F2FF'],xp:320,stars:[130,260,420],titles:['Drop Newbie','Plinker','Bounce Buddy','Gumdrop Guru','Drop Pro','Plop Legend'],
+    how:'Drag to line your pet up under the balloon, then let go to drop! Bounce off the gumdrops, grab candy on the way down, and land in the best bucket. Five drops a game.',
+    legend:[['candy','+2'],['star','+8'],['jackpot','big!'],['bumper','boing']],lvAt:[0,90,200,330,480,660],
+    lvSub:['','Bumpers! Boing!','Wiggly gumdrops!','Bigger jackpot!','Double candy!','Wild board!'],
+    VAL:[15,5,35,0,35,5,15],
+    init(g){const w=g.w,h=g.h;g.drops=5;g.st='aim';g.ax=w/2;g.cols=7;g.sx=w/g.cols;g.top=h*.2;g.bot=h*.8;g.pr=Math.min(g.sx*.15,h*.028);g.r=Math.min(g.sx*.3,h*.05);g.ps=g.r*3.1;g.rot=0;g.cheerT=0;g.sadT=0;g.flash=[];
+      g.pegs=[];const rows=7;for(let j=0;j<rows;j++){const y=g.top+(j+.5)*(g.bot-g.top)/rows,off=j%2?g.sx/2:0;for(let i=j%2?0:1;i<=g.cols;i++){const x=i*g.sx-off;if(x<g.pr*2||x>w-g.pr*2)continue;g.pegs.push({x,y,x0:x,c:(i+j)%5,j,h:0})}}
+      g.bumpers=[];g.items=[];this.newDrop(g)},
+    newDrop(g){const L=g.lv,w=g.w,h=g.h;g.st='aim';g.x=g.ax;g.y=g.top*.55;g.vx=0;g.vy=0;g.rot=0;g.spin=0;g.fallT=0;g.landT=0;g.combo=0;g.dropTaken=false;
+      g.items=[];const n=L>=5?12:7;for(let k=0;k<n+1;k++){const star=k===n,y=g.top+(Math.random()*.86+.07)*(g.bot-g.top),x=g.sx*.5+Math.random()*(w-g.sx);g.items.push({x,y,star,t:Math.random()*6,got:0})}
+      g.bumpers=L>=2?[0,1].map(i=>({x:w*(i?.72:.28),y:g.top+(g.bot-g.top)*(i?.42:.62),r:g.sx*.34,f:0})):[];
+      g.jack=60+Math.max(0,L-3)*30},
+    upd(g,dt){const w=g.w,h=g.h,L=g.lv;g.cheerT=Math.max(0,g.cheerT-dt);g.sadT=Math.max(0,g.sadT-dt);g.items.forEach(it=>it.t+=dt);g.bumpers.forEach(b=>b.f=Math.max(0,b.f-dt*3));g.pegs.forEach(q=>q.h=Math.max(0,q.h-dt*4));
+      if(L>=3||L>=6)g.pegs.forEach(q=>{if(q.j%2===(L>=6?q.j%2:1))q.x=q.x0+Math.sin(g.t*1.4+q.j)*g.sx*.18});
+      if(g.st==='aim'){g.x=approach(g.x,clamp(g.ax,g.r,w-g.r),dt*10);g.y=g.top*.55+Math.sin(g.t*2.2)*4;return}
+      if(g.st==='land'){g.landT+=dt;if(g.landT>1.3){if(--g.drops<=0){g.over=true;return}this.newDrop(g)}return}
+      // falling: a few sub-steps of gravity, pegs, bumpers, walls, buckets
+      g.fallT+=dt;const G=h*1.35,sub=5,hd=dt/sub,r=g.r,bw=w/7,bTop=h-h*.12;
+      for(let s_=0;s_<sub;s_++){g.vy+=G*hd;g.x+=g.vx*hd;g.y+=g.vy*hd;
+        for(const q of g.pegs){const dx=g.x-q.x,dy=g.y-q.y,d=Math.hypot(dx,dy),m=r+g.pr;if(d<m&&d>0){const nx=dx/d,ny=dy/d;g.x=q.x+nx*m;g.y=q.y+ny*m;const vn=g.vx*nx+g.vy*ny;if(vn<0){g.vx-=1.55*vn*nx;g.vy-=1.55*vn*ny;g.vx+=(Math.random()-.5)*40;g.spin+=g.vx*.004;if(q.h<.2){q.h=1;g.combo++;if(g.combo%6===0){g.score+=3;gFx(g,g.x,g.y-20,`Bouncy! +3`,'#B07BFF')}}}}}
+        for(const b of g.bumpers){const dx=g.x-b.x,dy=g.y-b.y,d=Math.hypot(dx,dy),m=r+b.r;if(d<m&&d>0){const nx=dx/d,ny=dy/d;g.x=b.x+nx*m;g.y=b.y+ny*m;const sp=Math.max(420,Math.hypot(g.vx,g.vy)*1.1);g.vx=nx*sp;g.vy=ny*sp-60;b.f=1;g.score+=3;g.shake=.25;gFx(g,b.x,b.y-b.r,'Boing! +3','#FF5FA8');gBurst(g,b.x+nx*b.r,b.y+ny*b.r,10,['#FF5FA8','#FFD21F','#fff'],{shape:'star',sp:220})}}
+        if(g.x<r){g.x=r;g.vx=Math.abs(g.vx)*.6}if(g.x>w-r){g.x=w-r;g.vx=-Math.abs(g.vx)*.6}
+        if(g.y>bTop-r){for(let i=1;i<7;i++){const ex=i*bw;if(Math.abs(g.x-ex)<r*.9){g.x=ex+(g.x<ex?-r*.9:r*.9);g.vx*=-.5}}}
+        if(g.y>h-r*1.05){g.y=h-r*1.05;const bi=clamp(Math.floor(g.x/bw),0,6),v=bi===3?g.jack:this.VAL[bi];g.score+=v;g.st='land';g.landT=0;g.lastB=bi;
+          if(bi===3){g.cheerT=1.6;g.shake=.5;gFx(g,g.x,h-h*.2,`JACKPOT! +${v}`,'#FFB300',30);gBurst(g,g.x,h-h*.1,34,['#FFD21F','#FF5FA8','#3EC8F2','#fff'],{shape:'star',sp:360,up:200})}
+          else if(v>=30){g.cheerT=1.1;gFx(g,g.x,h-h*.2,'+'+v,'#FF5FA8',26);gBurst(g,g.x,h-h*.1,18,['#FF5FA8','#FFD21F','#fff'],{sp:260,up:160})}
+          else{g.sadT=v<=5?.9:0;gFx(g,g.x,h-h*.2,'+'+v,v<=5?'#9C92BF':'#3EC8F2',22)}
+          while(g.lv<this.lvAt.length&&g.score>=this.lvAt[g.lv])gLevel(g,this.lvSub[Math.min(g.lv,this.lvSub.length-1)]);break}}
+      g.items.forEach(it=>{if(it.got)return;if(Math.hypot(g.x-it.x,g.y-it.y)<g.r+g.sx*.16){it.got=1;const v=it.star?8:2;g.score+=v;gFx(g,it.x,it.y,'+'+v,it.star?'#FFB300':'#B07BFF');gBurst(g,it.x,it.y,it.star?16:8,it.star?['#FFD21F','#fff']:['#C9A6FF','#FF5FA8','#fff'],{shape:it.star?'star':'dot',sp:200,life:.5})}});
+      g.rot+=g.spin*dt*60*.02;g.spin*=1-dt*.8;g.rot+=g.vx*dt*.004;
+      if(g.fallT>9&&Math.hypot(g.vx,g.vy)<40){g.vx=(Math.random()-.5)*300;g.vy=-120}},
+    down(g,px){if(g.st!=='aim')return;g.ax=px;g.aiming=true},
+    move(g,px){if(g.st==='aim')g.ax=px},
+    up(g){if(g.st!=='aim'||!g.aiming)return;g.aiming=false;g.st='fall';g.vx=(g.ax-g.x)*2+(Math.random()-.5)*20;g.vy=40;g.spin=(Math.random()-.5)*2;gBurst(g,g.x,g.y-g.r*1.6,8,['#FF5FA8','#fff'],{sp:140,up:60})},
+    pose(g,t){if(g.sadT>0)return PZ.sad(t);if(g.cheerT>0)return PZ.cheer(t);
+      if(g.st==='aim')return{arms:[{rz:-2.75+Math.sin(t*2.2)*.08,rx:-.1},{rz:2.75-Math.sin(t*2.2)*.08,rx:-.1}],legs:[Math.sin(t*2.2)*.25,-Math.sin(t*2.2)*.25],look:{x:0,y:-.7},heads:[{rx:.25,rz:.08},{rx:.25,rz:-.08}],mouth:.2};
+      if(g.st==='fall')return{arms:[{rz:-(1.9+Math.sin(t*15)*.6),rx:Math.sin(t*11)*.4},{rz:1.9+Math.sin(t*15+1)*.6,rx:Math.cos(t*11)*.4}],legs:[Math.sin(t*13)*.5,Math.cos(t*13)*.5],mouth:.85,lid:.35,heads:[{rz:Math.sin(t*9)*.2},{rz:-Math.sin(t*9)*.2}],sy:Math.sin(t*20)*.04};
+      return{arms:[{rz:-.9,rx:-.3},{rz:.9,rx:-.3}],mouth:.3}},
+    gumdrop(x,cx,cy,r,c,hit){const sq=hit?1+hit*.25:1;x.save();x.translate(cx,cy);x.scale(1/sq*1.1,sq*.9);x.beginPath();x.moveTo(-r*1.1,r*.75);x.quadraticCurveTo(-r*1.15,-r*.9,0,-r*1.05);x.quadraticCurveTo(r*1.15,-r*.9,r*1.1,r*.75);x.quadraticCurveTo(0,r*1.05,-r*1.1,r*.75);x.closePath();
+      x.fillStyle=gRad(x,0,0,r*1.2,[lighten2(c,.45),c]);x.fill();x.lineWidth=Math.max(2,r*.28);x.strokeStyle=GINK;x.stroke();x.fillStyle='rgba(255,255,255,.8)';x.beginPath();x.ellipse(-r*.4,-r*.45,r*.28,r*.14,-.6,0,7);x.fill();
+      x.fillStyle='rgba(255,255,255,.65)';[[.3,.1],[-.1,.35],[.5,.45],[-.5,.1]].forEach(([a,b])=>{x.fillRect(a*r,b*r,r*.12,r*.12)});x.restore()},
+    draw(g,x){const w=g.w,h=g.h,DC=['#FF5FA8','#FFD21F','#A6E22E','#3EC8F2','#B07BFF'];x.fillStyle=gGrad(x,0,0,0,h,['#FFE3F3','#FFF3F9','#D9F2FF']);x.fillRect(0,0,w,h);
+      x.save();x.globalAlpha=.22;for(let i=0;i<26;i++){const a=i*2.4,rx=(i*97)%w,ry=(i*53)%h;x.fillStyle=DC[i%5];x.save();x.translate(rx,ry);x.rotate(a);rr(x,-6,-2,12,4,2);x.fill();x.restore()}x.restore();
+      // the balloon rail
+      x.fillStyle='rgba(255,255,255,.7)';rr(x,8,g.top*.18,w-16,6,3);x.fill();
+      g.items.forEach(it=>{if(it.got)return;const bob=Math.sin(it.t*3)*3;if(it.star)drawSpr(x,sprite('dstar',g.sx*.16,(q,r)=>TREATS.star(q,r)),it.x,it.y+bob,Math.sin(it.t)*.2);else drawSpr(x,sprite('dcandy',g.sx*.13,(q,r)=>TREATS.candy(q,r)),it.x,it.y+bob,Math.sin(it.t*1.3)*.3)});
+      g.bumpers.forEach(b=>{const s_=1+b.f*.18;x.save();x.translate(b.x,b.y);x.scale(s_,s_);gCirc(x,0,0,b.r,gRad(x,0,0,b.r,['#FFC4E3','#FF5FA8']),3.5);gGloss(x,0,0,b.r,.7);x.fillStyle=GINK;[-1,1].forEach(d=>{x.beginPath();x.arc(d*b.r*.3,-b.r*.08,b.r*.09,0,7);x.fill()});x.lineWidth=3;x.strokeStyle=GINK;x.beginPath();x.arc(0,b.r*.12,b.r*.2,.2,Math.PI-.2);x.stroke();x.restore()});
+      g.pegs.forEach(q=>this.gumdrop(x,q.x,q.y,g.pr,DC[q.c],q.h));
+      // buckets
+      const bw=w/7,bt=h-h*.12;for(let i=0;i<7;i++){const v=i===3?g.jack:this.VAL[i],X=i*bw,hot=g.st==='land'&&g.lastB===i;x.beginPath();rr(x,X+3,bt,bw-6,h-bt+10,12);x.fillStyle=i===3?gGrad(x,0,bt,0,h,['#FFE98A','#FFB300']):gGrad(x,0,bt,0,h,[['#D9F2FF','#FFE3F3','#E6FFD0'][i%3],'#FFFFFF']);x.fill();x.lineWidth=3;x.strokeStyle=GINK;x.stroke();
+        if(hot){x.save();x.globalAlpha=.5+Math.sin(g.t*20)*.3;x.fillStyle='#fff';rr(x,X+3,bt,bw-6,h-bt,12);x.fill();x.restore()}
+        if(i===3)star5(x,X+bw/2,bt+h*.035,Math.min(bw*.18,14),'#fff');gText(x,i===3?String(v):String(v),X+bw/2,bt+h*(i===3?.08:.06),i===3?'#FF5FA8':'#fff',Math.min(22,bw*.32))}
+      // the pet: dangling from its balloon, then tumbling
+      if(g.st==='aim'){const bx=g.x,by=g.top*.2;x.strokeStyle=GINK;x.lineWidth=2;x.beginPath();x.moveTo(bx,by+26);x.quadraticCurveTo(bx+Math.sin(g.t*2)*6,(by+g.y)/2,g.x,g.y-g.r*1.2);x.stroke();
+        this.gumdrop(x,bx,by+8,18,'#FF5FA8');x.strokeStyle='rgba(59,18,115,.25)';x.setLineDash([4,6]);x.beginPath();x.moveTo(g.x,g.y+g.r);x.lineTo(g.x,g.top);x.stroke();x.setLineDash([])}
+      if(gpOn&&g.ps>0){const sz=g.ps,px=Math.min(420,Math.round(sz*(gm?gm.dpr:1)));if(gpR.__sz!==px){gpR.setSize(px,px,false);gpR.__sz=px}gpR.render(gpSc,gpCam);
+        x.save();x.translate(g.x,g.y);x.rotate(g.st==='fall'?g.rot:Math.sin(g.t*2.2)*.08);x.drawImage(gpR.domElement,-sz/2,-sz*.55,sz,sz);x.restore()}
+      // drops left
+      for(let i=0;i<5;i++)this.gumdrop(x,16+i*20,g.top*.62,7,i<g.drops?'#FF5FA8':'#E4D6F7')},
+    art(x,w,h,pi){const g={w,h,t:1,lv:2,score:0,fx:[],pt:[],drops:5};this.init.call(this,g);g.st='fall';g.x=w*.44;g.y=h*.45;g.rot=.4;this.draw.call(this,Object.assign(g,{ps:0}),x);if(pi){x.save();x.translate(w*.44,h*.45);x.rotate(.35);x.drawImage(pi,-h*.19,-h*.22,h*.38,h*.38);x.restore()}}},
   says:{n:'{pet} Says',c:'#FF3D9A',bg:['#FFE0F0','#FFF3C4'],xp:250,stars:[60,180,360],titles:['Good Listener','Copy Cat','Echo Buddy','Memory Pal','Mind Reader','Memory Legend'],
     how:'Watch the jelly buttons light up, then tap them back in the same order. Each round adds one more. You have three hearts, and a slip just replays the tune.',
     legend:[['tap','5 × level'],['round','10 × round'],['life','3 tries']],
@@ -4894,6 +4961,7 @@ function gmCard(html){const c=$('#gmCard');c.innerHTML=html;c.hidden=false}
 function gmIcon(k,key){const D=GAMES[k],c=mkCanvas(64,64),x=c.getContext('2d');x.translate(32,32);
   if(k==='catch')TREATS[key](x,key==='cloud'?16:18);else if(k==='pop')bubbleArt(x,20,BCOL[0],key==='b0'?'':key);
   else if(k==='stack'){if(key==='perfect')star5(x,0,0,20,'#FFD21F');else gJelly(x,-26,-12,52,24,'#A6E22E')}
+  else if(k==='drop'){if(key==='candy')TREATS.candy(x,16);else if(key==='star')TREATS.star(x,18);else if(key==='jackpot')star5(x,0,0,22,'#FFD21F');else{gCirc(x,0,0,20,gRad(x,0,0,20,['#FFC4E3','#FF5FA8']),3);gGloss(x,0,0,20,.7)}}
   else{if(key==='life')heartAt(x,0,0,18,'#FF5FA8');else if(key==='round')star5(x,0,0,20,'#B07BFF');else gCirc(x,0,0,18,gRad(x,0,0,18,['#FFB3DA','#FF5FA8']),3)}return c.toDataURL()}
 function gmNew(){const r=gmSize();gm.s={w:r.width,h:r.height,t:0,score:0,lv:1,over:false,fx:[],pt:[],shake:0,banner:null,time:null};GAMES[gm.k].init(gm.s)}
 function openGame(k){if(!GAMES[k])return;tdEnsure();closeProduct();setTab(null);const D=GAMES[k],el=$('#game');gm={k,play:false,dpr:1};
@@ -4933,7 +5001,7 @@ $('#gmX').onclick=closeGame;
 const gmPt=e=>{const r=gmc.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};
 gmc.addEventListener('pointerdown',e=>{if(!gm||!gm.play)return;e.preventDefault();gm.down=true;const D=GAMES[gm.k];if(D.down)D.down.call(D,gm.s,...gmPt(e))});
 gmc.addEventListener('pointermove',e=>{if(!gm||!gm.play)return;const D=GAMES[gm.k];if(D.move&&(gm.down||e.pointerType==='mouse'))D.move.call(D,gm.s,...gmPt(e))});
-window.addEventListener('pointerup',()=>{if(gm)gm.down=false});
+window.addEventListener('pointerup',()=>{if(gm){gm.down=false;const D=GAMES[gm.k];if(gm.play&&gm.s&&D.up)D.up.call(D,gm.s)}});
 window.addEventListener('resize',()=>{if(gm&&!gm.play){gmNew()}});
 // the high-score board on the arcade wall
 let scoreCv=null,scoreTex=null;
