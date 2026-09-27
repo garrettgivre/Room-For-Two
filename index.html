@@ -1208,7 +1208,8 @@ const SETS=[
  {k:'candy',img:'set-candy',n:'Sweet Tooth',e:'🍭',c:'#FF6FB5'},
  {k:'calm',img:'set-calm',n:'Oat & Linen',e:'🌾',c:'#E8D8BC'},
  {k:'monster',img:'set-monster',n:'Dumpster Den',e:'👾',c:'#B5E03A'},
- {k:'play',img:'set-play',n:'Toybox',e:'🧸',c:'#F2C230'}
+ {k:'play',img:'set-play',n:'Toybox',e:'🧸',c:'#F2C230'},
+ {k:'garden',img:'set-garden.svg',n:'Fairy Garden',e:'🍄',c:'#7FD08A'}
 ];
 const SETMAP={};SETS.forEach(s=>SETMAP[s.k]=s);
 const FUNCS=[['seat','Seats','🛋️'],['bed','Beds','🛏️'],['surface','Tables','🍽️'],['storage','Storage','📦'],['light','Lights','💡'],['fun','Fun','🕹️'],['plant','Plants','🌵'],['rug','Rugs','🌀'],['deco','Decor','🗿'],['wall','Walls','🖼️'],['pet','Pet','🐾']];
@@ -1313,6 +1314,21 @@ const CAT=[
  {k:'cloudshelf',n:'Cloud shelf',set:'play',fn:'wall',p:3,dc:7,wall:1,y:1.7},
  {k:'bunting',n:'Flag bunting',set:'play',fn:'wall',p:2,dc:1,wall:1,y:2.8},
  {k:'kiddrawing',n:'Fridge drawing',set:'play',fn:'wall',p:1,dc:3,wall:1,y:1.6},
+ // Fairy Garden
+ {k:'toadstool',n:'Toadstool stool',set:'garden',fn:'seat',p:4,dc:1,perch:{y:.86,z:0,fe:.52}},
+ {k:'petalchair',n:'Petal armchair',set:'garden',fn:'seat',p:8,dc:0,perch:{y:.46,z:.06,w:.32,bz:-.22,fe:.45}},
+ {k:'leafbed',n:'Leaf canopy bed',set:'garden',fn:'bed',p:13,dc:0,perch:{y:.72,z:.3,x:[-.4,0,.4],w:1.0,bz:-.8,pz:-1.05,side:1,se:1.12,kind:'bed',foot:1.52}},
+ {k:'stumptable',n:'Tree stump table',set:'garden',fn:'surface',p:5,dc:1},
+ {k:'beehive',n:'Honey hive cabinet',set:'garden',fn:'storage',p:6,dc:3},
+ {k:'flowerlamp',n:'Tulip lamp',set:'garden',fn:'light',p:5,dc:0},
+ {k:'sunflower',n:'Potted sunflower',set:'garden',fn:'plant',p:4,dc:3},
+ {k:'mossrug',n:'Moss & clover rug',set:'garden',fn:'rug',p:3,dc:0,flat:1},
+ {k:'birdbath',n:'Bird bath',set:'garden',fn:'deco',p:6,dc:7},
+ {k:'dandelion',n:'Giant dandelion',set:'garden',fn:'fun',p:5,dc:12},
+ {k:'acornbed',n:'Acorn pet bed',set:'garden',fn:'pet',p:4,dc:5,flat:1,sleep:1},
+ {k:'leafbowl',n:'Leaf bowl',set:'garden',fn:'pet',p:2,dc:1,flat:1,feed:1},
+ {k:'butterflyart',n:'Butterfly frame',set:'garden',fn:'wall',p:4,dc:0,wall:1,y:1.9},
+ {k:'trellis',n:'Rose trellis',set:'garden',fn:'wall',p:4,dc:1,wall:1,y:1.7},
 ];
 const CATMAP={}; CAT.forEach(c=>CATMAP[c.k]=c);
 const FLOORS=['checker','zigzag','slime','wood','shag','tile','galaxy','terrazzo','sprinkle','herring','concrete','foammat'];
@@ -2344,6 +2360,129 @@ Object.assign(BUILD,{
   const S=M(0xffffff,{roughness:.2});const R=rnd(9);for(let i=0;i<46;i++){const a=R()*6.28,y=.04+R()*.62,r=(y<.5?.44-(y/.5)*.14:.3*Math.sqrt(Math.max(0,1-Math.pow((y-.5)/.165,2))))+.006;const q=ol(nosh(bx(g,.024,.024,.024,S,Math.cos(a)*r,y,Math.sin(a)*r)),0);q.rotation.set(R()*3,R()*3,R()*3)}return g}
 });
 // Builds a catalogue piece with rounded box edges, then gives each material a surface type (fabric, wood, speckle).
+/* ================= FURNITURE SETS II: Fairy Garden, Seaside, Snow Lodge, Music & Art, Bookworm Nook ================= */
+// latheGeo: spin a profile [[r,y],...] (bottom to top) round the y axis, with smooth normals from the profile.
+function latheGeo(pts,seg){seg=seg||36;const P=[],N=[],U=[],I=[],n=pts.length;
+  const pn=pts.map((q,i)=>{const a=pts[Math.max(0,i-1)],b=pts[Math.min(n-1,i+1)],dr=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dr,dy)||1;return[dy/l,-dr/l]});
+  for(let j=0;j<=seg;j++){const a=j/seg*Math.PI*2,c=Math.cos(a),sn=Math.sin(a);for(let i=0;i<n;i++){const [r,y]=pts[i],[nr,ny]=pn[i];P.push(r*sn,y,r*c);N.push(nr*sn,ny,nr*c);U.push(j/seg,i/(n-1))}}
+  for(let j=0;j<seg;j++)for(let i=0;i<n-1;i++){const a=j*n+i,b=(j+1)*n+i;I.push(a,b,a+1,b,b+1,a+1)}
+  return new THREE.BufferGeometry(P,N,U,I)}
+const lathe=(g,pts,m,x,y,z,seg)=>add(g,gcache('L'+pts.join(';')+'|'+(seg||36),()=>latheGeo(pts,seg)),m,x||0,y||0,z||0);
+// a leaf blade (flat, pointed both ends) with a slight thickness; length along +y
+function leafGeo(L,W){const s=new THREE.Shape();s.moveTo(0,0);s.bezierCurveTo(W*.9,L*.2,W*.7,L*.75,0,L);s.bezierCurveTo(-W*.7,L*.75,-W*.9,L*.2,0,0);return new THREE.ExtrudeGeometry(s,{depth:.012,bevelEnabled:true,bevelThickness:.008,bevelSize:.008,bevelSegments:1})}
+// spots stuck flat onto a surface: position p, facing away from centre c
+function flatSpot(g,r,m,p,c,sq){const s_=sp(g,r,m,p[0],p[1],p[2],1,1,sq||.3);s_.lookAt(c[0],c[1],c[2]);return s_}
+const BARK=0x7A5134,MOSS=0x6FB04A,STONE=0xB9B2C9,TERRA=0xD9784A;
+function barkTex(){return tcache('bark',()=>ctex(256,256,(x,w,h)=>{x.fillStyle='#8A5E3C';x.fillRect(0,0,w,h);const R=rnd(4);
+  for(let i=0;i<46;i++){const X=R()*w;x.strokeStyle=R()<.55?'rgba(52,28,12,.85)':'rgba(186,136,92,.6)';x.lineWidth=3+R()*5;x.beginPath();x.moveTo(X,0);for(let y=0;y<=h;y+=16)x.lineTo(X+Math.sin(y*.05+i)*6,y);x.stroke()}},true))}
+function ringTex(){return tcache('rings',()=>ctex(256,256,(x,w,h)=>{x.fillStyle='#E7C28E';x.fillRect(0,0,w,h);const R=rnd(9);for(let i=26;i>0;i--){x.strokeStyle=i%3?'rgba(160,110,60,.45)':'rgba(120,75,40,.6)';x.lineWidth=1.5+R()*1.5;x.beginPath();x.ellipse(w/2+R()*3,h/2+R()*3,i*4.8,i*4.6,0,0,7);x.stroke()}
+  x.strokeStyle='rgba(110,70,35,.5)';x.lineWidth=2;x.beginPath();x.moveTo(w/2,h/2);x.lineTo(w*.82,h*.3);x.stroke()}))}
+function mossTex(c){return tcache('moss'+c,()=>ctex(512,512,(x,w,h)=>{x.fillStyle='#6FB04A';x.fillRect(0,0,w,h);const R=rnd(3);
+  for(let i=0;i<5000;i++){x.fillStyle=['#5C9C3C','#86C85A','#4E8A34','#9AD66A'][i%4];x.globalAlpha=.55;x.beginPath();x.arc(R()*w,R()*h,1+R()*3.5,0,7);x.fill()}x.globalAlpha=1;
+  for(let i=0;i<40;i++){const X=R()*w,Y=R()*h;x.fillStyle='#3F7E2C';[0,2.1,4.2].forEach(a=>{x.beginPath();x.arc(X+Math.cos(a)*6,Y+Math.sin(a)*6,6,0,7);x.fill()})}
+  for(let i=0;i<46;i++){const X=R()*w,Y=R()*h,cl=[hex(c),'#FFFFFF','#FFD21F','#C9A8FF'][i%4];x.fillStyle=cl;for(let k=0;k<5;k++){const a=k/5*Math.PI*2;x.beginPath();x.arc(X+Math.cos(a)*4,Y+Math.sin(a)*4,3.2,0,7);x.fill()}x.fillStyle='#FFE36E';x.beginPath();x.arc(X,Y,2.4,0,7);x.fill()}}))}
+function scaleTex(){return tcache('acornsc',()=>ctex(256,128,(x,w,h)=>{x.fillStyle='#8C5A32';x.fillRect(0,0,w,h);for(let j=0;j<9;j++)for(let i=0;i<17;i++){const X=i*16+(j%2)*8,Y=j*15;x.fillStyle=j%2?'#A36C3E':'#7A4B28';x.beginPath();x.ellipse(X,Y,8,9,0,0,Math.PI);x.fill();x.strokeStyle='rgba(50,25,10,.5)';x.lineWidth=1.5;x.stroke()}},true))}
+function seedTex(){return tcache('seeds',()=>ctex(256,256,(x,w,h)=>{x.fillStyle='#5A3218';x.fillRect(0,0,w,h);for(let i=0;i<420;i++){const r=Math.sqrt(i/420)*120,a=i*2.39996;x.fillStyle=i%3?'#7A4A24':'#3E200E';x.beginPath();x.ellipse(w/2+Math.cos(a)*r,h/2+Math.sin(a)*r,3.4,2.4,a,0,7);x.fill()}}))}
+function petalQuiltTex(c){return tcache('pq'+c,()=>ctex(512,448,(x,w,h)=>{x.fillStyle=hex(c);x.fillRect(0,0,w,h);x.strokeStyle='rgba(255,255,255,.45)';x.lineWidth=3;x.setLineDash([9,7]);
+  for(let i=1;i<6;i++){x.beginPath();x.moveTo(i*w/6,0);x.lineTo(i*w/6,h);x.stroke();x.beginPath();x.moveTo(0,i*h/6);x.lineTo(w,i*h/6);x.stroke()}x.setLineDash([]);
+  for(let j=0;j<6;j++)for(let i=0;i<6;i++){const X=(i+.5)*w/6,Y=(j+.5)*h/6;x.fillStyle=(i+j)%2?'#FFFFFF':hex(lighten(c,.55));for(let k=0;k<5;k++){const a=k/5*Math.PI*2+(i+j);x.beginPath();x.ellipse(X+Math.cos(a)*11,Y+Math.sin(a)*11,9,6,a,0,7);x.fill()}x.fillStyle='#FFD86A';x.beginPath();x.arc(X,Y,6,0,7);x.fill()}}))}
+function waterMat(){return M(0x7FD8F5,{roughness:.05,metalness:.1,emissive:0x3EC8F2,emissiveIntensity:.18})}
+Object.assign(BUILD,{
+ // ---- Fairy Garden ----
+ toadstool(c){const g=G(),Cr=M(CREAM,{roughness:.7}),Cp=M(c,{roughness:.35}),Wh=M(0xFFFFFF,{roughness:.5}),Gr=M(MOSS,{roughness:.8});
+  lathe(g,[[.2,0],[.23,.03],[.2,.1],[.165,.3],[.155,.46],[.18,.54]],M(0xF6E4C6,{roughness:.7}));
+  const gil=lathe(g,[[.17,.53],[.3,.555],[.44,.575],[.47,.58]],M(0xF1E2C4,{roughness:.8,side:THREE.DoubleSide}));for(let i=0;i<22;i++){const a=i/22*Math.PI*2;const b=ol(nosh(bx(g,.26,.012,.012,M(0xE2CFA8),Math.sin(a)*.32,.565,Math.cos(a)*.32)),0);b.rotation.y=a+Math.PI/2;b.rotation.z=-.1}
+  lathe(g,[[.47,.575],[.5,.6],[.5,.64],[.46,.71],[.38,.78],[.25,.83],[.1,.855],[0,.86]],Cp,0,0,0,48);
+  const R=rnd(5);for(let i=0;i<9;i++){const a=R()*6.28,ph=.35+R()*.85,rr_=.5*Math.sin(ph)*.95,y=.6+(.86-.6)*Math.cos(ph);flatSpot(g,.045+R()*.035,Wh,[Math.sin(a)*rr_,y+.01,Math.cos(a)*rr_],[0,.35,0],.28)}
+  for(let i=0;i<14;i++){const a=i/14*Math.PI*2+.2,k=co(g,.035,.16+(i%3)*.05,Gr,Math.sin(a)*.25,.07,Math.cos(a)*.25,6);k.rotation.set(Math.cos(a)*.35,0,-Math.sin(a)*.35)}
+  [[.3,.18,.7],[-.28,.24,.55]].forEach(([x,z,s_])=>{lathe(g,[[.05*s_,0],[.04*s_,.12*s_],[.05*s_,.14*s_]],Cr,x,0,z);lathe(g,[[.12*s_,.13*s_],[.1*s_,.18*s_],[0,.21*s_]],Cp,x,0,z)});return g},
+ petalchair(c){const g=G(),P=M(c,{roughness:.5}),Pl=M(lighten(c,.45),{roughness:.55}),Y=M(0xFFD86A,{roughness:.6}),Gr=M(MOSS,{roughness:.8}),Gd=M(0x4E8A34,{roughness:.8});
+  lathe(g,[[.44,0],[.47,.04],[.47,.26],[.42,.32]],Gr,0,0,0,40);for(let i=0;i<8;i++){const a=i/8*Math.PI*2,pv=piv(g,Math.sin(a)*.4,.02,Math.cos(a)*.4);pv.rotation.y=a;const l=add(pv,leafGeo(.42,.2),Gd,0,0,0);l.rotation.x=1.25;ol(l,.008)}
+  for(let i=0;i<12;i++){const a=i/12*Math.PI*2;const r_=rb(g,.07,.26,.05,.025,Gd,Math.sin(a)*.465,.16,Math.cos(a)*.465);r_.rotation.y=a}
+  lathe(g,[[0,.3],[.38,.31],[.44,.35],[.45,.4],[.41,.445],[.25,.465],[0,.47]],Y,0,0,0,44);for(let i=0;i<34;i++){const r=Math.sqrt(i/34)*.34,a=i*2.4;ol(nosh(sp(g,.018,M(0xE6A93A),Math.sin(a)*r,.468-r*r*.25,Math.cos(a)*r,1,.5,1)),0)}
+  [[-1.25,.6,.62,1],[-.62,.72,.66,1],[0,.78,.7,1],[.62,.72,.66,1],[1.25,.6,.62,1]].forEach(([a,y,h])=>{const pv=piv(g,Math.sin(a+Math.PI)*.36,y,Math.cos(a+Math.PI)*.36);pv.rotation.y=a+Math.PI;
+    const pe=add(pv,SPH(1,28,20),P,0,0,0);pe.scale.set(.27,h*.55,.07);pe.rotation.x=-.28;ol(pe,.012);const il=add(pv,SPH(1,20,14),Pl,0,-.03,-.04);il.scale.set(.17,h*.4,.03);il.rotation.x=-.28;ol(il,0);const cr=add(pv,new THREE.BoxGeometry(.014,h*.7,.012),M(shade(c,.2)),0,-.02,-.075);cr.rotation.x=-.28;ol(cr,0)});
+  [-1,1].forEach(s_=>{const pv=piv(g,s_*.44,.46,.04);const pe=add(pv,SPH(1,24,16),P,0,0,0);pe.scale.set(.1,.2,.34);pe.rotation.z=-s_*.35;ol(pe,.012)});return g},
+ leafbed(c){const g=G(),W=M(0xffffff,{map:barkTex(),roughness:.85}),Ms=M(0xffffff,{map:mossTex(0xFF8FC8),roughness:.95}),Bl=M(c,{roughness:.8}),Bll=M(lighten(c,.45),{roughness:.85}),Ln=M(CREAM,{roughness:.9}),Lf=M(0x5DAF4E,{roughness:.55}),Lfd=M(0x3F8A3A,{roughness:.6});
+  rb(g,2.2,.26,3,.08,W,0,.24,0);[[-1,-1.38],[1,-1.38],[-1,1.38],[1,1.38]].forEach(([x,z])=>{cy(g,.12,.13,.3,W,x*1.02,.11,z,14);cy(g,.12,.12,.012,M(0xffffff,{map:ringTex()}),x*1.02,.265,z,14)});
+  rb(g,2.05,.26,2.85,.12,Ms,0,.5,0);
+  rb(g,2.12,.09,1.85,.05,M(0xffffff,{map:petalQuiltTex(c),roughness:.85}),0,.67,.45);rb(g,2.14,.07,.28,.035,Bll,0,.71,-.44);for(let i=0;i<9;i++)ol(sp(g,.14,Bl,-.96+i*.24,.63,1.38,1,.45,.6),.008);
+  
+  [-.47,.47].forEach(x=>{rb(g,.82,.2,.46,.1,Ln,x,.72,-1.05);const f=piv(g,x,.83,-1.05);for(let k=0;k<5;k++){const a=k/5*Math.PI*2;ol(nosh(sp(f,.05,M(0xFFFFFF),Math.cos(a)*.06,.0,Math.sin(a)*.06,1,.4,1)),0)}ol(nosh(sp(f,.035,M(0xFFD86A),0,.01,0,1,.5,1)),0)});
+  // headboard: twig arch woven with vines, fairy lights and two big leaves bending over the pillows
+  const arch=[];for(let i=0;i<=16;i++){const a=i/16*Math.PI;arch.push([-Math.cos(a)*1.05,.3+Math.sin(a)*1.35])}const hb=piv(g,0,0,-1.45);tube(hb,arch,.06,W,false,0);tube(hb,arch.map(([x,y])=>[x*.86,y*.9+.05]),.035,W,false,0);
+  const lt=M(0xFFF3B0,{emissive:0xFFD86A,emissiveIntensity:1.5});for(let i=1;i<16;i++){const [x,y]=arch[i];ol(nosh(sp(hb,.035,lt,x,y-.08,.05)),.004)}
+  for(let i=0;i<22;i++){const a=i/22*Math.PI,x=-Math.cos(a)*1.05,y=.3+Math.sin(a)*1.35;const l=add(hb,leafGeo(.16,.08),i%2?Lf:Lfd,x,y,.02);l.rotation.z=a*2+i;ol(l,.006)}
+  [-1,1].forEach(s_=>{const pv=piv(g,s_*.5,1.55,-1.4);pv.rotation.set(1.05,0,-s_*.32);const lf=add(pv,leafGeo(1.25,.5),Lf,0,0,0);ol(lf,.012);
+    for(let k=1;k<6;k++){const v=add(pv,new THREE.BoxGeometry(.012,.22,.02),Lfd,0,k*.2,.02);v.rotation.z=(k%2?1:-1)*.7;v.position.x=(k%2?1:-1)*.06;ol(v,0)}ol(add(pv,new THREE.BoxGeometry(.018,1.2,.022),Lfd,0,.6,.02),0)});return g},
+ stumptable(c){const g=G(),Bk=M(0xffffff,{map:barkTex(),roughness:.9}),Rg=M(0xffffff,{map:ringTex(),roughness:.7}),Gr=M(MOSS,{roughness:.9}),Cr=M(CREAM,{roughness:.6}),Cp=M(c,{roughness:.35});
+  lathe(g,[[.72,0],[.6,.03],[.52,.08],[.48,.16],[.46,.35],[.47,.46]],Bk,0,0,0,40);cy(g,.47,.47,.02,Rg,0,.465,0,40);const Bd=M(0x5E3A20,{roughness:.95});for(let i=0;i<18;i++){const a=i/18*Math.PI*2+(i%3)*.05,pv=piv(g,Math.sin(a)*.462,.26,Math.cos(a)*.462);pv.rotation.y=a;const r_=rb(pv,.05+(i%3)*.02,.36-(i%4)*.05,.03,.012,Bd,0,(i%2)*.03,0);r_.rotation.z=(i%2?.06:-.05);ol(r_,0)}
+  for(let i=0;i<5;i++){const a=i/5*Math.PI*2+.3,r_=add(g,SPH(1,14,10),Bk,Math.sin(a)*.6,.05,Math.cos(a)*.6);r_.scale.set(.1,.07,.22);r_.rotation.y=a;ol(r_,.01)}
+  const Mt=M(0xffffff,{map:mossTex(0xFFFFFF),roughness:1});[[.2,1.2],[.3,-2.4]].forEach(([y,a])=>{const pv=piv(g,Math.sin(a)*.462,y,Math.cos(a)*.462);pv.rotation.y=a;const m=add(pv,SPH(.2,18,12),Mt,0,0,0);m.scale.set(1,.55,.12);ol(m,.006)});
+  [[-.45,.3,1],[-.3,.2,.75],[.5,.12,.8]].forEach(([a,y,s_])=>{const pv=piv(g,Math.sin(a)*.44,y,Math.cos(a)*.44);pv.rotation.y=a;const f=add(pv,SPH(.16*s_,20,10,0,Math.PI*2,0,Math.PI/2),Cp,0,0,.02);f.scale.set(1,.45,.7);ol(f,.008);const u=add(pv,new THREE.CircleGeometry(.155*s_,20),M(0xF1E2C4,{roughness:.8}),0,0,.02);u.rotation.x=Math.PI/2;u.scale.set(1,.7,1);ol(u,0)});
+  const cup=piv(g,.12,.475,.08);cy(cup,.14,.14,.015,Cr,0,.008,0,24);lathe(cup,[[.045,.015],[.075,.03],[.085,.11],[.08,.115]],Cp);cy(cup,.07,.07,.005,M(0x9C5A2E,{roughness:.2}),0,.1,0,20);const h=to(cup,.03,.009,Cp,.09,.07,0);h.rotation.y=Math.PI/2;return g},
+ beehive(c){const g=G(),H=M(0xE9B54A,{roughness:.75}),Hd=M(0xC98E2E,{roughness:.8}),W=M(0xffffff,{map:barkTex(),roughness:.85}),Dk=M(0x3B1E0A,{roughness:.9}),Hn=M(0xFFB21F,{roughness:.1,emissive:0xFF8A00,emissiveIntensity:.15});
+  cy(g,.55,.58,.12,W,0,.06,0,32);const prof=[[.5,.12],[.53,.3],[.52,.55],[.47,.8],[.37,1.02],[.22,1.18],[.08,1.25],[0,1.26]];lathe(g,prof,H,0,0,0,40);
+  for(let i=0;i<8;i++){const y=.18+i*.14,r=prof.reduce((a,[pr,py])=>Math.abs(py-y)<Math.abs(a[1]-y)?[pr,py]:a,prof[0])[0];ol(to(g,r+.012,.03,Hd,0,y,0,Math.PI/2),0)}
+  const dh=piv(g,0,.4,.5);const hole=cy(dh,.12,.12,.06,Dk,0,0,.02,24);hole.rotation.x=Math.PI/2;hole.scale.set(1,1,.8);ol(hole,0);ol(to(dh,.125,.028,Hd,0,0,.045),.006);rb(dh,.34,.035,.16,.012,W,0,-.15,.1);
+  const drip=lathe(g,[[.06,0],[.05,.05],[.02,.12]],Hn,.2,.62,.44);drip.rotation.x=Math.PI;
+  const bees=[0,1,2].map(i=>{const b=piv(g);const bb=piv(b,.75,0,0);const bd=add(bb,SPH(.06,14,10),M(0xFFD21F,{roughness:.4}),0,0,0);bd.scale.set(1.3,1,1);ol(bd,.006);[-.02,.03].forEach(x=>ol(nosh(cy(bb,.061,.061,.018,M(0x2A1A0A),x,0,0,14)),0).rotation.z=Math.PI/2);
+    [-1,1].forEach(s_=>{const w=nosh(add(bb,SPH(.045,10,8),M(0xE8F6FF,{transparent:true,opacity:.7}),0,.05,s_*.03));w.scale.set(1,.3,.6);ol(w,0)});return{b,bb,ph:i*2.1,r:.7+i*.08,y:.7+i*.2}});
+  g.userData.anim=t=>bees.forEach(q=>{q.b.rotation.y=t*.9+q.ph;q.bb.position.set(q.r,q.y+Math.sin(t*3+q.ph)*.08,0);q.bb.rotation.y=Math.PI/2});return g},
+ flowerlamp(c){const g=G(),Gr=M(0x4E9A3E,{roughness:.6}),Pt=M(0xffffff,{map:mossTex(c),roughness:.95}),P=M(c,{roughness:.4}),Glow=M(lighten(c,.7),{emissive:lighten(c,.35),emissiveIntensity:1.4,roughness:.4});
+  lathe(g,[[.26,0],[.3,.04],[.31,.16],[.27,.2]],Pt,0,0,0,32);const st=[];for(let i=0;i<=12;i++){const u=i/12;st.push([Math.sin(u*2.4)*.12,.18+u*1.3])}tube(g,st,.035,Gr,false,0);
+  [[.45,-1],[.8,1]].forEach(([u,s_])=>{const y=.18+u*1.3,l=add(g,leafGeo(.42,.16),Gr,Math.sin(u*2.4)*.12,y,0);l.rotation.z=-s_*1.0;ol(l,.01)});
+  const top=piv(g,Math.sin(2.4)*.12,1.5,0);ol(sp(top,.13,Glow,0,.1,0,1,1.2,1),0);for(let i=0;i<5;i++){const a=i/5*Math.PI*2,pv=piv(top,Math.sin(a)*.1,0,Math.cos(a)*.1);pv.rotation.y=a;const pe=add(pv,SPH(1,20,14),P,0,.12,0);pe.scale.set(.1,.2,.05);pe.rotation.x=.35;ol(pe,.01)}
+  cy(top,.05,.05,.06,Gr,0,-.03,0,12);return g},
+ sunflower(c){const g=G(),T=M(TERRA,{roughness:.7}),Td=M(shade(TERRA,.15),{roughness:.7}),So=M(0x4A2E1C,{roughness:1}),Gr=M(0x4E9A3E,{roughness:.6}),Y=M(c,{roughness:.45});
+  lathe(g,[[.22,0],[.25,.03],[.3,.36],[.34,.38],[.35,.46],[.31,.47],[.29,.44]],T,0,0,0,36);ol(to(g,.35,.02,Td,0,.42,0,Math.PI/2),0);cy(g,.3,.3,.02,So,0,.43,0,28);
+  const st=[];for(let i=0;i<=10;i++){const u=i/10;st.push([Math.sin(u*1.8)*.08,.43+u*1.1])}tube(g,st,.038,Gr,false,0);
+  [[.3,1],[.55,-1],[.75,1]].forEach(([u,s_])=>{const l=add(g,leafGeo(.34+u*.1,.17),Gr,Math.sin(u*1.8)*.08,.43+u*1.1,0);l.rotation.set(0,s_*.4,-s_*1.05);ol(l,.01)});
+  const hd=piv(g,Math.sin(1.8)*.08,1.58,.02);hd.rotation.x=-.35;cy(hd,.17,.19,.07,M(0xffffff,{map:seedTex(),roughness:.9}),0,0,.03,32).rotation.x=Math.PI/2;
+  for(let L=0;L<2;L++)for(let i=0;i<16;i++){const a=i/16*Math.PI*2+L*.2,pe=add(hd,SPH(1,14,10),L?M(shade(c,.12),{roughness:.5}):Y,Math.cos(a)*(.27-L*.02),Math.sin(a)*(.27-L*.02),-.01-L*.015);pe.scale.set(.11,.05,.02);pe.rotation.z=a;ol(pe,.006)}
+  g.userData.anim=t=>{hd.rotation.z=Math.sin(t*.7)*.06;hd.rotation.x=-.35+Math.sin(t*.5)*.04};return g},
+ mossrug(c){const g=G();const b=cy(g,1.35,1.35,.04,M(0xffffff,{map:mossTex(c),roughness:1}),0,.02,0,48);b.scale.set(1,1,.78);const R=rnd(21),Gd=M(0x4E8A34,{roughness:.9});
+  for(let i=0;i<34;i++){const a=i/34*Math.PI*2,m=ol(nosh(sp(g,.1+R()*.05,Gd,Math.cos(a)*1.32,.03,Math.sin(a)*1.32*.78,1,.35,1)),.006)}
+  for(let i=0;i<10;i++){const a=R()*6.28,r=R()*.9,f=piv(g,Math.cos(a)*r,.05,Math.sin(a)*r*.78);for(let k=0;k<5;k++){const q=k/5*Math.PI*2;ol(nosh(sp(f,.04,M(i%2?0xFFFFFF:c),Math.cos(q)*.045,0,Math.sin(q)*.045,1,.35,1)),.004)}ol(nosh(sp(f,.03,M(0xFFD86A),0,.01,0,1,.5,1)),0)}
+  return flatAll(g)},
+ birdbath(c){const g=G(),St=M(STONE,{roughness:.8}),Sd=M(shade(STONE,.15),{roughness:.85}),Gr=M(MOSS,{roughness:.9}),Wt=waterMat(),Bd=M(c,{roughness:.4}),Bl=M(lighten(c,.5),{roughness:.5});
+  lathe(g,[[.32,0],[.3,.06],[.16,.12],[.11,.25],[.1,.55],[.13,.62],[.3,.66],[.46,.7],[.52,.76],[.5,.8],[.44,.79],[.3,.72]],St,0,0,0,40);ol(to(g,.11,.02,Sd,0,.3,0,Math.PI/2),0);ol(to(g,.11,.02,Sd,0,.45,0,Math.PI/2),0);
+  const w=cy(g,.44,.44,.01,Wt,0,.755,0,36);w.castShadow=false;const rip=nosh(to(g,.15,.006,M(0xFFFFFF,{transparent:true,opacity:.6}),.1,.765,0,Math.PI/2));ol(rip,0);
+  for(let i=0;i<6;i++){const a=i*1.1;ol(nosh(sp(g,.06+(i%2)*.03,Gr,Math.sin(a)*.3,.03,Math.cos(a)*.3,1,.5,1)),.006)}
+  const bird=piv(g,.44,.8,0);bird.rotation.y=-Math.PI/2;const bb=piv(bird);const bdy=add(bb,SPH(.1,20,14),Bd,0,.08,0);bdy.scale.set(.9,.85,1.2);ol(bdy,.01);ol(add(bb,SPH(.075,18,12),Bd,0,.2,.07),.01);
+  ol(add(bb,SPH(.05,12,10),Bl,0,.06,.07),0).scale.set(1.2,1,.6);ol(co(bb,.02,.06,M(0xFFB21F),0,.2,.15,8),.004).rotation.x=Math.PI/2;[-1,1].forEach(s_=>{ol(nosh(sp(bb,.014,M(INKC),s_*.045,.23,.12)),0);const wg=add(bb,SPH(.07,14,10),Bl,s_*.08,.1,-.01);wg.scale.set(.35,.7,1.1);ol(wg,.006)});
+  const tl=add(bb,SPH(.06,12,8),Bd,0,.1,-.14);tl.scale.set(.5,.3,1.2);ol(tl,.006);
+  let busy=0;g.userData.use=(t,p)=>{busy=p>=0?1:0};g.userData.anim=t=>{const k=busy?1:0,dip=Math.max(0,Math.sin(t*(k?5:1.3)))*(k?1:(t%6<1.5?1:0));bb.rotation.x=dip*.7;bb.position.y=Math.abs(Math.sin(t*4))*.03*k;rip.scale.setScalar(.6+((t*.8)%1)*1.4);rip.material.opacity=.6*(1-((t*.8)%1))};return g},
+ dandelion(c){const g=G(),Gr=M(0x5DA544,{roughness:.6}),Pt=M(TERRA,{roughness:.7}),Sd=M(0xFFFFFF,{roughness:.6}),Cr=M(0xE9E2D0,{roughness:.8});
+  lathe(g,[[.2,0],[.23,.03],[.25,.24],[.28,.27],[.28,.31],[.24,.31]],Pt,0,0,0,32);cy(g,.23,.23,.02,M(0x4A2E1C),0,.3,0,24);
+  const st=[];for(let i=0;i<=10;i++){const u=i/10;st.push([Math.sin(u*2)*.05,.3+u*1.05])}tube(g,st,.03,Gr,false,0);for(let i=0;i<5;i++){const l=add(g,leafGeo(.32,.1),Gr,0,.32,0);l.rotation.set(0,i*1.25,1.1);ol(l,.008)}
+  const hd=piv(g,Math.sin(2)*.05,1.36,0);ol(sp(hd,.06,Cr,0,0,0),.006);const seeds=[];const N=46;
+  for(let i=0;i<N;i++){const y=1-2*(i+.5)/N,r=Math.sqrt(1-y*y),a=i*2.39996,dir=[Math.cos(a)*r,y,Math.sin(a)*r];const sd=piv(hd);sd.lookAt(dir[0],dir[1],dir[2]);const q=piv(sd);
+    ol(nosh(cy(q,.004,.004,.2,Cr,0,0,.1,4)),0).rotation.x=Math.PI/2;ol(nosh(sp(q,.03,Sd,0,0,.21,1,1,.4)),0);seeds.push({sd,q,dir,off:0,v:0})}
+  let blown=-1,t0=0;g.userData.use=(t,p)=>{if(p>.5&&blown<0){blown=0;seeds.forEach((s_,i)=>{s_.fly=Math.random()<.8;s_.dl=Math.random()*.4})}};
+  g.userData.anim=t=>{if(blown===0){t0=t;blown=1}const e=blown>0?t-t0:0;
+    seeds.forEach((s_,i)=>{if(blown>0&&s_.fly){const k=Math.max(0,e-s_.dl);s_.q.position.set(s_.dir[0]*k*.5+Math.sin(k*2+i)*.1,s_.dir[1]*k*.3+k*.35,s_.dir[2]*k*.5+.02*k);const sc=e<9?Math.max(0,1-k/3):Math.min(1,(e-9)/2);s_.q.scale.setScalar(Math.max(.001,sc));if(e>=9)s_.q.position.set(0,0,0)}else{s_.q.position.set(0,0,0);s_.q.scale.setScalar(1)}});
+    if(blown>0&&e>11)blown=-1;hd.rotation.z=Math.sin(t*.8)*.05};return g},
+ acornbed(c){const g=G(),Sc=M(0xffffff,{map:scaleTex(),roughness:.85}),Rm=M(0x6A4020,{roughness:.8}),Cu=M(c,{roughness:.95}),Cl=M(lighten(c,.45),{roughness:.95}),St=M(0x6A4020,{roughness:.7});
+  lathe(g,[[.1,0],[.4,.03],[.58,.12],[.64,.24],[.63,.3],[.58,.3],[.5,.22]],Sc,0,0,0,40);ol(to(g,.6,.045,Rm,0,.29,0,Math.PI/2),0);
+  cy(g,.5,.48,.14,Cu,0,.22,0,32);ol(to(g,.44,.08,Cl,0,.29,0,Math.PI/2),.006);const stm=cy(g,.04,.05,.18,St,.45,.38,-.3,10);stm.rotation.z=-.6;
+  const lf=add(g,leafGeo(.5,.22),M(0x5DAF4E,{roughness:.55}),-.3,.28,-.45);lf.rotation.set(-1.1,.5,.4);ol(lf,.01);return g},
+ leafbowl(c){const g=G(),Lf=M(0x5DAF4E,{roughness:.5}),Vn=M(0x3F8A3A,{roughness:.6}),Br=M(c,{roughness:.25});
+  const b=lathe(g,[[0,.01],[.2,.02],[.3,.07],[.35,.14],[.33,.155],[.28,.11],[.18,.07],[0,.06]],Lf,0,0,0,40);b.scale.set(1,1,.7);ol(b,.012);for(let i=0;i<6;i++){const a=i/6*Math.PI-Math.PI/2;const v=add(g,new THREE.BoxGeometry(.012,.012,.2),Vn,Math.sin(a)*.14,.075,Math.cos(a)*.1);v.rotation.y=a;ol(v,0)}
+  const tip=co(g,.05,.18,Lf,0,.13,.3,10);tip.rotation.x=Math.PI/2;ol(tip,.01);ol(add(g,new THREE.BoxGeometry(.015,.015,.5),Vn,0,.02,0),0);ol(cy(g,.02,.02,.1,Vn,0,.05,-.28,6),0).rotation.x=.8;
+  for(let i=0;i<9;i++){const a=i*2.4,r=Math.sqrt(i/9)*.17;ol(sp(g,.045,Br,Math.cos(a)*r,.105,Math.sin(a)*r*.7),.006)}return g},
+ butterflyart(c){const g=G(),W=M(0xffffff,{map:barkTex(),roughness:.8}),Bk=M(CREAM,{roughness:.9}),Pn=M(0x3B1273);
+  rb(g,1.2,.9,.1,.04,W,0,0,0);rb(g,1.04,.74,.04,.02,Bk,0,0,.04);const fl=[];
+  [[-.28,.08,c,.9],[.26,.15,lighten(c,.35),.75],[0,-.18,0x7FD8F5,.65]].forEach(([x,y,cc,s_],i)=>{const b=piv(g,x,y,.07);b.rotation.z=(i-1)*.3;const cm=M(cc,{roughness:.4}),cd=M(shade(cc,.3),{roughness:.4});
+    ol(nosh(cy(b,.012*s_,.012*s_,.2*s_,M(0x2A1A3A),0,0,.01,8)),0);const ws=[];[-1,1].forEach(sd=>{const w=piv(b);[[.11,.07,.1],[.08,-.07,.075]].forEach(([wx,wy,r])=>{const m=add(w,SPH(r*s_,16,12),cm,sd*wx*s_,wy*s_,0);m.scale.z=.12;ol(m,.006);ol(nosh(add(w,SPH(r*s_*.35,10,8),cd,sd*wx*s_*1.1,wy*s_,.008)),0).scale.z=.2});ws.push({w,sd})});
+    ol(nosh(cy(b,.004,.004,.08,Pn,0,0,-.02,4)),0).rotation.x=Math.PI/2;fl.push({ws,ph:i*1.7})});
+  g.userData.anim=t=>fl.forEach(f=>f.ws.forEach(q=>q.w.rotation.y=q.sd*(.25+Math.max(0,Math.sin(t*2+f.ph))*.5)));return g},
+ trellis(c){const g=G(),Wd=M(0xF3EBD8,{roughness:.6}),Vn=M(0x4E8A34,{roughness:.6}),Lf=M(0x5DAF4E,{roughness:.55}),Rs=M(c,{roughness:.45}),Rd=M(shade(c,.25),{roughness:.5});
+  [-.55,.55].forEach(x=>rb(g,.06,1.5,.06,.02,Wd,x,0,0));for(let i=-3;i<=3;i++)rb(g,.035,1.48,.03,.01,Wd,i*.15,0,.03);for(let j=-4;j<=4;j++)rb(g,1.1,.035,.03,.01,Wd,0,j*.17,.055);rb(g,1.2,.07,.07,.02,Wd,0,-.76,.03);
+  const top=[];for(let i=0;i<=10;i++){const a=i/10*Math.PI;top.push([-Math.cos(a)*.58,.75+Math.sin(a)*.22])}tube(g,top,.035,Wd,false,.02);
+  const vine=[];for(let i=0;i<=18;i++){const u=i/18;vine.push([Math.sin(u*9)*.35,-.75+u*1.6])}tube(g,vine,.018,Vn,false,.08);
+  vine.forEach(([x,y],i)=>{if(i%2)return;const l=add(g,leafGeo(.13,.07),Lf,x,y,.09);l.rotation.z=i*1.3;ol(l,.005)});
+  [[-.3,.55],[.28,.3],[-.2,-.1],[.3,-.45],[0,.85]].forEach(([x,y],i)=>{const r=piv(g,x,y,.12);ol(sp(r,.075,Rd),.008);for(let k=0;k<6;k++){const a=k/6*Math.PI*2;const pe=add(r,SPH(.055,12,8),Rs,Math.cos(a)*.06,Math.sin(a)*.06,.02);pe.scale.z=.5;ol(pe,.005)}ol(nosh(sp(r,.04,Rs,0,0,.06)),0)});return g}});
 function makePiece(k,c){const OB=THREE.BoxGeometry,OS=THREE.SphereGeometry;THREE.BoxGeometry=function(w,h,d){return rbox(w,h,d,Math.min(.03,Math.min(w,h,d)*.22))};
   THREE.SphereGeometry=function(r,a,b,...rest){return OS(r,Math.max(a||16,20),Math.max(b||12,14),...rest)};let g;try{g=BUILD[k](c)}finally{THREE.BoxGeometry=OB;THREE.SphereGeometry=OS}
   g.traverse(m=>{if(m.isMesh)autoDetail(m.material)});return g}
@@ -2973,11 +3112,12 @@ function randomSpot(){const blk=navGrid(),free=[];for(let n=0;n<blk.length;n++)i
 function perchSpots(o){const d=defOf(o.userData.k),P=d&&d.perch;if(!P)return[];const D=petDim(),hw=D.w/2,hd=D.d/2,hs=D.h-D.leg;
   if(P.w!=null&&hw*.8>P.w+.1)return[];if(P.top&&hs>P.top)return[];const zc=Math.max(P.z,(P.bz??-9)+hd*.9);if(P.fz!=null&&zc+hd*.8>P.fz)return[];
   const lim=Math.max(0,(P.w??9)-hw*.8),xs=[...new Set((P.x||[0]).map(x=>+clamp(x,-lim,lim).toFixed(2)))],out=[];
-  xs.forEach(x=>{const aps=P.side?[[-(P.se+hd+.12),zc],[P.se+hd+.12,zc]]:[[x,(P.fe??.55)+hd+.1]];if(P.foot)aps.push([x,P.foot+hd+.1]);aps.forEach(([ax,az])=>{const v=toWorld(o,ax,az);if(inRoom(v,hw*.6)&&spotClear(v,hd*.8,o.userData.id))out.push({id:o.userData.id,x,z:zc,y:P.y,kind:P.kind||'sit',ax,az})})});return out}
+  const lieZ=P.kind==='bed'&&pet.rig?Math.min((P.pz??(P.bz??-.8)-.28)+pet.rig.headY*(pet.scale||1)*.95,(P.foot??1.5)-.25):null,zz=lieZ??zc;
+  xs.forEach(x=>{const zc=zz,aps=P.side?[[-(P.se+hd+.12),zc],[P.se+hd+.12,zc]]:[[x,(P.fe??.55)+hd+.1]];if(P.foot)aps.push([x,P.foot+hd+.1]);aps.forEach(([ax,az])=>{const v=toWorld(o,ax,az);if(inRoom(v,hw*.6)&&spotClear(v,hd*.8,o.userData.id))out.push({id:o.userData.id,x,z:zc,y:P.y,kind:P.kind||'sit',ax,az})})});return out}
 function seatWorld(sp){const o=roomObjs().get(sp.id);if(!o||!defOf(o.userData.k).perch)return null;const c=toWorld(o,sp.x,sp.z),f=toWorld(o,sp.ax,sp.az);
   return{x:c.x,z:c.z,y:sp.y,h:o.rotation.y,front:f,ha:Math.atan2(c.x-f.x,c.z-f.z),o}}
 function startPerch(sp){const w=seatWorld(sp);if(!w)return;const st=petStats(),avg=(st.hunger+st.fun+st.energy+st.clean)/4;pet.mode='perch';pet.seat=sp;pet.lastUse=sp.id;pet.seatK=0;pet.seatDir=1;pet.act=null;pet.fidget=3;
-  sp.nap=sp.kind==='bed'&&st.energy<45;sp.bounce=sp.kind==='bed'&&!sp.nap;pet.perchT=sp.nap?16+Math.random()*10:sp.bounce?5+Math.random()*3:sp.kind==='ride'?7+Math.random()*4:(st.energy<40?16:9)+Math.random()*10;
+  sp.nap=sp.kind==='bed'&&st.energy<45;sp.bounce=sp.kind==='bed'&&!sp.nap&&st.energy>65&&avg>70&&Math.random()<.25;sp.lounge=sp.kind==='bed'&&!sp.nap&&!sp.bounce;pet.perchT=sp.nap?16+Math.random()*10:sp.bounce?5+Math.random()*3:sp.lounge?10+Math.random()*8:sp.kind==='ride'?7+Math.random()*4:(st.energy<40?16:9)+Math.random()*10;
   if(sp.bounce&&avg>50)setTimeout(()=>emote('🎉'),900)}
 function leaveSeatNow(){const w=pet.seat&&seatWorld(pet.seat);if(w){pet.pos.copy(w.front);rockPart(w.o,0)}pet.seat=null;pet.seatY=0;pet.seatK=0;pet.hop=Math.max(pet.hop,.45)}
 function rockPart(o,a){const p=o&&o.children[0];if(p&&defOf(o.userData.k).perch.kind==='ride')p.rotation.x=a}
@@ -3012,6 +3152,11 @@ const USE_ITEM={tv:TV,bustedtv:Object.assign({},TV,{d:10,emo:['❓','💥'],w:1}
   mirror:MIRROR,archmirror:MIRROR,donutmirror:MIRROR,crackmirror:MIRROR,clock:CLOCK,swirlclock:CLOCK,
   window:{kind:'wall',anim:'u_gaze',d:7,emo:['💗','❓'],w:.8},neon:{kind:'wall',anim:'dance',d:4.2,emo:['🎵'],w:.6},bunting:{kind:'wall',anim:'u_gaze',d:4,wave:1,emo:['🎉'],w:.5},
   petbed:NAP,donutbed:NAP,basketbed:NAP,tirebed:NAP,bowl:BOWL,candybowl:BOWL,ceramicbowl:BOWL,hubcap:BOWL};
+Object.assign(USE_ITEM,{
+  beehive:{kind:'stand',front:1,anim:'u_rummage',d:4.6,dist:.05,emo:['😋','🎉'],w:.8},birdbath:{kind:'stand',anim:'u_peer',d:6,dist:.08,emo:['💗','🎵'],w:.8},
+  dandelion:{kind:'stand',anim:'u_blow',d:4,dist:.12,emo:['✨','🎉'],w:.9},acornbed:NAP,leafbowl:BOWL,
+  butterflyart:{kind:'wall',anim:'u_gaze',d:5,emo:['💗','✨'],w:.6},trellis:{kind:'wall',anim:'u_sniff',d:3.6,then:['sneeze',.3],emo:['💗'],w:.5},
+  stumptable:{kind:'stand',anim:'u_sip',d:6,dist:.05,emo:['😋','💗'],w:.6}});
 const useOf=d=>d.use||USE_ITEM[d.k]||USE_FN[d.fn]||null;
 // Where to stand to use o, and which way to face.
 function useSpot(o,u){const it=roomItem(o.userData.id),d=defOf(it.k),D=petDim(),hd=D.d/2,e=o.userData.ext||{x:.4,z:.4};
@@ -3028,18 +3173,19 @@ function pickUse(stats,avg,only){const S=pet.rig.S,c=[];roomObjs().forEach(o=>{c
   for(let tries=0;tries<5&&c.length;tries++){let q=Math.random()*c.reduce((a,b)=>a+b.w,0),i=0;for(;i<c.length-1;i++){q-=c[i].w;if(q<=0)break}const C=c.splice(i,1)[0];
     if(C.u.kind==='perch'){const sps=perchSpots(C.o);if(!sps.length)continue;const sp=sps[Math.random()*sps.length|0];petGo(seatWorld(sp).front,()=>startPerch(sp));return true}
     const at=useSpot(C.o,C.u);if(!at)continue;
-    if(C.u.kind==='nap'){petGo(at.at,()=>{pet.mode='sleep';pet.sleepT=9+Math.random()*9;pet.lastUse=C.it.id;emote('💤')});return true}
+    if(C.u.kind==='nap'){petGo(at.at,()=>{pet.mode='sleep';pet.sleepT=9+Math.random()*9;pet.lastUse=C.it.id;pet.napBed=C.it.id;emote('💤')});return true}
     petGo(at.at,()=>startUse(C,at));return true}
   return false}
 function startUse(C,at){if(!roomObjs().has(C.it.id))return;const u=C.u;if(u.greet&&away){keeperReact('greet',2.2);keeperSay(pick1(away.keeper.lines.hi))}const st=petStats(),d=u.d*(.85+Math.random()*.3);pet.mode='use';pet.lastUse=C.it.id;
   pet.use={id:C.it.id,u,t:0,d,face:at.face,emoAt:[.3,d>8?.75:2].map(f=>f*d),emo:typeof u.emo==='function'?u.emo(st):u.emo};pet.act={k:u.anim,t:0,d}}
-function endUse(done){const U=pet.use;if(!U)return;pet.use=null;const o=roomObjs().get(U.id);if(o){delete o.userData.flick;if(U.u.wob)o.rotation.z=0}
+function endUse(done){const U=pet.use;if(!U)return;pet.use=null;const o=roomObjs().get(U.id);if(o){delete o.userData.flick;if(o.userData.use)o.userData.use(-1,-1);if(U.u.wob)o.rotation.z=0}
   if(pet.act&&pet.act.k===U.u.anim)pet.act=null;if(done){pet.mode='idle';pet.timer=1.5+Math.random()*2.5;const th=U.u.then;if(th&&Math.random()<th[1])setTimeout(()=>petAct(th[0]),250)}}
 function updUse(dt,t){const U=pet.use,o=roomObjs().get(U.id);if(!o){endUse(true);return}U.t+=dt;const p=U.t/U.d;
   if(U.face)faceToward(U.face,dt);
   U.emoAt.forEach((a,i)=>{if(a>=0&&U.t>=a){U.emoAt[i]=-1;if(U.emo&&U.emo.length)emote(U.emo[Math.random()*U.emo.length|0])}});
   if(U.u.flick)o.userData.flick=(p>.3&&p<.34)||(p>.44&&p<.48)?.12:p>.55?1+.3*bell(p,.6,.95):1;
   if(U.u.wob)o.rotation.z=Math.sin(U.t*13)*.22*bell(p,.38,.95);
+  if(o.userData.use)o.userData.use(U.t,p);
   if(U.u.spin&&p>=U.u.spin&&!U.spun){U.spun=1;pet.spinT=1.2}if(U.u.wave&&p>.5&&!U.waved){U.waved=1;pet.waveT=1.4}
   if(!pet.act||pet.act.k!==U.u.anim)pet.act={k:U.u.anim,t:U.t,d:U.d};if(U.t>=U.d)endUse(true)}
 
@@ -3086,8 +3232,26 @@ const ACTS_ANIM={
   u_tick:{d:4.5,f:(p,t)=>{const k=bell(p,.15,.85),tk=Math.sign(Math.sin(t*Math.PI*2))*Math.min(1,Math.abs(Math.sin(t*Math.PI*2))*4);return{rz:tk*.08*k,heads:[0,1].map(i=>({rx:-.3,rz:tk*.22,w:k})),look:{x:tk*.4,y:.55,w:k},mouth:.2*k}}},
   u_admire:{d:4.6,f:(p,t)=>{const k=bell(p,.1,.9);return{sway:Math.sin(t*3)*.25*k,arms:[{rz:-.4,rx:0,w:0},{rz:2.4+Math.sin(t*10)*.4,rx:-.2,w:k}],heads:[0,1].map(i=>({rz:(i?1:-1)*.22,w:k})),mouth:.7*k,lid:.45*k}}},
   u_wiggle:{d:3.8,f:(p,t,S)=>{const k=bell(p,.12,.88);return{y:-(S.leg*.95+.02)*k+Math.abs(Math.sin(t*5))*S.bw*.25*k,legs:[-1.35*k,-1.35*k],rz:Math.sin(t*5)*.45*k,arms:[0,1].map(i=>({rz:(i?1:-1)*2.3,rx:0,w:k})),mouth:.85*k,lid:.5*k}}},
+  // new sets: blow a dandelion, paint, play piano, read, spin a globe, warm up by the fire, sip cocoa, look through a telescope
+  u_blow:{d:4,f:(p,t)=>{const k=bell(p,.1,.9),inh=bell(p,.12,.42),blow=bell(p,.46,.8);return{rx:(-.1*inh+.24*blow)*k,heads:[0,1].map(i=>({rx:-.22*inh+.32*blow,rz:(i?1:-1)*.08,w:k})),mouth:.2*inh+.95*blow,lid:.25*inh+.65*blow,sy:(.07*inh-.05*blow)*k,arms:[0,1].map(i=>({rz:(i?1:-1)*(.45+1.3*inh),rx:-.5,w:k}))}}},
+  u_paint:{d:7,f:(p,t)=>{const k=bell(p,.08,.92),st=Math.sin(t*5);return{rx:.1*k,rz:Math.sin(t*2.5)*.05*k,arms:[{rz:-.9,rx:-.9,w:k},{rz:1.1+st*.35,rx:-1.25+Math.cos(t*5)*.3,w:k}],heads:[0,1].map(i=>({rz:.12+Math.sin(t*1.3+i)*.1,rx:.06,w:k})),look:{x:st*.3,y:.1,w:k},mouth:.2*k,lid:.25*k}}},
+  u_piano:{d:8,f:(p,t)=>{const k=bell(p,.08,.92);return{rx:.14*k,sway:Math.sin(t*2.2)*.18*k,arms:[0,1].map(i=>({rz:(i?1:-1)*(.3+Math.sin(t*6+i)*.12),rx:-1.15+Math.abs(Math.sin(t*9+i*1.7))*-.3,w:k})),heads:[0,1].map(i=>({rz:Math.sin(t*2.2+i*Math.PI)*.2,rx:.12,w:k})),lid:.55*k,mouth:.35*k}}},
+  u_read:{d:8,f:(p,t)=>{const k=bell(p,.08,.92),turn=(t%3)<.35?Math.sin((t%3)/.35*Math.PI):0;return{rx:.12*k,arms:[{rz:-.35,rx:-1.25,w:k},{rz:.35+turn*.9,rx:-1.25+turn*.3,w:k}],heads:[0,1].map(i=>({rx:.3,rz:(i?1:-1)*.1,w:k})),look:{x:Math.sin(t*1.7)*.5,y:-.5,w:k},lid:.2*k}}},
+  u_spin:{d:4,f:(p,t)=>{const k=bell(p,.1,.9),sw=bell(p,.2,.4);return{rx:.12*k,arms:[{rz:-.4,rx:0,w:0},{rz:.5+sw*1.6,rx:-1.1+sw*.2,w:k}],heads:[0,1].map(i=>({rz:Math.sin(t*6+i)*.15*(p>.4?1:0),rx:.1,w:k})),look:{x:Math.sin(t*6)*.8*(p>.4?1:0),y:0,w:k},mouth:.8*bell(p,.45,.9),lid:.4*k}}},
+  u_warm:{d:9,f:(p,t,S)=>{const k=bell(p,.08,.92);return{y:-(S.leg*.95+.02)*k,legs:[-1.35*k,-1.35*k],rx:.06*k,arms:[0,1].map(i=>({rz:(i?1:-1)*.5,rx:-1.35+Math.sin(t*1.5+i)*.08,w:k})),heads:[0,1].map(i=>({rz:(i?1:-1)*.2,rx:.05,w:k})),lid:.75*k,sy:Math.sin(t*1.3)*.02*k}}},
+  u_sip:{d:6,f:(p,t)=>{const k=bell(p,.1,.9),sip=Math.max(0,Math.sin(t*1.4));return{arms:[{rz:-.4,rx:0,w:0},{rz:.5,rx:-1.5-sip*.25,w:k}],heads:[0,1].map(i=>({rx:-.1-sip*.2,rz:(i?1:-1)*.12,w:k})),lid:.6*k+.3*sip,mouth:.15+.2*sip}}},
+  u_scope:{d:7,f:(p,t)=>{const k=bell(p,.1,.9);return{rx:-.1*k,arms:[0,1].map(i=>({rz:(i?1:-1)*.5,rx:-1.5,w:k})),heads:[{rx:-.35,rz:.2,w:k},{rx:-.35,rz:.05,w:k}],look:{x:Math.sin(t*.8)*.2,y:.8,w:k},lid:.2*k,mouth:bell(p,.6,.9)*.8}}},
   spinjump:{d:1.4,f:p=>({spin:ease(p/.8)*Math.PI*2,y:Math.sin(Math.min(1,p/.8)*Math.PI)*.6,arms:[0,1].map(i=>({rz:(i?1:-1)*2.6,rx:0,w:bell(p,.1,.85)})),mouth:.9,lid:.5})}
 };
+// Lying down. The body pivots at the feet, so rx -π/2 lays it on its back (heads towards the headboard, since the pet
+// faces the foot of the bed) and rz -π/2 rolls it onto its side. y lifts it by the body's half-depth so it rests on top.
+function lieBack(e,S,t,P){const nap=P.nap,pose=P.pose||'rest',br=Math.sin(t*(nap?1.4:2))*.03,kick=pose==='kick'?Math.sin(t*5):0,arms=pose==='arms';
+  return{y:S.bw*.8*.82*e,rx:-Math.PI/2*e,sy:br*e,legs:[(-.12+kick*.35)*e,(-.12-kick*.35)*e],lid:nap?(e>.9?1:.5*e):.15*e,mouth:nap?undefined:(pose==='chat'?undefined:.0),
+    arms:[0,1].map(i=>arms&&i===1?{rz:2.75,rx:-.25,w:e}:nap?{rz:(i?1:-1)*.35,rx:-.9,w:e}:{rz:(i?1:-1)*(.3+(pose==='kick'?.3:0)),rx:-.15,w:e}),
+    heads:[0,1].map(i=>nap?{rz:(i?1:-1)*.28,rx:-.1,w:e}:{rz:(i?1:-1)*.12+Math.sin(t*.7+i)*.06,rx:-.22,w:e}),look:nap?undefined:{x:Math.sin(t*.5)*.4,y:.2,w:e}}}
+function lieSide(e,S,t,inBed){const br=Math.sin(t*1.4)*.035,len=(pet.rig?pet.rig.headY:1)*.42;
+  return{y:(S.bw*.9+(inBed?.1:0))*e,x:-len*e,rz:-Math.PI/2*e*.96,sy:br*e,legs:[-1.05*e,-.85*e],lid:e>.8?1:undefined,
+    arms:[0,1].map(i=>({rz:(i?1:-1)*.2,rx:-1.0,w:e})),heads:[0,1].map(i=>({rz:(i?-.18:.18),rx:.32,w:e}))}}
 function petAct(k){const R=pet.rig;if(!R||pet.stage<1||!ACTS_ANIM[k]||styling())return false;if(k==='sit'&&R.S.leg<.06)return false;if(k==='tumble'&&pet.stage>2)k='curious';
   pet.act={k,t:0,d:ACTS_ANIM[k].d};if(pet.mode!=='toy'){pet.mode='idle';pet.target=null;pet.timer=ACTS_ANIM[k].d+1.5}
   if(k==='nuzzle'&&state.pet.s)state.pet.s.affection=clamp((state.pet.s.affection??40)+1,0,100);
@@ -3131,20 +3295,23 @@ function updatePet(dt,t){
       const hh=pet.seatDir>0?angLerp(w.ha,w.h,e):angLerp(w.ha+Math.PI,w.h,e);let dh=hh-pet.heading;dh=Math.atan2(Math.sin(dh),Math.cos(dh));pet.heading+=dh*Math.min(1,dt*(k>0&&k<1?14:8));
       if(pet.seatDir>0&&k>=1){pet.perchT-=dt;pet.fidget-=dt;
         if(sp.nap){if(Math.random()<dt*.4)emote('💤')}
+        else if(sp.lounge){if(pet.fidget<=0){pet.fidget=3.5+Math.random()*4;const r=Math.random();sp.pose=r<.35?'arms':r<.6?'kick':r<.8?'chat':'rest';if(sp.pose==='chat')pet.chatT=1.6;if(r>.9&&avg>55)emote('🎵')}}
         else if(sp.bounce){if(pet.hop<=0){pet.hop=1;pet.happyT=.8}}
         else if(pet.fidget<=0){pet.fidget=4+Math.random()*5;const r=Math.random();if(sp.kind==='ride'){if(r<.5)emote(r<.25?'🎉':'🎵')}else if(r<.25&&avg>45)pet.waveT=1.2;else if(r<.45)pet.chatT=1.6;else if(r<.6&&avg>65)emote('🎵');else if(r<.7&&stats.energy<30)emote('😪')}
         if(pet.perchT<=0&&!(sp.bounce&&pet.hop>0))pet.seatDir=-1}
       if(pet.seatDir<0&&k<=0){rockPart(w.o,0);pet.seat=null;pet.seatY=0;pet.mode='idle';pet.timer=1.5+Math.random()*2;pet.hop=.35}}}
   else if(pet.mode==='use'){if(pet.use)updUse(dt,t);else{pet.mode='idle';pet.timer=1}}
-  else if(sleeping){pet.sleepT-=dt;if(pet.sleepT<=0){pet.mode='idle';pet.timer=1;pet.hop=.6}if(Math.random()<dt*.45)emote('💤')}
+  else if(sleeping){pet.sleepT-=dt;if(pet.sleepT<=0){pet.mode='idle';pet.timer=1;pet.hop=.6;pet.napBed=null}if(Math.random()<dt*.45)emote('💤')}
   else if(eating){pet.eatT-=dt;if(pet.eatT<=0){pet.mode='idle';pet.timer=2;pet.happyT=1.2;emote('😋')}}
   let A=null;if(pet.act){pet.act.t+=dt;if(pet.act.t>=pet.act.d||walking||sleeping||eating)pet.act=null;else A=ACTS_ANIM[pet.act.k].f(pet.act.t/pet.act.d,t,S)}
   if(pet.mode==='perch'&&!A&&pet.seat){const k=pet.seatK,e=k*k*(3-2*k),P=pet.seat;
-    if(P.bounce)A={arms:[0,1].map(i=>({rz:(i?1:-1)*(2.2+Math.sin(t*9+i)*.3),rx:-.2,w:e})),mouth:.8*e,lid:.4*e};
+    if(P.kind==='bed'&&!P.bounce)A=lieBack(e,S,t,P);
+    else if(P.bounce)A={arms:[0,1].map(i=>({rz:(i?1:-1)*(2.2+Math.sin(t*9+i)*.3),rx:-.2,w:e})),mouth:.8*e,lid:.4*e};
     else if(P.nap)A={y:-(S.leg*.95+.02)*e,rx:.14*e,legs:[-1.35*e,-1.35*e],lid:k>=1?1:undefined,heads:[0,1].map(i=>({rz:(i?1:-1)*.3,rx:.2,w:e})),arms:[0,1].map(i=>({rz:(i?1:-1)*.2,rx:-.3,w:e})),sy:Math.sin(t*1.5)*.03*e};
     else{const ride=P.kind==='ride',kick=ride?0:(stats.energy<30?.12:avg>55?.32:.2)*e,sp=avg>55?3.4:2.2;
       A={y:-(S.leg*.95+.02)*e,rx:(ride?Math.sin(t*3.2)*.16:-.06)*e,legs:ride?[-.5*e,-.5*e]:[-1.35*e+Math.sin(t*sp)*kick,-1.35*e+Math.sin(t*sp+Math.PI)*kick],lid:stats.energy<30?.5:undefined,
         arms:[0,1].map(i=>ride?{rz:(i?1:-1)*.5,rx:-1.1,w:e}:{rz:(i?1:-1)*.35,rx:-.45,w:e*.8}),mouth:ride?.5*e:undefined}}}
+  pet.lieK=approach(pet.lieK||0,sleeping&&!A?1:0,dt*(sleeping?1.6:4));if(!A&&pet.lieK>.01)A=lieSide(pet.lieK*pet.lieK*(3-2*pet.lieK),S,t,pet.napBed);
   pet.spinT=Math.max(0,pet.spinT-dt);pet.shakeT=Math.max(0,pet.shakeT-dt);pet.waveT=Math.max(0,pet.waveT-dt);pet.happyT=Math.max(0,pet.happyT-dt);
   pet.chatT=walking||sleeping||eating?0:Math.max(0,pet.chatT-dt);const chat=pet.chatT>0?Math.sin(Math.min(1,(1.6-pet.chatT)/.25)*Math.PI/2)*Math.min(1,pet.chatT/.25):0;
 
@@ -3154,6 +3321,7 @@ function updatePet(dt,t){
   g.rotation.y=pet.heading+(A&&A.spin?A.spin:0)+(A&&A.sway?A.sway:0)+(A&&A.shake?Math.sin(t*40)*.12*A.shake:0)+(pet.spinT>0?(1-pet.spinT/1.2)*Math.PI*4:0)+(pet.shakeT>0?Math.sin(t*38)*.35*Math.min(1,pet.shakeT):0);
   const land=pet.hop>0&&pet.hop<.12?1:0,breathe=1+Math.sin(t*(sleeping?1.5:2.4))*(sleeping?.04:.018)-land*.12;
   const bob=walking&&!S.scoot?Math.abs(Math.sin(pet.ph))*.06:0;
+  R.body.position.x=approach(R.body.position.x,A&&A.x?A.x:0,dt*8);
   R.body.position.y=approach(R.body.position.y,bob+(sleeping?-.06:0)+(A&&A.y&&A.spin===undefined?A.y:0),dt*14);
   const sy=breathe+(A&&A.sy?A.sy:0);R.body.scale.set(2-sy,sy,2-sy);R.root.scale.setScalar(pet.scale*pop);
   R.body.rotation.x=approach(R.body.rotation.x,(A&&A.rx?A.rx:0)+(eating?.3+Math.sin(t*18)*.05:sleeping?.12:(S.elder?.12:0)+(walking?.08:0)+(S.scoot&&walking?.15:0)),dt*10);
@@ -4733,10 +4901,10 @@ function renderDeco(toTop){const grid=$('#tray');if(!grid)return;
     FUNCS.filter(f=>per[f[0]]||f[0]===decoFn).map(([k,n,e])=>`<button type="button" class="chip sm" data-fn="${k}" aria-pressed="${decoFn===k}"><span aria-hidden="true">${e}</span>${n}<small>${per[k]||0}</small></button>`).join('');
   fns.querySelectorAll('[data-fn]').forEach(b=>b.onclick=()=>{decoFn=b.dataset.fn;renderDeco(true)});centerChip(fns);
   const S=decoSet==='all'?null:SETMAP[decoSet],sb=$('#decoSetBtn');sb.style.setProperty('--sc',S?S.c:'#fff');sb.classList.toggle('on',!!S);
-  sb.innerHTML=`<img class="chi" src="assets/icons/${S?S.img:'heart-jar'}.webp" alt="">${S?esc(S.n):'All sets'}<i class="caret" aria-hidden="true"></i>`;
+  sb.innerHTML=`<img class="chi" src="${ico(S?S.img:'heart-jar')}" alt="">${S?esc(S.n):'All sets'}<i class="caret" aria-hidden="true"></i>`;
   $('#decoSortBtn').textContent='Sort: '+DECO_SORTS[decoSort][0];
   const sets=$('#decoSets');sets.innerHTML=`<button type="button" class="chip sm" data-set="all" aria-pressed="${decoSet==='all'}"><img class="chi" src="assets/icons/heart-jar.webp" alt="">Everything</button>`+
-    SETS.map(t=>`<button type="button" class="chip sm setchip" data-set="${t.k}" style="--sc:${t.c}" aria-pressed="${decoSet===t.k}"><img class="chi" src="assets/icons/${t.img}.webp" alt="">${esc(t.n)}</button>`).join('');
+    SETS.map(t=>`<button type="button" class="chip sm setchip" data-set="${t.k}" style="--sc:${t.c}" aria-pressed="${decoSet===t.k}"><img class="chi" src="${ico(t.img)}" alt="">${esc(t.n)}</button>`).join('');
   sets.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>{decoSet=b.dataset.set;decoSetsOpen=false;sets.hidden=true;sb.setAttribute('aria-expanded',false);renderDeco(true)});
   $('#decoCount').textContent=`${list.length} ${list.length===1?'piece':'pieces'}`;
   const filtered=words.length||decoSet!=='all'||decoFn!=='all',shopBtn='<button type="button" class="chip" id="decoShop">Shop at Cozy Nest</button>';
