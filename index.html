@@ -5498,7 +5498,7 @@ const GAMES={
       B.sh=add(root,new THREE.CircleGeometry(1,24),M(0x3B1273,{transparent:true,opacity:.14,depthWrite:false}),0,0,-.33);B.sh.outline=0;
       // the camera sees the board plane (z=0) exactly as the physics pixels; things in front get real perspective
       B.cam=new THREE.PerspectiveCamera(30,g.w/g.h,.1,100);const d=(g.h*k/2)/Math.tan(15*Math.PI/180);B.cam.position.set(0,0,d);B.cam.lookAt(new THREE.Vector3(0,0,0));
-      {const bx=new THREE.Box3().setFromObject(pet.group),v=new THREE.Vector3();bx.getSize(v);B.petH=Math.max(.3,v.y/(pet.group.scale.y||1));B.petS=pet.group.scale.x}
+      {const bx=new THREE.Box3().setFromObject(pet.group),v=new THREE.Vector3();bx.getSize(v);if(this._petS==null)this._petS=pet.group.scale.x;B.petH=Math.max(.3,v.y/(pet.group.scale.y||1))}
       return B},
     upd3(g,B){const k=B.k,W=B.W,H=B.H,t=g.t;
       this.plats(g).forEach(q=>{if(q.lip)return;const b_=B.plats[q.i];b_.grp.position.set(W((q.a[0]+q.b[0])/2),H((q.a[1]+q.b[1])/2),0);{const f=q.b[0]<q.a[0]?-1:1;b_.grp.rotation.z=-Math.atan2((q.b[1]-q.a[1])*f,(q.b[0]-q.a[0])*f)}
@@ -5512,7 +5512,7 @@ const GAMES={
       pet.group.scale.setScalar(sc);pet.group.position.set(X+Math.sin(th)*off,Y-Math.cos(th)*off,.06);pet.group.rotation.set(0,g.st==='aim'?0:Math.sin(t*1.3)*.25,th);
       B.str.visible=g.st==='aim';if(B.str.visible){const tx=X-Math.sin(th)*g.r*1.9*k,ty=Y+Math.cos(th)*g.r*1.9*k,ax=W(g.claw),ay=railY-.14,L=Math.hypot(tx-ax,ty-ay);B.str.scale.set(1,L,1);B.str.position.set((ax+tx)/2,(ay+ty)/2,.12);B.str.rotation.z=-Math.atan2(tx-ax,ay-ty)}
       B.sh.position.set(X+.12,Y-.1,-.33);B.sh.scale.setScalar(g.r*1.5*k)},
-    exit(g){if(this._root){gpSc.remove(this._root);this._root=null}if(g&&g.B3&&pet.group)pet.group.scale.setScalar(g.B3.petS||1)},
+    exit(){if(this._root){gpSc.remove(this._root);this._root=null}if(this._petS!=null&&pet.group)pet.group.scale.setScalar(this._petS);this._petS=null},
     draw(g,x){const B=this.b3(g);if(!B){g.no3=0;this.draw2(g,x);return}g.no3=1;this.upd3(g,B);const d=Math.min((gm&&gm.dpr)||1,1.5),pw=Math.round(g.w*d),ph=Math.round(g.h*d),dk=pw+'x'+ph;
       if(gpR.__dk!==dk){gpR.setSize(pw,ph,false);gpR.__dk=dk}gpR.__sz=0;gpR.render(gpSc,B.cam);x.fillStyle=gGrad(x,0,0,0,g.h,g.S.bg);x.fillRect(0,0,g.w,g.h);x.drawImage(gpR.domElement,0,0,g.w,g.h);
       const S=g.S,fy=g.by+g.bh;gText(x,S.n,g.bx+g.bw*.68,g.by-g.bh*.08,'#fff',Math.min(17,g.w*.045));
