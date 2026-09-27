@@ -5802,10 +5802,14 @@ function bindCard(card){const k=card.dataset.k;let st=null,ghost=null,spawned=nu
   card.addEventListener('pointercancel',()=>{if(spawned){dragging=false;endBuild(st&&st.U);saveSoon();renderSheetSoft()}reset()});
   card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();const U=beginBuild();if(spawn(k)){endBuild(U);toast(`${CATMAP[k].n} added`);saveSoon();renderSheetSoft()}}})}
 let fps=0,dbgSetI=0;
-// Drop render resolution in steps if the phone can't keep ~45fps.
-const maxPR=Math.min(window.devicePixelRatio||1,2);let curPR=maxPR,slowT=0,qT=0;
-function adaptQuality(dt){if(!ready||document.hidden)return;qT+=dt;slowT=dt>1/40?slowT+dt:Math.max(0,slowT-dt*.5);
-  if(qT>2&&slowT>1.2&&curPR>1){curPR=Math.max(1,curPR-.25);renderer.setPixelRatio(curPR);resize();slowT=0;qT=0}}
+// Render resolution follows the frame rate: down in steps if the phone can't keep ~40fps, back up after a stretch of smooth
+// frames (it used to only ever go down, so one heavy shop left everything fuzzy for the rest of the session). One-off hitches
+// (building a shop, a thumbnail) and the moments around travelling are ignored; high-res phones never go below 1.25x.
+const maxPR=Math.min(window.devicePixelRatio||1,2),minPR=maxPR>=2?1.25:1;let curPR=maxPR,slowT=0,fastT=0,qT=0,qHold=0;
+function adaptQuality(dt){if(!ready||document.hidden)return;if(traveling){qHold=2.5;return}if(qHold>0){qHold-=Math.min(dt,.1);return}if(dt>.25)return;qT+=dt;
+  slowT=dt>1/40?slowT+dt:Math.max(0,slowT-dt*.5);fastT=dt<1/52?fastT+dt:Math.max(0,fastT-dt*2);
+  if(qT>2&&slowT>1.5&&curPR>minPR){curPR=Math.max(minPR,curPR-.25);renderer.setPixelRatio(curPR);resize();slowT=fastT=qT=0}
+  else if(qT>3&&fastT>5&&curPR<maxPR){curPR=Math.min(maxPR,curPR+.25);renderer.setPixelRatio(curPR);resize();slowT=fastT=qT=0}}
 function cssRGB(v){const x=mkCanvas(1,1).getContext('2d');x.fillStyle=v.trim()||'#000';x.fillRect(0,0,1,1);const d=x.getImageData(0,0,1,1).data;return[d[0]/255,d[1]/255,d[2]/255]}
 function syncBg(){const cs=getComputedStyle(document.documentElement),g=n=>cssRGB(cs.getPropertyValue(n));renderer.setBackground(g('--bg1'),g('--bg2'),g('--bg3'),null);
   const m=/url\("([^"]*)"\)/.exec(getComputedStyle(document.body).backgroundImage||'');if(!m)return;const img=new Image();

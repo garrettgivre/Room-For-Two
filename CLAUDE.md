@@ -61,6 +61,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 - State: `defaultState`, `normalize` (migrates old saves — keep it backward compatible), `saveSoon`/`flush`, `connectShared`.
 
 ## Engine gotchas
+- Adaptive resolution (`adaptQuality`): steps the pixel ratio down when frames are slow and back up after smooth stretches; ignores hitches over .25 s and the time around travel; floor 1.25x on high-DPR phones. It used to only go down, so one heavy shop made the whole session fuzzy.
 - Lost WebGL context (Android drops it for backgrounded apps; the UI stayed but the room was gone): the engine can't rebuild GPU resources, so `glReload` flushes the save and reloads when the app is visible again (only for the main renderer's context; a sessionStorage guard stops reload loops). Test with `WEBGL_lose_context` and a faked `visibilityState`.
 - Textures are uploaded once: after redrawing a canvas texture call `renderer.disposeTexture(t)` so it re-uploads (`needsUpdate` alone does nothing).
 - Top-level `const`/`let` order matters: anything run at load (e.g. registering catalog entries) must come after what it uses (`BUILD` is defined after the tiles block; window CAT entries are registered just before the TOWN block for that reason).
