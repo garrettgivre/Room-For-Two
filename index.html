@@ -8618,7 +8618,7 @@ const GAMES={
   // Table units: x 0..1 across, y 0..TH down. Circle-vs-segment physics in sub-steps; flippers are moving capsules that add
   // their own speed to the hit. Pop bumpers are planets, slingshots are rocket fins, S-P-A-C-E rollovers raise the multiplier,
   // three moon drop targets, a black hole saucer that holds the ball and spits it out, a plunger lane, three balls, ball save.
-  pinball:{n:'{pet} Pinball',c:'#7B4BD6',bg:['#140A3A','#2A1459'],xp:300,stars:[40000,120000,300000],titles:['Space Cadet','Moon Walker','Orbit Ace','Star Pilot','Comet Captain','Galaxy Legend'],
+  pinball:{n:'{pet} Pinball',c:'#7B4BD6',bg:['#140A3A','#2A1459'],xp:100000,stars:[40000,120000,300000],titles:['Space Cadet','Moon Walker','Orbit Ace','Star Pilot','Comet Captain','Galaxy Legend'],
     how:'Your pet curls up into a ball! Tap the left or right side to flip (or the arrow keys). Tap or hold to launch. Light S-P-A-C-E for a bigger multiplier, drop all three moons for MULTIBALL, hit the atom three times for ATOM SMASH (double points), ping the satellite for a ball save and the radar dish to double the black hole. Three balls.',
     legend:[['bumper','100'],['lane','×2 ×3...'],['moon','multiball'],['hole','1500']],lvAt:[0,15000,40000,80000,140000,220000],
     lvSub:['','Planets power up!','Black hole doubled!','Moons worth more!','Hyperdrive!'],
@@ -8809,6 +8809,9 @@ const GAMES={
       // the ball is the pet, curled up and rolling (it sits in a roll pivot at its own middle); comet balls for multiball
       B.ball=G();root.add(B.ball);B.roll=G();B.ball.add(B.roll);const br=this.R*S;
       B.sh=add(root,new THREE.CircleGeometry(br,20),M(0x05020F,{transparent:true,opacity:.35,depthWrite:false}),0,.004,0);B.sh.rotation.x=-Math.PI/2;B.sh.outline=0;
+      B.glow=add(root,new THREE.CircleGeometry(br*2.7,28),M(0x8FF6FF,{emissive:0x8FF6FF,emissiveIntensity:1.4,transparent:true,opacity:.6,depthWrite:false}),0,.006,0);B.glow.rotation.x=-Math.PI/2;B.glow.outline=0;nosh(B.glow);B.disc=new THREE.Group();root.add(B.disc);[[1.8,0x3B1273,.008],[1.6,0xFFFFFF,.01]].forEach(([r,c,y])=>{const d=add(B.disc,new THREE.CircleGeometry(br*r,32),M(c,{emissive:c,emissiveIntensity:c==0xFFFFFF?.5:.2}),0,y,0);d.rotation.x=-Math.PI/2;d.outline=0;nosh(d);});
+      B.halo=to(root,br*1.45,.022,M(0xFF5FA8,{emissive:0xFF3D9A,emissiveIntensity:1.6}),0,.02,0,Math.PI/2);B.halo.outline=0;nosh(B.halo);
+      B.trail=[1,2,3,4,5].map(k=>{const m=sp(root,br*(.8-k*.12),M(0x8FF6FF,{emissive:0x8FF6FF,emissiveIntensity:1,transparent:true,opacity:.5-k*.08,depthWrite:false}),0,0,0);m.outline=0;nosh(m);return m});B.bh=[];
       {if(this._petS==null)this._petS=pet.group.scale.x;const s0=pet.group.scale.x;pet.group.scale.setScalar(1);const bx=new THREE.Box3().setFromObject(pet.group),v=new THREE.Vector3(),c=new THREE.Vector3();bx.getSize(v);bx.getCenter(c);
         B.petH=Math.max(.3,v.x,v.y,v.z);B.petCy=c.y-pet.group.position.y;pet.group.scale.setScalar(s0)}
       B.comets=[0,1,2].map(i=>{const cg=G();root.add(cg);const c=[0xFF5FA8,0x8FF6FF,0xFFD21F][i];ol(sp(cg,br,M(0xFFFFFF,{emissive:c,emissiveIntensity:1,roughness:.2}),0,0,0),.008);
@@ -8831,8 +8834,10 @@ const GAMES={
       B.spring.scale.z=1-g.charge*.55;B.pl.position.z=Z(this.PLY)+g.charge*.12;
       // the pet ball rolls (the pet turns about its own middle)
       const x=W(b.x),z=Z(b.y),br=R*S,gone=g.drainT>0,sq=g.hole?Math.max(.1,1-g.hole.t*.7):1;B.ball.visible=!gone;B.sh.visible=!gone;B.ball.position.set(x,br*sq,z);B.sh.position.set(x+.04,.004,z+.03);B.sh.scale.setScalar(sq);
+      B.glow.visible=B.halo.visible=B.disc.visible=!gone;B.disc.position.set(x,0,z);B.disc.scale.setScalar(sq);B.glow.position.set(x,.006,z);B.glow.scale.setScalar(sq*(1+Math.sin(t*6)*.08));B.halo.position.set(x,.02,z);B.halo.scale.setScalar(sq*(1+Math.sin(t*8)*.1));B.halo.material.emissiveIntensity=1.2+Math.sin(t*8)*.5;
+      {const sp_=Math.hypot(b.vx,b.vy);B.bh.unshift([x,br*sq,z]);B.bh.length=Math.min(B.bh.length,16);B.trail.forEach((m,k)=>{const q=B.bh[Math.min(B.bh.length-1,(k+1)*3)];m.visible=!gone&&sp_>.6&&!!q;if(q)m.position.set(...q)})}
       B.spin_=B.spin_||{x:0,z:0};B.spin_.x+=b.vy*S*(1/60)/br;B.spin_.z-=b.vx*S*(1/60)/br;B.roll.rotation.set(B.spin_.x,g.hole?t*9:0,B.spin_.z);
-      const pg=pet.group;if(pg.parent!==B.roll)B.roll.add(pg);const sc=br*2.15/B.petH*sq;pg.scale.setScalar(sc);pg.position.set(0,-B.petCy*sc,0);pg.visible=!gone;
+      const pg=pet.group;if(pg.parent!==B.roll)B.roll.add(pg);const sc=br*2.5/B.petH*sq;pg.scale.setScalar(sc);pg.position.set(0,-B.petCy*sc,0);pg.visible=!gone;
       B.comets.forEach((c,i)=>{const e=g.extra[i];c.g.visible=!!e;c.tr.forEach(m=>m.visible=!!e);if(!e){c.hist.length=0;return}const p=[W(e.x),br,Z(e.y)];c.g.position.set(...p);c.hist.unshift(p);c.hist.length=Math.min(c.hist.length,12);c.tr.forEach((m,k)=>{const q=c.hist[Math.min(c.hist.length-1,(k+1)*3)];m.position.set(...q)})})},
     exit(){if(this._B){if(pet.group.parent!==gpSc)gpSc.add(pet.group);pet.group.position.set(0,0,0);pet.group.rotation.set(0,0,0);gpSc.remove(this._B.root);this._B=null}if(this._petS!=null&&pet.group){pet.group.scale.setScalar(this._petS);pet.group.visible=true}this._petS=null},
     // ---------- the dot-matrix screen at the top (128 x 32 dots, amber, animated) ----------
@@ -8866,11 +8871,11 @@ const GAMES={
       const pw=Math.min(g.w-24,(dh-12)*4),ph=pw/4,px=(g.w-pw)/2,py=(dh-ph)/2;x.save();rr(x,px-6,py-6,pw+12,ph+12,10);x.fillStyle='#120A22';x.fill();x.lineWidth=3;x.strokeStyle='#8FF6FF';x.shadowColor='#3EE8FF';x.shadowBlur=12;x.stroke();x.restore();
       x.fillStyle='#1A0A02';x.fillRect(px,py,pw,ph);x.imageSmoothingEnabled=false;x.drawImage(c,px,py,pw,ph);x.imageSmoothingEnabled=true;x.drawImage(this.dmdMask(pw,ph),px,py,pw,ph);
       x.save();x.globalAlpha=.08;x.fillStyle='#fff';x.fillRect(px,py,pw,ph*.35);x.restore()},
-    draw(g,x){const B=this.b3(g);if(!B){this.draw2(g,x);return}this.upd3(g,B);const dh=this.dmdH(g),vh=g.h-dh,d=Math.min((gm&&gm.dpr)||1,1.5),pw=Math.round(g.w*d),ph=Math.round(vh*d),dk=pw+'x'+ph;B.oy=dh;B.vh=vh;
+    draw(g,x){const B=this.b3(g);if(!B){this.draw2(g,x);return}this.upd3(g,B);const dh=this.dmdH(g),up=Math.round(g.h*.022),vh=g.h-dh+up,d=Math.min((gm&&gm.dpr)||1,1.5),pw=Math.round(g.w*d),ph=Math.round(vh*d),dk=pw+'x'+ph;B.oy=dh-up;B.vh=vh;
       if(gpR.__dk!==dk){gpR.setSize(pw,ph,false);gpR.__dk=dk}gpR.__sz=0;
       // the camera sits behind the flippers, up high; on tall screens it looks down more steeply so the long table fills the space under the screen
       const a=g.w/vh,tp=clamp((.8-a)/.34,0,1),Ls=this.TH/1.62,k=Math.max(1,.71/a)*(1-tp*.3),c=B.cam;c.aspect=a;c.updateProjectionMatrix();c.position.set(0,(6.4+3.9*tp)*k*Ls,B.Z(this.TH)+(3.9-3.1*tp)*k*Ls);c.lookAt(new THREE.Vector3(0,0,B.Z(this.TH*(.52+.01*tp))));
-      x.fillStyle=gGrad(x,0,0,0,g.h,['#0B0630','#241054']);x.fillRect(0,0,g.w,g.h);gpR.render(gpSc,c);x.drawImage(gpR.domElement,0,dh,g.w,vh);this.dmd(g,x,dh);
+      x.fillStyle=gGrad(x,0,0,0,g.h,['#0B0630','#241054']);x.fillRect(0,0,g.w,g.h);gpR.render(gpSc,c);x.drawImage(gpR.domElement,0,dh-up,g.w,vh);this.dmd(g,x,dh);
       const t=g.t;for(let i=0;i<3;i++)gCirc(x,18+i*16,g.h-16,6,i<g.balls?'#8FF6FF':'#2A2360',2);if(g.mult>1)gText(x,`×${g.mult}`,g.w-34,g.h-18,'#FF5FA8',22);
       if(this.onLauncher(g)&&!g.hole&&!(g.drainT>0)){x.save();x.globalAlpha=.7+Math.sin(t*6)*.3;gText(x,g.chg?'Let go to launch!':'Tap or hold to launch',g.w/2,g.h-20,'#FFE45C',16);x.restore()}
       else if(g.save>0){x.save();x.globalAlpha=.5+Math.sin(t*8)*.3;gText(x,'Ball save',g.w/2,g.h-20,'#A6E22E',14);x.restore()}
