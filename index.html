@@ -1901,7 +1901,7 @@ function defaultState(){
       {id:uid(),k:'window',w:0,u:1.3,y:2.0,c:12},
       {id:uid(),k:'poster',w:3,u:.6,y:1.9,c:8}
     ],
-    pet:{name:'Mochi',color:0,xp:0,t:now,pers:null,s:{hunger:80,fun:80,energy:80,clean:80,affection:40}},wear:[],td:{},arc:{best:{},plays:0},
+    pet:{name:'Mochi',color:0,xp:65,t:now,pers:null,s:{hunger:80,fun:80,energy:80,clean:80,affection:40}},wear:[],td:{},arc:{best:{},plays:0},
     feed:[],visits:{},inv:{onigiri:0,cookie:2,fizzmelon:1,wipes:1},toys:['frisbee'],daily:{}};
 }
 let state=defaultState();
@@ -1933,7 +1933,7 @@ const PERSONALITIES={
   mystic:{n:'Mystic',d:'Dreamy and slow. Naps and stares into space.',fav:'drinks',bad:'exotic',toy:'wonder',acts:{doze:2,sit:2},rate:{energy:.85}},
   loner:{n:'Loner',d:'Happy with its own company. Needs less fussing.',fav:'snacks',bad:'drinks',toy:'plushie',acts:{sit:3,shrug:1},rate:{fun:.75}}};
 const PERS_KEYS=Object.keys(PERSONALITIES);
-function persOf(){return PERSONALITIES[state.pet.pers]||null}
+function persOf(){const p=state.pet;if(!p.pers&&p.xp>0)p.pers=PERS_KEYS[Math.floor(Math.random()*PERS_KEYS.length)];return PERSONALITIES[p.pers]||null}
 const FOOD_CATS={sweets:'Sweets',fruit:'Fruit',exotic:'Exotic',snacks:'Snacks',drinks:'Drinks',veggies:'Veggies',grains:'Grains'};
 const MEALS={treat:['Treat',10],snack:['Snack',15],light:['Light meal',30],hearty:['Hearty meal',45],feast:['Feast',60]};
 const GROOM_LV={quick:['Quick fix',15],basic:['Basic',22],standard:['Standard',35],premium:['Premium',50],luxury:['Luxury',70]};
