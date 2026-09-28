@@ -487,7 +487,7 @@ body.gaming #emotes,body.gaming .kbub{display:none!important}
 .tml{position:absolute;left:0;top:0;pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--disp);font-size:13px;color:var(--ink);background:#fff;border:2.5px solid var(--ink);border-radius:11px;padding:2px 9px 3px;box-shadow:0 3px 0 var(--ink);white-space:nowrap}
 .tml.here{background:var(--sun)}.tml i,.tml em{font-style:normal;font-size:10px;color:#fff;background:var(--grape);border:2px solid var(--ink);border-radius:8px;padding:0 6px 1px;margin-top:-16px}.tml em{background:var(--pink)}
 .tm-card{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);transform:translateX(-50%);width:min(calc(100% - 24px),420px);padding:14px 16px 16px;background:var(--paper);border:3px solid var(--ink);border-radius:26px 20px 28px 20px;box-shadow:0 6px 0 var(--ink);color:var(--ink)}
-.tm-card[hidden]{display:none}.tmh{display:flex;align-items:center;gap:10px}.tmh img{width:48px;height:48px}.tmh h3{margin:0;font-family:var(--disp);font-weight:400;font-size:22px}.tmh small{font-size:13px;opacity:.8}
+.tm-card[hidden]{display:none}.tmh{display:flex;align-items:center;gap:10px}.tmh img{width:48px;height:48px}.tmh img.lg{width:auto;height:76px}.tmh h3{margin:0;font-family:var(--disp);font-weight:400;font-size:22px}.tmh small{font-size:13px;opacity:.8}
 .tm-card p{margin:8px 0 0;font-size:14px;line-height:1.35}.tm-card .tmx{font-size:13px;opacity:.85}.tmgo{width:100%;min-height:50px;margin-top:12px;font-size:17px}
 .tmc-x{position:absolute;top:-12px;right:-8px;width:38px;height:38px;border-radius:50%;border:3px solid var(--ink);background:var(--pink);color:#fff;font-family:var(--disp);font-size:22px;line-height:1;box-shadow:0 3px 0 var(--ink)}
 .tm-tools{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);transform:translateX(-50%);width:min(calc(100% - 16px),520px);display:flex;flex-direction:column;gap:8px;padding:10px;background:rgba(255,248,238,.95);border:3px solid var(--ink);border-radius:24px;box-shadow:0 5px 0 var(--ink)}
@@ -671,7 +671,7 @@ body.away .tag{visibility:hidden}
 /* ---------- HUD (Sept 2026): a small logo, the heart jar, and one dock: Pet · Explore · Menu ---------- */
 .logo img{width:min(30vw,124px)}
 .storechip{margin:6px 0 0 4px;display:flex;align-items:center;gap:6px;padding:4px 11px 4px 6px;background:#fff;border:2.5px solid var(--ink);border-radius:14px 11px 15px 12px;box-shadow:var(--stk);transform:rotate(-2deg)}
-.storechip[hidden]{display:none}.storechip img{width:26px;height:26px;flex:none}
+.storechip.logo{background:none;border:0;box-shadow:none;padding:0;margin-top:2px}.storechip.logo img{width:auto;height:70px;filter:drop-shadow(0 2px 3px rgba(59,18,115,.35))}.storechip.logo b{display:none}.storechip[hidden]{display:none}.storechip img{width:26px;height:26px;flex:none}
 .storechip b{font-family:var(--disp);font-weight:400;font-size:14px;color:var(--sc);text-shadow:1.5px 0 var(--ink),-1.5px 0 var(--ink),0 1.5px var(--ink),0 -1.5px var(--ink);white-space:nowrap}
 body.styling .storechip{opacity:0}
 .dock{position:fixed;left:0;right:0;bottom:0;z-index:9;display:flex;justify-content:center;align-items:flex-end;gap:22px;padding:0 14px calc(env(safe-area-inset-bottom,0px) + 10px);pointer-events:none}
@@ -8296,7 +8296,7 @@ function tmLabels(){const el=$('#tmLab'),here=away?away.key:'home',wish=state.wi
 function tmSelect(k){if(tm.arr){tmPick('b:'+k);return}tm.focus=k;const o=tm.bld[k];if(o)tm.tgtTo.set(o.position.x,0,o.position.z);const here=(away?away.key:'home')===k,S=SHOPS[k],c=$('#tmCard');
   const own=k==='home'?[]:tmOwners(k).map(o=>TM_OWN[o]||o),P=S&&S.plan,rooms=P?P.levels.reduce((a,L)=>a+Object.keys(L.rooms).length,0):0,staff=P?P.levels.reduce((a,L)=>a+Object.values(L.rooms).filter(R=>R.lock).length,0):0;
   const extra=k==='furn'?`<p class="tmx">Today: ${nestStock().sets.map(q=>SETMAP[q].n).join(', ')}</p>`:state.wish&&state.wish.k==='trip'&&state.wish.shop===k?`<p class="tmx">${esc(state.pet.name)} wants to visit!</p>`:'';
-  c.innerHTML=`<button class="tmc-x" id="tmcX" aria-label="Close">×</button><div class="tmh"><img src="${ico(k==='home'?'tab-room':S.icon)}" alt=""><div><h3>${esc(k==='home'?'Home':S.n)}</h3><small>${k==='home'?`${esc(state.pet.name)}’s room`:'Run by '+own.join(' & ')}</small></div></div>
+  c.innerHTML=`<button class="tmc-x" id="tmcX" aria-label="Close">×</button><div class="tmh"><img${SHOP_LOGO.has(k)?' class="lg"':''} src="${SHOP_LOGO.has(k)?shopLogo(k):ico(k==='home'?'tab-room':S.icon)}" alt=""><div><h3>${esc(k==='home'?'Home':S.n)}</h3><small>${k==='home'?`${esc(state.pet.name)}’s room`:'Run by '+own.join(' & ')}</small></div></div>
     <p>${TM_INFO[k]||''}</p>${P?`<p class="tmx">${P.levels.length>1?P.levels.length+' floors':'1 floor'} · ${rooms} rooms${staff?` (${staff} staff only)`:''}</p>`:''}${extra}
     <button class="gel ${here?'lilac':'pink'} tmgo" id="tmGo"${here?' disabled':''}>${here?'You’re here':k==='home'?'Go home':'Go inside'}</button>`;
   c.hidden=false;$('#tmcX').onclick=()=>{c.hidden=true;tm.focus=null;tm.tgtTo.set(0,0,0)};const go=$('#tmGo');if(go&&!here)go.onclick=()=>{closeMap();travelTo(k)}}
@@ -8359,7 +8359,8 @@ function travelTo(dest,then,focus){if(traveling)return;const here=away?away.key:
     setTimeout(()=>{tv.classList.remove('on');setTimeout(()=>{tv.hidden=true},400);if(pet.stage>0)petGo(f.clone().add(new THREE.Vector3(1.3,0,-.4)));setTimeout(()=>{doorTarget=0},1100);
       if(away){keeperReact('greet',2.4);setTimeout(()=>away&&keeperSay(pick1(away.keeper.lines.hi)),500);if(!focus)setTimeout(()=>toast(away&&away.key==='glam'?'Tap Pom for new antennae, or Blush for colours and patterns.':away&&away.key==='wear'?'Tap anything on display to try it on. Stitch runs the fitting room.':away&&away.key==='arcade'?'Tap a cabinet to play. Scores go on the board!':away&&away.key==='furn'?'Tap any piece on the floor, or the catalog, to shop.':away&&away.key==='build'?'Tap paint cans, samples and doors, or the catalog.':'Tap anything on the shelves to shop.'),4300);if(focus)setTimeout(()=>typeof focus==='function'?openOffer(focus):openProduct(focus),1400)}
       traveling=false;then&&then()},250)},650)}
-function updStoreBar(){const b=$('#storebar');b.hidden=!away;document.body.classList.toggle('away',!!away);$('#kbub').hidden=true;kbT=0;if(!away)return;$('#sbIcon').src=ico(away.def.icon);$('#sbName').textContent=away.def.n;b.style.setProperty('--sc',away.def.color)}
+const SHOP_LOGO=new Set(['snack','salon','toys','furn','build','glam','wear','arcade']),shopLogo=k=>'assets/logos/'+k+'.webp';
+function updStoreBar(){const b=$('#storebar');b.hidden=!away;document.body.classList.toggle('away',!!away);$('#kbub').hidden=true;kbT=0;if(!away)return;const lg=SHOP_LOGO.has(away.key);b.classList.toggle('logo',lg);$('#sbIcon').src=lg?shopLogo(away.key):ico(away.def.icon);$('#sbName').textContent=away.def.n;b.style.setProperty('--sc',away.def.color)}
 
 /* --- shopping --- */
 // An offer is anything for sale: {title, sub, desc, price, deal, thumb, have, canBuy, buy(), hop}. Cards are opened with a

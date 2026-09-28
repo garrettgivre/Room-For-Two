@@ -168,3 +168,6 @@ Each shop in the town view is a novelty building from `TM_BODY[k]` (before `tmHo
 ## Z-fighting and the lift (Sept 2026)
 - `buildPlanLevel` wall runs extend `WT/2` past their ends so corners close; that made end faces coplanar with the neighbouring run's outside face. `seg` now takes `J` (joined ends) and skips end faces where another run touches that end point (`joined`); interior and rail tops get distinct tiny y offsets.
 - `fxElevator` is a real lift: front wall with an open doorway, doors slid into the jambs, a lit cab (mirror back, rail, ceiling light) in a shaft that runs back behind the wall, with a dark upper shaft, cables and guide rails.
+
+## Shop logos (Sept 2026)
+- `assets/logos/<shop key>.webp` (snack, salon, toys, furn, build, glam, wear, arcade): the user's ChatGPT logos (name baked in), trimmed and 640px. `SHOP_LOGO`/`shopLogo(k)` (before `updStoreBar`): the in-shop chip (`.storechip.logo`) and the town card header (`.tmh img.lg`) show them. Not yet used: 3D town signs, door signs, map SVG pins.
