@@ -164,3 +164,7 @@ Each shop in the town view is a novelty building from `TM_BODY[k]` (before `tmHo
 
 ## Camera pan (Sept 2026)
 - Two-finger drag pans the camera (`camPanBy`, in the `pinch` gesture: pinch = zoom, twist = rotate, midpoint drag = pan). `cam.panT` is the target offset, `cam.pan` eases to it and is added to the look-at point in `updCam` (faded out while styling, cleared on travel and when following the pet). Limit ~1.6x room half-size. A "Re-center" pill (`#centerPill`, `camRecenter`) shows whenever the camera is off-centre. The engine's `lookAt` takes a Vector3 only (use `camLook`).
+
+## Z-fighting and the lift (Sept 2026)
+- `buildPlanLevel` wall runs extend `WT/2` past their ends so corners close; that made end faces coplanar with the neighbouring run's outside face. `seg` now takes `J` (joined ends) and skips end faces where another run touches that end point (`joined`); interior and rail tops get distinct tiny y offsets.
+- `fxElevator` is a real lift: front wall with an open doorway, doors slid into the jambs, a lit cab (mirror back, rail, ceiling light) in a shaft that runs back behind the wall, with a dark upper shaft, cables and guide rails.

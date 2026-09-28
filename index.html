@@ -7796,17 +7796,19 @@ function buildPlanLevel(S,P,li,tiles){const L=P.levels[li],W=P.W,D=P.D,C=PLAN_CS
   E.forEach(e=>{const r=runs[runs.length-1],key=[e.t,e.cls,e.r,e.r2,e.n].join();if(r&&r.key===key&&Math.abs(r.b[0]-e.a[0])<1e-6&&Math.abs(r.b[1]-e.a[1])<1e-6){r.b=e.b;return}runs.push(Object.assign({key},e,{a:e.a.slice(),b:e.b.slice()}))});
   const matOf=(c,which)=>{const R=room(c),k=R.w,e=tileMat('w',k),d=TILESETS.w[k];tiles.add('w:'+k);return{id:'w:'+k+(R.lock?'|g':''),mat:R.lock?greyMat(e.mat):e.mat,sx:d&&d.mode==='repeat'?d.span[0]:2,vr:e.vrep||1}};
   const EXT={id:'ext',mat:M(P.ext||0xF4EEFF,{roughness:.6}),sx:1,vr:1},CAPT={id:'capT',mat:M(0xE9EAF4,{roughness:.6}),sx:1,vr:1,ol:.03},CAPS={id:'capS',mat:M(0xC8B6EC,{roughness:.5}),sx:1,vr:1,ol:.03},RAIL={id:'rail',mat:M(0xFFFFFF,{roughness:.4}),sx:1,vr:1};
-  const seg=(buck,A,Bp,nA,h,mA,mB,mC,yo)=>{const get=m=>{let b=buck.get(m.id);if(!b)buck.set(m.id,b={mat:m.mat,P:[],N:[],U:[],I:[],ol:m.ol||0,cast:true});return b};
+  const seg=(buck,A,Bp,nA,h,mA,mB,mC,yo,J)=>{J=J||[0,0];const get=m=>{let b=buck.get(m.id);if(!b)buck.set(m.id,b={mat:m.mat,P:[],N:[],U:[],I:[],ol:m.ol||0,cast:true});return b};
     const L_=Math.hypot(Bp[0]-A[0],Bp[1]-A[1]),d=[(Bp[0]-A[0])/L_,(Bp[1]-A[1])/L_],e=WT/2,a=[A[0]-d[0]*e,A[1]-d[1]*e],b=[Bp[0]+d[0]*e,Bp[1]+d[1]*e],off=(p,s)=>[p[0]+nA[0]*e*s,p[1]+nA[1]*e*s];
     const along=p=>Math.abs(d[0])>.5?p[0]:p[1],hh=h+(yo||0);
     vquad(get(mA),off(a,1),off(b,1),0,hh,nA,along(a)/mA.sx,along(b)/mA.sx,0,mA.vr*hh/WALLH);vquad(get(mB),off(a,-1),off(b,-1),0,hh,[-nA[0],-nA[1]],along(a)/mB.sx,along(b)/mB.sx,0,mB.vr*hh/WALLH);
     const pts=[off(a,1),off(b,1),off(b,-1),off(a,-1)],xs=pts.map(p=>p[0]),zs=pts.map(p=>p[1]);hquad(get(mC),Math.min(...xs),Math.min(...zs),Math.max(...xs),Math.max(...zs),hh);
-    vquad(get(mC),off(a,1),off(a,-1),0,hh,[-d[0],-d[1]],0,1,0,1);vquad(get(mC),off(b,1),off(b,-1),0,hh,d,0,1,0,1)};
+    if(!J[0])vquad(get(mC),off(a,1),off(a,-1),0,hh,[-d[0],-d[1]],0,1,0,1);if(!J[1])vquad(get(mC),off(b,1),off(b,-1),0,hh,d,0,1,0,1)};
+  const onSeg=(P,r)=>{const x0=Math.min(r.a[0],r.b[0])-1e-4,x1=Math.max(r.a[0],r.b[0])+1e-4,z0=Math.min(r.a[1],r.b[1])-1e-4,z1=Math.max(r.a[1],r.b[1])+1e-4;return P[0]>=x0&&P[0]<=x1&&P[1]>=z0&&P[1]<=z1},joined=(r,P)=>runs.some(o=>o!==r&&onSeg(P,o));
   const inner=new Map(),clsB=[0,1,2,3].map(()=>({tall:new Map(),stub:new Map()}));
   runs.forEach((r,ri)=>{const mn=[Math.min(r.a[0],r.b[0])-WT/2,Math.min(r.a[1],r.b[1])-WT/2],mx=[Math.max(r.a[0],r.b[0])+WT/2,Math.max(r.a[1],r.b[1])+WT/2];out.boxes.push(new THREE.Box3(new THREE.Vector3(mn[0],0,mn[1]),new THREE.Vector3(mx[0],1.2,mx[1])));
-    if(r.t==='ext'){const mA=matOf(r.r),yo=(r.cls%2)*.004;seg(clsB[r.cls].tall,r.a,r.b,r.n,WALLH,mA,EXT,CAPT,yo);seg(clsB[r.cls].stub,r.a,r.b,r.n,SWH,mA,EXT,CAPS,yo)}
-    else if(r.t==='int')seg(inner,r.a,r.b,r.n,IWH,matOf(r.r),matOf(r.r2),CAPS,(ri%2)*.003);
-    else seg(inner,r.a,r.b,r.n,.95,RAIL,RAIL,CAPT)});
+    const J=[joined(r,r.a)?1:0,joined(r,r.b)?1:0];
+    if(r.t==='ext'){const mA=matOf(r.r),yo=(r.cls%2)*.004;seg(clsB[r.cls].tall,r.a,r.b,r.n,WALLH,mA,EXT,CAPT,yo,J);seg(clsB[r.cls].stub,r.a,r.b,r.n,SWH,mA,EXT,CAPS,yo,J)}
+    else if(r.t==='int')seg(inner,r.a,r.b,r.n,IWH,matOf(r.r),matOf(r.r2),CAPS,(ri%4)*.003,J);
+    else seg(inner,r.a,r.b,r.n,.95,RAIL,RAIL,CAPT,(ri%3)*.002,J)});
   bucketsToMeshes(inner,g);clsB.forEach((c,k)=>{bucketsToMeshes(c.tall,out.cls[k].tall);bucketsToMeshes(c.stub,out.cls[k].stub)});
   return out}
 // which outside walls stand tall: the ones whose outside faces away from the camera
@@ -7831,10 +7833,26 @@ function fxStairs(c,len){const g=G(),n=12,Lg=len||3.6,rise=LH/n,run=Lg/n,Wd=M(c|
   for(let i=0;i<n;i++){const h=(i+1)*rise,z=-(i+.5)*run;ol(rb(g,.96,h,run+.01,.02,Wd,0,h/2,z),.01);nosh(rb(g,.98,.05,run*.9,.02,Tr,0,h+.02,z+.01))}
   const rl=cy(g,.035,.035,Math.hypot(Lg,LH),Rl,.46,LH/2+.95,-Lg/2,8);rl.rotation.x=-Math.atan2(Lg,LH);ol(rl,.006);
   for(let i=0;i<=n;i+=3){const h=i*rise;ol(cy(g,.025,.025,.95,Rl,.46,h+.48,-i*run,6),.004)}g.userData.stairs=1;return g}
-function fxElevator(c){const g=G(),F=M(c||0x9B4DF2,{roughness:.35,metalness:.3}),Dr=M(0xDDE3EA,{roughness:.2,metalness:.8}),Gl=M(0xFFE45C,{emissive:0xFFD21F,emissiveIntensity:1});
-  ol(rb(g,1.5,2.7,.4,.06,F,0,1.35,0),.012);[-1,1].forEach(s=>ol(rb(g,.56,2.2,.06,.02,Dr,s*.29,1.12,.2),.006));nosh(bx(g,.02,2.2,.07,M(0x3B1273),0,1.12,.22));
-  ol(rb(g,.6,.24,.06,.04,M(0x1E1A33),0,2.45,.21),.004);const ar=add(g,gcache('elArr',()=>new THREE.ConeGeometry(.07,.12,3)),Gl,0,2.46,.25);ar.outline=0;
-  ol(rb(g,.14,.28,.05,.03,M(0xFFFFFF),.62,1.2,.21),.004);[1.28,1.12].forEach((y,i)=>{const b=sp(g,.035,Gl,.62,y,.25);b.outline=0});g.userData.elev=1;return g}
+function fxElevator(c){const g=G(),F=M(c||0x9B4DF2,{roughness:.35,metalness:.3}),Dr=M(0xDDE3EA,{roughness:.2,metalness:.8}),Gl=M(0xFFE45C,{emissive:0xFFD21F,emissiveIntensity:1}),In=M(0xF3E6FF,{roughness:.6}),Fl=M(0x3B1273,{roughness:.4}),Mi=M(0xCFE9FF,{roughness:.08,metalness:.9}),Sh=M(0x6A6480,{roughness:.8}),Ch=M(0xC9CDD6,{roughness:.25,metalness:.8}),Bk=M(0x2A2540,{roughness:.9}),H=2.7,OW=.96,OH=2.15,ZF=.2,ZB=-1.05;
+  // front wall: two jambs, a header, and a frame round the opening
+  [-1,1].forEach(s=>ol(rb(g,(1.5-OW)/2,H,.4,.05,F,s*(OW/2+(1.5-OW)/4),H/2,0),.012));ol(rb(g,OW,H-OH,.4,.05,F,0,OH+(H-OH)/2,0),.012);
+  [-1,1].forEach(s=>nosh(bx(g,.05,OH,.05,Ch,s*(OW/2+.025),OH/2,ZF+.005)));nosh(bx(g,OW+.1,.05,.05,Ch,0,OH+.025,ZF+.005));
+  // the shaft behind: floor, back, side walls, ceiling
+  const D=ZF-ZB-.02,zc=(ZF+ZB)/2-.1,sw=OW/2+.08;
+  nosh(bx(g,OW+.16,.04,D,Fl,0,.02,zc));nosh(bx(g,OW+.16,.04,D,Bk,0,OH,zc));
+  ol(bx(g,.05,OH,D,In,-sw,OH/2,zc),.006);ol(bx(g,.05,OH,D,In,sw,OH/2,zc),.006);
+  nosh(bx(g,OW+.16,OH,.05,Mi,0,OH/2,ZB));
+  // shaft above the cab: dark, with cables and guide rails
+  nosh(bx(g,OW+.16,H-OH-.02,D,Bk,0,OH+(H-OH)/2,zc));[-1,1].forEach(s=>nosh(cy(g,.02,.02,H-OH,Sh,s*.2,OH+(H-OH)/2,ZB+.25,6)));
+  [-1,1].forEach(s=>nosh(bx(g,.05,OH,.05,Ch,s*(sw-.05),OH/2,ZB+.08)));
+  // cab: handrail, ceiling light, floor stripe
+  nosh(bx(g,OW-.1,.04,.04,Ch,0,.95,ZB+.06));[-1,1].forEach(s=>nosh(bx(g,.04,.04,.1,Ch,s*(OW/2-.05),.95,ZB+.09)));
+  const cl=nosh(bx(g,.5,.02,.3,Gl,0,OH-.03,zc));cl.outline=0;nosh(bx(g,OW-.2,.005,.05,Gl,0,.045,zc+.3));
+  // doors slid open into the walls
+  [-1,1].forEach(s=>{ol(rb(g,.3,OH,.05,.02,Dr,s*(OW/2+.06),OH/2,ZF-.06),.006);nosh(bx(g,.02,OH-.1,.01,Ch,s*(OW/2-.06),OH/2,ZF-.03))});
+  // floor indicator and call button
+  ol(rb(g,.6,.24,.06,.04,M(0x1E1A33),0,2.45,ZF+.01),.004);const ar=add(g,gcache('elArr',()=>new THREE.ConeGeometry(.07,.12,3)),Gl,0,2.46,ZF+.05);ar.outline=0;
+  ol(rb(g,.14,.28,.05,.03,M(0xFFFFFF),.62,1.2,ZF+.01),.004);[1.28,1.12].forEach(y=>{const b=sp(g,.035,Gl,.62,y,ZF+.05);b.outline=0});g.userData.elev=1;return g}
 function fxStaffSign(){const g=G(),Wd=M(0xC98A5A,{roughness:.55}),cv=mkCanvas(256,200),x=cv.getContext('2d');x.fillStyle='#3B1273';x.fillRect(0,0,256,200);x.fillStyle='#FFD21F';x.font='56px "R42 Bubble",sans-serif';x.textAlign='center';x.fillText('STAFF',128,86);x.fillText('ONLY',128,150);
   x.fillStyle='#fff';x.beginPath();x.arc(128,180,10,0,7);x.fill();const t=new THREE.CanvasTexture(cv);t.encoding=THREE.sRGBEncoding;
   [-1,1].forEach(s=>{const p=G();p.position.set(0,0,s*.05);p.rotation.x=s*.22;g.add(p);ol(rb(p,.62,.95,.04,.03,Wd,0,.5,0),.008);const f=add(p,new THREE.PlaneGeometry(.52,.42),M(0xffffff,{map:t,roughness:.7}),0,.62,s*.025);f.outline=0;if(s<0)f.rotation.y=Math.PI});
