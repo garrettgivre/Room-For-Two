@@ -18,8 +18,19 @@ caps=[g['y1']-g['y0'] for g,c in zip(out[0],EXP[0]) if c in 'ABCDEFGHIKLMNOPRSTU
 capH=float(np.median(caps));K=700/capH;print('capH px',capH,'K',K)
 glyphs={};UPM=1000;LSB=32
 SCALE={5:1.25,6:1.3,7:1.48,8:1.68,9:1.2}
+import cv2,os
+GROW=int(os.environ.get('GROW','6'))
+def open_counters(m):
+  inv=(~m).astype(np.uint8);n,lab,st,_=cv2.connectedComponentsWithStats(inv,4)
+  H,W=m.shape;res=m.copy();k=cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(GROW*2+1,GROW*2+1))
+  for i in range(1,n):
+    x,y,w,h,ar=st[i]
+    if x==0 or y==0 or x+w>=W or y+h>=H:continue
+    hole=(lab==i).astype(np.uint8)
+    res&=~cv2.dilate(hole,k).astype(bool)
+  return res
 def trace(g,base,Kb):
-  m0=g['mask'].astype(bool);m=np.pad(m0,2);bm=potrace.Bitmap(~m);path=bm.trace(turdsize=12,alphamax=1.0,opticurve=True,opttolerance=.25)
+  m0=open_counters(g['mask'].astype(bool));m=np.pad(m0,2);bm=potrace.Bitmap(~m);path=bm.trace(turdsize=12,alphamax=1.0,opticurve=True,opttolerance=.25)
   H=m.shape[0];top=g['y0']
   X=lambda p:(p.x-2)*Kb+LSB;Y=lambda p:(base-(top+p.y-2))*Kb
   adv=round(m0.shape[1]*Kb+LSB*2);pen=T2CharStringPen(adv,None);

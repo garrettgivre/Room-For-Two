@@ -1,7 +1,7 @@
 // Offline support for the installed app. Opening the app asks the network for the newest page first (so a deploy shows up
 // straight away, not one launch late) and falls back to the cached copy when offline or slow. Other files are served from the
 // cache and refreshed in the background. Firebase and other sites are never cached.
-const CACHE = 'r42-v2';
+const CACHE = 'r42-v3';
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', 'index.html', 'manifest.webmanifest', 'firebase-config.js'])).then(() => self.skipWaiting()));
 });
