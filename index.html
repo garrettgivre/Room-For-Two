@@ -8618,14 +8618,20 @@ const GAMES={
   // Table units: x 0..1 across, y 0..TH down. Circle-vs-segment physics in sub-steps; flippers are moving capsules that add
   // their own speed to the hit. Pop bumpers are planets, slingshots are rocket fins, S-P-A-C-E rollovers raise the multiplier,
   // three moon drop targets, a black hole saucer that holds the ball and spits it out, a plunger lane, three balls, ball save.
-  pinball:{n:'{pet} Pinball',c:'#7B4BD6',bg:['#140A3A','#2A1459'],xp:100000,stars:[40000,120000,300000],titles:['Space Cadet','Moon Walker','Orbit Ace','Star Pilot','Comet Captain','Galaxy Legend'],
-    how:'Your pet curls up into a ball! Tap the left or right side to flip (or the arrow keys). Tap or hold to launch. Light S-P-A-C-E for a bigger multiplier, drop all three moons for MULTIBALL, hit the atom three times for ATOM SMASH (double points), ping the satellite for a ball save and the radar dish to double the black hole. Three balls.',
-    legend:[['bumper','100'],['lane','×2 ×3...'],['moon','multiball'],['hole','1500']],lvAt:[0,15000,40000,80000,140000,220000],
-    lvSub:['','Planets power up!','Black hole doubled!','Moons worth more!','Hyperdrive!'],
+  pinball:{n:'{pet} Pinball',c:'#7B4BD6',bg:['#140A3A','#2A1459'],xp:300000,stars:[100000,350000,900000],titles:['Space Cadet','Moon Walker','Orbit Ace','Star Pilot','Comet Captain','Galaxy Legend'],
+    how:'Your pet curls up into a ball! Tap left or right to flip, tap or hold to launch. Every launch starts a MISSION: hit the shots under the bouncing arrows before time runs out to get promoted, from Cadet all the way to Star Legend. Between balls, the black hole starts the next one. Launch into the blinking lane for a SKILL SHOT, spell S-P-A-C-E to raise the multiplier, drop all three moons (twice) to light MULTIBALL at the black hole, then shoot it again for the JACKPOT. Finish every mission for SUPERNOVA. Your bonus counts up when a ball drains.',
+    legend:[['hole','missions'],['moon','multiball'],['bumper','jackpot'],['lane','×2 ×3...']],
+    // missions: k = the switch that counts (c times), or seq = shots in order
+    MS:[{n:'Launch Training',goal:'Hit 8 bumpers',k:'bump',c:8},{n:'Satellite Repair',goal:'Hit the satellite 3 times',k:'sat',c:3},{n:'Slingshot Drill',goal:'10 slingshot kicks',k:'sling',c:10},
+      {n:'Reactor Charge',goal:'Hit the atom 5 times',k:'atom',c:5},{n:'Spin Cycle',goal:'40 spinner turns',k:'spin',c:40},{n:'Black Hole Dive',goal:'Shoot the black hole twice',k:'hole',c:2},
+      {n:'Deep Space Relay',goal:'Radar, satellite, black hole',seq:['radar','sat','hole']},{n:'Moon Walk',goal:'Drop 6 moons',k:'moon',c:6},{n:'Asteroid Storm',goal:'Hit 25 bumpers',k:'bump',c:25}],
+    RANKS:['Cadet','Ensign','Lieutenant','Captain','Commander','Commodore','Admiral','Fleet Admiral','Star Legend'],
+    BON:{bump:15,sling:5,atom:75,sat:50,radar:50,spin:3,moon:100,lane:50,hole:200},
+    rank(lv){const R_=this.RANKS;return lv<=R_.length?R_[lv-1]:R_[R_.length-1]+' '+(lv-R_.length+1)},
     TH:2.112,R:.034,PLY:1.8,FP:[[.3,1.99],[.7,1.99]],FL:.15,SL:[[.11,1.64,.27,1.78,1.78],[.89,1.64,.73,1.78,1.78]],ART:'assets/pinball/space-table.webp',
     init(g){const TH=this.TH,tw=Math.min(g.w-12,(g.h-18)/TH);g.tw=tw;g.tx=(g.w-tw)/2;g.ty=(g.h-tw*TH)/2;g.ps=Math.max(26,tw*this.R*2*2.3);
       g.balls=3;g.mult=1;g.lanes=[0,0,0,0,0];g.moons=[1,1,1];g.fl=[{a:.52,w:0,up:0},{a:.52,w:0,up:0}];g.sf=[0,0];g.mf=[0,0,0];g.hole=null;g.holeCD=0;g.charge=0;g.chg=0;g.ptr={};
-      g.cheerT=0;g.sadT=0;g.drainT=0;g.save=0;g.laneF=0;g.msg=null;g.extra=[];g.atomHits=0;g.smashT=0;g.radar=0;g.satCD=0;g.pf={};g.dm={k:'idle',t:0};this.geom(g);g.bf=g.bumps.map(()=>0);this.serve(g)},
+      g.cheerT=0;g.sadT=0;g.drainT=0;g.save=0;g.laneF=0;g.msg=null;g.extra=[];g.atomHits=0;g.smashT=0;g.radar=0;g.satCD=0;g.pf={};g.dm={k:'idle',t:0};g.dq=[];g.bonus=0;g.bonusV=0;g.jp=10000;g.ms={i:0,a:null,lit:1,done:0,tour:1};g.skZ=.6;g.wiz=0;g.ebLit=0;g.matchT=0;g.land=0;g.landN=2;g.mbLit=0;g.matched=0;this.geom(g);g.bf=g.bumps.map(()=>0);this.serve(g)},
     // the layout follows the playfield art: bumpers in its three rings (and two little ones on the pink planet and the dotted path),
     // slingshots on its purple triangles, the launch lane in its yellow tube, moons by the right-hand arrows, the black hole under the
     // satellite, the atom reactor on the atom, spinners over the diamonds, the satellite and radar-dish targets on their pictures
@@ -8640,14 +8646,33 @@ const GAMES={
       g.posts=[{k:'atom',x:.5,y:1.39,r:.045,kick:.55},{k:'sat',x:.22,y:.79,r:.036,kick:.35},{k:'radar',x:.76,y:.8,r:.036,kick:.35}];
       g.spin=[{x0:.13,x1:.27,y:1.36,a:0,w:0,n:0},{x0:.73,x1:.87,y:1.45,a:0,w:0,n:0}];
       g.moonT=[0,1,2].map(i=>({x:.8,y:1.03+i*.1,h:.075}));g.holeP={x:.19,y:1.04,r:.042}},
-    serve(g){g.b={x:.94,y:this.PLY-this.R-.001,vx:0,vy:0,rot:0};g.served=0;g.drainT=0},
+    serve(g){g.b={x:.94,y:this.PLY-this.R-.001,vx:0,vy:0,rot:0};g.served=0;g.drainT=0;g.skZ=.3+Math.random()*.55},
     X(g,x){return g.tx+x*g.tw},Y(g,y){return g.ty+y*g.tw},
     onLauncher(g){const b=g.b;return b.x>.9&&b.y>this.PLY-.1&&Math.abs(b.vy)<.3},
-    pts(g,v,x,y,col,noMult){const p=Math.round(v*(noMult?1:g.mult*(g.smashT>0?2:1)));g.score+=p;gFx(g,...this.proj(g,x,y),'+'+p,col||'#FFE45C',18);return p},
+    pts(g,v,x,y,col,noMult){const p=Math.round(v*(noMult?1:g.mult*(g.smashT>0?2:1)*(g.wiz>0?3:1)));g.score+=p;gFx(g,...this.proj(g,x,y),'+'+p,col||'#FFE45C',18);return p},
     // messages go to the dot-matrix screen (kind picks its animation)
-    say(g,txt,col,kind){g.msg={txt,col:col||'#FFE45C',t:0};g.dm={k:kind||'msg',txt,t:0}},
+    say(g,txt,col,kind,now){const m={k:kind||'msg',txt,t:0,at:g.t},busy=g.dm.k!=='idle'&&g.dm.k!=='mprog';g._said=1;g.msg={txt,col:col||'#FFE45C',t:0};
+      if(m.k==='mprog'){if(!busy||g.dm.t>1.2)g.dm=m;return m}if(busy&&g.dm.t<.4&&!now){if(g.dq.length<4)g.dq.push(m)}else g.dm=m;return m},
+    // every switch reports here: end-of-ball bonus, the multiball jackpot, and mission progress
+    ev(g,k){g.bonus+=Math.round((this.BON[k]||0)*(1+(g.lv-1)*.1));if(k==='bump'&&g.extra.length)g.jp+=500;const A=g.ms.a;if(!A)return;const M=this.MS[A.i];
+      if(M.seq?M.seq[A.got]!==k:M.k!==k)return;A.got++;const need=M.seq?M.seq.length:M.c;if(A.got>=need)this.mDone(g);else this.say(g,`${A.got}/${need}`,'#A6E22E','mprog')},
+    mStart(g){const i=g.ms.i,M=this.MS[i];g.ms.a={i,got:0,t:M.seq?75:60};g.ms.lit=0;const m=this.say(g,M.n.toUpperCase(),'#A6E22E','mission');m.sub=M.goal.toUpperCase()},
+    mDone(g){const v=(5000+2500*g.ms.done)*g.ms.tour;g.ms.a=null;g.ms.done++;g.bonus+=1000;this.pts(g,v,.5,.95,'#A6E22E',1);g.ms.i=(g.ms.i+1)%this.MS.length;g.ms.lit=1;g.cheerT=1.8;
+      gBurst(g,g.w/2,g.h*.4,30,['#A6E22E','#FFE45C','#8FF6FF','#fff'],{shape:'star',sp:300});gLevel(g,'Promoted to '+this.rank(g.lv+1));const m=this.say(g,'MISSION COMPLETE','#A6E22E','mdone',1);m.sub=this.rank(g.lv).toUpperCase();
+      if(g.ms.done===3||g.ms.done===7){g.ebLit=1;this.say(g,'EXTRA BALL IS LIT','#FF5FA8','lit')}
+      if(g.ms.i===0){g.wiz=30;g.ms.tour++;this.say(g,'SUPERNOVA!','#FFD21F','wizard');for(let k=0;k<2;k++)if(g.extra.length<2)g.extra.push({x:.42+k*.16,y:.12,vx:k?.6:-.6,vy:.2,rot:0,comet:1,py:.12})}},
+    // the black hole: its own award, then the jackpot, the extra ball and the next mission when they're lit
+    holeIn(g){const H_=g.holeP,x3=g.radar?2:1;g.radar=0;g.cheerT=1;g._said=0;this.pts(g,(g.lv>=3?3000:1500)*x3,H_.x,H_.y-.05,'#E0B0FF',1);
+      if(g.wiz>0){this.pts(g,25000,H_.x,H_.y-.12,'#FFD21F',1);this.say(g,'SUPER JACKPOT','#FFD21F','jackpot');g.cheerT=1.6}
+      else if(g.extra.length){this.pts(g,g.jp,H_.x,H_.y-.12,'#FFD21F',1);this.say(g,'JACKPOT '+g.jp,'#FFD21F','jackpot');g.jp+=5000;g.cheerT=1.6}
+      if(g.mbLit&&!g.extra.length){g.mbLit=0;g.landN=Math.min(4,g.landN+1);this.multiball(g)}
+      this.ev(g,'hole');if(g.ebLit){g.ebLit=0;g.balls++;this.say(g,'EXTRA BALL!','#FF5FA8','extra');g.cheerT=1.6}
+      if(!g.ms.a&&g.ms.lit&&!(g.wiz>0))this.mStart(g);if(!g._said)this.say(g,x3>1?'BLACK HOLE x2!':'BLACK HOLE!','#E0B0FF','hole')},
     press(g,side,id){if(side==='p'){if(this.onLauncher(g)){g.chg=1;g.charge=0;if(id!=null)g.ptr[id]='p'}return}const f=g.fl[side];if(!f.up){f.up=1;const L=g.lanes;g.lanes=side?[L[4],L[0],L[1],L[2],L[3]]:[L[1],L[2],L[3],L[4],L[0]]}if(id!=null)g.ptr[id]=side},
-    release(g,side){if(side==='p'){if(g.chg){g.chg=0;if(this.onLauncher(g)){g.b.vy=-(3.1+1.25*g.charge);if(!g.served){g.served=1;g.save=6;this.say(g,'BLAST OFF!','#FFE45C','launch')}}}return}g.fl[side].up=0},
+    release(g,side){if(side==='p'){if(g.chg){g.chg=0;if(this.onLauncher(g)){g.b.vy=-(3.1+1.25*g.charge);if(!g.served){g.served=1;g.save=6;this.say(g,'BLAST OFF!','#FFE45C','launch');
+        // skill shot: let go with the launch meter in its lit zone (it moves every ball)
+        if(Math.abs(g.charge-g.skZ)<.06){this.pts(g,5000*g.ms.tour,.9,1.5,'#FF5FA8',1);this.say(g,'SKILL SHOT!','#FF5FA8','skill',1);g.cheerT=1.4;gBurst(g,...this.proj(g,.94,1.6),20,['#FF5FA8','#FFE45C','#fff'],{shape:'star',sp:260})}
+        if(!(g.wiz>0)){if(!g.ms.a)this.mStart(g);else{const M=this.MS[g.ms.a.i],m=this.say(g,M.n.toUpperCase(),'#A6E22E','mission');m.sub=M.goal.toUpperCase();m.re=1}}}}}return}g.fl[side].up=0},
     down(g,px,py,id){if(this.onLauncher(g)&&!g.chg){this.press(g,'p',id);return}this.press(g,px<g.w/2?0:1,id)},
     up(g,id){if(id!=null&&g.ptr[id]!=null){this.release(g,g.ptr[id]);delete g.ptr[id];return}this.release(g,0);this.release(g,1);this.release(g,'p');g.ptr={}},
     move(){},
@@ -8659,25 +8684,27 @@ const GAMES={
     // what the round targets do
     hitPost(g,q){g.pf[q.k]=1;g.shake=.1;if(q.k==='atom'){g.atomHits++;this.pts(g,250,q.x,q.y,'#E0B0FF');if(g.atomHits>=3){g.atomHits=0;g.smashT=20;g.cheerT=1.4;this.say(g,'ATOM SMASH x2',`#FF5FA8`,'atom');gBurst(g,...this.proj(g,q.x,q.y),30,['#FF5FA8','#B07BFF','#8FF6FF','#fff'],{shape:'star',sp:320})}else this.say(g,`ATOM ${g.atomHits}/3`,'#E0B0FF','atomc')}
       else if(q.k==='sat'){if(g.satCD<=0){g.satCD=15;g.save=Math.max(g.save,12);this.pts(g,500,q.x,q.y,'#8FF6FF');this.say(g,'UPLINK! BALL SAVE','#8FF6FF','uplink')}else this.pts(g,100,q.x,q.y,'#8FF6FF')}
-      else if(q.k==='radar'){if(!g.radar){g.radar=1;this.pts(g,500,q.x,q.y,'#A6E22E');this.say(g,'RADAR LOCK: HOLE x2','#A6E22E','radar')}else this.pts(g,100,q.x,q.y,'#A6E22E')}},
+      else if(q.k==='radar'){if(!g.radar){g.radar=1;this.pts(g,500,q.x,q.y,'#A6E22E');this.say(g,'RADAR LOCK: HOLE x2','#A6E22E','radar')}else this.pts(g,100,q.x,q.y,'#A6E22E')}this.ev(g,q.k)},
     multiball(g){if(g.extra.length)return;for(let i=0;i<2;i++)g.extra.push({x:.42+i*.16,y:.12,vx:(i?.6:-.6)+(Math.random()-.5)*.3,vy:.2,rot:0,comet:1,py:.12});this.say(g,'MULTIBALL!','#FFD21F','multi');g.cheerT=1.6},
     collide(g,b,main){const R=this.R;
-      for(const s of g.segs)this.hitSeg(g,b,s.a[0],s.a[1],s.b[0],s.b[1],s.e,s.kick||0,s.kick?()=>{g.sf[s.sl]=1;this.pts(g,10,b.x,b.y,'#FF8A5C');gBurst(g,...this.proj(g,b.x,b.y),6,['#FF5FA8','#fff'],{shape:'dot',sp:120,life:.3})}:null);
+      for(const s of g.segs)this.hitSeg(g,b,s.a[0],s.a[1],s.b[0],s.b[1],s.e,s.kick||0,s.kick?()=>{g.sf[s.sl]=1;this.pts(g,10,b.x,b.y,'#FF8A5C');this.ev(g,'sling');gBurst(g,...this.proj(g,b.x,b.y),6,['#FF5FA8','#fff'],{shape:'dot',sp:120,life:.3})}:null);
       this.hitSeg(g,b,.9,this.PLY,.98,this.PLY,.1,0,null);
       g.bumps.forEach((q,i)=>{const dx=b.x-q.x,dy=b.y-q.y,d=Math.hypot(dx,dy),m=R+q.r;if(d<m&&d>0){const nx=dx/d,ny=dy/d;b.x=q.x+nx*m;b.y=q.y+ny*m;const vn=b.vx*nx+b.vy*ny;if(vn<0){b.vx-=2*vn*nx;b.vy-=2*vn*ny}
-        const k=q.mini?1.05:1.25;b.vx+=nx*k;b.vy+=ny*k;if(g.bf[i]<.6){g.bf[i]=1;g.shake=.12;this.pts(g,Math.round((q.mini?50:100)*(1+(g.lv-1)*.25)),q.x,q.y-q.r,'#8FF6FF');gBurst(g,...this.proj(g,q.x,q.y),9,['#8FF6FF','#FFE45C','#fff'],{shape:'star',sp:170,life:.4})}}});
+        const k=q.mini?1.05:1.25;b.vx+=nx*k;b.vy+=ny*k;if(g.bf[i]<.6){g.bf[i]=1;g.shake=.12;this.ev(g,'bump');this.pts(g,Math.round((q.mini?50:100)*(1+(g.lv-1)*.25)),q.x,q.y-q.r,'#8FF6FF');gBurst(g,...this.proj(g,q.x,q.y),9,['#8FF6FF','#FFE45C','#fff'],{shape:'star',sp:170,life:.4})}}});
       g.posts.forEach(q=>{const dx=b.x-q.x,dy=b.y-q.y,d=Math.hypot(dx,dy),m=R+q.r;if(d<m&&d>0){const nx=dx/d,ny=dy/d;b.x=q.x+nx*m;b.y=q.y+ny*m;const vn=b.vx*nx+b.vy*ny;if(vn<0){b.vx-=1.6*vn*nx;b.vy-=1.6*vn*ny;b.vx+=nx*q.kick;b.vy+=ny*q.kick;if(!(g.pf[q.k]>.5))this.hitPost(g,q)}}});
-      g.moonT.forEach((m,i)=>{if(!g.moons[i])return;this.hitSeg(g,b,m.x,m.y-m.h/2,m.x,m.y+m.h/2,.4,0,()=>{g.moons[i]=0;g.mf[i]=1;this.pts(g,g.lv>=4?1100:750,m.x,m.y,'#FFF3B0');
-        if(g.moons.every(v=>!v)){this.pts(g,5000,.6,.8,'#FFD21F');g.cheerT=1.5;gBurst(g,...this.proj(g,.7,1.1),26,['#FFD21F','#fff','#8FF6FF'],{shape:'star',sp:300});if(!g.extra.length)this.multiball(g);else this.say(g,'MOON LANDING!','#FFD21F','moon');setTimeout(()=>{g.moons=[1,1,1]},900)}})});
+      g.moonT.forEach((m,i)=>{if(!g.moons[i])return;this.hitSeg(g,b,m.x,m.y-m.h/2,m.x,m.y+m.h/2,.4,0,()=>{g.moons[i]=0;g.mf[i]=1;this.pts(g,g.lv>=4?1100:750,m.x,m.y,'#FFF3B0');this.ev(g,'moon');
+        if(g.moons.every(v=>!v)){this.pts(g,5000,.6,.8,'#FFD21F');g.cheerT=1.5;gBurst(g,...this.proj(g,.7,1.1),26,['#FFD21F','#fff','#8FF6FF'],{shape:'star',sp:300});if(g.mbLit||g.extra.length)this.say(g,'MOON LANDING!','#FFD21F','moon');else if(++g.land>=g.landN){g.land=0;g.mbLit=1;this.say(g,'MULTIBALL IS LIT','#FFD21F','moon')}else this.say(g,`LANDING ${g.land} OF ${g.landN}`,'#FFD21F','moon');g.moonRs=.9}})});
       this.hitFlip(g,b,0);this.hitFlip(g,b,1);
-      if(main){const H_=g.holeP;if(!g.hole&&!g.holeCD&&Math.hypot(b.x-H_.x,b.y-H_.y)<H_.r*.9){g.hole={t:0};b.vx=b.vy=0;const x3=g.radar?2:1;g.radar=0;this.pts(g,(g.lv>=3?3000:1500)*x3,H_.x,H_.y-.05,'#E0B0FF',1);this.say(g,x3>1?'BLACK HOLE x2!':'BLACK HOLE!','#E0B0FF','hole');g.cheerT=1;return true}}
+      if(main){const H_=g.holeP;if(!g.hole&&!g.holeCD&&Math.hypot(b.x-H_.x,b.y-H_.y)<H_.r*.9){g.hole={t:0};b.vx=b.vy=0;this.holeIn(g);return true}}
       return false},
     upd(g,dt){const TH=this.TH,R=this.R;g.cheerT=Math.max(0,g.cheerT-dt);g.sadT=Math.max(0,g.sadT-dt);g.bf=g.bf.map(v=>Math.max(0,v-dt*3));g.sf=g.sf.map(v=>Math.max(0,v-dt*4));g.mf=g.mf.map(v=>Math.max(0,v-dt*2));
-      for(const k in g.pf)g.pf[k]=Math.max(0,g.pf[k]-dt*2.5);g.laneF=Math.max(0,g.laneF-dt);g.holeCD=Math.max(0,g.holeCD-dt);g.save=Math.max(0,g.save-dt);g.satCD=Math.max(0,g.satCD-dt);g.smashT=Math.max(0,g.smashT-dt);
-      if(g.msg){g.msg.t+=dt;if(g.msg.t>1.6)g.msg=null}g.dm.t+=dt;if(g.dm.k!=='idle'&&g.dm.t>2.6)g.dm={k:'idle',t:0};if(g.chg)g.charge=Math.min(1,g.charge+dt*1.1);
-      const fsp=g.lv>=5?28:24;g.fl.forEach(f=>{const tgt=f.up?-.42:.52,sp=f.up?fsp:15,old=f.a;f.a=f.a<tgt?Math.min(tgt,f.a+sp*dt):Math.max(tgt,f.a-sp*dt);f.w=(f.a-old)/Math.max(dt,1e-4)});
-      g.spin.forEach(s=>{s.a+=s.w*dt;s.w*=Math.pow(.25,dt);const n=Math.floor(s.a/(Math.PI*2));if(n>s.n){s.n=n;this.pts(g,20,(s.x0+s.x1)/2,s.y,'#FFD21F')}});
-      if(g.drainT>0){g.drainT-=dt;if(g.drainT<=0){if(--g.balls<=0){g.over=true;return}this.serve(g);this.say(g,`${g.balls} ${g.balls>1?'BALLS':'BALL'} LEFT`,'#8FF6FF','ready')}return}
+      for(const k in g.pf)g.pf[k]=Math.max(0,g.pf[k]-dt*2.5);g.laneF=Math.max(0,g.laneF-dt);if(g.moonRs>0&&(g.moonRs-=dt)<=0)g.moons=[1,1,1];if(g.laneRs>0&&(g.laneRs-=dt)<=0)g.lanes=[0,0,0,0,0];g.holeCD=Math.max(0,g.holeCD-dt);g.save=Math.max(0,g.save-dt);g.satCD=Math.max(0,g.satCD-dt);g.smashT=Math.max(0,g.smashT-dt);
+      if(g.msg){g.msg.t+=dt;if(g.msg.t>1.6)g.msg=null}g.dm.t+=dt;if(g.dm.k!=='idle'&&g.dm.t>({bonus:9,match:9,mission:3.4}[g.dm.k]||2.6)){let n=g.dq.shift();while(n&&g.t-n.at>4&&!/^(mission|mdone|wizard|extra|jackpot|lit|skill)$/.test(n.k))n=g.dq.shift();g.dm=n?Object.assign(n,{t:0}):{k:'idle',t:0}}if(g.chg)g.charge=Math.min(1,g.charge+dt*1.1);
+      const fsp=26;g.fl.forEach(f=>{const tgt=f.up?-.42:.52,sp=f.up?fsp:15,old=f.a;f.a=f.a<tgt?Math.min(tgt,f.a+sp*dt):Math.max(tgt,f.a-sp*dt);f.w=(f.a-old)/Math.max(dt,1e-4)});
+      g.spin.forEach(s=>{s.a+=s.w*dt;s.w*=Math.pow(.25,dt);const n=Math.floor(s.a/(Math.PI*2));if(n>s.n){s.n=n;this.pts(g,20,(s.x0+s.x1)/2,s.y,'#FFD21F');this.ev(g,'spin')}});
+      if(g.matchT>0){g.matchT-=dt;if(g.matchT<=0){if(g.matchWin){g.balls=1;this.serve(g);g.dm={k:'extra',txt:'ONE MORE BALL!',t:0}}else g.over=true}return}
+      if(g.drainT>0){const d0=g.drainT;g.drainT-=dt;if(d0>.5&&g.drainT<=.5&&g.bonusV){g.score+=g.bonusV;gFx(g,g.w/2,g.h*.45,'+'+g.bonusV,'#FFE45C',26);g.bonusV=0}
+        if(g.drainT<=0){g.bonus=0;g.mult=1;if(--g.balls<=0){if(!g.matched){g.matched=1;const a=Math.floor(g.score/10)%10*10,w=Math.random()<.1;g.matchWin=w;g.matchT=3.4;g.dm={k:'match',t:0,a,b:w?a:(a+10*(1+Math.floor(Math.random()*9)))%100,win:w};return}g.over=true;return}this.serve(g);this.say(g,`${g.balls} ${g.balls>1?'BALLS':'BALL'} LEFT`,'#8FF6FF','ready')}return}
       const b=g.b,all=[b,...g.extra],n=10,h=dt/n;all.forEach(q=>q.py=q.y);
       if(g.hole){g.hole.t+=dt;b.x=g.holeP.x;b.y=g.holeP.y;if(g.hole.t>1.4){g.hole=null;g.holeCD=5;b.vx=1.3+Math.random()*.4;b.vy=-2.4;g.shake=.3}}
       for(let s_=0;s_<n;s_++)all.forEach(q=>{if(q===b&&g.hole)return;q.vy+=1.9*h;q.x+=q.vx*h;q.y+=q.vy*h;this.collide(g,q,q===b)});
@@ -8685,12 +8712,15 @@ const GAMES={
         // spinners: pass through a gate and it spins with the ball's speed
         g.spin.forEach(s=>{if((q.py-s.y)*(q.y-s.y)<0&&q.x>s.x0&&q.x<s.x1)s.w+=Math.min(60,Math.abs(q.vy)*28)});
         // S-P-A-C-E rollovers at the top
-        if((q.py-.24)*(q.y-.24)<0&&q.x>.25&&q.x<.75){const i=Math.floor((q.x-.25)/.1);if(!g.lanes[i]){g.lanes[i]=1;this.pts(g,500,q.x,.2,'#FFE45C')}
-          if(g.lanes.every(v=>v)&&!g.laneF){g.laneF=1;g.mult=Math.min(6,g.mult+1);this.say(g,`SPACE x${g.mult}`,'#FF5FA8','space');g.cheerT=1.2;gBurst(g,...this.proj(g,.5,.22),24,['#FF5FA8','#FFE45C','#8FF6FF','#fff'],{shape:'star',sp:280});setTimeout(()=>{g.lanes=[0,0,0,0,0]},800)}}});
+        if((q.py-.24)*(q.y-.24)<0&&q.x>.25&&q.x<.75){const i=Math.floor((q.x-.25)/.1);if(!g.lanes[i]){g.lanes[i]=1;this.pts(g,500,q.x,.2,'#FFE45C');this.ev(g,'lane')}
+          if(g.lanes.every(v=>v)&&!g.laneF){g.laneF=1;g.mult=Math.min(6,g.mult+1);this.say(g,`SPACE x${g.mult}`,'#FF5FA8','space');g.cheerT=1.2;gBurst(g,...this.proj(g,.5,.22),24,['#FF5FA8','#FFE45C','#8FF6FF','#fff'],{shape:'star',sp:280});g.laneRs=.8}}});
+      // ball search, like a real machine: a ball sitting still (not cradled on a raised flipper) gets a little kick
+      {const sp=Math.hypot(b.vx,b.vy);if(sp<.08&&!g.hole&&!this.onLauncher(g)&&!g.fl[0].up&&!g.fl[1].up)g.still=(g.still||0)+dt;else g.still=0;if(g.still>1.5){g.still=0;b.vy=-1;b.vx=b.x<.5?.5:-.5}}
       g.extra=g.extra.filter(q=>q.y<TH+.06);
       if(b.y>TH+.06){if(g.extra.length){g.b=g.extra.shift();g.b.comet=0}
-        else if(g.save>0){this.serve(g);g.served=1;this.say(g,'BALL SAVED','#A6E22E','save')}else{g.drainT=1.3;g.sadT=1.3;g.mult=1;g.chg=0;g.smashT=0;this.say(g,'LOST IN SPACE','#9C92BF','drain')}}
-      const L0=g.lv;while(g.lv<this.lvAt.length&&g.score>=this.lvAt[g.lv])gLevel(g,this.lvSub[Math.min(g.lv,this.lvSub.length-1)]);if(g.lv>L0)this.say(g,`LEVEL ${g.lv}`,'#FFE45C','level')},
+        else if(g.save>0){this.serve(g);g.served=1;this.say(g,'BALL SAVED','#A6E22E','save')}else{const bv=g.bonus+g.lv*1000;g.bonusV=bv*g.mult;g.drainT=3.3;g.sadT=1.3;g.chg=0;g.smashT=0;g.dq.length=0;g.msg=null;g.dm={k:'bonus',txt:'LOST IN SPACE',t:0,b:bv,x:g.mult}}}
+      if(g.ms.a&&!g.hole&&!this.onLauncher(g)){g.ms.a.t-=dt;if(g.ms.a.t<=0){g.ms.a=null;g.ms.lit=1;this.say(g,'MISSION ABORTED','#9C92BF','mfail')}}
+      if(g.wiz>0){g.wiz-=dt;if(g.wiz<=0){g.wiz=0;this.say(g,'SUPERNOVA OVER','#FFD21F','msg')}}},
     pose(g,t){if(g.sadT>0)return PZ.sad(t);const f=Math.min(1,Math.hypot(g.b.vx,g.b.vy)/3);
       return{arms:[{rz:-.55,rx:-1.5},{rz:.55,rx:-1.5}],legs:[-1.35,-1.35],heads:[{rx:.7,rz:.3},{rx:.7,rz:-.3}],mouth:.2+f*.7,lid:.1+(g.cheerT>0?0:.3),sy:-.12,look:{x:Math.sin(t*3)*.5,y:-.2}}},
     // ---------- drawing ----------
@@ -8798,6 +8828,8 @@ const GAMES={
       B.orb=[[.13,.9,0xFF5FA8,.035],[.18,-.6,0x8FF6FF,.03],[.25,.4,0xA6E22E,.04]].map(([r,sp_,c,sz])=>{const m=sp(root,sz,M(c,{emissive:c,emissiveIntensity:.8,roughness:.2}),0,.05,0);m.outline=0;return{m,r,sp:sp_,a:Math.random()*6}});
       B.beacons=[[.35,.13],[.46,.1],[.66,.1],[.73,.14]].map(([u,v],i)=>{const m=M(0xFF5FA8,{emissive:[0xFF3D9A,0xFFD21F,0x3EE8FF,0xA6E22E][i],emissiveIntensity:.3});const b_=sp(root,.035,m,W(u),.03,Z(v));b_.outline=0;return m});
       B.twk=[[.5,.43],[.37,.65],[.62,.62],[.29,.82],[.42,1.2],[.6,1.62],[.39,1.83],[.57,1.52],[.12,1.22],[.86,.95]].map(([u,v])=>{const m=M(0xFFFFFF,{emissive:0xFFFFFF,emissiveIntensity:.2});const s_=star3(root,.04,m,W(u),.012,Z(v));s_.rotation.x=-Math.PI/2;s_.outline=0;return m});
+      // rank inserts: a star per mission in an arc under the atom (lit = done this tour, blinking = the current one)
+      B.rk=[];for(let i=0;i<9;i++){const a=(145-i*110/8)*Math.PI/180,m=M(0x3A2E8A,{emissive:0xA6E22E,emissiveIntensity:0,roughness:.4}),s_=star3(root,.055,m,W(.5+Math.cos(a)*.27),.012,Z(1.39+Math.sin(a)*.27));s_.rotation.x=-Math.PI/2;s_.outline=0;B.rk.push(m)}
       B.moonO=sp(root,.09,M(0xE6E9F5,{roughness:.6,emissive:0x8F8FB0,emissiveIntensity:.2}),0,.12,0);
       B.flame=piv(root,W(.85),.06,Z(.24));B.flame.rotation.set(Math.PI/2+.4,0,.5);{const f1=add(B.flame,gcache('pbfl',()=>new THREE.ConeGeometry(.06,.3,10)),glowM(0xFF8A1C,1.2),0,.15,0);f1.outline=0;const f2=add(B.flame,gcache('pbfl2',()=>new THREE.ConeGeometry(.035,.2,10)),glowM(0xFFE45C,1.3),0,.1,0);f2.outline=0}
       // flippers: white bats with red rubber, on chrome pivots
@@ -8809,15 +8841,15 @@ const GAMES={
       // the ball is the pet, curled up and rolling (it sits in a roll pivot at its own middle); comet balls for multiball
       B.ball=G();root.add(B.ball);B.roll=G();B.ball.add(B.roll);const br=this.R*S;
       B.sh=add(root,new THREE.CircleGeometry(br,20),M(0x05020F,{transparent:true,opacity:.35,depthWrite:false}),0,.004,0);B.sh.rotation.x=-Math.PI/2;B.sh.outline=0;
-      B.glow=add(root,new THREE.CircleGeometry(br*2.7,28),M(0x8FF6FF,{emissive:0x8FF6FF,emissiveIntensity:1.4,transparent:true,opacity:.6,depthWrite:false}),0,.006,0);B.glow.rotation.x=-Math.PI/2;B.glow.outline=0;nosh(B.glow);B.disc=new THREE.Group();root.add(B.disc);[[1.8,0x3B1273,.008],[1.6,0xFFFFFF,.01]].forEach(([r,c,y])=>{const d=add(B.disc,new THREE.CircleGeometry(br*r,32),M(c,{emissive:c,emissiveIntensity:c==0xFFFFFF?.5:.2}),0,y,0);d.rotation.x=-Math.PI/2;d.outline=0;nosh(d);});
-      B.halo=to(root,br*1.45,.022,M(0xFF5FA8,{emissive:0xFF3D9A,emissiveIntensity:1.6}),0,.02,0,Math.PI/2);B.halo.outline=0;nosh(B.halo);
-      B.trail=[1,2,3,4,5].map(k=>{const m=sp(root,br*(.8-k*.12),M(0x8FF6FF,{emissive:0x8FF6FF,emissiveIntensity:1,transparent:true,opacity:.5-k*.08,depthWrite:false}),0,0,0);m.outline=0;nosh(m);return m});B.bh=[];
+      B.glow=add(root,new THREE.CircleGeometry(br*1.9,28),M(0x8FF6FF,{emissive:0x8FF6FF,emissiveIntensity:1,transparent:true,opacity:.3,depthWrite:false}),0,.006,0);B.glow.rotation.x=-Math.PI/2;B.glow.outline=0;nosh(B.glow);
+      // lit shots: bouncing arrows over whatever the mission (or the jackpot / extra ball) wants you to hit
+      B.arw=[0,1,2,3,4].map(()=>{const a=G();root.add(a);const m=M(0xA6E22E,{emissive:0xA6E22E,emissiveIntensity:1,roughness:.3}),c=ol(add(a,gcache('pbarw',()=>new THREE.ConeGeometry(.15,.32,4)),m,0,0,0),.008);c.rotation.x=Math.PI;a.visible=false;return{a,m}});
       {if(this._petS==null)this._petS=pet.group.scale.x;const s0=pet.group.scale.x;pet.group.scale.setScalar(1);const bx=new THREE.Box3().setFromObject(pet.group),v=new THREE.Vector3(),c=new THREE.Vector3();bx.getSize(v);bx.getCenter(c);
         B.petH=Math.max(.3,v.x,v.y,v.z);B.petCy=c.y-pet.group.position.y;pet.group.scale.setScalar(s0)}
       B.comets=[0,1,2].map(i=>{const cg=G();root.add(cg);const c=[0xFF5FA8,0x8FF6FF,0xFFD21F][i];ol(sp(cg,br,M(0xFFFFFF,{emissive:c,emissiveIntensity:1,roughness:.2}),0,0,0),.008);
         const tr=[1,2,3].map(k=>{const m=sp(root,br*(1-k*.22),M(c,{emissive:c,emissiveIntensity:.8,transparent:true,opacity:.6-k*.15}),0,0,0);m.outline=0;nosh(m);return m});cg.visible=false;return{g:cg,tr,hist:[]}});
       B.cam=new THREE.PerspectiveCamera(38,1,.1,100);return B},
-    upd3(g,B){const t=g.t,S=B.S,W=B.W,Z=B.Z,b=g.b,R=this.R,smash=g.smashT>0;
+    upd3(g,B){const t=g.t,S=B.S,W=B.W,Z=B.Z,b=g.b,R=this.R,smash=g.smashT>0||g.wiz>0;
       g.fl.forEach((f,i)=>{const F=B.fl[i];F.pv.rotation.y=-f.a*F.d});
       B.bump.forEach((q,i)=>{const f=g.bf[i]||0;q.cap.emissiveIntensity=.25+f*2.2+(smash?Math.max(0,Math.sin(t*12+i))*.8:0);q.g.scale.set(1+f*.08,1-f*.1,1+f*.08);q.ring.rotation.z=t*1.5+i});
       B.posts.forEach(o=>{const f=g.pf[o.k]||0;if(o.k==='atom'){o.m.emissiveIntensity=.6+f*2+(smash?1+Math.sin(t*14):0)+g.atomHits*.3;o.rings.forEach((p_,i)=>{p_.rotation.y=t*(smash?9:2.4)+i*2})}
@@ -8826,19 +8858,24 @@ const GAMES={
       B.spin.forEach((o,i)=>{o.p.rotation.x=g.spin[i].a});
       B.sl.forEach((m,i)=>{m.emissiveIntensity=g.sf[i]*1.6});
       B.moons.forEach((m,i)=>{m.position.y=approach(m.position.y,g.moons[i]?0:-.34,.08)});
-      B.lanes.forEach((L,i)=>{const on=g.lanes[i]||(g.laneF>0&&Math.floor(t*10)%2);L.d.material=on?L.on:L.off});
+      B.lanes.forEach((L,i)=>{const on=g.lanes[i]||(g.laneF>0&&Math.floor(t*10)%2); L.d.material=on?L.on:L.off});
       B.swirl.rotation.z=t*(g.radar?6:2.2);B.holeRim.emissiveIntensity=g.radar?1.4+Math.sin(t*10)*.6:1;const ph=Math.floor(t*(smash?16:8));B.ring.forEach((m,i)=>{m.emissiveIntensity=smash?((i+ph)%2?1.6:.2):(i+ph)%5===0||(g.cheerT>0&&(i+ph)%2===0)?1.4:.15});
       B.orb.forEach(o=>{o.a+=o.sp*(smash?3:1)/60;o.m.position.set(W(.5)+Math.cos(o.a)*o.r*S,.05,Z(1.39)+Math.sin(o.a)*o.r*S)});
+      B.rk.forEach((m,i)=>{const w_=g.wiz>0,done=i<g.ms.i,cur=i===g.ms.i&&!w_;m.color.set(done||cur||w_?0xA6E22E:0x3A2E8A);m.emissiveIntensity=w_?(Math.floor(t*8+i)%2?1.4:.3):done?.9:cur?(Math.floor(t*4)%2?1.1:.1):0});
       B.beacons.forEach((m,i)=>{m.emissiveIntensity=Math.sin(t*3+i*1.7)>.6?1.6:.2});B.twk.forEach((m,i)=>{m.emissiveIntensity=.2+Math.max(0,Math.sin(t*1.3+i*2.3))*1.2});
       B.moonO.position.set(W(.12)+Math.cos(t*.7)*.5,.12,Z(.1)+Math.sin(t*.7)*.25);B.flame.scale.set(1,.8+Math.sin(t*23)*.15+Math.sin(t*9)*.1,1);
       B.spring.scale.z=1-g.charge*.55;B.pl.position.z=Z(this.PLY)+g.charge*.12;
       // the pet ball rolls (the pet turns about its own middle)
       const x=W(b.x),z=Z(b.y),br=R*S,gone=g.drainT>0,sq=g.hole?Math.max(.1,1-g.hole.t*.7):1;B.ball.visible=!gone;B.sh.visible=!gone;B.ball.position.set(x,br*sq,z);B.sh.position.set(x+.04,.004,z+.03);B.sh.scale.setScalar(sq);
-      B.glow.visible=B.halo.visible=B.disc.visible=!gone;B.disc.position.set(x,0,z);B.disc.scale.setScalar(sq);B.glow.position.set(x,.006,z);B.glow.scale.setScalar(sq*(1+Math.sin(t*6)*.08));B.halo.position.set(x,.02,z);B.halo.scale.setScalar(sq*(1+Math.sin(t*8)*.1));B.halo.material.emissiveIntensity=1.2+Math.sin(t*8)*.5;
-      {const sp_=Math.hypot(b.vx,b.vy);B.bh.unshift([x,br*sq,z]);B.bh.length=Math.min(B.bh.length,16);B.trail.forEach((m,k)=>{const q=B.bh[Math.min(B.bh.length-1,(k+1)*3)];m.visible=!gone&&sp_>.6&&!!q;if(q)m.position.set(...q)})}
+      B.glow.visible=!gone;B.glow.position.set(x,.006,z);B.glow.scale.setScalar(sq*(1+Math.sin(t*4)*.06));
+      {const lt=gone?[]:this.lit(g);B.arw.forEach((o,i)=>{const p=lt[i];o.a.visible=!!p;if(!p)return;o.a.position.set(W(p[0]),.7+Math.abs(Math.sin(t*5+i*.7))*.16,Z(p[1]));o.a.rotation.y=t*2;o.m.color.set(p[2]);o.m.emissive.set(p[2]);o.m.emissiveIntensity=.7+Math.max(0,Math.sin(t*10))*.6})}
       B.spin_=B.spin_||{x:0,z:0};B.spin_.x+=b.vy*S*(1/60)/br;B.spin_.z-=b.vx*S*(1/60)/br;B.roll.rotation.set(B.spin_.x,g.hole?t*9:0,B.spin_.z);
       const pg=pet.group;if(pg.parent!==B.roll)B.roll.add(pg);const sc=br*2.5/B.petH*sq;pg.scale.setScalar(sc);pg.position.set(0,-B.petCy*sc,0);pg.visible=!gone;
       B.comets.forEach((c,i)=>{const e=g.extra[i];c.g.visible=!!e;c.tr.forEach(m=>m.visible=!!e);if(!e){c.hist.length=0;return}const p=[W(e.x),br,Z(e.y)];c.g.position.set(...p);c.hist.unshift(p);c.hist.length=Math.min(c.hist.length,12);c.tr.forEach((m,k)=>{const q=c.hist[Math.min(c.hist.length-1,(k+1)*3)];m.position.set(...q)})})},
+    lit(g){const L=[],A=g.ms.a,H_=g.holeP;if(A){const M=this.MS[A.i],k=M.seq?M.seq[A.got]:M.k,c=0xA6E22E,P=g.posts.find(p=>p.k===k);
+        if(k==='bump')g.bumps.slice(0,3).forEach(q=>L.push([q.x,q.y,c]));else if(P)L.push([P.x,P.y,c]);else if(k==='spin')g.spin.forEach(s_=>L.push([(s_.x0+s_.x1)/2,s_.y,c]));
+        else if(k==='moon')g.moonT.forEach((m,i)=>{if(g.moons[i])L.push([m.x-.03,m.y,c])});else if(k==='lane')L.push([.5,.26,c]);else if(k==='sling')this.SL.forEach(([x1,y1,x2,y2,yb])=>L.push([(x1*2+x2)/3,(y1+yb+y2)/3,c]));else if(k==='hole')L.push([H_.x,H_.y,c])}
+      const hc=g.wiz>0||g.extra.length||g.mbLit?0xFFD21F:g.ebLit?0xFF5FA8:!A&&g.ms.lit&&g.served?0xA6E22E:0;if(hc&&!L.some(p=>p[0]===H_.x))L.push([H_.x,H_.y,hc]);return L.slice(0,5)},
     exit(){if(this._B){if(pet.group.parent!==gpSc)gpSc.add(pet.group);pet.group.position.set(0,0,0);pet.group.rotation.set(0,0,0);gpSc.remove(this._B.root);this._B=null}if(this._petS!=null&&pet.group){pet.group.scale.setScalar(this._petS);pet.group.visible=true}this._petS=null},
     // ---------- the dot-matrix screen at the top (128 x 32 dots, amber, animated) ----------
     dmdH(g){return Math.round(clamp(g.w*.24,54,110))},
@@ -8847,10 +8884,11 @@ const GAMES={
       const rocket=(x,y,up)=>{d.fillRect(x-1,y-5,3,9);d.fillRect(x,y-7,1,2);d.fillRect(x-3,y+2,2,3);d.fillRect(x+2,y+2,2,3);if(Math.floor(T*20)%2){d.globalAlpha=.7;d.fillRect(x-1,y+4,3,2+Math.floor(Math.random()*3));d.globalAlpha=1}};
       const pet=(x,y,happy)=>{[[-4,0],[4,0]].forEach(([ox])=>{d.beginPath();d.arc(x+ox,y,4.5,0,7);d.fill()});d.fillStyle='#000';[-4,4].forEach(ox=>{d.fillRect(x+ox,y-1,1,2)});if(happy)d.fillRect(x-1,y+2,3,1);else d.fillRect(x-1,y+3,3,1);d.fillStyle='#fff'};
       const k=dm.k;
-      if(k==='idle'){stars(-6);const ph=Math.floor(T/4)%3;
+      if(k==='idle'){stars(-6);const ph=Math.floor(T/4)%4,A=g.ms.a;
         if(ph===0){txt(`${PN().toUpperCase()} PINBALL`,64,11,11);txt('ORBITAL EDITION',64,24,7)}
         else if(ph===1){txt('SCORE',64,7,7);txt(String(g.score),64,21,15)}
-        else{const s='DROP ALL 3 MOONS FOR MULTIBALL  ~  HIT THE ATOM 3 TIMES  ~  SPELL S-P-A-C-E',w=s.length*5.2;txt(s,128-((T*28)%(w+128)),16,8,'left')}return}
+        else if(ph===2){txt('RANK',64,7,7);txt(this.rank(g.lv).toUpperCase(),64,21,12)}
+        else{const s=A?'MISSION: '+this.MS[A.i].goal.toUpperCase()+'  ~  FOLLOW THE ARROWS':'THE BLACK HOLE STARTS A MISSION  ~  LAND ON THE MOON TWICE TO LIGHT MULTIBALL  ~  SPELL S-P-A-C-E  ~  HIT THE ATOM 3 TIMES',w=s.length*5.2;txt(s,128-((T*28)%(w+128)),16,8,'left')}return}
       if(k==='launch'||k==='ready'){stars(-18);rocket(20+t*55,26-t*10);txt(dm.txt,76,16,11);return}
       if(k==='space'){stars(-30);const x=(t*90)%150-10;rocket(x,16);d.save();d.translate(x,16);d.restore();txt(dm.txt,64,16,Math.min(15,6+t*25));return}
       if(k==='multi'||k==='moon'){const y=Math.min(20,t*18);d.beginPath();d.arc(98,34,12,0,7);d.fill();d.fillStyle='#000';d.beginPath();d.arc(94,30,2,0,7);d.arc(103,28,1.5,0,7);d.fill();d.fillStyle='#fff';rocket(98,y);
@@ -8863,11 +8901,24 @@ const GAMES={
       if(k==='save'){pet(20,16,true);txt(dm.txt,76,16,11);return}
       if(k==='drain'){pet(20,16+Math.min(10,t*6),false);txt(dm.txt,76,16,11);return}
       if(k==='level'){stars(-40);txt(dm.txt,64,16,Math.floor(T*6)%2?15:13);return}
+      if(k==='mission'){stars(-24);if(t<.8){d.fillRect(0,0,128,1);d.fillRect(0,31,128,1);txt(dm.re?'MISSION RESUMED':'NEW MISSION',64,16,Math.floor(T*8)%2?12:11);return}rocket(10,18);txt(dm.txt,68,10,dm.txt.length>14?8:10);txt(dm.sub||'',68,24,6);return}
+      if(k==='mprog'){txt(dm.txt,64,16,Math.min(16,8+t*40));return}
+      if(k==='mdone'){stars(-40);if(t<1.3){txt('MISSION',64,9,11);txt('COMPLETE',64,24,Math.floor(T*8)%2?11:10)}else{txt('PROMOTED TO',64,8,7);txt(dm.sub||'',64,21,(dm.sub||'').length>11?9:12)}return}
+      if(k==='mfail'){txt('MISSION ABORTED',64,10,9);txt('BLACK HOLE TO RETRY',64,24,6);return}
+      if(k==='skill'){stars(-50);d.beginPath();d.ellipse(20,16,5,12,0,0,7);d.stroke();rocket(Math.min(20,-5+t*60),16);txt(dm.txt,78,16,Math.floor(T*10)%2?12:11);return}
+      if(k==='jackpot'){if(Math.floor(T*10)%2){d.fillRect(0,0,128,32);d.fillStyle='#000'}txt(dm.txt,64,16,dm.txt.length>12?10:13);d.fillStyle='#fff';return}
+      if(k==='extra'){pet(20,16+Math.sin(T*8)*2,true);txt(dm.txt,76,16,dm.txt.length>11?8:11);return}
+      if(k==='wizard'){for(let i=0;i<4;i++){const r_=(t*40+i*16)%64;d.globalAlpha=1-r_/64;d.beginPath();d.arc(64,16,r_,0,7);d.stroke()}d.globalAlpha=1;txt('SUPERNOVA',64,12,Math.floor(T*8)%2?13:12);txt('ALL SCORES X3',64,26,6);return}
+      if(k==='bonus'){if(t<1){pet(20,16+Math.min(10,t*6),false);txt('LOST IN SPACE',76,16,9);return}const b_=dm.b,x_=dm.x;
+        if(t<1.9){txt('BONUS',64,8,7);txt(String(Math.round(b_*Math.min(1,(t-1)/.7))),64,21,14);return}
+        if(t<2.5&&x_>1){txt('BONUS '+b_,64,8,7);txt('X'+x_,64,21,15);return}txt('TOTAL BONUS',64,8,7);txt(String(b_*x_),64,21,Math.floor(T*8)%2?15:14);return}
+      if(k==='match'){const n=t<2?(Math.floor(T*18)%10)*10:dm.b,f=v=>String(v).padStart(2,'0');txt('MATCH',64,8,8);txt(f(dm.a),30,21,14);txt(f(n),98,21,14);
+        if(t>2.2){if(dm.win){if(Math.floor(T*8)%2)d.strokeRect(12,12,104,19);txt('WIN!',64,22,9)}}return}
       txt(dm.txt||'',64,16,11)},
     dmdMask(pw,ph){const k=pw+'x'+ph;if(this._mk&&this._mk.k===k)return this._mk.c;const c=mkCanvas(Math.max(1,Math.round(pw)),Math.max(1,Math.round(ph))),x=c.getContext('2d');x.fillStyle='rgba(8,4,2,.9)';x.fillRect(0,0,c.width,c.height);x.globalCompositeOperation='destination-out';
       const cw=c.width/128,chh=c.height/32,r=Math.min(cw,chh)*.42;for(let j=0;j<32;j++)for(let i=0;i<128;i++){x.beginPath();x.arc((i+.5)*cw,(j+.5)*chh,r,0,7);x.fill()}this._mk={k,c};return c},
     dmd(g,x,dh){const c=this._dc||(this._dc=mkCanvas(128,32)),d=c.getContext('2d');d.globalCompositeOperation='source-over';d.globalAlpha=1;d.fillStyle='#000';d.fillRect(0,0,128,32);this.dmdFrame(g,d);
-      d.globalCompositeOperation='multiply';d.fillStyle=g.smashT>0&&Math.floor(g.t*8)%2?'#FF5FA8':'#FF9A2E';d.fillRect(0,0,128,32);d.globalCompositeOperation='source-over';
+      d.globalCompositeOperation='multiply';d.fillStyle=(g.smashT>0||g.wiz>0)&&Math.floor(g.t*8)%2?(g.wiz>0?'#FFE45C':'#FF5FA8'):'#FF9A2E';d.fillRect(0,0,128,32);d.globalCompositeOperation='source-over';
       const pw=Math.min(g.w-24,(dh-12)*4),ph=pw/4,px=(g.w-pw)/2,py=(dh-ph)/2;x.save();rr(x,px-6,py-6,pw+12,ph+12,10);x.fillStyle='#120A22';x.fill();x.lineWidth=3;x.strokeStyle='#8FF6FF';x.shadowColor='#3EE8FF';x.shadowBlur=12;x.stroke();x.restore();
       x.fillStyle='#1A0A02';x.fillRect(px,py,pw,ph);x.imageSmoothingEnabled=false;x.drawImage(c,px,py,pw,ph);x.imageSmoothingEnabled=true;x.drawImage(this.dmdMask(pw,ph),px,py,pw,ph);
       x.save();x.globalAlpha=.08;x.fillStyle='#fff';x.fillRect(px,py,pw,ph*.35);x.restore()},
@@ -8876,10 +8927,18 @@ const GAMES={
       // the camera sits behind the flippers, up high; on tall screens it looks down more steeply so the long table fills the space under the screen
       const a=g.w/vh,tp=clamp((.8-a)/.34,0,1),Ls=this.TH/1.62,k=Math.max(1,.71/a)*(1-tp*.3),c=B.cam;c.aspect=a;c.updateProjectionMatrix();c.position.set(0,(6.4+3.9*tp)*k*Ls,B.Z(this.TH)+(3.9-3.1*tp)*k*Ls);c.lookAt(new THREE.Vector3(0,0,B.Z(this.TH*(.52+.01*tp))));
       x.fillStyle=gGrad(x,0,0,0,g.h,['#0B0630','#241054']);x.fillRect(0,0,g.w,g.h);gpR.render(gpSc,c);x.drawImage(gpR.domElement,0,dh-up,g.w,vh);this.dmd(g,x,dh);
-      const t=g.t;for(let i=0;i<3;i++)gCirc(x,18+i*16,g.h-16,6,i<g.balls?'#8FF6FF':'#2A2360',2);if(g.mult>1)gText(x,`×${g.mult}`,g.w-34,g.h-18,'#FF5FA8',22);
-      if(this.onLauncher(g)&&!g.hole&&!(g.drainT>0)){x.save();x.globalAlpha=.7+Math.sin(t*6)*.3;gText(x,g.chg?'Let go to launch!':'Tap or hold to launch',g.w/2,g.h-20,'#FFE45C',16);x.restore()}
+      const t=g.t;for(let i=0;i<Math.max(3,g.balls);i++)gCirc(x,18+i*16,g.h-16,6,i<g.balls?'#8FF6FF':'#2A2360',2);if(g.mult>1)gText(x,`×${g.mult}`,g.w-34,g.h-18,'#FF5FA8',22);
+      if(this.onLauncher(g)&&!g.hole&&!(g.drainT>0)){x.save();x.globalAlpha=.7+Math.sin(t*6)*.3;gText(x,g.chg?'Let go to launch!':'Tap or hold to launch',g.w/2,g.h-20,'#FFE45C',16);x.restore();
+        if(!g.served){const bw=Math.min(200,g.w*.55),bx=g.w/2-bw/2,by=g.h-46;rr(x,bx-3,by-3,bw+6,14,7);x.fillStyle='#120A22';x.fill();x.lineWidth=2;x.strokeStyle='#3B1273';x.stroke();
+          x.fillStyle=Math.floor(t*8)%2?'#FF5FA8':'#FF8AC2';x.fillRect(bx+bw*(g.skZ-.06),by,bw*.12,8);x.fillStyle='rgba(255,228,92,.9)';x.fillRect(bx,by+2,bw*g.charge,4);
+          gText(x,'Skill shot',bx+bw*g.skZ,by-9,'#FF8AC2',11)}}
       else if(g.save>0){x.save();x.globalAlpha=.5+Math.sin(t*8)*.3;gText(x,'Ball save',g.w/2,g.h-20,'#A6E22E',14);x.restore()}
-      if(g.smashT>0){x.save();x.globalAlpha=.6+Math.sin(t*10)*.3;gText(x,`Atom smash ×2 · ${Math.ceil(g.smashT)}`,g.w/2,dh+16,'#FF5FA8',14);x.restore()}},
+      // the mission (or Supernova) with its timer, under the screen
+      {const A=g.ms.a,y=dh+14;let s_='',c='#A6E22E',f=0;if(g.wiz>0){s_=`SUPERNOVA ×3 · ${Math.ceil(g.wiz)}s`;c='#FFD21F';f=g.wiz/30}
+        else if(A){const M=this.MS[A.i],n=M.seq?M.seq.length:M.c;s_=`${M.n} ${A.got}/${n} · ${Math.ceil(A.t)}s`;f=A.t/(M.seq?75:60)}
+        else if(g.served&&!(g.drainT>0)&&!(g.matchT>0)){s_=g.mbLit?'Black hole: multiball!':g.ebLit?'Black hole: extra ball!':'Black hole: next mission';c=g.mbLit?'#FFD21F':g.ebLit?'#FF5FA8':'#C9B8FF'}
+        if(s_){gText(x,s_,g.w/2,y,c,14);if(f){const bw=Math.min(180,g.w*.5);x.fillStyle='rgba(255,255,255,.18)';x.fillRect(g.w/2-bw/2,y+11,bw,3);x.fillStyle=c;x.fillRect(g.w/2-bw/2,y+11,bw*f,3)}}}
+      if(g.smashT>0){x.save();x.globalAlpha=.6+Math.sin(t*10)*.3;gText(x,`Atom smash ×2 · ${Math.ceil(g.smashT)}`,g.w/2,dh+36,'#FF5FA8',13);x.restore()}},
     // particles and floating points are drawn in screen space, so place them where the 3D thing is
     proj(g,x,y){const B=this._B;if(!B||!B.vh)return[this.X(g,x),this.Y(g,y)];const v=new THREE.Vector3(B.W(x),.15,B.Z(y)).project(B.cam);return[(v.x*.5+.5)*g.w,B.oy+(-v.y*.5+.5)*B.vh]},
     art(x,w,h){const g={w,h,t:1,lv:1,score:0,fx:[],pt:[]};this.init.call(this,g);g.b.x=.5;g.b.y=.9;this.draw2.call(this,g,x)}},
