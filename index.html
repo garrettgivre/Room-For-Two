@@ -8621,20 +8621,23 @@ const GAMES={
     how:'Your pet is the ball, snug in a space bubble! Tap the left or right side to flip (or use the arrow keys). When the ball sits on the launcher, hold and let go to blast off. Light up S-P-A-C-E for a bigger multiplier, knock down all three moons, and fall into the black hole for a bonus. Three balls.',
     legend:[['bumper','100'],['lane','×2 ×3...'],['moon','750'],['hole','2500']],lvAt:[0,8000,20000,40000,70000,110000],
     lvSub:['','Planets power up!','Black hole doubled!','Moons worth more!','Hyperdrive!'],
-    TH:1.62,R:.034,
+    TH:2.112,R:.034,PLY:1.8,FP:[[.3,1.99],[.7,1.99]],FL:.15,SL:[[.11,1.64,.27,1.78,1.78],[.89,1.64,.73,1.78,1.78]],ART:'assets/pinball/space-table.webp',
     init(g){const TH=this.TH,tw=Math.min(g.w-12,(g.h-18)/TH);g.tw=tw;g.tx=(g.w-tw)/2;g.ty=(g.h-tw*TH)/2;g.ps=Math.max(26,tw*this.R*2*2.3);
       g.balls=3;g.mult=1;g.lanes=[0,0,0,0,0];g.moons=[1,1,1];g.fl=[{a:.52,w:0,up:0},{a:.52,w:0,up:0}];g.bf=[0,0,0];g.sf=[0,0];g.mf=[0,0,0];g.hole=null;g.holeCD=0;g.charge=0;g.chg=0;g.ptr={};
       g.cheerT=0;g.sadT=0;g.drainT=0;g.save=0;g.laneF=0;g.msg=null;this.geom(g);this.serve(g)},
-    geom(g){const S=[],seg=(a,b,o)=>S.push(Object.assign({a,b,e:.45},o||{})),TH=this.TH,r=.48;let p=[.98,.5];
+    // the layout follows the playfield art: bumpers in its three rings, slingshots on its purple triangles, the launch lane in its
+    // yellow tube, moons by the right-hand arrows, the black hole by the left ones, the ring of lights round the atom
+    geom(g){const S=[],seg=(a,b,o)=>S.push(Object.assign({a,b,e:.45},o||{})),TH=this.TH,r=.48,PY=this.PLY,[L_,R_]=this.FP;let p=[.98,.5];
       for(let i=1;i<=28;i++){const t=i/28*Math.PI,q=[.5+Math.cos(t)*r,.5-Math.sin(t)*r];seg(p,q,{rail:1});p=q}
-      seg([.02,.5],[.02,1.22],{rail:1});seg([.02,1.22],[.02,TH+.1]);seg([.98,.5],[.98,TH],{rail:1});seg([.9,.66],[.9,TH],{rail:1});seg([.02,1.22],[.2,1.425],{rail:1});seg([.9,1.22],[.72,1.425],{rail:1});
-      [[.12,1.0,.2,1.2],[.8,1.0,.72,1.2]].forEach(([x1,y1,x2,y2],i)=>{seg([x1,y1],[x2,y2],{kick:1.15,sl:i,e:.2});seg([x1,y1],[x1,y1+.17],{e:.3});seg([x1,y1+.17],[x2,y2],{e:.3})});
-      for(let i=0;i<6;i++){const x=.25+i*.1;seg([x,.16],[x,.27],{e:.3,post:1})}
-      seg([.83,.6],[.83,.92],{rail:1});seg([.83,.6],[.9,.6],{rail:1});seg([.83,.92],[.9,.92],{rail:1});
-      g.segs=S;g.bumps=[[.33,.47],[.6,.45],[.47,.63]].map(([x,y])=>({x,y,r:.058}));g.moonT=[0,1,2].map(i=>({x:.8,y:.66+i*.1,h:.075}));g.holeP={x:.18,y:.78,r:.042}},
-    serve(g){g.b={x:.94,y:this.TH-.03-this.R-.001,vx:0,vy:0,rot:0};g.served=0;g.drainT=0},
+      seg([.02,.5],[.02,1.86],{rail:1});seg([.02,1.86],[.02,TH+.1]);seg([.98,.5],[.98,PY],{rail:1});seg([.9,.9],[.9,1.86],{rail:1});
+      seg([.02,1.86],[L_[0]-.01,L_[1]-.015],{rail:1});seg([.9,1.86],[R_[0]+.01,R_[1]-.015],{rail:1});
+      this.SL.forEach(([x1,y1,x2,y2,yb],i)=>{seg([x1,y1],[x2,y2],{kick:1.15,sl:i,e:.2});seg([x1,y1],[x1,yb],{e:.3});seg([x1,yb],[x2,y2],{e:.3})});
+      for(let i=0;i<6;i++){const x=.25+i*.1;seg([x,.19],[x,.29],{e:.3,post:1})}
+      seg([.83,.98],[.83,1.28],{rail:1});seg([.83,.98],[.9,.98],{rail:1});seg([.83,1.28],[.9,1.28],{rail:1});
+      g.segs=S;g.bumps=[[.27,.47],[.71,.47],[.5,.72]].map(([x,y])=>({x,y,r:.07}));g.moonT=[0,1,2].map(i=>({x:.8,y:1.03+i*.1,h:.075}));g.holeP={x:.19,y:1.04,r:.042}},
+    serve(g){g.b={x:.94,y:this.PLY-this.R-.001,vx:0,vy:0,rot:0};g.served=0;g.drainT=0},
     X(g,x){return g.tx+x*g.tw},Y(g,y){return g.ty+y*g.tw},
-    onLauncher(g){const b=g.b;return b.x>.9&&b.y>this.TH-.12&&Math.abs(b.vy)<.3},
+    onLauncher(g){const b=g.b;return b.x>.9&&b.y>this.PLY-.1&&Math.abs(b.vy)<.3},
     pts(g,v,x,y,col,noMult){const p=Math.round(v*(noMult?1:g.mult));g.score+=p;gFx(g,...this.proj(g,x,y),'+'+p,col||'#FFE45C',18);return p},
     say(g,txt,col){g.msg={txt,col:col||'#FFE45C',t:0}},
     // input: left/right half flips, the launcher charges while held
@@ -8645,7 +8648,7 @@ const GAMES={
     move(){},
     hitSeg(g,b,ax,ay,bx,by,e,kick,onHit){const R=this.R,ex=bx-ax,ey=by-ay,L2=ex*ex+ey*ey||1e-9,t=clamp(((b.x-ax)*ex+(b.y-ay)*ey)/L2,0,1),cx=ax+ex*t,cy=ay+ey*t,dx=b.x-cx,dy=b.y-cy,d=Math.hypot(dx,dy);
       if(d>=R||d<=0)return false;const nx=dx/d,ny=dy/d;b.x=cx+nx*R;b.y=cy+ny*R;const vn=b.vx*nx+b.vy*ny;if(vn<0){b.vx-=(1+e)*vn*nx;b.vy-=(1+e)*vn*ny;if(kick&&vn<-.25){b.vx+=nx*kick;b.vy+=ny*kick;onHit&&onHit()}else if(!kick&&onHit)onHit()}return true},
-    hitFlip(g,b,i){const f=g.fl[i],P=i?[.7,1.44]:[.22,1.44],d=i?-1:1,len=.16,fr=.017,ca=Math.cos(f.a),sa=Math.sin(f.a),tx=P[0]+d*ca*len,ty=P[1]+sa*len,ex=tx-P[0],ey=ty-P[1],
+    hitFlip(g,b,i){const f=g.fl[i],P=this.FP[i],d=i?-1:1,len=this.FL,fr=.017,ca=Math.cos(f.a),sa=Math.sin(f.a),tx=P[0]+d*ca*len,ty=P[1]+sa*len,ex=tx-P[0],ey=ty-P[1],
         t=clamp(((b.x-P[0])*ex+(b.y-P[1])*ey)/(len*len),0,1),cx=P[0]+ex*t,cy=P[1]+ey*t,dx=b.x-cx,dy=b.y-cy,dd=Math.hypot(dx,dy),m=this.R+fr*(1-t*.3);if(dd>=m||dd<=0)return;
       const nx=dx/dd,ny=dy/dd;b.x=cx+nx*m;b.y=cy+ny*m;const s=t*len,vcx=-d*sa*f.w*s,vcy=ca*f.w*s;let rx=b.vx-vcx,ry=b.vy-vcy;const vn=rx*nx+ry*ny;if(vn<0){rx-=1.3*vn*nx;ry-=1.3*vn*ny}b.vx=rx+vcx;b.vy=ry+vcy},
     upd(g,dt){const TH=this.TH,R=this.R,b=g.b;g.cheerT=Math.max(0,g.cheerT-dt);g.sadT=Math.max(0,g.sadT-dt);g.bf=g.bf.map(v=>Math.max(0,v-dt*3));g.sf=g.sf.map(v=>Math.max(0,v-dt*4));g.mf=g.mf.map(v=>Math.max(0,v-dt*2));
@@ -8655,7 +8658,7 @@ const GAMES={
       if(g.hole){g.hole.t+=dt;b.x=g.holeP.x;b.y=g.holeP.y;b.rot+=dt*14;if(g.hole.t>1.4){g.hole=null;g.holeCD=1.2;b.vx=.7+Math.random()*.5;b.vy=-2.1;g.shake=.3}return}
       const py=b.y,n=10,h=dt/n;for(let s_=0;s_<n;s_++){b.vy+=1.9*h;b.x+=b.vx*h;b.y+=b.vy*h;
         for(const s of g.segs)this.hitSeg(g,b,s.a[0],s.a[1],s.b[0],s.b[1],s.e,s.kick||0,s.kick?()=>{g.sf[s.sl]=1;this.pts(g,10,b.x,b.y,'#FF8A5C');gBurst(g,...this.proj(g,b.x,b.y),6,['#FF5FA8','#fff'],{shape:'dot',sp:120,life:.3})}:null);
-        this.hitSeg(g,b,.9,TH-.03,.98,TH-.03,.1,0,null);
+        this.hitSeg(g,b,.9,this.PLY,.98,this.PLY,.1,0,null);
         g.bumps.forEach((q,i)=>{const dx=b.x-q.x,dy=b.y-q.y,d=Math.hypot(dx,dy),m=R+q.r;if(d<m&&d>0){const nx=dx/d,ny=dy/d;b.x=q.x+nx*m;b.y=q.y+ny*m;const vn=b.vx*nx+b.vy*ny;if(vn<0){b.vx-=2*vn*nx;b.vy-=2*vn*ny}
           b.vx+=nx*1.25;b.vy+=ny*1.25;if(g.bf[i]<.6){g.bf[i]=1;g.shake=.12;this.pts(g,Math.round(100*(1+(g.lv-1)*.25)),q.x,q.y-q.r,'#8FF6FF');gBurst(g,...this.proj(g,q.x,q.y),9,['#8FF6FF','#FFE45C','#fff'],{shape:'star',sp:170,life:.4})}}});
         g.moonT.forEach((m,i)=>{if(!g.moons[i])return;this.hitSeg(g,b,m.x,m.y-m.h/2,m.x,m.y+m.h/2,.4,0,()=>{g.moons[i]=0;g.mf[i]=1;this.pts(g,g.lv>=4?1100:750,m.x,m.y,'#FFF3B0');
@@ -8664,7 +8667,7 @@ const GAMES={
         const H_=g.holeP;if(!g.hole&&!g.holeCD&&Math.hypot(b.x-H_.x,b.y-H_.y)<H_.r*.9){g.hole={t:0};b.vx=b.vy=0;const v=this.pts(g,g.lv>=3?5000:2500,H_.x,H_.y-.05,'#E0B0FF');this.say(g,'Black hole!','#E0B0FF');g.cheerT=1;break}}
       const sp=Math.hypot(b.vx,b.vy);if(sp>4.3){b.vx*=4.3/sp;b.vy*=4.3/sp}b.rot+=b.vx*dt/R*.5;
       // S-P-A-C-E rollovers at the top
-      if((py-.215)*(b.y-.215)<0&&b.x>.25&&b.x<.75){const i=Math.floor((b.x-.25)/.1);if(!g.lanes[i]){g.lanes[i]=1;this.pts(g,500,b.x,.2,'#FFE45C')}
+      if((py-.24)*(b.y-.24)<0&&b.x>.25&&b.x<.75){const i=Math.floor((b.x-.25)/.1);if(!g.lanes[i]){g.lanes[i]=1;this.pts(g,500,b.x,.2,'#FFE45C')}
         if(g.lanes.every(v=>v)&&!g.laneF){g.laneF=1;g.mult=Math.min(6,g.mult+1);this.say(g,`SPACE ×${g.mult}!`,'#FF5FA8');g.cheerT=1.2;gBurst(g,...this.proj(g,.46,.22),24,['#FF5FA8','#FFE45C','#8FF6FF','#fff'],{shape:'star',sp:280});setTimeout(()=>{g.lanes=[0,0,0,0,0]},800)}}
       if(b.y>TH+.06){if(g.save>0){this.serve(g);g.served=1;this.say(g,'Ball saved!','#A6E22E')}else{g.drainT=1.3;g.sadT=1.3;g.mult=1;g.chg=0;this.say(g,'Lost in space...','#9C92BF')}}
       while(g.lv<this.lvAt.length&&g.score>=this.lvAt[g.lv])gLevel(g,this.lvSub[Math.min(g.lv,this.lvSub.length-1)])},
@@ -8708,7 +8711,7 @@ const GAMES={
         x.strokeStyle=f?'#FFE45C':'rgba(255,228,92,.8)';x.lineWidth=4;x.beginPath();x.ellipse(0,0,r*1.55,r*.38,-.35,Math.PI,Math.PI*2);x.stroke();gCirc(x,0,0,r,gRad(x,-r*.3,-r*.3,r*1.2,[f?'#fff':cols[0],cols[1]]),3);gGloss(x,0,0,r,.6);
         x.beginPath();x.ellipse(0,0,r*1.55,r*.38,-.35,0,Math.PI);x.stroke();x.restore();if(f){x.save();x.globalAlpha=f*.5;gCirc(x,cx,cy,r*1.5,'rgba(255,228,92,.4)',0);x.restore()}});
       // flippers: chrome with pink tips
-      g.fl.forEach((f,i)=>{const P=i?[.7,1.44]:[.22,1.44],d=i?-1:1,len=.16,tx=P[0]+d*Math.cos(f.a)*len,ty=P[1]+Math.sin(f.a)*len;x.lineCap='round';x.beginPath();x.moveTo(X(P[0]),Y(P[1]));x.lineTo(X(tx),Y(ty));
+      g.fl.forEach((f,i)=>{const P=this.FP[i],d=i?-1:1,len=this.FL,tx=P[0]+d*Math.cos(f.a)*len,ty=P[1]+Math.sin(f.a)*len;x.lineCap='round';x.beginPath();x.moveTo(X(P[0]),Y(P[1]));x.lineTo(X(tx),Y(ty));
         x.lineWidth=tw*.046;x.strokeStyle=GINK;x.stroke();x.lineWidth=tw*.03;x.strokeStyle=gGrad(x,X(P[0]),Y(P[1])-8,X(P[0]),Y(P[1])+8,['#FFFFFF','#AEB8D8']);x.stroke();gCirc(x,X(tx),Y(ty),tw*.013,'#FF5FA8',2);gCirc(x,X(P[0]),Y(P[1]),tw*.014,'#8FF6FF',2)});
       // the launcher: a striped spring, pulled back as it charges
       {const cx=X(.94),top=Y(TH-.03)+g.charge*tw*.06,bot=Y(TH)+2;x.fillStyle='#FF5FA8';x.fillRect(cx-tw*.03,top,tw*.06,tw*.012);x.strokeStyle=GINK;x.lineWidth=2;x.strokeRect(cx-tw*.03,top,tw*.06,tw*.012);
@@ -8727,28 +8730,19 @@ const GAMES={
     // World: 1 table unit = S world units, table surface at y=0, table y runs along +z towards the camera.
     b3(g){if(!gpOn||!gpR)return null;if(this._B)return this._B;const S=4,TH=this.TH,W=x=>(x-.5)*S,Z=y=>(y-TH/2)*S,root=G(),B={S,W,Z,root};gpSc.add(root);this._B=B;
       const Chrome=M(0xC9D2F0,{metalness:.75,roughness:.22}),Neon=M(0x8FF6FF,{emissive:0x3EE8FF,emissiveIntensity:1.2,roughness:.2}),Dark=M(0x1A1240,{roughness:.6}),Pink=M(0xFF5FA8,{roughness:.35});
-      // the playfield: painted space, cracked like old glass, arrow inserts, a ring of sockets round the centre
-      {const cw=1024,ch=Math.round(1024*TH),c=mkCanvas(cw,ch),x=c.getContext('2d'),R_=rnd(11),U=u=>u*cw,V=v=>v*cw;
-        const bg=x.createRadialGradient(U(.46),V(.95),40,U(.46),V(.95),cw*1.1);bg.addColorStop(0,'#3A4AC8');bg.addColorStop(.45,'#23207A');bg.addColorStop(1,'#0C0830');x.fillStyle=bg;x.fillRect(0,0,cw,ch);
-        x.strokeStyle='rgba(120,160,255,.28)';x.lineWidth=2;for(let i=0;i<60;i++){let px=R_()*cw,py=R_()*ch;x.beginPath();x.moveTo(px,py);for(let k=0;k<6;k++){px+=(R_()-.5)*90;py+=(R_()-.5)*90;x.lineTo(px,py)}x.stroke()}
-        for(let i=0;i<220;i++){x.fillStyle=`rgba(255,255,255,${.2+R_()*.6})`;x.beginPath();x.arc(R_()*cw,R_()*ch,.8+R_()*2,0,7);x.fill()}
-        // a big purple star fan behind the flippers and the ringed planet in the middle
-        x.save();x.translate(U(.46),V(1.62));for(let i=0;i<9;i++){const a=-Math.PI*(.12+.76*i/8);x.fillStyle=i%2?'#7B3CC8':'#9B5AE8';x.beginPath();x.moveTo(0,0);x.lineTo(Math.cos(a-.09)*V(.42),Math.sin(a-.09)*V(.42));x.lineTo(Math.cos(a)*V(.5),Math.sin(a)*V(.5));x.lineTo(Math.cos(a+.09)*V(.42),Math.sin(a+.09)*V(.42));x.closePath();x.fill()}x.restore();
-        x.fillStyle=gRad(x,U(.46),V(.95),V(.1),['#9FF4FF','#2FA7EA','#1E2266']);x.beginPath();x.arc(U(.46),V(.95),V(.1),0,7);x.fill();x.strokeStyle='rgba(255,228,92,.8)';x.lineWidth=8;x.beginPath();x.ellipse(U(.46),V(.95),V(.19),V(.05),-.3,0,7);x.stroke();
-        for(let i=0;i<20;i++){const a=i/20*Math.PI*2;x.fillStyle='#10103A';x.beginPath();x.arc(U(.46)+Math.cos(a)*V(.16),V(.95)+Math.sin(a)*V(.16),V(.014),0,7);x.fill()}
-        // arrow inserts pointing up the lanes and at the moons
-        [[.3,1.08,-.5],[.62,1.08,.5],[.72,.8,1.57],[.46,1.28,0],[.18,.95,-.2]].forEach(([u,v,a],i)=>{x.save();x.translate(U(u),V(v));x.rotate(a);x.fillStyle=['#FFD21F','#FF5FA8','#A6E22E','#8FF6FF','#FF8A1C'][i];x.globalAlpha=.85;x.beginPath();x.moveTo(0,-V(.04));x.lineTo(V(.03),V(.02));x.lineTo(-V(.03),V(.02));x.closePath();x.fill();x.restore()});
-        x.font=`${V(.045)}px "R42 Bubble"`;x.textAlign='center';x.fillStyle='rgba(255,228,92,.85)';x.fillText(`${PN().toUpperCase()} PINBALL`,U(.46),V(.37));x.font=`${V(.022)}px "R42 Bubble"`;x.fillStyle='rgba(143,246,255,.8)';x.fillText('ORBITAL EDITION',U(.46),V(.41));
-        const tx=new THREE.CanvasTexture(c);tx.encoding=THREE.sRGBEncoding;const pl=add(root,new THREE.PlaneGeometry(S,TH*S),M(0xffffff,{map:tx,roughness:.45,metalness:.1}),0,0,0);pl.rotation.x=-Math.PI/2;pl.outline=0;pl.castShadow=false}
+      // the playfield is the painted art (kept once loaded; plain purple until then)
+      {const pm=M(0x2A1470,{roughness:.45,metalness:.05}),pl=add(root,new THREE.PlaneGeometry(S,TH*S),pm,0,0,0);pl.rotation.x=-Math.PI/2;pl.outline=0;pl.castShadow=false;
+        const put=im=>{const t_=new THREE.CanvasTexture(im);t_.encoding=THREE.sRGBEncoding;pm.map=t_;pm.color.set(0xffffff);pm.needsUpdate=true};
+        if(this._art&&this._art.complete&&this._art.naturalWidth)put(this._art);else{const im=this._art||(this._art=new Image());im.onload=()=>put(im);if(!im.src)im.src=this.ART}}
       // the cabinet: a deep dark tub round the table with chrome lips
       ol(rb(root,S+.5,.5,TH*S+.5,.08,Dark,0,-.26,0),.02);[-1,1].forEach(sd=>ol(rb(root,.12,.5,TH*S+.5,.04,M(0x2A1E66,{roughness:.5}),sd*(S/2+.19),.12,0),.01));ol(rb(root,S+.5,.5,.14,.04,M(0x2A1E66,{roughness:.5}),0,.12,Z(0)-.2),.01);
       // walls, rails and posts from the physics segments: chrome with a neon strip on top
-      g.segs.forEach(s=>{if(s.kick)return;const ax=W(s.a[0]),az=Z(s.a[1]),bx=W(s.b[0]),bz=Z(s.b[1]),L=Math.hypot(bx-ax,bz-az);if(L<1e-3)return;const h=s.post?.13:.2,th=s.post?.05:.07;
+      g.segs.forEach(s=>{if(s.kick||s.a[1]>this.TH-.01||s.b[1]>this.TH+.01)return;const ax=W(s.a[0]),az=Z(s.a[1]),bx=W(s.b[0]),bz=Z(s.b[1]),L=Math.hypot(bx-ax,bz-az);if(L<1e-3)return;const h=s.post?.13:.2,th=s.post?.05:.07;
         const m=ol(rb(root,L+th,h,th,th*.45,s.post?Pink:Chrome,(ax+bx)/2,h/2,(az+bz)/2),.006);m.rotation.y=-Math.atan2(bz-az,bx-ax);if(!s.post&&s.rail){const n=add(root,new THREE.BoxGeometry(L,.015,.02),Neon,(ax+bx)/2,h+.01,(az+bz)/2);n.rotation.y=m.rotation.y;n.outline=0;n.castShadow=false}});
       // slingshots: rocket fins with a red rubber kicker face
-      B.sl=[[.12,1.0,.2,1.2],[.8,1.0,.72,1.2]].map(([x1,y1,x2,y2])=>{const P=[[W(x1),-Z(y1)],[W(x1),-Z(y1+.17)],[W(x2),-Z(y2)]],f=ol(flat(root,P,.16,M(0xE8384F,{roughness:.35}),0,0,0),.01);f.rotation.x=-Math.PI/2;
+      B.sl=this.SL.map(([x1,y1,x2,y2,yb])=>{const P=[[W(x1),-Z(y1)],[W(x1),-Z(yb)],[W(x2),-Z(y2)]],f=ol(flat(root,P,.13,M(0x8A3CE0,{roughness:.3,transparent:true,opacity:.55}),0,0,0),.01);f.rotation.x=-Math.PI/2;
         const ax=W(x1),az=Z(y1),bx=W(x2),bz=Z(y2),L=Math.hypot(bx-ax,bz-az),rm=M(0xFFFFFF,{roughness:.4,emissive:0xFF3D6A,emissiveIntensity:0}),r=ol(rb(root,L,.12,.04,.02,rm,(ax+bx)/2,.08,(az+bz)/2),.005);r.rotation.y=-Math.atan2(bz-az,bx-ax);
-        const st=star3(root,.07,M(0xFFFFFF,{roughness:.3}),W((x1*2+x2)/3),.17,Z((y1*2+y2+.17)/3));st.rotation.x=-Math.PI/2;st.outline=0;return rm});
+        const st=star3(root,.07,M(0xFFFFFF,{roughness:.3}),W((x1*2+x2)/3),.14,Z((y1+yb+y2)/3));st.rotation.x=-Math.PI/2;st.outline=0;return rm});
       // pop bumpers: mushroom planets with a light in the cap
       B.bump=g.bumps.map((q,i)=>{const c=[0xFF8A1C,0x3EC8F2,0x9B4DF2][i],bg_=G();bg_.position.set(W(q.x),0,Z(q.y));root.add(bg_);const r=q.r*S;
         ol(cy(bg_,r*1.05,r*1.1,.06,Dark,0,.03,0,28),.006);ol(cy(bg_,r*.55,r*.6,.2,M(0xE6E9F5,{metalness:.5,roughness:.3}),0,.14,0,20),.006);const cap=M(c,{emissive:c,emissiveIntensity:.25,roughness:.3});
@@ -8765,15 +8759,15 @@ const GAMES={
       // S-P-A-C-E lights on the table
       B.lanes='SPACE'.split('').map((ch,i)=>{const mk=on=>{const c=mkCanvas(96,96),x=c.getContext('2d');x.fillStyle=on?'#FFC21F':'#241A60';x.fillRect(0,0,96,96);x.fillStyle=on?'#FFF3B0':'#3A2E8A';x.beginPath();x.arc(48,48,40,0,7);x.fill();
           x.font='52px "R42 Bubble"';x.textAlign='center';x.textBaseline='middle';x.fillStyle=on?'#3B1273':'#8C84C8';x.fillText(ch,48,52);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t};
-        const on=M(0xffffff,{map:mk(1),emissive:0xFFE27A,emissiveIntensity:.5,roughness:.4}),off=M(0xffffff,{map:mk(0),roughness:.5}),d=add(root,new THREE.CircleGeometry(.1,24),off,W(.3+i*.1),.006,Z(.215));d.rotation.x=-Math.PI/2;d.outline=0;return{d,on,off}});
+        const on=M(0xffffff,{map:mk(1),emissive:0xFFE27A,emissiveIntensity:.5,roughness:.4}),off=M(0xffffff,{map:mk(0),roughness:.5}),d=add(root,new THREE.CircleGeometry(.1,24),off,W(.3+i*.1),.006,Z(.24));d.rotation.x=-Math.PI/2;d.outline=0;return{d,on,off}});
       // the ring of lights round the centre planet (they chase)
-      B.ring=[];for(let i=0;i<20;i++){const a=i/20*Math.PI*2,m=M(0xFFE45C,{emissive:0xFFD21F,emissiveIntensity:.2,roughness:.3}),d=sp(root,.04,m,W(.46)+Math.cos(a)*.16*S,.01,Z(.95)+Math.sin(a)*.16*S,1,.35,1);d.outline=0;B.ring.push(m)}
+      B.ring=[];for(let i=0;i<20;i++){const a=i/20*Math.PI*2,m=M(0xFFE45C,{emissive:0xFFD21F,emissiveIntensity:.2,roughness:.3}),d=sp(root,.045,m,W(.5)+Math.cos(a)*.2*S,.01,Z(1.39)+Math.sin(a)*.2*S,1,.35,1);d.outline=0;B.ring.push(m)}
       // flippers: white bats with red rubber, on chrome pivots
-      B.fl=[0,1].map(i=>{const P=i?[.7,1.44]:[.22,1.44],pv=G();pv.position.set(W(P[0]),0,Z(P[1]));root.add(pv);const arm=G();pv.add(arm);const len=.16*S,d=i?-1:1;
+      B.fl=[0,1].map(i=>{const P=this.FP[i],pv=G();pv.position.set(W(P[0]),0,Z(P[1]));root.add(pv);const arm=G();pv.add(arm);const len=this.FL*S,d=i?-1:1;
         const bat=ol(rb(arm,len,.12,.11,.05,M(0xFFFFFF,{roughness:.3}),d*len/2,.08,0),.008);const rub=ol(rb(arm,len*.96,.07,.13,.03,M(0xE8384F,{roughness:.5}),d*len/2,.06,0),0);
         ol(cy(pv,.08,.08,.16,M(0xC9D2F0,{metalness:.7,roughness:.2}),0,.08,0,16),.005);return{pv,arm,d}});
       // plunger: a chrome knob on a striped spring
-      {B.pl=G();root.add(B.pl);B.pl.position.set(W(.94),.08,Z(TH-.03));ol(rb(B.pl,.24,.1,.06,.03,Pink,0,0,0),.005);B.spring=G();B.pl.add(B.spring);for(let i=0;i<6;i++){const r_=to(B.spring,.06,.012,M(0xDDE3F5,{metalness:.6,roughness:.25}),0,0,.08+i*.05,0,0,0);r_.outline=0}}
+      {B.pl=G();root.add(B.pl);B.pl.position.set(W(.94),.08,Z(this.PLY));ol(rb(B.pl,.24,.1,.06,.03,Pink,0,0,0),.005);B.spring=G();B.pl.add(B.spring);for(let i=0;i<6;i++){const r_=to(B.spring,.06,.012,M(0xDDE3F5,{metalness:.6,roughness:.25}),0,0,.08+i*.05,0,0,0);r_.outline=0}}
       // the ball: the pet curled up inside a glass bubble, and its shadow
       B.ball=G();root.add(B.ball);const br=this.R*S;const gl=sp(B.ball,br,M(0xDDF8FF,{transparent:true,opacity:.34,roughness:.05,emissive:0x8FF6FF,emissiveIntensity:.25}),0,0,0);gl.outline=.012;nosh(gl);
       const hl=sp(B.ball,br*.25,M(0xFFFFFF,{emissive:0xFFFFFF,emissiveIntensity:.6}),-br*.4,br*.5,br*.45,1,.6,.5);hl.outline=0;B.hl=hl;
@@ -8787,7 +8781,7 @@ const GAMES={
       B.moons.forEach((m,i)=>{m.position.y=approach(m.position.y,g.moons[i]?0:-.34,.08)});
       B.lanes.forEach((L,i)=>{const on=g.lanes[i]||(g.laneF>0&&Math.floor(t*10)%2);L.d.material=on?L.on:L.off});
       B.swirl.rotation.z=t*2.2;const ph=Math.floor(t*8);B.ring.forEach((m,i)=>{m.emissiveIntensity=(i+ph)%5===0||(g.cheerT>0&&(i+ph)%2===0)?1.4:.15});
-      B.spring.scale.z=1-g.charge*.55;B.pl.position.z=Z(this.TH-.03)+g.charge*.12;
+      B.spring.scale.z=1-g.charge*.55;B.pl.position.z=Z(this.PLY)+g.charge*.12;
       // the ball rolls; the pet sits inside, spinning with it
       const x=W(b.x),z=Z(b.y),br=R*S,gone=g.drainT>0,sq=g.hole?Math.max(.1,1-g.hole.t*.7):1;B.ball.visible=!gone;B.sh.visible=!gone;B.ball.position.set(x,br*sq,z);B.ball.scale.setScalar(sq);B.sh.position.set(x+.04,.004,z+.03);B.sh.scale.setScalar(sq);
       B.spin=B.spin||{x:0,z:0};B.spin.x+=b.vy*S*(1/60)/br*.35;B.spin.z-=b.vx*S*(1/60)/br*.35;
@@ -8796,7 +8790,7 @@ const GAMES={
     draw(g,x){const B=this.b3(g);if(!B){this.draw2(g,x);return}this.upd3(g,B);const d=Math.min((gm&&gm.dpr)||1,1.5),pw=Math.round(g.w*d),ph=Math.round(g.h*d),dk=pw+'x'+ph;
       if(gpR.__dk!==dk){gpR.setSize(pw,ph,false);gpR.__dk=dk}gpR.__sz=0;
       // the camera sits behind the flippers, up high, and backs off on narrow screens so the whole table fits
-      const a=g.w/g.h,tp=clamp((.8-a)/.34,0,1),k=Math.max(1,.71/a)*(1-tp*.08),c=B.cam;c.aspect=a;c.updateProjectionMatrix();c.position.set(0,(6.4+2.6*tp)*k,B.Z(this.TH)+(3.9-2.3*tp)*k);c.lookAt(new THREE.Vector3(0,0,B.Z(.82-.06*tp)));
+      const a=g.w/g.h,tp=clamp((.8-a)/.34,0,1),Ls=this.TH/1.62,k=Math.max(1,.71/a)*(1-tp*.24),c=B.cam;c.aspect=a;c.updateProjectionMatrix();c.position.set(0,(6.4+2.8*tp)*k*Ls,B.Z(this.TH)+(3.9-2.5*tp)*k*Ls);c.lookAt(new THREE.Vector3(0,0,B.Z(this.TH*(.5-.03*tp))));
       x.fillStyle=gGrad(x,0,0,0,g.h,['#0B0630','#241054']);x.fillRect(0,0,g.w,g.h);gpR.render(gpSc,c);x.drawImage(gpR.domElement,0,0,g.w,g.h);
       const TH=this.TH,t=g.t;for(let i=0;i<3;i++)gCirc(x,18+i*16,g.h-16,6,i<g.balls?'#8FF6FF':'#2A2360',2);if(g.mult>1)gText(x,`×${g.mult}`,g.w-34,g.h-18,'#FF5FA8',22);
       if(this.onLauncher(g)&&!g.hole&&!(g.drainT>0)){x.save();x.globalAlpha=.7+Math.sin(t*6)*.3;gText(x,g.chg?'Let go to launch!':'Tap or hold to launch',g.w/2,g.h-20,'#FFE45C',16);x.restore()}
