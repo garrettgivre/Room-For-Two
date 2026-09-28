@@ -7254,7 +7254,7 @@ function buildShop(key){const S=SHOPS[key],root=G(),objs=new Map(),items=new Map
   applySold(A);return A}
 const ico=n=>'assets/icons/'+(n.includes('.')?n:n+'.webp');
 function keeperReact(a,d,K){K=K||away&&away.keeper;if(!K)return;K.act=a;K.k=0;K.d=d||1.6}
-let kbT=0;function keeperSay(txt){if(!away||!txt)return;const el=$('#kbub');el.textContent=txt;el.hidden=false;el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');kbT=3.4}
+let kbT=0;function keeperSay(txt){if(!away||!txt||!$('#game').hidden||gc&&gc.open)return;const el=$('#kbub');el.textContent=txt;el.hidden=false;el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');kbT=3.4}
 const _kv=new THREE.Vector3();
 // Merge a keeper's static meshes to cut draw calls (each mesh is drawn up to three times: colour, outline, shadow).
 // Sibling meshes that share a material and outline and never move on their own become one mesh. Which meshes move is found
@@ -8635,11 +8635,11 @@ const GAMES={
     serve(g){g.b={x:.94,y:this.TH-.03-this.R-.001,vx:0,vy:0,rot:0};g.served=0;g.drainT=0},
     X(g,x){return g.tx+x*g.tw},Y(g,y){return g.ty+y*g.tw},
     onLauncher(g){const b=g.b;return b.x>.9&&b.y>this.TH-.12&&Math.abs(b.vy)<.3},
-    pts(g,v,x,y,col,noMult){const p=Math.round(v*(noMult?1:g.mult));g.score+=p;gFx(g,this.X(g,x),this.Y(g,y),'+'+p,col||'#FFE45C',18);return p},
+    pts(g,v,x,y,col,noMult){const p=Math.round(v*(noMult?1:g.mult));g.score+=p;gFx(g,...this.proj(g,x,y),'+'+p,col||'#FFE45C',18);return p},
     say(g,txt,col){g.msg={txt,col:col||'#FFE45C',t:0}},
     // input: left/right half flips, the launcher charges while held
     press(g,side,id){if(side==='p'){if(this.onLauncher(g)){g.chg=1;g.charge=0;if(id!=null)g.ptr[id]='p'}return}const f=g.fl[side];if(!f.up){f.up=1;const L=g.lanes;g.lanes=side?[L[4],L[0],L[1],L[2],L[3]]:[L[1],L[2],L[3],L[4],L[0]]}if(id!=null)g.ptr[id]=side},
-    release(g,side){if(side==='p'){if(g.chg){g.chg=0;if(this.onLauncher(g)){g.b.vy=-(2.45+1.75*g.charge);if(!g.served){g.served=1;g.save=6}}}return}g.fl[side].up=0},
+    release(g,side){if(side==='p'){if(g.chg){g.chg=0;if(this.onLauncher(g)){g.b.vy=-(3.1+1.25*g.charge);if(!g.served){g.served=1;g.save=6}}}return}g.fl[side].up=0},
     down(g,px,py,id){if(this.onLauncher(g)&&!g.chg&&(px>g.w*.5||g.chg===0)){this.press(g,'p',id);return}this.press(g,px<g.w/2?0:1,id)},
     up(g,id){if(id!=null&&g.ptr[id]!=null){this.release(g,g.ptr[id]);delete g.ptr[id];return}this.release(g,0);this.release(g,1);this.release(g,'p');g.ptr={}},
     move(){},
@@ -8654,18 +8654,18 @@ const GAMES={
       if(g.drainT>0){g.drainT-=dt;if(g.drainT<=0){if(--g.balls<=0){g.over=true;return}this.serve(g);this.say(g,`${g.balls} ${g.balls>1?'balls':'ball'} left`,'#8FF6FF')}return}
       if(g.hole){g.hole.t+=dt;b.x=g.holeP.x;b.y=g.holeP.y;b.rot+=dt*14;if(g.hole.t>1.4){g.hole=null;g.holeCD=1.2;b.vx=.7+Math.random()*.5;b.vy=-2.1;g.shake=.3}return}
       const py=b.y,n=10,h=dt/n;for(let s_=0;s_<n;s_++){b.vy+=1.9*h;b.x+=b.vx*h;b.y+=b.vy*h;
-        for(const s of g.segs)this.hitSeg(g,b,s.a[0],s.a[1],s.b[0],s.b[1],s.e,s.kick||0,s.kick?()=>{g.sf[s.sl]=1;this.pts(g,10,b.x,b.y,'#FF8A5C');gBurst(g,this.X(g,b.x),this.Y(g,b.y),6,['#FF5FA8','#fff'],{shape:'dot',sp:120,life:.3})}:null);
+        for(const s of g.segs)this.hitSeg(g,b,s.a[0],s.a[1],s.b[0],s.b[1],s.e,s.kick||0,s.kick?()=>{g.sf[s.sl]=1;this.pts(g,10,b.x,b.y,'#FF8A5C');gBurst(g,...this.proj(g,b.x,b.y),6,['#FF5FA8','#fff'],{shape:'dot',sp:120,life:.3})}:null);
         this.hitSeg(g,b,.9,TH-.03,.98,TH-.03,.1,0,null);
         g.bumps.forEach((q,i)=>{const dx=b.x-q.x,dy=b.y-q.y,d=Math.hypot(dx,dy),m=R+q.r;if(d<m&&d>0){const nx=dx/d,ny=dy/d;b.x=q.x+nx*m;b.y=q.y+ny*m;const vn=b.vx*nx+b.vy*ny;if(vn<0){b.vx-=2*vn*nx;b.vy-=2*vn*ny}
-          b.vx+=nx*1.25;b.vy+=ny*1.25;if(g.bf[i]<.6){g.bf[i]=1;g.shake=.12;this.pts(g,Math.round(100*(1+(g.lv-1)*.25)),q.x,q.y-q.r,'#8FF6FF');gBurst(g,this.X(g,q.x),this.Y(g,q.y),9,['#8FF6FF','#FFE45C','#fff'],{shape:'star',sp:170,life:.4})}}});
+          b.vx+=nx*1.25;b.vy+=ny*1.25;if(g.bf[i]<.6){g.bf[i]=1;g.shake=.12;this.pts(g,Math.round(100*(1+(g.lv-1)*.25)),q.x,q.y-q.r,'#8FF6FF');gBurst(g,...this.proj(g,q.x,q.y),9,['#8FF6FF','#FFE45C','#fff'],{shape:'star',sp:170,life:.4})}}});
         g.moonT.forEach((m,i)=>{if(!g.moons[i])return;this.hitSeg(g,b,m.x,m.y-m.h/2,m.x,m.y+m.h/2,.4,0,()=>{g.moons[i]=0;g.mf[i]=1;this.pts(g,g.lv>=4?1100:750,m.x,m.y,'#FFF3B0');
-          if(g.moons.every(v=>!v)){this.pts(g,5000,.6,.8,'#FFD21F');this.say(g,'Moon landing!','#FFD21F');g.cheerT=1.5;gBurst(g,this.X(g,.7),this.Y(g,.8),26,['#FFD21F','#fff','#8FF6FF'],{shape:'star',sp:300});setTimeout(()=>{g.moons=[1,1,1]},900)}})});
+          if(g.moons.every(v=>!v)){this.pts(g,5000,.6,.8,'#FFD21F');this.say(g,'Moon landing!','#FFD21F');g.cheerT=1.5;gBurst(g,...this.proj(g,.7,.8),26,['#FFD21F','#fff','#8FF6FF'],{shape:'star',sp:300});setTimeout(()=>{g.moons=[1,1,1]},900)}})});
         this.hitFlip(g,b,0);this.hitFlip(g,b,1);
         const H_=g.holeP;if(!g.hole&&!g.holeCD&&Math.hypot(b.x-H_.x,b.y-H_.y)<H_.r*.9){g.hole={t:0};b.vx=b.vy=0;const v=this.pts(g,g.lv>=3?5000:2500,H_.x,H_.y-.05,'#E0B0FF');this.say(g,'Black hole!','#E0B0FF');g.cheerT=1;break}}
       const sp=Math.hypot(b.vx,b.vy);if(sp>4.3){b.vx*=4.3/sp;b.vy*=4.3/sp}b.rot+=b.vx*dt/R*.5;
       // S-P-A-C-E rollovers at the top
       if((py-.215)*(b.y-.215)<0&&b.x>.25&&b.x<.75){const i=Math.floor((b.x-.25)/.1);if(!g.lanes[i]){g.lanes[i]=1;this.pts(g,500,b.x,.2,'#FFE45C')}
-        if(g.lanes.every(v=>v)&&!g.laneF){g.laneF=1;g.mult=Math.min(6,g.mult+1);this.say(g,`SPACE ×${g.mult}!`,'#FF5FA8');g.cheerT=1.2;gBurst(g,g.w/2,this.Y(g,.22),24,['#FF5FA8','#FFE45C','#8FF6FF','#fff'],{shape:'star',sp:280});setTimeout(()=>{g.lanes=[0,0,0,0,0]},800)}}
+        if(g.lanes.every(v=>v)&&!g.laneF){g.laneF=1;g.mult=Math.min(6,g.mult+1);this.say(g,`SPACE ×${g.mult}!`,'#FF5FA8');g.cheerT=1.2;gBurst(g,...this.proj(g,.46,.22),24,['#FF5FA8','#FFE45C','#8FF6FF','#fff'],{shape:'star',sp:280});setTimeout(()=>{g.lanes=[0,0,0,0,0]},800)}}
       if(b.y>TH+.06){if(g.save>0){this.serve(g);g.served=1;this.say(g,'Ball saved!','#A6E22E')}else{g.drainT=1.3;g.sadT=1.3;g.mult=1;g.chg=0;this.say(g,'Lost in space...','#9C92BF')}}
       while(g.lv<this.lvAt.length&&g.score>=this.lvAt[g.lv])gLevel(g,this.lvSub[Math.min(g.lv,this.lvSub.length-1)])},
     pose(g,t){if(g.sadT>0)return PZ.sad(t);if(g.cheerT>0)return PZ.cheer(t);const f=Math.min(1,Math.hypot(g.b.vx,g.b.vy)/3);
@@ -8690,7 +8690,7 @@ const GAMES={
       gText(x,`${PN().toUpperCase()} PINBALL`,X(.46),Y(.36),'#FFE45C',Math.min(22,tw*.06));
       gText(x,'★ ORBITAL ★',X(.46),Y(.405),'#8FF6FF',Math.min(12,tw*.032))},
     rail(x,g,s){const X=v=>this.X(g,v),Y=v=>this.Y(g,v);x.beginPath();x.moveTo(X(s.a[0]),Y(s.a[1]));x.lineTo(X(s.b[0]),Y(s.b[1]));x.lineCap='round';x.lineWidth=g.tw*.02;x.strokeStyle=GINK;x.stroke();x.lineWidth=g.tw*.011;x.strokeStyle='#DDE3F5';x.stroke()},
-    draw(g,x){const X=v=>this.X(g,v),Y=v=>this.Y(g,v),tw=g.tw,TH=this.TH,t=g.t;x.drawImage(this.bgArt(g),0,0,g.w,g.h);
+    draw2(g,x){const X=v=>this.X(g,v),Y=v=>this.Y(g,v),tw=g.tw,TH=this.TH,t=g.t;x.drawImage(this.bgArt(g),0,0,g.w,g.h);
       g.segs.forEach(s=>{if(s.rail&&s.a[0]!==s.b[0]&&Math.abs(s.a[1]-.5)<.49&&s.a[1]<.5)return;if(!s.kick)this.rail(x,g,s)});
       // S-P-A-C-E lights
       'SPACE'.split('').forEach((ch,i)=>{const cx=X(.3+i*.1),cy=Y(.215),on=g.lanes[i]||(g.laneF>0&&Math.floor(t*10)%2);gCirc(x,cx,cy,tw*.03,on?gRad(x,cx,cy,tw*.03,['#FFF8C8','#FFC21F']):'#2A2360',2.5);gText(x,ch,cx,cy+1,on?'#3B1273':'#8C84C8',tw*.035)});
@@ -8723,7 +8723,88 @@ const GAMES={
       for(let i=0;i<3;i++)gCirc(x,X(.06)+i*14,Y(TH)-10,5,i<g.balls?'#8FF6FF':'#2A2360',2);if(g.mult>1)gText(x,`×${g.mult}`,X(.46),Y(.47),'#FF5FA8',Math.min(26,tw*.07));
       if(g.save>0){x.save();x.globalAlpha=.5+Math.sin(t*8)*.3;gText(x,'Ball save',X(.46),Y(1.5),'#A6E22E',Math.min(13,tw*.036));x.restore()}
       if(g.msg){const a=1-Math.max(0,g.msg.t-1.2)/.4,s=Math.min(1,g.msg.t*6);x.save();x.globalAlpha=a;x.translate(X(.46),Y(.84));x.scale(s,s);gText(x,g.msg.txt,0,0,g.msg.col,Math.min(28,tw*.075));x.restore()}},
-    art(x,w,h){const g={w,h,t:1,lv:1,score:0,fx:[],pt:[]};this.init.call(this,g);g.b.x=.5;g.b.y=.9;const gp=gpOn;this.draw.call(this,g,x)}},
+    // ---------- 3D: the table seen from behind the flippers, like the old desktop space table ----------
+    // World: 1 table unit = S world units, table surface at y=0, table y runs along +z towards the camera.
+    b3(g){if(!gpOn||!gpR)return null;if(this._B)return this._B;const S=4,TH=this.TH,W=x=>(x-.5)*S,Z=y=>(y-TH/2)*S,root=G(),B={S,W,Z,root};gpSc.add(root);this._B=B;
+      const Chrome=M(0xC9D2F0,{metalness:.75,roughness:.22}),Neon=M(0x8FF6FF,{emissive:0x3EE8FF,emissiveIntensity:1.2,roughness:.2}),Dark=M(0x1A1240,{roughness:.6}),Pink=M(0xFF5FA8,{roughness:.35});
+      // the playfield: painted space, cracked like old glass, arrow inserts, a ring of sockets round the centre
+      {const cw=1024,ch=Math.round(1024*TH),c=mkCanvas(cw,ch),x=c.getContext('2d'),R_=rnd(11),U=u=>u*cw,V=v=>v*cw;
+        const bg=x.createRadialGradient(U(.46),V(.95),40,U(.46),V(.95),cw*1.1);bg.addColorStop(0,'#3A4AC8');bg.addColorStop(.45,'#23207A');bg.addColorStop(1,'#0C0830');x.fillStyle=bg;x.fillRect(0,0,cw,ch);
+        x.strokeStyle='rgba(120,160,255,.28)';x.lineWidth=2;for(let i=0;i<60;i++){let px=R_()*cw,py=R_()*ch;x.beginPath();x.moveTo(px,py);for(let k=0;k<6;k++){px+=(R_()-.5)*90;py+=(R_()-.5)*90;x.lineTo(px,py)}x.stroke()}
+        for(let i=0;i<220;i++){x.fillStyle=`rgba(255,255,255,${.2+R_()*.6})`;x.beginPath();x.arc(R_()*cw,R_()*ch,.8+R_()*2,0,7);x.fill()}
+        // a big purple star fan behind the flippers and the ringed planet in the middle
+        x.save();x.translate(U(.46),V(1.62));for(let i=0;i<9;i++){const a=-Math.PI*(.12+.76*i/8);x.fillStyle=i%2?'#7B3CC8':'#9B5AE8';x.beginPath();x.moveTo(0,0);x.lineTo(Math.cos(a-.09)*V(.42),Math.sin(a-.09)*V(.42));x.lineTo(Math.cos(a)*V(.5),Math.sin(a)*V(.5));x.lineTo(Math.cos(a+.09)*V(.42),Math.sin(a+.09)*V(.42));x.closePath();x.fill()}x.restore();
+        x.fillStyle=gRad(x,U(.46),V(.95),V(.1),['#9FF4FF','#2FA7EA','#1E2266']);x.beginPath();x.arc(U(.46),V(.95),V(.1),0,7);x.fill();x.strokeStyle='rgba(255,228,92,.8)';x.lineWidth=8;x.beginPath();x.ellipse(U(.46),V(.95),V(.19),V(.05),-.3,0,7);x.stroke();
+        for(let i=0;i<20;i++){const a=i/20*Math.PI*2;x.fillStyle='#10103A';x.beginPath();x.arc(U(.46)+Math.cos(a)*V(.16),V(.95)+Math.sin(a)*V(.16),V(.014),0,7);x.fill()}
+        // arrow inserts pointing up the lanes and at the moons
+        [[.3,1.08,-.5],[.62,1.08,.5],[.72,.8,1.57],[.46,1.28,0],[.18,.95,-.2]].forEach(([u,v,a],i)=>{x.save();x.translate(U(u),V(v));x.rotate(a);x.fillStyle=['#FFD21F','#FF5FA8','#A6E22E','#8FF6FF','#FF8A1C'][i];x.globalAlpha=.85;x.beginPath();x.moveTo(0,-V(.04));x.lineTo(V(.03),V(.02));x.lineTo(-V(.03),V(.02));x.closePath();x.fill();x.restore()});
+        x.font=`${V(.045)}px "R42 Bubble"`;x.textAlign='center';x.fillStyle='rgba(255,228,92,.85)';x.fillText(`${PN().toUpperCase()} PINBALL`,U(.46),V(.37));x.font=`${V(.022)}px "R42 Bubble"`;x.fillStyle='rgba(143,246,255,.8)';x.fillText('ORBITAL EDITION',U(.46),V(.41));
+        const tx=new THREE.CanvasTexture(c);tx.encoding=THREE.sRGBEncoding;const pl=add(root,new THREE.PlaneGeometry(S,TH*S),M(0xffffff,{map:tx,roughness:.45,metalness:.1}),0,0,0);pl.rotation.x=-Math.PI/2;pl.outline=0;pl.castShadow=false}
+      // the cabinet: a deep dark tub round the table with chrome lips
+      ol(rb(root,S+.5,.5,TH*S+.5,.08,Dark,0,-.26,0),.02);[-1,1].forEach(sd=>ol(rb(root,.12,.5,TH*S+.5,.04,M(0x2A1E66,{roughness:.5}),sd*(S/2+.19),.12,0),.01));ol(rb(root,S+.5,.5,.14,.04,M(0x2A1E66,{roughness:.5}),0,.12,Z(0)-.2),.01);
+      // walls, rails and posts from the physics segments: chrome with a neon strip on top
+      g.segs.forEach(s=>{if(s.kick)return;const ax=W(s.a[0]),az=Z(s.a[1]),bx=W(s.b[0]),bz=Z(s.b[1]),L=Math.hypot(bx-ax,bz-az);if(L<1e-3)return;const h=s.post?.13:.2,th=s.post?.05:.07;
+        const m=ol(rb(root,L+th,h,th,th*.45,s.post?Pink:Chrome,(ax+bx)/2,h/2,(az+bz)/2),.006);m.rotation.y=-Math.atan2(bz-az,bx-ax);if(!s.post&&s.rail){const n=add(root,new THREE.BoxGeometry(L,.015,.02),Neon,(ax+bx)/2,h+.01,(az+bz)/2);n.rotation.y=m.rotation.y;n.outline=0;n.castShadow=false}});
+      // slingshots: rocket fins with a red rubber kicker face
+      B.sl=[[.12,1.0,.2,1.2],[.8,1.0,.72,1.2]].map(([x1,y1,x2,y2])=>{const P=[[W(x1),-Z(y1)],[W(x1),-Z(y1+.17)],[W(x2),-Z(y2)]],f=ol(flat(root,P,.16,M(0xE8384F,{roughness:.35}),0,0,0),.01);f.rotation.x=-Math.PI/2;
+        const ax=W(x1),az=Z(y1),bx=W(x2),bz=Z(y2),L=Math.hypot(bx-ax,bz-az),rm=M(0xFFFFFF,{roughness:.4,emissive:0xFF3D6A,emissiveIntensity:0}),r=ol(rb(root,L,.12,.04,.02,rm,(ax+bx)/2,.08,(az+bz)/2),.005);r.rotation.y=-Math.atan2(bz-az,bx-ax);
+        const st=star3(root,.07,M(0xFFFFFF,{roughness:.3}),W((x1*2+x2)/3),.17,Z((y1*2+y2+.17)/3));st.rotation.x=-Math.PI/2;st.outline=0;return rm});
+      // pop bumpers: mushroom planets with a light in the cap
+      B.bump=g.bumps.map((q,i)=>{const c=[0xFF8A1C,0x3EC8F2,0x9B4DF2][i],bg_=G();bg_.position.set(W(q.x),0,Z(q.y));root.add(bg_);const r=q.r*S;
+        ol(cy(bg_,r*1.05,r*1.1,.06,Dark,0,.03,0,28),.006);ol(cy(bg_,r*.55,r*.6,.2,M(0xE6E9F5,{metalness:.5,roughness:.3}),0,.14,0,20),.006);const cap=M(c,{emissive:c,emissiveIntensity:.25,roughness:.3});
+        ol(cy(bg_,r,r*.95,.09,cap,0,.27,0,28),.008);const dome=sp(bg_,r*.7,M(0xFFFFFF,{roughness:.1,emissive:lighten(c,.5),emissiveIntensity:.4}),0,.31,0,1,.45,1);dome.outline=0;
+        const ring=to(bg_,r*1.35,.018,M(0xFFE45C,{emissive:0xFFD21F,emissiveIntensity:.5}),0,.27,0,Math.PI/2+.25,0,0);ring.outline=0;return{g:bg_,cap,ring}});
+      // moon targets standing in front of the bank (they sink when hit)
+      B.moons=g.moonT.map(m=>{const t=G();t.position.set(W(m.x)-.03,0,Z(m.y));root.add(t);const d=ol(cy(t,m.h*S*.5,m.h*S*.5,.05,M(0xF2D46A,{roughness:.5,emissive:0xFFE27A,emissiveIntensity:.15}),0,m.h*S*.5+.02,0,24),.006);d.rotation.z=Math.PI/2;
+        [[-.3,.25,.25],[.2,-.2,.18],[.25,.35,.14]].forEach(([a,b_,r])=>{const k=cy(t,r*m.h*S*.5,r*m.h*S*.5,.012,M(0xC9A24A),-.03,m.h*S*.5+.02+a*m.h*S*.5,b_*m.h*S*.5,12);k.rotation.z=Math.PI/2;k.outline=0});return t});
+      // the black hole: a swirl sunk into the table with a glowing rim
+      {const H_=g.holeP,hp=G();hp.position.set(W(H_.x),.005,Z(H_.y));root.add(hp);const sw=mkCanvas(256,256),x=sw.getContext('2d');x.fillStyle='#05020F';x.fillRect(0,0,256,256);
+        for(let k=0;k<3;k++){x.strokeStyle=['#B07BFF','#FF5FA8','#8FF6FF'][k];x.lineWidth=10;x.beginPath();for(let a=0;a<9;a+=.1){const r=120*(1-a/9.5);x.lineTo(128+Math.cos(a+k*2.1)*r,128+Math.sin(a+k*2.1)*r)}x.stroke()}
+        const st=new THREE.CanvasTexture(sw);st.encoding=THREE.sRGBEncoding;const d=add(hp,new THREE.CircleGeometry(H_.r*S*1.7,32),M(0xffffff,{map:st,roughness:.8}),0,0,0);d.rotation.x=-Math.PI/2;d.outline=0;
+        const rim=to(hp,H_.r*S*1.75,.03,M(0xB07BFF,{emissive:0xB07BFF,emissiveIntensity:1}),0,.01,0,Math.PI/2);rim.outline=0;B.swirl=d}
+      // S-P-A-C-E lights on the table
+      B.lanes='SPACE'.split('').map((ch,i)=>{const mk=on=>{const c=mkCanvas(96,96),x=c.getContext('2d');x.fillStyle=on?'#FFC21F':'#241A60';x.fillRect(0,0,96,96);x.fillStyle=on?'#FFF3B0':'#3A2E8A';x.beginPath();x.arc(48,48,40,0,7);x.fill();
+          x.font='52px "R42 Bubble"';x.textAlign='center';x.textBaseline='middle';x.fillStyle=on?'#3B1273':'#8C84C8';x.fillText(ch,48,52);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t};
+        const on=M(0xffffff,{map:mk(1),emissive:0xFFE27A,emissiveIntensity:.5,roughness:.4}),off=M(0xffffff,{map:mk(0),roughness:.5}),d=add(root,new THREE.CircleGeometry(.1,24),off,W(.3+i*.1),.006,Z(.215));d.rotation.x=-Math.PI/2;d.outline=0;return{d,on,off}});
+      // the ring of lights round the centre planet (they chase)
+      B.ring=[];for(let i=0;i<20;i++){const a=i/20*Math.PI*2,m=M(0xFFE45C,{emissive:0xFFD21F,emissiveIntensity:.2,roughness:.3}),d=sp(root,.04,m,W(.46)+Math.cos(a)*.16*S,.01,Z(.95)+Math.sin(a)*.16*S,1,.35,1);d.outline=0;B.ring.push(m)}
+      // flippers: white bats with red rubber, on chrome pivots
+      B.fl=[0,1].map(i=>{const P=i?[.7,1.44]:[.22,1.44],pv=G();pv.position.set(W(P[0]),0,Z(P[1]));root.add(pv);const arm=G();pv.add(arm);const len=.16*S,d=i?-1:1;
+        const bat=ol(rb(arm,len,.12,.11,.05,M(0xFFFFFF,{roughness:.3}),d*len/2,.08,0),.008);const rub=ol(rb(arm,len*.96,.07,.13,.03,M(0xE8384F,{roughness:.5}),d*len/2,.06,0),0);
+        ol(cy(pv,.08,.08,.16,M(0xC9D2F0,{metalness:.7,roughness:.2}),0,.08,0,16),.005);return{pv,arm,d}});
+      // plunger: a chrome knob on a striped spring
+      {B.pl=G();root.add(B.pl);B.pl.position.set(W(.94),.08,Z(TH-.03));ol(rb(B.pl,.24,.1,.06,.03,Pink,0,0,0),.005);B.spring=G();B.pl.add(B.spring);for(let i=0;i<6;i++){const r_=to(B.spring,.06,.012,M(0xDDE3F5,{metalness:.6,roughness:.25}),0,0,.08+i*.05,0,0,0);r_.outline=0}}
+      // the ball: the pet curled up inside a glass bubble, and its shadow
+      B.ball=G();root.add(B.ball);const br=this.R*S;const gl=sp(B.ball,br,M(0xDDF8FF,{transparent:true,opacity:.34,roughness:.05,emissive:0x8FF6FF,emissiveIntensity:.25}),0,0,0);gl.outline=.012;nosh(gl);
+      const hl=sp(B.ball,br*.25,M(0xFFFFFF,{emissive:0xFFFFFF,emissiveIntensity:.6}),-br*.4,br*.5,br*.45,1,.6,.5);hl.outline=0;B.hl=hl;
+      B.sh=add(root,new THREE.CircleGeometry(br,20),M(0x05020F,{transparent:true,opacity:.35,depthWrite:false}),0,.004,0);B.sh.rotation.x=-Math.PI/2;B.sh.outline=0;
+      {const bx=new THREE.Box3().setFromObject(pet.group),v=new THREE.Vector3();bx.getSize(v);if(this._petS==null)this._petS=pet.group.scale.x;B.petH=Math.max(.3,Math.max(v.x,v.y)/(pet.group.scale.y||1))}
+      B.cam=new THREE.PerspectiveCamera(38,1,.1,100);return B},
+    upd3(g,B){const t=g.t,S=B.S,W=B.W,Z=B.Z,b=g.b,R=this.R;
+      g.fl.forEach((f,i)=>{const F=B.fl[i];F.pv.rotation.y=-f.a*F.d});
+      B.bump.forEach((q,i)=>{const f=g.bf[i];q.cap.emissiveIntensity=.25+f*2.2;q.g.scale.set(1+f*.08,1-f*.1,1+f*.08);q.ring.rotation.z=t*1.5+i});
+      B.sl.forEach((m,i)=>{m.emissiveIntensity=g.sf[i]*1.6});
+      B.moons.forEach((m,i)=>{m.position.y=approach(m.position.y,g.moons[i]?0:-.34,.08)});
+      B.lanes.forEach((L,i)=>{const on=g.lanes[i]||(g.laneF>0&&Math.floor(t*10)%2);L.d.material=on?L.on:L.off});
+      B.swirl.rotation.z=t*2.2;const ph=Math.floor(t*8);B.ring.forEach((m,i)=>{m.emissiveIntensity=(i+ph)%5===0||(g.cheerT>0&&(i+ph)%2===0)?1.4:.15});
+      B.spring.scale.z=1-g.charge*.55;B.pl.position.z=Z(this.TH-.03)+g.charge*.12;
+      // the ball rolls; the pet sits inside, spinning with it
+      const x=W(b.x),z=Z(b.y),br=R*S,gone=g.drainT>0,sq=g.hole?Math.max(.1,1-g.hole.t*.7):1;B.ball.visible=!gone;B.sh.visible=!gone;B.ball.position.set(x,br*sq,z);B.ball.scale.setScalar(sq);B.sh.position.set(x+.04,.004,z+.03);B.sh.scale.setScalar(sq);
+      B.spin=B.spin||{x:0,z:0};B.spin.x+=b.vy*S*(1/60)/br*.35;B.spin.z-=b.vx*S*(1/60)/br*.35;
+      const pg=pet.group,sc=br*1.55/B.petH*sq;pg.scale.setScalar(sc);pg.position.set(x,br*sq*.35,z);pg.rotation.set(B.spin.x*.25,g.hole?t*9:B.spin.z*.2,0);pg.visible=!gone},
+    exit(){if(this._B){gpSc.remove(this._B.root);this._B=null}if(this._petS!=null&&pet.group){pet.group.scale.setScalar(this._petS);pet.group.visible=true}this._petS=null},
+    draw(g,x){const B=this.b3(g);if(!B){this.draw2(g,x);return}this.upd3(g,B);const d=Math.min((gm&&gm.dpr)||1,1.5),pw=Math.round(g.w*d),ph=Math.round(g.h*d),dk=pw+'x'+ph;
+      if(gpR.__dk!==dk){gpR.setSize(pw,ph,false);gpR.__dk=dk}gpR.__sz=0;
+      // the camera sits behind the flippers, up high, and backs off on narrow screens so the whole table fits
+      const a=g.w/g.h,tp=clamp((.8-a)/.34,0,1),k=Math.max(1,.71/a)*(1-tp*.08),c=B.cam;c.aspect=a;c.updateProjectionMatrix();c.position.set(0,(6.4+2.6*tp)*k,B.Z(this.TH)+(3.9-2.3*tp)*k);c.lookAt(new THREE.Vector3(0,0,B.Z(.82-.06*tp)));
+      x.fillStyle=gGrad(x,0,0,0,g.h,['#0B0630','#241054']);x.fillRect(0,0,g.w,g.h);gpR.render(gpSc,c);x.drawImage(gpR.domElement,0,0,g.w,g.h);
+      const TH=this.TH,t=g.t;for(let i=0;i<3;i++)gCirc(x,18+i*16,g.h-16,6,i<g.balls?'#8FF6FF':'#2A2360',2);if(g.mult>1)gText(x,`×${g.mult}`,g.w-34,g.h-18,'#FF5FA8',22);
+      if(this.onLauncher(g)&&!g.hole&&!(g.drainT>0)){x.save();x.globalAlpha=.7+Math.sin(t*6)*.3;gText(x,g.chg?'Let go to launch!':'Tap or hold to launch',g.w/2,g.h-20,'#FFE45C',16);x.restore()}
+      if(g.save>0&&!this.onLauncher(g)){x.save();x.globalAlpha=.5+Math.sin(t*8)*.3;gText(x,'Ball save',g.w/2,g.h-20,'#A6E22E',14);x.restore()}
+      if(g.msg){const al=1-Math.max(0,g.msg.t-1.2)/.4,s=Math.min(1,g.msg.t*6);x.save();x.globalAlpha=al;x.translate(g.w/2,g.h*.34);x.scale(s,s);gText(x,g.msg.txt,0,0,g.msg.col,Math.min(34,g.w*.08));x.restore()}},
+    // particles and floating points are drawn in screen space, so place them where the 3D thing is
+    proj(g,x,y){const B=this._B;if(!B)return[this.X(g,x),this.Y(g,y)];const v=new THREE.Vector3(B.W(x),.15,B.Z(y)).project(B.cam);return[(v.x*.5+.5)*g.w,(-v.y*.5+.5)*g.h]},
+    art(x,w,h){const g={w,h,t:1,lv:1,score:0,fx:[],pt:[]};this.init.call(this,g);g.b.x=.5;g.b.y=.9;this.draw2.call(this,g,x)}},
   says:{n:'{pet} Says',c:'#FF3D9A',bg:['#FFE0F0','#FFF3C4'],xp:250,stars:[60,180,360],titles:['Good Listener','Copy Cat','Echo Buddy','Memory Pal','Mind Reader','Memory Legend'],
     how:'Watch the jelly buttons light up, then tap them back in the same order. Each round adds one more. You have three hearts, and a slip just replays the tune.',
     legend:[['tap','5 × level'],['round','10 × round'],['life','3 tries']],
@@ -8768,7 +8849,7 @@ function gmIcon(k,key){const D=GAMES[k],c=mkCanvas(64,64),x=c.getContext('2d');x
   else if(k==='pinball'){if(key==='bumper'){gCirc(x,0,0,15,gRad(x,-5,-5,18,['#FFD8A8','#FF8A1C']),3);x.strokeStyle='#FFE45C';x.lineWidth=3;x.beginPath();x.ellipse(0,0,26,7,-.35,0,7);x.stroke()}else if(key==='lane'){gCirc(x,0,0,16,gRad(x,0,0,16,['#FFF8C8','#FFC21F']),3);gText(x,'S',0,1,'#3B1273',18)}else if(key==='moon')gCirc(x,0,0,16,gRad(x,-4,-4,18,['#FFFBE0','#F2D46A']),3);else{gCirc(x,0,0,18,gRad(x,0,0,18,['#000','#3A1470']),3);x.strokeStyle='#B07BFF';x.lineWidth=3;x.beginPath();x.arc(0,0,11,0,4.5);x.stroke()}}
   else{if(key==='life')heartAt(x,0,0,18,'#FF5FA8');else if(key==='round')star5(x,0,0,20,'#B07BFF');else gCirc(x,0,0,18,gRad(x,0,0,18,['#FFB3DA','#FF5FA8']),3)}return c.toDataURL()}
 function gmNew(){const r=gmSize();gm.s={w:r.width,h:r.height,t:0,score:0,lv:1,over:false,fx:[],pt:[],shake:0,banner:null,time:null};GAMES[gm.k].init(gm.s)}
-function openGame(k){if(!GAMES[k])return;tdEnsure();closeProduct();setTab(null);const D=GAMES[k],el=$('#game');gm={k,play:false,dpr:1};
+function openGame(k){if(!GAMES[k])return;tdEnsure();closeProduct();setTab(null);$('#kbub').hidden=true;kbT=0;const D=GAMES[k],el=$('#game');gm={k,play:false,dpr:1};
   el.style.setProperty('--gc',D.c);el.style.setProperty('--g1',D.bg[0]);el.style.setProperty('--g2',D.bg[1]);$('#gmTitle').textContent=gName(k);['#gmScore','#gmTime','#gmLv'].forEach(q=>$(q).textContent='');
   el.hidden=false;requestAnimationFrame(()=>el.classList.add('on'));gpAttach();gmNew();gmLast=performance.now();if(!gmRaf)gmRaf=requestAnimationFrame(gmTick);
   const left=arcLeft(),xp=arcGet('xp',k),L=mLevel(k,xp),lo=L>1?mNeed(k,L-1):0,hi=mNeed(k,L),bs=arcGet('st',k);
