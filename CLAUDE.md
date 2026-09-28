@@ -171,3 +171,6 @@ Each shop in the town view is a novelty building from `TM_BODY[k]` (before `tmHo
 
 ## Shop logos (Sept 2026)
 - `assets/logos/<shop key>.webp` (snack, salon, toys, furn, build, glam, wear, arcade): the user's ChatGPT logos (name baked in), trimmed and 640px. `SHOP_LOGO`/`shopLogo(k)` (before `updStoreBar`): the in-shop chip (`.storechip.logo`) and the town card header (`.tmh img.lg`) show them. Not yet used: 3D town signs, door signs, map SVG pins.
+
+## Town map look (Sept 2026)
+- Aesthetics pass: `tmIsland` builds a rounded layered island (`tmRR` rounded-rect outline, three `flat` slabs: light grass lip, dark grass, soil), a candy picket fence round the rim (posts, caps, two rails, four corner lamps), a painted grass plane (mowing checker, mottling, tufts, five-petal flowers; the grid overlay is a separate transparent plane shown only in arrange mode) and three pivots of drifting clouds (`tm.cl`, rotated in `tmTick`). Paths use three cobblestone materials (`tm.cob`). `tmPad` puts a tinted stone pad under each building. Labels are the text-free logos (`assets/logos/<key>-nt.webp`, home uses the room icon) with a small name pill under them, bobbing via CSS; sky is a brighter gradient with a sun glow and vignette. `sw.js` CACHE is v5.
