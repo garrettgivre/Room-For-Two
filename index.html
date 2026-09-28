@@ -8340,8 +8340,8 @@ const GAMES={
   // rendered through the game renderer with the real pet in it; its front plane lines up with the physics (pixels), so the
   // 2D effects drawn on top still match. Kept generic so boards can each carry their own theme later.
   drop:{n:'{pet} Drop',c:'#4FA8FF',bg:['#3A1470','#1E0838'],xp:320,stars:[90,170,260],titles:['Drop Newbie','Plinker','Bounce Buddy','Gumdrop Guru','Drop Pro','Plop Legend'],
-    get how(){const S=this.stage(),gid=this.giftId();return`Today’s board: ${S.n}. It’s a tall one: your pet falls a long way, and the prizes get better the further down it goes. Move with the arrows and press GO! to drop. Your pet swings on the claw, so time it: drop it hanging straight for a steady fall. Come to rest in a prize pocket to win it${gid?`, and today there’s a ${wearDef(gid).n} up for grabs`:''}! Five drops a game.`},
-    legend:[['small','10'],['mid','25'],['big','50'],['gift','win it!']],lvAt:[0,60,140,240,360,500],
+    get how(){const S=this.stage(),gid=this.giftId();return`Today’s board: ${S.n}. It’s a tall one: your pet falls a long way, bouncing off the shopkeepers, and the prizes get better the further down it goes. Every prize is real: snacks and treats go to your pantry, tokens to the capsule machine. Move with the arrows and press GO! to drop. Your pet swings on the claw, so time it: drop it hanging straight for a steady fall. Come to rest in a prize pocket to win it${gid?`, and today there’s a ${wearDef(gid).n} up for grabs`:''}! Five drops a game.`},
+    legend:[['small','a snack'],['mid','a treat or token'],['big','a fancy treat'],['gift','win it!']],lvAt:[0,60,140,240,360,500],
     lvSub:['','Faster platforms!','Prizes worth more!','Bumpers wake up!','Wild board!'],
     PV:{small:10,mid:25,big:50,gift:60},
     // boards in board units: u across (0..1), v down (0..1); plats are ledges [a,b] (p = a prize on it, mv = moving), bump = bumpers, pegs = gumdrops
@@ -8369,13 +8369,13 @@ const GAMES={
         // dot rows (staggered), leaving room round the prize pockets
         TK.rows.forEach((l,ri)=>{if(s===NS-1&&l>.8)return;(ri%2?[.3,.5,.7]:[.2,.4,.6,.8]).forEach(u=>S.pegs.push([u+(R()-.5)*.03,V(l+(R()-.5)*.02)]))});
         // two prize pockets on alternate sides (short flat ledges; the lips come from the prize)
-        [[.32,side,T[0]],[.7,-side,T[1]]].forEach(([l,sd,t],k)=>{const w=TK.w[s]*(t==='gift'?.85:1),cx=sd<0?.2+R()*.12:.8-R()*.12;const P={a:[cx-w/2,V(l)],b:[cx+w/2,V(l)],p:{t,at:.5}};
+        [[.32,side,T[0]],[.7,-side,T[1]]].forEach(([l,sd,t],k)=>{const w=TK.w[s]*(t==='gift'?(style===1?1.15:.85):1),cx=sd<0?.2+R()*.12:.8-R()*.12;const P={a:[cx-w/2,V(l)],b:[cx+w/2,V(l)],p:{t,at:.5}};
           if(style===2&&s===1&&k===0)P.mv={dx:.12,sp:.8};S.plats.push(P)});
         // pink deflectors off the walls (slide the pet back towards the middle)
         [[.44,-1],[.58,1],[.84,-side]].forEach(([l,sd])=>{if(style===0&&l===.58)return;const u0=sd<0?0:1,u1=sd<0?.14:.86;S.plats.push({a:[u0,V(l)],b:[u1,V(l+.05)]})});
         // Falls: a long slide across each section; Cliffs: a ledge step; Tower: an extra bumper
         if(style===1)S.plats.push({a:[side<0?.3:.7,V(.5)],b:[side<0?.56:.44,V(.66)]});
-        S.bump.push({c:[.5+(R()-.5)*.25,V(.4)],r:.05,mv:s?{dy:.012,sp:1.4}:null});if(style===2||s===2)S.bump.push({c:[side<0?.78:.22,V(.12)],r:.045})}
+        S.bump.push({c:[.5+(R()-.5)*.2,V(.4)],r:.075,mv:s?{dy:.012,sp:1.4}:null});if(style===2||s===2)S.bump.push({c:[side<0?.76:.24,V(.12)],r:.065})}
       // keep dots clear of ledges and bumpers so nothing can wedge between them (v is stretched ~2.8x against u on screen)
       const ar=2.8,dSeg=(p,P)=>{const ax=P.a[0],ay=P.a[1]*ar,bx=P.b[0],by=P.b[1]*ar,px=p[0],py=p[1]*ar,ex=bx-ax,ey=by-ay,t=clamp(((px-ax)*ex+(py-ay)*ey)/(ex*ex+ey*ey||1),0,1);return Math.hypot(px-ax-ex*t,py-ay-ey*t)};
       S.pegs=S.pegs.filter(p=>!S.plats.some(P=>dSeg(p,P)<.13)&&!S.bump.some(b=>Math.hypot(p[0]-b.c[0],(p[1]-b.c[1])*ar)<b.r+.13));
@@ -8385,13 +8385,20 @@ const GAMES={
     // today's featured accessory: one you don't own yet (none if you have them all)
     giftId(){const all=Object.keys(ACCS).map(k=>'a:'+k).filter(id=>!ownsWear(id));if(!all.length)return null;const R=rnd(this.day()*7+3);return all[R()*all.length|0]},
     init(g){const S=this.stage(),w=g.w,h=g.h;g.S=S;g.bw=Math.min(w-50,h*.74);g.bx=(w-g.bw)/2;g.by=h*.2;g.sc=h*.72;g.bh=g.sc*(S.tall||1);g.cam=0;g.camY=0;g.prev=(S.tall||1)>1?3.2:0;g.r=g.bw*.042;g.ps=g.r*3.3;g.drops=5;g.gift=this.giftId();if(g.gift&&typeof queueThumbs==='function')queueThumbs(['wear:'+g.gift]);
-      g.won=new Set();g.claw=w/2;g.ax=w/2;g.cheerT=0;g.sadT=0;g.slow=1;this.newDrop(g)},
+      g.won=new Set();g.prz=this.prizes(g);g.claw=w/2;g.ax=w/2;g.cheerT=0;g.sadT=0;g.slow=1;this.newDrop(g)},
     U(g,u){return g.bx+u*g.bw},V(g,v){return g.by+v*g.bh},
     plats(g){const L=g.lv,k=1+(L-1)*.18,L0=g.S.plats.map((P,i)=>{const o=P.mv?Math.sin(g.t*P.mv.sp*k+i)*P.mv.dx:0,ov=P.mv?Math.cos(g.t*P.mv.sp*k+i)*P.mv.dx*P.mv.sp*k:0;
       return{i,P,a:[this.U(g,P.a[0]+o),this.V(g,P.a[1])],b:[this.U(g,P.b[0]+o),this.V(g,P.b[1])],vx:ov*g.bw,th:g.r*(P.p?.95:.55)}});
       const out=L0.slice();L0.forEach(q=>{if(!q.P.p||Math.hypot(q.b[0]-q.a[0],q.b[1]-q.a[1])<g.r*4.8)return;const P=this.prizeAt(g,q),ex=q.b[0]-q.a[0],ey=q.b[1]-q.a[1],l=Math.hypot(ex,ey)||1,dx=ex/l,dy=ey/l;let nx=dy,ny=-dx;if(ny>0){nx=-nx;ny=-ny}
         const pw=P.t==='gift'?1.45:2.2;[-1,1].forEach(sd=>{const bx=P.x+dx*sd*g.r*pw,by=P.y+dy*sd*g.r*pw;out.push({i:q.i,P:{},lip:1,a:[bx,by],b:[bx+nx*g.r*.45+dx*sd*g.r*.12,by+ny*g.r*.45+dy*sd*g.r*.12],vx:q.vx,th:g.r*.28})})});return out},
     bumps(g){return g.S.bump.map((B,i)=>{const o=B.mv&&g.lv>=3?Math.sin(g.t*B.mv.sp+i)*B.mv.dy:B.mv?Math.sin(g.t*B.mv.sp*.5+i)*B.mv.dy*.5:0;return{i,x:this.U(g,B.c[0]),y:this.V(g,B.c[1]+o),r:B.r*g.bw}})},
+    // today's prizes: each pill and floor cup holds something real (cheap snacks up top, fancy treats deep down, a capsule token now and then)
+    prizes(g){const R=rnd(this.day()*131+7),F=ITEMS.filter(i=>i.k==='food'&&i.p>0).sort((a,b)=>a.p-b.p),n=F.length,cheap=F.slice(0,Math.ceil(n*.55)),fancy=F.slice(Math.floor(n*.45)),pick=a=>a[R()*a.length|0].id,
+        T=state.arc&&state.arc.dropTok,tokOK=!(T&&T.d===tdDay()&&T.n>=2),P={};
+      g.S.plats.forEach((q,i)=>{if(!q.p||q.p.t==='gift')return;const t=q.p.t;P['p'+i]=t==='mid'&&tokOK&&R()<.35?{t:'token'}:{t:'item',id:pick(t==='big'?fancy:t==='mid'?(R()<.5?cheap:fancy):cheap)}});
+      g.S.floor.forEach((t,i)=>P['f'+i]={t:'item',id:pick(t==='big'?fancy:cheap)});return P},
+    prizeName(P){return P.t==='token'?'A lucky token':ITEMMAP[P.id]?ITEMMAP[P.id].n:'A treat'},
+    grant(P){if(P.t==='token'){state.tokens=(state.tokens|0)+1;const A=state.arc||(state.arc={}),T=A.dropTok&&A.dropTok.d===tdDay()?A.dropTok:(A.dropTok={d:tdDay(),n:0});T.n++}else state.inv[P.id]=(state.inv[P.id]||0)+1;saveSoon()},
     newDrop(g){g.restA=0;g.spS=null;g.barm={};g.slid=0;g.st='aim';g.vx=0;g.vy=0;g.rot=0;g.av=0;g.fallT=0;g.restT=0;g.landT=0;g.onG=null;g.teeter=0;g.reveal=null;g.claw=g.claw||g.w/2;g.th=0;g.x=g.claw;g.y=g.by-g.sc*.05;
       g.pop=null;g.items=[];g.S.plats.forEach(P=>{if(!P.p||P.mv)return;const px=this.U(g,P.a[0]+(P.b[0]-P.a[0])*P.p.at),py=this.V(g,P.a[1]+(P.b[1]-P.a[1])*P.p.at)-g.r*1.2,R_=g.r*3.1;
         for(let i=0;i<5;i++){const a=Math.PI*(1.12+.76*i/4);g.items.push({x:px+Math.cos(a)*R_,y:py+Math.sin(a)*R_,t:i*.4,got:0,gotT:0})}});
@@ -8439,11 +8446,11 @@ const GAMES={
       else if(q&&q.P.p&&!g.won.has(q.i)){const P=this.prizeAt(g,q);if(Math.abs(g.x-P.x)<Math.hypot(q.b[0]-q.a[0],q.b[1]-q.a[1])/2+g.r*.6){t=P.t;g.won.add(q.i)}else t='miss'}
       else t='miss';
       if(t==='gift'){if(g.gift){const id=g.gift;g.popId=id;state.wear.push(id);g.gift=null;logEvent(`won the ${wearDef(id).n.toLowerCase()} in ${gName('drop')}`);saveSoon();setTimeout(()=>toast(`You won the ${wearDef(id).n}! It’s in your Wardrobe.`),600);g.reveal={t:0,x,y,label:wearDef(id).n,img:'wear:'+id}}else{t='big'}}
-      const v=t==='miss'?3:Math.round(this.PV[t]*mult);g.score+=v;
-      if(t!=='miss'){const big=t==='big'||t==='gift';g.pop={t:0,kind:t,x,y,id:t==='gift'?g.popId:null};g.partyT=big?2.4:1.3;g.flashT=big?.3:.15;gBurst(g,g.w/2,g.h*.42,big?40:18,['#FFD21F','#FF5FA8','#3EC8F2','#A6E22E','#fff'],{shape:'star',sp:big?420:300,up:160})}
+      const v=t==='miss'?3:Math.round(this.PV[t]*mult);g.score+=v;let pz=null;if(t!=='miss'&&t!=='gift'){const key=q&&q.floor?'f'+clamp(Math.floor((g.x-g.bx)/(g.bw/g.S.floor.length)),0,g.S.floor.length-1):'p'+(q&&q.i);pz=g.prz&&g.prz[key]||null;if(pz)this.grant(pz)}
+      if(t!=='miss'){const big=t==='big'||t==='gift';g.pop={t:0,kind:t,x,y,id:t==='gift'?g.popId:null,pz};g.partyT=big?2.4:1.3;g.flashT=big?.3:.15;gBurst(g,g.w/2,g.h*.42,big?40:18,['#FFD21F','#FF5FA8','#3EC8F2','#A6E22E','#fff'],{shape:'star',sp:big?420:300,up:160})}
       if(t==='gift'||t==='big'){g.cheerT=1.8;g.shake=.4;gBurst(g,x,y-g.r,30,['#FFD21F','#FF5FA8','#3EC8F2','#fff'],{shape:'star',sp:340,up:180})}else if(t==='mid')g.cheerT=1;else g.sadT=t==='miss'?1:.6;
       gFx(g,x,y-g.r*2.4,t==='gift'?`Prize! +${v}`:t==='miss'?`Nice try +${v}`:(t==='small'?'Small prize':t==='mid'?'Nice':'Great')+` +${v}`,t==='gift'?'#FFB300':t==='big'?'#FF5FA8':t==='mid'?'#3EC8F2':'#9C92BF',t==='gift'||t==='big'?30:24);
-      if(!g.reveal)g.reveal={t:0,x,y,label:t==='miss'?'Nice try':t==='small'?'Small prize':t==='mid'?'Nice prize!':'Big prize!',kind:t}},
+      if(!g.reveal)g.reveal={t:0,x,y,label:t==='miss'?'Nice try':pz?this.prizeName(pz)+'!':t==='small'?'Small prize':t==='mid'?'Nice prize!':'Big prize!',kind:t}},
     btns(g){const r=clamp(g.h*.055,22,34),y=g.by+g.sc-r*1.35;return[{k:'l',d:-1,x:g.bx+r*1.5,y,r},{k:'r',d:1,x:g.bx+r*4,y,r},{k:'go',x:g.bx+g.bw-r*1.9,y,r:r*1.2}]},
     drawBtns(g,x){if(g.st!=='aim')return;this.btns(g).forEach(b=>{const on=b.k==='go'||g.hold===b.d;x.save();x.translate(b.x,b.y);gCirc(x,0,0,b.r,gRad(x,0,0,b.r,b.k==='go'?['#FFB3D6','#FF3D9A']:[on?'#FFF8C8':'#FFEE7A',on?'#FFB300':'#FFC21F']),3);gGloss(x,0,0,b.r,.7);
       if(b.k==='go')gText(x,'GO!',0,1,'#fff',b.r*.62);else{x.fillStyle='#3B1273';x.beginPath();x.moveTo(b.d*b.r*.42,0);x.lineTo(-b.d*b.r*.25,-b.r*.36);x.lineTo(-b.d*b.r*.25,b.r*.36);x.closePath();x.fill()}x.restore()})},
@@ -8516,6 +8523,9 @@ const GAMES={
         else{const c_=cy(pg,sz*.42,sz*.42,sz*.12,M(0xFFC21F,{roughness:.3,metalness:.35}),0,0,0,28);c_.rotation.x=Math.PI/2;ol(c_,.008);const st=add(pg,gcache('dr_cst',()=>{const q=new THREE.ExtrudeGeometry(starShape(.5,.22,5),{depth:.1});q.center();return q}),M(0xFFF3B0,{roughness:.3}),0,0,sz*.07);st.scale.setScalar(sz*.36);ol(st,0)}
         return pg};
       B.prize3=prize3;
+      // a real prize (a food prop or a capsule token), fitted into a box of size sz and centred
+      B.prizeM=(P,sz)=>{if(!P)return prize3('candy',sz);const pg=G();let o;try{o=P.t==='token'?tokenModel():buildProp(P.id)}catch(_){o=null}if(!o)return prize3('candy',sz);
+        const tl=G();tl.rotation.x=P.t==='token'?0:.5;pg.add(tl);const bx=new THREE.Box3().setFromObject(o),v=new THREE.Vector3();bx.getSize(v);const sc=sz*1.7/Math.max(v.x,v.y*1.3,v.z,.01);o.scale.setScalar(sc);bx.getCenter(v);o.position.set(-v.x*sc,-v.y*sc,-v.z*sc);tl.add(o);return pg};
       // a gold pill pad with three stars, like a prize plinth
       // a gold pill plaque with three stars, on the front of a ledge or the floor (its top flush with the surface the pet rests on)
       const pill=(par,x_,y_,w_,h_,z_)=>{const p=G();p.position.set(x_,y_,z_);par.add(p);ol(rb(p,w_,h_,.24,Math.min(.06,h_*.45),Gd,0,0,0),.01);nosh(rb(p,w_-.07,h_*.56,.03,Math.min(.03,h_*.25),Nv,0,0,.12));
@@ -8528,19 +8538,20 @@ const GAMES={
           
           pill(grp,0,0,L+.04,th,0);
           rays=G();rays.position.set(px,th/2+.02,-.12);grp.add(rays);for(let r_=0;r_<9;r_++){const a=Math.PI*(.1+.8*r_/8),L_=g.r*k*(r_%2?2.3:3.4),w_=.055,tr=flat(rays,[[0,0],[Math.cos(a-w_)*L_,Math.sin(a-w_)*L_],[Math.cos(a+w_)*L_,Math.sin(a+w_)*L_]],.01,RayM,0,0,0);tr.outline=0;tr.castShadow=false}
-          pm=prize3(P.p.t,sz);pm.position.set(px,th/2+.04+sz*.62,.02);grp.add(pm);if(P.p.t==='gift'){alt=prize3('big',sz);alt.position.copy(pm.position);grp.add(alt)}}
+          pm=P.p.t==='gift'?prize3('gift',sz):B.prizeM(g.prz['p'+i],sz);pm.position.set(px,th/2+.04+sz*.62,.02);grp.add(pm);if(P.p.t==='gift'){alt=prize3('big',sz);alt.position.copy(pm.position);grp.add(alt)}}
         return{grp,pm,alt,rays,i,P}});
       // bumpers: sunburst discs with a jelly face and mismatched googly eyes that follow the pet
-      B.bumps=S.bump.map((Q,i)=>{const bg_=G();root.add(bg_);const R_=Q.r*g.bw*k,sm=M(0xB6F03E,{emissive:0x8FE020,emissiveIntensity:.3,roughness:.3});
+      B.bumps=S.bump.map((Q,i)=>{const bg_=G();root.add(bg_);const R_=Q.r*g.bw*k,sm=M(0x9BEA1E,{emissive:0x7FD010,emissiveIntensity:.45,roughness:.3});
         ol(add(bg_,new THREE.ExtrudeGeometry(starShape(R_*1.5,R_*1.2,16),{depth:.08,bevelEnabled:false}),sm,0,0,-.22),.012);ol(to(bg_,R_*1.06,R_*.09,M(0x3FA02A,{roughness:.35}),0,0,-.1),.008);
-        const s_=add(bg_,SPH(R_,28,20),jel(0xFF5FA8,{roughness:.25}),0,0,0);s_.scale.z=.7;ol(s_,.014);
-        const onS=(x_,y_)=>R_*.7*Math.sqrt(Math.max(0,1-x_*x_-y_*y_)),Wt=M(0xFFFFFF,{roughness:.15}),Pu=M(0x1E0838,{roughness:.2}),Hi=M(0xFFFFFF,{emissive:0xFFFFFF,emissiveIntensity:.6});
-        const eyes=[-1,1].map(sd=>{const ex=sd*.33,ey=.12,e=G();e.position.set(ex*R_,ey*R_,onS(ex,ey)-R_*.05);bg_.add(e);ol(sp(e,R_*.28,Wt,0,0,0,1,1.12,.55),.007);const p=G();e.add(p);sp(p,R_*.15,Pu,0,0,R_*.12,1,1.1,.5).outline=0;sp(p,R_*.05,Hi,R_*.05,R_*.06,R_*.19).outline=0;return{p,r:R_*.28}});
-        [-1,1].forEach(sd=>{const c_=sp(bg_,R_*.14,M(0xFF7FB8,{roughness:.5}),sd*.58*R_,-.16*R_,onS(.58,-.16)-R_*.03,1,.6,.3);c_.outline=0});
-        ol(to(bg_,R_*.25,R_*.055,M(0x2A0E3E),0,-R_*.1,onS(0,-.35)+R_*.01,0,0,Math.PI+.55,Math.PI-1.1),0);bg_.userData.sm=sm;bg_.userData.eyes=eyes;return bg_});
+        const kp=FIG_KEEPERS[(i+this.day())%FIG_KEEPERS.length],fig=makePiece('fig_'+kp,TINTS[(CATMAP['fig_'+kp]||{}).dc||0]),fb=new THREE.Box3().setFromObject(fig),fv=new THREE.Vector3();fb.getSize(fv);
+        const fs=R_*2.15/Math.max(fv.y,.01),fp=G();fp.position.set(0,-R_*.92,R_*.3);fig.scale.setScalar(fs);fb.getCenter(fv);fig.position.set(-fv.x*fs,-fb.min.y*fs,-fv.z*fs);fp.add(fig);bg_.add(fp);
+        {const sh=Object.values(SHOPS).find(S_=>S_.keeper===kp||(S_.keepers||[]).some(q=>q.k===kp)),bc=sh?parseInt(sh.color.slice(1),16):0xFF5FA8;ol(cy(bg_,R_*.98,R_*.98,.06,M(bc,{roughness:.35,emissive:bc,emissiveIntensity:.35}),0,0,-.03,32),.006).rotation.x=Math.PI/2;
+          const dots=M(0xFFFFFF,{roughness:.4,emissive:0xFFFFFF,emissiveIntensity:.3});for(let d_=0;d_<10;d_++){const a_=d_/10*Math.PI*2;const q_=sp(bg_,R_*.06,dots,Math.cos(a_)*R_*.72,Math.sin(a_)*R_*.72,.01);q_.outline=0}}
+        ol(to(bg_,R_,R_*.07,M(0xFFFFFF,{roughness:.2}),0,0,0),.006);const hl=sp(bg_,R_*.18,M(0xFFFFFF,{roughness:.05,emissive:0xFFFFFF,emissiveIntensity:.5}),-R_*.45,R_*.45,R_*.62,1,.6,.3);hl.outline=0;
+        const eyes=[];bg_.userData.fig=fp;bg_.userData.kp=kp;bg_.userData.sm=sm;bg_.userData.eyes=eyes;return bg_});
       // the bottom: gold pill pads with candy and prizes, neon dividers topped with bulbs
       {const n=S.floor.length,fy=g.by+g.bh,cw=g.bw/n,ch=g.sc*.08;S.floor.forEach((t,i)=>{const X=W(g.bx+i*cw+cw/2);pill(root,X,H(fy)-.12,cw*k-.2,.24,.6);
-          const pm=prize3(t==='small'?'candy':t,ch*.8*k);pm.position.set(X,H(fy-ch*.62),-.22);root.add(pm);(B.cups||(B.cups=[])).push(pm)});
+          const pm=B.prizeM(g.prz['f'+i],ch*.8*k);pm.position.set(X,H(fy-ch*.62),-.22);root.add(pm);(B.cups||(B.cups=[])).push(pm)});
         for(let i=1;i<n;i++){const X=W(g.bx+i*cw),tb=cy(root,.04,.04,ch*k+.1,Neon,X,H(fy)+ch*k/2,.1,10);tb.outline=0;const cap=sp(root,.06,B.boff[i%5],X,H(fy)+ch*k+.12,.1);cap.outline=0;B.bulbs.push(cap)}}
       // gold coins in arcs over the prizes
       const CoinM=M(0xFFC21F,{emissive:0xFFA800,emissiveIntensity:.35,roughness:.2,metalness:.4}),CoinS=M(0xFFF3B0,{emissive:0xFFE070,emissiveIntensity:.4,roughness:.3});
@@ -8559,7 +8570,7 @@ const GAMES={
         if(b_.pm){const won=g.won.has(q.i),gone=b_.P.p.t==='gift'&&!g.gift;b_.pm.visible=!won&&!gone;if(b_.alt)b_.alt.visible=!won&&gone;[b_.pm,b_.alt].forEach(m=>{if(m){m.rotation.y=Math.sin(t*1.6+q.i)*.6;m.position.y=q.th*k/2+.04+g.r*1.7*k*.62+Math.sin(t*3+q.i)*.03}})}
         if(b_.rays){b_.rays.visible=!g.won.has(q.i);b_.rays.rotation.z=Math.sin(t*1.3+q.i)*.1;b_.rays.scale.setScalar(.9+Math.sin(t*4+q.i)*.1)}});
       this.bumps(g).forEach(b=>{const m=B.bumps[b.i],f=g.bf&&g.bf[b.i]||0;if(g.bf&&f)g.bf[b.i]=Math.max(0,f-1/20);m.position.set(W(b.x),H(b.y),0);const s_=1+Math.sin(f*Math.PI*3)*f*.25;m.scale.set(s_,2-s_,1);
-        const U_=m.userData;U_.sm.emissiveIntensity=.3+f*2.5+(party?.4:0);const dx=g.x-b.x,dy=-(g.y-b.y),l=Math.hypot(dx,dy)||1;U_.eyes.forEach(e=>e.p.position.set(dx/l*e.r*.3,dy/l*e.r*.3,0))});
+        const U_=m.userData;U_.sm.emissiveIntensity=.3+f*2.5+(party?.4:0);if(U_.fig){U_.fig.position.y=-b.r*B.k*.72+Math.abs(Math.sin(f*Math.PI*2))*b.r*B.k*.35;U_.fig.rotation.y=f>0?f*Math.PI*4:Math.sin(t*.8+b.i)*.35;U_.fig.traverse(o=>{if(o.userData.anim)try{o.userData.anim(t)}catch(_){}})}const dx=g.x-b.x,dy=-(g.y-b.y),l=Math.hypot(dx,dy)||1;U_.eyes.forEach(e=>e.p.position.set(dx/l*e.r*.3,dy/l*e.r*.3,0))});
       (B.cups||[]).forEach((m,i)=>{m.rotation.y=Math.sin(t*1.2+i)*.5});
       // coins spin; a grabbed one pops up and away
       B.items.forEach((m,i)=>{const it=g.items[i];m.visible=!!it&&(!it.got||it.gotT<.3);if(!m.visible)return;const p=it.got?it.gotT/.3:0;m.position.set(W(it.x),H(it.y)+p*.35,.1+p*.3);m.scale.setScalar(1+p*1.2);m.rotation.set(0,it.got?p*9:it.t*2.2,0)});
@@ -8576,7 +8587,7 @@ const GAMES={
           const rz=add(pg,gcache('dr_burst',()=>new THREE.ExtrudeGeometry(starShape(1,.42,14),{depth:.02,bevelEnabled:false})),M(0xFFF3A0,{emissive:0xFFE066,emissiveIntensity:1.1,roughness:1}),0,0,-.35);rz.outline=0;rz.castShadow=false;B.popR=rz;
           const rz2=add(pg,gcache('dr_burst2',()=>new THREE.ExtrudeGeometry(starShape(.7,.34,10),{depth:.02,bevelEnabled:false})),M(0xFFFFFF,{emissive:0xFFFFFF,emissiveIntensity:1,roughness:1}),0,0,-.3);rz2.outline=0;B.popR2=rz2;
           let o;if(P_.kind==='gift'&&P_.id){o=G();const w_=wearModel(P_.id),bx=new THREE.Box3().setFromObject(w_),v=new THREE.Vector3();bx.getSize(v);const s0=1/Math.max(v.x,v.y,v.z,.01);w_.scale.setScalar(s0);bx.getCenter(v);w_.position.set(-v.x*s0,-v.y*s0,-v.z*s0);o.add(w_)}
-          else o=B.prize3(P_.kind==='gift'?'big':P_.kind==='small'?'candy':P_.kind,1);pg.add(o);B.popO=o}
+          else o=P_.pz?B.prizeM(P_.pz,1):B.prize3(P_.kind==='gift'?'big':P_.kind==='small'?'candy':P_.kind,1);pg.add(o);B.popO=o}
         const t_=P_.t,u=1-Math.pow(1-Math.min(1,t_/.5),3),sx=W(P_.x),sy=H(P_.y),ey=H(g.h*.42+g.cam),out=t_>1.95?Math.max(0,1-(t_-1.95)/.35):1,s=(.3+1.2*u)*out*(1+Math.sin(Math.min(1,t_/.7)*Math.PI)*.2);
         B.pop.visible=out>0;B.pop.position.set(sx*(1-u),sy+(ey-sy)*u,.3+u*1.5);B.pop.scale.setScalar(s);B.popO.rotation.set(Math.sin(t_*2.3)*.15,(1-u)*Math.PI*4+Math.sin(t_*2)*.35,0);B.popR.rotation.z=t_*.9;B.popR2.rotation.z=-t_*1.3;B.popR.scale.setScalar(.85+Math.sin(t_*6)*.1)}
       else if(B.pop)B.pop.visible=false},
