@@ -149,3 +149,4 @@ cards. High scores started fresh with the stars version (old `state.arc.best` is
 ## Other ideas discussed
 - Pet portrait art per stage for the pet card; item art; wall-art posters; backdrop paintings (prompts were written).
 - Exploration as a future expansion.
+- Reef Pinball (`GAMES.pinball2`, second table on the arcade's party floor): a child of `GAMES.pinball` (`Object.assign(Object.create(GAMES.pinball),{...})`) overriding only what differs: its own missions/ranks/`WORD` 'CORAL', `SUB` text map, jellyfish bumpers, clam/lighthouse/periscope posts, kelp spinners, a whirlpool that pulls the ball in, a procedural playfield (`paintTex`), a tide (`TIDE` 28 s sine, `grav` lighter at high tide, low-tide pearl bonus) and a third flipper guarding the left lane (`FP`/`FD`, driven by the left button). Bot sim: `node .claude/pb_sim.js 20 pinball2` (median ~1M, stars 120k/400k/1M).
