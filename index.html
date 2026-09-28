@@ -118,6 +118,10 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px da
 .sheet .grab::before{content:"";position:absolute;left:-70px;right:-70px;top:-14px;bottom:-12px}
 .followpill{position:fixed;z-index:5;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 100px);transform:translateX(-50%);display:flex;align-items:center;gap:6px;height:38px;padding:0 8px 0 6px;background:#fff;border:2.5px solid var(--ink);border-radius:14px 11px 15px 10px;box-shadow:0 4px 0 var(--ink);color:var(--ink);font-family:var(--disp);font-size:13px;letter-spacing:.02em;animation:kpop .35s cubic-bezier(.3,1.8,.5,1)}
 .followpill[hidden]{display:none}
+.centerpill{position:fixed;z-index:5;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 118px);transform:translateX(-50%);display:flex;align-items:center;gap:7px;height:38px;padding:0 14px 0 9px;background:#fff;border:2.5px solid var(--ink);border-radius:11px 15px 10px 14px;box-shadow:0 4px 0 var(--ink);color:var(--ink);font-family:var(--disp);font-size:13px;letter-spacing:.02em;animation:kpop .35s cubic-bezier(.3,1.8,.5,1)}
+.centerpill[hidden]{display:none}.centerpill svg{width:22px;height:22px}
+.followpill:not([hidden])~.centerpill{bottom:calc(env(safe-area-inset-bottom,0px) + 166px)}
+body.styling .centerpill,body.gaming .centerpill{display:none}
 .wishdot{position:absolute;z-index:2;top:-14px;right:-12px;width:36px;height:34px;display:grid;place-items:center;background:#fff;border:2.5px solid var(--ink);border-radius:50% 50% 50% 16%;box-shadow:0 3px 0 var(--ink);animation:wig 1.8s ease-in-out infinite}
 .wishdot[hidden]{display:none}
 .minds{display:flex;gap:8px;margin:0 0 10px}.mind{flex:1;min-width:0;display:flex;flex-direction:column;padding:5px 9px 6px;background:#fff;border:2.5px solid var(--ink);border-radius:14px 11px 15px 10px;box-shadow:0 3px 0 var(--ink)}
@@ -833,6 +837,7 @@ body.styling .storechip{opacity:0}
 </div>
 
 <button class="followpill" id="followPill" hidden><img src="assets/icons/tab-pet.webp" alt="">Following <b id="fpName">Mochi</b><i aria-hidden="true">×</i></button>
+<button class="centerpill" id="centerPill" hidden><svg viewBox="0 0 24 24" fill="none" stroke="#3B1273" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="6.5" fill="#A6E22E"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/></svg>Re-center</button>
 <section class="sheet" id="sheet" aria-live="polite">
   <div class="grab" role="button" aria-label="Close" title="Drag down to close"></div>
   <button class="sback" id="sback" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg><span id="sbackL">Menu</span></button>
@@ -8332,7 +8337,7 @@ function travelTo(dest,then,focus){if(traveling)return;const here=away?away.key:
   const tv=$('#travel');$('#tvText').textContent=dest==='home'?'Heading home…':`Off to ${SHOPS[dest].n}…`;$('#tvIcon').src=ico(dest==='home'?'tab-room':SHOPS[dest].icon);tv.hidden=false;requestAnimationFrame(()=>tv.classList.add('on'));
   setTimeout(()=>{if(away){scene.remove(away.root);away=null}setRoomSize(dest==='home'?state.size:SHOPS[dest].plan?planSize(SHOPS[dest].plan):8);if(dest!=='home')away=buildShop(dest);{const PL=!!(away&&away.plan);slab.visible=trim.visible=!PL;LIT.room.half=PL?0:HALF;if(PL){away.cutKey='';updPlan();planFrame()}updFloorChip()}itemRoot.visible=!away;tilesDirty=true;syncTiles();doorKey='';syncDoor();navKey='';
     endToyPlay(true);endUse(false);pet.act=null;pet.seat=null;pet.seatY=0;pet.path=null;pet.target=null;pet.mode='idle';pet.timer=2.5;const f=doorFront();pet.pos.copy(f);petFree();pet.heading=Math.PI/2;
-    doorOpen=doorTarget=1;cam.target.set(0,.8,0);updStoreBar();if(away)td('visit:'+dest);
+    doorOpen=doorTarget=1;cam.target.set(0,.8,0);cam.panT.set(0,0,0);cam.pan.set(0,0,0);updCenterPill();updStoreBar();if(away)td('visit:'+dest);
     setTimeout(()=>{tv.classList.remove('on');setTimeout(()=>{tv.hidden=true},400);if(pet.stage>0)petGo(f.clone().add(new THREE.Vector3(1.3,0,-.4)));setTimeout(()=>{doorTarget=0},1100);
       if(away){keeperReact('greet',2.4);setTimeout(()=>away&&keeperSay(pick1(away.keeper.lines.hi)),500);if(!focus)setTimeout(()=>toast(away&&away.key==='glam'?'Tap Pom for new antennae, or Blush for colours and patterns.':away&&away.key==='wear'?'Tap anything on display to try it on. Stitch runs the fitting room.':away&&away.key==='arcade'?'Tap a cabinet to play. Scores go on the board!':away&&away.key==='furn'?'Tap any piece on the floor, or the catalog, to shop.':away&&away.key==='build'?'Tap paint cans, samples and doors, or the catalog.':'Tap anything on the shelves to shop.'),4300);if(focus)setTimeout(()=>typeof focus==='function'?openOffer(focus):openProduct(focus),1400)}
       traveling=false;then&&then()},250)},650)}
@@ -8479,7 +8484,7 @@ function syncScene(){
 }
 
 /* ================= CAMERA ================= */
-const cam={yaw:.8,pitch:.6,dist:15.5,target:new THREE.Vector3(0,.8,0),shift:0,shiftTo:0};
+const cam={yaw:.8,pitch:.6,dist:15.5,target:new THREE.Vector3(0,.8,0),shift:0,shiftTo:0,pan:new THREE.Vector3(),panT:new THREE.Vector3()};
 let W=1,H=1;
 function resize(){W=window.innerWidth;H=window.innerHeight;renderer.setSize(W,H,false);camera.aspect=W/H;
   const hTan=6.4/19;camera.fov=clamp(2*Math.atan(hTan/Math.min(1.2,camera.aspect))*180/Math.PI,30,68);camera.updateProjectionMatrix()}
@@ -8489,7 +8494,13 @@ window.addEventListener('resize',resize);resize();
 // cam.sk blends from the free camera to the close-up, cam.sz is the close-up's own zoom (pinch/wheel while styling).
 let camFollow=false,camSnap=0;
 const camMin=()=>camFollow?4.5:9;
-function setFollow(on){if(camFollow===on)return;camFollow=on;if(on)camSnap=.7;updFollowPill()}
+function setFollow(on){if(camFollow===on)return;camFollow=on;if(on){camSnap=.7;cam.panT.set(0,0,0)}updFollowPill()}
+const camLook=new THREE.Vector3();
+function camRecenter(){cam.panT.set(0,0,0);updCenterPill()}
+function updCenterPill(){const b=$('#centerPill');if(b)b.hidden=!(cam.panT.lengthSq()>.36)}
+function camPanBy(dx,dy){const sc=2*cam.dist*Math.tan((camera.fov||40)*Math.PI/360)/H,sp=Math.max(.3,Math.sin(cam.pitch)),lim=Math.max(6,HALF*1.6);
+  cam.panT.x+=-Math.cos(cam.yaw)*dx*sc-Math.sin(cam.yaw)*dy*sc/sp;cam.panT.z+=Math.sin(cam.yaw)*dx*sc-Math.cos(cam.yaw)*dy*sc/sp;
+  const l=Math.hypot(cam.panT.x,cam.panT.z);if(l>lim){cam.panT.x*=lim/l;cam.panT.z*=lim/l}updCenterPill()}
 function updFollowPill(){const b=$('#followPill');if(!b)return;b.hidden=!(camFollow&&!openTab&&pet.stage>=0);$('#fpName').textContent=state.pet.name}
 const styling=()=>pet.stage>0&&(openTab==='studio'||openTab==='wardrobe'||wearPrev);
 function updCam(){
@@ -8500,7 +8511,8 @@ function updCam(){
   const k=camSnap>0?.16:sty?.1:.06;camSnap=Math.max(0,camSnap-dt);cam.target.x+=(tx-cam.target.x)*k;cam.target.z+=(tz-cam.target.z)*k;cam.target.y+=(ty-cam.target.y)*k;
   // close-up distance: the whole pet fits in the space left above the sheet
   const vis=clamp((H-cam.shiftTo*2)/H,.3,1),petD=clamp((pet.head||1.4)/(.76*vis)/(2*Math.tan((camera.fov||40)*Math.PI/360)),3,16)*cam.sz,cd=cam.dist+(petD-cam.dist)*cam.sk,pitch=cam.pitch+(.26-cam.pitch)*cam.sk;
-  const cp=Math.cos(pitch);camera.position.set(cam.target.x+cd*cp*Math.sin(cam.yaw),cam.target.y+cd*Math.sin(pitch),cam.target.z+cd*cp*Math.cos(cam.yaw));camera.lookAt(cam.target);
+  cam.pan.x+=(cam.panT.x*(1-cam.sk)-cam.pan.x)*.25;cam.pan.z+=(cam.panT.z*(1-cam.sk)-cam.pan.z)*.25;const ex=cam.target.x+cam.pan.x,ez=cam.target.z+cam.pan.z;
+  const cp=Math.cos(pitch);camera.position.set(ex+cd*cp*Math.sin(cam.yaw),cam.target.y+cd*Math.sin(pitch),ez+cd*cp*Math.cos(cam.yaw));camera.lookAt(camLook.set(ex,cam.target.y,ez));
   cam.shift+=(cam.shiftTo-cam.shift)*.15;camera.setViewOffset(W,H,0,cam.shift,W,H)}
 
 /* ================= INTERACTION ================= */
@@ -8531,7 +8543,7 @@ function pdist(){const a=[...ptrs.values()];return Math.hypot(a[0].x-a[1].x,a[0]
 function pang(){const a=[...ptrs.values()];return Math.atan2(a[1].y-a[0].y,a[1].x-a[0].x)}
 canvas.addEventListener('pointerdown',e=>{if(!ready)return;try{canvas.setPointerCapture(e.pointerId)}catch(_){}
   ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,t:performance.now()});
-  if(ptrs.size===2){if(stroke)cancelStroke();if(gest&&gest.type==='item'&&gest.started)finishDrag();gest={type:'pinch',d0:pdist(),dist0:cam.dist,sz0:cam.sz||1,a0:pang(),yaw0:cam.yaw};return}
+  if(ptrs.size===2){if(stroke)cancelStroke();if(gest&&gest.type==='item'&&gest.started)finishDrag();{const a=[...ptrs.values()];gest={type:'pinch',d0:pdist(),dist0:cam.dist,sz0:cam.sz||1,a0:pang(),yaw0:cam.yaw,mx:(a[0].x+a[1].x)/2,my:(a[0].y+a[1].y)/2}}return}
   if(ptrs.size>2)return;
   if(openTab!=='decorate'&&!brush){const th=townHit(e.clientX,e.clientY);if(th){gest={type:'orbit',yaw0:cam.yaw,pitch0:cam.pitch,town:th};return}}
   if(brush&&brush.kind==='d'){setRay(e.clientX,e.clientY);const vis=walls.filter(w=>w.g.visible).map(w=>w.plane),hh=ray.intersectObjects(vis,false)[0];
@@ -8546,7 +8558,7 @@ canvas.addEventListener('pointerdown',e=>{if(!ready)return;try{canvas.setPointer
 });
 canvas.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(!p||!gest)return;p.x=e.clientX;p.y=e.clientY;
   const dx=p.x-p.sx,dy=p.y-p.sy;
-  if(gest.type==='pinch'&&ptrs.size===2){if(styling()){cam.sz=clamp(gest.sz0*gest.d0/Math.max(20,pdist()),.6,1.6);return}cam.dist=clamp(gest.dist0*gest.d0/Math.max(20,pdist()),camMin(),camMax());cam.yaw=gest.yaw0-(pang()-gest.a0)}
+  if(gest.type==='pinch'&&ptrs.size===2){if(styling()){cam.sz=clamp(gest.sz0*gest.d0/Math.max(20,pdist()),.6,1.6);return}cam.dist=clamp(gest.dist0*gest.d0/Math.max(20,pdist()),camMin(),camMax());cam.yaw=gest.yaw0-(pang()-gest.a0);{const a=[...ptrs.values()],mx=(a[0].x+a[1].x)/2,my=(a[0].y+a[1].y)/2;camPanBy(mx-gest.mx,my-gest.my);gest.mx=mx;gest.my=my}}
   else if(gest.type==='paint'){if(stroke)moveStroke(p.x,p.y)}
   else if(gest.type==='orbit'||(gest.type==='pet'&&styling())){if(styling()){if(gest.sy0===undefined)gest.sy0=pet.styleYaw||0;pet.styleYaw=gest.sy0+dx*.012;return}cam.yaw=gest.yaw0-dx*.009;cam.pitch=clamp(gest.pitch0+dy*.006,.22,1.3)}
   else if(gest.type==='item'){if(!gest.started&&Math.hypot(dx,dy)>6){gest.started=true;dragging=true;gest.U=beginBuild();const it=itemById(gest.id);
@@ -8592,7 +8604,7 @@ function renderPalette(){const it=itemById(selId),pl=$('#palette');if(!it){pl.hi
 $('#bColor').onclick=()=>{const pl=$('#palette');if(!itemById(selId))return;pl.hidden=!pl.hidden;if(!pl.hidden)renderPalette()};
 $('#bStore').onclick=()=>{const it=itemById(selId);if(!it)return;const U=beginBuild();setTimeout(()=>endBuild(U));const d=CATMAP[it.k];state.items=state.items.filter(i=>i!==it);state.fown[it.k]=(state.fown[it.k]||0)+1;select(null);syncScene();updHUD();toast(`${d.n} put in storage.`);saveSoon();if(openTab==='decorate')renderSheet()};
 $('#bDone').onclick=()=>select(null);
-$('#mapX').onclick=closeMap;$('#followPill').onclick=()=>setFollow(false);$('#map').onclick=e=>{if(e.target.id==='map')closeMap()};document.querySelectorAll('#map [data-go]').forEach(b=>b.onclick=()=>travelTo(b.dataset.go));$('#mapHome').onclick=()=>{closeMap();travelTo('home')};
+$('#mapX').onclick=closeMap;$('#followPill').onclick=()=>setFollow(false);$('#centerPill').onclick=camRecenter;$('#map').onclick=e=>{if(e.target.id==='map')closeMap()};document.querySelectorAll('#map [data-go]').forEach(b=>b.onclick=()=>travelTo(b.dataset.go));$('#mapHome').onclick=()=>{closeMap();travelTo('home')};
 document.querySelectorAll('#paintbar [data-tool]').forEach(b=>b.onclick=()=>{if(!brush)return;brush.tool=b.dataset.tool;updPaintBar()});
 $('#pbUndo').onclick=undoBuild;$('#sandX').onclick=()=>setSandbox(false);$('#pbDone').onclick=endBrush;$('#pbSwatch').onclick=()=>openDecorate(brush?(brush.kind==='d'?'door':brush.kind):'f');
 function projXY(o){const v=new THREE.Vector3();o.getWorldPosition(v);v.project(camera);return[(v.x+1)/2*W,(1-v.y)/2*H]}

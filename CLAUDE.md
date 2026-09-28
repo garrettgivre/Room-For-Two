@@ -161,3 +161,6 @@ Each shop in the town view is a novelty building from `TM_BODY[k]` (before `tmHo
 
 ## Font fix (Sept 2026)
 - R42 Bubble's counters (holes in o, e, a, B, 8, 0, &, @) were too small, so the UI's ink outline (text-shadow, `strokeText`) filled them. `tools/font/build.py` now runs `open_counters` before tracing: every interior hole is dilated by `GROW` px (default 6, env var) at the 4x mask scale. Needs `opencv-python-headless`, `potracer`, `brotli` (scipy breaks with numpy 2 here, so it's cv2 only). Rebuild: `python extract.py && python build.py` in `tools/font`. `sw.js` CACHE bumped to v3.
+
+## Camera pan (Sept 2026)
+- Two-finger drag pans the camera (`camPanBy`, in the `pinch` gesture: pinch = zoom, twist = rotate, midpoint drag = pan). `cam.panT` is the target offset, `cam.pan` eases to it and is added to the look-at point in `updCam` (faded out while styling, cleared on travel and when following the pet). Limit ~1.6x room half-size. A "Re-center" pill (`#centerPill`, `camRecenter`) shows whenever the camera is off-centre. The engine's `lookAt` takes a Vector3 only (use `camLook`).
