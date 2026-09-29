@@ -184,3 +184,4 @@ Each shop in the town view is a novelty building from `TM_BODY[k]` (before `tmHo
 
 ## Perf patch (Sept 2026)
 - `roomItem(id)` at home used a linear `state.items.find` per call, called per item per frame (O(items²)). `loop` now builds `frameIM` (id → item Map) once per frame at home and clears it before render; outside the loop `roomItem` falls back to `itemById`. Audits of `normalize`, all menu pages, shops, catalog, doors/windows, wear and keepers found no other errors.
+- Map open stall (Sept 2026): the first open cost ~860 ms (town scene sync + shader compile + first render), which also swallowed the genie so the popup appeared at its final spot. The 6 s pre-warm now also runs `tmNorm`/`tmSync` and one offscreen render (first open ~20 ms), and `genie` starts its clock on its first animation frame. `sw.js` CACHE is v14.
