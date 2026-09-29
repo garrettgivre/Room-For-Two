@@ -737,10 +737,17 @@ body.styling .storechip{opacity:0}
 .dbg-sec summary:after{content:'+';font-size:22px;line-height:1}
 .dbg-sec[open] summary{background:#F1E7FF;border-bottom:3px solid var(--ink)}.dbg-sec[open] summary:after{content:'2'}
 .dbg-in{padding:8px 10px 12px}.dbg-in .dbg-grid>.gel{min-width:0;overflow:hidden;padding:0 2px}.dbg-in .dbg-grid{gap:6px}
-.mn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 12px;padding:4px 2px 6px}
+.mn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 12px;padding:4px 2px 10px}
+.mn-sec{font-family:var(--disp);font-size:13px;color:#6B4E95;letter-spacing:.04em;margin:6px 4px 6px}
+.mn-t{transform:none!important}
+.mn-row{display:flex;align-items:center;gap:12px;width:100%;margin-top:6px;padding:8px 14px;border-radius:18px;border:3px solid var(--ink);background:#fff;box-shadow:0 3px 0 var(--ink);text-align:left;font-family:var(--disp);color:var(--ink);cursor:pointer}
+.mn-row:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.mn-row .mi{width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:50%;background:#E3D4FF;border:2.5px solid var(--ink)}.mn-row .mi img{width:26px;height:26px}
+.mn-row .mt{display:flex;flex-direction:column;flex:1}.mn-row b{font-size:16px;font-weight:400}.mn-row small{font-family:system-ui,sans-serif;font-size:11px;color:#6B4E95}.mn-row .chev{font-size:26px;font-style:normal;opacity:.5}
+.adv{margin:14px 0 4px;border:2.5px dashed rgba(59,18,115,.35);border-radius:14px;padding:2px 12px}.adv summary{font-family:var(--disp);color:var(--ink);padding:9px 0;cursor:pointer;list-style:none}.adv summary::-webkit-details-marker{display:none}.adv[open] summary{margin-bottom:4px}
 .mn-t{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px 10px;border-radius:20px 16px 22px 17px;border:3px solid var(--ink);background:var(--tc,#fff);
   box-shadow:0 5px 0 var(--ink);color:var(--ink);font-family:var(--disp);font-size:14px;letter-spacing:.02em;transition:transform .1s}
-.mn-t:nth-child(odd){transform:rotate(-1.2deg)}.mn-t:nth-child(even){transform:rotate(1.2deg)}
+..mn-t:nth-child(odd){transform:rotate(-1.2deg)}.mn-t:nth-child(even){transform:rotate(1.2deg)}
 .mn-t:active{transform:translateY(3px);box-shadow:0 2px 0 var(--ink)}
 .mn-t .mi{width:62px;height:62px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.7);border:2.5px solid var(--ink)}
 .mn-t .mi img,.mn-t .mi svg{width:46px;height:46px}
@@ -10114,13 +10121,14 @@ $('#petwheel').onclick=e=>{if(e.target.id==='petwheel')closeWheel()};
 // Menu: one screen of big labelled tiles; each opens its page with a "Menu" back button in the same corner.
 const NEEDS=[['hunger','Full','#FF8A1C','stat-full','feed'],['fun','Happy','#FF3D9A','stat-happy','play'],['energy','Energy','#9B4DF2','stat-energy','nap'],['clean','Clean','#3EC8F2','stat-clean','bath'],['affection','Love','#FF7FB8','heart-jar','pat']];
 const BUG_SVG='<svg viewBox="0 0 48 48" aria-hidden="true"><g stroke="#3B1273" stroke-width="3"><circle cx="24" cy="13" r="7" fill="#3B1273"/><ellipse cx="24" cy="29" rx="15" ry="14" fill="#FF5A5A"/><path d="M24 15v28"/></g><g fill="#3B1273"><circle cx="16" cy="25" r="3"/><circle cx="32" cy="25" r="3"/><circle cx="18" cy="35" r="2.6"/><circle cx="30" cy="35" r="2.6"/></g></svg>';
-const MENU_ITEMS=[['decorate','Decorate','tab-decorate','#FFB35C','Furniture, floors and walls'],['todo','Two-dos','twodo','#FFD6EA','Today’s list and rewards'],['journal','Journal','journal.svg','#FFF3B8','What your pet got up to'],['inbox','Inbox','tab-mail','#BDEBFF','Neighbours and notes'],['steps','Footprints','steps.svg','#D6F5A8','What you two have done'],
-  ['wardrobe','Wardrobe','wear.svg','#D6F5A8','Dress up your pet'],['room','Room','tab-room','#E3D4FF','Lights, sharing, names'],['debug','Debug','','#EDE6F5','Testing tools']],MENU_KIDS=MENU_ITEMS.map(m=>m[0]);
+const MENU_ITEMS=[['decorate','Decorate','tab-decorate','#FFB35C','Furniture, floors, walls','h'],['wardrobe','Wardrobe','wear.svg','#D6F5A8','Dress up your pet','h'],['journal','Journal','journal.svg','#FFF3B8','What your pet did','h'],
+  ['todo','Two-dos','twodo','#FFD6EA','Today’s list','t'],['inbox','Inbox','tab-mail','#BDEBFF','Neighbours and notes','t'],['steps','Footprints','steps.svg','#E3D4FF','What you two did','t'],
+  ['room','Room & sharing','tab-room','#fff','Light, invite, names','s'],['debug','Debug','','#EDE6F5','Testing tools','']],MENU_KIDS=MENU_ITEMS.map(m=>m[0]);
 function ringSvg(v,sz,w){const r=(sz-w)/2-1,c=2*Math.PI*r;return`<svg viewBox="0 0 ${sz} ${sz}" aria-hidden="true"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" class="tr"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" class="pr" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c*(1-Math.max(.02,Math.min(1,v)))).toFixed(1)}"/></svg>`}
 let dbgOpen='Pet stage';
 function renderMenu(body){const T=state.td,n=T.done.length,m=T.list.length,treat=n>=m&&!T.gift,un=unread();
   const extra={todo:treat?'<i class="badge">!</i>':`<i class="badge" style="background:#fff">${n}/${m}</i>`,journal:unreadOf('journal')?`<i class="badge">${unreadOf('journal')}</i>`:'',inbox:unreadOf('inbox')?`<i class="badge">${unreadOf('inbox')}</i>`:'',steps:unreadOf('steps')?`<i class="badge">${unreadOf('steps')}</i>`:''};
-  body.innerHTML=`<div class="mn-head"><h2>Menu</h2><span class="mn-who">${esc($('#presence').textContent)}</span></div><button class="mn-refresh" id="mnRefresh"><span class="mi"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#3B1273" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 3v5h-5"/></svg></span><span class="mt"><b>Refresh app</b><small>Get the latest version after an update · v${APP_V}</small></span></button><div class="mn-grid">${MENU_ITEMS.map(([k,nm,ic,c,sub])=>`<button class="mn-t" data-mn="${k}" style="--tc:${c}"><span class="mi">${ic?`<img src="${ico(ic)}" alt="">`:BUG_SVG}</span>${nm}<small>${sub}</small>${extra[k]||''}</button>`).join('')}</div>`;
+  body.innerHTML=`<div class="mn-head"><h2>Menu</h2><span class="mn-who">${esc($('#presence').textContent)}</span></div><button class="mn-refresh" id="mnRefresh"><span class="mi"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#3B1273" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 3v5h-5"/></svg></span><span class="mt"><b>Refresh app</b><small>Get the latest version after an update · v${APP_V}</small></span></button><div class="mn-sec">Home & pet</div><div class="mn-grid">${MENU_ITEMS.filter(m=>m[5]==='h').map(([k,nm,ic,c,sub])=>`<button class="mn-t" data-mn="${k}" style="--tc:${c}"><span class="mi">${ic?`<img src="${ico(ic)}" alt="">`:BUG_SVG}</span>${nm}<small>${sub}</small>${extra[k]||''}</button>`).join('')}</div><div class="mn-sec">Together</div><div class="mn-grid">${MENU_ITEMS.filter(m=>m[5]==='t').map(([k,nm,ic,c,sub])=>`<button class="mn-t" data-mn="${k}" style="--tc:${c}"><span class="mi">${ic?`<img src="${ico(ic)}" alt="">`:BUG_SVG}</span>${nm}<small>${sub}</small>${extra[k]||''}</button>`).join('')}</div>${MENU_ITEMS.filter(m=>m[5]==='s').map(([k,nm,ic,c,sub])=>`<button class="mn-row" data-mn="${k}"><span class="mi"><img src="${ico(ic)}" alt=""></span><span class="mt"><b>${nm}</b><small>${sub}</small></span><i class="chev">›</i></button>`).join('')}`;
   $('#mnRefresh').onclick=hardRefresh;
   body.querySelectorAll('[data-mn]').forEach(b=>b.onclick=()=>{const t=b.dataset.mn;if(away&&(t==='decorate'||t==='room')){travelTo('home',()=>setTab(t));return}setTab(t)})}
 // Pet wheel: tap Pet and the pet's needs fan out round it; tap a need to help with it, tap the middle for the pet's page.
@@ -10405,19 +10413,18 @@ ${P?`<p class="pers"><b>${P.n}</b> ${P.d}</p>`:''}<div class="minds">${petMinds(
   else if(openTab==='todo')renderTodo(body);
   else if(openTab==='room'){setTimeout(()=>document.querySelectorAll('[data-ceil]').forEach(b=>b.onclick=()=>{state.ceil=+b.dataset.ceil;logEvent(state.ceil<.1?'turned the ceiling light off':state.ceil<1?'dimmed the ceiling light':'turned the ceiling light up');saveSoon();renderSheet()}));
     const stat=mode==='shared'?'<span class="status"><i></i>Shared room, synced</span>':mode==='readonly'?'<span class="status ro"><i></i>View-only, changes stay local</span>':mode==='connecting'?'<span class="status solo"><i></i>Connecting to shared room</span>':'<span class="status solo"><i></i>Solo on this device</span>';
-    body.innerHTML=`<h2>Room</h2>${stat}
-    <div class="row-label">Floors, walls & door</div><p class="hint">They’re in Decorate now, next to your furniture.</p>
-    <div class="dbg-grid two" style="margin-bottom:12px"><button class="gel sun" id="toFloors">Floors</button><button class="gel sun" id="toWalls">Walls</button></div>
+    body.innerHTML=`<h2>Room & sharing</h2>${stat}
     <div class="row-label">Ceiling light</div><p class="hint">Dim it to let your lamps and glowing things set the mood. It changes for both of you.</p>
     <div class="chips" style="margin-bottom:6px">${CEIL_LEVELS.map(([v,n])=>`<button class="chip" data-ceil="${v}" aria-pressed="${Math.abs((state.ceil??1)-v)<.01}">${n}</button>`).join('')}</div>
-    <p class="hint">Your room is ${state.size} × ${state.size} tiles. ${state.size<ROOM_SIZES[ROOM_SIZES.length-1]?'Hammer & Hue can make it bigger, and sells more floors, walls, doors and windows.':'It can’t get any bigger!'}</p>
     ${FB?`<div class="row-label">Invite your person</div><p class="hint">Send them this link. When they open it, you'll both be in this room and see each other's changes.</p>
     <button class="gel pink" id="invite" style="width:100%">Share invite link</button>`:''}
     ${myId?`<div class="row-label">Your name</div><div class="codebox"><input id="myname" value="${esc((state.names||{})[myId]||'')}" maxlength="20" autocomplete="off" placeholder="So your person knows it's you" aria-label="Your name"><button class="gel sun" id="saveName">Save</button></div>`:''}
+    <details class="adv"><summary>More: room code, reset, debug</summary>
     <div class="row-label">Room code</div><p class="hint">${FB?'Anyone with this code can open the room, so keep it between you two. To start a separate room, type a new code together.':"Share this page with your person and you'll both land in the same room. To keep a separate room, type a new code together."}</p>
     <div class="codebox"><input id="code" value="${esc(roomCode)}" maxlength="24" autocapitalize="off" autocomplete="off" aria-label="Room code"><button class="gel lilac" id="join">Go</button></div>
-    <div class="row-label">Start over</div><button class="gel silver" id="reset">Reset this room</button><div style="height:6px"></div>`;
-    $('#toFloors').onclick=()=>openDecorate('f');$('#toWalls').onclick=()=>openDecorate('w');
+    <div class="row-label">Start over</div><button class="gel silver" id="reset">Reset this room</button>
+    <div class="row-label">Testing</div><button class="gel silver" id="toDebug">Debug tools</button><div style="height:6px"></div></details>`;
+    $('#toDebug').onclick=()=>setTab('debug');
     const inv=$('#invite');if(inv)inv.onclick=async()=>{const link=location.origin+location.pathname+'?room='+encodeURIComponent(roomCode);
       try{if(navigator.share){await navigator.share({title:'Room for Two',text:'Come hang out in our room!',url:link});return}}catch(e){if(e&&e.name==='AbortError')return}
       try{await navigator.clipboard.writeText(link);toast('Invite link copied. Send it to your person!')}catch(_){window.prompt('Copy this invite link:',link)}};
@@ -10559,7 +10566,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=25;
+const APP_V=26;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
