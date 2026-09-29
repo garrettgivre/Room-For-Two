@@ -9081,7 +9081,7 @@ function unreadOf(sec){const me=myId||'me',ls=seenT(sec);
   if(sec==='inbox')return state.inbox.filter(m=>m.t>ls).length+state.feed.filter(f=>f.k==='note'&&f.t>ls&&f.by!==me).length;
   if(sec==='journal')return state.journal.filter(j=>j.t>ls&&j.by!==me).length;
   if(sec==='steps')return state.feed.filter(f=>f.k!=='note'&&f.t>ls&&f.by!==me).length;return 0}
-function unread(){return unreadOf('inbox')+unreadOf('journal')+unreadOf('steps')}
+function unread(){return unreadOf('inbox')+unreadOf('steps')}
 
 /* ================= JOURNAL / INBOX / FOOTPRINTS ================= */
 const pickJ=a=>a[Math.random()*a.length|0];
@@ -10733,7 +10733,7 @@ let dbgOpen='Pet stage';
 const MN_RING={decorate:'#FF8A1C',wardrobe:'#A6E22E',journal:'#FFD21F',todo:'#FF3D9A',inbox:'#3EC8F2',steps:'#9B4DF2',room:'#3EC8F2',debug:'#9B4DF2'};
 function pgHead(k,o={}){const m=MENU_ITEMS.find(x=>x[0]===k)||[k,k,'','#fff'];return`<div class="pgh" style="--rc:${MN_RING[k]||'#FFD21F'}">${m[2]?`<span class="pi"><img src="${ico(m[2])}" alt=""></span>`:''}<h2>${o.t||m[1]}</h2>${o.right?`<span class="pgr">${o.right}</span>`:''}</div>${o.sub?`<p class="hint pgsub">${o.sub}</p>`:''}`}
 function menuBadges(){const T=state.td,n=T.done.length,m=T.list.length,treat=n>=m&&!T.gift,u=k=>unreadOf(k)?`<i class="badge">${unreadOf(k)}</i>`:'';
-  return{todo:treat?'<i class="badge">!</i>':`<i class="badge" style="background:#fff">${n}/${m}</i>`,journal:u('journal'),inbox:u('inbox'),steps:u('steps')}}
+  return{todo:treat?'<i class="badge">!</i>':`<i class="badge" style="background:#fff">${n}/${m}</i>`,inbox:u('inbox'),steps:u('steps')}}
 function renderMenuWheel(){const w=$('#menuwheel');if(w._busy)return;const items=MENU_ITEMS.filter(m=>m[5]==='h'||m[5]==='t'),R=Math.min(132,innerWidth*.33),ex=menuBadges();
   const nodes=items.map(([k,nm,ic,c],i)=>{const a=-Math.PI/2+i*Math.PI*2/items.length,x=Math.round(Math.cos(a)*R),y=Math.round(Math.sin(a)*R);return`<button class="pw-n" data-mn="${k}" data-x="${x}" data-y="${y}" style="--x:${x}px;--y:${y}px;--rc:${MN_RING[k]}" aria-label="${nm}"><span class="ring"></span><img src="${ico(ic)}" alt="">${arcLabel(nm,Math.sin(a)<-.2?-Math.PI/2:Math.PI/2,false,'mwa'+i)}${ex[k]||''}</button>`}).join('');
   w.innerHTML=`<div class="pw" style="--cy:${Math.round(innerHeight*.5)}px">${nodes}<button class="pw-c" data-mn="room" aria-label="Room and sharing"><img src="${ico('tab-room')}" alt=""><b>Our room</b><small>${esc($('#presence').textContent)}</small></button></div><button class="pw-ref" id="mwRef"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3B1273" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 3v5h-5"/></svg>Refresh app <small>v${APP_V}</small></button><div class="pw-hint">Tap one to open it</div>`;
@@ -11236,7 +11236,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=45;
+const APP_V=46;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
