@@ -7,7 +7,9 @@ service cloud.firestore {
       allow write: if room.size() >= 4 && room.size() <= 24
         && request.resource.data.keys().hasAll(['items', 'pet', 'feed'])
         && request.resource.data.items.size() <= 80
-        && request.resource.data.feed.size() <= 50;
+        && request.resource.data.feed.size() <= 50
+        // only app versions that merge saves may write (older ones saved whole stale copies over newer changes)
+        && request.resource.data.get('cv', 0) >= 44;
     }
     match /{document=**} {
       allow read, write: if false;
