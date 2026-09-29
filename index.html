@@ -10777,7 +10777,7 @@ if('serviceWorker' in navigator&&window.isSecureContext)window.addEventListener(
 setInterval(()=>{if(ready){updHUD();wishTick()}const ae=document.activeElement;if(openTab==='pet'&&!(ae&&ae.matches&&ae.matches('input')))renderSheet()},15000);
 
 /* ================= LOOP ================= */
-let skyTick=0;window.__T={get state(){return state},f:c=>eval(c)};const clock=new THREE.Clock();let tAcc=0,fpsN=0,fpsT=0;const tmp=new THREE.Vector3();
+let skyTick=0;const clock=new THREE.Clock();let tAcc=0,fpsN=0,fpsT=0;const tmp=new THREE.Vector3();
 function loop(){requestAnimationFrame(loop);const raw=clock.getDelta(),dt=Math.min(raw,.05);if(gm&&!$('#game').hidden)return;if(gc&&gc.open)return;if(tm&&tm.open)return;tAcc+=dt;fpsN++;fpsT+=raw;frameIM=away?null:new Map(state.items.map(i=>[i.id,i]));if(fpsT>1){fps=Math.round(fpsN/fpsT);fpsN=0;fpsT=0;if(openTab==='debug')updDbgInfo()}updCam();
   if(away&&away.plan){walls.forEach(w=>{w.g.visible=false});updPlan()}else walls.forEach((w,i)=>{const d=WALLDEF[i];w.g.visible=(camera.position.x-d.c[0])*d.n[0]+(camera.position.z-d.c[1])*d.n[1]>2.5});updArch();
   roomObjs().forEach(o=>{const it=roomItem(o.userData.id);if(it&&defOf(it.k).wall)o.visible=away&&away.plan?(it.cls==null||!!(away.tall&&away.tall[it.cls])):walls[it.w||0].g.visible;if(o.userData.anim)o.userData.anim(tAcc)});
