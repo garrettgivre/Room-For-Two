@@ -503,7 +503,14 @@ body.gaming #emotes,body.gaming .kbub{display:none!important}
 .tm-top{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 10px);display:flex;align-items:center;gap:10px;padding:0 12px;pointer-events:none}.tm-top>*{pointer-events:auto}
 .tm-top b{flex:1;font-family:var(--disp);font-weight:400;font-size:26px;color:#fff;letter-spacing:.02em;text-shadow:2.5px 0 var(--ink),-2.5px 0 var(--ink),0 2.5px var(--ink),0 -2.5px var(--ink),2px 2px var(--ink),-2px 2px var(--ink),2px -2px var(--ink),-2px -2px var(--ink);pointer-events:none}
 .tm-arr{min-height:42px;padding:0 16px;font-size:15px}.tm-arr[hidden]{display:none}
-.tm-pop.gen .tm-lab,.tm-pop.gen .tm-top{opacity:0}.tm-lab,.tm-top{transition:opacity .18s}.tm-lab{position:absolute;inset:0;pointer-events:none}.town3.arr .tm-lab{opacity:.55}
+.tm-pop.gen .tm-lab,.tm-pop.gen .tm-top{opacity:0}
+.tm-dock{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);transform:translateX(-50%);width:min(calc(100% - 16px),540px);display:flex;justify-content:center;gap:3px;padding:6px 8px 8px;background:rgba(255,248,238,.92);border:3px solid var(--ink);border-radius:24px 20px 26px 20px;box-shadow:0 5px 0 var(--ink);transition:opacity .2s}
+.tm-dock button{position:relative;flex:1 1 0;min-width:0;max-width:54px;aspect-ratio:1;border:0;padding:2px;background:none;border-radius:50%;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.tm-dock img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 2px 0 rgba(59,18,115,.45));transition:transform .18s}
+.tm-dock button:active img{transform:scale(.86)}.tm-dock button.on img{transform:translateY(-5px) scale(1.1)}
+.tm-dock button.here::after{content:'';position:absolute;left:50%;bottom:-7px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:var(--sun);border:2px solid var(--ink)}
+.tm-dock b{position:absolute;top:-2px;right:-2px;width:11px;height:11px;border-radius:50%;background:var(--pink);border:2.5px solid var(--ink);animation:wig 1.4s ease-in-out infinite}
+.tm-card:not([hidden])~.tm-dock,.tm-tools:not([hidden])~.tm-dock,.tm-pop.gen .tm-dock{opacity:0;pointer-events:none}.tm-lab,.tm-top{transition:opacity .18s}.tm-lab{position:absolute;inset:0;pointer-events:none}.town3.arr .tm-lab{opacity:.55}
 .tml{position:absolute;left:0;top:0;pointer-events:auto;background:none;border:0;padding:0;display:flex;flex-direction:column;align-items:center;-webkit-tap-highlight-color:transparent}.tml img{display:block;width:42px;height:42px;object-fit:contain;filter:drop-shadow(0 2px 0 rgba(59,18,115,.6)) drop-shadow(0 5px 5px rgba(30,8,60,.28));transition:transform .15s}.tml:active img{transform:scale(.9)}.tml i{width:0;height:0;margin-top:-1px;border:5px solid transparent;border-top:7px solid var(--ink);border-bottom:0}.tml.here img{animation:tmBob 1.8s ease-in-out infinite}.tml.here i{border-top-color:var(--sun);filter:drop-shadow(0 0 0 var(--ink)) drop-shadow(0 1px 0 var(--ink))}.tml b{position:absolute;top:-3px;right:-4px;width:12px;height:12px;border-radius:50%;background:var(--pink);border:2.5px solid var(--ink);box-shadow:0 0 0 2px #fff;animation:wig 1.4s ease-in-out infinite}@keyframes tmBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}#tmc{-webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent),linear-gradient(180deg,transparent,#000 4%,#000 94%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent),linear-gradient(180deg,transparent,#000 4%,#000 94%,transparent);mask-composite:intersect}
 .tm-card{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);transform:translateX(-50%);width:min(calc(100% - 24px),420px);padding:14px 16px 16px;background:var(--paper);border:3px solid var(--ink);border-radius:26px 20px 28px 20px;box-shadow:0 6px 0 var(--ink);color:var(--ink)}
 .tm-card[hidden]{display:none}.tmh{display:flex;align-items:center;gap:10px}.tmh img{width:48px;height:48px}.tmh img.lg{width:auto;height:76px}.tmh h3{margin:0;font-family:var(--disp);font-weight:400;font-size:22px}.tmh small{font-size:13px;opacity:.8}
@@ -849,7 +856,7 @@ body.styling .storechip{opacity:0}
   </div></div></div>
 <div class="town3" id="town3" hidden><canvas id="tmSnap" class="tm-fly"></canvas><div class="tm-pop" id="tmPop"><canvas id="tmc"></canvas><div class="tm-lab" id="tmLab"></div>
   <div class="tm-top"><b id="tmTitle">Where to?</b><button class="gel lilac tm-arr" id="tmArr">Arrange</button><button class="gm-x" id="tmX" aria-label="Close the map">×</button></div>
-  <div class="tm-card" id="tmCard" hidden></div><div class="tm-tools" id="tmTools" hidden></div></div></div>
+  <div class="tm-card" id="tmCard" hidden></div><div class="tm-tools" id="tmTools" hidden></div><div class="tm-dock" id="tmDock"></div></div></div>
 <div class="gacha" id="gacha" hidden><canvas id="gcc"></canvas><div class="gc-top"><button class="gm-x" id="gcX" aria-label="Leave">×</button><b>Capsule Corner</b><span class="gc-tok" id="gcTok"></span></div><div class="gc-hint" id="gcHint"></div><div class="gc-bar" id="gcBar"></div><div class="gc-prize" id="gcPrize" hidden></div><div class="gc-dex" id="gcDex" hidden></div></div>
 <div class="travel" id="travel" hidden><img id="tvIcon" alt=""><b id="tvText"></b></div>
 <div class="game" id="game" hidden><div class="gm-bar"><button class="gm-x" id="gmX" aria-label="Leave the game">×</button><b class="gm-title" id="gmTitle"></b><span class="gm-stat gm-lv" id="gmLv"></span><span class="gm-stat" id="gmTime"></span><span class="gm-score" id="gmScore"></span></div><canvas id="gmc"></canvas><div class="gm-card" id="gmCard" hidden></div></div>
@@ -8169,7 +8176,7 @@ function tmShop(k){const S=SHOPS[k],P=S.plan,g=G(),PS=TM_PS,col=parseInt((S.colo
     [-1,1].forEach(sd=>{ol(cy(fg,.05,.036,.09,Pt,sd*.23,.045,.08,10),.003);ol(sp(fg,.062,Lf,sd*.23,.14,.08),.003);ol(sp(fg,.042,Lf,sd*.23,.22,.08),.003);
       ol(rb(fg,.03,.06,.03,.008,Lt,sd*.17,.34,.02),.002);const gl=sp(fg,.024,glowM(0xFFE9A8,1.1),sd*.17,.34,.045);gl.outline=0})}
   const os=tmOwners(k),figs=[];os.forEach((o,n)=>{const f=tmFig(o,.34);if(!f)return;f.position.set((os.length>1?(n?.24:-.24):.3),0,.28);fg.add(f);figs.push(f)});
-  const n0=g.children.length;!tb&&tmFlair[k]&&tmFlair[k](g,top,col,fg);g.children.slice(n0).forEach(q=>q.scale.setScalar(1.6));{const skip=new Set();[D.g,...figs].forEach(r=>r.traverse(q=>skip.add(q)));g.traverse(q=>{const mt=q.isMesh&&!skip.has(q)&&q.material;if(mt&&!mt.map&&!(mt.detail|0)&&!mt.transparent&&!(mt.metalness>.2))mt.detail=3})}bakeStatic(g);g.userData.tb=k;g.userData.top=top;return g}
+  const n0=g.children.length;!tb&&tmFlair[k]&&tmFlair[k](g,top,col,fg);g.children.slice(n0).forEach(q=>q.scale.setScalar(1.6));{const skip=new Set();[D.g,...figs].forEach(r=>r.traverse(q=>skip.add(q)));g.traverse(q=>{const mt=q.isMesh&&!skip.has(q)&&q.material;if(mt&&!mt.map&&!(mt.detail|0)&&!mt.transparent&&!(mt.metalness>.2))mt.detail=3})}bakeStatic(g);tmSign(g,fg,k,-.52,.34);g.userData.tb=k;g.userData.top=top;return g}
 function curDoorKey(S){return doorKeyFix(S.door||'classic')}
 // what each owner puts on the roof
 const tmFlair={
@@ -8344,14 +8351,14 @@ function tmHome(){const g=G(),Bd=M(0xFFF6EA,{roughness:.55}),Wh=M(0xFFFFFF,{roug
   [[0,-.76],[.03,-.86]].forEach(([x,z])=>{const s_=ol(cy(g,.07,.075,.02,St,x,.012,z,12),.002);s_.scale.z=.8});
   [[-.62,-.74],[.62,-.74],[-.7,.7],[.7,.7]].forEach(([x,z],n)=>{sp(g,.1,Lf,x,.04,z,1.2,.6,1).outline=.003;for(let i=0;i<4;i++){const a_=i*1.7+n;sp(g,.028,Fl[(i+n)%3],x+Math.cos(a_)*.06,.09,z+Math.sin(a_)*.05).outline=0}});
   const mb=piv(g,-.36,0,-.8);ol(cy(mb,.02,.02,.3,Wd,0,.15,0,6),.002);ol(rb(mb,.14,.1,.1,.03,M(0xFF6FB5,{roughness:.4}),0,.33,0),.003);ol(rb(mb,.015,.08,.01,.004,M(0xFFD21F),.075,.38,0),.002);
-  bakeStatic(g);{const sm=piv(g,.4,1.24,.18),pf=[0,1,2].map(()=>{const q=sp(sm,1,Wh,0,0,0);q.outline=0;q.castShadow=false;q.scale.setScalar(.05);return q});
+  bakeStatic(g);tmSign(g,fg,'home',-.62,.19);{const sm=piv(g,.4,1.24,.18),pf=[0,1,2].map(()=>{const q=sp(sm,1,Wh,0,0,0);q.outline=0;q.castShadow=false;q.scale.setScalar(.05);return q});
     sm.userData.anim=t=>pf.forEach((q,i)=>{const k=(t*.3+i/3)%1,r=(.025+k*.045)*(k>.75?(1-k)/.25:Math.min(1,k*6));q.position.set(k*.1,k*.38,-k*.04);q.scale.setScalar(Math.max(.001,r))})}g.userData.tb='home';g.userData.top={x:0,z:0,y:1.15};return g}
 // ---------- the scene ----------
 let tm=null,tmLast=0;
 function tmInit(){if(tm)return tm;try{const cv=$('#tmc'),R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});R.outputEncoding=THREE.sRGBEncoding;const sc=new THREE.Scene();
     const et=ctex(256,128,(x,w,h)=>{const q=x.createLinearGradient(0,0,0,h);q.addColorStop(0,'#fff');q.addColorStop(.45,'#EAF6FF');q.addColorStop(.55,'#fff');q.addColorStop(1,'#CDEFB0');x.fillStyle=q;x.fillRect(0,0,w,h)},null,1);et.mapping=THREE.EquirectangularReflectionMapping;sc.environment=et;
     sc.add(new THREE.AmbientLight(0xffffff,.55));const dl=new THREE.DirectionalLight(0xFFF1DE,2.9);dl.position.set(-11,11,1.5);dl.castShadow=true;Object.assign(dl.shadow.camera,{left:-15,right:15,top:15,bottom:-15,near:1,far:60});dl.shadow.mapSize.set(2048,2048);dl.shadow.bias=-.0005;dl.shadow.normalBias=.02;R.shadowMap.enabled=true;sc.add(dl);sc.userData.lighting={exposure:1.08,ao:[],points:[],get sh(){const e=sc.environment;if(!e||!e._sh)return null;const k=(tm&&tm.todK)||[.5,.5,.5],key=k.map(v=>v.toFixed(3)).join();if(e._shKey!==key){e._shKey=key;e._shT=e._sh.map((v,i)=>v*k[i%3])}return e._shT}};const cam=new THREE.PerspectiveCamera(30,1,4,260);
-    tm={R,sc,cam,root:G(),world:G(),bld:{},bg:{},yaw:-.35,pitch:.7,zoom:.98,tgt:new THREE.Vector3(),tgtTo:new THREE.Vector3(),open:false,arr:false,tool:'move',sel:null,deco:'tree',t:0,ray:new THREE.Raycaster(),ptr:new Map()};
+    tm={R,sc,cam,root:G(),world:G(),bld:{},bg:{},yaw:-.35,pitch:.7,zoom:.98,tgt:new THREE.Vector3(),tgtTo:new THREE.Vector3(),open:false,arr:false,tool:'move',sel:null,deco:'tree',t:0,ray:new THREE.Raycaster(),ptr:new Map(),signs:[]};
     sc.add(tm.root);tm.root.add(tm.world);tmIsland();return tm}catch(e){console.warn('town',e);return null}}
 const tmRR=(a,b,r,n=12)=>{const P=[];[[a-r,b-r,0],[-(a-r),b-r,1],[-(a-r),-(b-r),2],[a-r,-(b-r),3]].forEach(([cx,cz,q])=>{for(let i=0;i<=n;i++){const t=(q+i/n)*Math.PI/2;P.push([cx+Math.cos(t)*r,cz+Math.sin(t)*r])}});return P};
 function tmIsland(){const g=G(),W=TM_W,D=TM_D;
@@ -8382,12 +8389,23 @@ function tmAO(){const A=[];for(const k in tm.bld){const o=tm.bld[k],[w,d]=tmFoot
   (tm.decor?tm.decor.children:[]).forEach(o=>{const q=state.tmap.d[o.userData.td];if(!q||A.length>=24)return;const big=TM_DECOR[q[0]]&&TM_DECOR[q[0]].sz;A.push([o.position.x,o.position.z,big?1.2:.42,big?.3:.36])});tm.sc.userData.lighting.ao=A.slice(0,24)}
 function tmPlace(k){const o=tm.bld[k];if(!o)return;const [x,z,r]=state.tmap.b[k],[w,d]=tmFoot(k,r);o.position.set(x-TM_W/2+w/2,0,z-TM_D/2+d/2);o.rotation.y=r*Math.PI/2}
 function tmPad(o,k){const [w,d]=tmFoot(k,0),c=k==='home'?0x3EC8F2:parseInt((SHOPS[k].color||'#FF8A1C').slice(1),16),mx=v=>Math.round(255-(255-v)*.24),t=(mx(c>>16&255)<<16)|(mx(c>>8&255)<<8)|mx(c&255);ol(rb(o,w+.34,.04,d+.34,.12,M(t,{roughness:.7}),0,.02,0),.004)}
-function tmSync(full){for(const k of['home',...tmShops()]){if(!(full||k==='home'||!tm.bld[k]))continue;if(tm.bld[k])tm.world.remove(tm.bld[k]);try{tm.bld[k]=k==='home'?tmHome():tmShop(k);tmPad(tm.bld[k],k)}catch(e){console.warn('town '+k,e);delete tm.bld[k];continue}tm.world.add(tm.bld[k])}
+function tmSync(full){for(const k of['home',...tmShops()]){if(!(full||k==='home'||!tm.bld[k]))continue;if(tm.bld[k])tm.world.remove(tm.bld[k]);tm.signs=tm.signs.filter(q=>q.k!==k);try{tm.bld[k]=k==='home'?tmHome():tmShop(k);tmPad(tm.bld[k],k)}catch(e){console.warn('town '+k,e);delete tm.bld[k];continue}tm.world.add(tm.bld[k])}
   for(const k in tm.bld)tmPlace(k);tmPaths();tmDecor();tmAO();tm.anims=[];tm.world.traverse(o=>{if(o.userData.anim)tm.anims.push(o)});tmLabels()}
+const tmLogo=k=>k==='home'?ico('tab-room'):`assets/logos/${k}-nt.webp`;
+let tmSignMs=null;
+function tmSignTex(k){const t=ctex(256,256,(x,w,h)=>{x.fillStyle='#FFFDF8';x.beginPath();x.arc(w/2,h/2,w/2,0,7);x.fill()},null,1),im=new Image();
+  im.onload=()=>{const x=t.image.getContext('2d'),w=t.image.width,s_=Math.min(w*.84/im.width,w*.84/im.height);x.drawImage(im,(w-im.width*s_)/2,(w-im.height*s_)/2,im.width*s_,im.height*s_);if(tm&&tm.R)tm.R.disposeTexture(t);tm&&(tm.snapOk=0)};im.src=tmLogo(k);return t}
+function tmSign(g,fg,k,x,z){if(!tmSignMs)tmSignMs={ink:M(0x3B1273,{roughness:.4}),sun:M(0xFFD21F,{roughness:.35,emissive:0xFFD21F,emissiveIntensity:.25}),wh:M(0xFFFFFF,{roughness:.5})};const S=tmSignMs;
+  const p=piv(fg,x,0,z);ol(cy(p,.02,.024,.66,S.wh,0,.33,0,8),.003);ol(cy(p,.07,.08,.035,S.ink,0,.017,0,12),.002);
+  const hd=piv(p,0,.86,0),fm=M(0xffffff,{map:tmSignTex(k),roughness:.45,emissive:0xFFFFFF,emissiveIntensity:.04}),c=k==='home'?0x3EC8F2:parseInt((SHOPS[k].color||'#FF8A1C').slice(1),16);
+  add(hd,gcache('tmsgd',()=>new THREE.CircleGeometry(.27,36)),fm,0,0,.016).outline=0;const bk=add(hd,gcache('tmsgd',()=>new THREE.CircleGeometry(.27,36)),M(c,{roughness:.5}),0,0,-.016);bk.rotation.y=Math.PI;bk.outline=0;
+  const ed=add(hd,gcache('tmsge',()=>new THREE.CylinderGeometry(.275,.275,.03,36)),S.wh,0,0,0);ed.rotation.x=Math.PI/2;ed.outline=0;const rim=to(hd,.28,.022,S.ink,0,0,0);rim.outline=0;
+  tm.signs.push({k,g,fg,hd,rim,fm})}
 // ---------- labels, card, pin ----------
-function tmLabels(){const el=$('#tmLab'),here=away?away.key:'home',wish=state.wish&&state.wish.k==='trip'&&state.wish.shop;
-  el.innerHTML=Object.keys(tm.bld).map(k=>{const n=k==='home'?'Home':SHOPS[k].n;return`<button class="tml${k===here?' here':''}" data-k="${k}" aria-label="${esc(n)}" title="${esc(n)}"><img src="${k==='home'?ico('tab-room'):`assets/logos/${k}-nt.webp`}" alt="">${k===wish?'<b></b>':''}<i></i></button>`}).join('');
-  el.querySelectorAll('.tml').forEach(b=>b.onclick=e=>{e.stopPropagation();tmSelect(b.dataset.k)})}
+function tmLabels(){const el=$('#tmDock'),here=away?away.key:'home',wish=state.wish&&state.wish.k==='trip'&&state.wish.shop;$('#tmLab').innerHTML='';
+  el.innerHTML=['home',...tmShops()].filter(k=>tm.bld[k]).map(k=>{const n=k==='home'?'Home':SHOPS[k].n;return`<button class="${k===here?'here':''}" data-k="${k}" aria-label="${esc(n)}" title="${esc(n)}"><img src="${tmLogo(k)}" alt="">${k===wish?'<b></b>':''}</button>`}).join('');
+  el.querySelectorAll('button').forEach(b=>b.onclick=e=>{e.stopPropagation();tmSelect(b.dataset.k)});
+  tm.signs.forEach(q=>q.rim.material=q.k===here?tmSignMs.sun:tmSignMs.ink)}
 function tmSelect(k){if(tm.arr){tmPick('b:'+k);return}tm.focus=k;const o=tm.bld[k];if(o)tm.tgtTo.set(o.position.x,0,o.position.z);const here=(away?away.key:'home')===k,S=SHOPS[k],c=$('#tmCard');
   const own=k==='home'?[]:tmOwners(k).map(o=>TM_OWN[o]||o),P=S&&S.plan,rooms=P?P.levels.reduce((a,L)=>a+Object.keys(L.rooms).length,0):0,staff=P?P.levels.reduce((a,L)=>a+Object.values(L.rooms).filter(R=>R.lock).length,0):0;
   const extra=k==='furn'?`<p class="tmx">Today: ${nestStock().sets.map(q=>SETMAP[q].n).join(', ')}</p>`:state.wish&&state.wish.k==='trip'&&state.wish.shop===k?`<p class="tmx">${esc(state.pet.name)} wants to visit!</p>`:'';
@@ -8466,12 +8484,13 @@ function tmTOD(){const now=performance.now();if(now-tmTodT<1000&&skyHourOverride
   // the sun rises on the right of the map and sets on the left; at night a moon hangs up on the left
   const a=(Math.min(20,Math.max(6,h))-6)/14*Math.PI,sp=[Math.cos(a)*13-2,3+Math.sin(a)*10,1.5],mp=[-8,12,5];dl.position.set(...sp.map((v,k)=>v+(mp[k]-v)*night));
   const k=lr(A[3],B[3]),t=cl(A[4],B[4]);tm.todK=t.map(v=>v*k);const L=tm.sc.userData.lighting;L.exposure=1.08-.2*night;L.emisBoost=lr(A[5],B[5]);
-  tmGlassMs.forEach(g=>g.emissiveIntensity=.06+.75*night);
+  tmGlassMs.forEach(g=>g.emissiveIntensity=.06+.75*night);tm.signs.forEach(q=>q.fm.emissiveIntensity=.04+.3*night);
   L.points=night>.05?(tm.decor?tm.decor.children:[]).filter(o=>{const q=state.tmap.d[o.userData.td];return q&&q[0]==='lamp'}).slice(0,8).map(o=>({pos:[o.position.x,.95,o.position.z],color:[1.5*night,1.15*night,.65*night],range:2.8})):[];
   $('#town3').style.setProperty('--tmn',night.toFixed(3));tm.night=night}
-function tmDraw(dt){const[W_,H_]=tmSize(),R=tm.R;tmTOD();
+function tmDraw(dt){const[W_,H_]=tmSize(),R=tm.R;tmTOD();{const here=away?away.key:'home';tm.signs.forEach((q,i)=>{q.hd.rotation.y=tm.yaw-q.g.rotation.y-q.fg.rotation.y;q.hd.rotation.z=Math.sin(tm.t*1.3+i*1.7)*.04;q.hd.position.y=.86+(q.k===here?Math.abs(Math.sin(tm.t*2.6))*.06:0)});
+    const d=$('#tmDock');if(d&&d._f!==tm.focus){d._f=tm.focus;d.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.k===tm.focus))}}
   if(R.__w!==W_||R.__h!==H_){R.setPixelRatio(Math.min(2,devicePixelRatio||1));R.setSize(W_,H_,false);R.__w=W_;R.__h=H_;tm.cam.aspect=W_/H_;tm.cam.updateProjectionMatrix()}
-  vlerp(tm.tgt,tm.tgtTo,Math.min(1,dt*4));const d=tmFit()*(tm.focus?.45:1)*tm.zoom,cp=Math.cos(tm.pitch),c=tm.cam;c.position.set(tm.tgt.x+Math.sin(tm.yaw)*cp*d,Math.sin(tm.pitch)*d,tm.tgt.z+Math.cos(tm.yaw)*cp*d);c.lookAt(new THREE.Vector3(tm.tgt.x,0,tm.tgt.z));
+  vlerp(tm.tgt,tm.tgtTo,Math.min(1,dt*4));const d=tmFit()*(tm.focus?.45:1)*tm.zoom,cp=Math.cos(tm.pitch),c=tm.cam;tm.off=(tm.off??1.9)+((tm.focus?.75:1.9)-(tm.off??1.9))*Math.min(1,dt*4);const ox=tm.tgt.x+Math.sin(tm.yaw)*tm.off,oz=tm.tgt.z+Math.cos(tm.yaw)*tm.off;c.position.set(ox+Math.sin(tm.yaw)*cp*d,Math.sin(tm.pitch)*d,oz+Math.cos(tm.yaw)*cp*d);c.lookAt(new THREE.Vector3(ox,0,oz));
   tm.cl&&tm.cl.forEach(p=>p.rotation.y=tm.t*p.userData.sp);tm.mills&&tm.mills.forEach(o=>o.userData.anim(tm.t));tm.anims.forEach(o=>{try{o.userData.anim(tm.t)}catch(_){}});const so=tmObj(tm.sel);if(so)so.position.y=.25+Math.sin(tm.t*5)*.06;
   R.render(tm.sc,c);return[c,W_,H_]}
 function tmFrame(dt){const[c,W_,H_]=tmDraw(dt),v=new THREE.Vector3();$('#tmLab').querySelectorAll('.tml').forEach(b=>{const o=tm.bld[b.dataset.k];if(!o)return;const T=o.userData.top||{y:1};v.set(o.position.x,(T.y||1)+.5+o.position.y,o.position.z).project(c);
@@ -10647,7 +10666,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=30;
+const APP_V=31;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
