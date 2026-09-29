@@ -1183,7 +1183,7 @@ void main(){vec4 w=uModel*vec4(position,1.);vW=w.xyz;vL=position;vLN=normal;vN=n
 const FS=`#version 300 es
 precision highp float;precision highp sampler2DShadow;
 in vec3 vW;in vec3 vN;in vec2 vUv;in vec4 vSh;in vec3 vL;in vec3 vLN;
-uniform int uDetail;
+uniform int uDetail;uniform float uRim;
 uniform bool uBasic,uHasMap,uHasEnv,uShadow,uPost,uLightPt;uniform float uLightRef;
 uniform vec3 uColor,uEmissive,uLightDir,uLightCol,uCam,uBounce;
 uniform float uOpacity,uRough,uMetal,uEnvLod,uTexel,uBias,uExposure,uEnvInt,uSpecInt,uTime,uCaustic,uEmisBoost,uEnvRot;
@@ -1250,6 +1250,8 @@ void main(){vec4 base=vec4(uColor,uOpacity);if(uHasMap){vec4 t=texture(uMap,vUv)
     col+=diff*(1.-kS)*amb*ao;
     if(uHasEnv){vec3 rad=dec(textureLod(uEnv,eq(reflect(-V,N)),r*(uEnvLod-1.5)).rgb);float sao=clamp(pow(NdV+ao,exp2(-16.*r-1.))-1.+ao,0.,1.);col+=rad*kS*uSpecInt*sao*mix(1.,.35,r*(1.-uMetal));}
     col+=base.rgb*pow(1.-NdV,4.)*(uDetail==4?.55:.3)*(shIrr(-V)*uEnvInt)*ao*(1.-uMetal);
+    // characters: a soft light catching their silhouette edges (material.rim), so they read against busy rooms
+    if(uRim>0.){float e=pow(1.-NdV,2.6)*smoothstep(-.35,.45,N.y+.25);col+=mix(vec3(1.,.96,1.),base.rgb*1.3+.1,.45)*e*uRim*(.55+.45*ao);}
   }
   col+=uEmissive*uEmisBoost;
   if(!uPost)col=enc(aces(col*uExposure));
@@ -1407,7 +1409,7 @@ class WebGLRenderer{
       if(mt.depthTest)gl.enable(gl.DEPTH_TEST);else gl.disable(gl.DEPTH_TEST);
       gl.uniformMatrix4fv(U.uModel,false,m.matrixWorld);gl.uniformMatrix3fv(U.uNrm,false,M4.normal3(m.matrixWorld));
       gl.uniform3f(U.uColor,mt.color.r,mt.color.g,mt.color.b);const ei=mt.emissiveIntensity;gl.uniform3f(U.uEmissive,mt.emissive.r*ei,mt.emissive.g*ei,mt.emissive.b*ei);
-      gl.uniform1f(U.uOpacity,mt.transparent?mt.opacity:1);gl.uniform1f(U.uRough,mt.roughness);gl.uniform1f(U.uMetal,mt.metalness);gl.uniform1i(U.uBasic,mt.basic?1:0);gl.uniform1i(U.uDetail,mt.detail|0);
+      gl.uniform1f(U.uOpacity,mt.transparent?mt.opacity:1);gl.uniform1f(U.uRough,mt.roughness);gl.uniform1f(U.uMetal,mt.metalness);gl.uniform1i(U.uBasic,mt.basic?1:0);gl.uniform1i(U.uDetail,mt.detail|0);gl.uniform1f(U.uRim,mt.rim||0);
       gl.uniform1i(U.uShadow,useShadow&&m.receiveShadow&&!mt.basic?1:0);
       gl.activeTexture(gl.TEXTURE0);if(mt.map){gl.bindTexture(gl.TEXTURE_2D,this._texture(mt.map,false));gl.uniform1i(U.uHasMap,1);gl.uniform2f(U.uRepeat,mt.map.repeat.x,mt.map.repeat.y)}else{gl.bindTexture(gl.TEXTURE_2D,this._white);gl.uniform1i(U.uHasMap,0);gl.uniform2f(U.uRepeat,1,1)}
       gl.bindVertexArray(e.vao);gl.drawElements(gl.TRIANGLES,e.n,e.type,0)};
@@ -7140,8 +7142,8 @@ const KEEPERS={
   // a stitched-on blue patch, sleepy lavender-lidded eyes and stubby feet. No arms: the top corners lift like hands to wave,
   // and every so often they give themself a big fluff, squishing like a real cushion.
   cushion(){const g=G(),b=G();g.add(b);const C=M(0xFF7DB9,{roughness:.78}),Pp=M(0xF0609F,{roughness:.75}),T=M(0xFFD23F,{roughness:.7}),Lv=M(0xC9A0F0,{roughness:.6}),
-      Bl=M(0x86BDF2,{roughness:.8}),Ft=M(0xB9A8B0,{roughness:.8}),Bd=[M(0xFF5FA8,{roughness:.3}),M(0x6FB6FF,{roughness:.3}),M(0xFF9A3C,{roughness:.3}),M(0xA6E22E,{roughness:.3})];
-    C.detail=1;Pp.detail=1;T.detail=1;Bl.detail=1;Ft.detail=3;
+      Bl=M(0x86BDF2,{roughness:.8}),Ft=M(0xD6C3E8,{roughness:.8}),Bd=[M(0xFF5FA8,{roughness:.3}),M(0x6FB6FF,{roughness:.3}),M(0xFF9A3C,{roughness:.3}),M(0xA6E22E,{roughness:.3})];
+    C.detail=1;Pp.detail=1;T.detail=1;Bl.detail=1;Ft.detail=1;
     const W=.52,Hh=.42,D=.27,body=piv(b,0,.74,0);
     // the cushion has its own geometry: the top corners lift (wave, cheer), so its vertices are moved each frame
     const cg=cushionGeo(W,Hh,D,{hump:.06,pinch:.14,n:3.4,lump:th=>.025*Math.sin(3*th+1)});cg.dyn=1;cg.bs={c:[0,0,0],r:.9};const P0=Float32Array.from(cg.pos);
@@ -7169,7 +7171,9 @@ const KEEPERS={
       ol(add(mg,gcache('cu_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.04,0);m.quadraticCurveTo(0,.01,.04,0);m.bezierCurveTo(.04,-.055,-.04,-.055,-.04,0);return bend(new THREE.ExtrudeGeometry(m,{depth:.01}))}),M(0x7A1036,{roughness:.6}),0,0,0),.006);
       const tg=add(mg,SPH(1,14,10),M(0xFF6F9F,{roughness:.6}),0,-.034,.005);tg.scale.set(.025,.012,.006);ol(tg,0)}
     // stubby feet
-    [[-.2,.1],[.2,.1],[-.2,-.12],[.2,-.12]].forEach(([x,z])=>ol(sp(b,.15,Ft,x,.13,z,1,.62,1.1),.01));
+    // little plush feet: a stitched seam round each, and a bead on the front pair
+    [[-.2,.1],[.2,.1],[-.2,-.12],[.2,-.12]].forEach(([x,z],i)=>{ol(sp(b,.15,Ft,x,.13,z,1,.62,1.1),.01);const sm=to(b,.148,.012,Pp,x,.11,z,Math.PI/2);sm.scale.set(1,1.1,1);sm.outline=.003;
+      if(z>0){sp(b,.028,Bd[i%4],x,.19,z+.13).outline=.003}});
     let fluffT=5,fp=9;const ES={};
     return{g,head:body,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';dt=Math.min(dt,.05);
       fluffT-=dt;if(fluffT<0&&!talk&&act==='idle'){fluffT=6+Math.random()*4;fp=0}fp+=dt;
@@ -8153,7 +8157,7 @@ function buildShop(key){const S=SHOPS[key],root=G(),objs=new Map(),items=new Map
   // staff-only rooms: everything in them is greyed out and can't be tapped
   objs.forEach((o,id)=>{if(items.get(id).locked){greyObj(o);o.userData.locked=1}});
   // a shop can have more than one keeper (S.keepers); tapping one with a service (svc) opens it
-  const KQ=(S.keepers||[{k:S.keeper,x:S.kx,z:S.kz,g:S.kg}]).map(q=>P&&q.g?Object.assign({},q,{x:planGX(P,q.g[0]),z:planGZ(P,q.g[1])}):q),KS=KQ.map((q,i)=>{const K=KEEPERS[q.k]();K.g.userData.keeper=i+1;bakeKeeper(K,q.k);K.g.position.set(q.x,.5,q.z);K.g.scale.setScalar(1.22);rb(P?lvG[0]:root,1.1,.5,.9,.05,M(0xE9DDF7,{roughness:.6}),q.x,.25,q.z);K.g.userData.keeper=i+1;{const L=G();K.g.children.slice().forEach(c=>L.add(c));K.g.add(L);K.layer=L}
+  const KQ=(S.keepers||[{k:S.keeper,x:S.kx,z:S.kz,g:S.kg}]).map(q=>P&&q.g?Object.assign({},q,{x:planGX(P,q.g[0]),z:planGZ(P,q.g[1])}):q),KS=KQ.map((q,i)=>{const K=KEEPERS[q.k]();K.g.userData.keeper=i+1;kPolish(K,q.k);bakeKeeper(K,q.k);K.g.position.set(q.x,.5,q.z);K.g.scale.setScalar(1.22);kPodium(P?lvG[0]:root,q.x,q.z,S.color);K.g.userData.keeper=i+1;{const L=G();K.g.children.slice().forEach(c=>L.add(c));K.g.add(L);K.layer=L}
     Object.assign(K,{act:'idle',k:0,d:1,svc:q.svc||S.svc,lines:q.lines||S.lines,n:q.n||'',kind:q.k});(P?lvG[0]:root).add(K.g);(P?lvExtra[0]:extra).push(new THREE.Box3(new THREE.Vector3(q.x-.6,0,q.z-.6),new THREE.Vector3(q.x+.6,2,q.z+.6)));return K});
   clearKeepers(KQ,KS,objs,items);
   const A={key,def:S,root,objs,items,extra,keeper:KS[0],keepers:KS,tf:S.tf(),tw:S.tw(),arch:AR.blocks,archFaces:AR.faces,archTiles:AR.tiles};
@@ -8202,6 +8206,15 @@ const BAKE_MOVING={};
 // snapshot of what can move: transforms, visibility and (for meshes) animated material values
 const bakeSnap=o=>{const q=[o.position.x,o.position.y,o.position.z,o.rotation.x,o.rotation.y,o.rotation.z,o.scale.x,o.scale.y,o.scale.z,o.visible?1:0];if(o.isMesh){const mt=o.material;q.push(mt.emissiveIntensity||0,mt.opacity,mt.color.r,mt.color.g,mt.color.b)}return q.map(v=>Math.round(v*1e4)).join(',')};
 function bakeWatch(nodes,steps,run){const s0=nodes.map(bakeSnap),mv=new Set();for(let i=0;i<steps;i++){try{run(i)}catch(_){}nodes.forEach((m,j)=>{if(!mv.has(j)&&bakeSnap(m)!==s0[j])mv.add(j)})}return mv}
+// the keeper's podium behind the counter (top at y .5): plinth, cream body with panel insets, gold band and a mat in the shop's colour
+function kPodium(par,x,z,c){const g=G(),sc=parseInt(String(c||'#FF8A1C').slice(1),16),Cr=M(0xFFF6EC,{roughness:.55}),Tr=M(lighten(sc,.5),{roughness:.75}),Dk=M(darken(sc,.25),{roughness:.5}),Gd=M(0xFFD21F,{roughness:.3,metalness:.35}),Pn=M(lighten(sc,.78),{roughness:.6});Cr.detail=3;Tr.detail=1;
+  ol(rb(g,1.12,.06,.92,.03,Dk,0,.03,0),.006);ol(rb(g,1.06,.34,.86,.08,Cr,0,.23,0),.008);ol(rb(g,1.1,.035,.9,.017,Gd,0,.415,0),.004);ol(rb(g,1.02,.07,.82,.035,Tr,0,.46,0),.006);
+  [[0,.435],[0,-.435],[.535,0],[-.535,0]].forEach(([px,pz])=>ol(rb(g,px?.02:.82,.2,pz?.02:.62,.012,Pn,px,.23,pz),.003));
+  g.position.set(x,0,z);par.add(g);bakeStatic(g);return g}
+// fidelity pass on a keeper before it's baked: a soft rim light on every surface, and a fabric weave on the plush ones
+const K_PLUSH={cushion:1,baker:1,tailor:1},K_JELLY={stylist:1};
+function kPolish(K,kind){const seen=new Set();K.g.traverse(o=>{const m=o.isMesh&&o.material;if(!m||seen.has(m))return;seen.add(m);if(m.basic||m.transparent)return;
+  m.rim=(m.emissiveIntensity||0)>.5?0:.34;if(m.map||(m.detail|0)||m.metalness>.2)return;if(K_PLUSH[kind])m.detail=1;else if(K_JELLY[kind]){m.detail=4;m.roughness=Math.min(m.roughness,.35)}})}
 function bakeKeeper(K,kind){const nodes=[];K.g.traverse(o=>nodes.push(o));let mv=BAKE_MOVING[kind];
   if(!mv){let t=0;const plan=[['idle',0,320],['idle',1,60],['greet',0,30],['cheer',0,30],['idle',0,40]],seq=[];plan.forEach(([a,talk,n])=>{for(let i=0;i<n;i++)seq.push([a,talk,i/n])});
     mv=BAKE_MOVING[kind]=bakeWatch(nodes,seq.length,i=>{t+=.1;const[a,talk,p]=seq[i];K.upd(.1,t,a,a==='idle'?0:p,!!talk)})}
@@ -9315,7 +9328,7 @@ function kPanel(view,dir){const P=$('#kpanel'),B=KBIB[kmode.kind],was=P.classLis
   P.querySelectorAll('[data-kr]').forEach(b=>b.onclick=()=>{const r=kmode.replies[+b.dataset.kr];kmode.replies=null;KB.q=[];kbShow(kFill(r[1]),kmode.K);keeperReact('cheer',1.2,kmode.K);kPanel('chat',-1)});
   requestAnimationFrame(fitSheet);setTimeout(fitSheet,320)}
 function kOpen(K){if(!away||!K)return;const kind=K.kind,B=KBIB[kind];if(!B){keeperReact('greet',1.8,K);keeperSay(pick1(K.lines.hi),K);return}
-  closeProduct();if(openTab)setTab(null);setFollow(false);closeWheel();kmode={K,kind,view:'menu',shop:away};try{const B_=new THREE.Box3().setFromObject(K.g);kmode.y0=B_.min.y;kmode.hk=Math.max(.8,B_.max.y-B_.min.y)}catch(_){kmode.y0=0;kmode.hk=2}away.keeper=K;document.body.classList.add('kmode');keeperReact('greet',1.8,K);
+  closeProduct();if(openTab)setTab(null);setFollow(false);closeWheel();$('#toast').classList.remove('on');kmode={K,kind,view:'menu',shop:away};try{const B_=new THREE.Box3().setFromObject(K.g);kmode.y0=B_.min.y;kmode.hk=Math.max(.8,B_.max.y-B_.min.y)}catch(_){kmode.y0=0;kmode.hk=2}away.keeper=K;document.body.classList.add('kmode');keeperReact('greet',1.8,K);
   const lv=kfLevel(kfOf(kind).p),g=lv>=2&&B.hiF&&Math.random()<.55?pick1(B.hiF):pick1(B.hi[kTod()]);kPanel('menu',0);KB.q=[];setTimeout(()=>{if(kmode&&kmode.K===K)kbShow(kFill(g),K)},280)}
 function kClose(quiet){if(!kmode)return;if(openTab==='shopcat'){kmode.view='closing';setTab(null)}const P=$('#kpanel'),K=kmode.K,B=KBIB[kmode.kind];P.classList.remove('on');setTimeout(()=>{if(!kmode)P.hidden=true},420);kmode=null;document.body.classList.remove('kmode');
   const sh=$('#sheet');if(openTab==='shopcat')setTab(null);sh.classList.remove('kshop');requestAnimationFrame(fitSheet);if(B&&away&&!quiet){KB.q=[];setTimeout(()=>away&&!kmode&&kbShow(kFill(pick1(B.bye)),K),120)}else{KB.q=[];kbT=0;$('#kbub').hidden=true}}
@@ -11236,7 +11249,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=46;
+const APP_V=47;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
