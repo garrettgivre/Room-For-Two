@@ -774,6 +774,10 @@ body.styling .storechip{opacity:0}
 .pw-n:active .lab{transform:translateY(3px)}
 .pw-n.low .ring{animation:wig 1s ease-in-out infinite}
 .pw-n:active .ring{transform:translateY(3px)}
+.mw .pw-n .ring{background:var(--tc)}.mw .pw-n>img{width:42px;height:42px}
+.mw .pw-n .badge{display:flex;top:-6px;right:-6px;z-index:3;pointer-events:none}
+.mw .pw-c{background:radial-gradient(circle at 35% 28%,#fff 0 18%,transparent 19%),linear-gradient(180deg,#F4FFD9,#CFEF8A)}.mw .pw-c b{color:#fff;font-size:15px}.mw .pw-c svg{margin-bottom:2px}
+.mw .pw-who{position:absolute;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 70px);font-family:var(--disp);font-size:13px;color:#fff;text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink);white-space:nowrap}
 .pw-hint{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 140px);white-space:nowrap;font-family:var(--disp);font-size:14px;color:#fff;text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink);opacity:0;transition:opacity .3s .25s}
 .petwheel.on .pw-hint{opacity:1}
 .pw-w{left:-27px;top:80px;width:54px;height:50px;border-radius:50% 50% 50% 18%;background:#fff;border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);animation:wig 1.8s ease-in-out infinite}
@@ -877,7 +881,7 @@ body.styling .storechip{opacity:0}
   <button class="dk dk-main" id="dkExplore" aria-label="Explore the town"><span class="dk-ic"><svg viewBox="0 0 48 48" aria-hidden="true"><g stroke="#3B1273" stroke-width="3" stroke-linejoin="round"><path d="M5 12l13-5 12 5 13-5v29l-13 5-12-5-13 5z" fill="#A6E22E"/><path d="M18 7l12 5v29l-12-5z" fill="#7FD8F5"/></g><path d="M24 31c-5.5-6.5-8-9.5-8-13a8 8 0 0 1 16 0c0 3.5-2.5 6.5-8 13z" fill="#FFD21F" stroke="#3B1273" stroke-width="3" stroke-linejoin="round"/><circle cx="24" cy="18" r="3" fill="#fff" stroke="#3B1273" stroke-width="2"/></svg></span><b>Explore</b></button>
   <button class="dk dk-side" id="dkMenu" aria-label="Menu" aria-expanded="false"><span class="dk-ic"><svg viewBox="0 0 48 48" aria-hidden="true"><g stroke="#3B1273" stroke-width="3"><rect x="6" y="6" width="16" height="16" rx="5" fill="#FF3D9A"/><rect x="26" y="6" width="16" height="16" rx="5" fill="#3EC8F2"/><rect x="6" y="26" width="16" height="16" rx="5" fill="#A6E22E"/><rect x="26" y="26" width="16" height="16" rx="5" fill="#9B4DF2"/></g><g fill="#fff" opacity=".65"><rect x="9.5" y="9.5" width="7" height="3" rx="1.5"/><rect x="29.5" y="9.5" width="7" height="3" rx="1.5"/><rect x="9.5" y="29.5" width="7" height="3" rx="1.5"/><rect x="29.5" y="29.5" width="7" height="3" rx="1.5"/></g></svg></span><b>Menu</b><span class="badge" id="mailBadge">0</span></button>
 </div>
-<div class="petwheel" id="petwheel" hidden></div>
+<div class="petwheel" id="petwheel" hidden></div><div class="petwheel mw" id="menuwheel" hidden></div>
 
 <div class="toast" id="toast"></div>
 
@@ -8724,9 +8728,9 @@ function updHUD(){updWish();$('#hearts').textContent=state.hearts;
   // the ring round the Pet button is the pet's overall mood; it wiggles when a need runs low
   const s=petStats(),st=stageOf(state.pet.xp),avg=st?NEEDS.reduce((a,n)=>a+Math.min(100,s[n[0]]),0)/NEEDS.length:100,r=$('#dkRing');
   r.style.setProperty('--rv',avg|0);r.style.setProperty('--rc',avg<35?'#FF5A5A':avg<65?'#FFD21F':'#A6E22E');$('#dkPet').classList.toggle('low',!!st&&NEEDS.some(n=>n[0]!=='affection'&&s[n[0]]<25));
-  updPresence();tdUI();if(wheelOn())renderWheel()}
+  updPresence();tdUI();if(!$('#petwheel').hidden)renderWheel()}
 // the Menu button's badge: unread mail, plus a "!" when the two-do treat is waiting
-function updMenuBadge(){if(!state||!state.td)return;const un=unread(),T=state.td,treat=T.done.length>=T.list.length&&!T.gift,n=un+(treat?1:0),b=$('#mailBadge');b.textContent=treat&&!un?'!':n;b.classList.toggle('on',n>0&&openTab!=='menu')}
+function updMenuBadge(){if(!state||!state.td)return;const un=unread(),T=state.td,treat=T.done.length>=T.list.length&&!T.gift,n=un+(treat?1:0),b=$('#mailBadge');b.textContent=treat&&!un?'!':n;b.classList.toggle('on',n>0)}
 
 /* ================= PEOPLE ================= */
 let userCap=null,myId=null;const names={};
@@ -10113,9 +10117,9 @@ function fxScores(){const g=G();rb(g,1.9,1.24,.08,.06,M(0xB07BFF,{roughness:.4})
 let openTab=null;const thumbs={};
 // the dock: Explore (the town map; the way home from a shop), Pet (the care wheel) and Menu (everything else)
 $('#dkExplore').onclick=()=>{closeWheel();setTab(null);showMap()};
-$('#dkMenu').onclick=()=>{closeWheel();setTab(openTab==='menu'?null:'menu')};
+$('#dkMenu').onclick=()=>{if(!$('#menuwheel').hidden&&$('#menuwheel').classList.contains('on')){closeMenuWheel();return}setTab(null);openMenuWheel()};
 $('#dkPet').onclick=()=>{if(wheelOn()){closeWheel();return}setTab(null);openWheel()};
-$('#sback').onclick=()=>{if(openTab==='pet'){setTab(null);openWheel();return}setTab('menu')};
+$('#sback').onclick=()=>{if(openTab==='pet'){setTab(null);openWheel();return}setTab(null);openMenuWheel()};
 $('#petwheel').onclick=e=>{if(e.target.id==='petwheel')closeWheel()};
 /* ---------- Menu and the pet wheel ---------- */
 // Menu: one screen of big labelled tiles; each opens its page with a "Menu" back button in the same corner.
@@ -10126,16 +10130,21 @@ const MENU_ITEMS=[['decorate','Decorate','tab-decorate','#FFB35C','Furniture, fl
   ['room','Room & sharing','tab-room','#fff','Light, invite, names','s'],['debug','Debug','','#EDE6F5','Testing tools','']],MENU_KIDS=MENU_ITEMS.map(m=>m[0]);
 function ringSvg(v,sz,w){const r=(sz-w)/2-1,c=2*Math.PI*r;return`<svg viewBox="0 0 ${sz} ${sz}" aria-hidden="true"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" class="tr"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" class="pr" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c*(1-Math.max(.02,Math.min(1,v)))).toFixed(1)}"/></svg>`}
 let dbgOpen='Pet stage';
-function renderMenu(body){const T=state.td,n=T.done.length,m=T.list.length,treat=n>=m&&!T.gift,un=unread();
-  const extra={todo:treat?'<i class="badge">!</i>':`<i class="badge" style="background:#fff">${n}/${m}</i>`,journal:unreadOf('journal')?`<i class="badge">${unreadOf('journal')}</i>`:'',inbox:unreadOf('inbox')?`<i class="badge">${unreadOf('inbox')}</i>`:'',steps:unreadOf('steps')?`<i class="badge">${unreadOf('steps')}</i>`:''};
-  body.innerHTML=`<div class="mn-head"><h2>Menu</h2><span class="mn-who">${esc($('#presence').textContent)}</span></div><button class="mn-refresh" id="mnRefresh"><span class="mi"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#3B1273" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 3v5h-5"/></svg></span><span class="mt"><b>Refresh app</b><small>Get the latest version after an update · v${APP_V}</small></span></button><div class="mn-sec">Home & pet</div><div class="mn-grid">${MENU_ITEMS.filter(m=>m[5]==='h').map(([k,nm,ic,c,sub])=>`<button class="mn-t" data-mn="${k}" style="--tc:${c}"><span class="mi">${ic?`<img src="${ico(ic)}" alt="">`:BUG_SVG}</span>${nm}<small>${sub}</small>${extra[k]||''}</button>`).join('')}</div><div class="mn-sec">Together</div><div class="mn-grid">${MENU_ITEMS.filter(m=>m[5]==='t').map(([k,nm,ic,c,sub])=>`<button class="mn-t" data-mn="${k}" style="--tc:${c}"><span class="mi">${ic?`<img src="${ico(ic)}" alt="">`:BUG_SVG}</span>${nm}<small>${sub}</small>${extra[k]||''}</button>`).join('')}</div>${MENU_ITEMS.filter(m=>m[5]==='s').map(([k,nm,ic,c,sub])=>`<button class="mn-row" data-mn="${k}"><span class="mi"><img src="${ico(ic)}" alt=""></span><span class="mt"><b>${nm}</b><small>${sub}</small></span><i class="chev">›</i></button>`).join('')}`;
-  $('#mnRefresh').onclick=hardRefresh;
-  body.querySelectorAll('[data-mn]').forEach(b=>b.onclick=()=>{const t=b.dataset.mn;if(away&&(t==='decorate'||t==='room')){travelTo('home',()=>setTab(t));return}setTab(t)})}
+function menuBadges(){const T=state.td,n=T.done.length,m=T.list.length,treat=n>=m&&!T.gift,u=k=>unreadOf(k)?`<i class="badge">${unreadOf(k)}</i>`:'';
+  return{todo:treat?'<i class="badge">!</i>':`<i class="badge" style="background:#fff">${n}/${m}</i>`,journal:u('journal'),inbox:u('inbox'),steps:u('steps')}}
+function renderMenuWheel(){const w=$('#menuwheel');if(w._busy)return;const items=MENU_ITEMS.filter(m=>m[0]!=='debug'),R=Math.min(132,innerWidth*.33),ex=menuBadges();
+  const nodes=items.map(([k,nm,ic,c],i)=>{const a=-Math.PI/2+i*Math.PI*2/items.length,x=Math.round(Math.cos(a)*R),y=Math.round(Math.sin(a)*R);return`<button class="pw-n" data-mn="${k}" data-x="${x}" data-y="${y}" style="--x:${x}px;--y:${y}px;--tc:${c}" aria-label="${nm}"><span class="ring"></span><img src="${ico(ic)}" alt="">${arcLabel(nm,a,false)}${ex[k]||''}</button>`}).join('');
+  w.innerHTML=`<div class="pw" style="--cy:${Math.round(innerHeight*.5)}px">${nodes}<button class="pw-c" id="mwRef"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#3B1273" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 3v5h-5"/></svg><b>Refresh app</b><small>v${APP_V}</small></button></div><div class="pw-who">${esc($('#presence').textContent)}</div><div class="pw-hint">Tap one to open it</div>`;
+  $('#mwRef').onclick=hardRefresh;
+  w.querySelectorAll('[data-mn]').forEach(b=>b.onclick=()=>{const t=b.dataset.mn;closeMenuWheel();if(away&&(t==='decorate'||t==='room')){travelTo('home',()=>setTab(t));return}setTab(t)})}
+function openMenuWheel(){closePetWheel();const w=$('#menuwheel');clearTimeout(w._to);w._busy=0;renderMenuWheel();w.hidden=false;w._busy=1;wheelAnim(true,'#menuwheel','#dkMenu');$('#dkMenu').setAttribute('aria-expanded',true);requestAnimationFrame(()=>w.classList.add('on'));w._to=setTimeout(()=>{w._busy=0},650)}
+function closeMenuWheel(){const w=$('#menuwheel');if(w.hidden||!w.classList.contains('on'))return;w._busy=1;wheelAnim(false,'#menuwheel','#dkMenu');w.classList.remove('on');$('#dkMenu').setAttribute('aria-expanded',false);clearTimeout(w._to);w._to=setTimeout(()=>{w._busy=0;if(!w.classList.contains('on'))w.hidden=true},300)}
+$('#menuwheel').onclick=e=>{if(e.target.id==='menuwheel')closeMenuWheel()};
 // Pet wheel: tap Pet and the pet's needs fan out round it; tap a need to help with it, tap the middle for the pet's page.
-const wheelOn=()=>!$('#petwheel').hidden;
-function wheelAnim(open){const w=$('#petwheel'),pw=w.querySelector('.pw');if(!pw||!pw.animate)return;
+const wheelOn=()=>!$('#petwheel').hidden||!$('#menuwheel').hidden;
+function wheelAnim(open,wid,bid){const w=$(wid||'#petwheel'),pw=w.querySelector('.pw');if(!pw||!pw.animate)return;
   (pw._an||[]).forEach(a=>a.cancel());const an=pw._an=[],go=(el,kf,o)=>{if(el)an.push(el.animate(kf,o))};
-  const bt=$('#dkPet').getBoundingClientRect(),cr=pw.getBoundingClientRect(),dx=bt.left+bt.width/2-cr.left,dy=bt.top+bt.height*.4-cr.top,c=pw.querySelector('.pw-c'),ns=[...pw.querySelectorAll('.pw-n')],n=ns.length,T=(x,y,sx,sy)=>`translate(${x}px,${y}px) scale(${sx},${sy})`;
+  const bt=$(bid||'#dkPet').getBoundingClientRect(),cr=pw.getBoundingClientRect(),dx=bt.left+bt.width/2-cr.left,dy=bt.top+bt.height*.4-cr.top,c=pw.querySelector('.pw-c'),ns=[...pw.querySelectorAll('.pw-n')],n=ns.length,T=(x,y,sx,sy)=>`translate(${x}px,${y}px) scale(${sx},${sy})`;
   if(open){
     go(c,[{transform:T(dx,dy,.2,.08),opacity:0,offset:0},{transform:T(dx*.6,dy*.6,.45,1.35),opacity:1,offset:.28},{transform:T(dx*.12,dy*.12,.8,1.14),opacity:1,offset:.62},{transform:T(0,0,1.07,.94),opacity:1,offset:.82},{transform:T(0,0,1,1),opacity:1,offset:1}],{duration:280,easing:'cubic-bezier(.3,.1,.3,1)'});
     ns.forEach((b,i)=>{const x=+b.dataset.x,y=+b.dataset.y,l=b.querySelector('.lab');
@@ -10146,8 +10155,9 @@ function wheelAnim(open){const w=$('#petwheel'),pw=w.querySelector('.pw');if(!pw
     ns.forEach((b,i)=>{const x=+b.dataset.x,y=+b.dataset.y;go(b,[{transform:T(x,y,1,1),opacity:1},{transform:T(0,0,.25,.25),opacity:0}],{duration:150,delay:(n-1-i)*15,easing:'cubic-bezier(.5,0,.8,.4)',fill:'forwards'})});
     go(pw.querySelector('.pw-w'),[{opacity:1,scale:1},{opacity:0,scale:.3}],{duration:100,easing:'ease-in',fill:'forwards'});
     go(c,[{transform:T(0,0,1,1),opacity:1,offset:0},{transform:T(0,0,1.06,.95),opacity:1,offset:.18},{transform:T(dx*.12,dy*.12,.8,1.14),opacity:1,offset:.38},{transform:T(dx*.6,dy*.6,.45,1.35),opacity:1,offset:.72},{transform:T(dx,dy,.2,.08),opacity:0,offset:1}],{duration:210,delay:70,easing:'cubic-bezier(.5,0,.75,.5)',fill:'forwards'})}}
-function openWheel(){const w=$('#petwheel');clearTimeout(w._to);w._busy=0;renderWheel();w.hidden=false;w._busy=1;wheelAnim(true);$('#dkPet').setAttribute('aria-expanded',true);requestAnimationFrame(()=>w.classList.add('on'));w._to=setTimeout(()=>{w._busy=0},650)}
-function closeWheel(){const w=$('#petwheel');if(w.hidden||!w.classList.contains('on'))return;w._busy=1;wheelAnim(false);w.classList.remove('on');$('#dkPet').setAttribute('aria-expanded',false);clearTimeout(w._to);w._to=setTimeout(()=>{w._busy=0;if(!w.classList.contains('on'))w.hidden=true},300)}
+function openWheel(){closeMenuWheel();const w=$('#petwheel');clearTimeout(w._to);w._busy=0;renderWheel();w.hidden=false;w._busy=1;wheelAnim(true);$('#dkPet').setAttribute('aria-expanded',true);requestAnimationFrame(()=>w.classList.add('on'));w._to=setTimeout(()=>{w._busy=0},650)}
+function closeWheel(){closePetWheel();closeMenuWheel()}
+function closePetWheel(){const w=$('#petwheel');if(w.hidden||!w.classList.contains('on'))return;w._busy=1;wheelAnim(false);w.classList.remove('on');$('#dkPet').setAttribute('aria-expanded',false);clearTimeout(w._to);w._to=setTimeout(()=>{w._busy=0;if(!w.classList.contains('on'))w.hidden=true},300)}
 function arcLabel(nm,a,low){const cx=70,cy=70,top=Math.sin(a)<=-.2,r=top?46:57,sp=1.05,t1=top?a-sp:a+sp,t2=top?a+sp:a-sp,P=t=>`${(cx+r*Math.cos(t)).toFixed(1)} ${(cy+r*Math.sin(t)).toFixed(1)}`,id='pwa'+Math.round((a+4)*100);
   return`<svg class="lab" viewBox="0 0 140 140" aria-hidden="true"><path id="${id}" d="M${P(t1)} A${r} ${r} 0 0 ${top?1:0} ${P(t2)}" fill="none"/><text text-anchor="middle"><textPath href="#${id}" startOffset="50%">${esc(nm)}${low?' <tspan class="bang">!</tspan>':''}</textPath></text></svg>`}
 function renderWheel(){const w=$('#petwheel');if(w._busy)return;const p=state.pet,st=stageOf(p.xp),s=petStats(),R=Math.min(128,innerWidth*.32),Wd=state.wish,wish=Wd&&Wd.k&&WISH_T[Wd.k]&&st>0;
@@ -10318,7 +10328,6 @@ function renderSheet(){const body=$('#sheetBody');
     const grid=$('#tray');grid.addEventListener('touchmove',e=>{if(decoHolding)e.preventDefault()},{passive:false});
     renderDeco(false);grid.scrollTop=keep}
 
-  else if(openTab==='menu')renderMenu(body);
   else if(openTab==='pet'){const p=state.pet,st=stageOf(p.xp),s=petStats(),P=persOf();
     const next=STAGE_XP[st+1];
     if(st>0&&petView){const kind=petView,title={food:'Pantry',groom:'Grooming',toy:'Toy box'}[kind],act={food:'feed',groom:'bath',toy:'play'}[kind];
@@ -10566,7 +10575,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=26;
+const APP_V=27;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

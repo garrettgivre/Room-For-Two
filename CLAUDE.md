@@ -202,3 +202,6 @@ Each shop in the town view is a novelty building from `TM_BODY[k]` (before `tmHo
 
 ## Menu cleanup (Sept 2026, v26)
 - `MENU_ITEMS` entries carry a group (6th field): `h` Home & pet (Decorate, Wardrobe, Journal), `t` Together (Two-dos, Inbox, Footprints), `s` a slim row (Room & sharing), `''` hidden (Debug, reached from Room & sharing > More). The old floors/walls shortcuts and room-size hint were dropped from the Room page (Decorate already has them); room code, reset and debug sit in a collapsed `.adv` section.
+
+## Floating menu (Sept 2026, v27)
+- The Menu button (`#dkMenu`) opens a floating cluster like the pet wheel, not a sheet: `#menuwheel` (`.petwheel.mw`), `openMenuWheel`/`closeMenuWheel`/`renderMenuWheel`, same `wheelAnim(open,wid,bid)` (2D transforms only) fanning out of the Menu button. Seven `MENU_ITEMS` (not Debug) ring round a centre **Refresh app** circle with `v${APP_V}`; badges from `menuBadges()`. `wheelOn()` covers both wheels, `closeWheel()` closes both. The sheet's back button (`#sback`, "Menu") reopens the cluster. `renderMenu` and the `openTab==='menu'` sheet are gone. `APP_V` 27, CACHE v27.
