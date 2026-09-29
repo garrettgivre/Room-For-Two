@@ -479,7 +479,7 @@ body.styling .sheet{max-height:min(46%,420px)}.followpill img{width:26px;height:
 body.gaming #emotes,body.gaming .kbub{display:none!important}
 /* town map (3D) */
 .town3{position:fixed;inset:0;z-index:31;background:rgba(59,18,115,.12);opacity:0;transition:opacity .3s;overflow:hidden}.town3.on{opacity:1}.town3[hidden]{display:none}
-.tm-pop{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 4vh);width:min(94vw,600px);height:min(76vh,700px);margin-left:calc(min(94vw,600px)/-2);background:none;overflow:visible;transform:scale(.04);opacity:0;transition:transform .42s cubic-bezier(.2,1.15,.3,1),opacity .2s}.town3.on .tm-pop{transform:none;opacity:1}
+.tm-pop{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 4vh);width:min(94vw,600px);height:min(76vh,700px);margin-left:calc(min(94vw,600px)/-2);background:none;overflow:visible;transform-origin:0 0}
 #tmc{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
 .tm-top{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 10px);display:flex;align-items:center;gap:10px;padding:0 12px;pointer-events:none}.tm-top>*{pointer-events:auto}
 .tm-top b{flex:1;font-family:var(--disp);font-weight:400;font-size:26px;color:#fff;letter-spacing:.02em;text-shadow:2.5px 0 var(--ink),-2.5px 0 var(--ink),0 2.5px var(--ink),0 -2.5px var(--ink),2px 2px var(--ink),-2px 2px var(--ink),2px -2px var(--ink),-2px -2px var(--ink);pointer-events:none}
@@ -8336,10 +8336,18 @@ function tmTap(cx,cy){tmCell(cx,cy);const hits=tm.ray.intersectObjects([...Objec
 function tmRoad(gx,gz,val){const m=state.tmap;if(gx<0||gz<0||gx>=TM_W||gz>=TM_D)return val;const i=m.r.findIndex(q=>q[0]===gx&&q[1]===gz),has=i>-1,want=val==null?!has:val;if(want===has)return want;
   if(want){const t=tmTaken(m).get(gx+','+gz);if(t&&t.startsWith('b:'))return want;m.r.push([gx,gz])}else m.r.splice(i,1);tmPaths();saveSoon();return want}
 // ---------- open, close, input, frame ----------
-function tmOpen(){const T=tmInit();if(!T)return false;state.tmap=tmNorm(state.tmap);tmSync(false);const el=$('#town3');el.hidden=false;tmOrigin();requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('on')));T.open=true;tmArrange(false);$('#tmArr').hidden=false;
+function tmOpen(){const T=tmInit();if(!T)return false;state.tmap=tmNorm(state.tmap);tmSync(false);const el=$('#town3');el.hidden=false;el.classList.add('on');tmGenie(true);T.open=true;tmArrange(false);$('#tmArr').hidden=false;
   const here=away?away.key:'home';$('#tmTitle').textContent=away?'Where next?':'Where to?';tmLast=performance.now();requestAnimationFrame(tmTick);return true}
-function tmOrigin(){const pp=$('#tmPop'),b=$('#dkExplore').getBoundingClientRect();pp.style.transformOrigin=(b.left+b.width/2-pp.offsetLeft)+'px '+(b.top+b.height/2-pp.offsetTop)+'px'}
-function tmClose(){if(!tm||!tm.open)return;tm.open=false;const el=$('#town3');tmOrigin();el.classList.remove('on');setTimeout(()=>{if(!tm.open)el.hidden=true},450);$('#tmCard').hidden=true;clock.getDelta()}
+function tmQuad(W,H,q){const[x0,y0,x1,y1,x2,y2,x3,y3]=q,dx1=x1-x2,dx2=x3-x2,dx3=x0-x1+x2-x3,dy1=y1-y2,dy2=y3-y2,dy3=y0-y1+y2-y3,D=dx1*dy2-dx2*dy1,g=(dx3*dy2-dx2*dy3)/D,h=(dx1*dy3-dx3*dy1)/D,a=x1-x0+g*x1,b=x3-x0+h*x3,c=x0,d=y1-y0+g*y1,e=y3-y0+h*y3,f=y0;
+  return`matrix3d(${a/W},${d/W},0,${g/W},${b/H},${e/H},0,${h/H},0,0,1,0,${c},${f},0,1)`}
+let tmGA=0;
+function tmGenie(open){const pp=$('#tmPop'),bt=$('#dkExplore').getBoundingClientRect(),W=pp.offsetWidth,H=pp.offsetHeight,L=pp.offsetLeft,T=pp.offsetTop,bx=bt.left+bt.width/2,by=bt.top+bt.height*.35,bw=Math.max(10,bt.width*.5),dur=open?620:480,t0=performance.now(),id=++tmGA,E=x=>x<0?0:x>1?1:x*x*(3-2*x);
+  const fr=now=>{if(id!==tmGA)return;let p=Math.min(1,(now-t0)/dur);const q=open?p:1-p,et=E(Math.min(1,q*1.35)),eb=E(Math.max(0,(q-.28)/.72)),cx=L+W/2,
+    tx=bx+(cx-bx)*et,ty=by+(T-by)*et,tw=bw+(W-bw)*et,bxc=bx+(cx-bx)*eb,byc=by+(T+H-by)*eb,bwd=bw+(W-bw)*Math.pow(eb,1.6);
+    pp.style.opacity=Math.min(1,q*5);pp.style.transform=q>=1?'none':tmQuad(W,H,[tx-tw/2-L,ty-T,tx+tw/2-L,ty-T,bxc+bwd/2-L,byc-T,bxc-bwd/2-L,byc-T]);
+    if(p<1)requestAnimationFrame(fr);else{pp.style.opacity=open?'':0}};
+  pp.style.opacity=0;requestAnimationFrame(fr)}
+function tmClose(){if(!tm||!tm.open)return;tm.open=false;const el=$('#town3');tmGenie(false);el.classList.remove('on');setTimeout(()=>{if(!tm.open)el.hidden=true},520);$('#tmCard').hidden=true;clock.getDelta()}
 function tmFit(){const a=tm.cam.aspect,t=Math.tan(tm.cam.fov*Math.PI/360),r=Math.hypot(TM_W,TM_D)/2;return r/(t*Math.min(1,a*1.12)*1.05)}
 function tmTick(ts){if(!tm||!tm.open)return;requestAnimationFrame(tmTick);const dt=Math.min(.05,(ts-tmLast)/1000);tmLast=ts;tm.t+=dt;const pp=$('#tmPop'),W_=pp.clientWidth||innerWidth,H_=pp.clientHeight||innerHeight,R=tm.R;
   if(R.__w!==W_||R.__h!==H_){R.setPixelRatio(Math.min(2,devicePixelRatio||1));R.setSize(W_,H_,false);R.__w=W_;R.__h=H_;tm.cam.aspect=W_/H_;tm.cam.updateProjectionMatrix()}
