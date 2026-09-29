@@ -8224,17 +8224,37 @@ function tmMass(g,k,o){const P=SHOPS[k].plan,PS=TM_PS,{m,mD,h0=.78,h1=.6,r=.05,w
 function tmFoot2(k){const P=SHOPS[k].plan,PS=TM_PS,g=P.levels[0].grid,R=[];let open=[];for(let j=0;j<P.D;j++){let i=0;const nx=[];while(i<P.W){if(g[j][i]==='.'){i++;continue}let e=i;while(e+1<P.W&&g[j][e+1]!=='.')e++;const q=open.find(u=>u.i===i&&u.e===e);if(q){q.j1=j;nx.push(q)}else{const u={i,e,j0:j,j1:j};R.push(u);nx.push(u)}i=e+1}open=nx}
   return R.map(u=>({w:(u.e-u.i+1)*PS,d:(u.j1-u.j0+1)*PS,x:((u.i+u.e)/2-P.W/2+.5)*PS,z:((u.j0+u.j1)/2-P.D/2+.5)*PS}))}
 const TM_BODY={
-  snack(g,o){const {hw,hd}=o,W=hw*2,D=hd*2,J=(c,q)=>M(c,Object.assign({roughness:.5},q)),bun=J(0xE7A550,{roughness:.4}),RC=tmFoot2('snack'),G0=g,L=(y,h,ex,m,r)=>RC.forEach(q=>ol(rb(g,q.w+ex,h,q.d+ex*2,r,m,q.x+ex/2,y+h/2,q.z),.01));
-    const ms=tmMass(G0,'snack',{m:bun,mD:J(0xC88A3C),h0:.42,r:.08,ld:.1,wm:0xFFF3B0});g=piv(G0,0,.18,0);
-    {const bk=J(0xB5533C,{roughness:.8}),ch=ol(cy(G0,.13,.15,.75,bk,ms.X(1),.42+.37,ms.Z(1),12),.006);ol(to(G0,.13,.03,J(0x6B3A22),ms.X(1),1.17,ms.Z(1),Math.PI/2),.003)}
-    {const um=piv(G0,ms.X(8)+.05,0,ms.Z(7)+.02);ol(cy(um,.02,.02,.5,J(0xDDE3EE),0,.25,0,6),0);ol(co(um,.32,.16,M(0xffffff,{map:s1Stripe(0xFF8A1C,0xFFFFFF,10,true),roughness:.5}),0,.55,0,16),.005);ol(cy(um,.2,.2,.03,J(0xC98A5A),0,.06,0,14),.003)}L(.24,.18,.06,J(0x6B3A22,{roughness:.7}),.08);const ch=J(0xFFCB1F,{roughness:.3});L(.42,.05,.12,ch,.02);
-    [[.45,hd+.02],[-.3,hd+.02],[.5,-hd-.02],[-.5,-hd-.02]].forEach(([x,z],i)=>ol(rb(g,.14,.16+.05*(i%2),.06,.03,ch,x,.4,z),.004));[[hw+.04,.3],[hw+.04,-.4]].forEach(([x,z])=>ol(rb(g,.06,.2,.14,.03,ch,x,.38,z),.004));
-    L(.47,.1,.16,J(0x6ACB2F,{roughness:.45}),.05);const gr=J(0x58BE28,{roughness:.45});for(let i=0;i<12;i++){const t=i/11;[hd+.08,-hd-.08].forEach(z=>ol(sp(g,.075,gr,-hw+.1+t*(W-.1),.53,z,1,.7,1),.004))}for(let i=0;i<9;i++)ol(sp(g,.075,gr,hw+.08,.53,-hd+.1+i/8*(D-.2),1,.7,1),.004);
-    L(.57,.07,.06,J(0xE8384F,{roughness:.25}),.03);L(.64,.14,.04,J(0x6B3A22,{roughness:.7}),.06);
-    ol(sp(g,1,bun,.03,.78,0,hw*1.03,.62,hd*1.03),.012);const ss=J(0xFFF3D6,{roughness:.5});for(let i=0;i<30;i++){const th=i*2.4,ph=.15+((i*.37)%1)*.95,x=hw*1.03*Math.sin(ph)*Math.cos(th)*1.01,y=.78+.62*Math.cos(ph)*1.01,z=hd*1.03*Math.sin(ph)*Math.sin(th)*1.01;const s=sp(g,.05,ss,x,y,z,1.2,.5,.7);s.rotation.set(th,ph,i);s.outline=.002}
-    const kt=J(0xE8384F,{roughness:.2});[[-.2,-.3],[.35,.25]].forEach(([x,z])=>{ol(sp(g,1,kt,x,1.37,z,.22,.05,.16),.003)});
-    [[-.28,-.25,.22,-.1],[.28,.25,-.22,.1]].forEach(([x,z,r,rx])=>{const e=piv(g,x,1.25,z*.5);e.rotation.z=r;e.rotation.x=rx;ol(rb(e,.2,.62,.07,.06,bun,0,.31,0),.006);ol(rb(e,.1,.48,.02,.03,J(0xFFB3D1),0,.31,.045),0)});
-    return 2.15},
+  snack(g,o){const {hw,hd}=o,J=(c,q)=>M(c,Object.assign({roughness:.5},q)),Cr=J(0xFFF1DE,{roughness:.6}),Or=J(0xFF8A1C,{roughness:.45}),Wh=J(0xFFFFFF),Ink=J(0x3B1273,{roughness:.4});Cr.detail=3;
+    const bun=J(0xE9A24E,{roughness:.38}),bunL=J(0xF6C27A,{roughness:.4}),pat=J(0x6B3A22,{roughness:.75}),let_=J(0x6ACB2F,{roughness:.45}),tom=J(0xE8384F,{roughness:.3}),chs=J(0xFFC61F,{roughness:.3}),ss=J(0xFFF6DE,{roughness:.5});pat.detail=3;
+    const ms=tmMass(g,'snack',{m:Cr,mD:J(0xE8CFAE,{roughness:.7}),h0:.84,r:.05,ld:.12,wm:0xFFE7B0}),{X,Z}=ms;
+    // a checkered orange wainscot and a roof cap on every block
+    const Rf=J(0xFFA14A,{roughness:.6}),RfD=J(0xD99A62,{roughness:.75});Rf.detail=3;RfD.detail=3;const chk=M(0xffffff,{map:ctex(64,64,(x,w,h)=>{for(let i=0;i<4;i++)for(let j=0;j<4;j++){x.fillStyle=(i+j)%2?'#FF8A1C':'#FFF1DE';x.fillRect(i*16,j*16,16,16)}},null,1),roughness:.5});
+    ms.out.forEach(b=>{if(b.li)return;if(!b.lo)ol(rb(g,b.w+.035,.17,b.d+.035,.02,chk,b.x,.12,b.z),.004);ol(rb(g,b.w+.07,.06,b.d+.07,.03,b.lo?RfD:Rf,b.x,b.y+.03,b.z),.006);ol(rb(g,b.w+.08,.025,b.d+.08,.012,Wh,b.x,b.y+.005,b.z),.003)});
+    // kitchen chimney and a vent on the staff roof
+    {const bk=J(0xC8654A,{roughness:.8});bk.detail=3;ol(rb(g,.2,.42,.2,.02,bk,X(1),.84+.21,Z(1)),.005);ol(rb(g,.26,.05,.26,.02,Wh,X(1),1.28,Z(1)),.004);ol(cy(g,.06,.06,.12,J(0xDDE3EE,{metalness:.6,roughness:.3}),X(2.6),.95,Z(.6),12),.003);ol(co(g,.09,.07,J(0xDDE3EE,{metalness:.6,roughness:.3}),X(2.6),1.04,Z(.6),12),.003)}
+    // the burger on the bakery roof: bun, patty, cheese with drips, a wavy lettuce frill, tomato, sesame bun and bunny ears
+    {const bx=X(6.5),bz=Z(3.5),R=.72,ez=.86,y0=.9,B=piv(g,bx,y0,bz);B.scale.z=ez;
+      lathe(B,[[0,0],[.62,0],[.7,.03],[.72,.08],[.7,.13],[.64,.16],[0,.16]],bun,0,0,0,40);
+      lathe(B,[[0,.15],[.74,.15],[.78,.19],[.77,.25],[.72,.28],[0,.28]],pat,0,0,0,40);
+      {const P=[];for(let i=0;i<48;i++){const t=i/48*Math.PI*2,r=.86+Math.sin(i*1.5)*.05+(i%2?.02:0);P.push([Math.cos(t)*r,Math.sin(t)*r])}const lf=flat(B,P,.05,let_,0,.28,0);lf.rotation.x=-Math.PI/2;ol(lf,.005)}
+      {const c=piv(B,0,.335,0);c.rotation.y=.4;ol(rb(c,1.1,.035,1.1,.01,chs,0,0,0),.004);[[.55,.55],[-.55,.55],[.55,-.55],[-.55,-.55]].forEach(([x,z])=>{ol(sp(c,.07,chs,x,-.06,z,1,1.6,1),.003);ol(cy(c,.035,.05,.14,chs,x*.8,-.05,z*.8,8),.002)})}
+      [[.35,.2],[-.3,-.25],[.05,.45],[-.4,.3]].forEach(([x,z],i)=>{const tm_=ol(cy(B,.2,.2,.04,tom,x,.37,z,20),.003);tm_.rotation.z=(i%2?.05:-.05)});
+      const top=piv(B,0,.39,0);lathe(top,[[0,0],[.74,0],[.76,.05],[.72,.18],[.6,.34],[.42,.46],[.2,.52],[0,.53]],bun,0,0,0,40);
+      {const hl=sp(top,.24,bunL,-.22,.42,.2,1.3,.35,1);hl.outline=0}
+      for(let i=0;i<34;i++){const th=i*2.39996,f=Math.sqrt((i+.5)/34)*.62,x=Math.cos(th)*f,z=Math.sin(th)*f,rr_=Math.hypot(x,z),y=rr_<.2?.53:rr_<.42?.46+(.42-rr_)/.22*.07:rr_<.6?.34+(.6-rr_)/.18*.12:.2,sd=sp(top,.028,ss,x,y+.004,z,1.5,.55,.8);sd.rotation.y=-th;sd.rotation.z=-rr_*.9;sd.outline=0}
+      const ear=(sd,flop)=>{const e=piv(top,sd*.2,.46,-.05);e.rotation.z=-sd*.22;e.rotation.x=-.12;ol(rb(e,.17,.42,.08,.075,bun,0,.2,0),.006);ol(rb(e,.09,.32,.02,.04,J(0xFFB3D1,{roughness:.5}),0,.2,.038),.002);
+        const t2=piv(e,0,.4,0);t2.rotation.x=flop?.9:.1;t2.rotation.z=flop?sd*.2:0;ol(rb(t2,.16,.3,.075,.07,bun,0,.13,0),.006);ol(rb(t2,.08,.2,.02,.035,J(0xFFB3D1,{roughness:.5}),0,.12,.036),.002)};
+      ear(-1,false);ear(1,true);
+      // a toothpick with a little flag
+      ol(cy(top,.012,.012,.36,J(0xE8D2A6),.18,.62,.12,6),.002);{const fl=flat(top,[[0,0],[.16,.05],[0,.1]],.01,J(0xFF3D9A,{roughness:.4}),.19,.72,.12);ol(fl,.002)}}
+    // café awning with bunting on the patio side, and the patio tables
+    {const cz=Z(7)+.15,aw=piv(g,X(1.5),.66,cz+.1);aw.rotation.x=.45;ol(rb(aw,1.24,.03,.26,.012,M(0xffffff,{map:s1Stripe(0xFF8A1C,0xFFFFFF,8,true),roughness:.5}),0,0,0),.004);
+      for(let i=0;i<8;i++)ol(sp(g,.035,Or,X(0)-.12+i*.18,.6,cz+.2,1,.5,1),.002);
+      const cols=[0xFF3D9A,0xFFD21F,0x3EC8F2,0xA6E22E];for(let i=0;i<7;i++){const f=flat(g,[[-.05,0],[.05,0],[0,-.09]],.008,J(cols[i%4],{roughness:.5}),X(0)-.05+i*.18,.78,cz+.02);ol(f,.002)}}
+    [[X(6),Z(7)+.02],[X(8.5),Z(6.4)]].forEach(([x,z],i)=>{const t=piv(g,x,0,z);ol(cy(t,.13,.13,.025,Wh,0,.3,0,16),.003);ol(cy(t,.02,.02,.3,Ink,0,.15,0,6),.002);ol(cy(t,.08,.08,.02,Ink,0,.01,0,12),.002);
+      ol(cy(t,.012,.012,.5,Wh,0,.55,0,6),.002);ol(co(t,.3,.14,M(0xffffff,{map:s1Stripe(i?0x3EC8F2:0xFF3D9A,0xFFFFFF,10,true),roughness:.5}),0,.84,0,16),.004);
+      [-1,1].forEach(q=>{ol(rb(t,.1,.03,.1,.01,Or,q*.2,.18,0),.002);ol(rb(t,.1,.12,.02,.01,Or,q*.2,.25,-q*.0+.05*0-.045),.002);[[-.04,-.04],[.04,.04],[-.04,.04],[.04,-.04]].forEach(([a_,b_])=>ol(cy(t,.008,.008,.17,Ink,q*.2+a_,.085,b_,4),0))})});
+    return 2.4},
   toys(g,o){const {hw,hd}=o,J=(c,q)=>M(c,Object.assign({roughness:.5},q)),Y=J(0xFFD21F),Pk=J(0xFF6FB5),Pu=J(0x9B4DF2);
     const m=tmMass(g,'toys',{m:Y,mD:J(0xD9B300),h0:.78,h1:.62,r:.06,ld:0});
     const yt=m.yt,lx0=m.X(1)-.15,lx1=m.X(8)+.15,lz0=m.Z(0)-.15,lz1=m.Z(4)+.15,cx=(lx0+lx1)/2,cz=(lz0+lz1)/2;
@@ -10699,7 +10719,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=33;
+const APP_V=34;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
