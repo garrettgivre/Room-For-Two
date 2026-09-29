@@ -174,3 +174,6 @@ Each shop in the town view is a novelty building from `TM_BODY[k]` (before `tmHo
 
 ## Town map look (Sept 2026)
 - Aesthetics pass: `tmIsland` builds a rounded layered island (`tmRR` rounded-rect outline, three `flat` slabs: light grass lip, dark grass, soil), a candy picket fence round the rim (posts, caps, two rails, four corner lamps), a painted grass plane (mowing checker, mottling, tufts, five-petal flowers; the grid overlay is a separate transparent plane shown only in arrange mode) and three pivots of drifting clouds (`tm.cl`, rotated in `tmTick`). Paths use three cobblestone materials (`tm.cob`). `tmPad` puts a tinted stone pad under each building. Labels are the text-free logos (`assets/logos/<key>-nt.webp`, home uses the room icon) with a small name pill under them, bobbing via CSS; sky is a brighter gradient with a sun glow and vignette. `sw.js` CACHE is v5.
+
+## Town map declutter (Sept 2026)
+- Labels are name pills only (`.tml span`, sun colour when you're there, a pink dot when the pet wants to go there); the bobbing logos and badges are gone (the text-free `*-nt.webp` logos are unused for now). Grass tufts/flowers, fence caps and the sky dot pattern were toned down. `tmMass` blocks now get plinth, cornice and detailed windows (frame, glass, mullions, sill, lintel, side trim).
