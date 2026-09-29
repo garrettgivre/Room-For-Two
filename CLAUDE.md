@@ -177,3 +177,6 @@ Each shop in the town view is a novelty building from `TM_BODY[k]` (before `tmHo
 
 ## Town map declutter (Sept 2026)
 - Labels are name pills only (`.tml span`, sun colour when you're there, a pink dot when the pet wants to go there); the bobbing logos and badges are gone (the text-free `*-nt.webp` logos are unused for now). Grass tufts/flowers, fence caps and the sky dot pattern were toned down. `tmMass` blocks now get plinth, cornice and detailed windows (frame, glass, mullions, sill, lintel, side trim).
+
+## Town land (Sept 2026)
+- The town no longer floats: `tmIsland` now builds a grounded meadow. A sandy curb slab under the fence, an 80-unit green ground disc, ring and random rolling hills (`HL`, height fn `H(x,z)` places trees/sheep on them), up to 46 trees and pines, a pond, 7 sheep, a windmill (`tm.mills`, animated in `tmTick`, NOT `tm.anims`, which `tmSync` rebuilds from `tm.world`) and a rainbow behind the town, stepping stones from a gap (gate) in the south fence. Clouds sit far out and low. This supersedes the floating-island description above. Town camera near/far are 4/260 (main camera near .6) for depth precision; default zoom 1.18, pitch .7, zoom-out limit 1.7. A throw inside `tmIsland` makes `tmInit` return null and the map falls back to the old SVG map, so check the console for `town` warnings.
