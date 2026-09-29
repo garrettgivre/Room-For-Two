@@ -697,6 +697,8 @@ body.away .tag{visibility:hidden}
 .reward.on{opacity:1}.reward[hidden]{display:none}
 .rw-card{position:relative;width:min(100%,330px);padding:58px 20px 18px;text-align:center;background:var(--paper);border:3px solid var(--ink);border-radius:28px 22px 30px 21px;box-shadow:0 8px 0 var(--ink),0 8px 0 4px #fff,0 0 0 4px #fff;transform:scale(.7) rotate(-4deg);transition:transform .4s cubic-bezier(.3,1.8,.5,1)}
 .reward.on .rw-card{transform:rotate(-1deg)}
+#rwB{max-height:52vh;overflow-y:auto}.wb-sec{text-align:left;margin:10px 0 0;padding:8px 11px 9px;background:#FFF6FB;border:2px solid #EAD9F5;border-radius:14px 12px 15px 11px}
+.wb-sec b{display:block;font-family:var(--disp);font-weight:400;font-size:13px;color:var(--grape)}.wb-sec p{margin:5px 0 0;font-size:12.5px;line-height:1.35}.wb-sec small{color:#9A86B8;font-size:11px}.wb-j{font-style:italic}.wb-sm{font-size:12px;color:#6B4E95;margin-top:10px}
 .rw-burst{position:absolute;left:50%;top:4px;width:240px;height:240px;margin:-120px 0 0 -120px;border-radius:50%;background:repeating-conic-gradient(rgba(255,210,31,.55) 0 9deg,transparent 9deg 20deg);-webkit-mask:radial-gradient(circle,#000 25%,transparent 68%);mask:radial-gradient(circle,#000 25%,transparent 68%);animation:rwSpin 9s linear infinite;z-index:-1}
 @keyframes rwSpin{to{transform:rotate(360deg)}}
 .rwi{position:absolute;left:50%;top:-46px;width:100px;height:100px;margin-left:-50px;filter:drop-shadow(0 4px 0 rgba(59,18,115,.35));animation:rwBob 2.2s ease-in-out infinite}
@@ -9584,10 +9586,28 @@ function tdTreat(){const T=state.td;if(T.gift||T.done.length<T.list.length)retur
 function tdSwap(k){const T=state.td,id=pid();if(T.swap[id]||T.done.includes(k))return;const i=T.list.findIndex(e=>e.k===k);if(i<0)return;const not=T.list.map(e=>e.k),nk=tdPick(Math.random,[TD_T[k].c],not)||tdPick(Math.random,['home','town','play'],not);
   if(!nk){toast('Nothing else to swap in right now.');return}T.list[i]={k:nk,n:TD_T[nk].n};delete T.prog[k];T.swap[id]=1;saveSoon();renderSheet();toast('Swapped! One swap a day each.')}
 // the little celebration card (rewards queue up and wait while a game is running)
-const rewardQ=[];function showReward(t,ic,html){rewardQ.push({t,ic,html});if(rewardQ.length===1)setTimeout(nextReward,450)}
+const rewardQ=[];function showReward(t,ic,html,o){rewardQ.push({t,ic,html,o});if(rewardQ.length===1)setTimeout(nextReward,450)}
 function nextReward(){const r=rewardQ[0],el=$('#reward');if(!r){el.hidden=true;return}if(gm){setTimeout(nextReward,700);return}
-  $('#rwT').textContent=r.t;$('#rwI').src=`assets/icons/${r.ic}.webp`;$('#rwB').innerHTML=r.html;el.hidden=false;el.classList.remove('on');void el.offsetWidth;el.classList.add('on')}
-$('#rwOk').onclick=()=>{const el=$('#reward');el.classList.remove('on');rewardQ.shift();setTimeout(()=>{if(rewardQ.length)nextReward();else el.hidden=true},220)};
+  $('#rwT').textContent=r.t;$('#rwI').src=`assets/icons/${r.ic}.webp`;$('#rwB').innerHTML=r.html;$('#rwOk').textContent=(r.o&&r.o.ok)||'Yay!';el.hidden=false;el.classList.remove('on');void el.offsetWidth;el.classList.add('on')}
+$('#rwOk').onclick=()=>{const el=$('#reward');el.classList.remove('on');const r=rewardQ.shift();setTimeout(()=>{if(rewardQ.length)nextReward();else el.hidden=true},220);if(r&&r.o&&r.o.fn)try{r.o.fn()}catch(_){}};
+// ---------- welcome back: a cozy recap when you open the app after a few hours away ----------
+// Per device (localStorage r42seen, refreshed every minute while the app is open): what the pet wrote, what your person did,
+// and what's waiting in the Inbox since you last looked. The button says hi to the pet.
+const WB_KEY='r42seen',WB_GAP=3*36e5,wbGet=()=>{try{return +localStorage.getItem(WB_KEY)||0}catch(_){return 0}},wbMark=()=>{try{localStorage.setItem(WB_KEY,String(Date.now()))}catch(_){}};
+{const since=wbGet();setTimeout(()=>{if(since&&Date.now()-since>WB_GAP)welcomeBack(since);wbMark()},7000)}
+setInterval(()=>{if(document.visibilityState==='visible'&&ready)wbMark()},60e3);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){wbMark();return}const t=wbGet();if(t&&Date.now()-t>WB_GAP)setTimeout(()=>welcomeBack(t),2500);wbMark()});
+function welcomeBack(since){if(!state||!ready||stageOf(state.pet.xp)===0||sandbox||!$('#game').hidden||document.querySelector('.coach'))return;
+  const h=centralHour(),hi=h>=5&&h<12?'Good morning!':h<17?'Good afternoon!':h<22?'Good evening!':'Hello, night owl!',p=state.pet,s=petStats(),me=myId||'me',nm=esc(p.name);
+  const low=NEEDS.map(n=>n[0]).filter(k=>k!=='affection').sort((a,b)=>s[a]-s[b]),mood=s[low[0]]>=60?`${nm} is doing great: ${tier(low[0],s[low[0]]).toLowerCase()} at worst.`:`${nm} is feeling ${tier(low[0],s[low[0]]).toLowerCase()}${s[low[1]]<50?`, and a little ${tier(low[1],s[low[1]]).toLowerCase()}`:''}.`;
+  const jr=state.journal.filter(j=>j.t>since).slice(0,3),ev=state.feed.filter(f=>f.k!=='note'&&f.t>since&&f.by&&f.by!==me&&f.by!==myId).slice(0,3),
+    notes=state.feed.filter(f=>f.k==='note'&&f.t>since&&f.by!==me&&f.by!==myId).length,dms=state.inbox.filter(m=>m.t>since).length;
+  const inbox=[notes?`${notes} note${notes>1?'s':''} from ${esc(who(state.feed.find(f=>f.k==='note'&&f.t>since&&f.by!==me).by))}`:'',dms?`${dms} message${dms>1?'s':''} from the neighbours`:''].filter(Boolean);
+  const html=`<p>${nm} missed you. ${mood}</p>`+
+    (jr.length?`<div class="wb-sec"><b>From ${nm}’s journal</b>${jr.map(j=>`<p class="wb-j">“${esc(j.text).replace(/\{p\}/g,esc(j.by?who(j.by):'Somebody'))}”</p>`).join('')}</div>`:'')+
+    (ev.length?`<div class="wb-sec"><b>${esc(who(ev[0].by))} was here</b>${ev.map(f=>`<p>${esc(who(f.by))} ${esc(f.text)} <small>${ago(f.t)}</small></p>`).join('')}</div>`:'')+
+    (inbox.length?`<p class="wb-sm">${inbox.join(' and ')} in your Inbox.</p>`:'');
+  showReward(hi,'tab-pet',html,{ok:`Say hi to ${p.name}`,fn:()=>{setTimeout(()=>{try{petGreet()}catch(_){}setTimeout(()=>{if(!away)petTap()},2200)},300)}})}
 // the sticker button under the room name: how many are done, and a wiggle when there's something new
 function tdUI(){if(!state)return;if(tdEnsure()&&ready)saveSoon();updMenuBadge()}
 function tdNudge(){const d=tdDay();let seen='';try{seen=localStorage.getItem('r42td:'+roomCode)||''}catch(_){}if(seen===d)return;try{localStorage.setItem('r42td:'+roomCode,d)}catch(_){}
@@ -11171,7 +11191,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=42;
+const APP_V=43;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
