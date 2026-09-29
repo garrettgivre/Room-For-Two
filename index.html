@@ -8351,14 +8351,14 @@ function genie(el,btn,open,dur,end,rc){let t0=-1,pl=0;const id=(genA.get(el)||0)
   requestAnimationFrame(fr)}
 let tmPopA=0;
 function tmGenie(open){const pp=$('#tmPop'),f=$('#tmSnap'),src=tm.snap,id=++tmPopA;pp.classList.add('gen');pp.style.visibility='hidden';
-  const r=pp.getBoundingClientRect(),L=r.left,T=r.top,W=r.width,H=r.height,dp=Math.min(2,devicePixelRatio||1),VW=innerWidth,VH=innerHeight,bt=$('#dkExplore').getBoundingClientRect(),
-    px=bt.width?bt.left+bt.width/2:VW/2,py=bt.height?bt.top+bt.height*.4:VH-70,bw=34,D=Math.max(1,py-T),sm=v=>v<=0?0:v>=1?1:v*v*(3-2*v),N=Math.max(48,Math.round(H/3)),dur=open?380:320;
-  f.width=Math.round(VW*dp);f.height=Math.round(VH*dp);f.style.display='block';const x=f.getContext('2d');let t0=-1,pl=0;
-  const draw=m=>{x.setTransform(dp,0,0,dp,0,0);x.globalAlpha=1;x.clearRect(0,0,VW,VH);if(m>=1||!src)return;const b=sm(Math.min(1,m/.5)),sl=sm(Math.max(0,(m-.22)/.78)),sh=src.height/N;x.globalAlpha=m>.88?(1-m)/.12:1;
+  const r=pp.getBoundingClientRect(),L=r.left,T=r.top,W=r.width,H=r.height,dp=Math.min(1.25,devicePixelRatio||1),VW=innerWidth,VH=innerHeight,bt=$('#dkExplore').getBoundingClientRect(),
+    px=bt.width?bt.left+bt.width/2:VW/2,py=bt.height?bt.top+bt.height*.4:VH-70,bw=34,D=Math.max(1,py-T),sm=v=>v<=0?0:v>=1?1:v*v*(3-2*v),N=Math.max(48,Math.round(H/3)),dur=open?300:300;
+  {const fw=Math.round(VW*dp),fh=Math.round(VH*dp);if(f.width!==fw||f.height!==fh){f.width=fw;f.height=fh}}f.style.display='block';const x=f.getContext('2d');let t0=-1,pl=0;
+  const draw=m=>{x.setTransform(dp,0,0,dp,0,0);x.globalAlpha=1;x.clearRect(0,0,VW,VH);if(m>=1||!src)return;const b=sm(Math.min(1,m/.45)),sl=(u=>u*u)(Math.max(0,(m-.2)/.8)),sh=src.height/N;x.globalAlpha=m>.96?(1-m)/.04:1;
     for(let j=0;j<N;j++){const y0=T+j*H/N+sl*D;if(y0>=py)break;const y1=Math.min(py,y0+H/N),s_=sm(((y0+y1)/2-T)/D)*b,w=W+(bw-W)*s_,cx=L+W/2+(px-L-W/2)*s_;x.drawImage(src,0,j*sh,src.width,sh,cx-w/2,y0,w,y1-y0+.7)}};
   draw(open?1:0);
-  const fr=now=>{if(id!==tmPopA)return;if(t0<0)t0=now;const p=pl=Math.max(0,Math.min(1,(now-t0)/dur,pl+.12));draw(open?1-p:p);if(p<1){requestAnimationFrame(fr);return}
-    f.style.display='none';if(open){pp.classList.remove('gen');try{tmFrame(0)}catch(_){}pp.style.visibility=''}else if(!tm.open){$('#town3').hidden=true;setTimeout(()=>{if(!tm.open)try{tmFresh()}catch(_){}},350)}};
+  const fr=now=>{if(id!==tmPopA)return;if(t0<0)t0=now-16;const p=pl=Math.max(0,Math.min(1,(now-t0)/dur,pl+.12)),e=open?1-(1-p)*(1-p):p*p;draw(open?1-e:e);if(p<1){requestAnimationFrame(fr);return}
+    if(open){pp.classList.remove('gen');try{tmFrame(0)}catch(_){}pp.style.visibility='';requestAnimationFrame(()=>requestAnimationFrame(()=>{if(id===tmPopA)f.style.display='none'}));return}f.style.display='none';if(!tm.open){$('#town3').hidden=true;setTimeout(()=>{if(!tm.open)try{tmFresh()}catch(_){}},350)}};
   requestAnimationFrame(fr)}
 function sheetGenie(open,t){const sh=$('#sheet'),btn=$(t==='pet'?'#dkPet':'#dkMenu');sh.classList.add('gen');
   genie(sh,btn,open,open?300:210,()=>{sh.style.transition='none';sh.classList.remove('gen');sh.style.transform='';sh.style.opacity='';sh.offsetWidth;requestAnimationFrame(()=>{sh.style.transition=''})})}
@@ -10448,7 +10448,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=21;
+const APP_V=22;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
