@@ -728,24 +728,25 @@ body.styling .storechip{opacity:0}
 .mn-t small{font-family:system-ui,sans-serif;font-size:11px;color:#6B4E95;line-height:1.2;text-align:center;min-height:2.4em}
 .mn-t .badge{display:flex;top:-10px;right:-8px}
 /* the pet wheel: the pet in the middle, its needs round it */
-.petwheel{position:fixed;inset:0;z-index:8;background:radial-gradient(circle at 50% 56%,rgba(40,12,80,.18),rgba(30,8,60,.62));opacity:0;transition:opacity .14s}
+.petwheel{position:fixed;inset:0;z-index:8;background:radial-gradient(circle at 50% 56%,rgba(40,12,80,.18),rgba(30,8,60,.62));opacity:0;transition:opacity .3s}
 .petwheel.on{opacity:1}.petwheel[hidden]{display:none}
 .pw{transform-origin:0 0;position:absolute;left:50%;top:var(--cy,56%);width:0;height:0}
 .pw-c,.pw-n,.pw-w{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;border:0;padding:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.pw-c{left:-62px;top:-62px;width:124px;height:124px;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff 0 18%,transparent 19%),linear-gradient(180deg,#FFF6FC,#FFD6EC);border:3.5px solid var(--ink);
+.pw-c{z-index:2;left:-62px;top:-62px;width:124px;height:124px;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff 0 18%,transparent 19%),linear-gradient(180deg,#FFF6FC,#FFD6EC);border:3.5px solid var(--ink);
   box-shadow:0 6px 0 var(--ink),0 6px 0 4px #fff,0 0 0 4px #fff;}
 
 .pw-c img{width:58px;height:58px;margin-top:-4px}
 .pw-c b{font-family:var(--disp);font-weight:400;font-size:17px;color:var(--pink);text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink),1.5px 1.5px var(--ink),-1.5px 1.5px var(--ink),1.5px -1.5px var(--ink),-1.5px -1.5px var(--ink);line-height:1}
 .pw-c small{font-family:var(--disp);font-size:11px;color:#6B4E95;margin-top:3px}
-.pw-n{left:-40px;top:-40px;width:80px;height:80px;transform:translate(var(--x),var(--y))}
+.pw-n{z-index:1;left:-40px;top:-40px;width:80px;height:80px;transform:translate(var(--x),var(--y))}
 
 .pw-n .ring{position:absolute;inset:0;border-radius:50%;background:#fff;border:3px solid var(--ink);box-shadow:0 5px 0 var(--ink),0 5px 0 3px #fff,0 0 0 3px #fff}
-.pw-n svg{position:absolute;inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);transform:rotate(-90deg)}
+.pw-n svg:not(.lab){position:absolute;inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);transform:rotate(-90deg)}
 .pw-n .tr{fill:none;stroke:#EDE6F5;stroke-width:9}.pw-n .pr{fill:none;stroke:var(--c);stroke-width:9;stroke-linecap:round}
 .pw-n img{position:relative;width:40px;height:40px;margin-top:-2px}
-.pw-n b{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%) rotate(-2deg);white-space:nowrap;font-family:var(--disp);font-weight:400;font-size:13px;color:var(--ink);background:var(--c);padding:2px 9px 3px;border-radius:9px;border:2.5px solid var(--ink);box-shadow:0 3px 0 var(--ink)}
-.pw-n.low .ring{animation:wig 1s ease-in-out infinite}.pw-n.low b::after{content:" !"}
+.pw-n .lab{position:absolute;left:-30px;top:-30px;width:140px;height:140px;overflow:visible;pointer-events:none}.pw-n .lab text{font-family:var(--disp);font-size:14px;letter-spacing:.6px;fill:#fff;stroke:var(--ink);stroke-width:5px;stroke-linejoin:round;paint-order:stroke}.pw-n .lab .bang{fill:var(--c)}
+.pw-n:active .lab{transform:translateY(3px)}
+.pw-n.low .ring{animation:wig 1s ease-in-out infinite}
 .pw-n:active .ring{transform:translateY(3px)}
 .pw-hint{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 140px);white-space:nowrap;font-family:var(--disp);font-size:14px;color:#fff;text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink);opacity:0;transition:opacity .3s .25s}
 .petwheel.on .pw-hint{opacity:1}
@@ -10026,12 +10027,26 @@ function renderMenu(body){const T=state.td,n=T.done.length,m=T.list.length,treat
   body.querySelectorAll('[data-mn]').forEach(b=>b.onclick=()=>{const t=b.dataset.mn;if(away&&(t==='decorate'||t==='room')){travelTo('home',()=>setTab(t));return}setTab(t)})}
 // Pet wheel: tap Pet and the pet's needs fan out round it; tap a need to help with it, tap the middle for the pet's page.
 const wheelOn=()=>!$('#petwheel').hidden;
-function wheelGenie(open){const w=$('#petwheel'),pw=w.querySelector('.pw'),c=pw.getBoundingClientRect(),h=Math.min(128,innerWidth*.32)+72;genie(pw,$('#dkPet'),open,open?300:210,()=>{if(open){pw.style.transform='';pw.style.opacity=''}},{left:c.left-h,top:c.top-h,width:2*h,height:2*h,ox:c.left,oy:c.top})}
-function openWheel(){const w=$('#petwheel');renderWheel();w.hidden=false;wheelGenie(true);$('#dkPet').setAttribute('aria-expanded',true);requestAnimationFrame(()=>w.classList.add('on'))}
-function closeWheel(){const w=$('#petwheel');if(w.hidden)return;wheelGenie(false);w.classList.remove('on');$('#dkPet').setAttribute('aria-expanded',false);setTimeout(()=>{if(!w.classList.contains('on'))w.hidden=true},230)}
-function renderWheel(){const w=$('#petwheel'),p=state.pet,st=stageOf(p.xp),s=petStats(),R=Math.min(128,innerWidth*.32),Wd=state.wish,wish=Wd&&Wd.k&&WISH_T[Wd.k]&&st>0;
-  const needs=st?NEEDS.map(([k,nm,c,ic],i)=>{const a=-Math.PI/2+i*Math.PI*2/NEEDS.length,v=Math.min(100,s[k]);return`<button class="pw-n${k!=='affection'&&v<25?' low':''}" data-need="${k}" style="--x:${(Math.cos(a)*R).toFixed(0)}px;--y:${(Math.sin(a)*R).toFixed(0)}px;--c:${c};--d:${(i*.04).toFixed(2)}s" aria-label="${nm}: ${tier(k,s[k])}"><span class="ring"></span>${ringSvg(v/100,74,9)}<img src="${ico(ic)}" alt=""><b>${nm}</b></button>`}).join(''):'';
-  w.innerHTML=`<div class="pw" style="--cy:${Math.round(innerHeight*.5)}px"><button class="pw-c" id="pwC"><img src="assets/icons/tab-pet.webp" alt=""><b>${esc(p.name)}</b><small>${st?STAGE_NAMES[st]:`Warm the egg (${p.xp}/3)`}</small></button>${needs}${wish?`<button class="pw-w" id="pwW" aria-label="Wish"><img src="${ico(WISH_T[Wd.k].ic)}" alt=""></button>`:''}</div><div class="pw-hint">${st?'Tap a need to help':'Tap the egg to warm it'}</div>`;
+function wheelAnim(open){const w=$('#petwheel'),pw=w.querySelector('.pw');if(!pw||!pw.animate||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  (pw._an||[]).forEach(a=>a.cancel());const an=pw._an=[],go=(el,kf,o)=>{if(el)an.push(el.animate(kf,o))};
+  const bt=$('#dkPet').getBoundingClientRect(),cr=pw.getBoundingClientRect(),dx=bt.left+bt.width/2-cr.left,dy=bt.top+bt.height*.4-cr.top,c=pw.querySelector('.pw-c'),ns=[...pw.querySelectorAll('.pw-n')],n=ns.length,T=(x,y,sx,sy)=>`translate(${x}px,${y}px) scale(${sx},${sy})`;
+  if(open){
+    go(c,[{transform:T(dx,dy,.2,.08),opacity:0,offset:0},{transform:T(dx*.6,dy*.6,.45,1.35),opacity:1,offset:.28},{transform:T(dx*.12,dy*.12,.8,1.14),opacity:1,offset:.62},{transform:T(0,0,1.07,.94),opacity:1,offset:.82},{transform:T(0,0,1,1),opacity:1,offset:1}],{duration:400,easing:'cubic-bezier(.3,.1,.3,1)'});
+    ns.forEach((b,i)=>{const x=+b.dataset.x,y=+b.dataset.y,l=b.querySelector('.lab');
+      go(b,[{transform:T(0,0,.25,.25),opacity:0,offset:0},{transform:T(x*1.1,y*1.1,1.08,1.08),opacity:1,offset:.7},{transform:T(x,y,1,1),opacity:1,offset:1}],{duration:380,delay:190+i*55,easing:'cubic-bezier(.2,.75,.3,1)',fill:'backwards'});
+      go(l,[{opacity:0,scale:.6},{opacity:1,scale:1}],{duration:260,delay:400+i*55,easing:'ease-out',fill:'backwards'})});
+    go(pw.querySelector('.pw-w'),[{opacity:0,scale:.3},{opacity:1,scale:1}],{duration:280,delay:190+n*55+120,easing:'cubic-bezier(.3,1.5,.5,1)',fill:'backwards'})}
+  else{
+    ns.forEach((b,i)=>{const x=+b.dataset.x,y=+b.dataset.y;go(b,[{transform:T(x,y,1,1),opacity:1},{transform:T(0,0,.25,.25),opacity:0}],{duration:210,delay:(n-1-i)*22,easing:'cubic-bezier(.5,0,.8,.4)',fill:'forwards'})});
+    go(pw.querySelector('.pw-w'),[{opacity:1,scale:1},{opacity:0,scale:.3}],{duration:140,easing:'ease-in',fill:'forwards'});
+    go(c,[{transform:T(0,0,1,1),opacity:1,offset:0},{transform:T(0,0,1.06,.95),opacity:1,offset:.18},{transform:T(dx*.12,dy*.12,.8,1.14),opacity:1,offset:.38},{transform:T(dx*.6,dy*.6,.45,1.35),opacity:1,offset:.72},{transform:T(dx,dy,.2,.08),opacity:0,offset:1}],{duration:300,delay:110,easing:'cubic-bezier(.5,0,.75,.5)',fill:'forwards'})}}
+function openWheel(){const w=$('#petwheel');clearTimeout(w._to);w._busy=0;renderWheel();w.hidden=false;w._busy=1;wheelAnim(true);$('#dkPet').setAttribute('aria-expanded',true);requestAnimationFrame(()=>w.classList.add('on'));w._to=setTimeout(()=>{w._busy=0},900)}
+function closeWheel(){const w=$('#petwheel');if(w.hidden||!w.classList.contains('on'))return;w._busy=1;wheelAnim(false);w.classList.remove('on');$('#dkPet').setAttribute('aria-expanded',false);clearTimeout(w._to);w._to=setTimeout(()=>{w._busy=0;if(!w.classList.contains('on'))w.hidden=true},420)}
+function arcLabel(nm,a,low){const cx=70,cy=70,top=Math.sin(a)<=-.2,r=top?46:57,sp=1.05,t1=top?a-sp:a+sp,t2=top?a+sp:a-sp,P=t=>`${(cx+r*Math.cos(t)).toFixed(1)} ${(cy+r*Math.sin(t)).toFixed(1)}`,id='pwa'+Math.round((a+4)*100);
+  return`<svg class="lab" viewBox="0 0 140 140" aria-hidden="true"><path id="${id}" d="M${P(t1)} A${r} ${r} 0 0 ${top?1:0} ${P(t2)}" fill="none"/><text text-anchor="middle"><textPath href="#${id}" startOffset="50%">${esc(nm)}${low?' <tspan class="bang">!</tspan>':''}</textPath></text></svg>`}
+function renderWheel(){const w=$('#petwheel');if(w._busy)return;const p=state.pet,st=stageOf(p.xp),s=petStats(),R=Math.min(128,innerWidth*.32),Wd=state.wish,wish=Wd&&Wd.k&&WISH_T[Wd.k]&&st>0;
+  const needs=st?NEEDS.map(([k,nm,c,ic],i)=>{const a=-Math.PI/2+i*Math.PI*2/NEEDS.length,v=Math.min(100,s[k]),x=Math.round(Math.cos(a)*R),y=Math.round(Math.sin(a)*R),low=k!=='affection'&&v<25;return`<button class="pw-n${low?' low':''}" data-need="${k}" data-x="${x}" data-y="${y}" style="--x:${x}px;--y:${y}px;--c:${c}" aria-label="${nm}: ${tier(k,s[k])}"><span class="ring"></span>${ringSvg(v/100,74,9)}<img src="${ico(ic)}" alt="">${arcLabel(nm,a,low)}</button>`}).join(''):'';
+  w.innerHTML=`<div class="pw" style="--cy:${Math.round(innerHeight*.5)}px">${needs}<button class="pw-c" id="pwC"><img src="assets/icons/tab-pet.webp" alt=""><b>${esc(p.name)}</b><small>${st?STAGE_NAMES[st]:`Warm the egg (${p.xp}/3)`}</small></button>${wish?`<button class="pw-w" id="pwW" aria-label="Wish"><img src="${ico(WISH_T[Wd.k].ic)}" alt=""></button>`:''}</div><div class="pw-hint">${st?'Tap a need to help':'Tap the egg to warm it'}</div>`;
   $('#pwC').onclick=()=>{if(!st){warm();renderWheel();return}setTab('pet')};const ww=$('#pwW');if(ww)ww.onclick=()=>{closeWheel();wishGo()};
   w.querySelectorAll('[data-need]').forEach(b=>b.onclick=()=>{const n=NEEDS.find(x=>x[0]===b.dataset.need),act=n[4];closeWheel();if(act==='pat'){petTap();return}if(act==='nap'){doAct('nap');return}setTab('pet');doAct(act)})}
 function setTab(t){if(t&&brush)endBrush();if((t==='studio'||t==='wardrobe')&&toyPlay)endToyPlay(true);if(t==='decorate')setFollow(false);if(openTab!==t&&(openTab==='studio'||openTab==='wardrobe')){endPreview();if(t!=='studio')studio=null}closeWheel();{const kid=MENU_KIDS.includes(t),sb=$('#sback');$('#dkMenu').setAttribute('aria-expanded',!!t&&(t==='menu'||kid));sb.hidden=!(kid||t==='pet');$('#sbackL').textContent=t==='pet'?'Pet':'Menu';$('#sheet').classList.toggle('hasback',!sb.hidden);document.body.classList.toggle('sheet-open',!!t)}if(t)closeProduct();if(t!=='decorate')select(null);petView=null;const wasOpen=!!openTab;openTab=t;$('#sheet').classList.toggle('open',!!t);
@@ -10448,7 +10463,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=22;
+const APP_V=23;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
