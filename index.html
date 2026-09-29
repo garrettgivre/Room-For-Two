@@ -8433,7 +8433,7 @@ const TM_SIGN={
     ol(cy(p,.09,.11,.04,Ink,0,.02,0,16),.003);ol(cy(p,.026,.026,.62,Ink,0,.33,0,8),.003);const h=piv(p,0,.84,0);tmFace(h,.36,L('#2A0F5C',0),.07,Pu,0);tmBulbs(h,.36,0,[0xFF6FB5,0xFFD21F,0x3EC8F2],16);return p},
   home(fg,L){const p=piv(fg,-.62,0,.19);p.rotation.y=-.15;const Wd=M(0xC98A5A,{roughness:.8});Wd.detail=2;ol(rb(p,.04,.4,.04,.008,Wd,0,.2,0),.003);const h=piv(p,0,.44,0);h.rotation.z=.06;tmFace(h,.26,L('#A6E22E',0),.035,Wd,0);return p},
   _(fg,L){const p=piv(fg,-.5,0,.44);ol(rb(p,.04,.5,.04,.008,M(0xFFFFFF),0,.25,0),.003);tmFace(piv(p,0,.6,0),.3,L('#FFFFFF',1),.04,M(0x3B1273,{roughness:.4}),1);return p}};
-function tmSignFor(g,fg,k){const ms=[],L=(bg,round)=>{const m=M(0xffffff,{map:tmLogoTex(k,bg,round),roughness:.45,emissive:0xFFFFFF,emissiveIntensity:.03});ms.push(m);return m};
+function tmSignFor(g,fg,k){const ms=[],L=(bg,round)=>{const m=M(0xffffff,{map:tmLogoTex(k,bg,round),roughness:.45,emissive:0xFFFFFF,emissiveIntensity:.02});ms.push(m);return m};
   const p=(TM_SIGN[k]||TM_SIGN._)(fg,L);let anim=false;p.traverse(q=>{if(q.userData.anim)anim=true});if(!anim)bakeStatic(p);tm.signs.push({k,ms})}
 // ---------- labels, card, pin ----------
 function tmLabels(){const el=$('#tmDock'),here=away?away.key:'home',wish=state.wish&&state.wish.k==='trip'&&state.wish.shop;$('#tmLab').innerHTML='';
@@ -8518,7 +8518,7 @@ function tmTOD(){const now=performance.now();if(now-tmTodT<1000&&skyHourOverride
   // the sun rises on the right of the map and sets on the left; at night a moon hangs up on the left
   const a=(Math.min(20,Math.max(6,h))-6)/14*Math.PI,sp=[Math.cos(a)*13-2,3+Math.sin(a)*10,1.5],mp=[-8,12,5];dl.position.set(...sp.map((v,k)=>v+(mp[k]-v)*night));
   const k=lr(A[3],B[3]),t=cl(A[4],B[4]);tm.todK=t.map(v=>v*k);const L=tm.sc.userData.lighting;L.exposure=1.08-.2*night;L.emisBoost=lr(A[5],B[5]);
-  tmGlassMs.forEach(g=>g.emissiveIntensity=.06+.75*night);tm.signs.forEach(q=>q.ms.forEach(m=>m.emissiveIntensity=.03+.3*night));
+  tmGlassMs.forEach(g=>g.emissiveIntensity=.06+.75*night);tm.signs.forEach(q=>q.ms.forEach(m=>{m.basic=night>.4;m.emissiveIntensity=night>.4?0:.02}));
   L.points=night>.05?(tm.decor?tm.decor.children:[]).filter(o=>{const q=state.tmap.d[o.userData.td];return q&&q[0]==='lamp'}).slice(0,8).map(o=>({pos:[o.position.x,.95,o.position.z],color:[1.5*night,1.15*night,.65*night],range:2.8})):[];
   $('#town3').style.setProperty('--tmn',night.toFixed(3));tm.night=night}
 function tmDraw(dt){const[W_,H_]=tmSize(),R=tm.R;tmTOD();{const d=$('#tmDock'),bk=$('#tmBack'),sh=!!tm.focus&&!tm.arr&&!$('#tmCard').hidden;if(bk.hidden===sh)bk.hidden=!sh;if(d&&d._f!==tm.focus){d._f=tm.focus;d.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.k===tm.focus))}}
@@ -10699,7 +10699,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=32;
+const APP_V=33;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
