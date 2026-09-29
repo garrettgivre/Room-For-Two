@@ -269,7 +269,10 @@ body.styling .sheet{max-height:min(46%,420px)}.followpill img{width:26px;height:
 
 /* ---------- Klasky-Csupo pass: wonky letters, wobble, sets ---------- */
 .dbg-btn{filter:url(#wob)}
-.card .thumb{background:radial-gradient(rgba(255,255,255,.55) 1.5px,transparent 2px) 0 0/10px 10px,var(--th,#CFEFEA)}
+.dneeds{position:absolute;left:3px;bottom:3px;display:flex;gap:1px;z-index:2;pointer-events:none}.dneeds img{width:17px!important;height:17px!important;filter:drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff) drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff)}
+.selfcare{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:4px 0 10px}.sc-n{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 2px 7px;border:2.5px solid var(--ink);border-radius:14px 12px 15px 11px;background:#fff;box-shadow:0 3px 0 var(--ink);font-family:var(--disp);color:var(--ink);cursor:pointer}
+.sc-n img{width:28px;height:28px}.sc-n b{font-weight:400;font-size:12px}.sc-n small{font-size:9.5px;color:#6B4E95;text-align:center;line-height:1.1}.sc-n.miss{background:#FFF3F8;border-style:dashed}.sc-n.miss small{color:var(--pink)}
+.card .thumb{position:relative;background:radial-gradient(rgba(255,255,255,.55) 1.5px,transparent 2px) 0 0/10px 10px,var(--th,#CFEFEA)}
 .card:nth-child(4n+2) .thumb{--th:#FFD1E6}.card:nth-child(4n+3) .thumb{--th:#FBE7A6}.card:nth-child(4n+4) .thumb{--th:#E3F5B5}
 .chip span{margin-right:5px}
 .chip.sm{height:32px;padding:0 11px;font-size:12px}
@@ -6442,9 +6445,9 @@ function perchSpots(o){const d=defOf(o.userData.k),P=d&&d.perch;if(!P)return[];c
   xs.forEach(x=>{const zc=zz,aps=P.side?[[-(P.se+hd+.12),zc],[P.se+hd+.12,zc]]:[[x,(P.fe??.55)+hd+.1]];if(P.foot)aps.push([x,P.foot+hd+.1]);aps.forEach(([ax,az])=>{const v=toWorld(o,ax,az);if(inRoom(v,hw*.6)&&spotClear(v,hd*.8,o.userData.id))out.push({id:o.userData.id,x,z:zc,y:P.y,kind:P.kind||'sit',ax,az})})});return out}
 function seatWorld(sp){const o=roomObjs().get(sp.id);if(!o||!defOf(o.userData.k).perch)return null;const c=toWorld(o,sp.x,sp.z),f=toWorld(o,sp.ax,sp.az);
   return{x:c.x,z:c.z,y:sp.y,h:o.rotation.y,front:f,ha:Math.atan2(c.x-f.x,c.z-f.z),o}}
-function startPerch(sp){const w=seatWorld(sp);if(!w)return;remember(sp.id);const st=petStats(),avg=(st.hunger+st.fun+st.energy+st.clean)/4;pet.mode='perch';pet.seat=sp;pet.lastUse=sp.id;pet.seatK=0;pet.seatDir=1;pet.act=null;pet.fidget=3;
+function startPerch(sp){const w=seatWorld(sp);if(!w)return;remember(sp.id);autoUseStart(sp.id);const st=petStats(),avg=(st.hunger+st.fun+st.energy+st.clean)/4;pet.mode='perch';pet.seat=sp;pet.lastUse=sp.id;pet.seatK=0;pet.seatDir=1;pet.act=null;pet.fidget=3;
   sp.nap=sp.kind==='bed'&&st.energy<45;sp.bounce=sp.kind==='bed'&&!sp.nap&&st.energy>65&&avg>70&&Math.random()<.25;sp.lounge=sp.kind==='bed'&&!sp.nap&&!sp.bounce;pet.perchT=sp.nap?16+Math.random()*10:sp.bounce?5+Math.random()*3:sp.lounge?10+Math.random()*8:sp.kind==='ride'?7+Math.random()*4:(st.energy<40?16:9)+Math.random()*10;
-  if(sp.bounce&&avg>50)setTimeout(()=>emote('🎉'),900)}
+  if(sp.nap&&petNight())pet.perchT*=2.2;if(sp.bounce&&avg>50)setTimeout(()=>emote('🎉'),900)}
 function leaveSeatNow(){const w=pet.seat&&seatWorld(pet.seat);if(w){pet.pos.copy(w.front);rockPart(w.o,0)}pet.seat=null;pet.seatY=0;pet.seatK=0;pet.hop=Math.max(pet.hop,.45)}
 function rockPart(o,a){const p=o&&o.children[0];if(p&&defOf(o.userData.k).perch.kind==='ride')p.rotation.x=a}
 
@@ -6544,6 +6547,39 @@ Object.assign(USE_ITEM,{sunmoonmobile:{kind:'stand',anim:'u_peer',d:4,dist:.1,em
   snacktable:{kind:'stand',front:1,anim:'u_nibble',d:4,dist:.05,emo:['😋'],w:.6},projector:{kind:'stand',anim:'u_peer',d:4,dist:.12,emo:['❗','⭐'],w:.6},popbowl:BOWL});
 CAT.filter(c=>c.gacha).forEach(c=>USE_ITEM[c.k]={kind:'stand',anim:'u_peer',d:4.5,dist:.12,emo:['💗','❗'],w:.7});
 const useOf=d=>d.use||USE_ITEM[d.k]||USE_FN[d.fn]||null;
+// ---------- needs: which furniture fills which need when the pet uses it by itself ----------
+// Amounts are points added per use. e:1 = feeds the pet from your bag (bowls, fridges, vending machines).
+const NEED_IC={hunger:'stat-full',fun:'stat-happy',energy:'stat-energy',clean:'stat-clean',affection:'heart-jar'};
+const NEED_NM={hunger:'Food & drink',fun:'Play & fun',energy:'Rest & sleep',clean:'Bath & wash',affection:'Cozy & cuddly'};
+const NEED_SHORT={hunger:'Full',fun:'Happy',energy:'Energy',clean:'Clean',affection:'Love'};
+const NEED_WANT={hunger:'something to eat from',fun:'something to play with',energy:'somewhere cozy to sleep',clean:'somewhere to wash',affection:'something cuddly'};
+const NEED_OVR={
+  // food: bowls and fridges serve food from your bag; tables, carts and counters have a little something of their own
+  fridge:{hunger:10,e:1},retrofridge:{hunger:10,e:1},vending:{hunger:8,fun:4,e:1},treatstation:{hunger:6,e:1},waterstation:{hunger:4,e:1},
+  cakecounter:{hunger:16},breadshelf:{hunger:16},candyjar:{hunger:8,fun:6},popcorn:{hunger:12,fun:4},popcorncart:{hunger:14,fun:6},juicecart:{hunger:10,energy:4},lemonade:{hunger:10,energy:3},
+  coffeemaker:{hunger:6,energy:8},cocoatable:{hunger:10,affection:3},teacart:{hunger:8,energy:4},teatable:{hunger:6,energy:4},zentable:{hunger:6,energy:4},stumptable:{hunger:6},
+  dinnertable:{hunger:14,affection:3},bistrotable:{hunger:8},snacktable:{hunger:12},smoresstand:{hunger:14,fun:4},picnicbasket:{hunger:14},caketable:{hunger:14,fun:6},cookietable:{hunger:12},
+  gingerhouse:{hunger:12},cauldronbowl:{hunger:10},beehive:{hunger:10},stove:{hunger:16},macaron:{hunger:6},
+  // washing
+  clawtub:{clean:40,fun:6},kiddiepool:{clean:24,fun:12},puddlerug:{clean:10,fun:8},sinkvanity:{clean:20},towelrack:{clean:10},soapbowl:{clean:14},bathmat:{clean:4},laundry:{clean:6},washer:{fun:8},soapshelf:{clean:10},bathstool:{clean:6,energy:6},birdbath:{clean:6,fun:4},dryingrack:{clean:4},foldtable:{clean:4},fountain:{clean:5,fun:4},soaplamp:{clean:3},sprinklerug:{clean:5,fun:5},
+  // cozy and cuddly
+  teddy:{affection:6,fun:4},lintbunny:{affection:6},candles:{affection:5},ghostplush:{affection:5,fun:4},fireplace:{affection:5,energy:8},mantel:{affection:4,energy:6},campfire:{affection:5,energy:8},incubator:{energy:10,affection:4},
+  rosevase:{affection:2},loveboard:{affection:3},heartbowl:{e:1,hunger:4,affection:2},
+  // play
+  cauldron:{fun:12},sandgarden:{fun:8,affection:3},bookcase:{fun:10},writedesk:{fun:8},toychest:{fun:12},pettoychest:{fun:14},gamestack:{fun:8},scratchpost:{fun:10},climbtree:{fun:14},
+  bustedtv:{fun:10},koibowl:{fun:6},fish:{fun:6},terrarium:{fun:5},bubblecolumn:{fun:5},lavalamp:{fun:4},fountain:{fun:4},orrery:{fun:6},telescope:{fun:14},
+  trashbags:{},broom:{},shoji:{}};
+const NEED_ANIM={u_nibble:{hunger:8},u_sip:{hunger:6,energy:3},u_stir:{hunger:10},press:{fun:16},u_game:{fun:22},u_watch:{fun:20},u_drum:{fun:16},u_piano:{fun:16},u_paint:{fun:14},u_scope:{fun:14},
+  u_dance:{fun:16},dance:{fun:14},u_swing:{fun:18},u_dive:{fun:18},u_bounce:{fun:16,energy:-4},u_run:{fun:14,energy:-5},u_unwrap:{fun:18},u_dig:{fun:14},u_blow:{fun:10},u_spin:{fun:10},
+  u_kick:{fun:12},u_read:{fun:10},u_rake:{fun:8,affection:2},hug:{affection:6,fun:4},u_snuggle:{affection:6},u_warm:{energy:8,affection:4},u_splash:{clean:24,fun:8},u_wash:{clean:18},u_dry:{clean:8},
+  u_admire:{affection:3},curious:{fun:8},u_type:{fun:6}};
+function needsOf(d){if(!d)return{};if(d._nd)return d._nd;let N=NEED_OVR[d.k];const u=useOf(d);
+  if(!N){N={};if(u){if(u.kind==='nap'||d.fn==='bed')N={energy:u.kind==='nap'?40:45};else if(u.kind==='perch'){const k=d.perch&&d.perch.kind;N=k==='ride'?{fun:16}:k==='bed'?{energy:45}:{energy:12}}
+    else if(u===BOWL)N={e:1};else if(NEED_ANIM[u.anim])N=Object.assign({},NEED_ANIM[u.anim])}}
+  return d._nd=N}
+const needHas=(d,k)=>{const N=needsOf(d);return N[k]>0||(k==='hunger'&&!!N.e)};
+const needKeys=d=>NEEDS.map(n=>n[0]).filter(k=>needHas(d,k));
+function needLine(d){const ks=needKeys(d);if(!ks.length)return'';const N=needsOf(d);return ` ${state.pet.name} can use it on its own: ${ks.map(k=>k==='hunger'&&N.e?'food from your bag':NEED_SHORT[k]).join(', ')}.`}
 // Where to stand to use o, and which way to face.
 function useSpot(o,u){const it=roomItem(o.userData.id),d=defOf(it.k),D=petDim(),hd=D.d/2,e=o.userData.ext||{x:.4,z:.4};
   if(u.kind==='wall'){const W=WALLDEF[it.w||0],b=new THREE.Vector3(W.c[0]+W.T[0]*it.u,0,W.c[1]+W.T[1]*it.u),v=b.clone().add(new THREE.Vector3(W.n[0],0,W.n[1]).multiplyScalar(hd+.75));
@@ -6555,15 +6591,15 @@ function useSpot(o,u){const it=roomItem(o.userData.id),d=defOf(it.k),D=petDim(),
     while(sides.length){const [lx,lz]=sides.splice(Math.random()*sides.length|0,1)[0],v=toWorld(o,lx,lz);if(inRoom(v,D.w*.4)&&spotClear(v,hd*.8,o.userData.id))return{at:v,face:toWorld(o,0,0)}}}return null}
 // Pick something to do, weighted by what the pet feels like and never the same thing twice in a row. only: filter.
 function pickUse(stats,avg,only){const S=pet.rig.S,c=[];roomObjs().forEach(o=>{const it=roomItem(o.userData.id);if(!it)return;const d=defOf(it.k),u=useOf(d);if(!u||(only&&!only(u,d)))return;
-    let w=typeof u.w==='function'?u.w(stats,avg,S):u.w;if(it.id===pet.lastUse)w*=.1;if(u.kind==='wall'&&!walls[it.w||0].g.visible)w*=.3;if(w>0)c.push({o,it,d,u,w})});
+    let w=typeof u.w==='function'?u.w(stats,avg,S):u.w;if(it.id===pet.lastUse)w*=.1;w*=1+Math.min(.6,((state.pet.likes||{})[it.k]||0)/20);if(u.kind==='wall'&&!walls[it.w||0].g.visible)w*=.3;if(w>0)c.push({o,it,d,u,w})});
   for(let tries=0;tries<5&&c.length;tries++){let q=Math.random()*c.reduce((a,b)=>a+b.w,0),i=0;for(;i<c.length-1;i++){q-=c[i].w;if(q<=0)break}const C=c.splice(i,1)[0];
     if(C.u.kind==='perch'){const sps=perchSpots(C.o);if(!sps.length)continue;const sp=sps[Math.random()*sps.length|0];petGo(seatWorld(sp).front,()=>startPerch(sp));return true}
     const at=useSpot(C.o,C.u);if(!at)continue;
-    if(C.u.kind==='nap'){petGo(at.at,()=>{pet.mode='sleep';pet.sleepT=9+Math.random()*9;pet.lastUse=C.it.id;pet.napBed=C.it.id;emote('💤')});return true}
+    if(C.u.kind==='nap'){petGo(at.at,()=>{pet.mode='sleep';pet.sleepT=(9+Math.random()*9)*(petNight()?2:1);pet.lastUse=C.it.id;pet.napBed=C.it.id;remember(C.it.id);autoUseStart(C.it.id);emote('💤')});return true}
     petGo(at.at,()=>startUse(C,at));return true}
   return false}
 function startUse(C,at){if(!roomObjs().has(C.it.id))return;const u=C.u;if(u.greet&&away){keeperReact('greet',2.2);keeperSay(pick1(away.keeper.lines.hi))}const st=petStats(),d=u.d*(.85+Math.random()*.3);pet.mode='use';pet.lastUse=C.it.id;remember(C.it.id);if(!away)jrUse(C.it.id);
-  pet.use={id:C.it.id,u,t:0,d,face:at.face,emoAt:[.3,d>8?.75:2].map(f=>f*d),emo:typeof u.emo==='function'?u.emo(st):u.emo};pet.act={k:u.anim,t:0,d}}
+  pet.use={id:C.it.id,u,t:0,d,face:at.face,emoAt:[.3,d>8?.75:2].map(f=>f*d),emo:typeof u.emo==='function'?u.emo(st):u.emo};pet.act={k:u.anim,t:0,d};if(!u.inspect)autoUseStart(C.it.id)}
 function endUse(done){const U=pet.use;if(!U)return;pet.use=null;const o=roomObjs().get(U.id);if(o){delete o.userData.flick;if(o.userData.use)o.userData.use(-1,-1);if(U.u.wob)o.rotation.z=0}
   if(pet.act&&pet.act.k===U.u.anim)pet.act=null;if(done){pet.mode='idle';pet.timer=1.5+Math.random()*2.5;const th=U.u.then;if(th&&Math.random()<th[1])setTimeout(()=>petAct(th[0]),250)}}
 function updUse(dt,t){const U=pet.use,o=roomObjs().get(U.id);if(!o){endUse(true);return}U.t+=dt;const p=U.t/U.d;
@@ -6708,9 +6744,59 @@ function petMinds(){const p=state.pet;if(p.seed==null)p.seed=p.t||1;const h=[...
 const smartAge=()=>pet.stage>=5;
 function goUse(C){if(C.u.kind==='perch'){const sps=perchSpots(C.o);if(!sps.length)return false;const sp=sps[Math.random()*sps.length|0];petGo(seatWorld(sp).front,()=>startPerch(sp));return true}
   const at=useSpot(C.o,C.u);if(!at)return false;
-  if(C.u.kind==='nap'){petGo(at.at,()=>{pet.mode='sleep';pet.sleepT=9+Math.random()*9;pet.lastUse=C.it.id;pet.napBed=C.it.id;remember(C.it.id);emote('💤')});return true}
+  if(C.u.kind==='nap'){petGo(at.at,()=>{pet.mode='sleep';pet.sleepT=(9+Math.random()*9)*(petNight()?2:1);pet.lastUse=C.it.id;pet.napBed=C.it.id;remember(C.it.id);autoUseStart(C.it.id);emote('💤')});return true}
   petGo(at.at,()=>startUse(C,at));return true}
 function remember(id){pet.recent=[id,...(pet.recent||[]).filter(x=>x!==id)].slice(0,5)}
+// ---------- autonomy: the pet looks after its own needs with what's in the room ----------
+// Both devices run their own pet AI, so fills go through shared per-need timestamps (state.pet.auto) and a cooldown;
+// that keeps two open phones from feeding the pet twice. Fills never give xp or hearts: care from you still matters most.
+const NEED_TH={hunger:[58,30],fun:[52,28],energy:[42,22],clean:[48,26],affection:[40,22]},AUTO_GAP=6*60e3;
+const petNight=()=>{const h=centralHour();return h>=22||h<7},petMorning=()=>{const h=centralHour();return h>=6&&h<11};
+function bagFood(){const P=persOf(),have=ITEMS.filter(i=>i.k==='food'&&(i.p===0||(state.inv[i.id]||0)>0));if(!have.length)return null;
+  const paid=have.filter(i=>i.p>0),pool=paid.length?paid:have,fav=P&&pool.filter(i=>i.cat===P.fav),starving=petStats().hunger<40,big=(a,b)=>MEALS[b.size][1]-MEALS[a.size][1];return(!starving&&fav&&fav.length?fav:pool).sort((a,b)=>starving?big(a,b)||((P&&b.cat===P.fav)-(P&&a.cat===P.fav)):big(a,b))[0]}
+let autoJrT=0;
+function autoFill(id){if(away||!state||stageOf(state.pet.xp)===0)return null;const it=state.items.find(i=>i.id===id);if(!it)return null;const d=CATMAP[it.k],N=needsOf(d),st=petStats(),p=state.pet,A=p.auto||(p.auto={}),now=Date.now(),gain={};let food=null;
+  for(const k in N){if(k==='e')continue;const v=N[k];if(!v)continue;if(v<0){gain[k]=v;continue}if(st[k]>=90||now-(A[k]||0)<AUTO_GAP)continue;gain[k]=v}
+  const canEat=N.e&&st.hunger<75&&now-(A.hunger||0)>=AUTO_GAP;if(canEat){food=bagFood();if(food)gain.hunger=(gain.hunger||0)+MEALS[food.size][1]}
+  const pos=Object.keys(gain).filter(k=>gain[k]>0);if(!pos.length)return{empty:!!canEat&&!food};
+  const P=persOf(),fav=food&&P&&food.cat===P.fav;
+  commitPet(s=>{for(const k in gain)s[k]=clamp((s[k]??40)+gain[k],0,k==='hunger'?110:100);if(food)s.fun=clamp(s.fun+(fav?8:2),0,100)});
+  pos.forEach(k=>A[k]=now);if(food&&food.p>0){state.inv[food.id]=(state.inv[food.id]||1)-1;if(state.inv[food.id]<=0)delete state.inv[food.id]}
+  const L=p.likes||(p.likes={});L[it.k]=Math.min(999,(L[it.k]||0)+1);saveSoon();updHUD();
+  const main=pos.sort((a,b)=>gain[b]-gain[a])[0];setTimeout(()=>emote('',{icon:NEED_IC[main],ms:1400}),200);if(fav)setTimeout(()=>emote('💗'),1500);
+  if(Date.now()-autoJrT>20*60e3&&Math.random()<.45){autoJrT=Date.now();jrEvent('self_'+main,{i:(food&&main==='hunger'?food.n:d.n).toLowerCase()})}
+  if(openTab==='pet')renderSheet();return{gain,food}}
+function autoUseStart(id){if(away)return;setTimeout(()=>{const r=autoFill(id);if(r&&r.empty){emote('',{icon:'stat-full',ms:1400});setTimeout(()=>emote('❓'),700);if(!needMissing.bag||Date.now()-needMissing.bag>30*60e3){needMissing.bag=Date.now();toast(`${PN()}’s bowl is empty. Snacks in your bag get served there.`)}}},1200)}
+// The needs-first chooser: if a need is low, pick something that fills it (weighted by how much it helps and how much the pet likes it)
+function needPick(stats){if(away||pet.stage<1||!pet.rig||styling()||toyPlay)return false;const night=petNight(),th=k=>k==='energy'&&night?70:NEED_TH[k][0],L=state.pet.likes||{};
+  const low=NEEDS.map(n=>n[0]).filter(k=>stats[k]<th(k)).sort((a,b)=>stats[a]/th(a)-stats[b]/th(b));
+  for(const k of low){const urgent=stats[k]<NEED_TH[k][1]||(k==='energy'&&night);if(!urgent&&Math.random()>.55)continue;const c=[];
+    roomObjs().forEach(o=>{const it=roomItem(o.userData.id);if(!it)return;const d=defOf(it.k),u=useOf(d);if(!u||!needHas(d,k))return;const N=needsOf(d);
+      c.push({o,it,d,u,w:(N[k]||(k==='hunger'?30:10))*(it.id===pet.lastUse?.5:1)*(1+Math.min(.8,(L[it.k]||0)/15))})});
+    if(!c.length){needMissing(k,urgent);continue}
+    let q=Math.random()*c.reduce((a,b)=>a+b.w,0),i=0;for(;i<c.length-1;i++){q-=c[i].w;if(q<=0)break}const C=c[i];
+    if(goUse(C)){pet.timer=1;pet.needGo=k;emote('',{icon:NEED_IC[k],ms:1500});return true}}
+  return false}
+// Nothing in the room for a need: look puzzled, come and ask you (for love), and make it a wish
+function needMissing(k,urgent){const t=Date.now(),M=needMissing.t||(needMissing.t={});if(t-(M[k]||0)<15*60e3)return;M[k]=t;
+  emote('',{icon:NEED_IC[k],ms:1600});setTimeout(()=>emote('❓'),800);if(k==='affection')setTimeout(petGreet,1200);
+  if(!urgent||!state||sandbox)return;const W=state.wish||{};if(W.k)return;
+  state.wish={k:'need',need:k,ev:'need:'+k,n:1,got:0,t,until:t+WISH_HOURS*36e5};saveSoon();updWish();setTimeout(()=>{wishEmote();toast(`${PN()} wishes for ${wishText()}.`)},1800);if(openTab==='pet')renderSheet()}
+// Come over and say hello (on opening the app, coming back to it, or when lonely)
+function petGreet(){if(away||!pet.rig||pet.stage<1||styling()||toyPlay||kmode||!['idle','walk'].includes(pet.mode))return;const f=new THREE.Vector3(Math.sin(cam.yaw),0,Math.cos(cam.yaw)).multiplyScalar(HALF*.45);
+  petGo(f,()=>{pet.waveT=1.8;pet.happyT=1.2;pet.hop=.7;emote('💗');pet.timer=3})}
+let hiddenAt=0;document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>15*60e3){hiddenAt=0;setTimeout(()=>{try{petGreet()}catch(_){}},900)}});
+setTimeout(()=>{try{petGreet()}catch(_){}},4200);
+// While nobody had the app open: the pet used what it had (once per load, gap measured from the last save)
+function selfCareAway(gap){if(away||gap<45*60e3||!state||stageOf(state.pet.xp)===0)return;const st=petStats(),p=state.pet,A=p.auto||(p.auto={}),now=Date.now(),did=[];
+  const has=k=>state.items.map(i=>CATMAP[i.k]).filter(d=>d&&needHas(d,k));const gain={};let ate=0;
+  NEEDS.map(n=>n[0]).forEach(k=>{if(st[k]>=65||now-(A[k]||0)<gap*.5)return;const src=has(k);if(!src.length)return;
+    if(k==='hunger'){const bowls=src.filter(d=>needsOf(d).e),own=src.filter(d=>needsOf(d).hunger>0);let g=0;const n=Math.min(3,1+Math.floor(gap/(3*36e5)));
+      if(bowls.length)for(let i=0;i<n;i++){const f=bagFood();if(!f)break;g+=MEALS[f.size][1];ate++;if(f.p>0){state.inv[f.id]=(state.inv[f.id]||1)-1;if(state.inv[f.id]<=0)delete state.inv[f.id]}}
+      if(own.length)g+=Math.max(...own.map(d=>needsOf(d).hunger))*Math.min(3,n);if(g>0){gain[k]=g;did.push([k,bowls[0]||own[0]])}}
+    else{const best=src.sort((a,b)=>(needsOf(b)[k]||0)-(needsOf(a)[k]||0))[0];gain[k]=(needsOf(best)[k]||0)*Math.min(3,1+Math.floor(gap/(2*36e5)));if(gain[k]>0)did.push([k,best])}});
+  if(!did.length)return;commitPet(s=>{for(const k in gain)s[k]=clamp((s[k]??40)+gain[k],0,85)});did.forEach(([k])=>A[k]=now);saveSoon();
+  const [k,d]=did[0];jrEvent('self_'+k,{i:d.n.toLowerCase()})}
 function smartPick(stats,avg){if(!pet.rig)return false;const S=pet.rig.S,Ms=petMinds(),hr=centralHour(),night=hr>=21.5||hr<7,dim=!away&&(state.ceil??1)<.4,rc=pet.recent||[],c=[];
   roomObjs().forEach(o=>{const it=roomItem(o.userData.id);if(!it)return;const d=defOf(it.k),u=useOf(d);if(!u)return;let w=typeof u.w==='function'?u.w(stats,avg,S):u.w;if(!(w>0))return;if(u.kind==='wall'&&!walls[it.w||0].g.visible)w*=.3;
     const fk=u.kind==='nap'?'bed':d.fn,nov=it.id===pet.lastUse?.08:rc.includes(it.id)?.4:1,calm=night||dim?(fk==='bed'||fk==='seat'||fk==='light'?1.7:fk==='fun'||fk==='rug'?.55:1):1;
@@ -6727,7 +6813,7 @@ function conferPose(C,t){const p=C.t/C.d,k=bell(p,.06,.94),talk=p<.66,dec=bell(p
       return C.agree||i===w?{ry:0,rx:Math.sin(t*13)*.2,rz:0,w:dec}:{ry:s*.28,rz:-s*.28,rx:.12,w:dec}}),
     mouth:talk?Math.abs(Math.sin(t*11))*.6*k:.55*dec,lid:talk?.2*k:.35*dec,arms:[0,1].map(i=>({rz:(i?1:-1)*(.6+(talk?Math.max(0,Math.sin(t*5+i*2))*.9:0)),rx:-.7,w:k}))}}
 // things put down since the pet last looked around get a closer look
-function newThing(){if(away||!pet.seen)return null;for(const [id,o] of roomObjs()){if(pet.seen.has(id))continue;pet.seen.add(id);const it=roomItem(id);if(!it)continue;const d=defOf(it.k);if(d.flat||d.wall)continue;return{o,it,d,u:{kind:'stand',anim:'u_peer',d:3.4,dist:.12,emo:['❗','💗'],w:1}}}return null}
+function newThing(){if(away||!pet.seen)return null;for(const [id,o] of roomObjs()){if(pet.seen.has(id))continue;pet.seen.add(id);const it=roomItem(id);if(!it)continue;const d=defOf(it.k);if(d.flat||d.wall)continue;return{o,it,d,u:{kind:'stand',anim:'u_peer',d:3.4,dist:.12,emo:['❗','💗'],w:1,inspect:1}}}return null}
 function idleAct(avg,stats){const st=pet.stage,S=pet.rig.S,r=Math.random(),P=persOf();
   // grown-ups: sometimes one head gets its way with something in its own style (they take turns)
   if(smartAge()&&avg>=35&&stats.energy>=25&&Math.random()<.35){pet.turnHead=pet.turnHead?0:1;const T=petMinds()[pet.turnHead].T;if(petAct(T.acts[Math.random()*T.acts.length|0])){if(Math.random()<.4)emote('',{head:pet.turnHead,icon:'emo-music',ms:1300});return true}}
@@ -6761,7 +6847,7 @@ function updatePet(dt,t){
   else if(pet.mode==='idle'){pet.timer-=dt;
     if(!pet.seen)pet.seen=new Set(away?[]:[...roomObjs().keys()]);if(away)roomObjs().forEach((o,id)=>pet.seen.add(id));
     if(pet.timer<=0&&pet.stage>=3&&!styling()){const nt=newThing();if(nt&&goUse(nt)){pet.timer=1;[0,1].forEach(i=>setTimeout(()=>emote('❗',{head:i}),i*180))}}
-    if(pet.timer<=0&&pet.mode==='idle'){const worn=stats.energy<12;if(!(worn?pickUse(stats,avg,(u,d)=>u.kind==='nap'||(d.perch&&d.perch.kind==='bed')):Math.random()<.65&&(smartAge()?smartPick(stats,avg):pickUse(stats,avg)))){if(worn&&Math.random()<.5){pet.mode='sleep';pet.sleepT=10}else{petGo(randomSpot());const P=persOf();if(P&&P.wander)pet.timer=0}}}
+    if(pet.timer<=0&&pet.mode==='idle'){const worn=stats.energy<12;if(!(needPick(stats)||(worn?pickUse(stats,avg,(u,d)=>u.kind==='nap'||(d.perch&&d.perch.kind==='bed')):Math.random()<.65&&(smartAge()?smartPick(stats,avg):pickUse(stats,avg))))){if(worn&&Math.random()<.5){pet.mode='sleep';pet.sleepT=10}else{petGo(randomSpot());const P=persOf();if(P&&P.wander)pet.timer=0}}}
     pet.fidget-=dt;if(pet.fidget<=0&&!pet.act){pet.fidget=5+Math.random()*6;const r=Math.random();if(r<.45)idleAct(avg,stats);else if(avg>55){if(r<.65)pet.waveT=1.4;else if(r<.8){pet.hop=1;pet.happyT=.8}}}
     pet.chatIn-=dt*((persOf()||{}).chat||1);if(pet.chatIn<=0){pet.chatIn=8+Math.random()*10;pet.chatT=1.6;if(avg>70&&Math.random()<.35)emote('🎵')}
     const sy=styling(),h=Math.atan2(camera.position.x-pet.pos.x,camera.position.z-pet.pos.z)+(sy?pet.styleYaw||0:0);let dh=h-pet.heading;dh=Math.atan2(Math.sin(dh),Math.cos(dh));pet.heading+=dh*Math.min(1,dt*(sy?7:1.8))}
@@ -6782,7 +6868,7 @@ function updatePet(dt,t){
   else if(pet.mode==='confer'){const C=pet.confer;if(!C){pet.mode='idle';pet.timer=1}else{C.t+=dt;const h=Math.atan2(camera.position.x-pet.pos.x,camera.position.z-pet.pos.z);let dh=h-pet.heading;dh=Math.atan2(Math.sin(dh),Math.cos(dh));pet.heading+=dh*Math.min(1,dt*3);
     if(C.t>=C.d){pet.confer=null;pet.mode='idle';pet.timer=.4;C.then&&C.then()}}}
   else if(pet.mode==='use'){if(pet.use)updUse(dt,t);else{pet.mode='idle';pet.timer=1}}
-  else if(sleeping){pet.sleepT-=dt;if(pet.sleepT<=0){pet.mode='idle';pet.timer=1;pet.hop=.6;pet.napBed=null}if(Math.random()<dt*.45)emote('💤')}
+  else if(sleeping){pet.sleepT-=dt;if(pet.sleepT<=0){pet.mode='idle';pet.timer=1;pet.hop=.6;pet.napBed=null;if(petMorning()&&pet.stage>0)setTimeout(()=>petAct('stretch'),500)}if(Math.random()<dt*.45)emote('💤')}
   else if(eating){pet.eatT-=dt;if(pet.eatT<=0){pet.mode='idle';pet.timer=2;pet.happyT=1.2;emote('😋')}}
   let A=null;if(pet.act){pet.act.t+=dt;if(pet.act.t>=pet.act.d||walking||sleeping||eating)pet.act=null;else A=ACTS_ANIM[pet.act.k].f(pet.act.t/pet.act.d,t,S)}
   if(pet.mode==='perch'&&!A&&pet.seat){const k=pet.seatK,e=k*k*(3-2*k),P=pet.seat;
@@ -8710,7 +8796,7 @@ function offerFurn(k){const d=CATMAP[k],own=state.fown[k]||0,placed=state.items.
     had=own+placed>0,stock=win||inStock(k),avail=stock||had,pr=stock?furnPrice(k):d.p,w=wished(k),by=w&&state.fwish[k]!==pid()?who(state.fwish[k]):'';
   const have=d.gacha?(had?`In storage: ${own}${placed?` · In your room: ${placed}`:''}`:'Found in capsules at Capsule Corner.')
     :had?`In storage: ${own}${placed?` · In your room: ${placed}`:''}`:stock?(here?'':`In at ${SHOPS[sk].n} today!`):`Back at Cozy Nest ${whenLabel(nextStock(k))}.`;
-  return{key:k,title:d.n,sub:`${SETMAP[d.set].n} · ${FUNCMAP[d.fn][1]}${stock&&pr<d.p?' · <b>Today’s deal!</b>':''}${by?` · On ${esc(by)}’s wishlist`:''}`,desc:FN_DESC[d.fn]||'',price:pr,was:pr<d.p?d.p:0,
+  return{key:k,title:d.n,sub:`${SETMAP[d.set].n} · ${FUNCMAP[d.fn][1]}${stock&&pr<d.p?' · <b>Today’s deal!</b>':''}${by?` · On ${esc(by)}’s wishlist`:''}`,desc:(FN_DESC[d.fn]||'')+needLine(d),price:pr,was:pr<d.p?d.p:0,
     thumb:`<img data-tt="${k}" src="${thumbs[k]||'assets/icons/tab-decorate.webp'}" alt="">`,thumbQ:k,have,canBuy:here&&avail&&!d.gacha,
     go:!here&&avail&&!d.gacha?{label:had?'Buy another':'Go shop',fn:()=>{closeProduct();goBuy(k)}}:null,
     alt:d.gacha||win||had||here&&avail?null:{label:w?'Wished':'Wish',on:w,fn:()=>{toggleWish(k);toast(w?'Taken off the wishlist':`${d.n} is on the wishlist. Cozy Nest will let you know.`)}},
@@ -8943,7 +9029,7 @@ function spawn(k){const d=CATMAP[k];if(!(state.fown[k]>0)){goBuy(k);return null}
   if(state.items.length>=80){toast('Your room is full. Store something first.');return null}
   state.fown[k]--;if(!state.fown[k])delete state.fown[k];const it={id:uid(),k,c:d.dc||0};
   if(d.wall){it.w=visibleWall();it.u=(Math.random()-.5)*2;it.y=d.y}else{it.x=(Math.random()-.5)*1.5;it.z=(Math.random()-.5)*1.5;it.r=0}
-  state.items.push(it);syncScene();clampPlaced(it);select(it.id);updHUD();td('place');return it}
+  state.items.push(it);syncScene();clampPlaced(it);select(it.id);updHUD();td('place');needKeys(d).forEach(k=>wishHit('need:'+k));return it}
 
 /* ================= EMOTES / HUD ================= */
 const emotes=[];
@@ -8996,6 +9082,11 @@ function jrFill(t,c){return t.replace(/\{(\w+)\}/g,(m,k)=>k!=='p'&&c[k]!=null?c[
 function jrAdd(text,by,k,t){if(!state||!state.journal)return;const J=state.journal;t=t||Date.now();if(J.some(j=>j.text===text&&Math.abs(j.t-t)<6e4))return;
   J.push({t,by:by||'',k:k||'',text});J.sort((x,y)=>y.t-x.t);if(J.length>80)J.length=80;saveSoon();updMenuBadge();if(openTab==='journal')renderSheet()}
 const JR_T={
+  self_hunger:['Got peckish, so I helped myself at the {i}. {a} chose, {b} chewed.','Nobody was looking, so I had a little {i}. Delicious crime.','I fed myself today! {i}. Very grown up of me.'],
+  self_energy:['Curled up on the {i} for a nap all by myself.','{a} yawned, so {b} yawned, so we went to the {i}. Zzz.','Best nap spot in the house: the {i}. Don’t tell the sofa.'],
+  self_clean:['Gave myself a wash at the {i}. {b} missed a spot on {a}.','Splish splash at the {i}. Shiny again!','I cleaned up at the {i} without being asked. Please be impressed.'],
+  self_fun:['Got bored, so I played with the {i}. {a} won.','Made my own fun with the {i}. Best afternoon.','The {i} kept us busy for ages. {b} wants to go again.'],
+  self_affection:['Felt a bit lonely, so I cuddled up with the {i}. Still missed you.','Snuggled the {i}. It’s not you two, but it helped.','The {i} is soft. You two are softer. Come home soon.'],
   feed:['{p} brought me {i}. {a} took the first bite, {b} took the second, and we argued about the third.','Snack time! {i}. I made it last as long as I possibly could.','There was {i}. There is no {i} now. Zero regrets.'],
   bath:['{p} scrubbed me with {i}. I am shiny and I smell like a brand new person.','Bath day. {b} pretended not to like it. {b} liked it.','Squeaky clean thanks to {i}. I kept checking my reflection in things.'],
   play:['{p} played {i} with me! I have never been so happy or so out of breath.','We played with {i} until both my heads got dizzy.','{i}! {a} won. {b} says it was closer than it looked.'],
@@ -9250,6 +9341,7 @@ function resThanks(shop){if(Date.now()-(state.ibT||0)<3*36e5||Math.random()>.5)r
 function lifeCheck(){if(!state||lifeCheck.done)return;lifeCheck.done=1;
   if(!state.inbox.length)resPost('baker','Welcome to the neighbourhood! I’m Bunbun from the Snack Shack. I’ll only write now and then, promise. Come visit when you can!');
   else if(Date.now()-(state.ibT||0)>9*36e5&&Math.random()<.7){let k,tries=0;const last=state.inbox[0].from;do{k=pickJ(Object.keys(RES))}while(k===last&&++tries<5);resPost(k,resCompose(k))}
+  try{selfCareAway(Date.now()-(state.jrT||Date.now()))}catch(e){console.warn('selfcare',e)}
   jrCatchUp();state.jrT=Date.now();saveSoon()}
 function dayLabel(t){const d=new Date(t),n=new Date(),y=new Date(Date.now()-864e5);if(d.toDateString()===n.toDateString())return'Today';if(d.toDateString()===y.toDateString())return'Yesterday';return d.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'})}
 function byDay(list,fn){let last='',out='';list.forEach((x,i)=>{const dl=dayLabel(x.t);if(dl!==last){last=dl;out+=`<div class="dayh">${dl}</div>`}out+=fn(x,i)});return out}
@@ -9328,11 +9420,12 @@ const WISH_T={
   nap:{ev:'nap',ic:'act-nap',go:'pet',txt:()=>'a cozy nap'},
   pats:{ev:'pat',n:5,ic:'stat-happy',go:'pat',txt:n=>`${n} pats`},
   look:{ev:'wear',ic:'tab-pet',go:'wardrobe',txt:()=>'a change of outfit'},
-  trip:{ev:'visit',ic:'tab-room',go:'map',txt:(n,k)=>`a trip to ${SHOPS[k]?SHOPS[k].n:'town'}`}};
+  trip:{ev:'visit',ic:'tab-room',go:'map',txt:(n,k)=>`a trip to ${SHOPS[k]?SHOPS[k].n:'town'}`},
+  need:{ev:'need',get ic(){const W=state&&state.wish;return W&&W.need?NEED_IC[W.need]:'tab-decorate'},go:'decorate',txt:(n,k,W)=>{W=W||state.wish;return W&&W.need?NEED_WANT[W.need]:'something new'}}};
 const WISH_HOURS=4,WISH_GAP=[25,45];
 function wishPick(){const st=petStats(),P=persOf(),c=['pats','look','trip','trip'];if(st.hunger<60)c.push('snack','snack');if(P&&st.hunger<90)c.push('fav');if(st.clean<60)c.push('bath','bath');
   if(st.fun<65)c.push('play','play');if(st.energy<40)c.push('nap','nap');const ok=c.filter(k=>!WISH_T[k].ok||WISH_T[k].ok());return ok[Math.random()*ok.length|0]}
-function wishText(){const W=state.wish,T=W&&WISH_T[W.k];return T?T.txt(W.n,W.shop):''}
+function wishText(){const W=state.wish,T=W&&WISH_T[W.k];return T?T.txt(W.n,W.shop,W):''}
 function wishTick(){if(!ready||sandbox||!state)return;if(!stageOf(state.pet.xp))return;const now=Date.now(),W=state.wish||{};
   if(W.k){if(now>W.until){state.wish={next:now+WISH_GAP[0]*6e4};saveSoon();updWish()}else if(!openTab&&!toyPlay&&Math.random()<.3)wishEmote();return}
   if(W.next&&now<W.next)return;
@@ -9355,7 +9448,10 @@ function updWish(){const W=state&&state.wish,on=!!(W&&W.k&&WISH_T[W.k])&&stageOf
 function wishRow(){const W=state.wish;if(!W||!W.k||!WISH_T[W.k])return'';const T=WISH_T[W.k];
   const nm=headNames(),who=W.agree?`${esc(nm[0])} & ${esc(nm[1])} both want`:W.alt&&WISH_T[W.alt.k]?`${esc(nm[W.win])} won the vote (${esc(nm[1-W.win])} wanted ${esc(WISH_T[W.alt.k].txt(WISH_T[W.alt.k].n||1,W.alt.shop))})`:`${esc(PN())} wishes for`;
   return`<div class="wishrow"><img src="assets/icons/${T.ic}.webp" alt=""><span><small>${who}</small><b>${esc(wishText())}</b>${W.n>1?`<i>${W.got|0} of ${W.n}</i>`:''}</span><button class="gel pink" id="wishGo">Go</button></div>`}
-function wishGo(){const W=state.wish;if(!W||!W.k)return;if(W.k==='trip'){setTab(null);if(!(away&&away.key===W.shop))travelTo(W.shop);return}tdGo(WISH_T[W.k].go)}
+function selfCareRow(){if(away)return'';const cnt=k=>state.items.filter(i=>{const d=CATMAP[i.k];return d&&needHas(d,k)}).length,L=state.pet.likes||{},fav=Object.keys(L).filter(k=>CATMAP[k]&&state.items.some(i=>i.k===k)).sort((a,b)=>L[b]-L[a])[0];
+  return`<div class="row-label">Looks after itself with</div><div class="selfcare">${NEEDS.map(([k,nm,c])=>{const n=cnt(k);return`<button class="sc-n${n?'':' miss'}" data-sn="${k}" style="--c:${c}" aria-label="${NEED_NM[k]}: ${n?n+' in your room':'nothing yet'}"><img src="${ico(NEED_IC[k])}" alt=""><b>${NEED_SHORT[k]}</b><small>${n?n+' in room':'Add one'}</small></button>`}).join('')}</div>${fav&&L[fav]>=3?`<p class="xp" style="margin-top:0">Favourite spot: <b>${esc(CATMAP[fav].n)}</b></p>`:''}`}
+function openDecoNeed(k){if(away){travelTo('home',()=>openDecoNeed(k));return}decoView='furn';decoPage='need:'+k;decoQ='';if(typeof decoMode!=='undefined')decoMode='place';setTab('decorate')}
+function wishGo(){const W=state.wish;if(!W||!W.k)return;if(W.k==='need'){openDecoNeed(W.need);return}if(W.k==='trip'){setTab(null);if(!(away&&away.key===W.shop))travelTo(W.shop);return}tdGo(WISH_T[W.k].go)}
 function cDate(){try{const p=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',year:'numeric',month:'numeric',day:'numeric'}).formatToParts(new Date()),g=t=>+p.find(x=>x.type===t).value;return new Date(Date.UTC(g('year'),g('month')-1,g('day')))}
   catch(_){const d=new Date();return new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()))}}
 let tdDayShift=0;// debug: pretend it's a later day
@@ -10655,7 +10751,7 @@ function roomCounts(){const n={};state.items.forEach(i=>n[i.k]=(n[i.k]||0)+1);re
 // Furniture cards. Placing: what you own (count in storage, ×n in the room). Collecting: pieces you don't have yet, faded,
 // tagged when they're in at Cozy Nest today or on the wishlist; tapping one shows where to get it. Buying: price stickers.
 function decoCard(c,n,want){const own=state.fown[c.k]||0,buy=decoMode==='buy',pr=furnPrice(c.k),w=wished(c.k),tag=want?(c.gacha?'':inStock(c.k)?'<i class="dtag in">In today</i>':''):'';
-  return`<div class="card dcard${want?' want':buy?(state.hearts<pr?' poor':''):own?'':' poor'}" data-k="${c.k}"${want?' data-peek="1"':''} role="button" tabindex="0" aria-label="${want?'See':buy?'Buy':'Add'} ${esc(c.n)}${n?`, ${n} in your room`:''}"><span class="setb" aria-hidden="true"><img src="${ico(SETMAP[c.set].img)}" alt=""></span>${w?'<i class="dwish" aria-label="On the wishlist"></i>':''}<div class="thumb">${thumbs[c.k]?`<img src="${thumbs[c.k]}" alt="">`:'<i class="spin"></i>'}${buy?`<span class="own have"${own+(n||0)?'':' hidden'}>have ${own+(n||0)}</span>`:want?'':`<span class="own"${n?'':' hidden'}>×${n||0}</span>`}</div><b>${esc(c.n)}</b>${tag}${buy?`<span class="price${pr>99?' long':''}${pr<c.p?' deal':''}"><i>♥</i>${pr}</span>`:want?'':`<span class="stock">${own}</span>`}</div>`}
+  return`<div class="card dcard${want?' want':buy?(state.hearts<pr?' poor':''):own?'':' poor'}" data-k="${c.k}"${want?' data-peek="1"':''} role="button" tabindex="0" aria-label="${want?'See':buy?'Buy':'Add'} ${esc(c.n)}${n?`, ${n} in your room`:''}"><span class="setb" aria-hidden="true"><img src="${ico(SETMAP[c.set].img)}" alt=""></span>${w?'<i class="dwish" aria-label="On the wishlist"></i>':''}<div class="thumb">${thumbs[c.k]?`<img src="${thumbs[c.k]}" alt="">`:'<i class="spin"></i>'}${(()=>{const ks=needKeys(c);return ks.length?`<span class="dneeds" aria-label="Fills: ${ks.map(k=>NEED_SHORT[k]).join(', ')}">${ks.map(k=>`<img src="${ico(NEED_IC[k])}" alt="">`).join('')}</span>`:''})()}${buy?`<span class="own have"${own+(n||0)?'':' hidden'}>have ${own+(n||0)}</span>`:want?'':`<span class="own"${n?'':' hidden'}>×${n||0}</span>`}</div><b>${esc(c.n)}</b>${tag}${buy?`<span class="price${pr>99?' long':''}${pr<c.p?' deal':''}"><i>♥</i>${pr}</span>`:want?'':`<span class="stock">${own}</span>`}</div>`}
 const decoOwn=(c,n)=>(state.fown[c.k]||0)>0||n[c.k]>0;
 // pieces that show up in the collection (windows only once you have one: Hammer & Hue sells them)
 const decoCol=(c,n)=>c.fn!=='window'||decoOwn(c,n);
@@ -10682,14 +10778,14 @@ function renderDeco(toTop){const grid=$('#tray');if(!grid)return;
   else{const pg=words.length?null:decoPage,[pk,pv]=pg?pg.split(':'):[],col=CAT.filter(c=>decoCol(c,n)),
       mineSort=(a,b)=>((state.fown[b.k]||0)>0)-((state.fown[a.k]||0)>0);
     if(words.length||pg){// a list: search results, a kind, a set, storage or the wishlist
-      const pool=words.length?col.filter(hit):pk==='fn'?col.filter(c=>c.fn===pv):pk==='set'?col.filter(c=>c.set===pv):pk==='wish'?CAT.filter(c=>wished(c.k)):col.filter(c=>(state.fown[c.k]||0)>0);
+      const pool=words.length?col.filter(hit):pk==='fn'?col.filter(c=>c.fn===pv):pk==='need'?col.filter(c=>needHas(c,pv)):pk==='set'?col.filter(c=>c.set===pv):pk==='wish'?CAT.filter(c=>wished(c.k)):col.filter(c=>(state.fown[c.k]||0)>0);
       const have=pool.filter(c=>decoOwn(c,n)).sort(mineSort),want=pool.filter(c=>!decoOwn(c,n));cnt=pool.length;
-      let top='';if(pg){const S=pk==='set'?SETMAP[pv]:null,F=pk==='fn'?FUNCMAP[pv]:null,title=S?S.n:F?F[1]:pk==='wish'?'Wishlist':'In storage',
-          sub=S||F?`${have.length} of ${pool.length} collected`:`${pool.length} ${pool.length===1?'piece':'pieces'}`,
+      let top='';if(pg){const S=pk==='set'?SETMAP[pv]:null,F=pk==='fn'?FUNCMAP[pv]:null,Nd=pk==='need'?pv:null,title=S?S.n:F?F[1]:Nd?NEED_NM[Nd]:pk==='wish'?'Wishlist':'In storage',
+          sub=S||F||Nd?`${have.length} of ${pool.length} collected`:`${pool.length} ${pool.length===1?'piece':'pieces'}`,
           note=S&&pv!=='gacha'&&pv!=='build'?(nestStock().sets.includes(pv)?'<button type="button" class="chip sm dnote in" id="decoGoSet">In at Cozy Nest today</button>':`<span class="dnote">Back at Cozy Nest ${whenLabel(nextStock(CAT.find(c=>c.set===pv).k))}</span>`):'';
         const tl=S&&TILESETS.f['s_'+pv]?'<button type="button" class="chip sm dnote" id="decoTiles">Matching floor & walls</button>':'';
-        top=`<div class="dcrumb"><button type="button" class="dback" id="decoBack" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>${S?`<img class="chi" src="${ico(S.img)}" alt="">`:''}<div><b>${esc(title)}</b><small>${sub}</small></div>${note}${tl}</div>`}
-      const bySet=pk==='fn'||words.length,grp=(l,want)=>{if(!bySet||l.length<8)return decoSection(l,n,want);const g=[];l.forEach(c=>{let G=g.find(x=>x.k===c.set);if(!G)g.push(G={k:c.set,l:[]});G.l.push(c)});
+        top=`<div class="dcrumb"><button type="button" class="dback" id="decoBack" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>${S?`<img class="chi" src="${ico(S.img)}" alt="">`:Nd?`<img class="chi" src="${ico(NEED_IC[Nd])}" alt="">`:''}<div><b>${esc(title)}</b><small>${sub}</small></div>${note}${tl}</div>`}
+      const bySet=pk==='fn'||pk==='need'||words.length,grp=(l,want)=>{if(!bySet||l.length<8)return decoSection(l,n,want);const g=[];l.forEach(c=>{let G=g.find(x=>x.k===c.set);if(!G)g.push(G={k:c.set,l:[]});G.l.push(c)});
           return g.map(G=>`<h3 class="tgh sm"><img class="chi" src="${ico(SETMAP[G.k].img)}" alt="">${esc(SETMAP[G.k].n)}</h3>`+decoSection(G.l,n,want)).join('')};
       html=top+(have.length?(pk==='wish'||!pg&&!words.length?'':decoHead(`Yours <small>${have.length}</small>`))+grp(have,false):'')+
         (want.length?decoHead(pk==='wish'?`Wished for <small>${want.length}</small>`:`To collect <small>${want.length}</small>`)+grp(want,true):'')+
@@ -10701,8 +10797,10 @@ function renderDeco(toTop){const grid=$('#tray');if(!grid)return;
         `<h3 class="tgh">In storage <small>${store.reduce((a,c)=>a+state.fown[c.k],0)}</small>${store.length>3?'<button type="button" class="dmore" data-go="store:">See all</button>':''}</h3>`+
         (store.length?decoShelf(store.slice(0,24),n):`<p class="dnone">New pieces wait here until you place them. ${shopBtn}</p>`)+
         (wl.length?`<h3 class="tgh">Wishlist <small>${wl.length}</small>${wl.length>3?'<button type="button" class="dmore" data-go="wish:">See all</button>':''}</h3>`+decoShelf(wl.slice(0,24),n,true):'')+
-        `<div class="dtog" role="tablist"><button type="button" role="tab" data-br="fn" aria-selected="${decoBrowse==='fn'}">By kind</button><button type="button" role="tab" data-br="set" aria-selected="${decoBrowse==='set'}">By set</button></div>`;
-      if(decoBrowse==='fn')html+=FUNCS.map(([k,nm])=>{const l=col.filter(c=>c.fn===k);if(!l.length)return'';const h=l.filter(c=>decoOwn(c,n)),rep=(h.length?h:l).slice().sort((a,b)=>b.p-a.p)[0];
+        `<div class="dtog" role="tablist"><button type="button" role="tab" data-br="fn" aria-selected="${decoBrowse==='fn'}">By kind</button><button type="button" role="tab" data-br="set" aria-selected="${decoBrowse==='set'}">By set</button><button type="button" role="tab" data-br="need" aria-selected="${decoBrowse==='need'}">By need</button></div>`;
+      if(decoBrowse==='need')html+=`<p class="dnone" style="margin:4px 2px 10px">${esc(state.pet.name)} uses these on its own when it needs to.</p>`+NEEDS.map(([k,nm,c])=>{const l=col.filter(q=>needHas(q,k));if(!l.length)return'';const h=l.filter(q=>decoOwn(q,n)).length;
+          return decoTile('need:'+k,ico(NEED_IC[k]),'',NEED_NM[k],`${h} of ${l.length}`,h/l.length,'',lighten(parseInt(c.slice(1),16),.72).toString(16).padStart(6,'0').replace(/^/,'#'))}).join('');
+      else if(decoBrowse==='fn')html+=FUNCS.map(([k,nm])=>{const l=col.filter(c=>c.fn===k);if(!l.length)return'';const h=l.filter(c=>decoOwn(c,n)),rep=(h.length?h:l).slice().sort((a,b)=>b.p-a.p)[0];
           return decoTile('fn:'+k,'',rep.k,nm,`${h.length} of ${l.length}`,h.length/l.length)}).join('');
       else{const st=nestStock();html+=SETS.filter(S=>S.k!=='build').map(S=>{const l=col.filter(c=>c.set===S.k);if(!l.length)return'';const h=l.filter(c=>decoOwn(c,n)).length;
           return decoTile('set:'+S.k,ico(S.img),'',S.n,h===l.length?'All collected!':`${h} of ${l.length}`,h/l.length,st.sets.includes(S.k)?'In today':'',S.c)}).join('')}
@@ -10787,13 +10885,13 @@ function renderSheet(){const body=$('#sheetBody');
     body.innerHTML=`<div class="pet-head"><input id="pname" maxlength="16" value="${esc(p.name)}" aria-label="Pet name"><span class="stage">${STAGE_NAMES[st]}</span></div>`+(st?wishRow():'')+
     (st===0?`<p class="hint">A mystery egg lives in your room. Warm it together to hatch it. Either of you can tap the egg or the button.</p><div class="actions"><button class="gel pink" id="warm" style="grid-column:span 2">Warm the egg (${p.xp}/3)</button></div>`:
     `    <div class="stats rings">${NEEDS.map(([k,n,c,ic])=>`<div class="sr" style="--c:${c}"><span>${ringSvg(Math.min(100,s[k])/100,56,8)}<img src="assets/icons/${ic}.webp" alt=""></span>${n}<small>${tier(k,s[k])}</small></div>`).join('')}</div>
-    <div class="actions">${Object.entries(ACTS).map(([k,a])=>`<button class="gel ${a.cls}" data-act="${k}"><img class="bi" src="assets/icons/act-${k}.webp" alt="">${a.label}</button>`).join('')}</div>
+    <div class="actions">${Object.entries(ACTS).map(([k,a])=>`<button class="gel ${a.cls}" data-act="${k}"><img class="bi" src="assets/icons/act-${k}.webp" alt="">${a.label}</button>`).join('')}</div>${selfCareRow()}
     <div class="spirit"><span>Spirit</span><b>${tier('spirit',sp)}</b><div class="bar"><i style="width:${sp|0}%;--c:#A6E22E"></i></div></div>
 ${P?`<p class="pers"><b>${P.n}</b> ${P.d}</p>`:''}<div class="minds">${petMinds().map(m=>`<label class="mind m${m.i}"><input data-hn="${m.i}" maxlength="10" value="${esc(m.name)}" aria-label="${m.i?'Right':'Left'} head’s name"><small>${st>=5?(m.i?'Right head, ':'Left head, ')+m.T.n:(m.i?'Right':'Left')+' head, still finding itself'}</small></label>`).join('')}</div>
-    <p class="xp">${next?`${next-p.xp} more care moments until ${esc(p.name)} grows.`:`${esc(p.name)} is fully grown. Keep the love coming.`} ${bag} ${bag===1?'item':'items'} in your bag. Stats drain while you're away, so take turns.</p>`)+
+    <p class="xp">${next?`${next-p.xp} more care moments until ${esc(p.name)} grows.`:`${esc(p.name)} is fully grown. Keep the love coming.`} ${bag} ${bag===1?'item':'items'} in your bag. Stats drain while you're away, but the things in your room help ${esc(p.name)} look after itself.</p>`)+
     (st?`<div class="row-label">Style</div><div class="actions"><button class="gel" id="goWard">Wardrobe</button><button class="gel" id="goGlam">Glow Up Studio</button></div>`:'');
     const w=$('#warm');if(w)w.onclick=warm;body.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>doAct(b.dataset.act));
-    {const wg=$('#wishGo');if(wg)wg.onclick=wishGo}
+    {const wg=$('#wishGo');if(wg)wg.onclick=wishGo}body.querySelectorAll('[data-sn]').forEach(b=>b.onclick=()=>openDecoNeed(b.dataset.sn));
     body.querySelectorAll('[data-hn]').forEach(inp=>inp.onchange=()=>{const n=headNames().slice(),v=inp.value.trim().slice(0,10);if(!v)return;n[+inp.dataset.hn]=v;state.pet.heads=n;logEvent(`named the ${inp.dataset.hn==='1'?'right':'left'} head ${v}`);saveSoon()})
     {const a=$('#goWard'),b=$('#goGlam');if(a)a.onclick=()=>setTab('wardrobe');if(b)b.onclick=()=>{setTab(null);travelTo('glam')}}
     const ni=$('#pname');ni.onchange=()=>{const v=ni.value.trim().slice(0,16);if(v&&v!==state.pet.name){logEvent(`renamed the pet to ${v}`);state.pet.name=v;saveSoon();updHUD()}}}
@@ -10991,6 +11089,7 @@ function normalize(s){const oldPal=!!s&&!(s.pv>=2);const d=defaultState();s=Obje
   s.toys=Array.isArray(s.toys)?s.toys.filter(k=>ITEMMAP[k]&&ITEMMAP[k].k==='toy'):d.toys.slice();s.daily=s.daily&&typeof s.daily==='object'?s.daily:{};
   s.pet=Object.assign({},d.pet,s.pet||{});if(s.pet.look&&typeof s.pet.look!=='object')delete s.pet.look;if(s.pet.heads&&!(Array.isArray(s.pet.heads)&&s.pet.heads.length===2))delete s.pet.heads;else if(s.pet.heads)s.pet.heads=s.pet.heads.map(x=>String(x||'').slice(0,10));s.tokens=s.tokens==null?3:Math.max(0,Math.min(999,+s.tokens|0));s.capsdex=Array.isArray(s.capsdex)?s.capsdex.filter(k=>typeof k==='string').slice(0,64):[];s.ceil=s.ceil==null?1:clamp(+s.ceil||0,0,1);s.wish=s.wish&&typeof s.wish==='object'&&(!s.wish.k||WISH_T[s.wish.k])?s.wish:{};s.wear=[...new Set(Array.isArray(s.wear)?s.wear.filter(id=>wearDef(id)):[])];s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
   s.journal=Array.isArray(s.journal)?s.journal.slice(0,80).map(f=>({t:+f.t||0,by:String(f.by||''),k:String(f.k||'').slice(0,12),text:String(f.text||'').slice(0,300)})):[];s.inbox=Array.isArray(s.inbox)?s.inbox.slice(0,60).map(f=>({t:+f.t||0,from:String(f.from||'').slice(0,12),text:String(f.text||'').slice(0,300)})):[];s.jrT=+s.jrT||0;s.ibT=+s.ibT||0;
+  if(s.pet){s.pet.auto=s.pet.auto&&typeof s.pet.auto==='object'?s.pet.auto:{};s.pet.likes=s.pet.likes&&typeof s.pet.likes==='object'?s.pet.likes:{}}
   s.kf=s.kf&&typeof s.kf==='object'&&!Array.isArray(s.kf)?s.kf:{};Object.keys(s.kf).forEach(k=>{const f=s.kf[k];if(!f||typeof f!=='object'){delete s.kf[k];return}f.p=Math.max(0,+f.p||0);f.s=Math.max(0,f.s|0);f.d=typeof f.d==='string'?f.d:''});
   s.feed=Array.isArray(s.feed)?s.feed.slice(0,50).map(f=>({t:+f.t||0,by:String(f.by||''),k:f.k==='note'?'note':'event',text:String(f.text||'').slice(0,160)})):[];
   s.visits=s.visits&&typeof s.visits==='object'?s.visits:{};s.names=s.names&&typeof s.names==='object'?Object.fromEntries(Object.entries(s.names).slice(0,8).map(([k,v])=>[String(k).slice(0,64),String(v||'').slice(0,20)])):{};s.hearts=Math.max(0,+s.hearts||0);if(!FLOORS.includes(s.floor))s.floor='checker';if(!WALLS.includes(s.wall))s.wall='bubble';const RN=ROOM_SIZES.includes(s.size)?s.size:8;s.size=RN;s.tf=Array.isArray(s.tf)&&s.tf.length===RN*RN?s.tf.map(k=>TILESETS.f[k]?k:s.floor):Array(RN*RN).fill(s.floor);s.tw=Array.isArray(s.tw)&&s.tw.length===RN*4?s.tw.map(k=>TILESETS.w[k]?k:s.wall):Array(RN*4).fill(s.wall);s.fown=s.fown&&typeof s.fown==='object'?Object.fromEntries(Object.entries(Object.entries(s.fown).reduce((o,[k,v])=>{k=winKeyFix(k);o[k]=(o[k]||0)+(+v||0);return o},{})).filter(([k,v])=>CATMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):{};s.fwish=s.fwish&&typeof s.fwish==='object'?Object.fromEntries(Object.entries(s.fwish).filter(([k])=>CATMAP[k]).slice(0,200).map(([k,v])=>[k,String(v||'').slice(0,64)])):{};s.town=[...new Set([...STARTER_TILES,...(Array.isArray(s.town)?s.town:[]),...s.tf.map(k=>'f:'+k),...s.tw.map(k=>'w:'+k)])].filter(k=>TILESETS[k[0]]&&TILESETS[k[0]][k.slice(2)]);s.downs=[...new Set(['classic',...(Array.isArray(s.downs)?s.downs:[]).map(doorKeyFix)])];s.door=Object.assign({s:'classic',w:3,u:-2.6},s.door&&typeof s.door==='object'?s.door:{});s.door.s=doorKeyFix(s.door.s);if(!s.downs.includes(s.door.s))s.door.s='classic';s.door.w=clamp(s.door.w|0,0,3);s.door.u=clamp(+s.door.u||0,-RN/2+.8,RN/2-.8);if(!SKY_KEYS.includes(s.sky))s.sky='classic';if(oldPal){const mp=[0,7,8,3,12,5,2];s.items.forEach(i=>i.c=mp[(i.c||0)%7])}s.td=s.td&&typeof s.td==='object'&&!Array.isArray(s.td)?s.td:{};s.arc=s.arc&&typeof s.arc==='object'&&!Array.isArray(s.arc)?s.arc:{best:{},plays:0};s.pv=2;return s}
@@ -11020,7 +11119,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=38;
+const APP_V=39;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
