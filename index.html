@@ -2099,7 +2099,9 @@ function glReload(){if(glReloading||document.visibilityState!=='visible')return;
   try{spotSave()}catch(_){}Promise.resolve().then(()=>typeof flush==='function'&&flush()).catch(()=>{}).finally(()=>location.reload())}
 function glCheck(){clearTimeout(glWait);if(!glLost)return;glWait=setTimeout(()=>{if(document.visibilityState==='visible'&&(glLost||renderer.gl&&renderer.gl.isContextLost()))glReload()},3500)}
 window.addEventListener('r42gllost',()=>{if(renderer.gl&&renderer.gl.isContextLost()){glLost=true;if(document.visibilityState==='visible')glCheck()}});
-window.addEventListener('r42glback',e=>{if(e.detail===renderer){glLost=false;clearTimeout(glWait);try{if(typeof tm!=='undefined'&&tm)tm.snapOk=0}catch(_){}}});
+const glProbe=mkCanvas(4,4);{const x=glProbe.getContext('2d');x.fillStyle='#f0f';x.fillRect(0,0,4,4)}
+function canvasWiped(){try{return glProbe.getContext('2d').getImageData(1,1,1,1).data[3]===0}catch(_){return true}}
+window.addEventListener('r42glback',e=>{if(e.detail===renderer&&canvasWiped()){glLost=true;glReload();return}if(e.detail===renderer){glLost=false;clearTimeout(glWait);try{if(typeof tm!=='undefined'&&tm)tm.snapOk=0}catch(_){}}});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){try{spotSave()}catch(_){}return}if(glLost||renderer.gl&&renderer.gl.isContextLost()){glLost=true;glCheck()}});
 window.addEventListener('pagehide',()=>{try{spotSave()}catch(_){}});
 window.addEventListener('pageshow',()=>{if(glLost||renderer.gl&&renderer.gl.isContextLost()){glLost=true;glCheck()}});
@@ -2128,12 +2130,12 @@ const rcache={};
 function rbox(w,h,d,r){const key=[w,h,d,r].join('|');return rcache[key]||(rcache[key]=new THREE.RoundedBoxGeometry(w,h,d,r))}
 
 /* ---------- canvas textures ---------- */
-function ctex(w,h,fn,rep,sc){sc=sc||2;const cv=document.createElement('canvas');cv.width=w*sc;cv.height=h*sc;const x=cv.getContext('2d');x.scale(sc,sc);fn(x,w,h);
+function ctex(w,h,fn,rep,sc){sc=sc||2;const cv=document.createElement('canvas');cv.width=w*sc;cv.height=h*sc;const x=cv.getContext('2d',{willReadFrequently:true});x.scale(sc,sc);fn(x,w,h);
   const t=new THREE.CanvasTexture(cv);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;if(rep){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rep[0],rep[1])}return t}
 function rnd(seed){let s=seed;return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646}}
 function spark(x,cx,cy,r,c){x.fillStyle=c;x.beginPath();x.moveTo(cx,cy-r);x.quadraticCurveTo(cx,cy,cx+r,cy);x.quadraticCurveTo(cx,cy,cx,cy+r);x.quadraticCurveTo(cx,cy,cx-r,cy);x.quadraticCurveTo(cx,cy,cx,cy-r);x.fill()}
 /* ---------- texture toolkit: tileable noise, grain, soft shadows, wrapped drawing ---------- */
-function mkCanvas(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return c}
+function mkCanvas(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;try{c.getContext('2d',{willReadFrequently:true})}catch(_){}return c}
 const noiseCache={};
 // Periodic fractal value noise (tiles seamlessly), grayscale, cached.
 function noiseCanvas(w,h,cx,cy,oct,seed){const key=[w,h,cx,cy,oct,seed].join();if(noiseCache[key])return noiseCache[key];
@@ -6551,7 +6553,7 @@ const useOf=d=>d.use||USE_ITEM[d.k]||USE_FN[d.fn]||null;
 // Amounts are points added per use. e:1 = feeds the pet from your bag (bowls, fridges, vending machines).
 const NEED_IC={hunger:'stat-full',fun:'stat-happy',energy:'stat-energy',clean:'stat-clean',affection:'heart-jar'};
 const NEED_NM={hunger:'Food & drink',fun:'Play & fun',energy:'Rest & sleep',clean:'Bath & wash',affection:'Cozy & cuddly'};
-const NEED_SHORT={hunger:'Full',fun:'Happy',energy:'Energy',clean:'Clean',affection:'Love'};
+const NEED_SHORT={hunger:'Hunger',fun:'Fun',energy:'Energy',clean:'Hygiene',affection:'Love'};
 const NEED_WANT={hunger:'something to eat from',fun:'something to play with',energy:'somewhere cozy to sleep',clean:'somewhere to wash',affection:'something cuddly'};
 const NEED_OVR={
   // food: bowls and fridges serve food from your bag; tables, carts and counters have a little something of their own
@@ -10661,7 +10663,7 @@ $('#sback').onclick=()=>{if(kmode&&openTab==='shopcat'){kShopBack();return}if(op
 $('#petwheel').onclick=e=>{if(e.target.id==='petwheel')closeWheel()};
 /* ---------- Menu and the pet wheel ---------- */
 // Menu: one screen of big labelled tiles; each opens its page with a "Menu" back button in the same corner.
-const NEEDS=[['hunger','Full','#FF8A1C','stat-full','feed'],['fun','Happy','#FF3D9A','stat-happy','play'],['energy','Energy','#9B4DF2','stat-energy','nap'],['clean','Clean','#3EC8F2','stat-clean','bath'],['affection','Love','#FF7FB8','heart-jar','pat']];
+const NEEDS=[['hunger','Hunger','#FF8A1C','stat-full','feed'],['fun','Fun','#FF3D9A','stat-happy','play'],['energy','Energy','#9B4DF2','stat-energy','nap'],['clean','Hygiene','#3EC8F2','stat-clean','bath'],['affection','Love','#FF7FB8','heart-jar','pat']];
 const BUG_SVG='<svg viewBox="0 0 48 48" aria-hidden="true"><g stroke="#3B1273" stroke-width="3"><circle cx="24" cy="13" r="7" fill="#3B1273"/><ellipse cx="24" cy="29" rx="15" ry="14" fill="#FF5A5A"/><path d="M24 15v28"/></g><g fill="#3B1273"><circle cx="16" cy="25" r="3"/><circle cx="32" cy="25" r="3"/><circle cx="18" cy="35" r="2.6"/><circle cx="30" cy="35" r="2.6"/></g></svg>';
 const MENU_ITEMS=[['decorate','Decorate','tab-decorate','#FFB35C','Furniture, floors, walls','h'],['wardrobe','Wardrobe','wear.svg','#D6F5A8','Dress up your pet','h'],['journal','Journal','journal.svg','#FFF3B8','What your pet did','h'],
   ['todo','Two-dos','twodo','#FFD6EA','Today’s list','t'],['inbox','Inbox','tab-mail','#BDEBFF','Neighbours and notes','t'],['steps','Footprints','steps.svg','#E3D4FF','What you two did','t'],
@@ -11119,7 +11121,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=39;
+const APP_V=40;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
