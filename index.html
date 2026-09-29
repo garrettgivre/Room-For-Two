@@ -504,6 +504,8 @@ body.gaming #emotes,body.gaming .kbub{display:none!important}
 .tm-top b{flex:1;font-family:var(--disp);font-weight:400;font-size:26px;color:#fff;letter-spacing:.02em;text-shadow:2.5px 0 var(--ink),-2.5px 0 var(--ink),0 2.5px var(--ink),0 -2.5px var(--ink),2px 2px var(--ink),-2px 2px var(--ink),2px -2px var(--ink),-2px -2px var(--ink);pointer-events:none}
 .tm-arr{min-height:42px;padding:0 16px;font-size:15px}.tm-arr[hidden]{display:none}
 .tm-pop.gen .tm-lab,.tm-pop.gen .tm-top{opacity:0}
+.tm-back{pointer-events:auto;display:flex;align-items:center;gap:3px;height:42px;padding:0 16px 0 8px;border-radius:21px;border:3px solid var(--ink);background:#fff;color:var(--ink);font-family:var(--disp);font-size:16px;box-shadow:0 4px 0 var(--ink);cursor:pointer}.tm-back[hidden]{display:none}.tm-back:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.tm-back:not([hidden])+b{visibility:hidden}
 .tm-dock{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);transform:translateX(-50%);width:min(calc(100% - 16px),540px);display:flex;justify-content:center;gap:3px;padding:6px 8px 8px;background:rgba(255,248,238,.92);border:3px solid var(--ink);border-radius:24px 20px 26px 20px;box-shadow:0 5px 0 var(--ink);transition:opacity .2s}
 .tm-dock button{position:relative;flex:1 1 0;min-width:0;max-width:54px;aspect-ratio:1;border:0;padding:2px;background:none;border-radius:50%;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .tm-dock img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 2px 0 rgba(59,18,115,.45));transition:transform .18s}
@@ -855,7 +857,7 @@ body.styling .storechip{opacity:0}
     <button class="pin" data-go="salon" style="left:81.7%;top:76.7%;--c:#3EC8F2"><span class="house"><i class="door"></i><img src="assets/icons/act-bath.webp" alt=""></span><b>Bubble Salon</b></button>
   </div></div></div>
 <div class="town3" id="town3" hidden><canvas id="tmSnap" class="tm-fly"></canvas><div class="tm-pop" id="tmPop"><canvas id="tmc"></canvas><div class="tm-lab" id="tmLab"></div>
-  <div class="tm-top"><b id="tmTitle">Where to?</b><button class="gel lilac tm-arr" id="tmArr">Arrange</button><button class="gm-x" id="tmX" aria-label="Close the map">×</button></div>
+  <div class="tm-top"><button class="tm-back" id="tmBack" hidden aria-label="Back to the map"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>Map</button><b id="tmTitle">Where to?</b><button class="gel lilac tm-arr" id="tmArr">Arrange</button><button class="gm-x" id="tmX" aria-label="Close the map">×</button></div>
   <div class="tm-card" id="tmCard" hidden></div><div class="tm-tools" id="tmTools" hidden></div><div class="tm-dock" id="tmDock"></div></div></div>
 <div class="gacha" id="gacha" hidden><canvas id="gcc"></canvas><div class="gc-top"><button class="gm-x" id="gcX" aria-label="Leave">×</button><b>Capsule Corner</b><span class="gc-tok" id="gcTok"></span></div><div class="gc-hint" id="gcHint"></div><div class="gc-bar" id="gcBar"></div><div class="gc-prize" id="gcPrize" hidden></div><div class="gc-dex" id="gcDex" hidden></div></div>
 <div class="travel" id="travel" hidden><img id="tvIcon" alt=""><b id="tvText"></b></div>
@@ -8171,12 +8173,12 @@ function tmShop(k){const S=SHOPS[k],P=S.plan,g=G(),PS=TM_PS,col=parseInt((S.colo
   // the front door (the shop's own door style), a sign, and the owner(s) outside
   const fg=piv(g,ds==='w'?X(di)-PS/2:X(di),0,ds==='w'?Z(dj):Z(dj)-PS/2);fg.rotation.y=ds==='w'?-Math.PI/2:Math.PI;
   const D=buildDoorModel(curDoorKey(S));D.g.scale.setScalar(.2);D.g.position.z=.005;fg.add(D.g);
-  ol(rb(fg,.62,.14,.03,.02,roof,0,.62,.02),.004);{const cn=ol(rb(fg,.46,.03,.2,.01,roof,0,.5,.1),.003);cn.rotation.x=.35}const sg=add(fg,new THREE.PlaneGeometry(.58,.11),M(0xffffff,{map:nsTex('tmsign2_'+k,256,48,(x,w,h)=>{x.fillStyle='#FFF8EE';x.fillRect(0,0,w,h);x.font='34px "R42 Bubble",sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillStyle='#3B1273';x.fillText(S.n,w/2,h/2+2)}),roughness:.5}),0,.62,.04);sg.outline=0;
+  {const cn=ol(rb(fg,.46,.03,.2,.01,roof,0,.5,.1),.003);cn.rotation.x=.35}
   {const Pt=M(0xE2725B,{roughness:.7}),Lf=M(0x4FA53E,{roughness:.7}),Lt=M(0x3B1273,{roughness:.4});ol(rb(fg,.3,.014,.13,.01,M(shade(col,.2),{roughness:.9}),0,.007,.09),.002);
     [-1,1].forEach(sd=>{ol(cy(fg,.05,.036,.09,Pt,sd*.23,.045,.08,10),.003);ol(sp(fg,.062,Lf,sd*.23,.14,.08),.003);ol(sp(fg,.042,Lf,sd*.23,.22,.08),.003);
       ol(rb(fg,.03,.06,.03,.008,Lt,sd*.17,.34,.02),.002);const gl=sp(fg,.024,glowM(0xFFE9A8,1.1),sd*.17,.34,.045);gl.outline=0})}
   const os=tmOwners(k),figs=[];os.forEach((o,n)=>{const f=tmFig(o,.34);if(!f)return;f.position.set((os.length>1?(n?.24:-.24):.3),0,.28);fg.add(f);figs.push(f)});
-  const n0=g.children.length;!tb&&tmFlair[k]&&tmFlair[k](g,top,col,fg);g.children.slice(n0).forEach(q=>q.scale.setScalar(1.6));{const skip=new Set();[D.g,...figs].forEach(r=>r.traverse(q=>skip.add(q)));g.traverse(q=>{const mt=q.isMesh&&!skip.has(q)&&q.material;if(mt&&!mt.map&&!(mt.detail|0)&&!mt.transparent&&!(mt.metalness>.2))mt.detail=3})}bakeStatic(g);tmSign(g,fg,k,-.52,.34);g.userData.tb=k;g.userData.top=top;return g}
+  const n0=g.children.length;!tb&&tmFlair[k]&&tmFlair[k](g,top,col,fg);g.children.slice(n0).forEach(q=>q.scale.setScalar(1.6));{const skip=new Set();[D.g,...figs].forEach(r=>r.traverse(q=>skip.add(q)));g.traverse(q=>{const mt=q.isMesh&&!skip.has(q)&&q.material;if(mt&&!mt.map&&!(mt.detail|0)&&!mt.transparent&&!(mt.metalness>.2))mt.detail=3})}bakeStatic(g);tmSignFor(g,fg,k);g.userData.tb=k;g.userData.top=top;return g}
 function curDoorKey(S){return doorKeyFix(S.door||'classic')}
 // what each owner puts on the roof
 const tmFlair={
@@ -8351,7 +8353,7 @@ function tmHome(){const g=G(),Bd=M(0xFFF6EA,{roughness:.55}),Wh=M(0xFFFFFF,{roug
   [[0,-.76],[.03,-.86]].forEach(([x,z])=>{const s_=ol(cy(g,.07,.075,.02,St,x,.012,z,12),.002);s_.scale.z=.8});
   [[-.62,-.74],[.62,-.74],[-.7,.7],[.7,.7]].forEach(([x,z],n)=>{sp(g,.1,Lf,x,.04,z,1.2,.6,1).outline=.003;for(let i=0;i<4;i++){const a_=i*1.7+n;sp(g,.028,Fl[(i+n)%3],x+Math.cos(a_)*.06,.09,z+Math.sin(a_)*.05).outline=0}});
   const mb=piv(g,-.36,0,-.8);ol(cy(mb,.02,.02,.3,Wd,0,.15,0,6),.002);ol(rb(mb,.14,.1,.1,.03,M(0xFF6FB5,{roughness:.4}),0,.33,0),.003);ol(rb(mb,.015,.08,.01,.004,M(0xFFD21F),.075,.38,0),.002);
-  bakeStatic(g);tmSign(g,fg,'home',-.62,.19);{const sm=piv(g,.4,1.24,.18),pf=[0,1,2].map(()=>{const q=sp(sm,1,Wh,0,0,0);q.outline=0;q.castShadow=false;q.scale.setScalar(.05);return q});
+  bakeStatic(g);tmSignFor(g,fg,'home');{const sm=piv(g,.4,1.24,.18),pf=[0,1,2].map(()=>{const q=sp(sm,1,Wh,0,0,0);q.outline=0;q.castShadow=false;q.scale.setScalar(.05);return q});
     sm.userData.anim=t=>pf.forEach((q,i)=>{const k=(t*.3+i/3)%1,r=(.025+k*.045)*(k>.75?(1-k)/.25:Math.min(1,k*6));q.position.set(k*.1,k*.38,-k*.04);q.scale.setScalar(Math.max(.001,r))})}g.userData.tb='home';g.userData.top={x:0,z:0,y:1.15};return g}
 // ---------- the scene ----------
 let tm=null,tmLast=0;
@@ -8392,20 +8394,51 @@ function tmPad(o,k){const [w,d]=tmFoot(k,0),c=k==='home'?0x3EC8F2:parseInt((SHOP
 function tmSync(full){for(const k of['home',...tmShops()]){if(!(full||k==='home'||!tm.bld[k]))continue;if(tm.bld[k])tm.world.remove(tm.bld[k]);tm.signs=tm.signs.filter(q=>q.k!==k);try{tm.bld[k]=k==='home'?tmHome():tmShop(k);tmPad(tm.bld[k],k)}catch(e){console.warn('town '+k,e);delete tm.bld[k];continue}tm.world.add(tm.bld[k])}
   for(const k in tm.bld)tmPlace(k);tmPaths();tmDecor();tmAO();tm.anims=[];tm.world.traverse(o=>{if(o.userData.anim)tm.anims.push(o)});tmLabels()}
 const tmLogo=k=>k==='home'?ico('tab-room'):`assets/logos/${k}-nt.webp`;
-let tmSignMs=null;
-function tmSignTex(k){const t=ctex(256,256,(x,w,h)=>{x.fillStyle='#FFFDF8';x.beginPath();x.arc(w/2,h/2,w/2,0,7);x.fill()},null,1),im=new Image();
-  im.onload=()=>{const x=t.image.getContext('2d'),w=t.image.width,s_=Math.min(w*.84/im.width,w*.84/im.height);x.drawImage(im,(w-im.width*s_)/2,(w-im.height*s_)/2,im.width*s_,im.height*s_);if(tm&&tm.R)tm.R.disposeTexture(t);tm&&(tm.snapOk=0)};im.src=tmLogo(k);return t}
-function tmSign(g,fg,k,x,z){if(!tmSignMs)tmSignMs={ink:M(0x3B1273,{roughness:.4}),sun:M(0xFFD21F,{roughness:.35,emissive:0xFFD21F,emissiveIntensity:.25}),wh:M(0xFFFFFF,{roughness:.5})};const S=tmSignMs;
-  const p=piv(fg,x,0,z);ol(cy(p,.02,.024,.66,S.wh,0,.33,0,8),.003);ol(cy(p,.07,.08,.035,S.ink,0,.017,0,12),.002);
-  const hd=piv(p,0,.86,0),fm=M(0xffffff,{map:tmSignTex(k),roughness:.45,emissive:0xFFFFFF,emissiveIntensity:.04}),c=k==='home'?0x3EC8F2:parseInt((SHOPS[k].color||'#FF8A1C').slice(1),16);
-  add(hd,gcache('tmsgd',()=>new THREE.CircleGeometry(.27,36)),fm,0,0,.016).outline=0;const bk=add(hd,gcache('tmsgd',()=>new THREE.CircleGeometry(.27,36)),M(c,{roughness:.5}),0,0,-.016);bk.rotation.y=Math.PI;bk.outline=0;
-  const ed=add(hd,gcache('tmsge',()=>new THREE.CylinderGeometry(.275,.275,.03,36)),S.wh,0,0,0);ed.rotation.x=Math.PI/2;ed.outline=0;const rim=to(hd,.28,.022,S.ink,0,0,0);rim.outline=0;
-  tm.signs.push({k,g,fg,hd,rim,fm})}
+const TM_IMG={};
+function tmImg(k){const u=tmLogo(k);if(!TM_IMG[u]){const im=new Image();im.decoding='async';im.src=u;TM_IMG[u]=im}return TM_IMG[u]}
+// a logo drawn on a cream plate over the sign's own colour, filled edge to edge; redrawn once the logo has loaded
+function tmLogoTex(k,bg,round){const W=256,draw=x=>{x.fillStyle=bg;x.fillRect(0,0,W,W);x.fillStyle='#FFFDF8';if(round){x.beginPath();x.arc(W/2,W/2,W*.45,0,7);x.fill()}else{rr(x,W*.05,W*.05,W*.9,W*.9,W*.1);x.fill()}
+    const im=tmImg(k);if(im.complete&&im.naturalWidth){const q=Math.min(W*.78/im.naturalWidth,W*.78/im.naturalHeight),w=im.naturalWidth*q,h=im.naturalHeight*q;x.drawImage(im,(W-w)/2,(W-h)/2,w,h)}};
+  const t=ctex(W,W,draw,null,1),im=tmImg(k);if(!(im.complete&&im.naturalWidth))im.addEventListener('load',()=>{draw(t.image.getContext('2d'));if(tm&&tm.R)tm.R.disposeTexture(t);if(tm&&!tm.open){clearTimeout(tmLogoTex.t);tmLogoTex.t=setTimeout(()=>{try{tmFresh()}catch(_){}},200)}},{once:true});return t}
+// a double-sided sign face (round or square) centred on p, facing +z and -z, with an edge in edgeM
+function tmFace(p,w,mat,d,edgeM,round,one){if(round){const r=w/2,G_=gcache('tmfc'+r,()=>new THREE.CircleGeometry(r,40));add(p,G_,mat,0,0,d/2+.002).outline=0;if(!one){const b=add(p,G_,mat,0,0,-d/2-.002);b.rotation.y=Math.PI;b.outline=0}const e=ol(cy(p,r+.014,r+.014,d,edgeM,0,0,0,40),.004);e.rotation.x=Math.PI/2}
+  else{const G_=gcache('tmfp'+w,()=>new THREE.PlaneGeometry(w,w));add(p,G_,mat,0,0,d/2+.002).outline=0;if(!one){const b=add(p,G_,mat,0,0,-d/2-.002);b.rotation.y=Math.PI;b.outline=0}ol(rb(p,w+.04,w+.04,d,.014,edgeM,0,0,0),.004)}}
+function tmBulbs(h,w,y0,cols,n){const ms=[];for(let i=0;i<n;i++){const t=i/n*4,sd=Math.floor(t),f=t-sd,a=w/2+.03,P=[[-a+f*2*a,a],[a,a-f*2*a],[a-f*2*a,-a],[-a,-a+f*2*a]][sd];const m=glowM(cols[i%cols.length],.8);ms.push(m);sp(h,.026,m,P[0],P[1]+y0,.03).outline=0}
+  h.userData.anim=t=>ms.forEach((m,i)=>m.emissiveIntensity=(Math.sin(t*5-i*.9)>.2?1.3:.35));return ms}
+// every shop's sign is its own object in the town, built round the door pivot fg (x along the wall, +z out of it, y up)
+const TM_SIGN={
+  snack(fg,L){const p=piv(fg,-.5,0,.44);p.rotation.y=.35;const Wd=M(0xC98A5A,{roughness:.7}),Bn=M(0xE7A550,{roughness:.45}),Sd=M(0xFFF3D6,{roughness:.5});
+    const f=piv(p,0,0,.08);f.rotation.x=-.2;tmFace(piv(f,0,.24,0),.3,L('#FFB35C',0),.03,Bn,0,1);ol(sp(f,.14,Bn,0,.42,0,1.15,.5,.55),.004);[[-.06,.47],[.05,.48],[0,.45]].forEach(([x,y])=>sp(f,.012,Sd,x,y,.05,1.4,.6,1).outline=0);
+    const b=piv(p,0,0,-.08);b.rotation.x=.2;ol(rb(b,.33,.4,.03,.01,Wd,0,.21,0),.004);return p},
+  salon(fg,L){const Gd=M(0xFFD21F,{metalness:.5,roughness:.3}),p=piv(fg,.44,0,0);ol(rb(p,.035,.035,.46,.012,Gd,0,.76,.23),.003);ol(rb(p,.03,.16,.03,.01,Gd,0,.7,.02),.003);ol(sp(p,.03,Gd,0,.76,.46),.002);
+    [.13,.33].forEach(z=>ol(cy(p,.006,.006,.08,Gd,0,.71,z,6),0));const h=piv(p,0,.5,.23);h.rotation.y=Math.PI/2;tmFace(h,.34,L('#BFEFFF',1),.04,Gd,1);
+    const Bb=M(0xE3F8FF,{roughness:.06,emissive:0xBFE8FF,emissiveIntensity:.15});[[.15,.15,.07],[-.17,.1,.05],[.03,.21,.045],[.19,-.06,.04],[-.13,-.15,.035]].forEach(([x,y,r])=>ol(sp(h,r,Bb,x,y,0),.002));return p},
+  toys(fg,L){const p=piv(fg,-.5,0,.45);p.rotation.y=.25;const cs=[M(0xFF6FB5,{roughness:.35}),M(0xFFFFFF,{roughness:.35})];for(let i=0;i<7;i++)ol(cy(p,.026,.026,.1,cs[i%2],0,.05+i*.1,0,10),.002);
+    const h=piv(p,0,.92,0);tmFace(h,.42,L('#FFD21F',1),.06,M(0x3EC8F2,{roughness:.3}),1);ol(sp(h,.055,M(0xA6E22E,{roughness:.3}),0,.26,0),.003);
+    [-1,1].forEach(q=>{const r=ol(rb(p,.12,.06,.04,.025,M(0xFF6FB5,{roughness:.4}),q*.07,.72,0),.002);r.rotation.z=q*.45});ol(sp(p,.03,M(0xFF6FB5,{roughness:.4}),0,.72,0),.002);return p},
+  furn(fg,L){const p=piv(fg,-.52,0,.44);p.rotation.y=.3;const Pk=M(0xFF9ECF,{roughness:.9}),Yl=M(0xFFD21F,{roughness:.9}),Gd=M(0xFFD21F,{roughness:.4,metalness:.3});
+    ol(rb(p,.42,.1,.34,.05,Yl,0,.05,0),.004);ol(rb(p,.37,.09,.29,.045,Pk,0,.145,-.01),.004);const h=piv(p,0,.39,0);h.rotation.x=-.1;h.rotation.z=.05;
+    ol(rb(h,.38,.36,.11,.07,M(0x9FD8FF,{roughness:.9}),0,0,0),.005);tmFace(piv(h,0,0,.057),.26,L('#9FD8FF',1),.004,M(0x9FD8FF,{roughness:.9}),1,1);
+    [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>{ol(sp(h,.028,Gd,a*.19,b*.18,0),.002);ol(co(h,.022,.06,Gd,a*.21,b*.18-.04,0,8),.002)});return p},
+  build(fg,L){const p=piv(fg,-.5,0,.45);p.rotation.y=.2;const Wd=M(0xC98A5A,{roughness:.8}),Yl=M(0xFFC61F,{roughness:.4});Wd.detail=2;
+    [-.19,.19].forEach(x=>ol(rb(p,.04,.66,.04,.008,Wd,x,.33,-.03),.003));tmFace(piv(p,0,.48,0),.32,L('#FFC61F',0),.03,Yl,0);
+    ol(rb(p,.46,.07,.04,.01,M(0xffffff,{map:s1Stripe(0x3B1273,0xFFD21F,8,true),roughness:.5}),0,.71,0),.003);ol(rb(p,.07,.05,.05,.01,M(0xFF8A1C,{roughness:.4}),.2,.02,.08),.002);return p},
+  glam(fg,L){const p=piv(fg,-.5,0,.44);p.rotation.y=.3;const Pk=M(0xFF6FB5,{roughness:.35}),Gd=M(0xFFD21F,{metalness:.5,roughness:.3});
+    ol(cy(p,.1,.12,.04,Gd,0,.02,0,18),.003);ol(cy(p,.022,.022,.44,Gd,0,.24,0,8),.003);const h=piv(p,0,.66,0);tmFace(h,.34,L('#FFB3DA',0),.04,Pk,0);tmBulbs(h,.34,0,[0xFFF3B0],16);return p},
+  wear(fg,L){const Ir=M(0x3B1273,{roughness:.4}),Sv=M(0xDDE3EE,{metalness:.6,roughness:.25}),p=piv(fg,.44,0,0);ol(rb(p,.03,.03,.46,.01,Ir,0,.78,.23),.003);ol(rb(p,.03,.14,.03,.01,Ir,0,.72,.02),.003);
+    const h=piv(p,0,0,.25);h.rotation.y=Math.PI/2;ol(to(h,.035,.009,Sv,0,.73,0,0,0,0,Math.PI*1.3),.002);
+    [[[0,.69,0],[-.17,.59,0]],[[0,.69,0],[.17,.59,0]],[[-.17,.59,0],[.17,.59,0]],[[-.06,.59,0],[-.05,.55,0]],[[.06,.59,0],[.05,.55,0]]].forEach(([a,b])=>nsLine(h,a,b,.008,Sv));
+    tmFace(piv(h,0,.4,0),.3,L('#3EC8F2',1),.045,M(0xFFD21F,{roughness:.35}),1);return p},
+  arcade(fg,L){const p=piv(fg,-.52,0,.45);p.rotation.y=.3;const Ink=M(0x3B1273,{roughness:.4}),Pu=M(0x9B4DF2,{roughness:.35});
+    ol(cy(p,.09,.11,.04,Ink,0,.02,0,16),.003);ol(cy(p,.026,.026,.62,Ink,0,.33,0,8),.003);const h=piv(p,0,.84,0);tmFace(h,.36,L('#2A0F5C',0),.07,Pu,0);tmBulbs(h,.36,0,[0xFF6FB5,0xFFD21F,0x3EC8F2],16);return p},
+  home(fg,L){const p=piv(fg,-.62,0,.19);p.rotation.y=-.15;const Wd=M(0xC98A5A,{roughness:.8});Wd.detail=2;ol(rb(p,.04,.4,.04,.008,Wd,0,.2,0),.003);const h=piv(p,0,.44,0);h.rotation.z=.06;tmFace(h,.26,L('#A6E22E',0),.035,Wd,0);return p},
+  _(fg,L){const p=piv(fg,-.5,0,.44);ol(rb(p,.04,.5,.04,.008,M(0xFFFFFF),0,.25,0),.003);tmFace(piv(p,0,.6,0),.3,L('#FFFFFF',1),.04,M(0x3B1273,{roughness:.4}),1);return p}};
+function tmSignFor(g,fg,k){const ms=[],L=(bg,round)=>{const m=M(0xffffff,{map:tmLogoTex(k,bg,round),roughness:.45,emissive:0xFFFFFF,emissiveIntensity:.03});ms.push(m);return m};
+  const p=(TM_SIGN[k]||TM_SIGN._)(fg,L);let anim=false;p.traverse(q=>{if(q.userData.anim)anim=true});if(!anim)bakeStatic(p);tm.signs.push({k,ms})}
 // ---------- labels, card, pin ----------
 function tmLabels(){const el=$('#tmDock'),here=away?away.key:'home',wish=state.wish&&state.wish.k==='trip'&&state.wish.shop;$('#tmLab').innerHTML='';
   el.innerHTML=['home',...tmShops()].filter(k=>tm.bld[k]).map(k=>{const n=k==='home'?'Home':SHOPS[k].n;return`<button class="${k===here?'here':''}" data-k="${k}" aria-label="${esc(n)}" title="${esc(n)}"><img src="${tmLogo(k)}" alt="">${k===wish?'<b></b>':''}</button>`}).join('');
-  el.querySelectorAll('button').forEach(b=>b.onclick=e=>{e.stopPropagation();tmSelect(b.dataset.k)});
-  tm.signs.forEach(q=>q.rim.material=q.k===here?tmSignMs.sun:tmSignMs.ink)}
+  el.querySelectorAll('button').forEach(b=>b.onclick=e=>{e.stopPropagation();tmSelect(b.dataset.k)});}
 function tmSelect(k){if(tm.arr){tmPick('b:'+k);return}tm.focus=k;const o=tm.bld[k];if(o)tm.tgtTo.set(o.position.x,0,o.position.z);const here=(away?away.key:'home')===k,S=SHOPS[k],c=$('#tmCard');
   const own=k==='home'?[]:tmOwners(k).map(o=>TM_OWN[o]||o),P=S&&S.plan,rooms=P?P.levels.reduce((a,L)=>a+Object.keys(L.rooms).length,0):0,staff=P?P.levels.reduce((a,L)=>a+Object.values(L.rooms).filter(R=>R.lock).length,0):0;
   const extra=k==='furn'?`<p class="tmx">Today: ${nestStock().sets.map(q=>SETMAP[q].n).join(', ')}</p>`:state.wish&&state.wish.k==='trip'&&state.wish.shop===k?`<p class="tmx">${esc(state.pet.name)} wants to visit!</p>`:'';
@@ -8441,7 +8474,8 @@ function tmTap(cx,cy){tmCell(cx,cy);const hits=tm.ray.intersectObjects([...Objec
 function tmRoad(gx,gz,val){const m=state.tmap;if(gx<0||gz<0||gx>=TM_W||gz>=TM_D)return val;const i=m.r.findIndex(q=>q[0]===gx&&q[1]===gz),has=i>-1,want=val==null?!has:val;if(want===has)return want;
   if(want){const t=tmTaken(m).get(gx+','+gz);if(t&&t.startsWith('b:'))return want;m.r.push([gx,gz])}else m.r.splice(i,1);tmPaths();saveSoon();return want}
 // ---------- open, close, input, frame ----------
-setTimeout(()=>{try{if(!tm)tmInit();if(tm)setTimeout(()=>{try{state.tmap=tmNorm(state.tmap);tmFresh()}catch(e){}},300)}catch(e){}},6000);
+['home',...tmShops()].forEach(k=>{try{tmImg(k)}catch(_){}});
+{const warm=()=>{try{if(!tm)tmInit();if(tm)setTimeout(()=>{try{state.tmap=tmNorm(state.tmap);tmFresh()}catch(e){}},250)}catch(e){}};setTimeout(()=>window.requestIdleCallback?requestIdleCallback(warm,{timeout:1500}):warm(),1600)}
 function tmOpen(){const T=tmInit();if(!T)return false;state.tmap=tmNorm(state.tmap);const el=$('#town3');el.hidden=false;el.classList.add('on');T.open=true;tmArrange(false);tm.tgt.set(0,0,0);$('#tmArr').hidden=false;
   $('#tmTitle').textContent=away?'Where next?':'Where to?';$('#tmPop').classList.add('gen');if(!T.snapOk){tmSync(false);tmDraw(0);tmSnapNow()}T.snapOk=0;tmLast=performance.now();tmTick(tmLast);tmGenie(true);return true}
 function tmQuad(W,H,q){const[x0,y0,x1,y1,x2,y2,x3,y3]=q,dx1=x1-x2,dx2=x3-x2,dx3=x0-x1+x2-x3,dy1=y1-y2,dy2=y3-y2,dy3=y0-y1+y2-y3,D=dx1*dy2-dx2*dy1,g=(dx3*dy2-dx2*dy3)/D,h=(dx1*dy3-dx3*dy1)/D,a=x1-x0+g*x1,b=x3-x0+h*x3,c=x0,d=y1-y0+g*y1,e=y3-y0+h*y3,f=y0;
@@ -8484,11 +8518,10 @@ function tmTOD(){const now=performance.now();if(now-tmTodT<1000&&skyHourOverride
   // the sun rises on the right of the map and sets on the left; at night a moon hangs up on the left
   const a=(Math.min(20,Math.max(6,h))-6)/14*Math.PI,sp=[Math.cos(a)*13-2,3+Math.sin(a)*10,1.5],mp=[-8,12,5];dl.position.set(...sp.map((v,k)=>v+(mp[k]-v)*night));
   const k=lr(A[3],B[3]),t=cl(A[4],B[4]);tm.todK=t.map(v=>v*k);const L=tm.sc.userData.lighting;L.exposure=1.08-.2*night;L.emisBoost=lr(A[5],B[5]);
-  tmGlassMs.forEach(g=>g.emissiveIntensity=.06+.75*night);tm.signs.forEach(q=>q.fm.emissiveIntensity=.04+.3*night);
+  tmGlassMs.forEach(g=>g.emissiveIntensity=.06+.75*night);tm.signs.forEach(q=>q.ms.forEach(m=>m.emissiveIntensity=.03+.3*night));
   L.points=night>.05?(tm.decor?tm.decor.children:[]).filter(o=>{const q=state.tmap.d[o.userData.td];return q&&q[0]==='lamp'}).slice(0,8).map(o=>({pos:[o.position.x,.95,o.position.z],color:[1.5*night,1.15*night,.65*night],range:2.8})):[];
   $('#town3').style.setProperty('--tmn',night.toFixed(3));tm.night=night}
-function tmDraw(dt){const[W_,H_]=tmSize(),R=tm.R;tmTOD();{const here=away?away.key:'home';tm.signs.forEach((q,i)=>{q.hd.rotation.y=tm.yaw-q.g.rotation.y-q.fg.rotation.y;q.hd.rotation.z=Math.sin(tm.t*1.3+i*1.7)*.04;q.hd.position.y=.86+(q.k===here?Math.abs(Math.sin(tm.t*2.6))*.06:0)});
-    const d=$('#tmDock');if(d&&d._f!==tm.focus){d._f=tm.focus;d.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.k===tm.focus))}}
+function tmDraw(dt){const[W_,H_]=tmSize(),R=tm.R;tmTOD();{const d=$('#tmDock'),bk=$('#tmBack'),sh=!!tm.focus&&!tm.arr&&!$('#tmCard').hidden;if(bk.hidden===sh)bk.hidden=!sh;if(d&&d._f!==tm.focus){d._f=tm.focus;d.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.k===tm.focus))}}
   if(R.__w!==W_||R.__h!==H_){R.setPixelRatio(Math.min(2,devicePixelRatio||1));R.setSize(W_,H_,false);R.__w=W_;R.__h=H_;tm.cam.aspect=W_/H_;tm.cam.updateProjectionMatrix()}
   vlerp(tm.tgt,tm.tgtTo,Math.min(1,dt*4));const d=tmFit()*(tm.focus?.45:1)*tm.zoom,cp=Math.cos(tm.pitch),c=tm.cam;tm.off=(tm.off??1.9)+((tm.focus?.75:1.9)-(tm.off??1.9))*Math.min(1,dt*4);const ox=tm.tgt.x+Math.sin(tm.yaw)*tm.off,oz=tm.tgt.z+Math.cos(tm.yaw)*tm.off;c.position.set(ox+Math.sin(tm.yaw)*cp*d,Math.sin(tm.pitch)*d,oz+Math.cos(tm.yaw)*cp*d);c.lookAt(new THREE.Vector3(ox,0,oz));
   tm.cl&&tm.cl.forEach(p=>p.rotation.y=tm.t*p.userData.sp);tm.mills&&tm.mills.forEach(o=>o.userData.anim(tm.t));tm.anims.forEach(o=>{try{o.userData.anim(tm.t)}catch(_){}});const so=tmObj(tm.sel);if(so)so.position.y=.25+Math.sin(tm.t*5)*.06;
@@ -8505,7 +8538,7 @@ function tmTick(ts){if(!tm||!tm.open)return;requestAnimationFrame(tmTick);const 
     if(down.mv>6){tm.yaw-=dx*.008;tm.pitch=clamp(tm.pitch+dy*.004,.55,1.35)}});
   const up=e=>{if(!tm)return;tm.ptr.delete(e.pointerId);if(tm.ptr.size<2)pinch=0;if(down&&down.mv<8&&!down.painted)tmTap(e.clientX,e.clientY);down=null;paint=null};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',e=>{tm&&tm.ptr.delete(e.pointerId);down=null});
   cv.addEventListener('wheel',e=>{if(!tm)return;e.preventDefault();tm.zoom=clamp(tm.zoom*(e.deltaY>0?1.1:.9),.35,1.7)},{passive:false});
-  $('#tmX').onclick=()=>closeMap();$('#town3').addEventListener('pointerdown',e=>{if(e.target===e.currentTarget&&!tm.arr)closeMap()});$('#tmArr').onclick=()=>tmArrange(true)}
+  $('#tmBack').onclick=()=>{$('#tmCard').hidden=true;tm.focus=null;tm.tgtTo.set(0,0,0)};$('#tmX').onclick=()=>closeMap();$('#town3').addEventListener('pointerdown',e=>{if(e.target===e.currentTarget&&!tm.arr)closeMap()});$('#tmArr').onclick=()=>tmArrange(true)}
 
 function showMap(){if(tmOpen())return;const m=$('#map'),here=away?away.key:'home';$('#mapHome').hidden=!away;$('#mapTitle').textContent=away?'Where next?':'Where to?';m.querySelectorAll('[data-go]').forEach(b=>b.classList.toggle('here',b.dataset.go===here));m.hidden=false;requestAnimationFrame(()=>m.classList.add('on'))}
 function closeMap(){tmClose();const m=$('#map');m.classList.remove('on');setTimeout(()=>{m.hidden=true},250);if(!traveling)doorTarget=0}
@@ -10666,7 +10699,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=31;
+const APP_V=32;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
