@@ -774,10 +774,13 @@ body.styling .storechip{opacity:0}
 .pw-n:active .lab{transform:translateY(3px)}
 .pw-n.low .ring{animation:wig 1s ease-in-out infinite}
 .pw-n:active .ring{transform:translateY(3px)}
-.mw .pw-n .ring{background:var(--tc)}.mw .pw-n>img{width:42px;height:42px}
+.mw .pw-n .ring{box-shadow:inset 0 0 0 7px var(--rc),inset 0 0 0 9px #fff,0 5px 0 var(--ink),0 5px 0 3px #fff,0 0 0 3px #fff}.mw .pw-n>img{width:40px;height:40px}
 .mw .pw-n .badge{display:flex;top:-6px;right:-6px;z-index:3;pointer-events:none}
-.mw .pw-c{background:radial-gradient(circle at 35% 28%,#fff 0 18%,transparent 19%),linear-gradient(180deg,#F4FFD9,#CFEF8A)}.mw .pw-c b{color:#fff;font-size:15px}.mw .pw-c svg{margin-bottom:2px}
-.mw .pw-who{position:absolute;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 70px);font-family:var(--disp);font-size:13px;color:#fff;text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink);white-space:nowrap}
+.mw .pw-c{background:radial-gradient(circle at 35% 28%,#fff 0 18%,transparent 19%),linear-gradient(180deg,#F4FFD9,#CFEF8A)}.mw .pw-c img{width:50px;height:50px;margin-top:0}.mw .pw-c small{max-width:96px;text-align:center;line-height:1.15}
+.mw .pw-ref{position:absolute;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 64px);display:flex;align-items:center;gap:6px;height:36px;padding:0 14px 0 10px;border-radius:18px;border:2.5px solid var(--ink);background:#fff;box-shadow:0 3px 0 var(--ink);font-family:var(--disp);font-size:13px;color:var(--ink);white-space:nowrap;opacity:0;transition:opacity .3s .2s;cursor:pointer}.mw .pw-ref small{font-size:11px;color:#6B4E95}.mw.on .pw-ref{opacity:1}.mw .pw-ref:active{transform:translateX(-50%) translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.pgh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 2px}.pgh h2{margin:2px 0 4px}.pgh .pgr{margin-left:auto}
+.pgh .pi{flex:none;width:42px;height:42px;border-radius:50%;background:#fff;border:3px solid var(--ink);box-shadow:inset 0 0 0 5px var(--rc),inset 0 0 0 6.5px #fff,0 3px 0 var(--ink);display:grid;place-items:center}.pgh .pi img{width:26px;height:26px}.pgsub{margin-top:0}
+/*unused*/.mw .pw-who{position:absolute;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 70px);font-family:var(--disp);font-size:13px;color:#fff;text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink);white-space:nowrap}
 .pw-hint{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 140px);white-space:nowrap;font-family:var(--disp);font-size:14px;color:#fff;text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink);opacity:0;transition:opacity .3s .25s}
 .petwheel.on .pw-hint{opacity:1}
 .pw-w{left:-27px;top:80px;width:54px;height:50px;border-radius:50% 50% 50% 18%;background:#fff;border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);animation:wig 1.8s ease-in-out infinite}
@@ -7694,7 +7697,7 @@ function offerWear(id){const D=wearDef(id),own=ownsWear(id),cat=(WEAR_CATS.find(
   return{key:id,title:D.n,sub:cat,desc:D.d,price:D.p,thumb:`<img data-tt="wear:${id}" src="${thumbs['wear:'+id]||BLANK}" alt="">`,thumbQ:'wear:'+id,have:own?'In your wardrobe':away&&away.key==='wear'?`Trying it on ${esc(PN())}`:'Sold at Jelly Threads',canBuy:!own&&!!away&&away.key==='wear',go:!own&&!(away&&away.key==='wear')?{label:'Shop there',fn:()=>{closeProduct();setTab(null);travelTo('wear',()=>{setTab('wardrobe');openWearOffer(id)})}}:null,
     buy(){state.wear.push(id);wearPrev=false;const L=petLook(true);setLook(wornOn(id,L).length?L:wearNext(L,id));td('wear');if(openTab==='wardrobe')renderSheet();setTimeout(()=>toast('It’s in your Wardrobe. Swap outfits any time from the Pet tab.'),900)}}}
 function renderWardrobe(body){const L=petLook(true),inShop=away&&away.key==='wear',st=stageOf(state.pet.xp);
-  let h=`<div class="pv-head"><h2>${inShop?'Fitting room':'Wardrobe'}</h2><span class="stage">${state.hearts} hearts</span></div>`;
+  let h=pgHead('wardrobe',{t:inShop?'Fitting room':'',right:`<span class="stage">${state.hearts} hearts</span>`});
   if(!st){body.innerHTML=h+`<p class="hint">Clothes will fit once your egg hatches.</p>`;return}
   const ids=wearIds(wearCat),two=wearCat==='hat'||wearCat==='face';
   h+=`<div class="chips">${WEAR_CATS.map(([k,n])=>`<button class="chip" data-wc="${k}" aria-pressed="${wearCat===k}">${n}</button>`).join('')}</div>
@@ -8811,17 +8814,17 @@ function lifeCheck(){if(!state||lifeCheck.done)return;lifeCheck.done=1;
 function dayLabel(t){const d=new Date(t),n=new Date(),y=new Date(Date.now()-864e5);if(d.toDateString()===n.toDateString())return'Today';if(d.toDateString()===y.toDateString())return'Yesterday';return d.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'})}
 function byDay(list,fn){let last='',out='';list.forEach((x,i)=>{const dl=dayLabel(x.t);if(dl!==last){last=dl;out+=`<div class="dayh">${dl}</div>`}out+=fn(x,i)});return out}
 function renderJournal(body){const p=state.pet,hn=headNames();resolveNames([...new Set(state.journal.map(x=>x.by))]);
-  body.innerHTML=`<h2>${esc(p.name)}’s journal</h2><p class="hint">${esc(hn[0])} and ${esc(hn[1])} write down what happened, including everything while you were away.</p>${state.journal.length?byDay(state.journal,(x,i)=>`<ul class="jr"><li${i%2?' class="alt"':''}>${esc(x.text).replace(/\{p\}/g,esc(x.by?who(x.by):'Somebody'))}<span class="sig"><span>${esc(p.name)}</span><span>${ago(x.t)}</span></span></li></ul>`):'<p class="hint">Nothing written yet. Check back after a little while.</p>'}`}
+  body.innerHTML=`${pgHead('journal',{sub:`Written by ${esc(hn[0])} and ${esc(hn[1])}: what they got up to, even while you were away.`})}${state.journal.length?byDay(state.journal,(x,i)=>`<ul class="jr"><li${i%2?' class="alt"':''}>${esc(x.text).replace(/\{p\}/g,esc(x.by?who(x.by):'Somebody'))}<span class="sig"><span>${esc(p.name)}</span><span>${ago(x.t)}</span></span></li></ul>`):'<p class="hint">Nothing written yet. Check back after a little while.</p>'}`}
 function renderInbox(body){const me=myId||'me';resolveNames([...new Set(state.feed.map(x=>x.by))]);
   const ms=state.inbox.map(m=>({t:m.t,from:m.from,text:m.text})).concat(state.feed.filter(f=>f.k==='note').map(f=>({t:f.t,by:f.by,text:f.text}))).sort((a,b)=>b.t-a.t).slice(0,60);
   const row=m=>{if(m.from){const r=RES[m.from]||['?','#fff'];return`<div class="dm" style="--c:${r[1]}"><span class="av">${esc(r[0][0])}</span><div class="bw"><span class="nm">${esc(r[0])}</span><div class="bub">${esc(m.text)}<small>${ago(m.t)}</small></div></div></div>`}
     const mine=m.by===me;return`<div class="dm${mine?' me':''}" style="--c:#BDEBFF">${mine?'':`<span class="av">${esc(who(m.by)[0]||'?')}</span>`}<div class="bw">${mine?'':`<span class="nm">${esc(who(m.by))}</span>`}<div class="bub">${esc(m.text)}<small>${ago(m.t)}</small></div></div></div>`};
-  body.innerHTML=`<h2>Inbox</h2><p class="hint">Messages from the neighbours, and notes between the two of you.</p><div class="compose"><input id="note" maxlength="140" placeholder="Message your person" enterkeyhint="send"><button class="gel pink" id="send">Send</button></div><div class="dms">${ms.length?byDay(ms,row):'<p class="hint">No messages yet.</p>'}</div>`;
+  body.innerHTML=`${pgHead('inbox',{sub:'Messages from the neighbours, and notes between the two of you.'})}<div class="compose"><input id="note" maxlength="140" placeholder="Message your person" enterkeyhint="send"><button class="gel pink" id="send">Send</button></div><div class="dms">${ms.length?byDay(ms,row):'<p class="hint">No messages yet.</p>'}</div>`;
   const send=()=>{const i=$('#note'),v=i.value.trim();if(!v)return;logEvent(v,'note');td('note');i.value='';saveSoon();renderSheet();toast('Sent');markSeen('inbox')};
   $('#send').onclick=send;$('#note').onkeydown=e=>{if(e.key==='Enter')send()}}
 function renderSteps(body){const me=myId||'me',ev=state.feed.filter(f=>f.k!=='note');resolveNames([...new Set(ev.map(x=>x.by))]);
   const row=x=>{const mine=x.by===me;return`<ul class="fp"><li><span class="av" style="--c:${mine?'#FFC6E8':'#BDEBFF'}">${esc(who(x.by)[0]||'?')}</span><span><b>${esc(who(x.by))}</b> ${esc(x.text)}</span><span class="when">${ago(x.t)}</span></li></ul>`};
-  body.innerHTML=`<h2>Footprints</h2><p class="hint">What each of you has been up to in the room.</p>${ev.length?byDay(ev,row):'<p class="hint">No footprints yet.</p>'}`}
+  body.innerHTML=`${pgHead('steps',{sub:'What each of you has been up to.'})}${ev.length?byDay(ev,row):'<p class="hint">No footprints yet.</p>'}`}
 
 /* ================= PET ACTIONS ================= */
 const ACTS={
@@ -9075,8 +9078,7 @@ function renderTodo(body){tdEnsure();const T=state.td,dl=new Date(T.day+'T12:00:
   const week=[...Array(12)].map((_,i)=>{const got=i<T.stamps,pz=TD_WEEK.find(w=>w.at===i+1);return`<span class="tds${got?' got':''}${pz?' prize':''}" style="--r:${((i*37)%11-5)}deg">${got?TD_HEART:pz?`<img src="assets/icons/${pz.ic}.webp" alt="">`:''}</span>`}).join('');
   const L=tdLevel(T.total),a=tdLvAt(L-1),b=tdLvAt(L);
   const ms=TD_MS.map(x=>({x,v:x.get(),got:T.ms.includes(x.k)})),open=ms.filter(o=>!o.got).sort((p,q)=>q.v[0]/q.v[1]-p.v[0]/p.v[1]),list=tdAllMs?ms:open.slice(0,3);
-  body.innerHTML=`<div class="tdhead"><h2>Two-Do List</h2><span class="tddate">${dl}</span></div>
-    <p class="hint">Little things for today. Either of you can check them off, and there's no rush.</p>
+  body.innerHTML=`${pgHead('todo',{right:`<span class="tddate">${dl}</span>`,sub:'Little things for today. Either of you can check them off, and there\'s no rush.'})}
     <div class="tdlist">${cards}</div>${treat}
     ${canSwap&&n<m?'<p class="hint tdswh">Not feeling one? Tap the arrows to swap it (once a day each).</p>':''}
     <div class="row-label">This week's sticker card</div><div class="tdweek">${week}</div><p class="hint">${T.stamps>=12?'Card full! A fresh one starts Monday.':`${T.stamps} of 12 · prizes at 4, 8 and 12 · a fresh card every Monday`}</p>
@@ -10130,11 +10132,13 @@ const MENU_ITEMS=[['decorate','Decorate','tab-decorate','#FFB35C','Furniture, fl
   ['room','Room & sharing','tab-room','#fff','Light, invite, names','s'],['debug','Debug','','#EDE6F5','Testing tools','']],MENU_KIDS=MENU_ITEMS.map(m=>m[0]);
 function ringSvg(v,sz,w){const r=(sz-w)/2-1,c=2*Math.PI*r;return`<svg viewBox="0 0 ${sz} ${sz}" aria-hidden="true"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" class="tr"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" class="pr" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c*(1-Math.max(.02,Math.min(1,v)))).toFixed(1)}"/></svg>`}
 let dbgOpen='Pet stage';
+const MN_RING={decorate:'#FF8A1C',wardrobe:'#A6E22E',journal:'#FFD21F',todo:'#FF3D9A',inbox:'#3EC8F2',steps:'#9B4DF2',room:'#3EC8F2',debug:'#9B4DF2'};
+function pgHead(k,o={}){const m=MENU_ITEMS.find(x=>x[0]===k)||[k,k,'','#fff'];return`<div class="pgh" style="--rc:${MN_RING[k]||'#FFD21F'}">${m[2]?`<span class="pi"><img src="${ico(m[2])}" alt=""></span>`:''}<h2>${o.t||m[1]}</h2>${o.right?`<span class="pgr">${o.right}</span>`:''}</div>${o.sub?`<p class="hint pgsub">${o.sub}</p>`:''}`}
 function menuBadges(){const T=state.td,n=T.done.length,m=T.list.length,treat=n>=m&&!T.gift,u=k=>unreadOf(k)?`<i class="badge">${unreadOf(k)}</i>`:'';
   return{todo:treat?'<i class="badge">!</i>':`<i class="badge" style="background:#fff">${n}/${m}</i>`,journal:u('journal'),inbox:u('inbox'),steps:u('steps')}}
-function renderMenuWheel(){const w=$('#menuwheel');if(w._busy)return;const items=MENU_ITEMS.filter(m=>m[0]!=='debug'),R=Math.min(132,innerWidth*.33),ex=menuBadges();
-  const nodes=items.map(([k,nm,ic,c],i)=>{const a=-Math.PI/2+i*Math.PI*2/items.length,x=Math.round(Math.cos(a)*R),y=Math.round(Math.sin(a)*R);return`<button class="pw-n" data-mn="${k}" data-x="${x}" data-y="${y}" style="--x:${x}px;--y:${y}px;--tc:${c}" aria-label="${nm}"><span class="ring"></span><img src="${ico(ic)}" alt="">${arcLabel(nm,a,false)}${ex[k]||''}</button>`}).join('');
-  w.innerHTML=`<div class="pw" style="--cy:${Math.round(innerHeight*.5)}px">${nodes}<button class="pw-c" id="mwRef"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#3B1273" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 3v5h-5"/></svg><b>Refresh app</b><small>v${APP_V}</small></button></div><div class="pw-who">${esc($('#presence').textContent)}</div><div class="pw-hint">Tap one to open it</div>`;
+function renderMenuWheel(){const w=$('#menuwheel');if(w._busy)return;const items=MENU_ITEMS.filter(m=>m[5]==='h'||m[5]==='t'),R=Math.min(132,innerWidth*.33),ex=menuBadges();
+  const nodes=items.map(([k,nm,ic,c],i)=>{const a=-Math.PI/2+i*Math.PI*2/items.length,x=Math.round(Math.cos(a)*R),y=Math.round(Math.sin(a)*R);return`<button class="pw-n" data-mn="${k}" data-x="${x}" data-y="${y}" style="--x:${x}px;--y:${y}px;--rc:${MN_RING[k]}" aria-label="${nm}"><span class="ring"></span><img src="${ico(ic)}" alt="">${arcLabel(nm,Math.sin(a)<-.2?-Math.PI/2:Math.PI/2,false,'mwa'+i)}${ex[k]||''}</button>`}).join('');
+  w.innerHTML=`<div class="pw" style="--cy:${Math.round(innerHeight*.5)}px">${nodes}<button class="pw-c" data-mn="room" aria-label="Room and sharing"><img src="${ico('tab-room')}" alt=""><b>Our room</b><small>${esc($('#presence').textContent)}</small></button></div><button class="pw-ref" id="mwRef"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3B1273" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 3v5h-5"/></svg>Refresh app <small>v${APP_V}</small></button><div class="pw-hint">Tap one to open it</div>`;
   $('#mwRef').onclick=hardRefresh;
   w.querySelectorAll('[data-mn]').forEach(b=>b.onclick=()=>{const t=b.dataset.mn;closeMenuWheel();if(away&&(t==='decorate'||t==='room')){travelTo('home',()=>setTab(t));return}setTab(t)})}
 function openMenuWheel(){closePetWheel();const w=$('#menuwheel');clearTimeout(w._to);w._busy=0;renderMenuWheel();w.hidden=false;w._busy=1;wheelAnim(true,'#menuwheel','#dkMenu');$('#dkMenu').setAttribute('aria-expanded',true);requestAnimationFrame(()=>w.classList.add('on'));w._to=setTimeout(()=>{w._busy=0},650)}
@@ -10158,7 +10162,7 @@ function wheelAnim(open,wid,bid){const w=$(wid||'#petwheel'),pw=w.querySelector(
 function openWheel(){closeMenuWheel();const w=$('#petwheel');clearTimeout(w._to);w._busy=0;renderWheel();w.hidden=false;w._busy=1;wheelAnim(true);$('#dkPet').setAttribute('aria-expanded',true);requestAnimationFrame(()=>w.classList.add('on'));w._to=setTimeout(()=>{w._busy=0},650)}
 function closeWheel(){closePetWheel();closeMenuWheel()}
 function closePetWheel(){const w=$('#petwheel');if(w.hidden||!w.classList.contains('on'))return;w._busy=1;wheelAnim(false);w.classList.remove('on');$('#dkPet').setAttribute('aria-expanded',false);clearTimeout(w._to);w._to=setTimeout(()=>{w._busy=0;if(!w.classList.contains('on'))w.hidden=true},300)}
-function arcLabel(nm,a,low){const cx=70,cy=70,top=Math.sin(a)<=-.2,r=top?46:57,sp=1.05,t1=top?a-sp:a+sp,t2=top?a+sp:a-sp,P=t=>`${(cx+r*Math.cos(t)).toFixed(1)} ${(cy+r*Math.sin(t)).toFixed(1)}`,id='pwa'+Math.round((a+4)*100);
+function arcLabel(nm,a,low,uid){const cx=70,cy=70,top=Math.sin(a)<=-.2,r=top?46:57,sp=1.05,t1=top?a-sp:a+sp,t2=top?a+sp:a-sp,P=t=>`${(cx+r*Math.cos(t)).toFixed(1)} ${(cy+r*Math.sin(t)).toFixed(1)}`,id=uid||'pwa'+Math.round((a+4)*100);
   return`<svg class="lab" viewBox="0 0 140 140" aria-hidden="true"><path id="${id}" d="M${P(t1)} A${r} ${r} 0 0 ${top?1:0} ${P(t2)}" fill="none"/><text text-anchor="middle"><textPath href="#${id}" startOffset="50%">${esc(nm)}${low?' <tspan class="bang">!</tspan>':''}</textPath></text></svg>`}
 function renderWheel(){const w=$('#petwheel');if(w._busy)return;const p=state.pet,st=stageOf(p.xp),s=petStats(),R=Math.min(128,innerWidth*.32),Wd=state.wish,wish=Wd&&Wd.k&&WISH_T[Wd.k]&&st>0;
   const needs=st?NEEDS.map(([k,nm,c,ic],i)=>{const a=-Math.PI/2+i*Math.PI*2/NEEDS.length,v=Math.min(100,s[k]),x=Math.round(Math.cos(a)*R),y=Math.round(Math.sin(a)*R),low=k!=='affection'&&v<25;return`<button class="pw-n${low?' low':''}" data-need="${k}" data-x="${x}" data-y="${y}" style="--x:${x}px;--y:${y}px;--c:${c}" aria-label="${nm}: ${tier(k,s[k])}"><span class="ring"></span>${ringSvg(v/100,74,9)}<img src="${ico(ic)}" alt="">${arcLabel(nm,a,low)}</button>`}).join(''):'';
@@ -10181,7 +10185,7 @@ const DECO_VIEWS=[['furn','Furniture','<path d="M4 11V8a3 3 0 0 1 3-3h10a3 3 0 0
   ['f','Floors','<path d="M12 4l9 5-9 5-9-5z"/><path d="M7.5 6.5l9 5M16.5 6.5l-9 5"/><path d="M3 9v4l9 5 9-5V9"/>'],
   ['w','Walls','<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v6M15 10v5M9 15v5"/>'],
   ['door','Door','<path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/><path d="M3 21h18"/><circle cx="14.5" cy="12.5" r="1.2" fill="currentColor"/>']];
-function decoSeg(){return`<div class="dseg" role="tablist" aria-label="What to change">${DECO_VIEWS.map(([k,n,ic])=>`<button type="button" role="tab" data-view="${k}" aria-selected="${decoView===k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ic}</svg>${n}</button>`).join('')}</div>`}
+function decoSeg(){return(openTab==='decorate'?pgHead('decorate'):'')+`<div class="dseg" role="tablist" aria-label="What to change">${DECO_VIEWS.map(([k,n,ic])=>`<button type="button" role="tab" data-view="${k}" aria-selected="${decoView===k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ic}</svg>${n}</button>`).join('')}</div>`}
 function bindSeg(body){body.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{if(decoView===b.dataset.view)return;decoView=b.dataset.view;renderSheet();const g=$('#tray');if(g)g.scrollTop=0})}
 function openDecorate(v){decoView=v;if(away){travelTo('home',()=>setTab('decorate'));return}setTab('decorate')}
 function shopFor(sk,cat){if(sk==='build'&&cat)bcCat=cat;const go=()=>setTab('shopcat');if(away&&away.key===sk){go();return}travelTo(sk,go)}
@@ -10422,7 +10426,7 @@ ${P?`<p class="pers"><b>${P.n}</b> ${P.d}</p>`:''}<div class="minds">${petMinds(
   else if(openTab==='todo')renderTodo(body);
   else if(openTab==='room'){setTimeout(()=>document.querySelectorAll('[data-ceil]').forEach(b=>b.onclick=()=>{state.ceil=+b.dataset.ceil;logEvent(state.ceil<.1?'turned the ceiling light off':state.ceil<1?'dimmed the ceiling light':'turned the ceiling light up');saveSoon();renderSheet()}));
     const stat=mode==='shared'?'<span class="status"><i></i>Shared room, synced</span>':mode==='readonly'?'<span class="status ro"><i></i>View-only, changes stay local</span>':mode==='connecting'?'<span class="status solo"><i></i>Connecting to shared room</span>':'<span class="status solo"><i></i>Solo on this device</span>';
-    body.innerHTML=`<h2>Room & sharing</h2>${stat}
+    body.innerHTML=`${pgHead('room',{sub:stat})}
     <div class="row-label">Ceiling light</div><p class="hint">Dim it to let your lamps and glowing things set the mood. It changes for both of you.</p>
     <div class="chips" style="margin-bottom:6px">${CEIL_LEVELS.map(([v,n])=>`<button class="chip" data-ceil="${v}" aria-pressed="${Math.abs((state.ceil??1)-v)<.01}">${n}</button>`).join('')}</div>
     ${FB?`<div class="row-label">Invite your person</div><p class="hint">Send them this link. When they open it, you'll both be in this room and see each other's changes.</p>
@@ -10575,7 +10579,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=27;
+const APP_V=28;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
