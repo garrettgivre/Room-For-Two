@@ -6799,7 +6799,7 @@ const doorName=k=>(THEME_DW[k]||THEME_DW.classic).n;
 // goes along. Shops are built from the same tile system + catalog furniture + shop fixtures (FIX). Nothing about
 // being out is saved: each device starts at home.
 let away=null,traveling=false;
-const roomObjs=()=>away?away.objs:itemObjs,roomItem=id=>away?away.items.get(id):itemById(id),defOf=k=>CATMAP[k]||FIX[k];
+let frameIM=null;const roomObjs=()=>away?away.objs:itemObjs,roomItem=id=>away?away.items.get(id):frameIM?frameIM.get(id):itemById(id),defOf=k=>CATMAP[k]||FIX[k];
 const curTF=()=>away?away.tf:state.tf,curTW=()=>away?away.tw:state.tw;
 const pick1=a=>a[Math.random()*a.length|0];
 
@@ -10455,12 +10455,12 @@ setInterval(()=>{if(ready){updHUD();wishTick()}const ae=document.activeElement;i
 
 /* ================= LOOP ================= */
 let skyTick=0;const clock=new THREE.Clock();let tAcc=0,fpsN=0,fpsT=0;const tmp=new THREE.Vector3();
-function loop(){requestAnimationFrame(loop);const raw=clock.getDelta(),dt=Math.min(raw,.05);if(gm&&!$('#game').hidden)return;if(gc&&gc.open)return;if(tm&&tm.open)return;tAcc+=dt;fpsN++;fpsT+=raw;if(fpsT>1){fps=Math.round(fpsN/fpsT);fpsN=0;fpsT=0;if(openTab==='debug')updDbgInfo()}updCam();
+function loop(){requestAnimationFrame(loop);const raw=clock.getDelta(),dt=Math.min(raw,.05);if(gm&&!$('#game').hidden)return;if(gc&&gc.open)return;if(tm&&tm.open)return;tAcc+=dt;fpsN++;fpsT+=raw;frameIM=away?null:new Map(state.items.map(i=>[i.id,i]));if(fpsT>1){fps=Math.round(fpsN/fpsT);fpsN=0;fpsT=0;if(openTab==='debug')updDbgInfo()}updCam();
   if(away&&away.plan){walls.forEach(w=>{w.g.visible=false});updPlan()}else walls.forEach((w,i)=>{const d=WALLDEF[i];w.g.visible=(camera.position.x-d.c[0])*d.n[0]+(camera.position.z-d.c[1])*d.n[1]>2.5});updArch();
   roomObjs().forEach(o=>{const it=roomItem(o.userData.id);if(it&&defOf(it.k).wall)o.visible=away&&away.plan?(it.cls==null||!!(away.tall&&away.tall[it.cls])):walls[it.w||0].g.visible;if(o.userData.anim)o.userData.anim(tAcc)});
   updDoor(dt);if(away)updShop(dt,tAcc);
   updateToyPlay(dt,tAcc);updatePet(dt,tAcc);if(selHelper)selHelper.update();
-updEmotes();skyTick+=raw;if(skyTick>15){skyTick=0;updateSky()}updLighting(tAcc);renderer.render(scene,camera);adaptQuality(raw)}
+updEmotes();skyTick+=raw;if(skyTick>15){skyTick=0;updateSky()}updLighting(tAcc);frameIM=null;renderer.render(scene,camera);adaptQuality(raw)}
 try{loop()}catch(e){showErr(e.message)}
 })();
 </script>
