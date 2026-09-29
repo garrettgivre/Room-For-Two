@@ -480,7 +480,7 @@ body.gaming #emotes,body.gaming .kbub{display:none!important}
 /* town map (3D) */
 .town3{position:fixed;inset:0;z-index:31;background:rgba(59,18,115,0);transition:background .3s;overflow:hidden}.town3.on{background:rgba(59,18,115,.12)}.town3[hidden]{display:none}
 .tm-pop{will-change:transform,opacity;position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 4vh);width:min(94vw,600px);height:min(76vh,700px);margin-left:calc(min(94vw,600px)/-2);background:none;overflow:visible;transform-origin:0 0}
-#tmc{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+#tmc{position:absolute;inset:0;width:100%;height:100%;touch-action:none}.tm-snap{position:absolute;inset:0;width:100%;height:100%;display:none;pointer-events:none}.tm-pop.gen #tmc{visibility:hidden}.tm-pop.gen .tm-snap{display:block}
 .tm-top{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 10px);display:flex;align-items:center;gap:10px;padding:0 12px;pointer-events:none}.tm-top>*{pointer-events:auto}
 .tm-top b{flex:1;font-family:var(--disp);font-weight:400;font-size:26px;color:#fff;letter-spacing:.02em;text-shadow:2.5px 0 var(--ink),-2.5px 0 var(--ink),0 2.5px var(--ink),0 -2.5px var(--ink),2px 2px var(--ink),-2px 2px var(--ink),2px -2px var(--ink),-2px -2px var(--ink);pointer-events:none}
 .tm-arr{min-height:42px;padding:0 16px;font-size:15px}.tm-arr[hidden]{display:none}
@@ -814,7 +814,7 @@ body.styling .storechip{opacity:0}
     <button class="pin" data-go="wear" style="left:81.7%;top:58.1%;--c:#7FC21E"><span class="house"><i class="door"></i><img src="assets/icons/wear.svg" alt=""></span><b>Jelly Threads</b></button>
     <button class="pin" data-go="salon" style="left:81.7%;top:76.7%;--c:#3EC8F2"><span class="house"><i class="door"></i><img src="assets/icons/act-bath.webp" alt=""></span><b>Bubble Salon</b></button>
   </div></div></div>
-<div class="town3" id="town3" hidden><div class="tm-pop" id="tmPop"><canvas id="tmc"></canvas><div class="tm-lab" id="tmLab"></div>
+<div class="town3" id="town3" hidden><div class="tm-pop" id="tmPop"><canvas id="tmc"></canvas><canvas id="tmSnap" class="tm-snap"></canvas><div class="tm-lab" id="tmLab"></div>
   <div class="tm-top"><b id="tmTitle">Where to?</b><button class="gel lilac tm-arr" id="tmArr">Arrange</button><button class="gm-x" id="tmX" aria-label="Close the map">×</button></div>
   <div class="tm-card" id="tmCard" hidden></div><div class="tm-tools" id="tmTools" hidden></div></div></div>
 <div class="gacha" id="gacha" hidden><canvas id="gcc"></canvas><div class="gc-top"><button class="gm-x" id="gcX" aria-label="Leave">×</button><b>Capsule Corner</b><span class="gc-tok" id="gcTok"></span></div><div class="gc-hint" id="gcHint"></div><div class="gc-bar" id="gcBar"></div><div class="gc-prize" id="gcPrize" hidden></div><div class="gc-dex" id="gcDex" hidden></div></div>
@@ -8338,7 +8338,7 @@ function tmRoad(gx,gz,val){const m=state.tmap;if(gx<0||gz<0||gx>=TM_W||gz>=TM_D)
 // ---------- open, close, input, frame ----------
 setTimeout(()=>{try{if(tm)return;tmInit();if(!tm)return;setTimeout(()=>{try{tm.map=tmNorm(state.tmap);state.tmap=tm.map;tmSync(false);setTimeout(()=>{try{const W_=Math.min(innerWidth*.94,600),H_=Math.min(innerHeight*.76,700),R=tm.R;R.setPixelRatio(Math.min(2,devicePixelRatio||1));R.setSize(W_,H_,false);tm.cam.aspect=W_/H_;tm.cam.updateProjectionMatrix();tm.cam.position.set(Math.sin(tm.yaw)*8,6,Math.cos(tm.yaw)*8);tm.cam.lookAt(new THREE.Vector3(0,0,0));R.render(tm.sc,tm.cam);R.__w=0;tm.drawn=0}catch(e){}},300)}catch(e){}},300)}catch(e){}},6000);
 function tmOpen(){const T=tmInit();if(!T)return false;state.tmap=tmNorm(state.tmap);tmSync(false);T.drawn=0;const el=$('#town3');el.hidden=false;el.classList.add('on');T.open=true;tmArrange(false);$('#tmArr').hidden=false;
-  const here=away?away.key:'home';$('#tmTitle').textContent=away?'Where next?':'Where to?';tmLast=performance.now();tmTick(tmLast);tmGenie(true);return true}
+  const here=away?away.key:'home';$('#tmTitle').textContent=away?'Where next?':'Where to?';tmLast=performance.now();$('#tmPop').classList.add('gen');tmTick(tmLast);tmGenie(true);return true}
 function tmQuad(W,H,q){const[x0,y0,x1,y1,x2,y2,x3,y3]=q,dx1=x1-x2,dx2=x3-x2,dx3=x0-x1+x2-x3,dy1=y1-y2,dy2=y3-y2,dy3=y0-y1+y2-y3,D=dx1*dy2-dx2*dy1,g=(dx3*dy2-dx2*dy3)/D,h=(dx1*dy3-dx3*dy1)/D,a=x1-x0+g*x1,b=x3-x0+h*x3,c=x0,d=y1-y0+g*y1,e=y3-y0+h*y3,f=y0;
   return`matrix3d(${a/W},${d/W},0,${g/W},${b/H},${e/H},0,${h/H},0,0,1,0,${c},${f},0,1)`}
 const genA=new WeakMap();
@@ -8352,13 +8352,14 @@ function genie(el,btn,open,dur,end,rc){let t0=-1,pl=0;const id=(genA.get(el)||0)
 function tmGenie(open){const pp=$('#tmPop');pp.classList.add('gen');genie(pp,$('#dkExplore'),open,open?340:220,()=>{pp.style.opacity=open?'':0;if(!open&&!tm.open)$('#town3').hidden=true;if(open)pp.style.transform='none';if(open)pp.classList.remove('gen')})}
 function sheetGenie(open,t){const sh=$('#sheet'),btn=$(t==='pet'?'#dkPet':'#dkMenu');sh.classList.add('gen');
   genie(sh,btn,open,open?300:210,()=>{sh.style.transition='none';sh.classList.remove('gen');sh.style.transform='';sh.style.opacity='';sh.offsetWidth;requestAnimationFrame(()=>{sh.style.transition=''})})}
-function tmClose(){if(!tm||!tm.open)return;tm.open=false;const el=$('#town3');tmGenie(false);el.classList.remove('on');setTimeout(()=>{if(!tm.open)el.hidden=true},1500);$('#tmCard').hidden=true;clock.getDelta()}
+function tmClose(){if(!tm||!tm.open)return;tm.open=false;const el=$('#town3');try{tm.R.render(tm.sc,tm.cam);tmSnapNow()}catch(_){}tmGenie(false);el.classList.remove('on');setTimeout(()=>{if(!tm.open)el.hidden=true},1500);$('#tmCard').hidden=true;clock.getDelta()}
 function tmFit(){const a=tm.cam.aspect,t=Math.tan(tm.cam.fov*Math.PI/360),r=Math.hypot(TM_W,TM_D)/2;return r/(t*Math.min(1,a*1.12)*1.05)}
+function tmSnapNow(){const c=$('#tmc'),s=$('#tmSnap');if(s.width!==c.width||s.height!==c.height){s.width=c.width;s.height=c.height}const x=s.getContext('2d');x.clearRect(0,0,s.width,s.height);x.drawImage(c,0,0)}
 function tmTick(ts){if(!tm||!tm.open)return;requestAnimationFrame(tmTick);const dt=Math.min(.05,(ts-tmLast)/1000);tmLast=ts;tm.t+=dt;const pp=$('#tmPop');if(pp.classList.contains('gen')&&tm.drawn)return;tm.drawn=1;const W_=pp.clientWidth||innerWidth,H_=pp.clientHeight||innerHeight,R=tm.R;
   if(R.__w!==W_||R.__h!==H_){R.setPixelRatio(Math.min(2,devicePixelRatio||1));R.setSize(W_,H_,false);R.__w=W_;R.__h=H_;tm.cam.aspect=W_/H_;tm.cam.updateProjectionMatrix()}
   vlerp(tm.tgt,tm.tgtTo,Math.min(1,dt*4));const d=tmFit()*(tm.focus?.45:1)*tm.zoom,cp=Math.cos(tm.pitch),c=tm.cam;c.position.set(tm.tgt.x+Math.sin(tm.yaw)*cp*d,Math.sin(tm.pitch)*d,tm.tgt.z+Math.cos(tm.yaw)*cp*d);c.lookAt(new THREE.Vector3(tm.tgt.x,0,tm.tgt.z));
   tm.cl&&tm.cl.forEach(p=>p.rotation.y=tm.t*p.userData.sp);tm.mills&&tm.mills.forEach(o=>o.userData.anim(tm.t));tm.anims.forEach(o=>{try{o.userData.anim(tm.t)}catch(_){}});const so=tmObj(tm.sel);if(so)so.position.y=.25+Math.sin(tm.t*5)*.06;
-  R.render(tm.sc,c);const v=new THREE.Vector3();$('#tmLab').querySelectorAll('.tml').forEach(b=>{const o=tm.bld[b.dataset.k];if(!o)return;const T=o.userData.top||{y:1};v.set(o.position.x,(T.y||1)+.5+o.position.y,o.position.z).project(c);
+  R.render(tm.sc,c);if(pp.classList.contains('gen'))tmSnapNow();const v=new THREE.Vector3();$('#tmLab').querySelectorAll('.tml').forEach(b=>{const o=tm.bld[b.dataset.k];if(!o)return;const T=o.userData.top||{y:1};v.set(o.position.x,(T.y||1)+.5+o.position.y,o.position.z).project(c);
     b.style.transform=`translate(${(v.x*.5+.5)*W_}px,${(-v.y*.5+.5)*H_}px) translate(-50%,-100%)`;b.style.visibility=v.z<1?'visible':'hidden'})}
 {const cv=$('#tmc');let down=null,paint=null,pinch=0;
   cv.addEventListener('pointerdown',e=>{if(!tm)return;try{cv.setPointerCapture(e.pointerId)}catch(_){}tm.ptr.set(e.pointerId,[e.clientX,e.clientY]);if(tm.ptr.size===2){const [a,b]=[...tm.ptr.values()];pinch=Math.hypot(a[0]-b[0],a[1]-b[1]);down=null;return}
