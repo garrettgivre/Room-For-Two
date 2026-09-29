@@ -711,7 +711,11 @@ body.kmode .kbub{z-index:9}body.kmode .top,body.kmode .dock,body.kmode #followPi
 .kpanel{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:8;margin:0 auto;width:calc(100% - 20px);max-width:460px;padding:12px 14px 16px;box-sizing:border-box;overflow:hidden;
   background:radial-gradient(rgba(27,16,48,.07) 1.3px,transparent 1.8px) 0 0/12px 12px,var(--paper);border:3px solid var(--ink);border-radius:28px 22px 30px 20px;box-shadow:0 7px 0 var(--ink),0 7px 0 4px #fff,0 0 0 4px #fff;
   transform:translateY(calc(100% + 40px));transition:transform .4s cubic-bezier(.25,1.35,.45,1)}
-.kpanel.on{transform:none}.kpanel[hidden]{display:none}
+.kpanel.on{transform:none}
+.kbadges{position:fixed;inset:0;z-index:5;pointer-events:none}body.kmode .kbadges,body.styling .kbadges,body.gaming .kbadges,body.sheet-open .kbadges{display:none}
+.kbdg{position:absolute;left:0;top:0;width:40px;height:40px;margin:-40px 0 0 -20px;padding:0;border-radius:50% 50% 50% 14%;border:3px solid var(--ink);background:#fff;box-shadow:0 3px 0 var(--ink);display:grid;place-items:center;pointer-events:auto;cursor:pointer;animation:kbob 1.8s ease-in-out infinite;-webkit-tap-highlight-color:transparent}
+.kbdg svg{width:24px;height:24px}.kbdg[hidden]{display:none}.kbdg i{position:absolute;top:-5px;right:-5px;width:12px;height:12px;border-radius:50%;background:var(--pink);border:2.5px solid var(--ink)}
+@keyframes kbob{50%{transform:translateY(-4px)}}.kpanel[hidden]{display:none}
 .kp-h{display:flex;align-items:center;gap:10px;margin-bottom:10px}.kp-who{flex:1;min-width:0}.kp-who b{display:block;font-family:var(--disp);font-weight:400;font-size:22px;line-height:1.05;color:var(--kc,var(--pink));text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink),1.5px 1.5px var(--ink),-1.5px 1.5px var(--ink),1.5px -1.5px var(--ink),-1.5px -1.5px var(--ink)}
 .kp-who small{font-family:var(--disp);font-size:12px;color:#6B4E95}
 .kp-back{flex:none;width:40px;height:40px;border-radius:50%;border:3px solid var(--ink);background:#fff;color:var(--ink);display:grid;place-items:center;box-shadow:0 3px 0 var(--ink);cursor:pointer;padding:0}.kp-back svg{width:20px;height:20px}
@@ -726,7 +730,7 @@ body.kmode .kbub{z-index:9}body.kmode .top,body.kmode .dock,body.kmode #followPi
 .kp-t{position:relative;max-width:88%;padding:9px 14px 10px;border:3px solid var(--ink);border-radius:18px 18px 6px 18px;background:var(--tc,#E3D4FF);box-shadow:0 3px 0 var(--ink);font-family:var(--disp);font-size:14.5px;color:var(--ink);text-align:right;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .kp-t:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}.kp-t.bye{--tc:#fff}.kp-t .new{display:inline-block;margin-right:6px;padding:0 6px;border-radius:8px;background:var(--pink);color:#fff;font-size:11px;border:2px solid var(--ink);vertical-align:1px}
 .kp-hint{font-family:var(--disp);font-size:12px;color:#6B4E95;margin:0 0 8px;text-align:left}
-.sheet.kshop{bottom:calc(env(safe-area-inset-bottom,0px) + 10px);height:min(64vh,640px);max-height:none;max-width:520px}
+.sheet.kshop .sheet-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}.sheet.kshop,.sheet.deco.kshop{bottom:calc(env(safe-area-inset-bottom,0px) + 10px);height:min(64vh,640px);max-height:none;max-width:520px}
 .kc-h{display:flex;align-items:center;gap:10px;margin:0 0 4px}.kc-h h2{margin:2px 0 4px}.kc-h .stage{margin-left:auto}
 .kc-s{font-family:var(--disp);font-size:13px;color:#6B4E95;margin:12px 0 6px}
 .kc-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:10px}
@@ -856,7 +860,7 @@ body.styling .storechip{opacity:0}
 <span id="presence" hidden>Opening your room</span>
 
 <div class="sandbar" id="sandbar" hidden title="Everything unlocked. Nothing saves."><b>Sandbox</b><button class="gel lilac" id="sandX">Exit</button></div>
-<div class="kbub" id="kbub" hidden></div><div class="kpanel" id="kpanel" hidden role="dialog" aria-label="Shopkeeper"></div>
+<div class="kbub" id="kbub" hidden></div><div class="kbadges" id="kbadges"></div><div class="kpanel" id="kpanel" hidden role="dialog" aria-label="Shopkeeper"></div>
 <div class="shopcard" id="shopcard" hidden></div>
 <div class="map" id="map" hidden><div class="map-card" role="dialog" aria-label="Town map">
   <button class="map-x" id="mapX" aria-label="Close map">×</button><h2 id="mapTitle">Where to?</h2><button class="gel pink map-home" id="mapHome" hidden><img src="assets/icons/tab-room.webp" alt="" width="30" height="30">Go home</button>
@@ -8157,7 +8161,16 @@ function keeperChat(dt){const KA=away.keepers;if(KA.length<2)return null;const C
   if(C.on>0){C.on-=dt;C.st-=dt;if(C.st<0){C.sp=1-C.sp;C.st=1+Math.random()*1.4}if(C.on<=0||busy){C.on=0;C.t=16+Math.random()*18;if(!busy)KA.forEach(k=>{if(k.anim){k.anim.k='laugh';k.anim.p=0}})}}
   else if(!busy){C.t-=dt;if(C.t<0){C.on=5+Math.random()*4;C.sp=Math.random()<.5?0:1;C.st=1.2}}
   return C.on>0?C:null}
-function updShop(dt,t){const CH=keeperChat(dt);away.keepers.forEach((K,i)=>{K.k+=dt;if(K.act!=='idle'&&K.k>=K.d)K.act='idle';const chat=!!CH,speak=chat&&CH.sp===i,talking=kbT>0&&K===KB.K&&KB.n<KB.txt.length+3||speak;
+let kbadgeFor=null;
+function kNews(kind){const B=KBIB[kind];if(!B)return false;const f=kfOf(kind),st=B.story[f.s];return f.d!==tdDay()||!!(st&&st[0]<=kfLevel(f.p))}
+function updBadges(){const box=$('#kbadges');if(!away||!away.keepers)return;
+  if(kbadgeFor!==away){kbadgeFor=away;box.innerHTML=away.keepers.map((K,i)=>KBIB[K.kind]?`<button class="kbdg" data-kb="${i}" aria-label="Talk to ${esc(KBIB[K.kind].n)}">${KSVG.chat}<i hidden></i></button>`:'').join('');
+    box.querySelectorAll('[data-kb]').forEach(b=>b.onclick=e=>{e.stopPropagation();const K=away.keepers[+b.dataset.kb];if(K){away.keeper=K;kOpen(K)}});
+    away.keepers.forEach(K=>{try{const B=new THREE.Box3().setFromObject(K.g);K._top=B.max.y}catch(_){K._top=null}})}
+  box.querySelectorAll('[data-kb]').forEach(b=>{const K=away.keepers[+b.dataset.kb];if(!K||!K.head)return;const talking=kbT>0&&KB.K===K,lv=away.level||0;
+    const off=lv!==0||talking;b.hidden=off;if(off)return;K.head.getWorldPosition(_kv);_kv.y=(K._top??_kv.y+1)+.12;_kv.project(camera);
+    if(_kv.z>1){b.hidden=true;return}b.style.left=((_kv.x+1)/2*W).toFixed(1)+'px';b.style.top=((1-_kv.y)/2*H).toFixed(1)+'px';const d=b.querySelector('i'),nw=kNews(K.kind);if(d.hidden===nw)d.hidden=!nw})}
+function updShop(dt,t){updBadges();const CH=keeperChat(dt);away.keepers.forEach((K,i)=>{K.k+=dt;if(K.act!=='idle'&&K.k>=K.d)K.act='idle';const chat=!!CH,speak=chat&&CH.sp===i,talking=kbT>0&&K===KB.K&&KB.n<KB.txt.length+3||speak;
     const Z=keeperGaze(K,dt,(kbT>0&&K===KB.K)||K.act!=='idle');if(chat){Z.mode='partner';Z.other=away.keepers[1-i];Z.t=.3}const kc=kmode&&kmode.K===K,o=kc?camera.position:Z.mode==='partner'&&Z.other?Z.other.g.position:pet.pos;
     const a=Math.atan2(o.x-K.g.position.x,o.z-K.g.position.z);K.g.rotation.y=approach(K.g.rotation.y,clamp(a,-1.3,1.3)*(kc?.9:chat?.85:Z.mode==='partner'?.55:.6),dt*3);
   K.upd(dt,t,K.act,K.act==='idle'?0:K.k/K.d,talking);keeperLayer(K,dt,t,talking,chat&&!speak)});const K=away.keeper;
@@ -8636,7 +8649,7 @@ function travelTo(dest,then,focus){if(traveling)return;const here=away?away.key:
       if(away){keeperReact('greet',2.4);setTimeout(()=>away&&keeperSay(pick1(away.keeper.lines.hi)),500);if(!focus)setTimeout(()=>toast(away?(away.keepers.length>1?`Tap ${away.keepers.map(K=>KBIB[K.kind]?KBIB[K.kind].n:K.n).join(' or ')} to chat or book.`:away.keeper&&KBIB[away.keeper.kind]?`Tap ${KBIB[away.keeper.kind].n} to chat or shop. Or tap anything on display.`:''):''),4300);if(focus)setTimeout(()=>typeof focus==='function'?openOffer(focus):openProduct(focus),1400)}
       traveling=false;then&&then()},250)},650)}
 const SHOP_LOGO=new Set(['snack','salon','toys','furn','build','glam','wear','arcade']),shopLogo=k=>'assets/logos/'+k+'.webp';
-function updStoreBar(){if(kmode&&!away){kmode=null;document.body.classList.remove('kmode');$('#kpanel').hidden=true;$('#kpanel').classList.remove('on');$('#sheet').classList.remove('kshop')}const b=$('#storebar');b.hidden=!away;document.body.classList.toggle('away',!!away);$('#kbub').hidden=true;kbT=0;if(!away)return;const lg=SHOP_LOGO.has(away.key);b.classList.toggle('logo',lg);$('#sbIcon').src=lg?shopLogo(away.key):ico(away.def.icon);$('#sbName').textContent=away.def.n;b.style.setProperty('--sc',away.def.color)}
+function updStoreBar(){$('#kbadges').innerHTML='';kbadgeFor=null;if(kmode&&(!away||kmode.shop!==away)){kmode=null;document.body.classList.remove('kmode');$('#kpanel').hidden=true;$('#kpanel').classList.remove('on');$('#sheet').classList.remove('kshop')}const b=$('#storebar');b.hidden=!away;document.body.classList.toggle('away',!!away);$('#kbub').hidden=true;kbT=0;if(!away)return;const lg=SHOP_LOGO.has(away.key);b.classList.toggle('logo',lg);$('#sbIcon').src=lg?shopLogo(away.key):ico(away.def.icon);$('#sbName').textContent=away.def.n;b.style.setProperty('--sc',away.def.color)}
 
 /* --- shopping --- */
 // An offer is anything for sale: {title, sub, desc, price, deal, thumb, have, canBuy, buy(), hop}. Cards are opened with a
@@ -8732,7 +8745,7 @@ function renderBuildCat(body){if(!away||away.key!=='build'){setTab(null);return}
 function townHit(x,y){setRay(x,y);const list=[doorG,pet.group];if(away)list.push(away.root);const hits=ray.intersectObjects(list,true);
   for(const h of hits){if(!visDeep(h.object))continue;for(let q=h.object;q;q=q.parent)if(q.userData&&q.userData.locked)return{staff:1};let o=h.object;while(o){if(o.userData.pet)return null;if(o.userData.door)return{door:1};if(o.userData.stairs||o.userData.elev)return{stairs:1};if(o.userData.staff)return{staff:1};if(o.userData.game)return{game:o.userData.game};if(o.userData.product){tapObj=o;return{product:o.userData.product}}if(o.userData.offer){tapObj=o;return{offer:o.userData.offer}}if(o.userData.catalog)return{catalog:1};if(o.userData.gacha)return{gacha:1};if(o.userData.svc)return{svc:o.userData.svc};if(o.userData.keeper)return{keeper:o.userData.keeper};o=o.parent}if(away)continue;return null}return null}
 function townTap(h){if(h.stairs){setLevel(away.level?0:1);return}if(h.staff){staffTap();return}if(h.game){openGame(h.game);return}if(h.gacha){openGacha();return}if(h.door)openDoor();else if(h.product)openProduct(h.product);else if(h.offer){if(h.offer.t==='wear'&&!ownsWear(h.offer.k))openWearOffer(h.offer.k);else openOffer(makeOffer(h.offer))}else if(h.catalog){closeProduct();setTab(away.key==='wear'?'wardrobe':'shopcat')}else if(h.svc)openService(h.svc.k,h.svc.style);
-  else if(h.keeper){const K=away.keepers[h.keeper-1]||away.keeper;if(kmode){if(kmode.K===K){keeperReact('greet',1.2,K);kSay('mood')}return}away.keeper=K;kOpen(K)}}
+  else if(h.keeper){const K=away.keepers[h.keeper-1]||away.keeper;if(kmode){if(kmode.K===K){if(kmode.view!=='reply'){keeperReact('greet',1.2,K);kSay('mood')}}else{kClose(true);if(openTab)setTab(null);away.keeper=K;kOpen(K)}return}away.keeper=K;kOpen(K)}}
 
 /* ================= SCENE SYNC ================= */
 const itemObjs=new Map();
@@ -9188,15 +9201,15 @@ function kPanel(view,dir){const P=$('#kpanel'),B=KBIB[kmode.kind],was=P.classLis
   P.querySelectorAll('[data-kr]').forEach(b=>b.onclick=()=>{const r=kmode.replies[+b.dataset.kr];kmode.replies=null;KB.q=[];kbShow(kFill(r[1]),kmode.K);keeperReact('cheer',1.2,kmode.K);kPanel('chat',-1)});
   requestAnimationFrame(fitSheet);setTimeout(fitSheet,320)}
 function kOpen(K){if(!away||!K)return;const kind=K.kind,B=KBIB[kind];if(!B){keeperReact('greet',1.8,K);keeperSay(pick1(K.lines.hi),K);return}
-  closeProduct();if(openTab)setTab(null);setFollow(false);closeWheel();kmode={K,kind,view:'menu'};try{const B_=new THREE.Box3().setFromObject(K.g);kmode.y0=B_.min.y;kmode.hk=Math.max(.8,B_.max.y-B_.min.y)}catch(_){kmode.y0=0;kmode.hk=2}away.keeper=K;document.body.classList.add('kmode');keeperReact('greet',1.8,K);
+  closeProduct();if(openTab)setTab(null);setFollow(false);closeWheel();kmode={K,kind,view:'menu',shop:away};try{const B_=new THREE.Box3().setFromObject(K.g);kmode.y0=B_.min.y;kmode.hk=Math.max(.8,B_.max.y-B_.min.y)}catch(_){kmode.y0=0;kmode.hk=2}away.keeper=K;document.body.classList.add('kmode');keeperReact('greet',1.8,K);
   const lv=kfLevel(kfOf(kind).p),g=lv>=2&&B.hiF&&Math.random()<.55?pick1(B.hiF):pick1(B.hi[kTod()]);kPanel('menu',0);KB.q=[];setTimeout(()=>{if(kmode&&kmode.K===K)kbShow(kFill(g),K)},280)}
-function kClose(){if(!kmode)return;const P=$('#kpanel'),K=kmode.K,B=KBIB[kmode.kind];P.classList.remove('on');setTimeout(()=>{if(!kmode)P.hidden=true},420);kmode=null;document.body.classList.remove('kmode');
-  const sh=$('#sheet');if(openTab==='shopcat')setTab(null);sh.classList.remove('kshop');requestAnimationFrame(fitSheet);if(B&&away){KB.q=[];setTimeout(()=>away&&kbShow(kFill(pick1(B.bye)),K),120)}}
+function kClose(quiet){if(!kmode)return;if(openTab==='shopcat'){kmode.view='closing';setTab(null)}const P=$('#kpanel'),K=kmode.K,B=KBIB[kmode.kind];P.classList.remove('on');setTimeout(()=>{if(!kmode)P.hidden=true},420);kmode=null;document.body.classList.remove('kmode');
+  const sh=$('#sheet');if(openTab==='shopcat')setTab(null);sh.classList.remove('kshop');requestAnimationFrame(fitSheet);if(B&&away&&!quiet){KB.q=[];setTimeout(()=>away&&!kmode&&kbShow(kFill(pick1(B.bye)),K),120)}else{KB.q=[];kbT=0;$('#kbub').hidden=true}}
 function kAct(a){const K=kmode.K;if(a==='chat'){kPanel('chat',1);return}
   if(a==='shop'){$('#kpanel').classList.remove('on');kmode.view='shop';$('#sheet').classList.add('kshop');setTab('shopcat');return}
-  if(a==='gacha'){kClose();openGacha();return}
-  if(a==='wardrobe'){kClose();setTab('wardrobe');return}
-  if(a.startsWith('svc:')){kClose();openService(a.slice(4));return}}
+  if(a==='gacha'){kClose(true);openGacha();return}
+  if(a==='wardrobe'){kClose(true);setTab('wardrobe');return}
+  if(a.startsWith('svc:')){kClose(true);openService(a.slice(4));return}}
 function kShopBack(){if(!kmode)return;const sh=$('#sheet');kmode.view='menu';setTab(null);sh.classList.remove('kshop');kPanel('menu',-1)}
 function kSay(tp){const B=KBIB[kmode.kind],K=kmode.K,f=kfOf(kmode.kind),lv=kfLevel(f.p);let L=null;
   if(tp==='mood')L=pick1(B.mood);else if(tp==='pet')L=pick1(B.pet);
@@ -9215,7 +9228,7 @@ function renderGoodsCat(body){if(!away){setTab(null);return}const k=away.key,S=a
     cats.forEach(c=>{const L=goods.filter(i=>(i.cat||'')===c);if(c)h+=`<div class="kc-s">${esc(FOOD_CATS[c]||c)}</div>`;else h+='<div class="kc-s">For sale</div>';
       h+=`<div class="kc-g">${L.map(it=>{const have=it.k==='toy'?owned(it):(state.inv[it.id]||0);q.push('toy:'+it.id);return`<button class="kc-c" data-i="${it.id}">${have?`<span class="hv">${it.k==='toy'?'Yours':'×'+have}</span>`:''}<img data-tt="toy:${it.id}" src="${thumbs['toy:'+it.id]||'assets/icons/'+KIND_ICON[it.k]+'.webp'}" alt=""><b>${esc(it.n)}</b><span class="pr">${it.p}${H}</span></button>`}).join('')}</div>`})}
   body.innerHTML=h;queueThumbs(q);
-  body.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{const g=b.dataset.g;if(kmode)kClose();setTab(null);openGame(g)});
+  body.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{const g=b.dataset.g;if(kmode)kClose(true);setTab(null);openGame(g)});
   body.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>openOffer(()=>offerWear(b.dataset.w)));
   body.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>openProduct(b.dataset.i))}
 function resPost(key,text){state.inbox.unshift({t:Date.now(),from:key,text});if(state.inbox.length>60)state.inbox.length=60;state.ibT=Date.now();saveSoon();updMenuBadge();if(openTab==='inbox')renderSheet()}
@@ -10733,7 +10746,7 @@ function moveStroke(x,y){if(brush.tool==='tile'){const dx=x-stroke.x,dy=y-stroke
 function endStroke(){const a=tileArr(stroke.kind),ch=a.filter((v,n)=>v!==stroke.snap[n]).length;if(ch){endBuild(stroke.U);td('paint',ch);saveSoon()}stroke=null;dragging=false;updPaintBar()}
 function cancelStroke(){const a=tileArr(stroke.kind);stroke.snap.forEach((v,n)=>a[n]=v);stroke=null;dragging=false;syncTiles()}
 function renderSheet(){const body=$('#sheetBody');
-  $('#sheet').classList.toggle('deco',openTab==='decorate'||openTab==='shopcat');
+  $('#sheet').classList.toggle('deco',openTab==='decorate'||openTab==='shopcat'&&!!away&&(away.key==='furn'||away.key==='build'));
   decoMode=openTab==='shopcat'?'buy':'place';
   if(openTab==='decorate'&&decoView!=='furn')renderTileView(body);
   else if(openTab==='decorate'||(openTab==='shopcat'&&away&&away.key==='furn')){const old=$('#tray'),keep=old?old.scrollTop:0,buy=decoMode==='buy';
@@ -10994,7 +11007,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=36;
+const APP_V=37;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
