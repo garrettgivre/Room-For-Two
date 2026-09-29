@@ -480,7 +480,7 @@ body.gaming #emotes,body.gaming .kbub{display:none!important}
 /* town map (3D) */
 .town3{position:fixed;inset:0;z-index:31;background:rgba(59,18,115,0);transition:background .3s;overflow:hidden}.town3.on{background:rgba(59,18,115,.12)}.town3[hidden]{display:none}
 .tm-pop{will-change:transform,opacity;position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 4vh);width:min(94vw,600px);height:min(76vh,700px);margin-left:calc(min(94vw,600px)/-2);background:none;overflow:visible;transform-origin:0 0}
-#tmc{position:absolute;inset:0;width:100%;height:100%;touch-action:none}.tm-fly{position:fixed;display:none;pointer-events:none;transform-origin:0 0;z-index:1}
+#tmc{position:absolute;inset:0;width:100%;height:100%;touch-action:none}.tm-fly{position:fixed;left:0;top:0;width:100%;height:100%;display:none;pointer-events:none;z-index:1}
 .tm-top{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 10px);display:flex;align-items:center;gap:10px;padding:0 12px;pointer-events:none}.tm-top>*{pointer-events:auto}
 .tm-top b{flex:1;font-family:var(--disp);font-weight:400;font-size:26px;color:#fff;letter-spacing:.02em;text-shadow:2.5px 0 var(--ink),-2.5px 0 var(--ink),0 2.5px var(--ink),0 -2.5px var(--ink),2px 2px var(--ink),-2px 2px var(--ink),2px -2px var(--ink),-2px -2px var(--ink);pointer-events:none}
 .tm-arr{min-height:42px;padding:0 16px;font-size:15px}.tm-arr[hidden]{display:none}
@@ -8336,9 +8336,9 @@ function tmTap(cx,cy){tmCell(cx,cy);const hits=tm.ray.intersectObjects([...Objec
 function tmRoad(gx,gz,val){const m=state.tmap;if(gx<0||gz<0||gx>=TM_W||gz>=TM_D)return val;const i=m.r.findIndex(q=>q[0]===gx&&q[1]===gz),has=i>-1,want=val==null?!has:val;if(want===has)return want;
   if(want){const t=tmTaken(m).get(gx+','+gz);if(t&&t.startsWith('b:'))return want;m.r.push([gx,gz])}else m.r.splice(i,1);tmPaths();saveSoon();return want}
 // ---------- open, close, input, frame ----------
-setTimeout(()=>{try{if(tm)return;tmInit();if(!tm)return;setTimeout(()=>{try{tm.map=tmNorm(state.tmap);state.tmap=tm.map;tmSync(false);setTimeout(()=>{try{const W_=Math.min(innerWidth*.94,600),H_=Math.min(innerHeight*.76,700),R=tm.R;R.setPixelRatio(Math.min(2,devicePixelRatio||1));R.setSize(W_,H_,false);tm.cam.aspect=W_/H_;tm.cam.updateProjectionMatrix();tm.cam.position.set(Math.sin(tm.yaw)*8,6,Math.cos(tm.yaw)*8);tm.cam.lookAt(new THREE.Vector3(0,0,0));R.render(tm.sc,tm.cam);R.__w=0;tm.drawn=0}catch(e){}},300)}catch(e){}},300)}catch(e){}},6000);
-function tmOpen(){const T=tmInit();if(!T)return false;state.tmap=tmNorm(state.tmap);tmSync(false);T.drawn=0;const el=$('#town3');el.hidden=false;el.classList.add('on');T.open=true;tmArrange(false);$('#tmArr').hidden=false;
-  const here=away?away.key:'home';$('#tmTitle').textContent=away?'Where next?':'Where to?';tmLast=performance.now();$('#tmPop').classList.add('gen');tmTick(tmLast);tmGenie(true);return true}
+setTimeout(()=>{try{if(!tm)tmInit();if(tm)setTimeout(()=>{try{state.tmap=tmNorm(state.tmap);tmFresh()}catch(e){}},300)}catch(e){}},6000);
+function tmOpen(){const T=tmInit();if(!T)return false;state.tmap=tmNorm(state.tmap);const el=$('#town3');el.hidden=false;el.classList.add('on');T.open=true;tmArrange(false);tm.tgt.set(0,0,0);$('#tmArr').hidden=false;
+  $('#tmTitle').textContent=away?'Where next?':'Where to?';$('#tmPop').classList.add('gen');if(!T.snapOk){tmSync(false);tmDraw(0);tmSnapNow()}T.snapOk=0;tmLast=performance.now();tmTick(tmLast);tmGenie(true);return true}
 function tmQuad(W,H,q){const[x0,y0,x1,y1,x2,y2,x3,y3]=q,dx1=x1-x2,dx2=x3-x2,dx3=x0-x1+x2-x3,dy1=y1-y2,dy2=y3-y2,dy3=y0-y1+y2-y3,D=dx1*dy2-dx2*dy1,g=(dx3*dy2-dx2*dy3)/D,h=(dx1*dy3-dx3*dy1)/D,a=x1-x0+g*x1,b=x3-x0+h*x3,c=x0,d=y1-y0+g*y1,e=y3-y0+h*y3,f=y0;
   return`matrix3d(${a/W},${d/W},0,${g/W},${b/H},${e/H},0,${h/H},0,0,1,0,${c},${f},0,1)`}
 const genA=new WeakMap();
@@ -8350,23 +8350,31 @@ function genie(el,btn,open,dur,end,rc){let t0=-1,pl=0;const id=(genA.get(el)||0)
     if(p<1)requestAnimationFrame(fr);else end&&end()};
   requestAnimationFrame(fr)}
 let tmPopA=0;
-function tmPopAnim(el,open,dur,end){const id=++tmPopA;el.style.transform='none';const r=el.getBoundingClientRect(),W=r.width,H=r.height,L=r.left,T=r.top,px=innerWidth/2,py=innerHeight-24,E=x=>1-Math.pow(1-x,3);let t0=-1,pl=0;
-  const fr=now=>{if(id!==tmPopA)return;if(t0<0)t0=now;const p=pl=Math.max(0,Math.min(1,(now-t0)/dur,pl+.14)),q=open?p:1-p,ey=E(q),ex=E(Math.max(0,(q-.15)/.85)),sy=.03+.97*ey,sx=.12+.88*ex,
-    bx=px+(L+W/2-px)*ey,by=py+(T+H-py)*ey;el.style.opacity=Math.min(1,q*4);el.style.transform=q>=1?'none':`translate(${bx-sx*W/2-L}px,${by-sy*H-T}px) scale(${sx},${sy})`;
-    if(p<1)requestAnimationFrame(fr);else end&&end()};requestAnimationFrame(fr)}
-function tmGenie(open){const pp=$('#tmPop'),f=$('#tmSnap');pp.classList.add('gen');pp.style.transform='';pp.style.opacity='';const r=pp.getBoundingClientRect();Object.assign(f.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px',display:'block',opacity:0});pp.style.visibility='hidden';
-  tmPopAnim(f,open,open?300:200,()=>{f.style.display='none';if(open){pp.style.visibility='';pp.classList.remove('gen')}else if(!tm.open)$('#town3').hidden=true})}
+function tmGenie(open){const pp=$('#tmPop'),f=$('#tmSnap'),src=tm.snap,id=++tmPopA;pp.classList.add('gen');pp.style.visibility='hidden';
+  const r=pp.getBoundingClientRect(),L=r.left,T=r.top,W=r.width,H=r.height,dp=Math.min(2,devicePixelRatio||1),VW=innerWidth,VH=innerHeight,bt=$('#dkExplore').getBoundingClientRect(),
+    px=bt.width?bt.left+bt.width/2:VW/2,py=bt.height?bt.top+bt.height*.4:VH-70,bw=34,D=Math.max(1,py-T),sm=v=>v<=0?0:v>=1?1:v*v*(3-2*v),N=Math.max(48,Math.round(H/3)),dur=open?380:320;
+  f.width=Math.round(VW*dp);f.height=Math.round(VH*dp);f.style.display='block';const x=f.getContext('2d');let t0=-1,pl=0;
+  const draw=m=>{x.setTransform(dp,0,0,dp,0,0);x.globalAlpha=1;x.clearRect(0,0,VW,VH);if(m>=1||!src)return;const b=sm(Math.min(1,m/.5)),sl=sm(Math.max(0,(m-.22)/.78)),sh=src.height/N;x.globalAlpha=m>.88?(1-m)/.12:1;
+    for(let j=0;j<N;j++){const y0=T+j*H/N+sl*D;if(y0>=py)break;const y1=Math.min(py,y0+H/N),s_=sm(((y0+y1)/2-T)/D)*b,w=W+(bw-W)*s_,cx=L+W/2+(px-L-W/2)*s_;x.drawImage(src,0,j*sh,src.width,sh,cx-w/2,y0,w,y1-y0+.7)}};
+  draw(open?1:0);
+  const fr=now=>{if(id!==tmPopA)return;if(t0<0)t0=now;const p=pl=Math.max(0,Math.min(1,(now-t0)/dur,pl+.12));draw(open?1-p:p);if(p<1){requestAnimationFrame(fr);return}
+    f.style.display='none';if(open){pp.classList.remove('gen');try{tmFrame(0)}catch(_){}pp.style.visibility=''}else if(!tm.open){$('#town3').hidden=true;setTimeout(()=>{if(!tm.open)try{tmFresh()}catch(_){}},350)}};
+  requestAnimationFrame(fr)}
 function sheetGenie(open,t){const sh=$('#sheet'),btn=$(t==='pet'?'#dkPet':'#dkMenu');sh.classList.add('gen');
   genie(sh,btn,open,open?300:210,()=>{sh.style.transition='none';sh.classList.remove('gen');sh.style.transform='';sh.style.opacity='';sh.offsetWidth;requestAnimationFrame(()=>{sh.style.transition=''})})}
-function tmClose(){if(!tm||!tm.open)return;tm.open=false;const el=$('#town3');try{tm.R.render(tm.sc,tm.cam);tmSnapNow()}catch(_){}tmGenie(false);el.classList.remove('on');setTimeout(()=>{if(!tm.open)el.hidden=true},1500);$('#tmCard').hidden=true;clock.getDelta()}
+function tmClose(){if(!tm||!tm.open)return;tm.open=false;const el=$('#town3');try{tmDraw(0);tmSnapNow()}catch(_){}tmGenie(false);el.classList.remove('on');setTimeout(()=>{if(!tm.open)el.hidden=true},1500);$('#tmCard').hidden=true;clock.getDelta()}
 function tmFit(){const a=tm.cam.aspect,t=Math.tan(tm.cam.fov*Math.PI/360),r=Math.hypot(TM_W,TM_D)/2;return r/(t*Math.min(1,a*1.12)*1.05)}
-function tmSnapNow(){const c=$('#tmc'),s=$('#tmSnap');if(s.width!==c.width||s.height!==c.height){s.width=c.width;s.height=c.height}const x=s.getContext('2d');x.clearRect(0,0,s.width,s.height);x.drawImage(c,0,0)}
-function tmTick(ts){if(!tm||!tm.open)return;requestAnimationFrame(tmTick);const dt=Math.min(.05,(ts-tmLast)/1000);tmLast=ts;tm.t+=dt;const pp=$('#tmPop');if(pp.classList.contains('gen')&&tm.drawn)return;tm.drawn=1;const W_=pp.clientWidth||innerWidth,H_=pp.clientHeight||innerHeight,R=tm.R;
+function tmSnapNow(){const c=$('#tmc'),s=tm.snap||(tm.snap=document.createElement('canvas'));if(s.width!==c.width||s.height!==c.height){s.width=c.width;s.height=c.height}const x=s.getContext('2d');x.clearRect(0,0,s.width,s.height);x.drawImage(c,0,0)}
+function tmFresh(){if(!tm||tm.open)return;tmSync(false);tmArrange(false);tm.focus=null;tm.tgt.set(0,0,0);tmDraw(0);tmSnapNow();tm.snapOk=1}
+function tmSize(){const pp=$('#tmPop');return[pp.clientWidth||Math.round(Math.min(innerWidth*.94,600)),pp.clientHeight||Math.round(Math.min(innerHeight*.76,700))]}
+function tmDraw(dt){const[W_,H_]=tmSize(),R=tm.R;
   if(R.__w!==W_||R.__h!==H_){R.setPixelRatio(Math.min(2,devicePixelRatio||1));R.setSize(W_,H_,false);R.__w=W_;R.__h=H_;tm.cam.aspect=W_/H_;tm.cam.updateProjectionMatrix()}
   vlerp(tm.tgt,tm.tgtTo,Math.min(1,dt*4));const d=tmFit()*(tm.focus?.45:1)*tm.zoom,cp=Math.cos(tm.pitch),c=tm.cam;c.position.set(tm.tgt.x+Math.sin(tm.yaw)*cp*d,Math.sin(tm.pitch)*d,tm.tgt.z+Math.cos(tm.yaw)*cp*d);c.lookAt(new THREE.Vector3(tm.tgt.x,0,tm.tgt.z));
   tm.cl&&tm.cl.forEach(p=>p.rotation.y=tm.t*p.userData.sp);tm.mills&&tm.mills.forEach(o=>o.userData.anim(tm.t));tm.anims.forEach(o=>{try{o.userData.anim(tm.t)}catch(_){}});const so=tmObj(tm.sel);if(so)so.position.y=.25+Math.sin(tm.t*5)*.06;
-  R.render(tm.sc,c);if(pp.classList.contains('gen'))tmSnapNow();const v=new THREE.Vector3();$('#tmLab').querySelectorAll('.tml').forEach(b=>{const o=tm.bld[b.dataset.k];if(!o)return;const T=o.userData.top||{y:1};v.set(o.position.x,(T.y||1)+.5+o.position.y,o.position.z).project(c);
+  R.render(tm.sc,c);return[c,W_,H_]}
+function tmFrame(dt){const[c,W_,H_]=tmDraw(dt),v=new THREE.Vector3();$('#tmLab').querySelectorAll('.tml').forEach(b=>{const o=tm.bld[b.dataset.k];if(!o)return;const T=o.userData.top||{y:1};v.set(o.position.x,(T.y||1)+.5+o.position.y,o.position.z).project(c);
     b.style.transform=`translate(${(v.x*.5+.5)*W_}px,${(-v.y*.5+.5)*H_}px) translate(-50%,-100%)`;b.style.visibility=v.z<1?'visible':'hidden'})}
+function tmTick(ts){if(!tm||!tm.open)return;requestAnimationFrame(tmTick);const dt=Math.min(.05,(ts-tmLast)/1000);tmLast=ts;tm.t+=dt;if($('#tmPop').classList.contains('gen'))return;tmFrame(dt)}
 {const cv=$('#tmc');let down=null,paint=null,pinch=0;
   cv.addEventListener('pointerdown',e=>{if(!tm)return;try{cv.setPointerCapture(e.pointerId)}catch(_){}tm.ptr.set(e.pointerId,[e.clientX,e.clientY]);if(tm.ptr.size===2){const [a,b]=[...tm.ptr.values()];pinch=Math.hypot(a[0]-b[0],a[1]-b[1]);down=null;return}
     down={x:e.clientX,y:e.clientY,mv:0};paint=null;if(tm.arr&&tm.tool==='road'){tmCell(e.clientX,e.clientY);const p=new THREE.Vector3();if(tm.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),p)){paint=tmRoad(Math.floor(p.x+TM_W/2),Math.floor(p.z+TM_D/2),null);down.painted=1}}});
@@ -10440,7 +10448,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=20;
+const APP_V=21;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
