@@ -8342,8 +8342,8 @@ function tmOpen(){const T=tmInit();if(!T)return false;state.tmap=tmNorm(state.tm
 function tmQuad(W,H,q){const[x0,y0,x1,y1,x2,y2,x3,y3]=q,dx1=x1-x2,dx2=x3-x2,dx3=x0-x1+x2-x3,dy1=y1-y2,dy2=y3-y2,dy3=y0-y1+y2-y3,D=dx1*dy2-dx2*dy1,g=(dx3*dy2-dx2*dy3)/D,h=(dx1*dy3-dx3*dy1)/D,a=x1-x0+g*x1,b=x3-x0+h*x3,c=x0,d=y1-y0+g*y1,e=y3-y0+h*y3,f=y0;
   return`matrix3d(${a/W},${d/W},0,${g/W},${b/H},${e/H},0,${h/H},0,0,1,0,${c},${f},0,1)`}
 const genA=new WeakMap();
-function genie(el,btn,open,dur,end,rc){const id=(genA.get(el)||0)+1;genA.set(el,id);el.style.transform='none';el.style.opacity=open?0:'';
-  const r=rc||el.getBoundingClientRect(),W=r.width,H=r.height,L=r.left,T=r.top,ox=rc?rc.ox:L,oy=rc?rc.oy:T,bt=btn.getBoundingClientRect(),bx=bt.left+bt.width/2,by=bt.top+bt.height*.35,bw=Math.max(10,bt.width*.5),t0=-1,E=x=>x<0?0:x>1?1:x*x*(3-2*x);
+function genie(el,btn,open,dur,end,rc){let t0=-1;const id=(genA.get(el)||0)+1;genA.set(el,id);el.style.transform='none';el.style.opacity=open?0:'';
+  const r=rc||el.getBoundingClientRect(),W=r.width,H=r.height,L=r.left,T=r.top,ox=rc?rc.ox:L,oy=rc?rc.oy:T,bt=btn.getBoundingClientRect(),bx=bt.left+bt.width/2,by=bt.top+bt.height*.35,bw=Math.max(10,bt.width*.5),E=x=>x<0?0:x>1?1:x*x*(3-2*x);
   const fr=now=>{if(id!==genA.get(el))return;if(t0<0)t0=now;const p=Math.max(0,Math.min(1,(now-t0)/dur)),q=open?p:1-p,et=E(Math.min(1,q*1.35)),eb=E(Math.max(0,(q-.28)/.72)),cx=L+W/2,
     tx=bx+(cx-bx)*et,ty=by+(T-by)*et,tw=bw+(W-bw)*et,bxc=bx+(cx-bx)*eb,byc=by+(T+H-by)*eb,bwd=bw+(W-bw)*Math.pow(eb,1.6);
     el.style.opacity=Math.min(1,q*5);el.style.transform=q>=1?'none':tmQuad(W,H,[tx-tw/2-ox,ty-oy,tx+tw/2-ox,ty-oy,bxc+bwd/2-ox,byc-oy,bxc-bwd/2-ox,byc-oy])+(rc?` translate(${ox-L}px,${oy-T}px)`:'');
