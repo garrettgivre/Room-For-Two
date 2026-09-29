@@ -113,7 +113,7 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px da
 .sheet{position:fixed;left:0;right:0;z-index:6;bottom:calc(env(safe-area-inset-bottom,0px) + 86px);margin:0 auto;max-width:460px;width:calc(100% - 20px);padding:10px 0 14px;
   background:radial-gradient(rgba(27,16,48,.07) 1.3px,transparent 1.8px) 0 0/12px 12px,var(--paper);border:3px solid var(--ink);border-radius:28px 22px 30px 20px;box-shadow:0 7px 0 var(--ink);
   transform:translateY(calc(100% + 140px)) rotate(4deg);transition:transform .38s cubic-bezier(.25,1.5,.45,1);max-height:min(50%,440px);display:flex;flex-direction:column}
-.sheet.open{transform:none}
+.sheet.open{transform:none}.sheet.gen{transform:none;transform-origin:0 0;transition:none!important}
 .sheet .grab{position:relative;width:54px;height:8px;border-radius:5px;background:var(--ink);margin:0 auto 8px;flex:none;touch-action:none;cursor:grab}
 .sheet .grab::before{content:"";position:absolute;left:-70px;right:-70px;top:-14px;bottom:-12px}
 .followpill{position:fixed;z-index:5;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 100px);transform:translateX(-50%);display:flex;align-items:center;gap:6px;height:38px;padding:0 8px 0 6px;background:#fff;border:2.5px solid var(--ink);border-radius:14px 11px 15px 10px;box-shadow:0 4px 0 var(--ink);color:var(--ink);font-family:var(--disp);font-size:13px;letter-spacing:.02em;animation:kpop .35s cubic-bezier(.3,1.8,.5,1)}
@@ -728,17 +728,17 @@ body.styling .storechip{opacity:0}
 .mn-t small{font-family:system-ui,sans-serif;font-size:11px;color:#6B4E95;line-height:1.2;text-align:center;min-height:2.4em}
 .mn-t .badge{display:flex;top:-10px;right:-8px}
 /* the pet wheel: the pet in the middle, its needs round it */
-.petwheel{position:fixed;inset:0;z-index:8;background:radial-gradient(circle at 50% 56%,rgba(40,12,80,.18),rgba(30,8,60,.62));opacity:0;transition:opacity .18s}
+.petwheel{position:fixed;inset:0;z-index:8;background:radial-gradient(circle at 50% 56%,rgba(40,12,80,.18),rgba(30,8,60,.62));opacity:0;transition:opacity .14s}
 .petwheel.on{opacity:1}.petwheel[hidden]{display:none}
 .pw{position:absolute;left:50%;top:var(--cy,56%);width:0;height:0}
 .pw-c,.pw-n,.pw-w{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;border:0;padding:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .pw-c{left:-62px;top:-62px;width:124px;height:124px;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff 0 18%,transparent 19%),linear-gradient(180deg,#FFF6FC,#FFD6EC);border:3.5px solid var(--ink);
-  box-shadow:0 6px 0 var(--ink),0 6px 0 4px #fff,0 0 0 4px #fff;transform:scale(.3);transition:transform .28s cubic-bezier(.3,1.7,.5,1)}
-.petwheel.on .pw-c{transform:scale(1)}
+  box-shadow:0 6px 0 var(--ink),0 6px 0 4px #fff,0 0 0 4px #fff;transform:translate(var(--bx,0),var(--by,0)) scale(.15);transition:transform .24s cubic-bezier(.3,1.5,.5,1)}
+.petwheel.on .pw-c{transform:none}
 .pw-c img{width:58px;height:58px;margin-top:-4px}
 .pw-c b{font-family:var(--disp);font-weight:400;font-size:17px;color:var(--pink);text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink),1.5px 1.5px var(--ink),-1.5px 1.5px var(--ink),1.5px -1.5px var(--ink),-1.5px -1.5px var(--ink);line-height:1}
 .pw-c small{font-family:var(--disp);font-size:11px;color:#6B4E95;margin-top:3px}
-.pw-n{left:-40px;top:-40px;width:80px;height:80px;transform:translate(0,0) scale(.2);opacity:0;transition:transform .32s cubic-bezier(.3,1.6,.5,1) var(--d),opacity .2s var(--d)}
+.pw-n{left:-40px;top:-40px;width:80px;height:80px;transform:translate(var(--bx,0),var(--by,0)) scale(.15);opacity:0;transition:transform .26s cubic-bezier(.3,1.5,.5,1) var(--d),opacity .15s var(--d)}
 .petwheel.on .pw-n{transform:translate(var(--x),var(--y)) scale(1);opacity:1}
 .pw-n .ring{position:absolute;inset:0;border-radius:50%;background:#fff;border:3px solid var(--ink);box-shadow:0 5px 0 var(--ink),0 5px 0 3px #fff,0 0 0 3px #fff}
 .pw-n svg{position:absolute;inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);transform:rotate(-90deg)}
@@ -8340,14 +8340,18 @@ function tmOpen(){const T=tmInit();if(!T)return false;state.tmap=tmNorm(state.tm
   const here=away?away.key:'home';$('#tmTitle').textContent=away?'Where next?':'Where to?';tmLast=performance.now();requestAnimationFrame(tmTick);return true}
 function tmQuad(W,H,q){const[x0,y0,x1,y1,x2,y2,x3,y3]=q,dx1=x1-x2,dx2=x3-x2,dx3=x0-x1+x2-x3,dy1=y1-y2,dy2=y3-y2,dy3=y0-y1+y2-y3,D=dx1*dy2-dx2*dy1,g=(dx3*dy2-dx2*dy3)/D,h=(dx1*dy3-dx3*dy1)/D,a=x1-x0+g*x1,b=x3-x0+h*x3,c=x0,d=y1-y0+g*y1,e=y3-y0+h*y3,f=y0;
   return`matrix3d(${a/W},${d/W},0,${g/W},${b/H},${e/H},0,${h/H},0,0,1,0,${c},${f},0,1)`}
-let tmGA=0;
-function tmGenie(open){const pp=$('#tmPop'),bt=$('#dkExplore').getBoundingClientRect(),W=pp.offsetWidth,H=pp.offsetHeight,L=pp.offsetLeft,T=pp.offsetTop,bx=bt.left+bt.width/2,by=bt.top+bt.height*.35,bw=Math.max(10,bt.width*.5),dur=open?620:480,t0=performance.now(),id=++tmGA,E=x=>x<0?0:x>1?1:x*x*(3-2*x);
-  const fr=now=>{if(id!==tmGA)return;let p=Math.min(1,(now-t0)/dur);const q=open?p:1-p,et=E(Math.min(1,q*1.35)),eb=E(Math.max(0,(q-.28)/.72)),cx=L+W/2,
+const genA=new WeakMap();
+function genie(el,btn,open,dur,end){const id=(genA.get(el)||0)+1;genA.set(el,id);el.style.transform='none';el.style.opacity=open?0:'';
+  const r=el.getBoundingClientRect(),W=r.width,H=r.height,L=r.left,T=r.top,bt=btn.getBoundingClientRect(),bx=bt.left+bt.width/2,by=bt.top+bt.height*.35,bw=Math.max(10,bt.width*.5),t0=performance.now(),E=x=>x<0?0:x>1?1:x*x*(3-2*x);
+  const fr=now=>{if(id!==genA.get(el))return;const p=Math.min(1,(now-t0)/dur),q=open?p:1-p,et=E(Math.min(1,q*1.35)),eb=E(Math.max(0,(q-.28)/.72)),cx=L+W/2,
     tx=bx+(cx-bx)*et,ty=by+(T-by)*et,tw=bw+(W-bw)*et,bxc=bx+(cx-bx)*eb,byc=by+(T+H-by)*eb,bwd=bw+(W-bw)*Math.pow(eb,1.6);
-    pp.style.opacity=Math.min(1,q*5);pp.style.transform=q>=1?'none':tmQuad(W,H,[tx-tw/2-L,ty-T,tx+tw/2-L,ty-T,bxc+bwd/2-L,byc-T,bxc-bwd/2-L,byc-T]);
-    if(p<1)requestAnimationFrame(fr);else{pp.style.opacity=open?'':0}};
-  pp.style.opacity=0;requestAnimationFrame(fr)}
-function tmClose(){if(!tm||!tm.open)return;tm.open=false;const el=$('#town3');tmGenie(false);el.classList.remove('on');setTimeout(()=>{if(!tm.open)el.hidden=true},520);$('#tmCard').hidden=true;clock.getDelta()}
+    el.style.opacity=Math.min(1,q*5);el.style.transform=q>=1?'none':tmQuad(W,H,[tx-tw/2-L,ty-T,tx+tw/2-L,ty-T,bxc+bwd/2-L,byc-T,bxc-bwd/2-L,byc-T]);
+    if(p<1)requestAnimationFrame(fr);else end&&end()};
+  requestAnimationFrame(fr)}
+function tmGenie(open){const pp=$('#tmPop');genie(pp,$('#dkExplore'),open,open?340:220,()=>{pp.style.opacity=open?'':0;if(open)pp.style.transform='none'})}
+function sheetGenie(open,t){const sh=$('#sheet'),btn=$(t==='pet'?'#dkPet':'#dkMenu');sh.classList.add('gen');
+  genie(sh,btn,open,open?300:210,()=>{sh.style.transition='none';sh.classList.remove('gen');sh.style.transform='';sh.style.opacity='';sh.offsetWidth;requestAnimationFrame(()=>{sh.style.transition=''})})}
+function tmClose(){if(!tm||!tm.open)return;tm.open=false;const el=$('#town3');tmGenie(false);el.classList.remove('on');setTimeout(()=>{if(!tm.open)el.hidden=true},260);$('#tmCard').hidden=true;clock.getDelta()}
 function tmFit(){const a=tm.cam.aspect,t=Math.tan(tm.cam.fov*Math.PI/360),r=Math.hypot(TM_W,TM_D)/2;return r/(t*Math.min(1,a*1.12)*1.05)}
 function tmTick(ts){if(!tm||!tm.open)return;requestAnimationFrame(tmTick);const dt=Math.min(.05,(ts-tmLast)/1000);tmLast=ts;tm.t+=dt;const pp=$('#tmPop'),W_=pp.clientWidth||innerWidth,H_=pp.clientHeight||innerHeight,R=tm.R;
   if(R.__w!==W_||R.__h!==H_){R.setPixelRatio(Math.min(2,devicePixelRatio||1));R.setSize(W_,H_,false);R.__w=W_;R.__h=H_;tm.cam.aspect=W_/H_;tm.cam.updateProjectionMatrix()}
@@ -10006,14 +10010,15 @@ function renderMenu(body){const T=state.td,n=T.done.length,m=T.list.length,treat
   body.querySelectorAll('[data-mn]').forEach(b=>b.onclick=()=>{const t=b.dataset.mn;if(away&&(t==='decorate'||t==='room')){travelTo('home',()=>setTab(t));return}setTab(t)})}
 // Pet wheel: tap Pet and the pet's needs fan out round it; tap a need to help with it, tap the middle for the pet's page.
 const wheelOn=()=>!$('#petwheel').hidden;
-function openWheel(){const w=$('#petwheel');renderWheel();w.hidden=false;$('#dkPet').setAttribute('aria-expanded',true);requestAnimationFrame(()=>w.classList.add('on'))}
-function closeWheel(){const w=$('#petwheel');if(w.hidden)return;w.classList.remove('on');$('#dkPet').setAttribute('aria-expanded',false);setTimeout(()=>{if(!w.classList.contains('on'))w.hidden=true},200)}
+function openWheel(){const w=$('#petwheel');renderWheel();w.hidden=false;{const c=w.querySelector('.pw').getBoundingClientRect(),b=$('#dkPet').getBoundingClientRect();w.style.setProperty('--bx',(b.left+b.width/2-c.left)+'px');w.style.setProperty('--by',(b.top+b.height/2-c.top)+'px')}$('#dkPet').setAttribute('aria-expanded',true);requestAnimationFrame(()=>w.classList.add('on'))}
+function closeWheel(){const w=$('#petwheel');if(w.hidden)return;w.classList.remove('on');$('#dkPet').setAttribute('aria-expanded',false);setTimeout(()=>{if(!w.classList.contains('on'))w.hidden=true},190)}
 function renderWheel(){const w=$('#petwheel'),p=state.pet,st=stageOf(p.xp),s=petStats(),R=Math.min(128,innerWidth*.32),Wd=state.wish,wish=Wd&&Wd.k&&WISH_T[Wd.k]&&st>0;
   const needs=st?NEEDS.map(([k,nm,c,ic],i)=>{const a=-Math.PI/2+i*Math.PI*2/NEEDS.length,v=Math.min(100,s[k]);return`<button class="pw-n${k!=='affection'&&v<25?' low':''}" data-need="${k}" style="--x:${(Math.cos(a)*R).toFixed(0)}px;--y:${(Math.sin(a)*R).toFixed(0)}px;--c:${c};--d:${(i*.04).toFixed(2)}s" aria-label="${nm}: ${tier(k,s[k])}"><span class="ring"></span>${ringSvg(v/100,74,9)}<img src="${ico(ic)}" alt=""><b>${nm}</b></button>`}).join(''):'';
   w.innerHTML=`<div class="pw" style="--cy:${Math.round(innerHeight*.5)}px"><button class="pw-c" id="pwC"><img src="assets/icons/tab-pet.webp" alt=""><b>${esc(p.name)}</b><small>${st?STAGE_NAMES[st]:`Warm the egg (${p.xp}/3)`}</small></button>${needs}${wish?`<button class="pw-w" id="pwW" aria-label="Wish"><img src="${ico(WISH_T[Wd.k].ic)}" alt=""></button>`:''}</div><div class="pw-hint">${st?'Tap a need to help':'Tap the egg to warm it'}</div>`;
   $('#pwC').onclick=()=>{if(!st){warm();renderWheel();return}setTab('pet')};const ww=$('#pwW');if(ww)ww.onclick=()=>{closeWheel();wishGo()};
   w.querySelectorAll('[data-need]').forEach(b=>b.onclick=()=>{const n=NEEDS.find(x=>x[0]===b.dataset.need),act=n[4];closeWheel();if(act==='pat'){petTap();return}if(act==='nap'){doAct('nap');return}setTab('pet');doAct(act)})}
-function setTab(t){if(t&&brush)endBrush();if((t==='studio'||t==='wardrobe')&&toyPlay)endToyPlay(true);if(t==='decorate')setFollow(false);if(openTab!==t&&(openTab==='studio'||openTab==='wardrobe')){endPreview();if(t!=='studio')studio=null}closeWheel();{const kid=MENU_KIDS.includes(t),sb=$('#sback');$('#dkMenu').setAttribute('aria-expanded',!!t&&(t==='menu'||kid));sb.hidden=!(kid||t==='pet');$('#sbackL').textContent=t==='pet'?'Pet':'Menu';$('#sheet').classList.toggle('hasback',!sb.hidden);document.body.classList.toggle('sheet-open',!!t)}if(t)closeProduct();if(t!=='decorate')select(null);petView=null;openTab=t;$('#sheet').classList.toggle('open',!!t);
+function setTab(t){if(t&&brush)endBrush();if((t==='studio'||t==='wardrobe')&&toyPlay)endToyPlay(true);if(t==='decorate')setFollow(false);if(openTab!==t&&(openTab==='studio'||openTab==='wardrobe')){endPreview();if(t!=='studio')studio=null}closeWheel();{const kid=MENU_KIDS.includes(t),sb=$('#sback');$('#dkMenu').setAttribute('aria-expanded',!!t&&(t==='menu'||kid));sb.hidden=!(kid||t==='pet');$('#sbackL').textContent=t==='pet'?'Pet':'Menu';$('#sheet').classList.toggle('hasback',!sb.hidden);document.body.classList.toggle('sheet-open',!!t)}if(t)closeProduct();if(t!=='decorate')select(null);petView=null;const wasOpen=!!openTab;openTab=t;$('#sheet').classList.toggle('open',!!t);
+  if(!!t!==wasOpen)sheetGenie(!!t,t);
   if(t){renderSheet();if(t==='mail')markRead()}requestAnimationFrame(fitSheet);updHUD();updFollowPill()}
 // Keep the room framed above the sheet, also when its content grows or shrinks (e.g. the egg hatching).
 function fitSheet(){const c=$('#shopcard'),sh=Math.max(openTab?$('#sheet').offsetHeight:0,c&&!c.hidden&&c.classList.contains('on')?c.offsetHeight:0);cam.shiftTo=sh*.5;$('#seltools').style.bottom=`calc(env(safe-area-inset-bottom,0px) + ${112+(openTab?sh+8:0)}px)`}
