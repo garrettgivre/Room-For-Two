@@ -10027,7 +10027,7 @@ function renderMenu(body){const T=state.td,n=T.done.length,m=T.list.length,treat
   body.querySelectorAll('[data-mn]').forEach(b=>b.onclick=()=>{const t=b.dataset.mn;if(away&&(t==='decorate'||t==='room')){travelTo('home',()=>setTab(t));return}setTab(t)})}
 // Pet wheel: tap Pet and the pet's needs fan out round it; tap a need to help with it, tap the middle for the pet's page.
 const wheelOn=()=>!$('#petwheel').hidden;
-function wheelAnim(open){const w=$('#petwheel'),pw=w.querySelector('.pw');if(!pw||!pw.animate||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+function wheelAnim(open){const w=$('#petwheel'),pw=w.querySelector('.pw');if(!pw||!pw.animate)return;
   (pw._an||[]).forEach(a=>a.cancel());const an=pw._an=[],go=(el,kf,o)=>{if(el)an.push(el.animate(kf,o))};
   const bt=$('#dkPet').getBoundingClientRect(),cr=pw.getBoundingClientRect(),dx=bt.left+bt.width/2-cr.left,dy=bt.top+bt.height*.4-cr.top,c=pw.querySelector('.pw-c'),ns=[...pw.querySelectorAll('.pw-n')],n=ns.length,T=(x,y,sx,sy)=>`translate(${x}px,${y}px) scale(${sx},${sy})`;
   if(open){
@@ -10463,7 +10463,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=23;
+const APP_V=24;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
