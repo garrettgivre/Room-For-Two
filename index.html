@@ -707,12 +707,12 @@ body.away .tag{visibility:hidden}
 .storechip{margin:6px 0 0 4px;display:flex;align-items:center;gap:6px;padding:4px 11px 4px 6px;background:#fff;border:2.5px solid var(--ink);border-radius:14px 11px 15px 12px;box-shadow:var(--stk);transform:rotate(-2deg)}
 .storechip.logo{background:none;border:0;box-shadow:none;padding:0;margin-top:2px}.storechip.logo img{width:auto;height:70px;filter:drop-shadow(0 2px 3px rgba(59,18,115,.35))}.storechip.logo b{display:none}.storechip[hidden]{display:none}
 body.away .brand>h1.logo{display:none}body.away .storechip.logo{margin:0;transform:rotate(-2deg)}body.away .storechip.logo img{height:92px}
-body.kmode .kbub{z-index:9}body.kmode .top,body.kmode .dock,body.kmode #followPill,body.kmode #centerPill,body.kmode #emotes{opacity:0!important;pointer-events:none!important;transition:opacity .25s}
+body.kmode .kbub{z-index:9}body.kmode .top,body.kmode .dock,body.kmode #followPill,body.kmode #centerPill,body.kmode #emotes{opacity:0!important;visibility:hidden;transition:opacity .25s,visibility 0s .25s}body.kmode .top *,body.kmode .dock *,body.kmode #followPill,body.kmode #centerPill{pointer-events:none!important}
 .kpanel{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:8;margin:0 auto;width:calc(100% - 20px);max-width:460px;padding:12px 14px 16px;box-sizing:border-box;overflow:hidden;
   background:radial-gradient(rgba(27,16,48,.07) 1.3px,transparent 1.8px) 0 0/12px 12px,var(--paper);border:3px solid var(--ink);border-radius:28px 22px 30px 20px;box-shadow:0 7px 0 var(--ink),0 7px 0 4px #fff,0 0 0 4px #fff;
   transform:translateY(calc(100% + 40px));transition:transform .4s cubic-bezier(.25,1.35,.45,1)}
 .kpanel.on{transform:none}
-.kbadges{position:fixed;inset:0;z-index:5;pointer-events:none}body.kmode .kbadges,body.styling .kbadges,body.gaming .kbadges,body.sheet-open .kbadges{display:none}
+.kbadges{position:fixed;inset:0;z-index:5;pointer-events:none}body.mapopen .kbadges,body.mapopen .kbub,body.kmode .kbadges,body.styling .kbadges,body.gaming .kbadges,body.sheet-open .kbadges{display:none}
 .kbdg{position:absolute;left:0;top:0;width:40px;height:40px;margin:-40px 0 0 -20px;padding:0;border-radius:50% 50% 50% 14%;border:3px solid var(--ink);background:#fff;box-shadow:0 3px 0 var(--ink);display:grid;place-items:center;pointer-events:auto;cursor:pointer;animation:kbob 1.8s ease-in-out infinite;-webkit-tap-highlight-color:transparent}
 .kbdg svg{width:24px;height:24px}.kbdg[hidden]{display:none}.kbdg i{position:absolute;top:-5px;right:-5px;width:12px;height:12px;border-radius:50%;background:var(--pink);border:2.5px solid var(--ink)}
 @keyframes kbob{50%{transform:translateY(-4px)}}.kpanel[hidden]{display:none}
@@ -1297,9 +1297,12 @@ const LDEF={exposure:1,envInt:1,specInt:1,bloom:.3,bloomThreshold:1,bloomKnee:.5
 class WebGLRenderer{
   constructor(o){o=o||{};this.domElement=o.canvas||document.createElement('canvas');this.post=!!o.post;this.background=!!o.background;
     const gl=this.domElement.getContext('webgl2',{antialias:this.post?false:!!o.antialias,alpha:this.post?false:o.alpha!==false,premultipliedAlpha:false,preserveDrawingBuffer:!!o.preserveDrawingBuffer,powerPreference:'high-performance'});
-    this.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();window.dispatchEvent(new Event('r42gllost'))});
+    this.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();this.lost=true;window.dispatchEvent(new Event('r42gllost'))});
+    this.domElement.addEventListener('webglcontextrestored',()=>{try{this._initGL();this.lost=false;window.dispatchEvent(new CustomEvent('r42glback',{detail:this}))}catch(err){console.warn('gl restore',err)}});
     if(!gl)throw new Error('This device or browser does not support WebGL2, which the 3D room needs.');
-    this.gl=gl;this.pixelRatio=1;this.shadowMap={enabled:false,type:0};this.outputEncoding=3000;this._vao=new WeakMap();this._tex=new WeakMap();
+    this.gl=gl;this.pixelRatio=1;this.shadowMap={enabled:false,type:0};this.outputEncoding=3000;this.bg={c1:[.29,.16,.47],c2:[.69,.28,.49],c3:[.14,.27,.25],pat:null,img:null};this._initGL()}
+  // every GPU object is (re)made here; geometry and texture uploads live in the two caches and redo themselves lazily
+  _initGL(){const gl=this.gl;this._vao=new WeakMap();this._tex=new WeakMap();this._shadowSize=0;this.shadowTex=null;this.shadowFbo=null;this._T=null;this._tw=0;this._th=0;
     const mk=(vs,fs)=>{const p=gl.createProgram();for(const [t,s] of [[gl.VERTEX_SHADER,vs],[gl.FRAGMENT_SHADER,fs]]){const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw new Error('Shader: '+gl.getShaderInfoLog(sh));gl.attachShader(p,sh)}
       gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw new Error('Link: '+gl.getProgramInfoLog(p));const u={};const n=gl.getProgramParameter(p,gl.ACTIVE_UNIFORMS);for(let i=0;i<n;i++){const a=gl.getActiveUniform(p,i);u[a.name]=gl.getUniformLocation(p,a.name)}
       return{p,u:new Proxy(u,{get:(t,k)=>k in t?t[k]:null})}};
@@ -1309,7 +1312,7 @@ class WebGLRenderer{
     this._shadowSize=0;this._ensureShadow(1);
     this.lineBuf=gl.createBuffer();this.lineVao=gl.createVertexArray();gl.bindVertexArray(this.lineVao);gl.bindBuffer(gl.ARRAY_BUFFER,this.lineBuf);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);gl.bindVertexArray(null);
     this.aniso=gl.getExtension('EXT_texture_filter_anisotropic');this.maxAniso=this.aniso?Math.min(8,gl.getParameter(this.aniso.MAX_TEXTURE_MAX_ANISOTROPY_EXT)):1;
-    this.quadVao=gl.createVertexArray();this.bg={c1:[.29,.16,.47],c2:[.69,.28,.49],c3:[.14,.27,.25],pat:null,img:null};
+    this.quadVao=gl.createVertexArray();
     if(this.post){this.hdr=!!(gl.getExtension('EXT_color_buffer_float')||gl.getExtension('EXT_color_buffer_half_float'));this.bgProg=mk(QVS,BGFS);
       if(this.hdr){this.downProg=mk(QVS,DOWNFS);this.upProg=mk(QVS,UPFS);this.compProg=mk(QVS,COMPFS)}this._tw=0;this._th=0}
     else if(this.background)this.bgProg=mk(QVS,BGFS);
@@ -2086,12 +2089,22 @@ const renderer=new THREE.WebGLRenderer({canvas,post:true,background:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
 // Android drops the GPU context of an app in the background, which left the UI up but the room gone. The engine can't rebuild
 // its GPU resources, so when a context is lost we save and reload as soon as the app is visible again (location isn't saved anyway).
-let glLost=false,glReloading=false;
+let glLost=false,glReloading=false,glWait=0;
+// Android drops WebGL contexts of backgrounded apps. Each renderer rebuilds itself on 'webglcontextrestored' (_initGL); the page only
+// reloads if the main context doesn't come back within a few seconds of being visible again, and then it returns to where you were (spotSave).
 function glReload(){if(glReloading||document.visibilityState!=='visible')return;let last=0;try{last=+sessionStorage.r42glr||0}catch(_){}if(Date.now()-last<8000)return;glReloading=true;try{sessionStorage.r42glr=Date.now()}catch(_){}
-  Promise.resolve().then(()=>typeof flush==='function'&&flush()).catch(()=>{}).finally(()=>location.reload())}
-window.addEventListener('r42gllost',()=>{if(renderer.gl&&renderer.gl.isContextLost()){glLost=true;glReload()}});
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&(glLost||renderer.gl&&renderer.gl.isContextLost()))glReload()});
-window.addEventListener('pageshow',()=>{if(glLost||renderer.gl&&renderer.gl.isContextLost())glReload()});
+  try{spotSave()}catch(_){}Promise.resolve().then(()=>typeof flush==='function'&&flush()).catch(()=>{}).finally(()=>location.reload())}
+function glCheck(){clearTimeout(glWait);if(!glLost)return;glWait=setTimeout(()=>{if(document.visibilityState==='visible'&&(glLost||renderer.gl&&renderer.gl.isContextLost()))glReload()},3500)}
+window.addEventListener('r42gllost',()=>{if(renderer.gl&&renderer.gl.isContextLost()){glLost=true;if(document.visibilityState==='visible')glCheck()}});
+window.addEventListener('r42glback',e=>{if(e.detail===renderer){glLost=false;clearTimeout(glWait);try{if(typeof tm!=='undefined'&&tm)tm.snapOk=0}catch(_){}}});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){try{spotSave()}catch(_){}return}if(glLost||renderer.gl&&renderer.gl.isContextLost()){glLost=true;glCheck()}});
+window.addEventListener('pagehide',()=>{try{spotSave()}catch(_){}});
+window.addEventListener('pageshow',()=>{if(glLost||renderer.gl&&renderer.gl.isContextLost()){glLost=true;glCheck()}});
+// where you are, kept for this app session so a reload (or Android discarding the app) puts you back in the same shop
+function spotSave(){try{sessionStorage.r42spot=JSON.stringify({k:typeof away!=='undefined'&&away?away.key:null,lv:typeof away!=='undefined'&&away?away.level||0:0,t:Date.now()})}catch(_){}}
+function spotResume(){let S=null;try{S=JSON.parse(sessionStorage.r42spot||'null');sessionStorage.removeItem('r42spot')}catch(_){}
+  if(!S||!S.k||Date.now()-S.t>3*3600e3||typeof SHOPS==='undefined'||!SHOPS[S.k]||(typeof away!=='undefined'&&away))return;travelTo(S.k,()=>{if(S.lv&&away&&away.plan&&away.plan.levels.length>S.lv)setLevel(S.lv)})}
+setTimeout(()=>{try{spotResume()}catch(e){console.warn('resume',e)}},900);
 renderer.outputEncoding=THREE.sRGBEncoding;
 renderer.shadowMap.enabled=true;
 renderer.shadowMap.type=THREE.PCFSoftShadowMap;
@@ -8574,7 +8587,7 @@ function tmRoad(gx,gz,val){const m=state.tmap;if(gx<0||gz<0||gx>=TM_W||gz>=TM_D)
 // ---------- open, close, input, frame ----------
 ['home',...tmShops()].forEach(k=>{try{tmImg(k)}catch(_){}});
 {const warm=()=>{try{if(!tm)tmInit();if(tm)setTimeout(()=>{try{state.tmap=tmNorm(state.tmap);tmFresh()}catch(e){}},250)}catch(e){}};setTimeout(()=>window.requestIdleCallback?requestIdleCallback(warm,{timeout:1500}):warm(),1600)}
-function tmOpen(){const T=tmInit();if(!T)return false;state.tmap=tmNorm(state.tmap);const el=$('#town3');el.hidden=false;el.classList.add('on');T.open=true;tmArrange(false);tm.tgt.set(0,0,0);$('#tmArr').hidden=false;
+function tmOpen(){const T=tmInit();if(!T)return false;document.body.classList.add('mapopen');state.tmap=tmNorm(state.tmap);const el=$('#town3');el.hidden=false;el.classList.add('on');T.open=true;tmArrange(false);tm.tgt.set(0,0,0);$('#tmArr').hidden=false;
   $('#tmTitle').textContent=away?'Where next?':'Where to?';$('#tmPop').classList.add('gen');if(!T.snapOk){tmSync(false);tmDraw(0);tmSnapNow()}T.snapOk=0;tmLast=performance.now();tmTick(tmLast);tmGenie(true);return true}
 function tmQuad(W,H,q){const[x0,y0,x1,y1,x2,y2,x3,y3]=q,dx1=x1-x2,dx2=x3-x2,dx3=x0-x1+x2-x3,dy1=y1-y2,dy2=y3-y2,dy3=y0-y1+y2-y3,D=dx1*dy2-dx2*dy1,g=(dx3*dy2-dx2*dy3)/D,h=(dx1*dy3-dx3*dy1)/D,a=x1-x0+g*x1,b=x3-x0+h*x3,c=x0,d=y1-y0+g*y1,e=y3-y0+h*y3,f=y0;
   return`matrix3d(${a/W},${d/W},0,${g/W},${b/H},${e/H},0,${h/H},0,0,1,0,${c},${f},0,1)`}
@@ -8599,7 +8612,7 @@ function tmGenie(open){const pp=$('#tmPop'),f=$('#tmSnap'),src=tm.snap,id=++tmPo
   requestAnimationFrame(fr)}
 function sheetGenie(open,t){const sh=$('#sheet'),btn=$(t==='pet'?'#dkPet':'#dkMenu');sh.classList.add('gen');
   genie(sh,btn,open,open?300:210,()=>{sh.style.transition='none';sh.classList.remove('gen');sh.style.transform='';sh.style.opacity='';sh.offsetWidth;requestAnimationFrame(()=>{sh.style.transition=''})})}
-function tmClose(){if(!tm||!tm.open)return;tm.open=false;const el=$('#town3');try{tmDraw(0);tmSnapNow()}catch(_){}tmGenie(false);el.classList.remove('on');setTimeout(()=>{if(!tm.open)el.hidden=true},1500);$('#tmCard').hidden=true;clock.getDelta()}
+function tmClose(){if(!tm||!tm.open)return;tm.open=false;document.body.classList.remove('mapopen');const el=$('#town3');try{tmDraw(0);tmSnapNow()}catch(_){}tmGenie(false);el.classList.remove('on');setTimeout(()=>{if(!tm.open)el.hidden=true},1500);$('#tmCard').hidden=true;clock.getDelta()}
 function tmFit(){const a=tm.cam.aspect,t=Math.tan(tm.cam.fov*Math.PI/360),r=Math.hypot(TM_W,TM_D)/2;return r/(t*Math.min(1,a*1.12)*1.05)}
 function tmSnapNow(){const c=$('#tmc'),s=tm.snap||(tm.snap=document.createElement('canvas'));if(s.width!==c.width||s.height!==c.height){s.width=c.width;s.height=c.height}const x=s.getContext('2d');x.clearRect(0,0,s.width,s.height);x.drawImage(c,0,0)}
 function tmFresh(){if(!tm||tm.open)return;tmSync(false);tmArrange(false);tm.focus=null;tm.tgt.set(0,0,0);tmDraw(0);tmSnapNow();tm.snapOk=1}
@@ -11007,7 +11020,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=37;
+const APP_V=38;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
