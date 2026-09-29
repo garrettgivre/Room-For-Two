@@ -11078,7 +11078,11 @@ function setSandbox(on){if(!!sandbox===on)return;select(null);if(brush)endBrush(
 // from them, keys only we changed stay ours, and keys both changed merge by kind (counts add up, logs join, sets union, the pet
 // per field, with its needs combined as changes on top of the shared version, all measured at the same moment).
 let syncBase=null,syncBaseRev=0;
-function snapBase(s){const b={};for(const k in s)b[k]=JSON.stringify(s[k]);syncBase=b;syncBaseRev=+s.rev||0}
+// The base is also kept on the device, so after a reload (or a slow connection) changes that never reached the server are
+// merged into the shared copy instead of being replaced by it.
+function snapBase(s,keep){const b={};for(const k in s)b[k]=JSON.stringify(s[k]);syncBase=b;syncBaseRev=+s.rev||0;if(keep!==false)try{localStorage.setItem('r42base:'+roomCode,JSON.stringify(s))}catch(_){}}
+const SYNC_SKIP={rev:1,kr:1,visits:1,jrT:1};
+const localChanged=()=>!!syncBase&&Object.keys(state).some(k=>!SYNC_SKIP[k]&&JSON.stringify(state[k])!==syncBase[k]);
 const mNum=(l,r,b)=>(+b||0)+((+l||0)-(+b||0))+((+r||0)-(+b||0));
 const mCounts=(l,r,b)=>{b=b||{};l=l||{};r=r||{};const o={};new Set([...Object.keys(l),...Object.keys(r),...Object.keys(b)]).forEach(k=>{const v=mNum(l[k],r[k],b[k]);if(v>0)o[k]=Math.min(99,v)});return o};
 const mLog=n=>(l,r)=>{const seen=new Set(),o=[];[...(l||[]),...(r||[])].sort((a,b)=>(b.t||0)-(a.t||0)).forEach(x=>{const key=(x.t||0)+'|'+(x.text||'');if(!seen.has(key)){seen.add(key);o.push(x)}});return o.slice(0,n)};
@@ -11099,10 +11103,12 @@ const MERGE={hearts:(l,r,b)=>Math.max(0,mNum(l,r,b)),tokens:(l,r,b)=>Math.max(0,
   journal:mLog(80),inbox:mLog(60),feed:mLog(50),toys:mSet,wear:mSet,capsdex:mSet,town:mSet,downs:mSet,jrT:mMax,ibT:mMax,
   visits:mMaxMap,names:(l,r)=>Object.assign({},r,l),
   kf:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{}){const a=l[k],c=o[k];o[k]=!c?a:{p:Math.max(a.p,c.p),s:Math.max(a.s,c.s),d:a.d>c.d?a.d:c.d}}return o},
-  pet:mPet,fwish:mFields,daily:mFields,td:mFields,arc:mFields,tmap:mFields};
+  pet:mPet,fwish:mFields,daily:mFields,td:mFields,arc:mFields,tmap:mFields,kr:mMaxMap};
 // merge the normalized remote R into the local state L; returns the keys that changed locally
-function mergeInto(L,R){if(!syncBase)return{};const B=syncBase,ch={};new Set([...Object.keys(L),...Object.keys(R)]).forEach(k=>{if(k==='rev')return;
-    const lj=JSON.stringify(L[k]),rj=JSON.stringify(R[k]),bj=B[k];if(rj===lj||rj===bj)return;
+// kr holds when each key last changed (stamped on write); a remote copy of a key older than the one in our base is a stale write
+// (e.g. a device still running old code saving its whole copy) and is ignored.
+function mergeInto(L,R){if(!syncBase)return{};const B=syncBase,ch={},Bkr=B.kr?JSON.parse(B.kr)||{}:{},Rkr=R.kr||{};new Set([...Object.keys(L),...Object.keys(R)]).forEach(k=>{if(k==='rev')return;
+    const lj=JSON.stringify(L[k]),rj=JSON.stringify(R[k]),bj=B[k];if(rj===lj||rj===bj)return;if(k!=='kr'&&(+Rkr[k]||0)<(+Bkr[k]||0))return;
     if(lj===bj){L[k]=R[k]===undefined?undefined:JSON.parse(rj);ch[k]=1;return}
     const m=MERGE[k];if(m){const v=m(L[k],R[k],bj==null?undefined:JSON.parse(bj));if(JSON.stringify(v)!==lj){L[k]=v;ch[k]=1}}});
   return ch}
@@ -11112,7 +11118,7 @@ function saveSoon(){dirty=true;clearTimeout(saveT);saveT=setTimeout(flush,600)}
 function saveLocal(body){try{localStorage.setItem(soloKey(),JSON.stringify(body))}catch(_){}}
 async function flush(){if(writing){saveT=setTimeout(flush,300);return}if(!dirty)return;dirty=false;if(sandbox)return;
   if(mode==='shared'&&remote&&(remote.rev||0)>syncBaseRev){try{const R=normalize(JSON.parse(JSON.stringify(remote)));afterMerge(mergeInto(state,R));snapBase(R)}catch(e){console.warn('merge',e)}}
-  state.rev=Math.max(Date.now(),(remote&&remote.rev||0)+1);state.visits=state.visits||{};state.visits[myId||'me']=Date.now();if(lifeCheck.done)state.jrT=Date.now();const body=JSON.parse(JSON.stringify(state));
+  state.rev=Math.max(Date.now(),(remote&&remote.rev||0)+1);state.kr=state.kr||{};if(syncBase)for(const k in state){if(!SYNC_SKIP[k]&&JSON.stringify(state[k])!==syncBase[k])state.kr[k]=state.rev}state.visits=state.visits||{};state.visits[myId||'me']=Date.now();if(lifeCheck.done)state.jrT=Date.now();const body=JSON.parse(JSON.stringify(state));
   saveLocal(body);
   if(mode!=='shared'||!ref)return;
   writing=true;try{await ref.set(body);snapBase(body)}catch(e){const c=e&&e.code;
@@ -11123,19 +11129,21 @@ async function flush(){if(writing){saveT=setTimeout(flush,300);return}if(!dirty)
 function adoptRemote(){buildHist.length=0;updUndoBtns();state=normalize(JSON.parse(JSON.stringify(remote)));snapBase(state);syncScene();updHUD();
   resolveNames(Object.keys(state.visits||{}).concat(state.feed.map(f=>f.by)));
   const ae=document.activeElement;if(openTab&&!(ae&&ae.matches&&ae.matches('input')))renderSheet()}
-function tryRemote(){if(sandbox||!remote||writing||dragging)return;if((remote.rev||0)<=Math.max(state.rev||0,syncBaseRev))return;if(!dirty||!syncBase){if(!dirty)adoptRemote();return}
-  // unsaved local changes: take the other side's changes in now and keep ours for the next write
-  try{const R=normalize(JSON.parse(JSON.stringify(remote)));afterMerge(mergeInto(state,R));snapBase(R)}catch(e){console.warn('merge',e)}}
+function tryRemote(){if(sandbox||!remote||writing||dragging)return;if((remote.rev||0)<=Math.max(state.rev||0,syncBaseRev))return;if(!syncBase){if(!dirty)adoptRemote();return}
+  // take the other side's changes in (keeping any unsaved ones of ours); if part of their write was stale, write ours back
+  try{const R=normalize(JSON.parse(JSON.stringify(remote)));afterMerge(mergeInto(state,R));snapBase(R);if(localChanged())saveSoon()}catch(e){console.warn('merge',e)}}
 function normalize(s){const oldPal=!!s&&!(s.pv>=2);const d=defaultState();s=Object.assign({},d,s||{});s.items=Array.isArray(s.items)?s.items.map(i=>i&&typeof i.k==='string'&&i.k.startsWith('win_')?Object.assign(i,{k:winKeyFix(i.k)}):i).filter(i=>i&&CATMAP[i.k]&&typeof i.id==='string').slice(0,80):[];
   s.inv=s.inv&&typeof s.inv==='object'?Object.fromEntries(Object.entries(s.inv).filter(([k,v])=>ITEMMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):Object.assign({},d.inv);
   s.toys=Array.isArray(s.toys)?s.toys.filter(k=>ITEMMAP[k]&&ITEMMAP[k].k==='toy'):d.toys.slice();s.daily=s.daily&&typeof s.daily==='object'?s.daily:{};
   s.pet=Object.assign({},d.pet,s.pet||{});if(s.pet.look&&typeof s.pet.look!=='object')delete s.pet.look;if(s.pet.heads&&!(Array.isArray(s.pet.heads)&&s.pet.heads.length===2))delete s.pet.heads;else if(s.pet.heads)s.pet.heads=s.pet.heads.map(x=>String(x||'').slice(0,10));s.tokens=s.tokens==null?3:Math.max(0,Math.min(999,+s.tokens|0));s.capsdex=Array.isArray(s.capsdex)?s.capsdex.filter(k=>typeof k==='string').slice(0,64):[];s.ceil=s.ceil==null?1:clamp(+s.ceil||0,0,1);s.wish=s.wish&&typeof s.wish==='object'&&(!s.wish.k||WISH_T[s.wish.k])?s.wish:{};s.wear=[...new Set(Array.isArray(s.wear)?s.wear.filter(id=>wearDef(id)):[])];s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
   s.journal=Array.isArray(s.journal)?s.journal.slice(0,80).map(f=>({t:+f.t||0,by:String(f.by||''),k:String(f.k||'').slice(0,12),text:String(f.text||'').slice(0,300)})):[];s.inbox=Array.isArray(s.inbox)?s.inbox.slice(0,60).map(f=>({t:+f.t||0,from:String(f.from||'').slice(0,12),text:String(f.text||'').slice(0,300)})):[];s.jrT=+s.jrT||0;s.ibT=+s.ibT||0;
   if(s.pet){s.pet.auto=s.pet.auto&&typeof s.pet.auto==='object'?s.pet.auto:{};s.pet.likes=s.pet.likes&&typeof s.pet.likes==='object'?s.pet.likes:{}}
+  s.kr=s.kr&&typeof s.kr==='object'&&!Array.isArray(s.kr)?s.kr:{};
   s.kf=s.kf&&typeof s.kf==='object'&&!Array.isArray(s.kf)?s.kf:{};Object.keys(s.kf).forEach(k=>{const f=s.kf[k];if(!f||typeof f!=='object'){delete s.kf[k];return}f.p=Math.max(0,+f.p||0);f.s=Math.max(0,f.s|0);f.d=typeof f.d==='string'?f.d:''});
   s.feed=Array.isArray(s.feed)?s.feed.slice(0,50).map(f=>({t:+f.t||0,by:String(f.by||''),k:f.k==='note'?'note':'event',text:String(f.text||'').slice(0,160)})):[];
   s.visits=s.visits&&typeof s.visits==='object'?s.visits:{};s.names=s.names&&typeof s.names==='object'?Object.fromEntries(Object.entries(s.names).slice(0,8).map(([k,v])=>[String(k).slice(0,64),String(v||'').slice(0,20)])):{};s.hearts=Math.max(0,+s.hearts||0);if(!FLOORS.includes(s.floor))s.floor='checker';if(!WALLS.includes(s.wall))s.wall='bubble';const RN=ROOM_SIZES.includes(s.size)?s.size:8;s.size=RN;s.tf=Array.isArray(s.tf)&&s.tf.length===RN*RN?s.tf.map(k=>TILESETS.f[k]?k:s.floor):Array(RN*RN).fill(s.floor);s.tw=Array.isArray(s.tw)&&s.tw.length===RN*4?s.tw.map(k=>TILESETS.w[k]?k:s.wall):Array(RN*4).fill(s.wall);s.fown=s.fown&&typeof s.fown==='object'?Object.fromEntries(Object.entries(Object.entries(s.fown).reduce((o,[k,v])=>{k=winKeyFix(k);o[k]=(o[k]||0)+(+v||0);return o},{})).filter(([k,v])=>CATMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):{};s.fwish=s.fwish&&typeof s.fwish==='object'?Object.fromEntries(Object.entries(s.fwish).filter(([k])=>CATMAP[k]).slice(0,200).map(([k,v])=>[k,String(v||'').slice(0,64)])):{};s.town=[...new Set([...STARTER_TILES,...(Array.isArray(s.town)?s.town:[]),...s.tf.map(k=>'f:'+k),...s.tw.map(k=>'w:'+k)])].filter(k=>TILESETS[k[0]]&&TILESETS[k[0]][k.slice(2)]);s.downs=[...new Set(['classic',...(Array.isArray(s.downs)?s.downs:[]).map(doorKeyFix)])];s.door=Object.assign({s:'classic',w:3,u:-2.6},s.door&&typeof s.door==='object'?s.door:{});s.door.s=doorKeyFix(s.door.s);if(!s.downs.includes(s.door.s))s.door.s='classic';s.door.w=clamp(s.door.w|0,0,3);s.door.u=clamp(+s.door.u||0,-RN/2+.8,RN/2-.8);if(!SKY_KEYS.includes(s.sky))s.sky='classic';if(oldPal){const mp=[0,7,8,3,12,5,2];s.items.forEach(i=>i.c=mp[(i.c||0)%7])}s.td=s.td&&typeof s.td==='object'&&!Array.isArray(s.td)?s.td:{};s.arc=s.arc&&typeof s.arc==='object'&&!Array.isArray(s.arc)?s.arc:{best:{},plays:0};s.pv=2;return s}
-function loadLocal(){let s=null;try{s=JSON.parse(localStorage.getItem(soloKey())||'null')}catch(_){}state=normalize(s||defaultState());if(!s)state.rev=0;syncScene();updHUD()}
+function loadLocal(){let s=null;try{s=JSON.parse(localStorage.getItem(soloKey())||'null')}catch(_){}state=normalize(s||defaultState());if(!s)state.rev=0;
+  syncBase=null;syncBaseRev=0;try{const b=JSON.parse(localStorage.getItem('r42base:'+roomCode)||'null');if(b)snapBase(normalize(b),false)}catch(_){}syncScene();updHUD()}
 function connectShared(){
   if(!db)return;if(unsub){try{unsub()}catch(_){}unsub=null}
   clearTimeout(connectT);clearTimeout(cacheT);remote=null;gotFirstSnap=false;mode='connecting';updHUD();
@@ -11145,7 +11153,9 @@ function connectShared(){
       if(snap.metadata&&snap.metadata.fromCache&&!gotFirstSnap){clearTimeout(cacheT);cacheT=setTimeout(()=>{if(!gotFirstSnap)createShared()},2500);return}
       if(!gotFirstSnap)createShared();return}
     clearTimeout(cacheT);remote=snap.data();
-    if(!gotFirstSnap){gotFirstSnap=true;clearTimeout(connectT);mode='shared';adoptRemote();setTimeout(checkDaily,800);setTimeout(lifeCheck,2500);state.visits[myId||'me']=Date.now();saveSoon();if(openTab==='room')renderSheet();return}
+    if(!gotFirstSnap){gotFirstSnap=true;clearTimeout(connectT);mode='shared';
+      // changes made on this device that never reached the server (slow connection, reload mid-save) are merged in, not dropped
+      if(localChanged()&&!sandbox){try{const R=normalize(JSON.parse(JSON.stringify(remote)));afterMerge(mergeInto(state,R));snapBase(R);dirty=true}catch(e){console.warn('merge',e);adoptRemote()}}else adoptRemote();setTimeout(checkDaily,800);setTimeout(lifeCheck,2500);state.visits[myId||'me']=Date.now();saveSoon();if(openTab==='room')renderSheet();return}
     tryRemote()}catch(e){showErr('sync: '+e.message)}};
   const onErr=err=>{const c=err&&err.code;if(c==='permission-denied'||c==='revoked'||c==='not_granted'||c==='capability_disabled'){mode='readonly';updHUD()}else if(c==='unavailable'){setTimeout(connectShared,3000)}};
   try{unsub=ref.onSnapshot(onDoc,onErr)}catch(e){mode='solo';updHUD();return}
@@ -11161,7 +11171,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=41;
+const APP_V=42;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
