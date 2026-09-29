@@ -497,7 +497,7 @@ body.styling .sheet{max-height:min(46%,420px)}.followpill img{width:26px;height:
 
 body.gaming #emotes,body.gaming .kbub{display:none!important}
 /* town map (3D) */
-.town3{position:fixed;inset:0;z-index:31;background:rgba(59,18,115,0);transition:background .3s;overflow:hidden}.town3.on{background:rgba(59,18,115,.12)}.town3[hidden]{display:none}
+.town3{position:fixed;inset:0;z-index:31;background:rgba(59,18,115,0);transition:background .3s;overflow:hidden}.town3.on{background:rgba(24,14,70,calc(.12 + var(--tmn,0) * .3))}.town3[hidden]{display:none}
 .tm-pop{will-change:transform,opacity;position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 4vh);width:min(94vw,600px);height:min(76vh,700px);margin-left:calc(min(94vw,600px)/-2);background:none;overflow:visible;transform-origin:0 0}
 #tmc{position:absolute;inset:0;width:100%;height:100%;touch-action:none}.tm-fly{position:fixed;left:0;top:0;width:100%;height:100%;display:none;pointer-events:none;z-index:1}
 .tm-top{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 10px);display:flex;align-items:center;gap:10px;padding:0 12px;pointer-events:none}.tm-top>*{pointer-events:auto}
@@ -8192,12 +8192,12 @@ const tmFlair={
 };
 // wacky novelty-architecture bodies for the town view: each builds the whole building inside the shop's plan box (west face flat at x=-hw for the door) and returns the label height
 // plan massing for the town bodies: merged room blocks per storey, staff rooms lower and darker, windows on the outer walls
-let tmGlassT=null,tmWaterT=null;
+let tmGlassT=null,tmWaterT=null;const tmGlassMs=[];
 function tmWater(){return tmWaterT||(tmWaterT=ctex(128,128,(x,w,h)=>{x.fillStyle='#CBE6F5';x.fillRect(0,0,w,h);const R=rnd(5);x.lineCap='round';for(let n=0;n<26;n++){const y0=R()*h,x0=R()*w,l=14+R()*26,a=R()*6.28;x.strokeStyle=n%3?'rgba(255,255,255,.85)':'rgba(120,170,210,.35)';x.lineWidth=n%3?2:3;x.beginPath();for(let i=0;i<=10;i++){const t=i/10;x.lineTo(x0+t*l,y0+Math.sin(t*6.28+a)*2.5)}x.stroke()}},null,1))}
 function tmGlass(tint){if(!tmGlassT)tmGlassT=ctex(48,64,(x,w,h)=>{const q=x.createLinearGradient(0,0,0,h);q.addColorStop(0,'#3E86CF');q.addColorStop(.55,'#8FD0FA');q.addColorStop(1,'#E2F6FF');x.fillStyle=q;x.fillRect(0,0,w,h);
     x.fillStyle='#FFE9A8';x.globalAlpha=.55;x.fillRect(w*.25,h*.62,w*.5,h*.38);x.globalAlpha=1;x.fillStyle='#FF9ECF';x.beginPath();x.moveTo(0,0);x.lineTo(w*.2,0);x.quadraticCurveTo(w*.08,h*.5,w*.16,h);x.lineTo(0,h);x.fill();x.beginPath();x.moveTo(w,0);x.lineTo(w*.8,0);x.quadraticCurveTo(w*.92,h*.5,w*.84,h);x.lineTo(w,h);x.fill();
     x.fillStyle='rgba(255,255,255,.6)';x.beginPath();x.moveTo(w*.42,0);x.lineTo(w*.6,0);x.lineTo(w*.3,h);x.lineTo(w*.12,h);x.fill()},null,1);
-  return M(lighten(tint||0xBFE8FF,.55),{map:tmGlassT,roughness:.08,emissive:0xBFE8FF,emissiveIntensity:.08})}
+  const m=M(lighten(tint||0xBFE8FF,.55),{map:tmGlassT,roughness:.08,emissive:0xFFD28A,emissiveIntensity:.06});tmGlassMs.push(m);return m}
 function tmMass(g,k,o){const P=SHOPS[k].plan,PS=TM_PS,{m,mD,h0=.78,h1=.6,r=.05,wm=0xBFE8FF,fr=0xFFFFFF,ex=0,wy=.55,ld=.1}=o,X=i=>(i-P.W/2+.5)*PS,Z=j=>(j-P.D/2+.5)*PS,[di,dj]=P.door;
   const Gl=tmGlass(wm),Fr=M(fr,{roughness:.5}),FbM=M(0x8A5E3C,{roughness:.8}),FlM=[M(0xFF6FB5,{roughness:.5}),M(0xFFD21F,{roughness:.5}),M(0xFFFFFF,{roughness:.5})],LfM=M(0x4FA53E,{roughness:.7}),out=[];
   P.levels.slice(0,2).forEach((L,li)=>{const y0=li?h0:0,h=li?h1:h0,isF=(i,j)=>i>=0&&j>=0&&i<P.W&&j<P.D&&L.grid[j][i]!=='.',lk=c=>!!(L.rooms[c]&&L.rooms[c].lock),R=[],open=[];
@@ -8350,7 +8350,7 @@ function tmHome(){const g=G(),Bd=M(0xFFF6EA,{roughness:.55}),Wh=M(0xFFFFFF,{roug
 let tm=null,tmLast=0;
 function tmInit(){if(tm)return tm;try{const cv=$('#tmc'),R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});R.outputEncoding=THREE.sRGBEncoding;const sc=new THREE.Scene();
     const et=ctex(256,128,(x,w,h)=>{const q=x.createLinearGradient(0,0,0,h);q.addColorStop(0,'#fff');q.addColorStop(.45,'#EAF6FF');q.addColorStop(.55,'#fff');q.addColorStop(1,'#CDEFB0');x.fillStyle=q;x.fillRect(0,0,w,h)},null,1);et.mapping=THREE.EquirectangularReflectionMapping;sc.environment=et;
-    sc.add(new THREE.AmbientLight(0xffffff,.55));const dl=new THREE.DirectionalLight(0xFFF1DE,2.9);dl.position.set(-11,11,1.5);dl.castShadow=true;Object.assign(dl.shadow.camera,{left:-15,right:15,top:15,bottom:-15,near:1,far:60});dl.shadow.mapSize.set(2048,2048);dl.shadow.bias=-.0005;dl.shadow.normalBias=.02;R.shadowMap.enabled=true;sc.add(dl);sc.userData.lighting={exposure:1.08,ao:[],get sh(){const e=sc.environment;if(!e||!e._sh)return null;return e._shT||(e._shT=e._sh.map(v=>v*.5))}};const cam=new THREE.PerspectiveCamera(30,1,4,260);
+    sc.add(new THREE.AmbientLight(0xffffff,.55));const dl=new THREE.DirectionalLight(0xFFF1DE,2.9);dl.position.set(-11,11,1.5);dl.castShadow=true;Object.assign(dl.shadow.camera,{left:-15,right:15,top:15,bottom:-15,near:1,far:60});dl.shadow.mapSize.set(2048,2048);dl.shadow.bias=-.0005;dl.shadow.normalBias=.02;R.shadowMap.enabled=true;sc.add(dl);sc.userData.lighting={exposure:1.08,ao:[],points:[],get sh(){const e=sc.environment;if(!e||!e._sh)return null;const k=(tm&&tm.todK)||[.5,.5,.5],key=k.map(v=>v.toFixed(3)).join();if(e._shKey!==key){e._shKey=key;e._shT=e._sh.map((v,i)=>v*k[i%3])}return e._shT}};const cam=new THREE.PerspectiveCamera(30,1,4,260);
     tm={R,sc,cam,root:G(),world:G(),bld:{},bg:{},yaw:-.35,pitch:.7,zoom:.98,tgt:new THREE.Vector3(),tgtTo:new THREE.Vector3(),open:false,arr:false,tool:'move',sel:null,deco:'tree',t:0,ray:new THREE.Raycaster(),ptr:new Map()};
     sc.add(tm.root);tm.root.add(tm.world);tmIsland();return tm}catch(e){console.warn('town',e);return null}}
 const tmRR=(a,b,r,n=12)=>{const P=[];[[a-r,b-r,0],[-(a-r),b-r,1],[-(a-r),-(b-r),2],[a-r,-(b-r),3]].forEach(([cx,cz,q])=>{for(let i=0;i<=n;i++){const t=(q+i/n)*Math.PI/2;P.push([cx+Math.cos(t)*r,cz+Math.sin(t)*r])}});return P};
@@ -8454,7 +8454,22 @@ function tmFit(){const a=tm.cam.aspect,t=Math.tan(tm.cam.fov*Math.PI/360),r=Math
 function tmSnapNow(){const c=$('#tmc'),s=tm.snap||(tm.snap=document.createElement('canvas'));if(s.width!==c.width||s.height!==c.height){s.width=c.width;s.height=c.height}const x=s.getContext('2d');x.clearRect(0,0,s.width,s.height);x.drawImage(c,0,0)}
 function tmFresh(){if(!tm||tm.open)return;tmSync(false);tmArrange(false);tm.focus=null;tm.tgt.set(0,0,0);tmDraw(0);tmSnapNow();tm.snapOk=1}
 function tmSize(){const pp=$('#tmPop');return[pp.clientWidth||Math.round(Math.min(innerWidth*.94,600)),pp.clientHeight||Math.round(Math.min(innerHeight*.76,700))]}
-function tmDraw(dt){const[W_,H_]=tmSize(),R=tm.R;
+// Time of day on the map follows US Central time (and the debug sky slider), like the room's sky:
+// [hour, sun/moon colour, intensity, sky fill, fill tint, lamp/emissive boost, night 0..1]
+const TM_TOD=[[0,0x9FB4FF,.7,.22,0x7C8CFF,2.5,1],[5,0x9FB4FF,.7,.22,0x7C8CFF,2.5,1],[6.2,0xFFB08A,1.9,.42,0xFFC6D9,2.3,.45],[7.6,0xFFF1DE,2.9,.5,0xFFFFFF,1.8,0],[17.4,0xFFF1DE,2.9,.5,0xFFFFFF,1.8,0],
+  [18.8,0xFFB45A,2.4,.46,0xFFD9B0,2.1,.2],[19.9,0xD39BFF,1.4,.34,0xB9A2FF,2.3,.7],[21,0x9FB4FF,.7,.22,0x7C8CFF,2.5,1],[24,0x9FB4FF,.7,.22,0x7C8CFF,2.5,1]];
+let tmTodT=0;
+function tmTOD(){const now=performance.now();if(now-tmTodT<1000&&skyHourOverride==null)return;tmTodT=now;
+  const h=skyHourOverride??centralHour();let i=0;while(i<TM_TOD.length-2&&h>=TM_TOD[i+1][0])i++;const A=TM_TOD[i],B=TM_TOD[i+1],m=A[0]===B[0]?0:ease((h-A[0])/(B[0]-A[0])),lr=(a,b)=>a+(b-a)*m,
+    rgb=c=>[(c>>16&255)/255,(c>>8&255)/255,(c&255)/255],cl=(a,b)=>{const x=rgb(a),y=rgb(b);return x.map((v,k)=>v+(y[k]-v)*m)},night=lr(A[6],B[6]);
+  let dl=null;tm.sc.traverse(q=>{if(q.isDirectional)dl=q});const c=cl(A[1],B[1]);dl.color.r=c[0];dl.color.g=c[1];dl.color.b=c[2];dl.intensity=lr(A[2],B[2]);
+  // the sun rises on the right of the map and sets on the left; at night a moon hangs up on the left
+  const a=(Math.min(20,Math.max(6,h))-6)/14*Math.PI,sp=[Math.cos(a)*13-2,3+Math.sin(a)*10,1.5],mp=[-8,12,5];dl.position.set(...sp.map((v,k)=>v+(mp[k]-v)*night));
+  const k=lr(A[3],B[3]),t=cl(A[4],B[4]);tm.todK=t.map(v=>v*k);const L=tm.sc.userData.lighting;L.exposure=1.08-.2*night;L.emisBoost=lr(A[5],B[5]);
+  tmGlassMs.forEach(g=>g.emissiveIntensity=.06+.75*night);
+  L.points=night>.05?(tm.decor?tm.decor.children:[]).filter(o=>{const q=state.tmap.d[o.userData.td];return q&&q[0]==='lamp'}).slice(0,8).map(o=>({pos:[o.position.x,.95,o.position.z],color:[1.5*night,1.15*night,.65*night],range:2.8})):[];
+  $('#town3').style.setProperty('--tmn',night.toFixed(3));tm.night=night}
+function tmDraw(dt){const[W_,H_]=tmSize(),R=tm.R;tmTOD();
   if(R.__w!==W_||R.__h!==H_){R.setPixelRatio(Math.min(2,devicePixelRatio||1));R.setSize(W_,H_,false);R.__w=W_;R.__h=H_;tm.cam.aspect=W_/H_;tm.cam.updateProjectionMatrix()}
   vlerp(tm.tgt,tm.tgtTo,Math.min(1,dt*4));const d=tmFit()*(tm.focus?.45:1)*tm.zoom,cp=Math.cos(tm.pitch),c=tm.cam;c.position.set(tm.tgt.x+Math.sin(tm.yaw)*cp*d,Math.sin(tm.pitch)*d,tm.tgt.z+Math.cos(tm.yaw)*cp*d);c.lookAt(new THREE.Vector3(tm.tgt.x,0,tm.tgt.z));
   tm.cl&&tm.cl.forEach(p=>p.rotation.y=tm.t*p.userData.sp);tm.mills&&tm.mills.forEach(o=>o.userData.anim(tm.t));tm.anims.forEach(o=>{try{o.userData.anim(tm.t)}catch(_){}});const so=tmObj(tm.sel);if(so)so.position.y=.25+Math.sin(tm.t*5)*.06;
@@ -10632,7 +10647,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=29;
+const APP_V=30;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
