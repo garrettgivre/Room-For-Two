@@ -8349,7 +8349,12 @@ function genie(el,btn,open,dur,end,rc){let t0=-1,pl=0;const id=(genA.get(el)||0)
     el.style.opacity=Math.min(1,q*5);el.style.transform=q>=1?'none':tmQuad(W,H,[tx-tw/2-ox,ty-oy,tx+tw/2-ox,ty-oy,bxc+bwd/2-ox,byc-oy,bxc-bwd/2-ox,byc-oy])+(rc?` translate(${ox-L}px,${oy-T}px)`:'');
     if(p<1)requestAnimationFrame(fr);else end&&end()};
   requestAnimationFrame(fr)}
-function tmGenie(open){const pp=$('#tmPop');pp.classList.add('gen');genie(pp,$('#dkExplore'),open,open?340:220,()=>{pp.style.opacity=open?'':0;if(!open&&!tm.open)$('#town3').hidden=true;if(open)pp.style.transform='none';if(open)pp.classList.remove('gen')})}
+let tmPopA=0;
+function tmPopAnim(el,open,dur,end){const id=++tmPopA;el.style.transform='none';const r=el.getBoundingClientRect(),W=r.width,H=r.height,L=r.left,T=r.top,px=innerWidth/2,py=innerHeight-24,E=x=>1-Math.pow(1-x,3);let t0=-1,pl=0;
+  const fr=now=>{if(id!==tmPopA)return;if(t0<0)t0=now;const p=pl=Math.max(0,Math.min(1,(now-t0)/dur,pl+.14)),q=open?p:1-p,ey=E(q),ex=E(Math.max(0,(q-.15)/.85)),sy=.03+.97*ey,sx=.12+.88*ex,
+    bx=px+(L+W/2-px)*ey,by=py+(T+H-py)*ey;el.style.opacity=Math.min(1,q*4);el.style.transform=q>=1?'none':`translate(${bx-sx*W/2-L}px,${by-sy*H-T}px) scale(${sx},${sy})`;
+    if(p<1)requestAnimationFrame(fr);else end&&end()};requestAnimationFrame(fr)}
+function tmGenie(open){const pp=$('#tmPop');pp.classList.add('gen');tmPopAnim(pp,open,open?300:200,()=>{pp.style.opacity=open?'':0;if(!open&&!tm.open)$('#town3').hidden=true;if(open)pp.style.transform='none';if(open)pp.classList.remove('gen')})}
 function sheetGenie(open,t){const sh=$('#sheet'),btn=$(t==='pet'?'#dkPet':'#dkMenu');sh.classList.add('gen');
   genie(sh,btn,open,open?300:210,()=>{sh.style.transition='none';sh.classList.remove('gen');sh.style.transform='';sh.style.opacity='';sh.offsetWidth;requestAnimationFrame(()=>{sh.style.transition=''})})}
 function tmClose(){if(!tm||!tm.open)return;tm.open=false;const el=$('#town3');try{tm.R.render(tm.sc,tm.cam);tmSnapNow()}catch(_){}tmGenie(false);el.classList.remove('on');setTimeout(()=>{if(!tm.open)el.hidden=true},1500);$('#tmCard').hidden=true;clock.getDelta()}
