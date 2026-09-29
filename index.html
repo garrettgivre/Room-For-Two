@@ -556,9 +556,15 @@ body.away .tag{visibility:hidden}
 .sandbar .gel{width:auto;min-height:32px;padding:0 11px;font-size:13px}
 .storebar[hidden]{display:none}.storebar img{width:30px;height:30px;flex:none}.storebar b{font-family:var(--disp);font-weight:400;font-size:15px;color:var(--sc);text-shadow:1.5px 0 var(--ink),-1.5px 0 var(--ink),0 1.5px var(--ink),0 -1.5px var(--ink);white-space:nowrap}
 .storebar .gel{width:auto;min-height:34px;padding:0 12px;font-size:13px}
-.kbub{position:fixed;z-index:6;transform:translate(-50%,-100%);width:max-content;max-width:190px;padding:8px 12px 9px;background:#fff;border:3px solid var(--ink);border-radius:18px 16px 18px 14px;box-shadow:0 4px 0 var(--ink);
-  font-family:var(--disp);font-size:13.5px;line-height:1.25;color:var(--ink);text-align:center;pointer-events:none}
-.kbub::after{content:"";position:absolute;left:50%;bottom:-12px;width:16px;height:12px;background:#fff;border:3px solid var(--ink);border-top:0;border-left:0;transform:translateX(-50%) skewX(30deg)}
+.kbub{position:fixed;left:0;top:0;z-index:6;width:max-content;max-width:min(230px,64vw);padding:10px 14px 11px;background:#fff;border:3px solid var(--ink);border-radius:20px 18px 21px 17px;box-shadow:0 4px 0 var(--ink);
+  font-family:var(--disp);font-size:14px;line-height:1.3;color:var(--ink);text-align:left;pointer-events:auto;cursor:pointer;-webkit-tap-highlight-color:transparent;transform-origin:var(--ox,50%) var(--oy,100%)}
+.kbub .kn{position:absolute;top:-15px;left:12px;padding:1px 9px 2px;border-radius:10px 9px 11px 8px;background:var(--kc,#FF8A1C);border:2.5px solid var(--ink);color:#fff;font-size:12px;line-height:1.2;white-space:nowrap;text-shadow:1.5px 0 var(--ink),-1.5px 0 var(--ink),0 1.5px var(--ink),0 -1.5px var(--ink)}
+.kbub .kn+.kt{display:block;margin-top:3px}.kbub .off{visibility:hidden}
+.kbub .tl{position:absolute;width:14px;height:14px;background:#fff;border:3px solid var(--ink);border-top:0;border-left:0}
+.kbub[data-side=t] .tl{bottom:-9px;transform:translateX(-50%) rotate(45deg)}.kbub[data-side=b] .tl{top:-9px;transform:translateX(-50%) rotate(225deg)}
+.kbub[data-side=r] .tl{left:-9px;transform:translateY(-50%) rotate(135deg)}.kbub[data-side=l] .tl{right:-9px;transform:translateY(-50%) rotate(-45deg)}
+.kbub.more .kt::after{content:'';display:inline-block;margin-left:6px;border:5px solid transparent;border-left:7px solid var(--pink);border-right:0;animation:kmore .8s ease-in-out infinite}
+@keyframes kmore{50%{transform:translateX(3px)}}
 .sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:14px 10px;margin:6px 0 8px}
 .scard{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 4px 7px;background:#fff;border:3px solid var(--ink);border-radius:18px 13px 19px 14px;box-shadow:0 4px 0 var(--ink);color:var(--ink);font:inherit;transition:transform .1s}
 .scard img{width:64px;height:64px;object-fit:contain}.scard img.pat{width:74px;height:42px;margin:11px 0;border-radius:12px;border:2.5px solid var(--ink);object-fit:cover}
@@ -582,7 +588,7 @@ body.away .tag{visibility:hidden}
 .gc-dex{position:absolute;inset:auto 12px calc(env(safe-area-inset-bottom,0px) + 84px);margin:0 auto;max-width:440px;padding:12px;background:var(--paper);border:3px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink)}
 .gc-dex h3{margin:0 0 8px;font-family:var(--disp);font-weight:400;font-size:18px;color:var(--ink)}.gc-dex .dx{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.gc-dex .dx span{aspect-ratio:1;display:grid;place-items:center;background:#fff;border:2.5px solid var(--ink);border-radius:14px;overflow:hidden;font-family:var(--disp);font-size:22px;color:#C9B8E6}.gc-dex .dx img{width:100%;height:100%;object-fit:contain}
 .kbub[hidden]{display:none}.kbub.pop{animation:kpop .35s cubic-bezier(.3,1.8,.5,1)}
-@keyframes kpop{from{transform:translate(-50%,-100%) scale(.4)}}
+@keyframes kpop{from{transform:scale(.3);opacity:0}60%{transform:scale(1.06);opacity:1}to{transform:scale(1)}}
 .shopcard{position:fixed;z-index:10;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 116px);width:min(calc(100% - 20px),420px);padding:14px 14px 12px;background:var(--paper);border:3px solid var(--ink);
   border-radius:26px 20px 28px 18px;box-shadow:0 7px 0 var(--ink),0 7px 0 4px #fff,0 0 0 4px #fff;transform:translate(-50%,130%) rotate(3deg);transition:transform .35s cubic-bezier(.25,1.4,.45,1)}
 .shopcard.on{transform:translate(-50%,0)}.shopcard[hidden]{display:none}
@@ -8015,7 +8021,37 @@ function buildShop(key){const S=SHOPS[key],root=G(),objs=new Map(),items=new Map
   applySold(A);return A}
 const ico=n=>'assets/icons/'+(n.includes('.')?n:n+'.webp');
 function keeperReact(a,d,K){K=K||away&&away.keeper;if(!K)return;K.act=a;K.k=0;K.d=d||1.6}
-let kbT=0;function keeperSay(txt){if(!away||!txt||!$('#game').hidden||gc&&gc.open)return;const el=$('#kbub');el.textContent=txt;el.hidden=false;el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');kbT=3.4}
+// Keeper speech bubble: types out while the keeper talks, stays for a reading time, tap to finish / skip.
+// Each frame it picks a side (above, right, left, below) that keeps clear of the keeper and the HUD, with its tail on the head.
+let kbT=0;const KB={q:[],K:null,txt:'',n:0,side:'',w:0,h:0,x:0,y:0,box:null};
+function keeperSay(txt,K){if(!away||!txt||!$('#game').hidden||gc&&gc.open)return;K=K||away.keeper;if(!K)return;
+  if(kbT>0&&KB.K===K&&KB.n<KB.txt.length&&KB.q.length<2){KB.q.push(txt);$('#kbub').classList.add('more');return}KB.q=[];kbShow(txt,K)}
+function kbShow(txt,K){const el=$('#kbub'),nm=(typeof TM_OWN!=='undefined'&&TM_OWN[K.kind])||K.n||'';KB.K=K;KB.txt=txt;KB.n=0;KB.side='';
+  el.style.setProperty('--kc',(away&&away.def.color)||'#FF8A1C');el.classList.toggle('more',KB.q.length>0);
+  el.innerHTML=`${nm?`<b class="kn">${esc(nm)}</b>`:''}<span class="kt"><span class="on"></span><span class="off">${esc(txt)}</span></span><i class="tl"></i>`;
+  el.hidden=false;el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');KB.w=el.offsetWidth;KB.h=el.offsetHeight;
+  kbT=txt.length/38+Math.min(5,Math.max(2,1.5+txt.length*.035));try{KB.box=new THREE.Box3().setFromObject(K.g)}catch(_){KB.box=null}kbPlace(true)}
+function kbReveal(n){const el=$('#kbub'),on=el.querySelector('.on'),off=el.querySelector('.off');if(!on||on._n===n)return;on._n=n;on.textContent=KB.txt.slice(0,n);off.textContent=KB.txt.slice(n)}
+function kbNext(){const el=$('#kbub');if(KB.n<KB.txt.length){KB.n=KB.txt.length;kbReveal(KB.n);kbT=Math.min(5,Math.max(2,1.5+KB.txt.length*.035));return}
+  if(KB.q.length){kbShow(KB.q.shift(),KB.K);return}kbT=0;el.hidden=true}
+$('#kbub').addEventListener('click',e=>{e.stopPropagation();kbNext()});
+function kbTick(dt){const el=$('#kbub');kbT-=dt;if(KB.n<KB.txt.length){KB.n=Math.min(KB.txt.length,KB.n+dt*38);kbReveal(Math.floor(KB.n))}
+  if(kbT<=0){if(KB.q.length){kbShow(KB.q.shift(),KB.K);return}el.hidden=true;return}kbPlace(false)}
+function kbPlace(snap){const el=$('#kbub'),K=KB.K;if(!K||!K.head)return;const bw=KB.w,bh=KB.h,g=16,m=8;let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;const B=KB.box;
+  K.head.getWorldPosition(_kv);_kv.project(camera);const hx=(_kv.x+1)/2*W,hy=(1-_kv.y)/2*H;
+  if(B&&B.max.x>B.min.x)for(let i=0;i<8;i++){_kv.set(i&1?B.max.x:B.min.x,i&2?B.max.y:B.min.y,i&4?B.max.z:B.min.z).project(camera);const sx=(_kv.x+1)/2*W,sy=(1-_kv.y)/2*H;x0=Math.min(x0,sx);x1=Math.max(x1,sx);y0=Math.min(y0,sy);y1=Math.max(y1,sy)}
+  else{x0=hx-45;x1=hx+45;y0=hy-60;y1=hy+90}
+  // the keeper's box from a steep camera includes its step and floor shadow; the body is mostly the top two thirds
+  y1=y0+(y1-y0)*.7;y0=Math.min(hy-24,y0+(hy-y0)*.35);x0=Math.max(x0,hx-(y1-y0)*.55);x1=Math.min(x1,hx+(y1-y0)*.55);
+  const obs=[];['header.top .brand','header.top .jar','#storebar','#dock','#floorchip','#shopcard'].forEach(q=>{const e=document.querySelector(q);if(e&&!e.hidden){const r=e.getBoundingClientRect();if(r.width&&r.height)obs.push(r)}});if(openTab)obs.push($('#sheet').getBoundingClientRect());
+  const ov=(ax,ay,aw,ah,r)=>Math.max(0,Math.min(ax+aw,r.right)-Math.max(ax,r.left))*Math.max(0,Math.min(ay+ah,r.bottom)-Math.max(ay,r.top));
+  const C=[['t',hx-bw/2,y0-g-bh,0],['r',x1+g,hy-bh*.6,50],['l',x0-g-bw,hy-bh*.6,50],['b',hx-bw/2,y1+g,140]];let best=null;
+  C.forEach(([sd,x,y,pen])=>{if(sd==='t'||sd==='b')x=clamp(x,m,W-m-bw);else y=clamp(y,m,H-m-bh);let p=pen+(sd===KB.side?-25:0);
+    if(x<m||x+bw>W-m||y<m||y+bh>H-m)p+=5000;p+=ov(x,y,bw,bh,{left:x0,right:x1,top:y0,bottom:y1})*.08;obs.forEach(r=>p+=ov(x,y,bw,bh,r)*.05);if(!best||p<best.p)best={sd,x,y,p}});
+  if(!best)return;if(best.sd!==KB.side){KB.side=best.sd;el.dataset.side=best.sd;snap=true}
+  const k=snap?1:.25;KB.x+=(best.x-KB.x)*k;KB.y+=(best.y-KB.y)*k;el.style.left=Math.round(KB.x)+'px';el.style.top=Math.round(KB.y)+'px';
+  const tl=el.querySelector('.tl');if(tl){if(best.sd==='t'||best.sd==='b'){const tx=clamp(hx-KB.x,20,bw-20);tl.style.left=tx+'px';tl.style.top='';el.style.setProperty('--ox',tx+'px');el.style.setProperty('--oy',best.sd==='t'?'100%':'0%')}
+    else{const ty=clamp(hy-KB.y,18,bh-18);tl.style.top=ty+'px';tl.style.left='';el.style.setProperty('--oy',ty+'px');el.style.setProperty('--ox',best.sd==='r'?'0%':'100%')}}}
 const _kv=new THREE.Vector3();
 // Merge a keeper's static meshes to cut draw calls (each mesh is drawn up to three times: colour, outline, shadow).
 // Sibling meshes that share a material and outline and never move on their own become one mesh. Which meshes move is found
@@ -8092,11 +8128,11 @@ function keeperChat(dt){const KA=away.keepers;if(KA.length<2)return null;const C
   if(C.on>0){C.on-=dt;C.st-=dt;if(C.st<0){C.sp=1-C.sp;C.st=1+Math.random()*1.4}if(C.on<=0||busy){C.on=0;C.t=16+Math.random()*18;if(!busy)KA.forEach(k=>{if(k.anim){k.anim.k='laugh';k.anim.p=0}})}}
   else if(!busy){C.t-=dt;if(C.t<0){C.on=5+Math.random()*4;C.sp=Math.random()<.5?0:1;C.st=1.2}}
   return C.on>0?C:null}
-function updShop(dt,t){const CH=keeperChat(dt);away.keepers.forEach((K,i)=>{K.k+=dt;if(K.act!=='idle'&&K.k>=K.d)K.act='idle';const chat=!!CH,speak=chat&&CH.sp===i,talking=kbT>0&&K===away.keeper||speak;
-    const Z=keeperGaze(K,dt,(kbT>0&&K===away.keeper)||K.act!=='idle');if(chat){Z.mode='partner';Z.other=away.keepers[1-i];Z.t=.3}const o=Z.mode==='partner'&&Z.other?Z.other.g.position:pet.pos;
+function updShop(dt,t){const CH=keeperChat(dt);away.keepers.forEach((K,i)=>{K.k+=dt;if(K.act!=='idle'&&K.k>=K.d)K.act='idle';const chat=!!CH,speak=chat&&CH.sp===i,talking=kbT>0&&K===KB.K&&KB.n<KB.txt.length+3||speak;
+    const Z=keeperGaze(K,dt,(kbT>0&&K===KB.K)||K.act!=='idle');if(chat){Z.mode='partner';Z.other=away.keepers[1-i];Z.t=.3}const o=Z.mode==='partner'&&Z.other?Z.other.g.position:pet.pos;
     const a=Math.atan2(o.x-K.g.position.x,o.z-K.g.position.z);K.g.rotation.y=approach(K.g.rotation.y,clamp(a,-1.3,1.3)*(chat?.85:Z.mode==='partner'?.55:.6),dt*3);
   K.upd(dt,t,K.act,K.act==='idle'?0:K.k/K.d,talking);keeperLayer(K,dt,t,talking,chat&&!speak)});const K=away.keeper;
-  if(kbT>0){kbT-=dt;K.head.getWorldPosition(_kv);_kv.y+=.55;_kv.project(camera);const el=$('#kbub');el.style.left=clamp((_kv.x+1)/2*W,104,W-104)+'px';el.style.top=((1-_kv.y)/2*H)+'px';if(kbT<=0)el.hidden=true}}
+  if(kbT>0)kbTick(dt)}
 
 /* --- going places --- */
 function openDoor(){if(traveling)return;doorTarget=1;setTab(null);if(pet.stage>0&&pet.mode!=='toy'&&!toyPlay){endUse(false);pet.act=null;pet.seat=null;petGo(doorFront())}setTimeout(()=>showMap(),350)}
@@ -10719,7 +10755,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=34;
+const APP_V=35;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
@@ -10741,7 +10777,7 @@ if('serviceWorker' in navigator&&window.isSecureContext)window.addEventListener(
 setInterval(()=>{if(ready){updHUD();wishTick()}const ae=document.activeElement;if(openTab==='pet'&&!(ae&&ae.matches&&ae.matches('input')))renderSheet()},15000);
 
 /* ================= LOOP ================= */
-let skyTick=0;const clock=new THREE.Clock();let tAcc=0,fpsN=0,fpsT=0;const tmp=new THREE.Vector3();
+let skyTick=0;window.__T={get state(){return state},f:c=>eval(c)};const clock=new THREE.Clock();let tAcc=0,fpsN=0,fpsT=0;const tmp=new THREE.Vector3();
 function loop(){requestAnimationFrame(loop);const raw=clock.getDelta(),dt=Math.min(raw,.05);if(gm&&!$('#game').hidden)return;if(gc&&gc.open)return;if(tm&&tm.open)return;tAcc+=dt;fpsN++;fpsT+=raw;frameIM=away?null:new Map(state.items.map(i=>[i.id,i]));if(fpsT>1){fps=Math.round(fpsN/fpsT);fpsN=0;fpsT=0;if(openTab==='debug')updDbgInfo()}updCam();
   if(away&&away.plan){walls.forEach(w=>{w.g.visible=false});updPlan()}else walls.forEach((w,i)=>{const d=WALLDEF[i];w.g.visible=(camera.position.x-d.c[0])*d.n[0]+(camera.position.z-d.c[1])*d.n[1]>2.5});updArch();
   roomObjs().forEach(o=>{const it=roomItem(o.userData.id);if(it&&defOf(it.k).wall)o.visible=away&&away.plan?(it.cls==null||!!(away.tall&&away.tall[it.cls])):walls[it.w||0].g.visible;if(o.userData.anim)o.userData.anim(tAcc)});
