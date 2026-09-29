@@ -705,7 +705,36 @@ body.away .tag{visibility:hidden}
 /* ---------- HUD (Sept 2026): a small logo, the heart jar, and one dock: Pet · Explore · Menu ---------- */
 .logo img{width:min(30vw,124px)}
 .storechip{margin:6px 0 0 4px;display:flex;align-items:center;gap:6px;padding:4px 11px 4px 6px;background:#fff;border:2.5px solid var(--ink);border-radius:14px 11px 15px 12px;box-shadow:var(--stk);transform:rotate(-2deg)}
-.storechip.logo{background:none;border:0;box-shadow:none;padding:0;margin-top:2px}.storechip.logo img{width:auto;height:70px;filter:drop-shadow(0 2px 3px rgba(59,18,115,.35))}.storechip.logo b{display:none}.storechip[hidden]{display:none}.storechip img{width:26px;height:26px;flex:none}
+.storechip.logo{background:none;border:0;box-shadow:none;padding:0;margin-top:2px}.storechip.logo img{width:auto;height:70px;filter:drop-shadow(0 2px 3px rgba(59,18,115,.35))}.storechip.logo b{display:none}.storechip[hidden]{display:none}
+body.away .brand>h1.logo{display:none}body.away .storechip.logo{margin:0;transform:rotate(-2deg)}body.away .storechip.logo img{height:92px}
+body.kmode .kbub{z-index:9}body.kmode .top,body.kmode .dock,body.kmode #followPill,body.kmode #centerPill,body.kmode #emotes{opacity:0!important;pointer-events:none!important;transition:opacity .25s}
+.kpanel{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:8;margin:0 auto;width:calc(100% - 20px);max-width:460px;padding:12px 14px 16px;box-sizing:border-box;overflow:hidden;
+  background:radial-gradient(rgba(27,16,48,.07) 1.3px,transparent 1.8px) 0 0/12px 12px,var(--paper);border:3px solid var(--ink);border-radius:28px 22px 30px 20px;box-shadow:0 7px 0 var(--ink),0 7px 0 4px #fff,0 0 0 4px #fff;
+  transform:translateY(calc(100% + 40px));transition:transform .4s cubic-bezier(.25,1.35,.45,1)}
+.kpanel.on{transform:none}.kpanel[hidden]{display:none}
+.kp-h{display:flex;align-items:center;gap:10px;margin-bottom:10px}.kp-who{flex:1;min-width:0}.kp-who b{display:block;font-family:var(--disp);font-weight:400;font-size:22px;line-height:1.05;color:var(--kc,var(--pink));text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink),1.5px 1.5px var(--ink),-1.5px 1.5px var(--ink),1.5px -1.5px var(--ink),-1.5px -1.5px var(--ink)}
+.kp-who small{font-family:var(--disp);font-size:12px;color:#6B4E95}
+.kp-back{flex:none;width:40px;height:40px;border-radius:50%;border:3px solid var(--ink);background:#fff;color:var(--ink);display:grid;place-items:center;box-shadow:0 3px 0 var(--ink);cursor:pointer;padding:0}.kp-back svg{width:20px;height:20px}
+.kp-f{display:flex;flex-direction:column;align-items:flex-end;gap:1px}.kp-f span{display:flex;gap:1px}.kp-f svg{width:15px;height:15px}.kp-f small{font-family:var(--disp);font-size:10.5px;color:#6B4E95;white-space:nowrap}
+.kp-f.pulse span{animation:kfp .6s ease-out}@keyframes kfp{40%{transform:scale(1.35)}}
+.kp-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kp-a{display:flex;align-items:center;gap:10px;min-height:64px;padding:8px 12px 8px 8px;border:3px solid var(--ink);border-radius:20px 16px 22px 15px;background:#fff;box-shadow:0 4px 0 var(--ink);text-align:left;cursor:pointer;color:var(--ink);-webkit-tap-highlight-color:transparent}
+.kp-a:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}.kp-a.wide{grid-column:1/-1}
+.kp-a i{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--ac,#FFD6EA);border:2.5px solid var(--ink)}.kp-a i svg{width:26px;height:26px}
+.kp-a b{display:block;font-family:var(--disp);font-weight:400;font-size:16px;line-height:1.1}.kp-a small{display:block;font-size:11.5px;font-weight:700;color:#6B4E95;margin-top:2px}
+.kp-topics{display:flex;flex-direction:column;align-items:flex-end;gap:8px;max-height:min(38vh,300px);overflow:auto;padding:2px 2px 6px}
+.kp-t{position:relative;max-width:88%;padding:9px 14px 10px;border:3px solid var(--ink);border-radius:18px 18px 6px 18px;background:var(--tc,#E3D4FF);box-shadow:0 3px 0 var(--ink);font-family:var(--disp);font-size:14.5px;color:var(--ink);text-align:right;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.kp-t:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}.kp-t.bye{--tc:#fff}.kp-t .new{display:inline-block;margin-right:6px;padding:0 6px;border-radius:8px;background:var(--pink);color:#fff;font-size:11px;border:2px solid var(--ink);vertical-align:1px}
+.kp-hint{font-family:var(--disp);font-size:12px;color:#6B4E95;margin:0 0 8px;text-align:left}
+.sheet.kshop{bottom:calc(env(safe-area-inset-bottom,0px) + 10px);height:min(64vh,640px);max-height:none;max-width:520px}
+.kc-h{display:flex;align-items:center;gap:10px;margin:0 0 4px}.kc-h h2{margin:2px 0 4px}.kc-h .stage{margin-left:auto}
+.kc-s{font-family:var(--disp);font-size:13px;color:#6B4E95;margin:12px 0 6px}
+.kc-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:10px}
+.kc-c{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 6px 9px;border:3px solid var(--ink);border-radius:18px 14px 19px 13px;background:#fff;box-shadow:0 3px 0 var(--ink);cursor:pointer;color:var(--ink);-webkit-tap-highlight-color:transparent}
+.kc-c:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}.kc-c img{width:64px;height:64px;object-fit:contain}.kc-c b{font-family:var(--disp);font-weight:400;font-size:12.5px;line-height:1.15;text-align:center}
+.kc-c .pr{display:inline-flex;align-items:center;gap:2px;font-family:var(--disp);font-size:13px;color:var(--pink)}.kc-c .pr img{width:15px;height:15px}.kc-c .hv{position:absolute;top:-8px;right:-6px;padding:0 6px;border-radius:9px;background:var(--lime);border:2px solid var(--ink);font-family:var(--disp);font-size:11px}
+.kc-c .gi{width:64px;height:64px;border-radius:16px;display:grid;place-items:center;background:var(--gc);border:2.5px solid var(--ink)}.kc-c .gi svg{width:36px;height:36px}
+@media (min-height:760px){.kpanel{padding-bottom:20px}}.storechip img{width:26px;height:26px;flex:none}
 .storechip b{font-family:var(--disp);font-weight:400;font-size:14px;color:var(--sc);text-shadow:1.5px 0 var(--ink),-1.5px 0 var(--ink),0 1.5px var(--ink),0 -1.5px var(--ink);white-space:nowrap}
 body.styling .storechip{opacity:0}
 .dock{position:fixed;left:0;right:0;bottom:0;z-index:9;display:flex;justify-content:center;align-items:flex-end;gap:22px;padding:0 14px calc(env(safe-area-inset-bottom,0px) + 10px);pointer-events:none}
@@ -827,7 +856,7 @@ body.styling .storechip{opacity:0}
 <span id="presence" hidden>Opening your room</span>
 
 <div class="sandbar" id="sandbar" hidden title="Everything unlocked. Nothing saves."><b>Sandbox</b><button class="gel lilac" id="sandX">Exit</button></div>
-<div class="kbub" id="kbub" hidden></div>
+<div class="kbub" id="kbub" hidden></div><div class="kpanel" id="kpanel" hidden role="dialog" aria-label="Shopkeeper"></div>
 <div class="shopcard" id="shopcard" hidden></div>
 <div class="map" id="map" hidden><div class="map-card" role="dialog" aria-label="Town map">
   <button class="map-x" id="mapX" aria-label="Close map">×</button><h2 id="mapTitle">Where to?</h2><button class="gel pink map-home" id="mapHome" hidden><img src="assets/icons/tab-room.webp" alt="" width="30" height="30">Go home</button>
@@ -1956,7 +1985,7 @@ function defaultState(){
       {id:uid(),k:'poster',w:3,u:.6,y:1.9,c:8}
     ],
     pet:{name:'Mochi',color:0,xp:65,t:now,pers:null,s:{hunger:80,fun:80,energy:80,clean:80,affection:40}},wear:[],td:{},arc:{best:{},plays:0},
-    feed:[],journal:[],inbox:[],jrT:0,ibT:0,visits:{},inv:{onigiri:0,cookie:2,fizzmelon:1,wipes:1},toys:['frisbee'],daily:{}};
+    feed:[],journal:[],inbox:[],jrT:0,ibT:0,kf:{},visits:{},inv:{onigiri:0,cookie:2,fizzmelon:1,wipes:1},toys:['frisbee'],daily:{}};
 }
 let state=defaultState();
 const RATES={hunger:6,fun:5,energy:4,clean:3};
@@ -6950,7 +6979,7 @@ function keeperGaze(K,dt,talk){const Z=K.g.userData.gaze||(K.g.userData.gaze={mo
   if(Z.t<0||(talk&&Z.mode!=='pet')){const other=away.keepers.length>1?away.keepers.find(q=>q!==K):null,r=Math.random();
     Z.mode=talk?'pet':other&&r<.22?'partner':r<.7?'pet':'glance';Z.other=other;Z.t=Z.mode==='glance'?.7+Math.random()*1.3:Z.mode==='partner'?1.3+Math.random()*1.4:2+Math.random()*3.5;
     Z.look=[(Math.random()-.5)*1.1,(Math.random()-.3)*.5]}
-  if(Z.mode==='partner'&&Z.other){Z.other.head.getWorldPosition(Z.pt);Z.pt.y-=.1}else if(pet.group){pet.group.getWorldPosition(Z.pt);Z.pt.y+=(pet.head||1)*.7}
+  if(kmode&&kmode.K===K){Z.mode='cam';Z.pt.copy(camera.position)}else if(Z.mode==='partner'&&Z.other){Z.other.head.getWorldPosition(Z.pt);Z.pt.y-=.1}else if(pet.group){pet.group.getWorldPosition(Z.pt);Z.pt.y+=(pet.head||1)*.7}
   return Z}
 function gazeAngles(o,S){if(S.root===undefined){let r=o;while(r&&!(r.userData&&r.userData.keeper))r=r.parent;S.root=r||null}const Z=S.root&&S.root.userData.gaze;if(!Z)return null;
   if(Z.mode==='glance')return Z.look;const d=camLocal(o,Z.pt);return[clamp(Math.atan2(d[0],d[2]),-.6,.6),clamp(Math.atan2(d[1],d[2]),-.45,.45)]}
@@ -8032,7 +8061,7 @@ function kbShow(txt,K){const el=$('#kbub'),nm=(typeof TM_OWN!=='undefined'&&TM_O
   el.hidden=false;el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');KB.w=el.offsetWidth;KB.h=el.offsetHeight;
   kbT=txt.length/38+Math.min(5,Math.max(2,1.5+txt.length*.035));try{KB.box=new THREE.Box3().setFromObject(K.g)}catch(_){KB.box=null}kbPlace(true)}
 function kbReveal(n){const el=$('#kbub'),on=el.querySelector('.on'),off=el.querySelector('.off');if(!on||on._n===n)return;on._n=n;on.textContent=KB.txt.slice(0,n);off.textContent=KB.txt.slice(n)}
-function kbNext(){const el=$('#kbub');if(KB.n<KB.txt.length){KB.n=KB.txt.length;kbReveal(KB.n);kbT=Math.min(5,Math.max(2,1.5+KB.txt.length*.035));return}
+function kbNext(){const el=$('#kbub');if(KB.n<KB.txt.length){KB.n=KB.txt.length;kbReveal(KB.n);if(!(kmode&&kmode.view==='reply'))kbT=Math.min(5,Math.max(2,1.5+KB.txt.length*.035));return}if(kmode&&kmode.view==='reply')return;
   if(KB.q.length){kbShow(KB.q.shift(),KB.K);return}kbT=0;el.hidden=true}
 $('#kbub').addEventListener('click',e=>{e.stopPropagation();kbNext()});
 function kbTick(dt){const el=$('#kbub');kbT-=dt;if(KB.n<KB.txt.length){KB.n=Math.min(KB.txt.length,KB.n+dt*38);kbReveal(Math.floor(KB.n))}
@@ -8043,11 +8072,11 @@ function kbPlace(snap){const el=$('#kbub'),K=KB.K;if(!K||!K.head)return;const bw
   else{x0=hx-45;x1=hx+45;y0=hy-60;y1=hy+90}
   // the keeper's box from a steep camera includes its step and floor shadow; the body is mostly the top two thirds
   y1=y0+(y1-y0)*.7;y0=Math.min(hy-24,y0+(hy-y0)*.35);x0=Math.max(x0,hx-(y1-y0)*.55);x1=Math.min(x1,hx+(y1-y0)*.55);
-  const obs=[];['header.top .brand','header.top .jar','#storebar','#dock','#floorchip','#shopcard'].forEach(q=>{const e=document.querySelector(q);if(e&&!e.hidden){const r=e.getBoundingClientRect();if(r.width&&r.height)obs.push(r)}});if(openTab)obs.push($('#sheet').getBoundingClientRect());
+  const obs=[];['header.top .brand','header.top .jar','#storebar','#dock','#floorchip','#shopcard','#kpanel'].forEach(q=>{const e=document.querySelector(q);if(e&&!e.hidden){const r=e.getBoundingClientRect();if(r.width&&r.height)obs.push(r)}});if(openTab)obs.push($('#sheet').getBoundingClientRect());
   const ov=(ax,ay,aw,ah,r)=>Math.max(0,Math.min(ax+aw,r.right)-Math.max(ax,r.left))*Math.max(0,Math.min(ay+ah,r.bottom)-Math.max(ay,r.top));
   const C=[['t',hx-bw/2,y0-g-bh,0],['r',x1+g,hy-bh*.6,50],['l',x0-g-bw,hy-bh*.6,50],['b',hx-bw/2,y1+g,140]];let best=null;
-  C.forEach(([sd,x,y,pen])=>{if(sd==='t'||sd==='b')x=clamp(x,m,W-m-bw);else y=clamp(y,m,H-m-bh);let p=pen+(sd===KB.side?-25:0);
-    if(x<m||x+bw>W-m||y<m||y+bh>H-m)p+=5000;p+=ov(x,y,bw,bh,{left:x0,right:x1,top:y0,bottom:y1})*.08;obs.forEach(r=>p+=ov(x,y,bw,bh,r)*.05);if(!best||p<best.p)best={sd,x,y,p}});
+  C.forEach(([sd,x,y,pen])=>{if(sd==='t'||sd==='b')x=clamp(x,m,W-m-bw);else y=clamp(y,m,H-m-bh);if(sd==='t'&&y<m)y=m;let p=pen+(sd===KB.side?-25:0);
+    if(x<m||x+bw>W-m||y<m||y+bh>H-m)p+=5000;const ksh=kmode&&kmode.view==='shop';p+=ov(x,y,bw,bh,{left:x0,right:x1,top:y0,bottom:y1})*(ksh?.012:.08);obs.forEach(r=>p+=ov(x,y,bw,bh,r)*(ksh?.3:.05));if(!best||p<best.p)best={sd,x,y,p}});
   if(!best)return;if(best.sd!==KB.side){KB.side=best.sd;el.dataset.side=best.sd;snap=true}
   const k=snap?1:.25;KB.x+=(best.x-KB.x)*k;KB.y+=(best.y-KB.y)*k;el.style.left=Math.round(KB.x)+'px';el.style.top=Math.round(KB.y)+'px';
   const tl=el.querySelector('.tl');if(tl){if(best.sd==='t'||best.sd==='b'){const tx=clamp(hx-KB.x,20,bw-20);tl.style.left=tx+'px';tl.style.top='';el.style.setProperty('--ox',tx+'px');el.style.setProperty('--oy',best.sd==='t'?'100%':'0%')}
@@ -8124,13 +8153,13 @@ function keeperLayer(K,dt,t,talk,listen){const L=K.layer;if(!L)return;const A=K.
 // Two keepers in a shop (Pom and Blush) chat now and then: they turn to each other and take turns talking while the other
 // nods along, and finish with a little laugh. Anything the player does ends it.
 function keeperChat(dt){const KA=away.keepers;if(KA.length<2)return null;const C=away.chat||(away.chat={t:10+Math.random()*10,on:0,sp:0,st:0});
-  const busy=kbT>0||KA.some(k=>k.act!=='idle');
+  const busy=kbT>0||!!kmode||KA.some(k=>k.act!=='idle');
   if(C.on>0){C.on-=dt;C.st-=dt;if(C.st<0){C.sp=1-C.sp;C.st=1+Math.random()*1.4}if(C.on<=0||busy){C.on=0;C.t=16+Math.random()*18;if(!busy)KA.forEach(k=>{if(k.anim){k.anim.k='laugh';k.anim.p=0}})}}
   else if(!busy){C.t-=dt;if(C.t<0){C.on=5+Math.random()*4;C.sp=Math.random()<.5?0:1;C.st=1.2}}
   return C.on>0?C:null}
 function updShop(dt,t){const CH=keeperChat(dt);away.keepers.forEach((K,i)=>{K.k+=dt;if(K.act!=='idle'&&K.k>=K.d)K.act='idle';const chat=!!CH,speak=chat&&CH.sp===i,talking=kbT>0&&K===KB.K&&KB.n<KB.txt.length+3||speak;
-    const Z=keeperGaze(K,dt,(kbT>0&&K===KB.K)||K.act!=='idle');if(chat){Z.mode='partner';Z.other=away.keepers[1-i];Z.t=.3}const o=Z.mode==='partner'&&Z.other?Z.other.g.position:pet.pos;
-    const a=Math.atan2(o.x-K.g.position.x,o.z-K.g.position.z);K.g.rotation.y=approach(K.g.rotation.y,clamp(a,-1.3,1.3)*(chat?.85:Z.mode==='partner'?.55:.6),dt*3);
+    const Z=keeperGaze(K,dt,(kbT>0&&K===KB.K)||K.act!=='idle');if(chat){Z.mode='partner';Z.other=away.keepers[1-i];Z.t=.3}const kc=kmode&&kmode.K===K,o=kc?camera.position:Z.mode==='partner'&&Z.other?Z.other.g.position:pet.pos;
+    const a=Math.atan2(o.x-K.g.position.x,o.z-K.g.position.z);K.g.rotation.y=approach(K.g.rotation.y,clamp(a,-1.3,1.3)*(kc?.9:chat?.85:Z.mode==='partner'?.55:.6),dt*3);
   K.upd(dt,t,K.act,K.act==='idle'?0:K.k/K.d,talking);keeperLayer(K,dt,t,talking,chat&&!speak)});const K=away.keeper;
   if(kbT>0)kbTick(dt)}
 
@@ -8604,10 +8633,10 @@ function travelTo(dest,then,focus){if(traveling)return;const here=away?away.key:
     endToyPlay(true);endUse(false);pet.act=null;pet.seat=null;pet.seatY=0;pet.path=null;pet.target=null;pet.mode='idle';pet.timer=2.5;const f=doorFront();pet.pos.copy(f);petFree();pet.heading=Math.PI/2;
     doorOpen=doorTarget=1;cam.target.set(0,.8,0);cam.panT.set(0,0,0);cam.pan.set(0,0,0);updCenterPill();updStoreBar();if(away)td('visit:'+dest);
     setTimeout(()=>{tv.classList.remove('on');setTimeout(()=>{tv.hidden=true},400);if(pet.stage>0)petGo(f.clone().add(new THREE.Vector3(1.3,0,-.4)));setTimeout(()=>{doorTarget=0},1100);
-      if(away){keeperReact('greet',2.4);setTimeout(()=>away&&keeperSay(pick1(away.keeper.lines.hi)),500);if(!focus)setTimeout(()=>toast(away&&away.key==='glam'?'Tap Pom for new antennae, or Blush for colours and patterns.':away&&away.key==='wear'?'Tap anything on display to try it on. Stitch runs the fitting room.':away&&away.key==='arcade'?'Tap a cabinet to play. Scores go on the board!':away&&away.key==='furn'?'Tap any piece on the floor, or the catalog, to shop.':away&&away.key==='build'?'Tap paint cans, samples and doors, or the catalog.':'Tap anything on the shelves to shop.'),4300);if(focus)setTimeout(()=>typeof focus==='function'?openOffer(focus):openProduct(focus),1400)}
+      if(away){keeperReact('greet',2.4);setTimeout(()=>away&&keeperSay(pick1(away.keeper.lines.hi)),500);if(!focus)setTimeout(()=>toast(away?(away.keepers.length>1?`Tap ${away.keepers.map(K=>KBIB[K.kind]?KBIB[K.kind].n:K.n).join(' or ')} to chat or book.`:away.keeper&&KBIB[away.keeper.kind]?`Tap ${KBIB[away.keeper.kind].n} to chat or shop. Or tap anything on display.`:''):''),4300);if(focus)setTimeout(()=>typeof focus==='function'?openOffer(focus):openProduct(focus),1400)}
       traveling=false;then&&then()},250)},650)}
 const SHOP_LOGO=new Set(['snack','salon','toys','furn','build','glam','wear','arcade']),shopLogo=k=>'assets/logos/'+k+'.webp';
-function updStoreBar(){const b=$('#storebar');b.hidden=!away;document.body.classList.toggle('away',!!away);$('#kbub').hidden=true;kbT=0;if(!away)return;const lg=SHOP_LOGO.has(away.key);b.classList.toggle('logo',lg);$('#sbIcon').src=lg?shopLogo(away.key):ico(away.def.icon);$('#sbName').textContent=away.def.n;b.style.setProperty('--sc',away.def.color)}
+function updStoreBar(){if(kmode&&!away){kmode=null;document.body.classList.remove('kmode');$('#kpanel').hidden=true;$('#kpanel').classList.remove('on');$('#sheet').classList.remove('kshop')}const b=$('#storebar');b.hidden=!away;document.body.classList.toggle('away',!!away);$('#kbub').hidden=true;kbT=0;if(!away)return;const lg=SHOP_LOGO.has(away.key);b.classList.toggle('logo',lg);$('#sbIcon').src=lg?shopLogo(away.key):ico(away.def.icon);$('#sbName').textContent=away.def.n;b.style.setProperty('--sc',away.def.color)}
 
 /* --- shopping --- */
 // An offer is anything for sale: {title, sub, desc, price, deal, thumb, have, canBuy, buy(), hop}. Cards are opened with a
@@ -8677,7 +8706,7 @@ function openOffer(fn){const O=fn();cardFn=fn;const c=$('#shopcard');
 function openProduct(id){openOffer(()=>offerItem(id))}
 function closeProduct(){endWearPrev();const c=$('#shopcard');c.classList.remove('on');requestAnimationFrame(fitSheet);setTimeout(()=>{if(!c.classList.contains('on'))c.hidden=true},250);cardFn=null}
 function buyOffer(){if(!cardFn||!away)return;const O=cardFn();if(!O.canBuy)return;if(state.hearts<O.price){keeperSay(pick1(away.keeper.lines.poor));return}
-  state.hearts-=O.price;O.buy();logEvent(`bought ${O.title.toLowerCase()} at ${away.def.n}`);td('buy');td('buy:'+away.key);resThanks(away.key);if(Math.random()<.4)jrEvent('shop',{s:away.def.n});saveSoon();updHUD();keeperReact('cheer',1.4);keeperSay(pick1(away.keeper.lines.buy));pet.happyT=1;setTimeout(()=>emote('💗'),300);
+  state.hearts-=O.price;O.buy();if(away.keeper&&away.keeper.kind)kfAdd(away.keeper.kind,1);logEvent(`bought ${O.title.toLowerCase()} at ${away.def.n}`);td('buy');td('buy:'+away.key);resThanks(away.key);if(Math.random()<.4)jrEvent('shop',{s:away.def.n});saveSoon();updHUD();keeperReact('cheer',1.4);keeperSay(pick1(away.keeper.lines.buy));pet.happyT=1;setTimeout(()=>emote('💗'),300);
   {let tgt=tapObj&&tapObj.parent&&!tapObj.userData.sold&&saleMatch(tapObj,O)?tapObj:null;if(!tgt)away.root.traverse(h=>{if(!tgt&&visDeep(h)&&!h.userData.sold&&saleMatch(h,O))tgt=h});if(tgt)soldOut(tgt);tapObj=null}
   if(openTab==='shopcat')renderSheet();openOffer(cardFn)}
 // Things you don't own yet send you to the shop that has them
@@ -8703,7 +8732,7 @@ function renderBuildCat(body){if(!away||away.key!=='build'){setTab(null);return}
 function townHit(x,y){setRay(x,y);const list=[doorG,pet.group];if(away)list.push(away.root);const hits=ray.intersectObjects(list,true);
   for(const h of hits){if(!visDeep(h.object))continue;for(let q=h.object;q;q=q.parent)if(q.userData&&q.userData.locked)return{staff:1};let o=h.object;while(o){if(o.userData.pet)return null;if(o.userData.door)return{door:1};if(o.userData.stairs||o.userData.elev)return{stairs:1};if(o.userData.staff)return{staff:1};if(o.userData.game)return{game:o.userData.game};if(o.userData.product){tapObj=o;return{product:o.userData.product}}if(o.userData.offer){tapObj=o;return{offer:o.userData.offer}}if(o.userData.catalog)return{catalog:1};if(o.userData.gacha)return{gacha:1};if(o.userData.svc)return{svc:o.userData.svc};if(o.userData.keeper)return{keeper:o.userData.keeper};o=o.parent}if(away)continue;return null}return null}
 function townTap(h){if(h.stairs){setLevel(away.level?0:1);return}if(h.staff){staffTap();return}if(h.game){openGame(h.game);return}if(h.gacha){openGacha();return}if(h.door)openDoor();else if(h.product)openProduct(h.product);else if(h.offer){if(h.offer.t==='wear'&&!ownsWear(h.offer.k))openWearOffer(h.offer.k);else openOffer(makeOffer(h.offer))}else if(h.catalog){closeProduct();setTab(away.key==='wear'?'wardrobe':'shopcat')}else if(h.svc)openService(h.svc.k,h.svc.style);
-  else if(h.keeper){const K=away.keepers[h.keeper-1]||away.keeper;away.keeper=K;if(K.svc){openService(K.svc);return}keeperReact('greet',1.8);const L=K.lines,P=persOf(),r=Math.random();keeperSay(r<.4&&L.tip(P)||pick1(L.hi))}}
+  else if(h.keeper){const K=away.keepers[h.keeper-1]||away.keeper;if(kmode){if(kmode.K===K){keeperReact('greet',1.2,K);kSay('mood')}return}away.keeper=K;kOpen(K)}}
 
 /* ================= SCENE SYNC ================= */
 const itemObjs=new Map();
@@ -8773,12 +8802,14 @@ function updCam(){
   const sty=styling(),fp=(openTab==='pet'||toyPlay)&&pet.stage>0,pp=pet.group.position,dt=1/60;
   if(sty!==document.body.classList.contains('styling')){document.body.classList.toggle('styling',sty);requestAnimationFrame(fitSheet)}
   cam.sk=(cam.sk||0)+((sty?1:0)-(cam.sk||0))*.07;cam.sz=cam.sz||1;if(!camFollow&&cam.dist<9)cam.dist+=(9-cam.dist)*.08;
+  const km=kmode&&away&&kmode.K&&kmode.K.head?kmode:null;cam.kk=(cam.kk||0)+((km?1:0)-(cam.kk||0))*.08;
   let tx=away&&away.cc?away.cc[0]:0,tz=away&&away.cc?away.cc[1]:0,ty=.8;if(sty||camFollow){tx=pp.x;tz=pp.z;ty=Math.max(.8,(pet.head||1.4)*(sty?.5:.45))}else if(fp){tx=pp.x*.75;tz=pp.z*.75}
-  const k=camSnap>0?.16:sty?.1:.06;camSnap=Math.max(0,camSnap-dt);cam.target.x+=(tx-cam.target.x)*k;cam.target.z+=(tz-cam.target.z)*k;cam.target.y+=(ty-cam.target.y)*k;
+  if(km){km.K.head.getWorldPosition(_kh);tx=_kh.x;tz=_kh.z;ty=km.y0+km.hk*(km.view==='shop'?.64:.7)}
+  const k=camSnap>0?.16:sty?.1:km?.12:.06;camSnap=Math.max(0,camSnap-dt);cam.target.x+=(tx-cam.target.x)*k;cam.target.z+=(tz-cam.target.z)*k;cam.target.y+=(ty-cam.target.y)*k;
   // close-up distance: the whole pet fits in the space left above the sheet
-  const vis=clamp((H-cam.shiftTo*2)/H,.3,1),petD=clamp((pet.head||1.4)/(.76*vis)/(2*Math.tan((camera.fov||40)*Math.PI/360)),3,16)*cam.sz,cd=cam.dist+(petD-cam.dist)*cam.sk,pitch=cam.pitch+(.26-cam.pitch)*cam.sk;
-  cam.pan.x+=(cam.panT.x*(1-cam.sk)-cam.pan.x)*.25;cam.pan.z+=(cam.panT.z*(1-cam.sk)-cam.pan.z)*.25;const ex=cam.target.x+cam.pan.x,ez=cam.target.z+cam.pan.z;
-  const cp=Math.cos(pitch);camera.position.set(ex+cd*cp*Math.sin(cam.yaw),cam.target.y+cd*Math.sin(pitch),ez+cd*cp*Math.cos(cam.yaw));camera.lookAt(camLook.set(ex,cam.target.y,ez));
+  const vis=clamp((H-cam.shiftTo*2)/H,.3,1),petD=clamp((pet.head||1.4)/(.76*vis)/(2*Math.tan((camera.fov||40)*Math.PI/360)),3,16)*cam.sz,cd=cam.dist+(petD-cam.dist)*cam.sk,pitch=cam.pitch+(.26-cam.pitch)*cam.sk;let cdK=cd;if(cam.kk>.001){if(km){const kv=clamp((H-cam.shiftTo*2)/H,.22,1);cam.kd=clamp(km.hk*(km.view==='shop'?.95:1.6)/kv/(2*Math.tan((camera.fov||40)*Math.PI/360)),1.6,14)}cdK=cd+((cam.kd||cd)-cd)*cam.kk}
+  const nopan=1-Math.max(cam.sk,cam.kk||0);cam.pan.x+=(cam.panT.x*nopan-cam.pan.x)*.25;cam.pan.z+=(cam.panT.z*nopan-cam.pan.z)*.25;const ex=cam.target.x+cam.pan.x,ez=cam.target.z+cam.pan.z;
+  const pk=pitch+(.3-pitch)*(cam.kk||0),cp=Math.cos(pk);camera.position.set(ex+cdK*cp*Math.sin(cam.yaw),cam.target.y+cdK*Math.sin(pk),ez+cdK*cp*Math.cos(cam.yaw));camera.lookAt(camLook.set(ex,cam.target.y,ez));
   cam.shift+=(cam.shiftTo-cam.shift)*.15;camera.setViewOffset(W,H,0,cam.shift,W,H)}
 
 /* ================= INTERACTION ================= */
@@ -8844,7 +8875,7 @@ canvas.addEventListener('pointerup',endPtr);canvas.addEventListener('pointercanc
 canvas.addEventListener('wheel',e=>{e.preventDefault();if(styling()){cam.sz=clamp((cam.sz||1)*(1+e.deltaY*.001),.6,1.6);return}cam.dist=clamp(cam.dist*(1+e.deltaY*.001),camMin(),camMax())},{passive:false});
 // A tap on nothing in particular: closes a product card or a menu first, otherwise stops following the pet.
 // (Decorate stays open: taps there are for building. Styling stays open too: drags there turn the pet.)
-function emptyTap(){if(wheelOn()){closeWheel();return}if(styling())return;const c=$('#shopcard');if(c&&!c.hidden){closeProduct();return}if(openTab&&openTab!=='decorate'){setTab(null);return}setFollow(false)}
+function emptyTap(){if(wheelOn()){closeWheel();return}if(styling())return;const c=$('#shopcard');if(c&&!c.hidden){closeProduct();return}if(kmode){if(openTab==='shopcat')kShopBack();else kClose();return}if(openTab&&openTab!=='decorate'){setTab(null);return}setFollow(false)}
 // Menus with a handle: drag the handle down (or tap it) to close. Escape closes the top-most thing on a keyboard.
 {const sh=$('#sheet'),gr=sh.querySelector('.grab');let d=null;
   const reset=()=>{sh.style.transition='';sh.style.transform='';d=null};
@@ -8852,12 +8883,13 @@ function emptyTap(){if(wheelOn()){closeWheel();return}if(styling())return;const 
   gr.addEventListener('pointermove',e=>{if(!d||e.pointerId!==d.id)return;d.dy=Math.max(-12,e.clientY-d.y);sh.style.transform=`translateY(${d.dy<0?d.dy*.3:d.dy}px)`});
   gr.addEventListener('pointerup',e=>{if(!d||e.pointerId!==d.id)return;const ms=performance.now()-d.t,tap=Math.abs(d.dy)<6&&ms<350,close=tap||d.dy>60||(d.dy>20&&d.dy/ms>.5);if(close)setTab(null);reset()});
   gr.addEventListener('pointercancel',reset)}
-window.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(wheelOn()){closeWheel();return}if(!$('#game').hidden||!$('#reward').hidden)return;if(!$('#map').hidden||tm&&tm.open){if(tm&&tm.open&&tm.arr){tmArrange(false);return}closeMap();return}const c=$('#shopcard');if(!c.hidden){closeProduct();return}if(openTab){setTab(null);return}setFollow(false)});
+window.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(wheelOn()){closeWheel();return}if(!$('#game').hidden||!$('#reward').hidden)return;if(!$('#map').hidden||tm&&tm.open){if(tm&&tm.open&&tm.arr){tmArrange(false);return}closeMap();return}if(kmode){backAct();return}const c=$('#shopcard');if(!c.hidden){closeProduct();return}if(openTab){setTab(null);return}setFollow(false)});
 // Android back (and the browser back button): we keep one spare history entry; going back closes the topmost thing instead of
 // leaving the app. With nothing open, a second back within 2.5 s leaves (a toast says so).
 function backAct(){if(traveling)return true;if(!$('#reward').hidden){$('#rwOk').click();return true}if(!$('#game').hidden){closeGame();return true}if(gc&&gc.open){closeGacha();return true}
   if(tm&&tm.open){if(tm.arr){tmArrange(false);return true}if(!$('#tmCard').hidden){$('#tmCard').hidden=true;tm.focus=null;tm.tgtTo.set(0,0,0);return true}closeMap();return true}
   if(!$('#map').hidden){closeMap();return true}if(wheelOn()){closeWheel();return true}if(brush){endBrush();return true}if(!$('#shopcard').hidden){closeProduct();return true}
+  if(kmode){if(!$('#shopcard').hidden){closeProduct();return true}if(openTab==='shopcat'){kShopBack();return true}if(kmode.view!=='menu'){kPanel(kmode.view==='reply'?'chat':'menu',-1);return true}kClose();return true}
   if(openTab){const sb=$('#sback');if(sb&&!sb.hidden){sb.click();return true}setTab(null);return true}if(camFollow){setFollow(false);return true}if(away){showMap();return true}return false}
 {let armed=0;try{history.replaceState({rft:0},'');history.pushState({rft:1},'')}catch(_){}
   const push=()=>{try{history.pushState({rft:1},'')}catch(_){}};
@@ -8901,7 +8933,7 @@ const _ev=new THREE.Vector3();
 function updEmotes(){if(!emotes.length)return;const v=new THREE.Vector3(pet.group.position.x,pet.group.position.y+(pet.head||1),pet.group.position.z).project(camera);const x=(v.x+1)/2*W,y=(1-v.y)/2*H;
   emotes.forEach(e=>{let ex=x,ey=y;const R=pet.rig;if(e.head!=null&&R&&R.heads&&R.heads[e.head]){R.heads[e.head].p.getWorldPosition(_ev);_ev.y+=(R.S.hr+R.S.tl*.7)*(pet.scale||1)+.12;_ev.project(camera);ex=(_ev.x+1)/2*W;ey=(1-_ev.y)/2*H}
     e.el.style.left=ex+e.dx+'px';e.el.style.top=ey+'px'})}
-let toastT=0;function toast(m,force){if(!force&&document.body.classList.contains('gaming'))return;const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600)}
+let toastT=0;function toast(m,force){if(!m)return;if(!force&&(document.body.classList.contains('gaming')||document.body.classList.contains('kmode')))return;const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600)}
 function moodFace(){const st=stageOf(state.pet.xp);if(st===0)return'🥚';const s=petStats(),a=spiritOf(s);if(pet.mode==='sleep')return'😴';return a>75?'😊':a>50?'🙂':a>30?'😕':'😢'}
 function updHUD(){updWish();$('#hearts').textContent=state.hearts;
   // the ring round the Pet button is the pet's overall mood; it wiggles when a need runs low
@@ -8980,6 +9012,212 @@ const RES_T={
   makeup:['I mixed a shade that doesn’t have a name yet. Want to name it?','the pattern wall is finished and I’m very proud of it.','everyone deserves a glow-up. {n} especially.'],
   tailor:['I just finished a hat. It’s probably too big. I love it anyway.','I measured a customer twice and got two different numbers. Tape measure’s fault.','the sewing room is a mess of ribbons and I’m thriving.']};
 const RES_THANKS=['Thanks for shopping with us! {n} has great taste.','Loved seeing you two in the shop today.','Nice pick! It suits {n} perfectly.'];
+// Shopkeeper dialog, written from tools/writing/keepers-bible.md. {n} = pet name, {a}/{b} = head names.
+// hi: greetings by time of day (m 5-11, d 11-17, e 17-21, n 21-5), hiF: warmer greetings from Friend up,
+// story: [minimum friendship level, line] told in order, rel: what they think of the others, r: player replies [you say, they answer].
+const KF_LV=[0,4,10,18,30],KF_N=['New face','Regular','Friend','Good friend','Bestie'];
+const KB_LATER=['Ask me that again when we know each other a little better!','Oh, that’s a story for another day.','Hmm, maybe next time. I’m not ready to spill that one yet.'];
+const KBIB={
+  baker:{n:'Bunbun',role:'Baker',
+    hi:{m:['Morning, sweetie! The first batch is still warm.','You’re up early! Breakfast? Say yes.'],d:['Hi hon! Lunch rush is over, so it’s just us and the cookies.','Oh good, you’re here! Taste this. Careful, it’s hot.'],e:['Evening! I saved you the last cinnamon swirl.','Closing soon, but never for you two.'],n:['Oh! I was just proving tomorrow’s dough. Come in, come in.','Midnight snack? I won’t tell.']},
+    hiF:['There’s my favourite family! Sit, sit, eat something.','I baked {n}’s favourite today. Coincidence? No.'],
+    mood:['Busy! Good busy. Floury busy.','I burned my tongue on the first cookie again. Every single batch.','The oven’s humming, the shop smells like butter. Honestly? Perfect day.','A little tired, hon. Bolt forgot his lunch again, so I walked it over.'],
+    story:[[0,'I opened the Snack Shack because the whole street used to skip breakfast. Unacceptable!'],
+      [0,{t:'Everything here is baked before sunrise. Do you like mornings?',r:[['Love them!','Then come by at six. The first tray is for early birds!'],['Not really…','That’s alright, sweetie. I’ll keep something warm for whenever you wake up.']]}],
+      [1,'I can’t whistle. I’ve tried for years. So I hum. The dough doesn’t mind.'],
+      [2,'Cushy and I have tea every Sunday. Well, I have tea. Cushy has a nap.'],
+      [3,'I keep the first bite of every batch for {n}. Don’t tell the others, they’ll want one too.'],
+      [4,{t:'Can I tell you a secret? I want to throw a picnic on the plaza every spring. The whole town. Would you come?',r:[['We’d love that!','Oh, I’m going to cry into the dough. Spring it is!'],['Only if there’s cake.','There will be SO much cake.']]}]],
+    tips:['A full belly makes a happy pet. Don’t let {n} go hungry, hon!','Everyone has a favourite food. Watch {n}’s face when they eat, you’ll see.','Drinks count too! A little juice perks right up.'],
+    pet:['Look at {n}! Two heads, two appetites. My kind of customer.','{a} always goes for the sweets and {b} always steals the crumbs. I see everything.','Our little {n} is growing so fast. I should bake a measuring cake.'],
+    rel:{cushion:'Cushy is my best friend. Sunday tea, every week. Well, tea for me, a nap for Cushy.',builder:'Bolt forgets to eat, so I pack him a lunch. He fixed my oven door in return. Fair trade!',toymaker:'I bake Boing little bounce buns. He eats them in one gulp. Chew, Boing!',stylist:'Fizz is so glamorous, I get a bit shy. He orders a cream bun at three every day, on the dot.',joy:'Joy thinks I don’t notice the cookies going missing. I notice. I bake extra.',tailor:'Stitch made my apron! I pay in recipes. Stitch pays in patterns. It works.'},
+    bye:['Bye, sweetie! Eat something!','Come back soon, the oven misses you.']},
+  stylist:{n:'Fizz',role:'Stylist',
+    hi:{m:['Darling! You caught me mid-bubble. Divine timing.','Morning, loves. The bath hall is warm and so am I.'],d:['Enter, enter! The light in here is perfect for you.','Oh, it’s my favourite clients. Don’t tell the others.'],e:['Evening, darlings. The steam is at its absolute best right now.','A little evening pampering? Say no more.'],n:['Darling, it’s late! Perfect. Night baths are the most dramatic.','Shh, the bubbles are sleeping. Mostly.']},
+    hiF:['My darlings! My muses! Come in out of that tragic dry air.','I was JUST thinking about {n}’s shine. Fate, really.'],
+    mood:['Fabulous. The humidity is on my side today.','Tragic morning. The air was dry and I lost three bubbles. I’ve recovered.','I laughed at my own joke and my hair floated away. Classic Fizz.','Relaxed, darling. Utterly, wonderfully soaked.'],
+    story:[[0,'I opened Bubble Salon because everyone deserves a bath that feels like an event.'],
+      [0,{t:'My hair is a bubble bath. Before you ask: yes, it’s real. Want to touch it?',r:[['Yes please!','Gently… gently… oh, you popped one. It’s fine. It grows back. Probably.'],['Maybe not.','Wise. It pops. Emotionally, and also literally.']]}],
+      [1,'Dry days are my enemy. I carry a spray bottle for emergencies. It’s in my hair somewhere.'],
+      [2,'I taught Pom everything about styling. Well. Pom taught me about antennae. Mutual genius.'],
+      [3,'Blush and I argue about what “glow” means. Between us? She’s usually right. Never tell her.'],
+      [4,'Before this town, I styled bubbles for a travelling bath circus. Long story. Magnificent story.']],
+    tips:['A clean pet is a happy pet, darling. Bath time is self-care time.','Brush before the bath, never after. Trust me on this.','When {n} looks grumpy, try a little pampering. Works on me every time.'],
+    pet:['{n} has such a glow today. Two heads, twice the shine!','{a} loves the bubbles. {b} pretends not to. I see you, {b}.','That jelly, darling. That wobble. Iconic.'],
+    rel:{makeup:'Blush and I disagree about “glow”. Constantly. I adore her. Don’t repeat that.',hair:'Pom is my protégé! Well, Pom says colleague. I say protégé.',builder:'Bolt painted my salon. The colour is… brave. Very brave. I love it now.',baker:'Bunbun makes a cream bun that could make a bubble cry. Three o’clock, every day.',toymaker:'Boing is exhausting. And adorable. Exhaustingly adorable.',joy:'Joy beat me at Bubble Pop. BUBBLE Pop. I am still processing.',tailor:'Stitch makes my robes. Silk, darling. Stitch understands drama.'},
+    bye:['Ciao, darlings! Stay moisturised!','Off you pop. Gracefully.']},
+  toymaker:{n:'Boing',role:'Toymaker',
+    hi:{m:['BOING! Morning! I made three toys before breakfast!','Okay okay okay, you’re here, good, look at this spring!'],d:['Hi hi hi! Want to see what I’m building? It has no name yet!','BOING! Welcome back, testers!'],e:['Evening! I’m winding down. Just kidding, I’m winding UP.','You’re here! Perfect! I need someone to press this button.'],n:['Shh… the toys are sleeping. BOING. Oops.','It’s late! Great time to invent! Terrible time to test!']},
+    hiF:['MY FAVOURITE TESTERS! Okay I have seven things to show you.','{n}! {n} is here! Everybody bounce!'],
+    mood:['Bouncy! So bouncy! Is that a mood? It is now.','I bonked the ceiling three times today. Personal best.','Waiting for glue to dry. Worst part of the job. It takes FOREVER.','Great! Joy and I are planning Game Night. Top secret. You’re invited.'],
+    story:[[0,'I made my first toy out of my own spring. Then I needed a new spring. Lesson learned!'],
+      [0,{t:'Every toy here gets a name. Want to name the next one?',r:[['Sure! “Wobbles”.','WOBBLES. Perfect. Wobbles is born!'],['You pick.','Okay okay: “Sir Bounceton”. Very fancy.']]}],
+      [1,'Bolt gets me springs and wood. I call him Boss. He hates it. He loves it.'],
+      [2,'I tried to make Cushy a bouncy cushion. Cushy said no. Very softly. Very firmly.'],
+      [3,'Stitch sews all my plush designs. I draw them, Stitch makes them real. Magic!'],
+      [4,'Secret: I’m a little scared of getting too tall. One big stretch and I’d be stuck in the ceiling forever.']],
+    tips:['Toys make {n} happy! Happy pets play better. Science!','Pick a toy {n} likes and play together. Two players is always better.','The capsule machine here is lucky today. I didn’t check. I just feel it.'],
+    pet:['{n} has TWO heads! Two heads means double the fun. I did the math.','{a} bounces more than {b}. I would know.','{n} is the best tester I’ve ever had. Don’t tell Joy.'],
+    rel:{joy:'Joy is my best buddy! Game Night, every week. Joy wins. I bounce.',builder:'Bolt is the Boss. Springs, wood, and very good advice.',tailor:'Stitch sews my plushies. I tried sewing once. I sewed myself to the table.',baker:'Bunbun makes me bounce buns. I eat them in one gulp. She says chew. I try.',cushion:'Cushy is very soft and very sleepy. The bouncy cushion was a mistake. I see that now.',stylist:'Fizz’s hair makes bubbles! I want a toy that does that! Working on it!'},
+    bye:['BOING! Bye! Come back and test stuff!','Bye bye bye!']},
+  cushion:{n:'Cushy',role:'Furniture',
+    hi:{m:['Mm… morning. Too early. Sit anywhere. Everything here is soft.','Oh… hi. I was resting my eyes. On purpose.'],d:['Welcome to Cozy Nest… take your time. I am.','Hi… everything today is extra squishy. I checked.'],e:['Evening… the best time for a sofa.','Hi… it’s nearly nap o’clock. Browse quietly.'],n:['Zzz… oh! Customers. Hello. Mind the pillows.','It’s so late… stay a while. Everything here is comfy.']},
+    hiF:['Oh… it’s you two. My favourite nest-makers.','Hi… I saved the good corner of the sofa for {n}.'],
+    mood:['Cozy. Very cozy. Maybe a little sleepy.','I fluffed everything in the shop… now I need a nap.','Mm… it rained earlier. Perfect nap weather. I napped.','I tested all the new stock. For science. Very squishy science.'],
+    story:[[0,'I opened Cozy Nest because… mm… everyone deserves somewhere soft to land.'],
+      [0,{t:'Do you prefer a big sofa… or a little armchair?',r:[['Big sofa!','Mm… room for everyone. Very wise.'],['Little armchair.','Cozy… and all yours. I understand.']]}],
+      [1,'Bolt builds the frames… I do the stuffing. He does the loud part. I do the soft part.'],
+      [2,'Bunbun and I have tea on Sundays… I mostly nap. Bunbun says it counts.'],
+      [3,'Stitch and I trade fabric scraps. My covers… zzz… sorry. My covers are Stitch’s leftovers.'],
+      [4,'Blush painted my tassels once while I was asleep. I woke up pink. I kept it for a week. I liked it.']],
+    tips:['A comfy spot helps {n} nap… a rested pet is a happy pet.','Put something soft near a window… mm… sunbeams are free.','New sets come in every day… if you miss one, it comes back.'],
+    pet:['{n} would fit perfectly on a beanbag… just saying.','{a} likes the soft pillows… {b} likes the springy ones. Mm… both valid.','Your room is a very good nest. {n} looks happy there.'],
+    rel:{baker:'Bunbun is my best friend… mm. Tea and naps. The perfect friendship.',builder:'Bolt and I make furniture together… he hammers, I fluff.',tailor:'Stitch and I swap fabric… Stitch is very tidy. I am… soft.',toymaker:'Boing tried to make me bouncy… I said no. Kindly. Firmly. Sleepily.',joy:'Joy challenges me to staring contests… I always win. My eyes are half closed anyway.',makeup:'Blush painted my tassels… I slept through it. I looked lovely.'},
+    bye:['Bye… rest well…','Mm… come back when you’re tired.']},
+  builder:{n:'Bolt',role:'Builder',
+    hi:{m:['Morning, chief! Fresh paint just came in. Let’s nail it.','Early start! Good. The best walls are built before lunch.'],d:['Hammer & Hue! What are we building today?','Hey chief! Your room been treating you right?'],e:['Evening! Still time to pick a wall colour. Barely.','Just finishing a shelf. Come in, mind the sawdust.'],n:['Late shift! I was sorting screws. By size. Then by happiness.','Chief! Burning the midnight paint?']},
+    hiF:['Chief! My favourite clients! How are those walls holding up?','There they are! Tell me everything about your room.'],
+    mood:['Solid! Like a good beam.','Lost my pencil. Found it in my hat. Also found a sandwich. Bunbun’s, I think.','Good day! Sold three tins of paint and zero beige. Perfect.','Tired, chief. Hammered all morning. Happy tired though.'],
+    story:[[0,'I built Hammer & Hue with my own two hands. And one mallet. Mostly the mallet.'],
+      [0,{t:'Quick question, chief: bright walls or calm walls?',r:[['Bright!','Now we’re talking! Life’s too short for beige.'],['Calm.','Respect. A calm wall is a happy wall.']]}],
+      [1,'I tap things with my mallet to hear if they’re happy. That table? Happy. That chair? Needs a chat.'],
+      [2,'Bunbun packs me lunch because I forget to eat. I fix her oven. Best deal in town.'],
+      [3,'Blush and I argue about colour names. It’s ORANGE. She says “apricot sunrise”. We’re both right.'],
+      [4,'Fizz called my paint “brave” once. I pretended it didn’t sting. I painted his salon anyway. He loves it now.']],
+    tips:['A bigger room means more space to play. Just saying, chief.','Mix a floor and a wall from the same set. Always works.','Doors and windows count! A new door changes the whole room.'],
+    pet:['{n} has great taste in rooms. Must get it from you two.','{a} keeps looking at the walls. That head’s got a builder’s eye.','How tall is {n} now? I could build a doorway to match.'],
+    rel:{makeup:'Blush? We argue about colours all day. She buys all her paint here. Funny, that.',baker:'Bunbun feeds me. I fix her oven. Fair trade, and delicious.',toymaker:'The kid? Boing? Good kid. Goes through springs like snacks.',cushion:'Cushy and I make furniture. I do the frame, Cushy does the fluff. Great team.',stylist:'Fizz called my colours brave. I choose to take that as a compliment.'},
+    bye:['See you, chief! Build something great!','Bye! Keep it level!']},
+  hair:{n:'Pom',role:'Antenna stylist',
+    hi:{m:['Morning! Okay but hear me out: new tips just came in.','Early bird! Obsessed. Hop in the chair!'],d:['Hiii! I have ideas. So many ideas. Sit!','Welcome to Glow Up! Pom’s side is the fun side.'],e:['Evening! Perfect lighting for a new look. Iconic lighting.','Last appointment of the day? Let’s make it count!'],n:['It’s so late! I was naming my curls. Again.','Night owl! Love that for you. Sit!']},
+    hiF:['My faves! I made a mood board for {a} AND {b}.','Okay, you two. I’ve been waiting all day. Sit!'],
+    mood:['Obsessed with everything. Especially these new tips.','Blush changed the playlist again. We’re fine. We’re great.','I named a new curl today. Her name is Brenda.','So good! Fizz complimented my work and I’m still floating.'],
+    story:[[0,'Pom and Blush, Glow Up Studio! I do antennae, Blush does colour. Dream team!'],
+      [0,{t:'Okay but hear me out: antennae are the new hats. Agree?',r:[['Totally!','ICONIC. You get it. You GET it.'],['Hats are hats.','Hmm. I’ll convert you. Give me time.']]}],
+      [1,'Every curl in my afro has a name. There are forty-two. I know them all.'],
+      [2,'Fizz taught me styling when I was just starting. Total legend. The original bubble legend.'],
+      [3,'Stitch gave me this tool belt! Everything has a pocket now. My life changed.'],
+      [4,'Secret? I get nervous before every appointment. Then I pick up the comb and it’s gone.']],
+    tips:['Two heads means two looks! Mix it up, {a} and {b} don’t have to match.','A new antenna tip changes the whole vibe. Trust.','Colour is Blush’s thing. Pair a new tip with a new dye, you’ll see!'],
+    pet:['{n}’s antennae are so bouncy. Perfect canvas.','{a} is giving main character. {b} is giving mysterious. Love both.','I have SO many ideas for {n}. Sit still, sweetie!'],
+    rel:{makeup:'Blush is my co-owner and best friend. We finish each other’s… sandwiches. Sentences!',stylist:'Fizz! The original bubble legend. Taught me everything.',tailor:'Stitch made my tool belt. I wear it every day. Even to bed. Don’t tell.',joy:'Joy lets me style her for tournaments. Her antenna game is strong now.'},
+    bye:['Byeee! Stay iconic!','Come back soon, I’ll have new tips!']},
+  makeup:{n:'Blush',role:'Colour artist',
+    hi:{m:['Morning, love. The light is soft today. Perfect for colour.','Hello… I was naming a new shade. It’s called “first coffee”.'],d:['Welcome, love. Sit. Let’s see what colours you feel like today.','Hello, you two. Your glow is already lovely.'],e:['Evening, love. Sunset colours are my favourite. Stay a while.','The light’s going golden. Want to match it?'],n:['Late visitors. Lovely. Night colours are the richest.','Hello… I was writing in my colour journal. Come in.']},
+    hiF:['Love! You two are my favourite palette.','I saved a page in my colour journal just for {n}.'],
+    mood:['Calm. Pom’s at full speed, so I’m at half.','I mixed a colour with no name yet. Maybe you’ll name it?','Lovely. I painted the sunset from the window. It didn’t hold still.','Paint on my hands, paint on my beret. A good day.'],
+    story:[[0,'I do colours and patterns. Pom does antennae. Between us, there’s nothing we can’t glow up.'],
+      [0,{t:'If you were a colour, love, which one would you be?',r:[['Something bright!','A bold choice. I see a hot pink in you.'],['Something soft.','A lilac, then. Quiet and lovely.']]}],
+      [1,'I keep a colour journal. Every day gets a colour. Today is “apricot sunrise”.'],
+      [2,'Bolt and I argue about colour names. It’s not orange, it’s apricot sunrise. He knows.'],
+      [3,'Fizz and I disagree about what “glow” means. We’ve been disagreeing for years. It’s our love language.'],
+      [4,'I painted Cushy’s tassels pink while Cushy slept. They kept it for a week. I think about it often.']],
+    tips:['Patterns look best when the colours argue a little. Just a little.','You don’t have to match {a} and {b}. Two heads, two stories.','Try a colour you’d never pick. Worst case, we change it.'],
+    pet:['{n} is a beautiful canvas. Everything shows up on that jelly.','{a} suits warm colours. {b} suits cool. I’ve thought about this a lot.','Look how {n} catches the light. Lovely.'],
+    rel:{hair:'Pom is my co-owner. Pom is fast, I am slow. Together we are exactly right.',builder:'Bolt and I disagree about colour names. I buy all my paint from him anyway.',stylist:'Fizz and I have a long-running argument about glow. I adore him.',tailor:'Stitch has the most beautiful fabric palettes. I steal ideas constantly.',cushion:'Cushy has the loveliest tassels. I may have painted them once.'},
+    bye:['Bye, love. Stay colourful.','Come back soon. I’ll have a new shade.']},
+  tailor:{n:'Stitch',role:'Tailor',
+    hi:{m:['Morning! I just finished a cuff. Just a smidge crooked. On purpose.','Oh, hello! Mind the ribbons, they’re everywhere.'],d:['Welcome to Jelly Threads! Try anything on, sizes are… flexible.','Hello, you two! I measured the door this morning. It’s a door.'],e:['Evening! I’m knitting something tiny. Might be a hat. Might be a sock.','Come in, come in! The fitting room is all yours.'],n:['Oh! Late visitors. I was untangling myself. Long story.','Hello! Mind the pins. Some of them are in me.']},
+    hiF:['Oh, it’s you! I made something that might fit {n}. Might.','My favourite fitting! Let me look at {n}… mm, just a smidge taller.'],
+    mood:['Neatly done. Most seams lined up today.','I unravelled a little this morning. I’m fine now. Mostly wound.','I lost my needle. Then I found it. In me. Classic.','Busy! Joy wants a costume for the next tournament.'],
+    story:[[0,'I opened Jelly Threads so every jelly could have something that fits. Or almost fits.'],
+      [0,{t:'Hats or scarves? Be honest, I won’t unravel.',r:[['Hats!','A hat person. I knew it. I have a drawer.'],['Scarves!','Cozy and practical. You’d get along with Cushy.']]}],
+      [1,'I measure everything twice and get two different numbers. The tape measure’s fault, I’m sure.'],
+      [2,'Cushy and I trade fabric. Cushy’s covers are all my leftovers. They look better on Cushy.'],
+      [3,'I sew all of Boing’s plushies. Boing draws them. I make them hold together.'],
+      [4,'I have a drawer of things “that might fit someday”. Half of them are for {n}.']],
+    tips:['Hats and eyewear can go on either head. Try one on each!','Hands and shoes change the whole silhouette. Just a smidge makes a big difference.','Colours on hands and shoes are free to swap. Play with them!'],
+    pet:['{n} is growing. I can tell by eye. Just a smidge taller.','{a} would look lovely in a hat. {b} too, but a different hat.','Two heads means two hats. My favourite kind of customer.'],
+    rel:{cushion:'Cushy and I swap fabric. Cushy is very soft to work with. Literally.',toymaker:'Boing draws, I sew. Boing once sewed himself to a table. I had to help.',joy:'Joy wants a new costume every tournament. I love a deadline.',baker:'I made Bunbun’s apron. She pays me in scones. Best payment.',hair:'I made Pom’s tool belt. Pom wears it to bed. I’m told.'},
+    bye:['Bye! Mind the loose threads!','Come back for a fitting!']},
+  joy:{n:'Joy',role:'Arcade host',
+    hi:{m:['Morning, player one! Early practice? Respect.','Let’s go! The machines are warm and so am I.'],d:['Welcome to Jelly Arcade! Pick a cabinet, any cabinet!','Hey, co-op team! Ready to break some scores?'],e:['Evening session! Best time for high scores.','The pinball table’s been lonely. Go say hi!'],n:['Night mode! Lights low, scores high.','Late game? My favourite kind.']},
+    hiF:['The co-op team is back! Let’s GO!','{n}! I kept your spot on the board warm.'],
+    mood:['GG so far! Great day.','Beat my own high score this morning. Still buzzing.','Lag day. The claw machine stuck twice. I forgave it.','Pumped! Boing and I are planning Game Night.'],
+    story:[[0,'I run Jelly Arcade so everyone gets a turn. Even the claw machine. Especially the claw machine.'],
+      [0,{t:'Real question: pinball or Drop?',r:[['Pinball!','Yes! Flipper gang! Let’s go!'],['Drop!','The patient choice. Respect, player two.']]}],
+      [1,'Boing is my best buddy. We host Game Night. I win, Boing bounces. Balance.'],
+      [2,'I beat Fizz at Bubble Pop once. He still brings it up. I bring it up more.'],
+      [3,'Stitch makes my tournament costumes. Last one had a cape. Capes are very aerodynamic.'],
+      [4,'I lost every staring contest to Cushy. Every one. I don’t think Cushy knows it was a contest.']],
+    tips:['Three stars in a round earns a capsule token! Go for it!','Drop: wait for the swing to slow down before you let go. Trust me.','Pinball: hold the flipper up to catch the ball, then aim.'],
+    pet:['{n} is a natural! Two heads means twice the reaction time.','{a} watches the ball, {b} watches the score. Perfect co-op.','Your pet is a legend in this arcade. Don’t let it go to their heads. Both heads.'],
+    rel:{toymaker:'Boing! Best buddy! Game Night co-host! Bouncy!',stylist:'I beat Fizz at Bubble Pop. He says it didn’t count. It counted.',cushion:'Cushy wins every staring contest. I think Cushy is just asleep.',tailor:'Stitch makes my costumes. The cape was a great call.',baker:'I definitely don’t steal Bunbun’s cookies. Definitely. GG.',hair:'Pom styled me for the last tournament. I won! Coincidence? No.'},
+    bye:['GG! Come back soon!','See you next round!']}
+};
+
+// ---------- Shopkeeper close-up: tap a keeper to zoom in, then Chat / Shop / their special action ----------
+let kmode=null;const _kh=new THREE.Vector3();
+function kfOf(k){const F=state.kf||(state.kf={});return F[k]||(F[k]={p:0,d:'',s:0})}
+function kfLevel(p){let l=0;KF_LV.forEach((v,i)=>{if(p>=v)l=i});return l}
+function kfAdd(k,n){if(!KBIB[k])return;const f=kfOf(k),l0=kfLevel(f.p);f.p+=n;saveSoon();const l1=kfLevel(f.p);
+  if(l1>l0)setTimeout(()=>toast(`${KBIB[k].n} counts you as ${['','a regular','a friend','a good friend','their bestie'][l1]} now!`,true),900);if(kmode&&kmode.kind===k){const el=$('#kpF');if(el){el.innerHTML=kHearts();el.classList.remove('pulse');void el.offsetWidth;el.classList.add('pulse')}}}
+const kTod=()=>{const h=centralHour();return h<5?'n':h<11?'m':h<17?'d':h<21?'e':'n'};
+function kFill(t){const hn=headNames();return String(t).replace(/\{n\}/g,state.pet.name).replace(/\{a\}/g,hn[0]).replace(/\{b\}/g,hn[1])}
+const kLine=t=>typeof t==='string'?{t}:t;
+const KSVG={chat:'<svg viewBox="0 0 24 24" fill="#fff" stroke="#3B1273" stroke-width="2.2" stroke-linejoin="round"><path d="M4 5h16v10H10l-4 4v-4H4z"/><circle cx="9" cy="10" r="1" fill="#3B1273"/><circle cx="12.5" cy="10" r="1" fill="#3B1273"/><circle cx="16" cy="10" r="1" fill="#3B1273"/></svg>',
+  shop:'<svg viewBox="0 0 24 24" fill="#fff" stroke="#3B1273" stroke-width="2.2" stroke-linejoin="round"><path d="M5 8h14l-1 12H6z"/><path d="M9 8a3 3 0 0 1 6 0" fill="none"/></svg>',
+  play:'<svg viewBox="0 0 24 24" fill="#fff" stroke="#3B1273" stroke-width="2.2" stroke-linejoin="round"><rect x="3" y="7" width="18" height="11" rx="5"/><path d="M8 10v5M5.5 12.5h5" fill="none" stroke-linecap="round"/><circle cx="16" cy="11.5" r="1.3" fill="#3B1273"/><circle cx="18" cy="14" r="1.3" fill="#3B1273"/></svg>',
+  gacha:'<svg viewBox="0 0 24 24" stroke="#3B1273" stroke-width="2.2"><path d="M4 12a8 8 0 0 1 16 0z" fill="#FF6FB5"/><path d="M4 12a8 8 0 0 0 16 0z" fill="#fff"/></svg>',
+  style:'<svg viewBox="0 0 24 24" fill="#fff" stroke="#3B1273" stroke-width="2.2" stroke-linejoin="round"><circle cx="12" cy="15" r="5"/><path d="M10 10 8 4M14 10l2-6" fill="none" stroke-linecap="round"/><circle cx="8" cy="4" r="1.6"/><circle cx="16" cy="4" r="1.6"/></svg>',
+  paint:'<svg viewBox="0 0 24 24" stroke="#3B1273" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-1 2-2s-1-1.5-1-2.5 1-1.5 2-1.5h2a4 4 0 0 0 4-4c0-4.4-4-8-9-8z" fill="#fff"/><circle cx="8" cy="10" r="1.4" fill="#FF3D9A"/><circle cx="12" cy="7" r="1.4" fill="#3EC8F2"/><circle cx="16" cy="10" r="1.4" fill="#A6E22E"/></svg>',
+  hanger:'<svg viewBox="0 0 24 24" fill="none" stroke="#3B1273" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7a2 2 0 1 1 2-2M12 7v2l-9 7h18l-9-7"/></svg>'};
+function kHearts(){const f=kfOf(kmode.kind),l=kfLevel(f.p),H=(on)=>`<svg viewBox="0 0 24 24"><path d="M12 20.5C6 16.4 2.8 13 2.8 9.2 2.8 6.4 5 4.3 7.6 4.3c1.9 0 3.4 1 4.4 2.5 1-1.5 2.5-2.5 4.4-2.5 2.6 0 4.8 2.1 4.8 4.9 0 3.8-3.2 7.2-9.2 11.3z" fill="${on?'#FF3D9A':'#fff'}" stroke="#3B1273" stroke-width="2.4"/></svg>`;
+  return`<span>${[0,1,2,3,4].map(i=>H(i<=l&&(i>0||f.p>0||l>0))).join('')}</span><small>${KF_N[l]}</small>`}
+function kActs(){const k=away.key,kind=kmode.kind,A=[['chat','Chat','Have a little natter','#E3D4FF','chat']];
+  if(kind==='hair')A.push(['svc:hair','Restyle antennae','New tips and colours','#FFD6EA','style']);
+  else if(kind==='makeup')A.push(['svc:makeup','Makeover','Colours and patterns','#FFD6EA','paint']);
+  else if(k==='arcade')A.push(['shop','Play a game','Pick a cabinet','#D6F5A8','play']);
+  else A.push(['shop','Shop',{snack:'Treats and drinks',salon:'Bath and grooming',toys:'Toys to keep',furn:'Today’s furniture',build:'Floors, walls, doors, room size',wear:'Hands, shoes, accessories'}[k]||'See what’s for sale','#FFD6A8','shop']);
+  if(k==='toys'||k==='arcade')A.push(['gacha','Capsule machine',`${state.tokens|0} token${(state.tokens|0)===1?'':'s'}`,'#FFE7F3','gacha']);
+  if(k==='wear')A.push(['wardrobe','Fitting room','Swap what you own','#D4F0FF','hanger']);
+  return A}
+function kTopics(){const B=KBIB[kmode.kind],f=kfOf(kmode.kind),lv=kfLevel(f.p),others=Object.keys(B.rel||{}).filter(q=>KBIB[q]),st=B.story[f.s],fresh=st&&st[0]<=lv;
+  const ask=kmode.ask||(kmode.ask=others.sort(()=>Math.random()-.5).slice(0,2));
+  return[['mood','How’s your day going?'],['story',`${fresh?'<span class="new">New</span>':''}Tell me about yourself`],...ask.map(q=>['rel:'+q,`What do you think of ${KBIB[q].n}?`]),['pet',`What do you think of ${esc(state.pet.name)}?`],['tip','Any tips for us?']]}
+function kPanel(view,dir){const P=$('#kpanel'),B=KBIB[kmode.kind],was=P.classList.contains('on')&&!P.hidden,h0=was?P.offsetHeight:0;kmode.view=view;
+  let body='';if(view==='menu')body=`<div class="kp-acts">${kActs().map(([k,nm,sub,c,ic],i,a)=>`<button class="kp-a${a.length%2&&i===a.length-1?' wide':''}" data-ka="${k}" style="--ac:${c}"><i>${KSVG[ic]}</i><span><b>${nm}</b><small>${sub}</small></span></button>`).join('')}</div>`;
+  else if(view==='chat')body=`<p class="kp-hint">Pick something to say</p><div class="kp-topics">${kTopics().map(([k,t])=>`<button class="kp-t" data-kt="${k}">${t}</button>`).join('')}</div>`;
+  else body=`<p class="kp-hint">Your answer</p><div class="kp-topics">${(kmode.replies||[]).map((r,i)=>`<button class="kp-t" data-kr="${i}" style="--tc:#FFF3B8">${esc(r[0])}</button>`).join('')}</div>`;
+  P.style.setProperty('--kc',away.def.color||'#FF3D9A');
+  P.innerHTML=`<div class="kp-h">${view!=='menu'?`<button class="kp-back" id="kpBack" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>`:''}<div class="kp-who"><b>${esc(B.n)}</b><small>${esc(B.role)} · ${esc(away.def.n)}</small></div><div class="kp-f" id="kpF">${kHearts()}</div><button class="gm-x" id="kpX" aria-label="Say bye">×</button></div><div class="kp-v">${body}</div>`;
+  P.hidden=false;if(!was){P.classList.remove('on');void P.offsetWidth;requestAnimationFrame(()=>{if(kmode&&kmode.view!=='shop')P.classList.add('on')})}
+  else if(P.animate){const h1=P.offsetHeight;P.animate([{height:h0+'px'},{height:h1+'px'}],{duration:280,easing:'cubic-bezier(.3,1.25,.45,1)'});const v=P.querySelector('.kp-v');v.animate([{opacity:0,transform:`translateX(${(dir||1)*44}px)`},{opacity:1,transform:'none'}],{duration:260,easing:'cubic-bezier(.2,.9,.3,1)'})}
+  $('#kpX').onclick=kClose;const bk=$('#kpBack');if(bk)bk.onclick=()=>kPanel(view==='reply'?'chat':'menu',-1);
+  P.querySelectorAll('[data-ka]').forEach(b=>b.onclick=()=>kAct(b.dataset.ka));P.querySelectorAll('[data-kt]').forEach(b=>b.onclick=()=>kSay(b.dataset.kt));
+  P.querySelectorAll('[data-kr]').forEach(b=>b.onclick=()=>{const r=kmode.replies[+b.dataset.kr];kmode.replies=null;KB.q=[];kbShow(kFill(r[1]),kmode.K);keeperReact('cheer',1.2,kmode.K);kPanel('chat',-1)});
+  requestAnimationFrame(fitSheet);setTimeout(fitSheet,320)}
+function kOpen(K){if(!away||!K)return;const kind=K.kind,B=KBIB[kind];if(!B){keeperReact('greet',1.8,K);keeperSay(pick1(K.lines.hi),K);return}
+  closeProduct();if(openTab)setTab(null);setFollow(false);closeWheel();kmode={K,kind,view:'menu'};try{const B_=new THREE.Box3().setFromObject(K.g);kmode.y0=B_.min.y;kmode.hk=Math.max(.8,B_.max.y-B_.min.y)}catch(_){kmode.y0=0;kmode.hk=2}away.keeper=K;document.body.classList.add('kmode');keeperReact('greet',1.8,K);
+  const lv=kfLevel(kfOf(kind).p),g=lv>=2&&B.hiF&&Math.random()<.55?pick1(B.hiF):pick1(B.hi[kTod()]);kPanel('menu',0);KB.q=[];setTimeout(()=>{if(kmode&&kmode.K===K)kbShow(kFill(g),K)},280)}
+function kClose(){if(!kmode)return;const P=$('#kpanel'),K=kmode.K,B=KBIB[kmode.kind];P.classList.remove('on');setTimeout(()=>{if(!kmode)P.hidden=true},420);kmode=null;document.body.classList.remove('kmode');
+  const sh=$('#sheet');if(openTab==='shopcat')setTab(null);sh.classList.remove('kshop');requestAnimationFrame(fitSheet);if(B&&away){KB.q=[];setTimeout(()=>away&&kbShow(kFill(pick1(B.bye)),K),120)}}
+function kAct(a){const K=kmode.K;if(a==='chat'){kPanel('chat',1);return}
+  if(a==='shop'){$('#kpanel').classList.remove('on');kmode.view='shop';$('#sheet').classList.add('kshop');setTab('shopcat');return}
+  if(a==='gacha'){kClose();openGacha();return}
+  if(a==='wardrobe'){kClose();setTab('wardrobe');return}
+  if(a.startsWith('svc:')){kClose();openService(a.slice(4));return}}
+function kShopBack(){if(!kmode)return;const sh=$('#sheet');kmode.view='menu';setTab(null);sh.classList.remove('kshop');kPanel('menu',-1)}
+function kSay(tp){const B=KBIB[kmode.kind],K=kmode.K,f=kfOf(kmode.kind),lv=kfLevel(f.p);let L=null;
+  if(tp==='mood')L=pick1(B.mood);else if(tp==='pet')L=pick1(B.pet);
+  else if(tp==='tip'){const t=K.lines&&K.lines.tip&&K.lines.tip(persOf());L=t&&Math.random()<.4?t:pick1(B.tips)}
+  else if(tp.startsWith('rel:'))L=B.rel[tp.slice(4)];
+  else if(tp==='story'){const st=B.story[f.s];if(!st){const ok=B.story.filter(q=>q[0]<=lv);L=pick1(ok)[1]}else if(st[0]>lv)L=pick1(B.later||KB_LATER);else{L=st[1];f.s++;saveSoon()}}
+  L=kLine(L||'…');const d=tdDay();if(f.d!==d){f.d=d;kfAdd(kmode.kind,2)}
+  keeperReact('greet',1.2,K);KB.q=[];kbShow(kFill(L.t),K);if(L.r){kbT=600;kmode.replies=L.r;kPanel('reply',1)}else if(tp==='story')kPanel('chat',0)}
+// The shop catalogue for shops that sell straight from their shelves (and the arcade's games)
+function renderGoodsCat(body){if(!away){setTab(null);return}const k=away.key,S=away.def,q=[],hv=`<span class="stage">${state.hearts} hearts</span>`,H='<img src="assets/icons/stat-happy.webp" alt="hearts">';
+  let h=`<div class="kc-h"><h2>${esc(k==='arcade'?'Games':S.n)}</h2>${k==='arcade'?'':hv}</div>`;
+  if(k==='arcade'){h+=`<p class="hint" style="margin-top:0">Every game is free. Three stars earns a capsule token.</p><div class="kc-g">${Object.keys(GAMES).map(g=>{const G_=GAMES[g];return`<button class="kc-c" data-g="${g}"><span class="gi" style="--gc:${G_.c||'#9B4DF2'}">${KSVG.play}</span><b>${esc(String(G_.n).replace('{pet}',state.pet.name))}</b></button>`}).join('')}</div>`}
+  else if(k==='wear'){WEAR_CATS.forEach(([c,lab])=>{const ids=wearIds(c).filter(id=>!ownsWear(id)&&wearDef(id)).sort((a,b)=>(wearDef(a).p||0)-(wearDef(b).p||0)).slice(0,12);if(!ids.length)return;
+      h+=`<div class="kc-s">${lab}</div><div class="kc-g">${ids.map(id=>{const D=wearDef(id);q.push('wear:'+id);return`<button class="kc-c" data-w="${id}"><img data-tt="wear:${id}" src="${thumbs['wear:'+id]||BLANK}" alt=""><b>${esc(D.n)}</b><span class="pr">${D.p||0}${H}</span></button>`}).join('')}</div>`})}
+  else{const goods=ITEMS.filter(i=>i.k===S.kind&&i.p>0),cats=[...new Set(goods.map(i=>i.cat||''))];
+    cats.forEach(c=>{const L=goods.filter(i=>(i.cat||'')===c);if(c)h+=`<div class="kc-s">${esc(FOOD_CATS[c]||c)}</div>`;else h+='<div class="kc-s">For sale</div>';
+      h+=`<div class="kc-g">${L.map(it=>{const have=it.k==='toy'?owned(it):(state.inv[it.id]||0);q.push('toy:'+it.id);return`<button class="kc-c" data-i="${it.id}">${have?`<span class="hv">${it.k==='toy'?'Yours':'×'+have}</span>`:''}<img data-tt="toy:${it.id}" src="${thumbs['toy:'+it.id]||'assets/icons/'+KIND_ICON[it.k]+'.webp'}" alt=""><b>${esc(it.n)}</b><span class="pr">${it.p}${H}</span></button>`}).join('')}</div>`})}
+  body.innerHTML=h;queueThumbs(q);
+  body.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{const g=b.dataset.g;if(kmode)kClose();setTab(null);openGame(g)});
+  body.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>openOffer(()=>offerWear(b.dataset.w)));
+  body.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>openProduct(b.dataset.i))}
 function resPost(key,text){state.inbox.unshift({t:Date.now(),from:key,text});if(state.inbox.length>60)state.inbox.length=60;state.ibT=Date.now();saveSoon();updMenuBadge();if(openTab==='inbox')renderSheet()}
 function resCompose(key,thanks){const c=jrCtx();return jrFill(thanks?pickJ(RES_THANKS):pickJ(RES_OPEN)+' '+pickJ(RES_T[key])+' '+pickJ(RES_END),c)}
 function resThanks(shop){if(Date.now()-(state.ibT||0)<3*36e5||Math.random()>.5)return;const ks=RES_SHOP[shop];if(!ks)return;const k=pickJ(ks);resPost(k,resCompose(k,true))}
@@ -10297,7 +10535,7 @@ let openTab=null;const thumbs={};
 $('#dkExplore').onclick=()=>{closeWheel();setTab(null);showMap()};
 $('#dkMenu').onclick=()=>{if(!$('#menuwheel').hidden&&$('#menuwheel').classList.contains('on')){closeMenuWheel();return}setTab(null);openMenuWheel()};
 $('#dkPet').onclick=()=>{if(wheelOn()){closeWheel();return}setTab(null);openWheel()};
-$('#sback').onclick=()=>{if(openTab==='pet'){setTab(null);openWheel();return}setTab(null);openMenuWheel()};
+$('#sback').onclick=()=>{if(kmode&&openTab==='shopcat'){kShopBack();return}if(openTab==='pet'){setTab(null);openWheel();return}setTab(null);openMenuWheel()};
 $('#petwheel').onclick=e=>{if(e.target.id==='petwheel')closeWheel()};
 /* ---------- Menu and the pet wheel ---------- */
 // Menu: one screen of big labelled tiles; each opens its page with a "Menu" back button in the same corner.
@@ -10345,12 +10583,12 @@ function renderWheel(){const w=$('#petwheel');if(w._busy)return;const p=state.pe
   w.innerHTML=`<div class="pw" style="--cy:${Math.round(innerHeight*.5)}px">${needs}<button class="pw-c" id="pwC"><img src="assets/icons/tab-pet.webp" alt=""><b>${esc(p.name)}</b><small>${st?STAGE_NAMES[st]:`Warm the egg (${p.xp}/3)`}</small></button>${wish?`<button class="pw-w" id="pwW" aria-label="Wish"><img src="${ico(WISH_T[Wd.k].ic)}" alt=""></button>`:''}</div><div class="pw-hint">${st?'Tap a need to help':'Tap the egg to warm it'}</div>`;
   $('#pwC').onclick=()=>{if(!st){warm();renderWheel();return}setTab('pet')};const ww=$('#pwW');if(ww)ww.onclick=()=>{closeWheel();wishGo()};
   w.querySelectorAll('[data-need]').forEach(b=>b.onclick=()=>{const n=NEEDS.find(x=>x[0]===b.dataset.need),act=n[4];closeWheel();if(act==='pat'){petTap();return}if(act==='nap'){doAct('nap');return}setTab('pet');doAct(act)})}
-function setTab(t){if(t&&brush)endBrush();if((t==='studio'||t==='wardrobe')&&toyPlay)endToyPlay(true);if(t==='decorate')setFollow(false);if(openTab!==t&&(openTab==='studio'||openTab==='wardrobe')){endPreview();if(t!=='studio')studio=null}closeWheel();{const kid=MENU_KIDS.includes(t),sb=$('#sback');$('#dkMenu').setAttribute('aria-expanded',!!t&&(t==='menu'||kid));sb.hidden=!(kid||t==='pet');$('#sbackL').textContent=t==='pet'?'Pet':'Menu';$('#sheet').classList.toggle('hasback',!sb.hidden);document.body.classList.toggle('sheet-open',!!t)}if(t)closeProduct();if(t!=='decorate')select(null);petView=null;const wasOpen=!!openTab;openTab=t;$('#sheet').classList.toggle('open',!!t);
+function setTab(t){if(t&&brush)endBrush();if((t==='studio'||t==='wardrobe')&&toyPlay)endToyPlay(true);if(t==='decorate')setFollow(false);if(openTab!==t&&(openTab==='studio'||openTab==='wardrobe')){endPreview();if(t!=='studio')studio=null}closeWheel();{const kid=MENU_KIDS.includes(t),sb=$('#sback');$('#dkMenu').setAttribute('aria-expanded',!!t&&(t==='menu'||kid));const ks=!!kmode&&t==='shopcat';sb.hidden=!(kid||t==='pet'||ks);$('#sbackL').textContent=t==='pet'?'Pet':ks?KBIB[kmode.kind].n:'Menu';$('#sheet').classList.toggle('hasback',!sb.hidden);document.body.classList.toggle('sheet-open',!!t)}if(t)closeProduct();if(t!=='decorate')select(null);petView=null;const wasOpen=!!openTab;openTab=t;$('#sheet').classList.toggle('open',!!t);
   if(t&&!wasOpen){renderSheet();try{fitSheet()}catch(e){}}
-  if(!!t!==wasOpen)sheetGenie(!!t,t);
+  if(!!t!==wasOpen&&!kmode)sheetGenie(!!t,t);if(kmode&&kmode.view==='shop'&&!t&&wasOpen)setTimeout(()=>{if(kmode&&kmode.view==='shop'){kmode.view='menu';$('#sheet').classList.remove('kshop');kPanel('menu',-1)}},0);
   if(t){if(wasOpen)renderSheet();if(t==='journal'||t==='inbox'||t==='steps')markSeen(t)}requestAnimationFrame(fitSheet);updHUD();updFollowPill()}
 // Keep the room framed above the sheet, also when its content grows or shrinks (e.g. the egg hatching).
-function fitSheet(){const c=$('#shopcard'),sh=Math.max(openTab?$('#sheet').offsetHeight:0,c&&!c.hidden&&c.classList.contains('on')?c.offsetHeight:0);cam.shiftTo=sh*.5;$('#seltools').style.bottom=`calc(env(safe-area-inset-bottom,0px) + ${112+(openTab?sh+8:0)}px)`}
+function fitSheet(){const c=$('#shopcard'),kp=$('#kpanel'),sh=Math.max(openTab?$('#sheet').offsetHeight:0,c&&!c.hidden&&c.classList.contains('on')?c.offsetHeight:0,kp&&!kp.hidden&&kp.classList.contains('on')?kp.offsetHeight+12:0);cam.shiftTo=sh*.5;$('#seltools').style.bottom=`calc(env(safe-area-inset-bottom,0px) + ${112+(openTab?sh+8:0)}px)`}
 if(window.ResizeObserver)new ResizeObserver(()=>{if(openTab)fitSheet()}).observe($('#sheet'));
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 /* ---------- decorate catalog ---------- */
@@ -10596,7 +10834,7 @@ ${P?`<p class="pers"><b>${P.n}</b> ${P.d}</p>`:''}<div class="minds">${petMinds(
     $('#dbgCoach').onclick=()=>{setTab(null);showCoach()};
     $('#dbgReconnect').onclick=()=>{if(db){connectShared();toast('Reconnecting…')}else toast('Shared sync is not set up for this copy yet.')};
     updDbgInfo()}
-  else if(openTab==='shopcat'){renderBuildCat(body)}
+  else if(openTab==='shopcat'){if(away&&away.key==='build')renderBuildCat(body);else renderGoodsCat(body)}
   else if(openTab==='studio')renderStudio(body);
   else if(openTab==='wardrobe')renderWardrobe(body);
   else if(openTab==='todo')renderTodo(body);
@@ -10727,6 +10965,7 @@ function normalize(s){const oldPal=!!s&&!(s.pv>=2);const d=defaultState();s=Obje
   s.toys=Array.isArray(s.toys)?s.toys.filter(k=>ITEMMAP[k]&&ITEMMAP[k].k==='toy'):d.toys.slice();s.daily=s.daily&&typeof s.daily==='object'?s.daily:{};
   s.pet=Object.assign({},d.pet,s.pet||{});if(s.pet.look&&typeof s.pet.look!=='object')delete s.pet.look;if(s.pet.heads&&!(Array.isArray(s.pet.heads)&&s.pet.heads.length===2))delete s.pet.heads;else if(s.pet.heads)s.pet.heads=s.pet.heads.map(x=>String(x||'').slice(0,10));s.tokens=s.tokens==null?3:Math.max(0,Math.min(999,+s.tokens|0));s.capsdex=Array.isArray(s.capsdex)?s.capsdex.filter(k=>typeof k==='string').slice(0,64):[];s.ceil=s.ceil==null?1:clamp(+s.ceil||0,0,1);s.wish=s.wish&&typeof s.wish==='object'&&(!s.wish.k||WISH_T[s.wish.k])?s.wish:{};s.wear=[...new Set(Array.isArray(s.wear)?s.wear.filter(id=>wearDef(id)):[])];s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
   s.journal=Array.isArray(s.journal)?s.journal.slice(0,80).map(f=>({t:+f.t||0,by:String(f.by||''),k:String(f.k||'').slice(0,12),text:String(f.text||'').slice(0,300)})):[];s.inbox=Array.isArray(s.inbox)?s.inbox.slice(0,60).map(f=>({t:+f.t||0,from:String(f.from||'').slice(0,12),text:String(f.text||'').slice(0,300)})):[];s.jrT=+s.jrT||0;s.ibT=+s.ibT||0;
+  s.kf=s.kf&&typeof s.kf==='object'&&!Array.isArray(s.kf)?s.kf:{};Object.keys(s.kf).forEach(k=>{const f=s.kf[k];if(!f||typeof f!=='object'){delete s.kf[k];return}f.p=Math.max(0,+f.p||0);f.s=Math.max(0,f.s|0);f.d=typeof f.d==='string'?f.d:''});
   s.feed=Array.isArray(s.feed)?s.feed.slice(0,50).map(f=>({t:+f.t||0,by:String(f.by||''),k:f.k==='note'?'note':'event',text:String(f.text||'').slice(0,160)})):[];
   s.visits=s.visits&&typeof s.visits==='object'?s.visits:{};s.names=s.names&&typeof s.names==='object'?Object.fromEntries(Object.entries(s.names).slice(0,8).map(([k,v])=>[String(k).slice(0,64),String(v||'').slice(0,20)])):{};s.hearts=Math.max(0,+s.hearts||0);if(!FLOORS.includes(s.floor))s.floor='checker';if(!WALLS.includes(s.wall))s.wall='bubble';const RN=ROOM_SIZES.includes(s.size)?s.size:8;s.size=RN;s.tf=Array.isArray(s.tf)&&s.tf.length===RN*RN?s.tf.map(k=>TILESETS.f[k]?k:s.floor):Array(RN*RN).fill(s.floor);s.tw=Array.isArray(s.tw)&&s.tw.length===RN*4?s.tw.map(k=>TILESETS.w[k]?k:s.wall):Array(RN*4).fill(s.wall);s.fown=s.fown&&typeof s.fown==='object'?Object.fromEntries(Object.entries(Object.entries(s.fown).reduce((o,[k,v])=>{k=winKeyFix(k);o[k]=(o[k]||0)+(+v||0);return o},{})).filter(([k,v])=>CATMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):{};s.fwish=s.fwish&&typeof s.fwish==='object'?Object.fromEntries(Object.entries(s.fwish).filter(([k])=>CATMAP[k]).slice(0,200).map(([k,v])=>[k,String(v||'').slice(0,64)])):{};s.town=[...new Set([...STARTER_TILES,...(Array.isArray(s.town)?s.town:[]),...s.tf.map(k=>'f:'+k),...s.tw.map(k=>'w:'+k)])].filter(k=>TILESETS[k[0]]&&TILESETS[k[0]][k.slice(2)]);s.downs=[...new Set(['classic',...(Array.isArray(s.downs)?s.downs:[]).map(doorKeyFix)])];s.door=Object.assign({s:'classic',w:3,u:-2.6},s.door&&typeof s.door==='object'?s.door:{});s.door.s=doorKeyFix(s.door.s);if(!s.downs.includes(s.door.s))s.door.s='classic';s.door.w=clamp(s.door.w|0,0,3);s.door.u=clamp(+s.door.u||0,-RN/2+.8,RN/2-.8);if(!SKY_KEYS.includes(s.sky))s.sky='classic';if(oldPal){const mp=[0,7,8,3,12,5,2];s.items.forEach(i=>i.c=mp[(i.c||0)%7])}s.td=s.td&&typeof s.td==='object'&&!Array.isArray(s.td)?s.td:{};s.arc=s.arc&&typeof s.arc==='object'&&!Array.isArray(s.arc)?s.arc:{best:{},plays:0};s.pv=2;return s}
 function loadLocal(){let s=null;try{s=JSON.parse(localStorage.getItem(soloKey())||'null')}catch(_){}state=normalize(s||defaultState());if(!s)state.rev=0;syncScene();updHUD()}
@@ -10755,7 +10994,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=35;
+const APP_V=36;
 async function hardRefresh(){toast('Getting the latest version…');try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
