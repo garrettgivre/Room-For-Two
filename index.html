@@ -178,7 +178,13 @@ body.styling .sheet{max-height:min(46%,420px)}.followpill img{width:26px;height:
 .xp{font-size:12.5px;margin:12px 0 0;padding:8px 10px;background:#fff;border:2.5px dashed var(--ink);border-radius:12px;line-height:1.45}
 
 /* mail */
-.jr{list-style:none;margin:8px 0 0;padding:0}
+.jr{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.jr-day{position:relative;margin:8px 0 0;padding:12px 14px 10px 30px;background:linear-gradient(90deg,transparent 21px,#FFB3D1 21px,#FFB3D1 23px,transparent 23px),repeating-linear-gradient(180deg,#FFFDF6 0 23px,#D6E6FF 23px 24px);background-position:0 0,0 11px;border:2.5px solid var(--ink);border-radius:6px 14px 10px 14px;box-shadow:2px 3px 0 var(--ink);color:var(--ink)}
+.jr-day p{margin:0;font-size:14px;line-height:24px}
+.jr-day .sig{display:flex;justify-content:space-between;margin-top:6px;font-family:var(--disp);font-size:11px;opacity:.6}
+.jr-notes{margin-top:8px}.jr-notes summary{cursor:pointer;font-family:var(--disp);font-size:12px;color:var(--grape);list-style:none;padding:4px 0}.jr-notes summary::-webkit-details-marker{display:none}
+.jr-notes summary::before{content:'';display:inline-block;margin-right:6px;border:5px solid transparent;border-left:7px solid var(--grape);border-right:0;transition:transform .2s;vertical-align:1px}.jr-notes[open] summary::before{transform:rotate(90deg)}
+.jr-notes .jr{margin-top:4px}.jr-notes .jr li{font-size:12.5px}
 .jr li{padding:11px 13px 9px;background:#FFF9DC;border:2.5px solid var(--ink);border-radius:6px 14px 10px 14px;box-shadow:2px 3px 0 var(--ink);font-size:13.5px;line-height:1.5;color:var(--ink)}
 .jr li.alt{background:#FFEAF5}
 .jr li .sig{display:flex;justify-content:space-between;margin-top:6px;font-family:var(--disp);font-size:11px;opacity:.55}
@@ -9083,8 +9089,8 @@ const FAVW={sweets:'sweets',fruit:'fruit',snacks:'snacks',exotic:'exotic snacks'
 function jrCtx(extra){const p=state.pet,hn=headNames(),P=persOf(),its=(state.items||[]).map(i=>CATMAP[i.k]).filter(c=>c&&c.fn!=='window'&&!/^win_/.test(c.k));
   return Object.assign({n:p.name,a:hn[0],b:hn[1],i:its.length?pickJ(its).n.toLowerCase():'floor',f:P&&(FAVW[P.fav]||P.fav)||'snacks'},extra||{})}
 function jrFill(t,c){return t.replace(/\{(\w+)\}/g,(m,k)=>k!=='p'&&c[k]!=null?c[k]:m)}
-function jrAdd(text,by,k,t){if(!state||!state.journal)return;const J=state.journal;t=t||Date.now();if(J.some(j=>j.text===text&&Math.abs(j.t-t)<6e4))return;
-  J.push({t,by:by||'',k:k||'',text});J.sort((x,y)=>y.t-x.t);if(J.length>80)J.length=80;saveSoon();updMenuBadge();if(openTab==='journal')renderSheet()}
+function jrAdd(text,by,k,t,i){if(!state||!state.journal)return;const J=state.journal;t=t||Date.now();if(J.some(j=>j.text===text&&Math.abs(j.t-t)<6e4))return;
+  const e={t,by:by||'',k:k||'',text};if(i)e.i=String(i).slice(0,40);J.push(e);J.sort((x,y)=>y.t-x.t);if(J.length>80)J.length=80;saveSoon();updMenuBadge();if(openTab==='journal')renderSheet()}
 const JR_T={
   self_hunger:['Got peckish, so I helped myself at the {i}. {a} chose, {b} chewed.','Nobody was looking, so I had a little {i}. Delicious crime.','I fed myself today! {i}. Very grown up of me.'],
   self_energy:['Curled up on the {i} for a nap all by myself.','{a} yawned, so {b} yawned, so we went to the {i}. Zzz.','Best nap spot in the house: the {i}. Don’t tell the sofa.'],
@@ -9110,9 +9116,9 @@ const JR_AWAY={
   night:['Curled up and dreamed about {f}. I won’t say which head dreamed louder.','Couldn’t sleep, so we counted the stars on the ceiling. There are none. We counted them anyway.','Everything was quiet, so I tiptoed past the {i}. Very sneaky. Very pointless.'],
   hungry:['My tummy made a noise. {a} blamed {b}.'],
   miss:['It was quiet without you two. I talked to the {i} so it wouldn’t feel left out.','I kept an eye on the door. You two always come back, but I like to check.']};
-function jrEvent(k,x){if(!state||!state.journal)return;const pool=JR_T[k];if(!pool||(stageOf(state.pet.xp)===0&&k!=='hatch'&&k!=='warm'))return;jrAdd(jrFill(pickJ(pool),jrCtx(x)),myId||'me',k)}
+function jrEvent(k,x){if(!state||!state.journal)return;const pool=JR_T[k];if(!pool||(stageOf(state.pet.xp)===0&&k!=='hatch'&&k!=='warm'))return;jrAdd(jrFill(pickJ(pool),jrCtx(x)),k.startsWith('self_')?'':myId||'me',k,0,x&&(x.i||x.s||x.st)||'')}
 function jrUse(id){const it=state.items.find(i=>i.id===id);if(!it)return;const c=CATMAP[it.k];if(!c||c.fn==='window'||/^win_/.test(c.k)||stageOf(state.pet.xp)===0)return;
-  const now=Date.now();if(now-(jrUse.t||0)<25*6e4||Math.random()>.35)return;jrUse.t=now;jrAdd(jrFill(pickJ(JR_T.use),jrCtx({i:c.n.toLowerCase()})),'','use')}
+  const now=Date.now();if(now-(jrUse.t||0)<25*6e4||Math.random()>.35)return;jrUse.t=now;jrAdd(jrFill(pickJ(JR_T.use),jrCtx({i:c.n.toLowerCase()})),'','use',0,c.n.toLowerCase())}
 function jrCatchUp(){const now=Date.now(),gap=now-(state.jrT||now),p=state.pet;if(!state.jrT||stageOf(p.xp)===0||gap<50*6e4)return;
   const hrs=gap/36e5,n=Math.min(4,1+Math.floor(hrs/4)),st=petStats(),used=new Set();
   for(let i=0;i<n;i++){const t=state.jrT+gap*(i+1)/(n+1)+Math.random()*6e5,h=new Date(t).getHours(),band=h>=5&&h<11?'am':h<17?'day':h<22?'eve':'night';
@@ -9349,8 +9355,42 @@ function lifeCheck(){if(!state||lifeCheck.done)return;lifeCheck.done=1;
   jrCatchUp();state.jrT=Date.now();saveSoon()}
 function dayLabel(t){const d=new Date(t),n=new Date(),y=new Date(Date.now()-864e5);if(d.toDateString()===n.toDateString())return'Today';if(d.toDateString()===y.toDateString())return'Yesterday';return d.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'})}
 function byDay(list,fn){let last='',out='';list.forEach((x,i)=>{const dl=dayLabel(x.t);if(dl!==last){last=dl;out+=`<div class="dayh">${dl}</div>`}out+=fn(x,i)});return out}
-function renderJournal(body){const p=state.pet,hn=headNames();resolveNames([...new Set(state.journal.map(x=>x.by))]);
-  body.innerHTML=`${pgHead('journal',{sub:`Written by ${esc(hn[0])} and ${esc(hn[1])}: what they got up to, even while you were away.`})}${state.journal.length?byDay(state.journal,(x,i)=>`<ul class="jr"><li${i%2?' class="alt"':''}>${esc(x.text).replace(/\{p\}/g,esc(x.by?who(x.by):'Somebody'))}<span class="sig"><span>${esc(p.name)}</span><span>${ago(x.t)}</span></span></li></ul>`):'<p class="hint">Nothing written yet. Check back after a little while.</p>'}`}
+// ---------- a finished day becomes one journal page, written by the pet from that day's notes ----------
+// Seeded by the date, so the page reads the same every time it's opened.
+function jrRand(seed){let h=2166136261;for(const c of seed)h=Math.imul(h^c.charCodeAt(0),16777619);return()=>{h+=0x6D2B79F5;let t=h;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+const jrList=a=>a.length<=1?a.join(''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];
+const JR_TIMES=['','','twice','three times','four times'];
+const JR_SELF={hunger:['a snack','at'],energy:['a nap','on'],clean:['a wash','at'],fun:['some playtime','with'],aff:['a cuddle','with']};
+function jrDay(list,key){const R=jrRand(key),pk=a=>a[Math.floor(R()*a.length)],hn=headNames(),E=list.slice().sort((a,b)=>a.t-b.t),has=k=>E.filter(e=>e.k===k);
+  const wd=new Date(E[0].t).toLocaleDateString(undefined,{weekday:'long'}),n=E.length,S=[];
+  S.push(pk(n>=7?[`Dear diary, ${wd} was a big one.`,`Dear diary! What a ${wd}.`,`${wd}. Where do I even start?`]:n>=3?[`Dear diary, ${wd} was a good one.`,`Dear journal, here’s my ${wd}.`,`A nice ${wd}, all things considered.`]:[`Dear diary, ${wd} was a quiet one.`,`A slow ${wd}. I liked it.`,`Not much happened this ${wd}, which is its own kind of nice.`]));
+  if(has('hatch').length)S.push('I hatched! Everything was very bright and very new.');
+  if(has('warm').length&&!has('hatch').length)S.push('Somebody kept my shell warm. I noticed.');
+  has('grow').forEach(e=>S.push(e.i?`I grew up into ${/^[aeiou]/i.test(e.i)?'an':'a'} ${e.i}!`:'I grew up a little!'));
+  // who looked after us, and with what
+  const ppl={};E.filter(e=>['feed','bath','play','nap'].includes(e.k)&&e.by).forEach(e=>{const P=ppl[e.by]||(ppl[e.by]={feed:[],bath:[],play:[],nap:[]});P[e.k].push(e.i||'')});
+  Object.keys(ppl).forEach(by=>{const P=ppl[by],parts=[],x=a=>a.length>1?' '+(JR_TIMES[a.length]||a.length+' times'):'',its=a=>{const u=[...new Set(a.filter(Boolean))].slice(0,2);return u.length?` (${jrList(u)})`:''};
+    if(P.feed.length)parts.push('fed us'+x(P.feed)+its(P.feed));if(P.bath.length)parts.push('gave us a bath'+x(P.bath));if(P.play.length)parts.push('played with us'+its(P.play));if(P.nap.length)parts.push('tucked us in');
+    S.push(`${who(by)} ${jrList(parts)}.`)});
+  const shops=[...new Set(has('shop').map(e=>e.i).filter(Boolean))];if(shops.length)S.push(`We went to ${jrList(shops)}.`);else if(has('shop').length)S.push('We went shopping in town.');
+  if(has('wish').length)S.push(pk(['A wish came true, and I acted very casual about it.','My wish was granted! I may have done a little spin.']));
+  if(has('gift').length||has('capsule').length)S.push(pk(['There was a present, and I held it very carefully.','We got a little surprise.']));
+  // what we did for ourselves
+  const sc=E.filter(e=>e.k.startsWith('self_'));if(sc.length){const by={};sc.forEach(e=>{const k=e.k.startsWith('self_aff')?'aff':e.k.slice(5);if(!by[k]||(!by[k].i&&e.i))by[k]=e});
+    const bits=Object.keys(by).map(k=>{const e=by[k],m=JR_SELF[k]||['some time to ourselves','with'];return m[0]+(e.i?` ${m[1]} the ${e.i}`:'')}).slice(0,3);S.push(`We looked after ourselves too: ${jrList(bits)}.`)}
+  // one thought of the day, in its own words
+  const mus=E.filter(e=>e.k==='use'||e.k==='away');if(mus.length){const m=pk(mus);S.push(m.text.replace(/\{p\}/g,m.by?who(m.by):'Somebody'))}
+  if(S.length===1)S.push(pk([`${hn[0]} and ${hn[1]} mostly napped and waited for you two.`,'We kept the room tidy and the door watched.']));
+  S.push(pk([`${hn[0]} says it was a good day. ${hn[1]} agrees, mostly.`,`${hn[1]} wants to do it all again tomorrow. ${hn[0]} wants a nap first.`,`Signing off. ${hn[0]} is already asleep. ${hn[1]} is pretending.`,'Night night.']));
+  return S.join(' ')}
+function renderJournal(body){const p=state.pet,hn=headNames(),J=state.journal;resolveNames([...new Set(J.map(x=>x.by))]);
+  const note=(x,i)=>`<li${i%2?' class="alt"':''}>${esc(x.text).replace(/\{p\}/g,esc(x.by?who(x.by):'Somebody'))}<span class="sig"><span>${esc(p.name)}</span><span>${ago(x.t)}</span></span></li>`;
+  const days=[];J.forEach(x=>{const k=new Date(x.t).toDateString();let D=days[days.length-1];if(!D||D.k!==k)days.push(D={k,l:[]});D.l.push(x)});
+  const today=new Date().toDateString();
+  const html=days.map(D=>{const lab=`<div class="dayh">${dayLabel(D.l[0].t)}</div>`;if(D.k===today)return lab+`<ul class="jr">${D.l.map(note).join('')}</ul>`;
+    return lab+`<article class="jr-day"><p>${esc(jrDay(D.l,D.k+'|'+p.name))}</p><span class="sig"><span>${esc(p.name)}</span><span>${esc(hn[0])} & ${esc(hn[1])}</span></span>
+      <details class="jr-notes"><summary>The day’s notes (${D.l.length})</summary><ul class="jr">${D.l.map(note).join('')}</ul></details></article>`}).join('');
+  body.innerHTML=`${pgHead('journal',{sub:`Written by ${esc(hn[0])} and ${esc(hn[1])}: what they got up to, even while you were away.`})}${J.length?html:'<p class="hint">Nothing written yet. Check back after a little while.</p>'}`}
 function renderInbox(body){const me=myId||'me';resolveNames([...new Set(state.feed.map(x=>x.by))]);
   const ms=state.inbox.map(m=>({t:m.t,from:m.from,text:m.text})).concat(state.feed.filter(f=>f.k==='note').map(f=>({t:f.t,by:f.by,text:f.text}))).sort((a,b)=>b.t-a.t).slice(0,60);
   const row=m=>{if(m.from){const r=RES[m.from]||['?','#fff'];return`<div class="dm" style="--c:${r[1]}"><span class="av">${esc(r[0][0])}</span><div class="bw"><span class="nm">${esc(r[0])}</span><div class="bub">${esc(m.text)}<small>${ago(m.t)}</small></div></div></div>`}
@@ -11158,7 +11198,7 @@ function normalize(s){const oldPal=!!s&&!(s.pv>=2);const d=defaultState();s=Obje
   s.inv=s.inv&&typeof s.inv==='object'?Object.fromEntries(Object.entries(s.inv).filter(([k,v])=>ITEMMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):Object.assign({},d.inv);
   s.toys=Array.isArray(s.toys)?s.toys.filter(k=>ITEMMAP[k]&&ITEMMAP[k].k==='toy'):d.toys.slice();s.daily=s.daily&&typeof s.daily==='object'?s.daily:{};
   s.pet=Object.assign({},d.pet,s.pet||{});if(s.pet.look&&typeof s.pet.look!=='object')delete s.pet.look;if(s.pet.heads&&!(Array.isArray(s.pet.heads)&&s.pet.heads.length===2))delete s.pet.heads;else if(s.pet.heads)s.pet.heads=s.pet.heads.map(x=>String(x||'').slice(0,10));s.tokens=s.tokens==null?3:Math.max(0,Math.min(999,+s.tokens|0));s.capsdex=Array.isArray(s.capsdex)?s.capsdex.filter(k=>typeof k==='string').slice(0,64):[];s.ceil=s.ceil==null?1:clamp(+s.ceil||0,0,1);s.wish=s.wish&&typeof s.wish==='object'&&(!s.wish.k||WISH_T[s.wish.k])?s.wish:{};s.wear=[...new Set(Array.isArray(s.wear)?s.wear.filter(id=>wearDef(id)):[])];s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
-  s.journal=Array.isArray(s.journal)?s.journal.slice(0,80).map(f=>({t:+f.t||0,by:String(f.by||''),k:String(f.k||'').slice(0,12),text:String(f.text||'').slice(0,300)})):[];s.inbox=Array.isArray(s.inbox)?s.inbox.slice(0,60).map(f=>({t:+f.t||0,from:String(f.from||'').slice(0,12),text:String(f.text||'').slice(0,300)})):[];s.jrT=+s.jrT||0;s.ibT=+s.ibT||0;
+  s.journal=Array.isArray(s.journal)?s.journal.slice(0,80).map(f=>Object.assign({t:+f.t||0,by:String(f.by||''),k:String(f.k||'').slice(0,16),text:String(f.text||'').slice(0,300)},f.i?{i:String(f.i).slice(0,40)}:{})):[];s.inbox=Array.isArray(s.inbox)?s.inbox.slice(0,60).map(f=>({t:+f.t||0,from:String(f.from||'').slice(0,12),text:String(f.text||'').slice(0,300)})):[];s.jrT=+s.jrT||0;s.ibT=+s.ibT||0;
   if(s.pet){s.pet.auto=s.pet.auto&&typeof s.pet.auto==='object'?s.pet.auto:{};s.pet.likes=s.pet.likes&&typeof s.pet.likes==='object'?s.pet.likes:{}}
   s.kr=s.kr&&typeof s.kr==='object'&&!Array.isArray(s.kr)?s.kr:{};
   s.kf=s.kf&&typeof s.kf==='object'&&!Array.isArray(s.kf)?s.kf:{};Object.keys(s.kf).forEach(k=>{const f=s.kf[k];if(!f||typeof f!=='object'){delete s.kf[k];return}f.p=Math.max(0,+f.p||0);f.s=Math.max(0,f.s|0);f.d=typeof f.d==='string'?f.d:''});
@@ -11196,7 +11236,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=44;
+const APP_V=45;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
