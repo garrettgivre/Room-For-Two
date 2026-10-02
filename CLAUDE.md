@@ -6,35 +6,61 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 - Work branch: `claude/room-for-two-github-migration-m7is0v` (it is also the repo's default branch; there is no `main`). Push there; Pages deploys from it.
 - Origin: started as a claude.ai artifact, moved here.
 
-## Start here (handoff, end of Sept 2026)
-This file is the only memory between sessions and accounts. Read this section, then search the sections below for whatever you touch. Later sections are newer and win where they disagree with earlier ones (e.g. the HUD bullet still mentions a menu sheet; the menu is now a floating wheel, see "Floating menu (v27)"). Keep adding a short section per feature/version at the bottom, as previous sessions did.
+## Start here (handoff, Oct 2026: read this first)
+This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
+Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v55** (`APP_V` in index.html, next to `hardRefresh`, and `CACHE='r42-v55'` in `sw.js`; always bump both together for anything user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 54 (clients older than this refresh themselves instead of saving).
+**Current build: v55** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v55'` in `sw.js`; bump both for anything
+user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 54 (older clients refresh
+themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
 **Who and how**
-- Garrett (the user) plays on Android with Beau; they share one Firestore room. Garrett tests on the live site, so a push to `claude/room-for-two-github-migration-m7is0v` is a release (Pages deploys in ~1 min). Commit and push when a feature is done and tested; no PRs, no other branches.
-- He asks for features in plain language, often several at once, and likes: a short plain summary of what changed, screenshots of results, refinement over redesign, cozy not RPG. Never add streaks, penalties or anything that punishes missing a day.
-- Commit messages: a short title, a few bullets, ending with the Co-Authored-By line the harness gives you. No model names in repo content.
+- Garrett (the user) plays on Android with his boyfriend Beau; they share one Firestore room. A push to
+  `claude/room-for-two-github-migration-m7is0v` is a release (GitHub Pages, ~1 min). Commit and push when a feature is done
+  and tested; no PRs, no other branches. Commit messages: short title, a few bullets, the Co-Authored-By line; no model names.
+- He asks in plain language, often several things at once, likes a short plain summary, screenshots, refinement over redesign,
+  cozy not RPG, never streaks or penalties. He said "it's turning Animal Crossing-esque" and wants that direction.
+- He watches usage: prefer doing work yourself over spawning many agents; when agents are used, keep 5-7 at a time
+  (17 in parallel hit the usage limit once). Sonnet agents modelled all the townsfolk and houses from the briefs in
+  `tools/dev/town/` and Claude reviewed every screenshot, sending fixes back.
 
-**Working method that has held up**
-- index.html is ~600 KB in one file: never rewrite it wholesale. Find things with grep (names in this file), make edits with small Python scripts that assert each target string occurs exactly once (on Garrett's PC: `~/anaconda3/python.exe`; keep scratch scripts in `.claude/`, which is gitignored), or the Edit tool.
-- After every edit: syntax check every `<script>` block with `node -e` + `new Function(...)` (see Testing).
-- Test in solo mode only (`python tools/dev/serve_solo.py`, then http://localhost:8765/index.html in the in-app browser or Playwright). It forces `R42_FIREBASE=null` and blocks the service worker. **Never point tests at the real Firebase room.** Inspect with a temporary `window.__T={get state(){return state},f:c=>eval(c)};` inserted before `const clock=`; remove it before committing (`grep -c __T index.html` must be 0; it was committed by accident once).
-- A hidden browser pane pauses requestAnimationFrame: step `loop(t)` / `updatePet(dt,t)` by hand, finish CSS/WAAPI animations with `document.getAnimations().forEach(a=>{try{a.finish()}catch(_){}})`. A reload may resume inside a shop (`spotResume`); home-only features need `travelTo('home')` first.
-- New state fields need: a default/sanitizer in `normalize` (backward compatible, old saves must load), a `MERGE` rule if both phones can change them (see v41/v42/v44 sync notes: three-way merge against `syncBase`, per-key revisions `kr`), and usually a debug button.
+**Working method**
+- index.html is ~1.8 MB in one file: never rewrite it wholesale. Find things with grep, edit with small Python scripts that
+  assert each target string occurs exactly once and write via a temp file + `os.replace` (on Garrett's PC: `~/anaconda3/python.exe`;
+  scratch scripts go in `.claude/`, which is gitignored), or the Edit tool.
+- After every edit: `node tools/dev/town/syn.js` (syntax-checks every script block).
+- Test headless in solo mode with `tools/dev/town/run.js` (see its README; Playwright goes in `.claude/pw`). It injects a
+  `__T` eval hook at serve time, so nothing test-only ever lands in index.html (still check `grep -c __T index.html` is 0).
+  Never point tests at the real Firebase room. Software GL is slow (building the town takes ~10 s there; phones are much faster).
+- Some features live between marker comments in index.html, e.g. `/* <townsfolk> */`, `/* <townsfolk-talk> */`,
+  `/* <town-life> */`, `/* <town-walk> */`, `/* <house-plans> */`, `/* <house-models> */`. They were generated from files in
+  the gitignored `.claude/town/` (integrate.py etc.), which a new session won't have: **edit the code in index.html directly now**.
+- New state fields need a default + sanitizer (`defaultState`/`normalize`, old saves must load) and a `MERGE` rule if both phones
+  change them (three-way merge against `syncBase`, per-key revisions `kr`).
 - Top-level const order matters (TDZ): code that runs at load can only use what's defined above it.
 
-**Open items / not verified on a phone**
-- v49 (shop assistants, three neighbourhoods, houses) was only tested in solo mode. Watch for: performance of the bigger houses on a phone, assistants' floor spots in shops (`crewPlace`), the map tabs fitting on narrow phones, invite timing.
-- v48 (traits, dreams, favours, town cheer) was only tested in solo mode. Watch for: two phones generating different dreams/favours (they are seeded by room code + day/count so they should match), balance of cheer levels (`CHEER` thresholds), the trait thresholds in `traitsOf`.
-- `firestore.rules` requires `cv >= 44` on writes; it has to be published by hand in the Firebase console and may not have been yet. Ask Garrett before assuming either way.
-- Older unverified items are listed in the "Where things stand" sections below (door moving, 12x12 room, arcade performance on phone).
-- `tools/art/interiors/` holds in-game screenshots + floor plans of every shop floor and `PROMPTS.md` (ChatGPT prompts for concept art of the shop exteriors). Garrett may come back with exterior art to model the town buildings after.
+**Where the game is now (v49-v55, details in the sections at the bottom)**
+- 32 residents (`RESIDENTS`): 9 shopkeepers, 8 shop assistants (shifts: keepers 7-17, assistants the rest, so shops never close),
+  15 townsfolk with jobs and daily rounds. All have KBIB dialog, Inbox letters, Capsule Pals, character sheets in
+  `tools/writing/townsfolk/` and the bible `tools/writing/keepers-bible.md`.
+- 23 houses (`HOUSES`, `HOUSE_DEF`, `TM_BODY['h_'+id]`) in four neighbourhoods; some shared (roommates, couples, Tutti + twins).
+- Town life (v51): Neighbours page (people, gifts, garden, calendar, parcels between the two of you), birthdays, weather, jobs as
+  close-up actions, weekly events and seasonal festivals at houses, customers in shops, visitors knocking at home.
+- The outdoors (v52-v55): the Explore map is one walkable round island (`worldDesign`, plaza + shops ring + 4 neighbourhood lanes),
+  full screen, a curved "rolling hill" world (engine shader bend), the pet walks the streets (`tw`, `twStart`, `twWalk`), doors lead in,
+  residents walk their schedules and show as portrait pins when far, the Places wheel hops anywhere.
 
-**Direction (what Garrett has said he wants next, not built)**
-- More maps: a neighbourhood with the shopkeepers' houses, other townspeople. Several workers per shop so keepers can roam (visit each other, the pet, the town) without their shop closing. Life stages matter less over time; most play is young adult / adult (egg to young adult is short, elder is late game).
-- Keep balancing pet care, home decorating (Beau leans Happy Home Designer) and the town (Garrett leans Tamagotchi); new systems should hook into `td()` events so they reinforce each other.
-- Map: Dark Cloud georama feel (arranging the town), not an overworld to walk around.
+**Open items / what to do next**
+1. **Map performance on phones is the top issue.** Garrett reported heavy lag at v54. v55 added culling, low-detail town geometry,
+   merged static meshes with vertex colours and a preloading progress bar, but it hasn't been checked on a phone. Zoomed out still
+   draws ~1450 meshes (many small animated pieces, per-texture signs/windows). Ideas: draw the far view at half rate and without
+   shadows/outlines, lower `GEO_LOD` further, fewer decorations, merge animated pieces per building, measure with `tm.R.drawn`.
+2. **Rolling-hill feel:** Garrett wanted the Animal Crossing rolling landscape, not a round island. v55 lowered/widened the street camera and
+   made the bend forward-only; he hasn't confirmed it's right. He also hasn't said whether the round island shape itself should stay.
+3. Not verified on a phone: everything from v49 on (assistants, houses, town life, walking, residents outdoors).
+4. `firestore.rules` requires `cv >= 44` on writes and must be published by hand in the Firebase console; ask Garrett before assuming.
+5. Ideas he liked but not built: residents going in/out of doors visibly, benches to sit on, a plaza market, residents asking you to
+   redecorate a room in their house (Happy Home Designer), new townsfolk moving into the empty lots, ambient sound.
 
 ## Files
 - `index.html` — the whole app (~565 KB): CSS, a custom WebGL2 engine, game logic, UI. No build step, no framework.
