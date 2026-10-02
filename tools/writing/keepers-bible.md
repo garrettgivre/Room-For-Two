@@ -215,5 +215,179 @@ Friend for keepers, Regular for assistants, announced by an Inbox note). Roommat
 - **Sugarloaf Lane** (bakery smells and nap-time quiet): Bunbun (The Warm Loaf), Pip next door (The Jam Jar), Cushy, Dusty. Two empty lots.
 - **Bubble Bay** (spa steam and style): Fizz, Loofah, Stitch; Pom & Blush share a house (best friends and co-owners); Gloss & Bobbin are flatmates. Two empty lots.
 - **Playhouse Hill** (games, gadgets, building): Boing & Joy share the Game Night house; Tock & Sketch are a couple (they met comparing rulers); Bolt; Pixel. Three empty lots.
+- Later additions: Sugarloaf Lane also has Tutti with her niece and nephew, the muffin twins Scone & Crumb (The Sundae Cottage), and Dr. Patch's little clinic; Bubble Bay has Beacon's lighthouse cottage; Playhouse Hill has Parcel & Fold (flatmates, The Paper Post) and Cobble's pebble cottage.
+- **Lantern Meadow** (wildflowers, lamplight, the mayor's porch): Mayor Marsh, Dewey, Lumi & Nimbus (housemates), Posy & Prickles (a couple, The Potted Lodge), Echo. One lot left in each neighbourhood, two in the Meadow.
 
 Empty lots ("Someone new soon!") are for townsfolk who move in later. New residents need: a KEEPERS model, a RESIDENTS entry, KBIB lines, a HOUSES entry and a house.
+
+---
+
+# The townsfolk
+
+Neighbours with their own jobs and routines (not shop staff). Their doors are open whenever they are home; each is out on their rounds
+for part of the day (`RESIDENTS[k].out` hours, US Central, `away` says where). Full sheets with every line: `tools/writing/townsfolk/<key>.md`.
+
+## Mayor Marsh · Mayor
+- **Look:** a plump, pillowy marshmallow cylinder with rounded edges and a lightly toasted golden top. A little black top hat with a pink band (tipped a touch to one side), round gold spectacles, a curly brown moustache, a pink bow tie, a pink-and-lime sash across the belly with a gold rosette medal, stubby arms in white mitts, shiny black shoes. The right mitt holds a small wooden gavel.
+- **Voice:** pompous in the sweetest way. Full sentences, announcements, "ahem" before anything important. Calls everyone "dear resident". Deflates into a mumble when he is touched.
+- **Loves:** ceremonies, ribbon cuttings, the first of anything, remembering birthdays (all of them), a speech with three parts. **Can't stand:** hot afternoons (he gets a bit sticky), anyone cutting a ribbon before he has finished the speech, an empty guest book.
+- **Quirks:** practises a speech: clears his throat into a fist, puffs his moustache up like a pigeon, then gives a tiny bow to nobody. Taps the gavel on his palm when pleased. Gets sticky in hot weather and apologises to every handrail.
+- **Dream:** to cut a ribbon so grand that the scissors have to be fetched from Bolt's workshop.
+- **With the two of you:** treats you as the town's founding couple and the guests of honour at everything. Knows both your birthdays and mentions them a month early. Wants {n} to be named Citizen of the Month, every month.
+- **Relationships:**
+  - **Bunbun:** brings him a warm bun at ten, and he declares it a municipal holiday each time.
+  - **Bolt:** lends the giant ribbon scissors and always checks he gets them back.
+  - **Fizz:** the only one who laughs at every joke in the speeches, so he is invited to everything.
+
+## Parcel · Mail carrier
+- **Look:** a chunky cardboard box creature, warm kraft brown with a tape stripe over the top and folded flaps along the bottom. The face is an address-label patch (cream paper, a pink stamp with a heart in the corner, a faint postmark and two address lines), with big blue eyes, pink cheeks and a happy open mouth. A heart sticker, the FRAGILE kind with no words, sits on the side and another on the back. A sky-blue postal cap with a lime brim and a heart badge sits tilted on top. A sky-blue satchel hangs on the left hip on a strap across the front, stuffed with envelopes. Sturdy little boots with lime laces, short kraft arms, and a letter held out in the right hand.
+- **Voice:** cheerful, quick, on schedule. Talks about the weather and the routes in the same breath ("light drizzle on Maker's Lane, so I took the long way"). Gives times like "ten past nine". Warm and chatty, never nosy.
+- **Loves:** stamps, a dry morning, knowing which door is which, a letter with a hand-drawn heart on it. **Can't stand:** wet cardboard, a missing house number, a letter with no name on it.
+- **Quirks:** every few seconds of idling Parcel checks the satchel: an envelope pops up, Parcel reads the address, nods, and tucks it back. Carries a different letter every time. On the mail round 8:00 to 12:00.
+- **With the two of you:** hands you a note from the other one before saying hello, and always waits to see you read it. Calls the pair of you "the two-door house".
+- **Relationships:** Fold, their flatmate, paints the signs; Parcel reads every one out loud on the round. Bunbun saves them a warm roll at the Snack Shack. Tock counts the letters with them, and they never agree on the total.
+
+## Fold · Sign painter
+- **Look:** an origami crane come to life, built from flat paper facets with crisp creases. A pink bipyramid body in two shades, a short folded neck, a round faceted head with big glossy dot eyes, pink blush, a small gold beak and a red crown fold. Wings are lime washi paper with wave arcs and dots, each in three panels; the outer panel hinges on a crease. Two thin folded legs with a bent knee and flat triangle feet, a pointed paper tail, and a tiny paintbrush tucked under one wing.
+- **Voice:** quiet, precise, a little poetic about corners and creases. Short sentences, long pauses. Apologises to the weather.
+- **Loves:** a clean crease, the corner of a fresh sheet, painting the curl of a sign letter, giving away tiny paper gifts. **Can't stand:** rain, damp, being unfolded by accident, a dog-eared edge.
+- **Quirks:** unfolds one wing, then refolds it neatly with a small crinkle and a nod. Now and then does a slow paper-flap stretch. Leaves small paper gifts (a boat, a frog, a heart) in people's pockets and pretends it was the wind.
+- **Dream:** to paint one sign so well that nobody notices it is a sign, only the street looking happier.
+- **With the two of you:** makes {n} and both of you a paper gift each visit and says the fold was "nothing". Asks which corner of the room you like best.
+- **Relationships:**
+  - **Parcel:** flatmate. Fold labels everything in the flat with lovely lettering; Parcel stamps over it.
+  - **Stitch:** swaps scraps. Fold gives paper, Stitch gives thread, nobody keeps score.
+  - **Bolt:** hires Fold for every shop sign and then asks for it "a bit bigger".
+  - **Pencil:** shares sketches and strong opinions about straight lines.
+
+## Posy · Gardener
+- **Look:** a terracotta flower pot with a cream, pink and yellow painted band round the rim, a round face on the pot and rosy cheeks. Soil on top with a big pink five-petal flower (yellow centre) on a long stem like a hairdo, plus two leaves that wave like arms. Little vine-green arms with yellow gardening gloves, a blue apron with a pocket (a heart patch and a trowel poking out), and yellow rain boots.
+- **Voice:** soft, sunny and unhurried. Talks to plants mid-sentence and answers them. Hums between thoughts. Goes pink and changes the subject when someone says something nice about her.
+- **Loves:** the first warm morning of spring, seedlings that came up when they were told to, Prickles, good rain, handing people a pot with something small growing in it. **Can't stand:** stepped-on tulips, someone pulling a weed "to see how it goes", being rushed.
+- **Quirks:** now and then she fetches a tiny watering can, waters her own flower, and the petals perk up and do a little twirl. She gives seedlings away and is secretly sad when one leaves.
+- **Dream:** a whole hillside of sunflowers that all face the same way on purpose.
+- **With the two of you:** gives you a seedling to look after, then asks about it every visit as if it were a mutual friend. Wants {n} to smell the flowers first.
+- **Relationships:**
+  - **Prickles:** her partner. Retired cactus adventurer. She waters him on a schedule he claims is too much. He tells her stories and she laughs in the right places, every time.
+  - **Bunbun:** buys her herbs for the bakery and pays in cookies, so the beds by the Snack Shack get extra attention.
+  - **Cushy:** naps on the park bench she keeps tidy. Posy pretends not to notice the pillow and then moves the shade so it stays cool.
+  - **Bolt:** built her a raised bed. She planted it so full that he can no longer find the corner he started from.
+
+## Prickles · Retired adventurer
+- **Look:** a round, ribbed barrel cactus growing out of a squat blue-glazed pot with white polka dots (the pot is his feet). Soft cream spine tufts on the ribs, none near the face. A cream pith helmet with a brown band and a pink flower blooming on the brim, an orange scarf knotted at the front, bushy white brows over sleepy, kind brown eyes, rosy cheeks, a small content smile. Stubby cactus arms; the left one leans on a wooden walking stick with a brass knob and a pink pennant.
+- **Voice:** gruff on the outside. Short sentences, a grumble first, then something kind slips out. Calls everyone "kid" or "youngster". Every sentence about the weather turns into a story about a desert or the sea.
+- **Loves:** Posy, his helmet, the one good hour of afternoon sun, telling the one about the sandstorm. **Can't stand:** being called old, soggy soil, people who say they have already heard that one.
+- **Quirks:** tells an old story to nobody in particular and waves the walking stick for the big parts; nods off for a second and the flower droops, then wakes with a jolt and the flower pops back up; pretends he was only resting his eyes.
+- **Dream:** to take Posy somewhere warm and wet at last, and to see the sea at sunrise one more time.
+- **With the two of you:** grumbles that you should "sit, sit, you're making the place untidy", then tells you the story anyway. Treats {n} like a junior expedition member and checks it has a hat.
+- **Relationships:**
+  - **Posy:** his partner. He says she is "the only plant I ever followed anywhere". She waters him on time; he pretends it is a nuisance.
+  - **Bunbun:** brings him the burnt cookies on purpose, because he said once that he likes them. He has never told her it was a joke.
+  - **Stitch:** mended the scarf twice and will not take payment. Prickles leaves a jar of dried flowers on the step.
+  - **Cushy:** the only one who stays awake for the whole sandstorm story, which means Prickles thinks she is a genius.
+
+## Dewey · Librarian
+**Look:** a living hardback book standing upright in fuzzy pink slippers. Plum cover with gold corner protectors and gold title lines, hinged at the spine so the front cover hangs a little open like a cardigan. Cream page block with fine page lines shows down the open side. The face sits on the cover's cream title label: brown eyes behind round gold reading glasses, soft cream brows, pink cheeks. A gold glasses chain loops under the chin. A pink ribbon bookmark hangs from the bottom edge like a tail. Cream noodle arms come out between the covers; one holds a tiny book.
+**Voice:** soft, a little whispery, always one fact further than you asked for. Says "oh, you'll like this one" before every recommendation. Never raises its voice, shushes itself.
+**Loves:** the smell of a new spine, the 10:00 quiet, matching the right book to the right person, margins, rainy afternoons, tea going cold because the chapter wasn't finished.
+**Can't stand:** dog-eared pages (it forgives them, but it remembers), spoilers, damp.
+**Quirks:** shushes softly with one finger to where its mouth is, then the pages flutter as it chuckles at itself. Sometimes it opens its cover and a little paper moth flutters out, circles the room and goes back in.
+**With the two of you:** Dewey keeps a card for each of you and pretends it doesn't. It will have a book set aside for whoever came in looking tired.
+
+## Lumi · Lamplighter
+**Look.** A little paper lantern with a face: a rounded body of frosted warm-cream panels that glow from inside (the glow breathes slowly), held together by thin plum ribs and rings, with a dark plum metal cap like a topknot and a gold carrying ring on top. Soft half-lidded dark eyes with tiny brows, pink cheeks and a small sleepy smile on the front panel. Little warm-tan noodle arms, plum feet. In one hand a long plum lamplighter's pole with a gold cup and a flame-shaped glowing tip that flickers.
+**Voice.** Soft and slow, a little dreamy. Trails off, notices small things (a star, someone leaving a porch light on). Yawns in the daytime and doesn't apologise. Never in a hurry, always on time.
+**Loves.** The minute the sky turns lilac, warm porch lights, being thanked by a lamp, hot milk. **Can't stand.** Bright noon, burnt-out bulbs, being rushed.
+**Quirks.** Every so often the inner light sputters low like a yawn, eyes shut, mouth wide. Then it brightens up in a happy flare, flame flaring too, with a little hop and a wave.
+**With the two of you.** Waves the pole in greeting and tells you which star is out. Remembers who left a light on for whom.
+**Relationships.** Nimbus (housemate): makes the rain clouds sound like weather reports, Lumi finds it soothing. Cushy: both nap at the wrong hours. Joy: stays up for the late rounds.
+
+## Nimbus · Weather watcher
+**Look.** A small fluffy rain cloud in white and lilac puffs, floating a hand's width off the ground with a slow bob. A sweet round face on the front with big blue eyes, soft brows, pink cheeks and a tiny mouth. Little puff arms; the right one carries a pastel pink umbrella with yellow scallops and a gold handle. A few light-blue raindrops drip from underneath, shrink and start again.
+**Voice.** Earnest and a bit gloomy-sounding, but always lands on the hopeful side. Forecasts everything, including things that have nothing to do with weather. Apologises for drizzle, for clouds, for the damp. Says "mostly" and "likely" a lot.
+**Loves.** A clear sunrise from the hill, puddles with someone jumping in them, rainbows (never takes credit), a good barometer. **Can't stand.** Being called gloomy, umbrellas left open indoors, forecasts people ignore.
+**Quirks.** Every so often the face scrunches up, the whole cloud tips back, and Nimbus sneezes a little shower in every direction. Then a rainbow peeks out above and Nimbus looks quietly pleased, and says sorry about the sprinkle.
+**With the two of you.** Gives you the day's forecast before hello. Checks whether your pet needs a coat. Is thrilled when you say it was sunny where you were.
+**Relationships.** Lumi (housemate): "the only one who doesn't mind the drip", they share the kettle and a window. Bunbun: leaves forecasts for the bakery ("chance of cookies: high"). Fizz: always asks him politely to keep the bubbles to a light shower.
+
+## Beacon · Harbour keeper
+**Look.** A stubby little lighthouse with a face: a chunky tapered tower in red and white candy bands, about half as wide as it is tall. A railed gold balcony ring near the top, a glass lamp room that glows warm with a turning light beam, and a red dome cap like a hat. The face sits on the white stripe under the balcony: big dark-blue eyes, pink cheeks, a small steady smile. A blue-and-cream knitted sailor's scarf with one tail hanging, warm-tan noodle arms, yellow rubber boots, a coil of rope at the hip. One hand holds a brass spyglass.
+**Voice.** Steady and unhurried, salty-sweet. Talks in sea-weather sayings and half believes them. A bit lonely out on the point, so very glad when anyone turns up, and it shows in how long the goodbyes take.
+**Loves.** Visitors, fog horns heard from far off, hot cocoa in a tin mug, lost things that wash up. **Can't stand.** Empty harbours, being called a streetlamp, boats that leave without waving.
+**Quirks.** Every so often the top light sweeps round fast, then Beacon lifts the spyglass, squints at an imaginary boat way out, lowers it, and waves with the other hand.
+**With the two of you.** Counts you in when you arrive, as if you were a ship. Keeps a shelf of things it has adopted: a single mitten, a button, a very patient crab shell.
+**Relationships.** Spool (the tailor's assistant) knitted the scarf. Lumi flashes a lamp back at the point on clear nights. Bunbun sends the burnt cookies down the pier.
+
+## Tutti · Ice-cream vendor
+- **Look:** a chubby golden waffle cone (embossed diamond grid) that tapers to a rounded tip on two little cream feet. Two big scoops sit on top like a hairdo, strawberry pink and mint, with ruffled skirts over the rim, rainbow sprinkles and a cherry with a green stem in the valley between them. Round eyes and a warm smile on the upper cone, pink cheeks, a pink-and-white striped vendor apron with a pocket, cream mitten hands, a mini cone in the right one.
+- **Voice:** sing-song and bustling, a big-sister voice. Ends sentences going up. Calls everyone "sweet pea" and "my loves". Talks while doing three other things and half-turns every time she hears a small noise.
+- **Loves:** a full freezer, sprinkles for everybody (free, always), Sunday afternoon queues, the sound of Scone and Crumb laughing from across the plaza. **Can't stand:** a dropped cone, the sun on a bad day, someone saying "just one scoop".
+- **Quirks:** one of her scoops starts to melt and a drip slides down the cone. She catches it with a lick, then the cherry bounces. She keeps glancing out over the plaza to check on the twins.
+- **Dream:** a cart big enough to seat the whole town, and a day when the twins both sit still for a family photo.
+- **With the two of you:** gives you the first sprinkle shake of the day for free. Asks if you've eaten, then asks again. Wants {n} to try the flavour she hasn't named yet.
+- **Relationships:**
+  - **Scone and Crumb:** her nephews. She raised them in the little house behind the cart and never stops saying so. "Don't touch the cart" is her most repeated sentence.
+  - **Bunbun:** swaps cones for cookies every Friday. They argue about who makes the better crumb.
+  - **Fizz:** brings her bubble-gum scoops for tasting. She says they are "interesting" and means it kindly.
+
+## Scone · Kid
+- **Look:** a chubby blueberry muffin kid: a sky-blue pleated paper-cup body, a big golden muffin-top head dotted with blue berries, a lime cap worn backwards (the little adjuster strap shows at the front), a skinned-knee plaster on one leg, red sneakers, one huge grin and wide brown eyes with thick brows. Slightly taller than his sister.
+- **Voice:** loud, fast, all caps energy without the caps. Announces everything he does as it happens. Counts down out loud. Every sentence is a race.
+- **Loves:** winning, being first, Pip's jam tarts, Boing's wind-up toys, jumping off the swing at the highest point. **Can't stand:** waiting, "walk, don't run", coming second to a pigeon.
+- **Quirks:** crouches in a racing start, holds it, shouts "GO", does a jumping spin and sprints on the spot. Taps one foot when he has to stand still.
+- **Dream:** to run all the way round the town before the bakery bell stops ringing.
+- **With the two of you:** challenges {n} to races it can't hear about. Wants you to time him. Crumb is "my sister, she finds the good rocks, I find the fast ones".
+- **Relationships:**
+  - **Tutti:** the aunt who hands out the first scoop of the day. He licks fast and gets brain freeze every time.
+  - **Pip:** the coolest grown-up he knows, because Pip is only a bit grown-up.
+  - **Boing:** best toys in town, and the only one who lets him wind them up himself.
+  - **Mayor Marsh:** the moustache twitches when he talks and Scone can't keep a straight face.
+
+## Crumb · Kid
+- **Look:** a round chocolate-chip muffin kid: a lilac pleated paper-cup body, a dark chocolate muffin-top head with glossy chips, a big pink bow on one side, big green eyes, a small shy smile, pink sneakers, and a little cyan backpack with a gold button (full of pebbles). A touch smaller than her brother.
+- **Voice:** soft, short, a little hesitant. Starts sentences and finishes them quietly. Whispers when she's excited. Asks questions instead of stating things.
+- **Loves:** pebbles with stripes, holes or secrets in them, the snail by the slide, drawing round her best finds, Scone, even when he's loud. **Can't stand:** being picked first for anything, loud sirens, dropping her bag.
+- **Quirks:** pulls out a found pebble and holds it up to the light, turning it, then puts it carefully away. Sometimes crumbs fall off her muffin top and she gasps and watches them land.
+- **Dream:** to find a pebble that is a perfect heart, and give it to someone without saying anything.
+- **With the two of you:** shows {n} her best pebble when she thinks no one is looking. Gives you one to keep. It's your pebble forever.
+- **Relationships:**
+  - **Tutti:** her aunt hums while she scoops, and Crumb hums along without knowing it.
+  - **Pip:** he lets her taste the jam first because she says it carefully.
+  - **Boing:** the only person who has never laughed at her pebbles. He wound one up to see if it would roll. It rolled.
+  - **Mayor Marsh:** she stares at the moustache and tries not to giggle, and loses.
+
+## Echo · Street musician
+- **Look:** a little gramophone creature. A chunky cherry-wood box with gold trim is the whole body, the face on a cream plate on the front. A big brass horn lined in pink rises from the lid, tilted a little back like a hairdo. A record with a pink label turns slowly on the lid, and a crank on one side turns along with it. Small pink arms hold a tiny ukulele and a baton, on small dark-wood feet. Round-headed music notes in candy colours drift up out of the horn.
+- **Voice:** dreamy and romantic, half-singing. Speaks in little lyric lines, always original, often trailing off with "..." Gets shy and plain-spoken when nobody is listening.
+- **Loves:** golden hour, the first note of anything, knowing your favourite tune, a quiet audience. **Can't stand:** a scratched record, being asked for an encore too soon, silence that feels awkward.
+- **Quirks:** every so often the record spins up fast, the horn bobs to a beat only Echo hears, notes puff out in a burst, and it finishes with a small bow. Remembers each person's favourite tune and hums it back when they walk past. Offstage it hides behind the horn.
+- **With the two of you:** hums one tune for you and a different one for Beau, and has never mixed them up. Plays a little louder when you stop to listen.
+- **baker:** "Bunbun leaves a roll on my lid at four. The record skips once, and I let it."
+- **lantern:** "Lantern lights the plaza as I finish. Our timing is a song in itself."
+- **toymaker:** "Boing bounces on the beat. Always the beat. I've stopped trying to fool him."
+
+## Dr. Patch · Town doctor
+- **Look:** a squat, puffy sticking plaster standing on two little cream-and-white shoes. Peach fabric with a cream pad in the middle that holds a calm face (kind blue eyes, soft brows, a small smile, pink cheeks), tiny breathing holes along both ends, a pink heart badge on the pad, a silver head mirror on a band across the top, and a stethoscope round the neck with a silver chest piece. One hand carries a pink lollipop for brave patients. No cross anywhere; hearts only.
+- **Voice:** calm, low and slow. Short reassuring sentences, tiny pep talks, "that's alright" before anything else. Never alarmed. Prescribes naps, water and snacks, in that order.
+- **Loves:** a good nap prescription, patients who say "ow" out loud, warm tea, the sound of a steady heartbeat. **Can't stand:** people who say "it's nothing" and then limp, empty lollipop jars, rushing.
+- **Quirks:** now and then listens to its own heartbeat, eyes closed, a heart puffs up above, then nods satisfied. Or holds out the lollipop to nobody, glances round, and decides someone brave will turn up.
+- **Dream:** a day where the waiting room is empty because everyone is simply fine.
+- **With the two of you:** checks you both over with a smile. Wants {n} to have a nap on the house, and Garrett and Beau to drink some water.
+- **Relationships:**
+  - **Bunbun:** brings Patch burnt cookies as thanks. Patch eats them and prescribes her a sit-down.
+  - **Cushy:** the best colleague Patch has: a medically approved sleeper. They compare pillows.
+  - **Bolt:** hard hat, loud mallet, one thumb a week. Patch keeps his plasters in the toolbox.
+  - **Joy:** a regular after every arcade high score, wrists first.
+
+## Cobble · Road mender
+- **Look:** a big, smooth river pebble, wider than he is tall, in soft grey-lavender stone with fine speckles and a few lighter mineral bands. A little moss tuft sticks up like a cowlick, with a small yellow hard hat perched on the other side. Sleepy half-closed eyes, a slow small smile, pink cheeks. A high-vis orange vest (open at the front) with a lime reflective stripe, stubby stone arms, flat round feet, and a little wooden mallet he carries by his side.
+- **Voice:** slow, short sentences, a beat late. Deadpan and kind. Says "Mm." and "Fair." Never raises his voice, never needs to. Leaves a pause where other people put a joke, and the pause is the joke.
+- **Loves:** things that last, a path with no wobbly stones, rain after the work is done, sitting on a wall he mended, a good listener's silence. **Can't stand:** people running on fresh cobbles (he doesn't say so, he just looks at them), shortcuts across the flower beds, anything described as "temporary".
+- **Quirks:** now and then he leans over, very slowly sets down a tiny cobblestone, taps it twice with the mallet and admires it for a long moment. Other times he has a big, slow yawn that takes most of a minute. Everything he does arrives slightly after you expect it.
+- **Dream:** one road, all the way round the town, with every stone fitted so well the rain doesn't notice it.
+- **With the two of you:** treats you as people worth waiting for. Remembers which stone you stood on last time. Lets {n} sit on the mallet bag while he works and never mentions it.
+- **Relationships:**
+  - **Bolt:** his neighbour up on Playhouse Hill. Bolt talks fast about the next build and Cobble nods through all of it. Bolt says it's the only conversation he's ever finished.
+  - **Bunbun:** leaves a warm roll on the wall by the cobbles each morning. Cobble pretends he found it. He did not find it.
+  - **Cushy:** they once sat side by side for an afternoon without speaking, and both agree it was the best talk they've had.
+  - **Posy:** she plants along his paths. He fits the stones around her roots instead of through them, and never mentions it.
