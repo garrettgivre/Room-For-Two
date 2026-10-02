@@ -686,6 +686,17 @@ body.away .tag{visibility:hidden}
 .tm-cheer .tclv{width:40px;height:40px;border-width:2.5px;box-shadow:none}.tm-cheer .tclv b{font-size:18px}.tm-cheer .tct>b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tm-cheer .tdbar{margin-top:3px;height:9px;min-width:110px}
 .tm-pop.gen .tm-cheer,.town3.arr .tm-cheer{opacity:0;pointer-events:none}
 .tm-cheer[hidden]{display:none}
+.lifetabs{display:flex;gap:4px;margin:6px 0 10px;padding:3px;background:#F6EEFF;border:3px solid var(--ink);border-radius:16px}.lifetabs button{flex:1;border:0;background:none;font-family:var(--disp);font-size:13px;color:var(--ink);padding:7px 4px;border-radius:12px;cursor:pointer}.lifetabs button.on{background:var(--sun)}
+.lifewx{display:inline-flex;align-items:center;gap:4px;font-family:var(--disp);font-size:13px;padding:3px 10px 3px 6px;border:2.5px solid var(--ink);border-radius:14px;background:#fff}
+.lifeface img{width:40px;height:40px;object-fit:contain}.lifeface b{font-family:var(--disp);font-size:20px}
+.lifep .tdt small+small{margin-top:1px}.lifewish{margin:2px 0 8px}
+.lifegift{margin:4px 0 12px;padding:8px 10px;background:#FFFBE6;border:3px solid var(--ink);border-radius:16px}.lifegift .row-label{display:flex;align-items:center;gap:6px}.lifegift .gm-x{margin-left:auto;width:30px;height:30px}
+.lifegoods,.lifeseeds{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.lifegoods .gel,.lifeseeds .gel{width:auto;min-height:32px;padding:0 10px;font-size:13px}.lifegoods small{opacity:.7}
+.lifelist{margin:6px 0;padding-left:18px;text-align:left}.lifelist li{margin:2px 0}.lifestory{font-style:italic;text-align:left;max-height:40vh;overflow:auto}
+.lifenote{display:flex;align-items:center;gap:8px;font-family:var(--disp);margin:6px 0}.lifenote input{flex:1;min-width:0;padding:8px 10px;border:2.5px solid var(--ink);border-radius:12px;font:inherit}
+.lifewxrow{display:flex;gap:8px;margin:4px 0 10px}.lifewxrow>div{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px;background:#fff;border:2.5px solid var(--ink);border-radius:14px}.lifewxrow b{font-family:var(--disp);font-weight:400;font-size:13px}.lifewxrow small{font-size:11px}
+.lsv{display:block}.tdi .lsv{width:36px;height:36px}
+#visBadge{position:fixed;z-index:6}#visBadge[hidden]{display:none}
 .tm-cheer{top:calc(env(safe-area-inset-top,0px) + 112px)}
 .tm-tabs{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;top:calc(env(safe-area-inset-top,0px) + 62px);display:flex;padding:3px;gap:2px;background:rgba(255,251,240,.95);border:3px solid var(--ink);border-radius:18px;box-shadow:0 4px 0 var(--ink)}
 .tm-tabs button{border:0;background:none;font-family:var(--disp);font-size:12px;color:var(--ink);padding:6px 7px;border-radius:13px;cursor:pointer}
@@ -2026,7 +2037,7 @@ const WALLS=['squiggle','splat','bubble','stripe','stars','sunset','grid','plain
 function uid(){return Math.random().toString(36).slice(2,9)}
 function defaultState(){
   const now=Date.now();
-  return {v:1,pv:2,rev:0,floor:'checker',wall:'squiggle',sky:'classic',hearts:60,
+  return {gifts:{},disc:{},acts:{},seeds:{},garden:[],hdeco:{},parcels:[],evseen:[],v:1,pv:2,rev:0,floor:'checker',wall:'squiggle',sky:'classic',hearts:60,
     items:[
       {id:uid(),k:'rug',x:0,z:.3,r:0,c:8},
       {id:uid(),k:'bed',x:-2.4,z:-2.3,r:0,c:0},
@@ -10382,7 +10393,10 @@ const resHere=k=>!!(RESIDENTS[k]&&KEEPERS[k]);
 const townHour=()=>skyHourOverride??centralHour();
 let dbgAllHome=false;
 const inHours=(h,[a,b])=>a<=b?h>=a&&h<b:h>=a||h<b;
-function resWhere(k,h){const R=RESIDENTS[k];if(!R)return'shop';if(dbgAllHome)return'home';h=h??townHour();if(!R.shop)return R.out&&inHours(h,R.out)?'out':'home';return R.boss?(h>=7&&h<17?'shop':'home'):(h>=7&&h<13?'home':'shop')}
+function resWhere(k,h){const R=RESIDENTS[k];if(!R)return'shop';if(dbgAllHome)return'home';h=h??townHour();
+  if(typeof eventNow==='function'){const E=eventNow(h);if(evGuest(k,E))return HOUSES[E.house].res.includes(k)?'home':'event'}
+  const w=!R.shop?(R.out&&inHours(h,R.out)?'out':'home'):R.boss?(h>=7&&h<17?'shop':'home'):(h>=7&&h<13?'home':'shop');
+  return w==='home'&&typeof shopVisitOf==='function'&&shopVisitOf(k,h)?'visit':w}
 const hourName=h=>{h=((h%24)+24)%24;const a=h<12?'am':'pm',n=h%12||12;return n+(a==='am'?' am':' pm')};
 function resUntil(k){const R=RESIDENTS[k];if(!R.shop)return R.out?R.out[1]:7;return R.boss?(resWhere(k)==='shop'?17:7):(resWhere(k)==='home'?13:7)}
 // The three neighbourhoods. Who lives where follows the friendships in the character bible; roommates share working hours so
@@ -10401,9 +10415,9 @@ const HOUSES={bunbun:{hood:'sugar',res:['baker'],at:[1,4,1]},pip:{hood:'sugar',r
 const houseOf=k=>Object.keys(HOUSES).find(h=>HOUSES[h].res.includes(k));
 const resNames=ks=>ks.map(k=>RESIDENTS[k].n).join(' & ');
 // a house can be visited once one of its residents has invited you (Friend for keepers, Regular for assistants) and someone's home
-function houseVisit(id){const H=HOUSES[id],R=H.res.map(k=>[k,RESIDENTS[k]]),inv=R.filter(([k,r])=>sandbox||!r.shop||kfLevel(kfOf(k).p)>=(r.boss?2:1)),home=R.filter(([k])=>resWhere(k)==='home'),nm=a=>resNames(a.map(q=>q[0]));
+function houseVisit(id){{const E=typeof eventNow==='function'&&eventNow();if(E&&E.house===id)return{ok:1,why:`${E.n} is on! ${E.t}`}}const H=HOUSES[id],R=H.res.map(k=>[k,RESIDENTS[k]]),inv=R.filter(([k,r])=>sandbox||!r.shop||kfLevel(kfOf(k).p)>=(r.boss?2:1)),home=R.filter(([k])=>resWhere(k)==='home'),nm=a=>resNames(a.map(q=>q[0]));
   if(!inv.length){const [k,r]=R[0],shop=SHOPS[r.shop]?SHOPS[r.shop].n:'their shop';return{ok:0,btn:'Not invited yet',why:`${nm(R)} ${R.length>1?'haven’t':'hasn’t'} invited you over yet. Chat with ${r.n} at ${shop} to become ${r.boss?'friends':'regulars'}.`}}
-  if(!home.length){const [k,r]=R[0],where=r.shop?'at '+(SHOPS[r.shop]?SHOPS[r.shop].n:'work'):(r.away||'out');return{ok:0,btn:'Nobody home',why:`${R.length>1?'Everyone’s out. ':''}${r.n} is ${where} until ${hourName(resUntil(k))}.`}}
+  if(!home.length){const [k,r]=R[0],w=resWhere(k);return{ok:0,btn:'Nobody home',why:`${R.length>1?'Everyone’s out. ':''}${r.n} is ${lifeWhere(k)}${w==='shop'||w==='out'?` until ${hourName(resUntil(k))}`:''}.`}}
   return{ok:1,why:`${nm(home)} ${home.length>1?'are':'is'} home. Come on in!`}}
 // House exteriors on the map are TM_BODY['h_'+id] (like the shops'); without one the map builds the plan's boxes.
 // HOUSE_DEF[id] = {n, blurb, door, color, plan, layout, kg:{resident:[gx,gz]}, lines:{resident:{hi:[]}}} (filled in per house)
@@ -10412,11 +10426,17 @@ function houseShop(id){const H=HOUSES[id],D=HOUSE_DEF[id]||{},R0=RESIDENTS[H.res
     rooms:{L:{n:'Living room',f:'wood',w:'plaster'},B:{n:'Bedroom',f:'wood',w:'gingham'},K:{n:'Kitchen',f:'jellytile',w:'plain'}},doors:[[2,1,'e'],[1,2,'s']],open:[],rugs:[]}]};
   return{n:D.n||(H.res.length>1?resNames(H.res)+'’s place':R0.n+'’s house'),house:1,hid:id,hood:H.hood,res:H.res,owner:H.res[0],kind:'home',door:D.door||'classic',icon:'tab-room',color:D.color||'#FFB3DA',blurb:D.blurb||'',tf:()=>[],tw:()=>[],plan:P,
     kgs:H.res.map((k,i)=>(D.kg&&D.kg[k])||[1.6+i*1.1,1.2]),
-    layout:D.layout||[{k:'linensofa',g:[1.5,.5]},{k:'oaktable',g:[1.5,1.6]},{k:'lantern',g:[2.6,.4]},{k:'platbed',g:[4.5,1.4]},{k:'bistrotable',g:[1.5,3.8]}],
+    layout:(B=>()=>[...B,...houseDecoLayout(id,B,P)])(D.layout||[{k:'linensofa',g:[1.5,.5]},{k:'oaktable',g:[1.5,1.6]},{k:'lantern',g:[2.6,.4]},{k:'platbed',g:[4.5,1.4]},{k:'bistrotable',g:[1.5,3.8]}]),
     lines:H.res.map(k=>Object.assign({hi:['Oh! Hello! Come in, come in.'],buy:[''],poor:['']},D.lines&&D.lines[k]))}}
 function addHouses(){for(const id in HOUSES)if(HOUSES[id].res.every(resHere)&&!SHOPS['h_'+id])SHOPS['h_'+id]=houseShop(id)}
 // who's working in a shop or home in a house right now: [{k, g|x,z, home, lines, svc}]
-function shopCrew(key){const S=SHOPS[key];if(S.house)return S.res.map((k,i)=>({k,g:S.kgs[i],home:1,lines:S.lines[i],n:RESIDENTS[k].n})).filter(q=>resWhere(q.k)==='home');
+const lifeLines=k=>{const B=KBIB[k];return{hi:B?(B.hi.d||B.hi.m):['Hello!'],buy:[''],poor:['']}};
+function shopCrew(key){const S=SHOPS[key];
+  if(S.house){const E=eventNow(),R=S.res.map((k,i)=>({k,g:S.kgs[i],home:1,lines:S.lines[i],n:RESIDENTS[k].n})).filter(q=>resWhere(q.k)==='home');
+    if(E&&E.house===S.hid&&R.length)E.guests.filter(g=>!S.res.includes(g)&&resHere(g)&&KBIB[g]).forEach(g=>R.push({k:g,auto:1,home:1,guest:1,n:RESIDENTS[g].n,lines:lifeLines(g)}));return R}
+  const cust=Object.keys(RESIDENTS).filter(k=>resHere(k)&&KBIB[k]&&resWhere(k)==='visit'&&shopVisitOf(k)===key).slice(0,2).map(k=>({k,auto:1,home:1,customer:1,n:RESIDENTS[k].n,lines:lifeLines(k)}));
+  return[...shopStaff(key),...cust]}
+function shopStaff(key){const S=SHOPS[key];
   const base=S.keepers||[{k:S.keeper,x:S.kx,z:S.kz,g:S.kg}],as=Object.keys(RESIDENTS).find(k=>!RESIDENTS[k].boss&&RESIDENTS[k].shop===key&&KEEPERS[k]);
   if(!as)return base;const bosses=base.filter(q=>resWhere(q.k)==='shop'),aq={k:as,n:RESIDENTS[as].n,lines:typeof ASSIST_LINES!=='undefined'&&ASSIST_LINES[as]||S.lines};
   if(resWhere(as)!=='shop')return bosses.length?bosses:base;
@@ -11349,7 +11369,7 @@ function buildShop(key){const S=SHOPS[key],root=G(),objs=new Map(),items=new Map
   objs.forEach((o,id)=>{if(items.get(id).locked){greyObj(o);o.userData.locked=1}});
   // a shop can have more than one keeper (S.keepers); tapping one with a service (svc) opens it
   const KQ=crewPlace(shopCrew(key).map(q=>P&&q.g?Object.assign({},q,{x:planGX(P,q.g[0]),z:planGZ(P,q.g[1])}):q),P,objs,items),KS=KQ.map((q,i)=>{const K=KEEPERS[q.k]();K.g.userData.keeper=i+1;kPolish(K,q.k);bakeKeeper(K,q.k);K.g.position.set(q.x,q.home?0:.5,q.z);K.g.scale.setScalar(1.22);if(!q.home)kPodium(P?lvG[0]:root,q.x,q.z,S.color);K.g.userData.keeper=i+1;{const L=G();K.g.children.slice().forEach(c=>L.add(c));K.g.add(L);K.layer=L}
-    Object.assign(K,{act:'idle',k:0,d:1,svc:q.svc||S.svc,lines:q.lines||S.lines,n:q.n||'',kind:q.k});(P?lvG[0]:root).add(K.g);(P?lvExtra[0]:extra).push(new THREE.Box3(new THREE.Vector3(q.x-.6,0,q.z-.6),new THREE.Vector3(q.x+.6,2,q.z+.6)));return K});
+    Object.assign(K,{act:'idle',k:0,d:1,svc:q.svc||S.svc,lines:q.lines||S.lines,n:q.n||'',kind:q.k,customer:!!q.customer,guest:!!q.guest});(P?lvG[0]:root).add(K.g);(P?lvExtra[0]:extra).push(new THREE.Box3(new THREE.Vector3(q.x-.6,0,q.z-.6),new THREE.Vector3(q.x+.6,2,q.z+.6)));return K});
   clearKeepers(KQ,KS,objs,items);
   const A={key,def:S,root,objs,items,extra,keeper:KS[0],keepers:KS,tf:S.tf(),tw:S.tw(),arch:AR.blocks,archFaces:AR.faces,archTiles:AR.tiles};
   if(P){const tiles=new Set(),[di,dj,ds]=P.door,n=ds==='w'?[1,0]:[0,1];A.lv=lvG.map((g,li)=>{const geo=buildPlanLevel(S,P,li,tiles);g.add(geo.g);lvExtra[li].push(...geo.boxes);return{g,geo}});
@@ -11868,7 +11888,10 @@ function tmPaths(){if(tm.paths){tm.world.remove(tm.paths)}const g=G(),m=tmM(),S=
   m.r.forEach(([x,z])=>{const cx=tmCX(x),cz=tmCZ(z),Rd=tm.cob[(x*7+z*13)%3];ol(add(g,gcache('tmrd',()=>new THREE.BoxGeometry(1,.05,1)),Rd,cx,.025,cz),0);
     [[1,0],[-1,0],[0,1],[0,-1]].forEach(([a,b])=>{if(S.has((x+a)+','+(z+b)))return;const e=add(g,gcache('tmed',()=>new THREE.BoxGeometry(1,.08,.08)),Ed,cx+a*.46,.04,cz+b*.46);if(a)e.rotation.y=Math.PI/2;ol(e,.003)})});
   bakeStatic(g);tm.paths=g;tm.world.add(g)}
-function tmDecor(){if(tm.decor)tm.world.remove(tm.decor);const g=G();tmM().d.forEach((q,n)=>{const D_=TM_DECOR[q[0]];const o=D_.b(),[w,d]=D_.sz||[1,1];o.position.set(q[1]-TM_W/2+w/2,0,q[2]-TM_D/2+d/2);o.userData.td=n;g.add(o)});tm.decor=g;tm.world.add(g)}
+function tmDecor(){if(tm.decor)tm.world.remove(tm.decor);const g=G();tmM().d.forEach((q,n)=>{const D_=TM_DECOR[q[0]];const o=D_.b(),[w,d]=D_.sz||[1,1];o.position.set(q[1]-TM_W/2+w/2,0,q[2]-TM_D/2+d/2);o.userData.td=n;g.add(o)});
+  // a festival dresses up the plaza (not saved, not tappable)
+  if(tmMk()==='town'&&typeof festOn==='function'&&festOn())[['bunting',6,9],['bunting',10,9],['balloons',7,13],['balloons',10,13],['lamp',6,11],['lamp',11,11]].forEach(([k,x,z])=>{const D_=TM_DECOR[k],o=D_.b(),[w,d]=D_.sz||[1,1];o.position.set(x-TM_W/2+w/2,0,z-TM_D/2+d/2);g.add(o)});
+  tm.decor=g;tm.world.add(g)}
 function tmAO(){const A=[];for(const k in tm.bld){const o=tm.bld[k],[w,d]=tmFoot(k,0);A.push([o.position.x,o.position.z,Math.max(w,d)*.5+.25,.42])}
   (tm.decor?tm.decor.children:[]).forEach(o=>{const q=tmM().d[o.userData.td];if(!q||A.length>=24)return;const big=TM_DECOR[q[0]]&&TM_DECOR[q[0]].sz;A.push([o.position.x,o.position.z,big?1.2:.42,big?.3:.36])});tm.sc.userData.lighting.ao=A.slice(0,24)}
 function tmPlace(k){const o=tm.bld[k];if(!o)return;const [x,z,r]=tmM().b[k],[w,d]=tmFoot(k,r);o.position.set(x-TM_W/2+w/2,0,z-TM_D/2+d/2);o.rotation.y=r*Math.PI/2}
@@ -13099,11 +13122,11 @@ function tmTick(ts){if(!tm||!tm.open)return;requestAnimationFrame(tmTick);const 
 
 function showMap(){if(tmOpen())return;const m=$('#map'),here=away?away.key:'home';$('#mapHome').hidden=!away;$('#mapTitle').textContent=away?'Where next?':'Where to?';m.querySelectorAll('[data-go]').forEach(b=>b.classList.toggle('here',b.dataset.go===here));m.hidden=false;requestAnimationFrame(()=>m.classList.add('on'))}
 function closeMap(){tmClose();const m=$('#map');m.classList.remove('on');setTimeout(()=>{m.hidden=true},250);if(!traveling)doorTarget=0}
-function travelTo(dest,then,focus){if(traveling)return;const here=away?away.key:'home';if(dest===here){closeMap();then&&then();return}traveling=true;closeMap();closeProduct();setTab(null);select(null);if(brush)endBrush();
+function travelTo(dest,then,focus){if(traveling)return;const here=away?away.key:'home';if(dest===here){closeMap();then&&then();return}traveling=true;closeMap();closeProduct();setTab(null);select(null);if(brush)endBrush();if(visitor){scene.remove(visitor.K.g);visitor=null;const vb=$('#visBadge');if(vb)vb.hidden=true}
   const tv=$('#travel');$('#tvText').textContent=dest==='home'?'Heading home…':`Off to ${SHOPS[dest].n}…`;$('#tvIcon').src=ico(dest==='home'?'tab-room':SHOPS[dest].icon);tv.hidden=false;requestAnimationFrame(()=>tv.classList.add('on'));
   setTimeout(()=>{if(away){scene.remove(away.root);away=null}setRoomSize(dest==='home'?state.size:SHOPS[dest].plan?planSize(SHOPS[dest].plan):8);if(dest!=='home')away=buildShop(dest);{const PL=!!(away&&away.plan);slab.visible=trim.visible=!PL;LIT.room.half=PL?0:HALF;if(PL){away.cutKey='';updPlan();planFrame()}updFloorChip()}itemRoot.visible=!away;tilesDirty=true;syncTiles();doorKey='';syncDoor();navKey='';
     endToyPlay(true);endUse(false);pet.act=null;pet.seat=null;pet.seatY=0;pet.path=null;pet.target=null;pet.mode='idle';pet.timer=2.5;const f=doorFront();pet.pos.copy(f);petFree();pet.heading=Math.PI/2;
-    doorOpen=doorTarget=1;cam.target.set(0,.8,0);cam.panT.set(0,0,0);cam.pan.set(0,0,0);updCenterPill();updStoreBar();if(away)td('visit:'+dest);if(away&&away.def.house){td('visit:house');if(Math.random()<.6)jrEvent('visit',{s:away.def.n})}
+    doorOpen=doorTarget=1;cam.target.set(0,.8,0);cam.panT.set(0,0,0);cam.pan.set(0,0,0);updCenterPill();updStoreBar();if(away)td('visit:'+dest);if(away&&away.def.house){td('visit:house');if(Math.random()<.6)jrEvent('visit',{s:away.def.n});eventArrive()}
     setTimeout(()=>{tv.classList.remove('on');setTimeout(()=>{tv.hidden=true},400);if(pet.stage>0)petGo(f.clone().add(new THREE.Vector3(1.3,0,-.4)));setTimeout(()=>{doorTarget=0},1100);
       if(away){keeperReact('greet',2.4);setTimeout(()=>away&&away.keeper&&keeperSay(pick1(away.keeper.lines.hi)),500);if(!focus)setTimeout(()=>toast(away?(away.keepers.length>1?`Tap ${away.keepers.map(K=>KBIB[K.kind]?KBIB[K.kind].n:K.n).join(' or ')} to chat${away.def.house?'':' or book'}.`:away.keeper&&KBIB[away.keeper.kind]?(away.def.house?`Tap ${KBIB[away.keeper.kind].n} to chat.`:`Tap ${KBIB[away.keeper.kind].n} to chat or shop. Or tap anything on display.`):''):''),4300);if(focus)setTimeout(()=>typeof focus==='function'?openOffer(focus):openProduct(focus),1400)}
       traveling=false;then&&then()},250)},650)}
@@ -13455,6 +13478,9 @@ const JR_T={
   wish:['{p} made my wish come true! I wished on purpose and it worked.','My wish got granted. I am going to act very casual about it.'],
   gift:['I found a little gift waiting for us today. I sat next to it for a while before opening it, to make it last.'],
   capsule:['{p} got something from a capsule and let me hold it. I held it very carefully. Twice.'],
+  gift_town:['{p} gave {s} a present. {s} did a little happy wiggle. I did one too, to be polite.','We gave {s} a {i}. I wanted to keep it. I didn’t. I’m very grown up.'],
+  visitor:['{s} came round to see us! I showed them my favourite spot. Then my other favourite spot.','We had a visitor: {s}. They brought me a snack. Best visitor.'],
+  event:['We went to {s}! Everyone was there and nobody minded that I sat on two cushions.','{s} tonight. I stayed up past my bedtime and nobody noticed. Well, {b} noticed.'],
   visit:['{p} and I went round to {s}. I wiped my feet twice, once for each head.','We visited {s}! I wanted to see where everyone sleeps. It was very nice and very theirs.','{p} knocked at {s} and we stayed for a while. I didn’t want to leave.'],
   shop:['{p} took me to {s}. So much to look at that I forgot where my feet were.','A trip to {s}! I met everyone and only knocked over one thing.'],
   grow:['Big news: I grew up into a {st}! Everything looks a little smaller now.','I’m a {st} now. {a} says it feels the same. {b} says everything is different. We are both right.'],
@@ -13659,7 +13685,229 @@ Object.assign(KBIB,{"mayor": {"n": "Mayor Marsh", "role": "", "hi": {"m": ["Ahem
 Object.assign(RES_T,{"mayor": ["the fountain is now officially open. i said so loudly. please do not splash the plaque.", "i have written your birthday in the big book. in ink. there is no going back, which is how birthdays should feel.", "there will be a small ceremony on friday. the subject is still undecided, but there will be bunting."], "parcel": ["the rain stopped just as I reached your street, so everything smells like new cardboard.", "I found a stamp with a tiny heart on it and saved it for you.", "the whole round was quiet today, so I whistled the long way home."], "crane": ["the sign by the bakery is dry now. you may touch it. gently.", "i folded you a small thing. it is in your pocket. please do not tell the wind.", "no rain forecast tomorrow. i have opened every window to celebrate."], "posy": ["the roses came up pink this year. i didn't plant pink ones, so thank you, roses.", "i left a seedling by your door. it's very small, so please say hello to it every day.", "prickles told the whole garden the story about the desert again. the geraniums leaned in."], "cactus": ["the stick needs a new ribbon. posy says pink. i said fine.", "i did not nod off, i was resting my eyes. the flower knows the truth.", "it rained in the night and the whole garden smelled like the sea. i stood outside for an hour."], "book": ["the new shelf by the window smells of cedar and I have no regrets.", "a moth got out of chapter nine again, if you see it, it's friendly.", "i set a book aside for you both. it has a map in the back, you'll see."], "lantern": ["the lamps by the fountain are lit. one flickered, then settled.", "there's a star over your house tonight, the small kind. thought you'd like to know.", "left a candle's worth of light on the porch. no reason. just because."], "cloud": ["the hill was clear this morning. sunrise at 6:41, mostly gold.", "light drizzle this afternoon. sorry. i took the worst of it myself.", "rainbow around three. i didn't do it. fine, i did it a little."], "beacon": ["the fog came in at four and the light did its job. thought of you.", "found another lost mitten on the pier. adding it to the shelf.", "there's a boat out past the point tonight. i waved. it waved. good evening."], "cone": ["the cherries came in early this week, so the cart smells like summer.", "the twins have invented a game with the sprinkle jars. i am not allowed to ask.", "i saved you a corner of the freezer. no, don't peek, it's a surprise."], "scone": ["i did a lap of the whole playground in nine seconds. nobody timed it but it was nine.", "crumb says hi. she's showing the pebbles to a snail. i'm waiting at the gate.", "come to the swings! i'll go highest. you can be second."], "crumb": ["i found a pebble with a white ring all the way round. i think it's lucky.", "the snail made it to the top of the slide today. i didn't say anything. i just cheered inside.", "scone is racing the pigeons again. i'm keeping your pebble safe in my bag."], "gramo": ["the plaza was golden today, and i played something new for it.", "i found a tune that sounds like your pet's footsteps. i'll play it Thursday.", "my record skipped, but nobody minded. i think that makes it ours."], "patch": ["remember to drink some water today, and to rest if you have been busy.", "i listened to my heartbeat this morning. it said hello, so that is a good sign.", "there are lollipops on the desk if either of you has a brave day coming."], "pebble": ["i fixed the lane by your door today. it's flat now. please walk on it a lot.", "bolt came by and talked for an hour. i said mm four times. he thanked me.", "it rained and the new stones held. i stood there for a bit. thought you should know."]});
 ["mayor", "parcel", "crane", "posy", "cactus", "book", "lantern", "cloud", "beacon", "cone", "scone", "crumb", "gramo", "patch", "pebble"].forEach(k=>{if(KBIB[k]&&RESIDENTS[k])KBIB[k].role=RESIDENTS[k].role});
 /* </townsfolk-talk> */
-function kActs(){const k=away.key,kind=kmode.kind,A=[['chat','Chat','Have a little natter','#E3D4FF','chat']];if(away.def&&away.def.house)return A;
+/* <town-life> */
+/* ---------- Town life: gifts, birthdays, weather, garden, events, festivals, jobs, visitors, parcels (v51) ----------
+   Everything here hangs off the residents (RESIDENTS/HOUSES), so caring for the pet, decorating and the town feed each other.
+   Shared state (all merged, see MERGE): gifts {k: day last gifted}, disc {k: [gift tags discovered]}, acts {key: day} (once-a-day actions),
+   seeds {kind: n}, garden [{s, d0, w:[days watered]}] x3, hdeco {house: [{id,k}]} (furniture given to residents), parcels [{id,by,t,item,note,open:[ids]}],
+   evseen [event keys attended]. */
+// small drawn icons (no emoji): weather, planters, festivals
+const LSV=(b,w)=>`<svg class="lsv" viewBox="0 0 24 24" width="${w||30}" height="${w||30}" stroke="#3B1273" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round">${b}</svg>`;
+const LIFE_IC={sun:LSV('<circle cx="12" cy="12" r="5" fill="#FFD21F"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2 2M16.7 16.7l2 2M5.3 18.7l2-2M16.7 7.3l2-2" fill="none"/>'),
+  cloud:LSV('<path d="M7 18h10a4 4 0 0 0 .6-7.95A5.5 5.5 0 0 0 7 9.5 4.3 4.3 0 0 0 7 18z" fill="#E3E9FF"/>'),
+  rain:LSV('<path d="M7 14h10a3.6 3.6 0 0 0 .5-7.15A5 5 0 0 0 7.3 6 3.9 3.9 0 0 0 7 14z" fill="#CFE0FF"/><path d="M8.5 17l-1 3M12.5 17l-1 3M16.5 17l-1 3" stroke="#3EC8F2" stroke-width="2.2" fill="none"/>'),
+  wind:LSV('<path d="M3 9h11a3 3 0 1 0-3-3M3 14h15a3 3 0 1 1-3 3M3 19h7" fill="none" stroke="#3EC8F2" stroke-width="2.2"/>'),
+  pot:LSV('<path d="M6 11h12l-1.5 9h-9z" fill="#E0895A"/><path d="M5 9h14v2.5H5z" fill="#F2A276"/>'),
+  sprout:LSV('<path d="M12 20v-7" fill="none" stroke="#4FA53E" stroke-width="2.2"/><path d="M12 13c-4 0-6-2-6-5 3 0 6 1 6 5zM12 12c0-4 2-6 6-6 0 3-2 6-6 6z" fill="#A6E22E"/><path d="M7 20h10" fill="none"/>'),
+  bloom:LSV('<path d="M12 21v-7" fill="none" stroke="#4FA53E" stroke-width="2.2"/><g fill="#FF8AC4"><circle cx="12" cy="6" r="2.6"/><circle cx="15.4" cy="8.6" r="2.6"/><circle cx="14" cy="12.4" r="2.6"/><circle cx="10" cy="12.4" r="2.6"/><circle cx="8.6" cy="8.6" r="2.6"/></g><circle cx="12" cy="9.6" r="2" fill="#FFD21F"/>'),
+  fest:LSV('<path d="M4 20V8l8-4 8 4v12" fill="#FFE6A8"/><path d="M3 8l9-5 9 5" fill="#FF6FB5"/><path d="M9 20v-5h6v5" fill="#9B4DF2"/><path d="M6 11l1.5 1.5L9 11l1.5 1.5L12 11l1.5 1.5L15 11l1.5 1.5L18 11" fill="none" stroke="#3EC8F2"/>')};
+const LIFE_CATS=['f:sweets','f:fruit','f:exotic','f:snacks','f:drinks','f:veggies','f:grains','g:groom'];
+// what each resident loves and likes: f:<food category>, i:<item id>, s:<furniture set>, n:<furniture kind>, g:groom
+const LIKES={baker:{love:['f:grains','s:cafe'],like:['f:sweets','n:surface']},stylist:{love:['g:groom','s:bath'],like:['f:drinks','s:date']},toymaker:{love:['s:carnival','f:sweets'],like:['n:fun','s:dino']},
+  cushion:{love:['s:fort','n:bed'],like:['f:drinks','s:cloud9']},builder:{love:['s:work','f:veggies'],like:['n:storage','s:camp']},hair:{love:['s:groovy','g:groom'],like:['f:sweets','n:light']},
+  makeup:{love:['s:studio','f:fruit'],like:['s:green','n:deco']},tailor:{love:['s:washday','f:drinks'],like:['s:books','n:rug']},joy:{love:['s:games','f:snacks'],like:['s:movie','f:sweets']},
+  jam:{love:['f:fruit','s:fruity'],like:['f:sweets','s:cafe']},sponge:{love:['s:sea','g:groom'],like:['f:drinks','s:bath']},windup:{love:['s:work','n:storage'],like:['f:grains','s:books']},
+  dust:{love:['s:zen','n:storage'],like:['f:drinks','s:washday']},pencil:{love:['s:books','n:surface'],like:['f:snacks','s:stars']},polish:{love:['s:date','g:groom'],like:['f:sweets','s:groovy']},
+  spool:{love:['f:snacks','s:bday'],like:['s:washday','f:fruit']},pixel:{love:['s:games','f:snacks'],like:['s:movie','n:light']},
+  mayor:{love:['f:sweets','s:holiday'],like:['s:date','n:deco']},parcel:{love:['f:snacks','s:roadtrip'],like:['f:drinks','n:storage']},crane:{love:['s:studio','s:zen'],like:['f:fruit','n:deco']},
+  posy:{love:['s:garden','s:green'],like:['f:veggies','f:fruit']},cactus:{love:['s:camp','f:exotic'],like:['s:books','n:seat']},book:{love:['s:books','f:drinks'],like:['s:stars','n:light']},
+  lantern:{love:['s:stars','n:light'],like:['f:drinks','s:cloud9']},cloud:{love:['s:cloud9','f:drinks'],like:['s:stars','n:rug']},beacon:{love:['s:sea','s:lagoon'],like:['f:exotic','n:storage']},
+  cone:{love:['f:sweets','s:bday'],like:['s:fruity','f:fruit']},scone:{love:['s:carnival','f:sweets'],like:['s:dino','n:fun']},crumb:{love:['s:dino','f:fruit'],like:['s:nursery','n:storage']},
+  gramo:{love:['s:studio','s:groovy'],like:['f:drinks','s:movie']},patch:{love:['s:petpal','f:veggies'],like:['s:cloud9','f:drinks']},pebble:{love:['s:zen','f:grains'],like:['s:camp','n:seat']}};
+const lifeTags=src=>{if(src.t==='inv'){const it=ITEMS.find(i=>i.id===src.id);if(!it)return[];return it.k==='food'?['i:'+it.id,'f:'+it.cat]:['i:'+it.id,'g:groom']}
+  const d=CATMAP[src.id];return d?['s:'+d.set,'n:'+d.fn]:[]};
+function giftGrade(k,src){const L=LIKES[k]||{love:[],like:[]},T=lifeTags(src);return T.some(t=>L.love.includes(t))?'love':T.some(t=>L.like.includes(t))?'like':'meh'}
+const tagName=t=>{const [a,b]=t.split(':');return a==='f'?(FOOD_CATS[b]||b).toLowerCase()+' food':a==='g'?'grooming things':a==='s'?(SETMAP[b]?SETMAP[b].n:b)+' furniture':a==='i'?((ITEMS.find(i=>i.id===b)||{}).n||b):
+  ({seat:'seats',bed:'beds',light:'lamps',rug:'rugs',surface:'tables',fun:'fun things',deco:'decorations',storage:'shelves and storage',plant:'plants'}[b]||b)};
+const lifeDay=()=>tdDay();
+// ---- birthdays: one per resident, spread through the year (stable from the key)
+function bdayOf(k){const d=Math.floor(jrRand('bday:'+k)()*365),dt=new Date(Date.UTC(2025,0,1+d));return dt.toISOString().slice(5,10)}
+const bdayToday=()=>Object.keys(RESIDENTS).filter(k=>resHere(k)&&bdayOf(k)===lifeDay().slice(5));
+function bdaySoon(n){const out=[],base=new Date(lifeDay()+'T12:00:00Z');for(let i=0;i<n;i++){const d=new Date(base);d.setUTCDate(d.getUTCDate()+i);const md=d.toISOString().slice(5,10);
+  Object.keys(RESIDENTS).forEach(k=>{if(resHere(k)&&bdayOf(k)===md)out.push([k,i,d])})}return out}
+// ---- weather (Nimbus's forecast): the same for both phones, seeded by the room and the day
+const WEATHER={sun:{n:'Sunny',ic:'sun',t:'Clear skies all day.'},cloud:{n:'Cloudy',ic:'cloud',t:'Soft grey skies, good for naps.'},rain:{n:'Rainy',ic:'rain',t:'Rain all day. The garden waters itself.'},wind:{n:'Breezy',ic:'wind',t:'A good kite day.'}};
+function weatherOf(day){const r=Math.floor(jrRand('wx|'+(roomCode||'solo')+'|'+day)()*100);return r<45?'sun':r<70?'cloud':r<92?'rain':'wind'}
+const dayPlus=n=>{const d=new Date(lifeDay()+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
+const dowOf=day=>new Date(day+'T12:00:00Z').getUTCDay();
+// ---- weekly events at someone's house (US Central): guests leave home (and work) for them; turning up is rewarded once per event
+const EVENTS=[{k:'tea',n:'Sunday tea',dow:0,h:[15,18],house:'bunbun',guests:['baker','cushion','mayor','posy','cactus'],t:'Tea, cake and a nap on the sofa.'},
+  {k:'story',n:'Story hour',dow:3,h:[16,18],house:'dewey',guests:['book','scone','crumb','cloud','posy'],t:'Dewey reads aloud, everyone gets a cushion.'},
+  {k:'music',n:'Music night',dow:4,h:[19,22],house:'echo',guests:['gramo','lantern','stylist','hair','makeup'],t:'Echo plays, Lumi dims the lights.'},
+  {k:'games',n:'Game Night',dow:5,h:[19,23],house:'gamenight',guests:['toymaker','joy','crane','parcel','pebble','beacon'],t:'Board games, snacks and a lot of shouting.'},
+  {k:'market',n:'Bake sale',dow:6,h:[10,14],house:'mayor',guests:['mayor','cone','scone','crumb','parcel','crane'],t:'A bake sale for the town fund at the Mayor’s.'}];
+// seasonal festivals: all day at the Mayor's house, with a keepsake from the season's furniture set
+const FESTS=[{k:'spring',n:'Spring Picnic',from:'04-01',to:'04-07',set:'spring'},{k:'summer',n:'Summer Fair',from:'07-01',to:'07-07',set:'fruity'},
+  {k:'spooky',n:'Pumpkin Parade',from:'10-25',to:'10-31',set:'spooky'},{k:'lights',n:'Festival of Lights',from:'12-20',to:'12-26',set:'holiday'}];
+let dbgFest=null,dbgEvent=null;
+function festOn(day){if(dbgFest)return FESTS.find(f=>f.k===dbgFest);const md=(day||lifeDay()).slice(5);return FESTS.find(f=>md>=f.from&&md<=f.to)||null}
+const evMemo={};
+function eventNow(h){h=h??townHour();const key=lifeDay()+'|'+Math.floor(h)+'|'+dbgEvent+'|'+dbgFest;if(key in evMemo)return evMemo[key];return evMemo[key]=eventCalc(h)}
+function eventCalc(h){if(dbgEvent)return EVENTS.find(e=>e.k===dbgEvent);const F=festOn();
+  if(F&&h>=10&&h<20){const pool=Object.keys(RESIDENTS).filter(k=>resHere(k)&&!RESIDENTS[k].boss),R=jrRand('fest|'+F.k+'|'+lifeDay()),g=['mayor'];
+    while(g.length<6&&pool.length){const k=pool.splice(Math.floor(R()*pool.length),1)[0];if(k!=='mayor')g.push(k)}return{k:'fest-'+F.k,n:F.n,house:'mayor',guests:g,h:[10,20],fest:F,t:'The whole town comes out.'}}
+  const d=dowOf(lifeDay());return EVENTS.find(e=>e.dow===d&&h>=e.h[0]&&h<e.h[1])||null}
+const evGuest=(k,E)=>!!E&&HOUSES[E.house]&&SHOPS['h_'+E.house]&&(E.guests.includes(k)||HOUSES[E.house].res.includes(k));
+// ---- off-duty residents pop into shops as customers now and then (2-hour slots, same on both phones)
+const LIFE_SHOPS=['snack','salon','toys','furn','build','glam','wear','arcade'];
+function shopVisitOf(k,h){h=h??townHour();const slot=Math.floor(h/2),r=Math.floor(jrRand('cust|'+(roomCode||'solo')+'|'+lifeDay()+'|'+slot+'|'+k)()*100);if(r>=14||h<9||h>=21)return null;
+  const R=RESIDENTS[k],c=LIFE_SHOPS.filter(s=>s!==R.shop&&SHOPS[s]);return c[r%c.length]}
+// ---- gifts
+function lifeGiftables(){const out=[];ITEMS.forEach(it=>{const n=state.inv[it.id]|0;if(n>0&&(it.k==='food'||it.k==='groom'))out.push({t:'inv',id:it.id,n,name:it.n})});
+  Object.entries(state.fown||{}).forEach(([k,n])=>{const d=CATMAP[k];if(n>0&&d&&!d.gacha)out.push({t:'fown',id:k,n,name:d.n})});return out}
+// one resident a day would love a particular kind of furniture for their home (the Happy Home Designer bit)
+function lifeWish(){const day=lifeDay(),R=jrRand('hw|'+(roomCode||'solo')+'|'+day),ks=Object.keys(RESIDENTS).filter(k=>resHere(k)&&houseOf(k)&&SHOPS['h_'+houseOf(k)]);if(!ks.length)return null;
+  const k=ks[Math.floor(R()*ks.length)],L=LIKES[k],tg=[...L.love,...L.like].filter(t=>t[0]==='s'||t[0]==='n');return{k,tag:tg.length?tg[Math.floor(R()*tg.length)]:'n:deco'}}
+const GIFT_LINES={love:['Oh! {g}! I love it. How did you know?','{g}! This is exactly my favourite kind of thing.','You remembered! {g} is perfect.'],
+  like:['Ooh, {g}. That’s lovely, thank you.','For me? {g}! I’ll put it somewhere special.','How kind. I like {g} a lot.'],meh:['Oh, {g}! Thank you, that’s thoughtful.','A present! {g}. You’re sweet.','Thank you! I’ll find a good spot for {g}.']};
+function giveGift(k,src,how){const R=RESIDENTS[k];if(!R||!state)return false;const day=lifeDay(),G=state.gifts||(state.gifts={}),first=G[k]!==day;
+  if(src.t==='inv'){if((state.inv[src.id]|0)<1)return false;state.inv[src.id]--;if(!state.inv[src.id])delete state.inv[src.id]}
+  else{if((state.fown[src.id]|0)<1)return false;state.fown[src.id]--;if(!state.fown[src.id])delete state.fown[src.id];const h=houseOf(k);if(h){const D=state.hdeco||(state.hdeco={});(D[h]=D[h]||[]).push({id:uid(),k:src.id,by:k})}}
+  const grade=giftGrade(k,src),bday=bdayOf(k)===day.slice(5),W=lifeWish(),wished=W&&W.k===k&&lifeTags(src).includes(W.tag),name=src.t==='inv'?(ITEMS.find(i=>i.id===src.id)||{}).n:CATMAP[src.id].n;
+  let pts=first?{love:5,like:3,meh:2}[grade]:1;if(bday&&first)pts+=4;if(wished&&first)pts+=3;G[k]=day;
+  const L=LIKES[k],D_=state.disc||(state.disc={}),dk=D_[k]=D_[k]||[];lifeTags(src).forEach(t=>{if((grade==='love'&&L.love.includes(t)||grade==='like'&&L.like.includes(t))&&!dk.includes(t))dk.push(t)});
+  kfAdd(k,pts);td('gift');td('gift:'+k);if(first&&grade==='love')cheerAdd(2,'gift');if(wished&&first)cheerAdd(4,'gift');
+  logEvent(`gave ${R.n} ${name.toLowerCase()}`);if(Math.random()<.5)jrEvent('gift_town',{s:R.n,i:name});
+  let line=pick1(GIFT_LINES[grade]).replace('{g}',name.toLowerCase());if(bday)line='On my birthday too! '+line;if(wished)line+=src.t==='fown'?' I’ve wanted one of these for my house!':'';
+  if(src.t==='fown')line+=' It’s going straight into my house.';
+  if(how==='mail')resPost(k,`Parcel just brought your present. ${line}`);saveSoon();return{line,grade,pts}}
+// ---- once-a-day actions (jobs)
+const actDone=key=>(state.acts||{})[key]===lifeDay(),actMark=key=>{(state.acts||(state.acts={}))[key]=lifeDay();saveSoon()};
+const SEEDS={berry:{n:'Quibbleberry bush',days:2,give:{t:'inv',id:'quibble',n:3},c:'#FF6FB5'},melon:{n:'Fizzmelon vine',days:3,give:{t:'inv',id:'fizzmelon',n:2},c:'#7FD86A'},
+  root:{n:'Jibbleroot',days:2,give:{t:'inv',id:'jibble',n:2},c:'#C98A5A'},sunflower:{n:'Sunflower',days:3,give:{t:'fown',id:'sunflower',n:1},c:'#FFD21F'},dandelion:{n:'Dandelion',days:2,give:{t:'fown',id:'dandelion',n:1},c:'#FFF3A0'}};
+const JOB_ACTS={patch:[['job:checkup','Check-up','How is {n} doing?','#FFE4D6','chat']],posy:[['job:seeds','Ask for seeds','Something to grow','#E8F7C8','paint']],
+  beacon:[['job:lost','Lost and found','See what washed up','#D4F0FF','gacha']],book:[['job:story','Story time','Read me something','#E6D4F5','chat']],
+  cone:[['job:icecream','A scoop','On the house','#FFE0EE','shop']],gramo:[['job:song','Play a song','{n} might dance','#D8D0F5','play']],
+  mayor:[['job:news','Town news','What’s coming up','#FFE9F2','chat']],parcel:[['job:parcel','Send a parcel','A surprise for your person','#F5DEC0','shop']],
+  cloud:[['job:forecast','Forecast','The next few days','#DDEBFF','chat']]};
+function jobAct(a){const K=kmode.K,k=K.kind,R=RESIDENTS[k],say=t=>kbShow(kFill(t),K),once=key=>{if(actDone(a+':'+k)){say(pick1(['Same time tomorrow?','That’s all for today. Come back tomorrow!','Tomorrow, I promise.']));return false}actMark(a+':'+k);return true};
+  if(a==='job:checkup'){const s=petStats(),p=state.pet,low=NEEDS.map(n=>n[0]).sort((x,y)=>s[x]-s[y]),tr=traitsOf().map(t=>TRAITS[t].n);
+    const rows=NEEDS.map(([nk,lab])=>`<li><b>${esc(lab)}</b> ${esc(tier(nk,s[nk]))}</li>`).join(''),tip=s[low[0]]<50?`A little more ${esc(NEEDS.find(n=>n[0]===low[0])[1].toLowerCase())} would help.`:'Keep doing what you’re doing.';
+    const first=once(a);if(first){state.hearts+=3;kfAdd(k,1);updHUD()}td('checkup');kClose(true);
+    showReward('Check-up','stat-happy',`<p>Dr. Patch listened to both heads.</p><ul class="lifelist">${rows}</ul><p>${esc(STAGE_NAMES?STAGE_NAMES[stageOf(p.xp)]:'')}${tr.length?` · ${esc(tr.join(', '))}`:''}</p><p>“${tip} Nothing hurts? Good.”${first?' +3 hearts':''}</p>`);return true}
+  if(a==='job:seeds'){if(!once(a))return true;const ks=Object.keys(SEEDS),R_=jrRand(lifeDay()+k),s1=ks[Math.floor(R_()*ks.length)],s2=ks[Math.floor(R_()*ks.length)],S=state.seeds||(state.seeds={});
+    S[s1]=(S[s1]|0)+1;S[s2]=(S[s2]|0)+1;kfAdd(k,1);saveSoon();say(`Here: ${SEEDS[s1].n.toLowerCase()} and ${SEEDS[s2].n.toLowerCase()} seeds. Plant them in your garden on the Neighbours page.`);return true}
+  if(a==='job:lost'){if(!once(a))return true;const R_=Math.random();let txt;if(R_<.15){state.tokens=(state.tokens|0)+1;txt='A capsule token washed up! Must be yours now.'}
+    else{const f=ITEMS.filter(i=>i.k==='food'&&i.p>0&&i.p<3),it=pick1(f);state.inv[it.id]=(state.inv[it.id]|0)+1;txt=`Found a ${it.n.toLowerCase()} on the pier. Still wrapped. Take it.`}kfAdd(k,1);saveSoon();updHUD();say(txt);return true}
+  if(a==='job:story'){const J=state.journal.filter(j=>new Date(j.t).toDateString()!==new Date().toDateString());let txt;
+    if(J.length){const days={};J.forEach(x=>{const d=new Date(x.t).toDateString();(days[d]=days[d]||[]).push(x)});const dk=pick1(Object.keys(days));txt=jrDay(days[dk],dk+'|'+state.pet.name)}
+    else txt=pick1(KBIB.book.story.map(s=>typeof s[1]==='string'?s[1]:s[1].t));kfAdd(k,actDone(a+':'+k)?0:1);actMark(a+':'+k);kClose(true);showReward('Story time','journal.svg',`<p>Dewey opens a book from the shelf of ${esc(state.pet.name)}’s days.</p><p class="lifestory">${esc(txt)}</p>`);return true}
+  if(a==='job:icecream'){if(!once(a))return true;state.inv.candy=(state.inv.candy|0)+1;kfAdd(k,1);saveSoon();say('One candy swirl, extra sprinkles. Don’t tell the twins I gave you the big one.');return true}
+  if(a==='job:song'){kfAdd(k,actDone(a+':'+k)?0:1);actMark(a+':'+k);say(pick1(['This one’s for {n}.','A little tune for the two heads.','Here’s a slow one. Or a fast one. Let’s see.']));setTimeout(()=>{try{petAct('dance')}catch(_){}},900);td('song');return true}
+  if(a==='job:news'){kClose(true);showReward('Town news','tab-room',lifeNewsHtml());return true}
+  if(a==='job:forecast'){const html=[0,1,2].map(i=>{const w=WEATHER[weatherOf(dayPlus(i))];return`<li><b>${i?i===1?'Tomorrow':dayName(dayPlus(i)):'Today'}</b> ${esc(w.n)}</li>`}).join('');kClose(true);showReward('Forecast','tab-room',`<p>Nimbus checked the sky.</p><ul class="lifelist">${html}</ul><p>“Chance of a good day: high.”</p>`);return true}
+  if(a==='job:parcel'){kClose(true);lifeTab='parcel';setTab('town');return true}
+  if(a==='gift'){kClose(true);lifeTab='people';lifeGiftFor=k;lifeGiftHand=true;setTab('town');setTimeout(()=>{const g=$('#lifeGift');if(g)g.scrollIntoView({block:'center'})},120);return true}
+  return false}
+const dayName=d=>['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dowOf(d)];
+function lifeNewsHtml(){const C=cheerOf(),L=cheerLv(C.p),F=festOn(),b=bdaySoon(14).slice(0,4),ev=[0,1,2,3,4,5,6].map(i=>{const d=dayPlus(i),e=EVENTS.find(x=>x.dow===dowOf(d));return e&&[e,i,d]}).filter(Boolean).slice(0,3);
+  return`<p>The Mayor clears his throat.</p><ul class="lifelist">${F?`<li><b>${esc(F.n)}</b> all week at the Town Hall!</li>`:''}${ev.map(([e,i,d])=>`<li><b>${esc(e.n)}</b> ${i?i===1?'tomorrow':dayName(d):'today'}, ${hourName(e.h[0])} at ${esc(SHOPS['h_'+e.house]?SHOPS['h_'+e.house].n:'')}</li>`).join('')}
+    ${b.map(([k,i])=>`<li><b>${esc(RESIDENTS[k].n)}’s birthday</b> ${i?i===1?'tomorrow':`in ${i} days`:'today!'}</li>`).join('')}<li><b>Town cheer</b> level ${L}, “${esc(CHEER[L][1])}”</li></ul>`}
+// ---- the garden (three planters; either of you can water once a day; rain waters it for you)
+const GARDEN_N=3;
+function gardenPlots(){const G=state.garden||(state.garden=[]);while(G.length<GARDEN_N)G.push(null);return G}
+function plotGrowth(P){if(!P||!P.s)return 0;const S=SEEDS[P.s];if(!S)return 0;const days=new Set(P.w||[]);for(let i=0;i<14;i++){const d=new Date(P.d0+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+i);const ds=d.toISOString().slice(0,10);if(ds>lifeDay())break;if(weatherOf(ds)==='rain')days.add(ds)}
+  return Math.min(S.days,[...days].filter(d=>d>=P.d0&&d<=lifeDay()).length)}
+function plantSeed(i,s){const G=gardenPlots();if(G[i]&&G[i].s||!(state.seeds&&state.seeds[s]>0))return;state.seeds[s]--;G[i]={s,d0:lifeDay(),w:[],u:Date.now()};td('plant');saveSoon()}
+function waterPlot(i){const P=gardenPlots()[i];if(!P||!P.s)return;const d=lifeDay();if(!P.w.includes(d)){P.w.push(d);P.u=Date.now();td('water');saveSoon()}}
+function harvestPlot(i){const G=gardenPlots(),P=G[i];if(!P||!P.s)return;const S=SEEDS[P.s];if(plotGrowth(P)<S.days)return;const g=S.give;
+  if(g.t==='inv')state.inv[g.id]=(state.inv[g.id]|0)+g.n;else state.fown[g.id]=(state.fown[g.id]|0)+g.n;G[i]={s:null,u:Date.now()};td('harvest');cheerAdd(1,'garden');saveSoon();
+  toast(`${S.n} harvested: ${g.n} × ${g.t==='inv'?(ITEMS.find(x=>x.id===g.id)||{}).n:CATMAP[g.id].n}.`,true)}
+// ---- parcels between the two of you (Parcel delivers): wrap a shop treat with a note; it's unwrapped on the other phone
+function parcelsForMe(){const me=myId||'me';return(state.parcels||[]).filter(p=>p.by!==me&&p.by!==myId&&!(p.open||[]).length)}
+function sendParcel(id,note){const it=ITEMS.find(i=>i.id===id),cost=(it?it.p:0)+1;if(!it||state.hearts<cost){toast('Not enough hearts for that parcel.',true);return false}
+  state.hearts-=cost;(state.parcels||(state.parcels=[])).unshift({id:uid(),by:myId||'me',t:Date.now(),item:id,note:String(note||'').slice(0,120),open:[]});state.parcels.length=Math.min(state.parcels.length,30);
+  kfAdd('parcel',1);td('parcel');logEvent(`sent a parcel (${it.n.toLowerCase()})`);saveSoon();updHUD();return true}
+function openParcel(p){const it=ITEMS.find(i=>i.id===p.item);(p.open=p.open||[]).push(myId||'me');if(it)state.inv[it.id]=(state.inv[it.id]|0)+1;saveSoon();
+  showReward('A parcel for you!','tab-mail',`<p>Parcel tips his cap: “Delivery from ${esc(who(p.by))}!”</p><p><b>${esc(it?it.n:'A surprise')}</b></p>${p.note?`<p class="lifestory">“${esc(p.note)}”</p>`:''}`,{ok:'Thank you!'})}
+// ---- visitors at home: now and then someone free knocks with a little something and a comment about your room
+let visitor=null,visitT=0;
+function visitorTick(){if(away||visitor||!state||!ready||stageOf(state.pet.xp)===0||openTab||kmode||traveling||!$('#game').hidden)return;const now=Date.now();
+  if(now-visitT<20*6e4||Math.random()>.12)return;visitT=now;let last=+localStorage.r42visit||0;if(now-last<2.5*36e5&&!dbgVisit)return;
+  const free=Object.keys(RESIDENTS).filter(k=>resHere(k)&&KBIB[k]&&resWhere(k)==='home');if(!free.length)return;
+  const best=free.sort((a,b)=>kfOf(b).p-kfOf(a).p).slice(0,8);spawnVisitor(pick1(best))}
+let dbgVisit=false;
+function spawnVisitor(k){try{localStorage.r42visit=Date.now()}catch(_){}const K=KEEPERS[k]();kPolish(K,k);K.g.scale.setScalar(1.22);const f=doorFront(),c=new THREE.Vector3(0,0,0);
+  const p=f.clone().add(c.clone().sub(f).normalize().multiplyScalar(1.1));K.g.position.set(p.x,0,p.z);K.g.rotation.y=Math.atan2(c.x-p.x,c.z-p.z)*.4;scene.add(K.g);
+  visitor={K,k,t:0,act:'greet',a:0,leaving:0};doorTarget=1;setTimeout(()=>{doorTarget=0},1600);toast(`${RESIDENTS[k].n} stopped by! Tap them to say hi.`,true);
+  let b=$('#visBadge');if(!b){b=document.createElement('button');b.id='visBadge';b.className='kbdg';b.innerHTML=KSVG.chat;document.body.appendChild(b)}b.hidden=false;b.onclick=e=>{e.stopPropagation();visitorChat()}}
+function updVisitor(dt,t){const V=visitor;if(!V)return;V.t+=dt;V.a+=dt;const act=V.leaving?'greet':V.a<2?'greet':'idle';try{V.K.upd(dt,t,act,Math.min(1,V.a/2),false)}catch(_){}
+  if(V.leaving){V.leaving+=dt;const s=Math.max(.001,1.22*(1-V.leaving/0.6));V.K.g.scale.setScalar(s);if(V.leaving>.6){scene.remove(V.K.g);visitor=null;const b=$('#visBadge');if(b)b.hidden=true;return}}
+  if(V.t>240&&!V.leaving)V.leaving=.001;
+  const b=$('#visBadge');if(b&&!away){const v=new THREE.Vector3();V.K.g.getWorldPosition(v);v.y+=2;v.project(camera);b.hidden=v.z>1||!!openTab||kmode!=null;b.style.left=((v.x+1)/2*innerWidth)+'px';b.style.top=((1-v.y)/2*innerHeight)+'px'}}
+function visitorChat(){const V=visitor;if(!V||V.leaving)return;const k=V.k,R=RESIDENTS[k],B=KBIB[k],own=state.items.length?CATMAP[pick1(state.items).k]:null,L=LIKES[k];
+  const food=ITEMS.filter(i=>i.k==='food'&&i.p>0&&L.love.concat(L.like).includes('f:'+i.cat)),it=food.length?pick1(food):ITEMS.find(i=>i.id==='cookie');state.inv[it.id]=(state.inv[it.id]|0)+1;
+  kfAdd(k,2);td('visitor');if(Math.random()<.6)jrEvent('visitor',{s:R.n});saveSoon();
+  const hi=kFill(pick1(B.hi.d||B.hi.m||['Hello!'])),cm=own?pick1([`I love your ${own.n.toLowerCase()}.`,`Is that a new ${own.n.toLowerCase()}? Very you.`,`Your ${own.n.toLowerCase()} makes the whole room.`]):'Your room is so cozy.';
+  showReward(`${R.n} came to visit`,'tab-room',`<p>“${esc(hi)}”</p><p>“${esc(cm)} I brought ${esc(state.pet.name)} a ${esc(it.n.toLowerCase())}.”</p>`,{ok:'Come again!',fn:()=>{if(visitor)visitor.leaving=.001}})}
+// ---- house furniture given as gifts appears in the resident's house, on free floor spots
+function houseDecoLayout(id,base,P){const D=(state&&state.hdeco&&state.hdeco[id])||[];if(!D.length)return[];const taken=base.filter(q=>q.g).map(q=>q.g),out=[],L=P.levels[0];
+  const cells=[];for(let j=0;j<P.D;j++)for(let i=0;i<P.W;i++){if(!L.grid[j]||L.grid[j][i]==='.'||L.grid[j][i]==='#')continue;cells.push([i+.5,j+.5])}
+  const ar=P.arrive[0],R=jrRand('hd|'+id);cells.sort(()=>R()-.5);
+  D.forEach(d=>{const def=CATMAP[d.k];if(!def)return;if(def.wall){const c=cells.find(([x,z])=>z<1&&!taken.some(t=>Math.abs(t[0]-x)<1&&t[1]<1.2));if(c){out.push({k:d.k,wl:[c[0],0,'n'],y:1.6});taken.push([c[0],.3])}return}
+    const c=cells.find(([x,z])=>Math.hypot(x-ar[0],z-ar[1])>1.6&&!taken.some(t=>Math.hypot(t[0]-x,t[1]-z)<1.15));if(c){out.push({k:d.k,g:c,r:0});taken.push(c)}});return out}
+// ---- the event a house is hosting, arriving at it
+function eventArrive(){const E=eventNow();if(!E||!away||!away.def.house||away.def.hid!==E.house)return;const key=E.k+'|'+lifeDay();const S=state.evseen||(state.evseen=[]);if(S.includes(key))return;
+  S.push(key);if(S.length>40)S.splice(0,S.length-40);state.hearts+=5;E.guests.forEach(g=>{if(KBIB[g])kfAdd(g,1)});cheerAdd(4,'event');td('event');jrEvent('event',{s:E.n});
+  let extra='';if(E.fest){const set=Object.values(CATMAP).filter(d=>d.set===E.fest.set&&!d.gacha);if(set.length){const d=pick1(set);state.fown[d.k]=(state.fown[d.k]|0)+1;extra=` and a keepsake from the festival: <b>${esc(d.n)}</b>`}}
+  saveSoon();updHUD();setTimeout(()=>showReward(E.n+'!','stat-happy',`<p>${esc(E.t)}</p><p>Everyone’s glad you came. +5 hearts${extra}.</p>`),1600)}
+// ---- daily letters: birthdays (from the Mayor), festivals, Nimbus's forecast on rainy days; parcels waiting
+function townLifeTick(){if(!state||sandbox)return;const day=lifeDay(),noon=Date.parse(day+'T12:00:00Z'),post=(k,txt,t)=>{if(!state.inbox.some(m=>m.from===k&&m.text===txt))state.inbox.unshift({t,from:k,text:txt})};
+  try{bdayToday().forEach(k=>post('mayor',`Today is ${RESIDENTS[k].n}’s birthday! A small gift would make their day. You’ll find them on the Neighbours page.`,noon));
+    const F=festOn();if(F)post('mayor',`The ${F.n} is on all week at the Town Hall, 10 am to 8 pm. Everyone’s invited. Bring {n}!`.replace('{n}',state.pet.name),Date.parse(day+'T11:00:00Z'));
+    if(weatherOf(day)==='rain')post('cloud','rain today, all day. I’m sorry. Your garden isn’t, though.'.replace(/^r/,'R'),Date.parse(day+'T10:00:00Z'));
+    state.inbox.sort((a,b)=>b.t-a.t);if(state.inbox.length>60)state.inbox.length=60;
+    const P=parcelsForMe();if(P.length&&rewardQ.length===0&&!openTab&&$('#game').hidden)openParcel(P[0]);visitorTick()}catch(e){console.warn('town life',e)}}
+// ---- the Neighbours page: people, garden, calendar, parcel
+let lifeTab='people',lifeGiftFor=null,lifeGiftHand=false;
+function lifeWhere(k){const R=RESIDENTS[k],E=eventNow();if(evGuest(k,E))return`at ${E.n} (${SHOPS['h_'+E.house].n})`;const w=resWhere(k);
+  if(w==='shop')return'working at '+(SHOPS[R.shop]?SHOPS[R.shop].n:'the shop');if(w==='visit')return'popped into '+SHOPS[shopVisitOf(k)].n;if(w==='out')return R.away||'out';return'at home'}
+function lifeFace(k){const t=thumbs['fig_'+k];if(!t){queueThumbs(['fig_'+k]);clearTimeout(lifeFace.t);lifeFace.t=setTimeout(()=>{if(openTab==='town'&&!lifeGiftFor)renderSheet()},1800)}return t?`<img src="${t}" alt="">`:`<b>${esc(RESIDENTS[k].n[0])}</b>`}
+function renderTown(body){const day=lifeDay(),W=WEATHER[weatherOf(day)],F=festOn();
+  const tabs=[['people','People'],['garden','Garden'],['calendar','Calendar'],['parcel','Parcels']].map(([k,n])=>`<button class="${lifeTab===k?'on':''}" data-lt="${k}">${n}</button>`).join('');
+  let html=`${pgHead('town',{right:`<span class="lifewx">${LIFE_IC[W.ic].replace('width="30" height="30"','width="22" height="22"')} ${esc(W.n)}</span>`,sub:F?`The ${esc(F.n)} is on at the Town Hall!`:'Everyone in town, what they love, and what’s on.'})}<div class="lifetabs">${tabs}</div>`;
+  if(lifeTab==='people'){const W2=lifeWish(),bd=bdayToday(),E=eventNow();
+    if(lifeGiftFor)html+=lifeGiftHtml(lifeGiftFor,!lifeGiftHand);
+    if(E)html+=`<div class="tdc lifeev" style="--cc:#FFD21F"><span class="tdi">${lifeFace(E.guests[0])}</span><div class="tdt"><b>${esc(E.n)} is on now</b><small>${esc(E.t)} At ${esc(SHOPS['h_'+E.house].n)}.</small></div><div class="tdr"><button class="gel pink tdgo" data-lgo="h_${E.house}">Go</button></div></div>`;
+    if(W2)html+=`<p class="hint lifewish">${esc(RESIDENTS[W2.k].n)} would love ${esc(tagName(W2.tag))} for their house today.</p>`;
+    const groups=[['Shops','',Object.keys(RESIDENTS).filter(k=>resHere(k)&&RESIDENTS[k].shop)],...HOOD_KEYS.map(h=>[HODS_N(h),h,Object.keys(RESIDENTS).filter(k=>resHere(k)&&!RESIDENTS[k].shop&&HOUSES[houseOf(k)]&&HOUSES[houseOf(k)].hood===h)])];
+    groups.forEach(([n,h,ks])=>{if(!ks.length)return;html+=`<div class="row-label">${esc(n)}</div><div class="tdlist">`+ks.map(k=>{const R=RESIDENTS[k],f=kfOf(k),lv=kfLevel(f.p),dk=(state.disc||{})[k]||[],given=(state.gifts||{})[k]===day,
+        loves=LIKES[k]?LIKES[k].love.map(t=>dk.includes(t)?esc(tagName(t)):'?').join(', '):'',isB=bd.includes(k);
+      return`<div class="tdc lifep" style="--cc:${(RES[k]||['','#eee'])[1]}"><span class="tdi lifeface">${lifeFace(k)}</span><div class="tdt"><b>${esc(R.n)}${isB?' · birthday!':''}</b><small>${esc(R.role)} · ${esc(lifeWhere(k))}</small><small>${'♥'.repeat(lv)}${'♡'.repeat(4-lv)} · Loves: ${loves}</small></div>
+        <div class="tdr"><button class="gel lilac tdgo" data-lgift="${k}"${given?' disabled':''}>${given?'Gifted':'Gift'}</button></div></div>`}).join('')+'</div>'});
+    }
+  else if(lifeTab==='garden'){const G=gardenPlots(),S=state.seeds||{},rain=weatherOf(day)==='rain';
+    html+=`<p class="hint">${rain?'It’s raining, so every planter is watered today.':'Water each planter once a day (either of you can). Rainy days water them for you.'} Posy gives out seeds at her house.</p><div class="tdlist">`+G.map((P,i)=>{if(!P||!P.s){const own=Object.keys(SEEDS).filter(s=>S[s]>0);
+        return`<div class="tdc" style="--cc:#C98A5A"><span class="tdi">${LIFE_IC.pot}</span><div class="tdt"><b>Empty planter</b><small>${own.length?'Pick seeds to plant:':'No seeds yet. Ask Posy in Lantern Meadow.'}</small>${own.length?`<div class="lifeseeds">${own.map(s=>`<button class="gel silver" data-plant="${i}:${s}">${esc(SEEDS[s].n)} ×${S[s]}</button>`).join('')}</div>`:''}</div></div>`}
+      const Sd=SEEDS[P.s],g=plotGrowth(P),ready=g>=Sd.days,wet=rain||(P.w||[]).includes(day);
+      return`<div class="tdc" style="--cc:${Sd.c}"><span class="tdi">${ready?LIFE_IC.bloom:LIFE_IC.sprout}</span><div class="tdt"><b>${esc(Sd.n)}</b><span class="tdbar"><i style="width:${g/Sd.days*100}%"></i></span><small>${ready?'Ready to pick!':`Grown ${g} of ${Sd.days} days${wet?' · watered today':''}`}</small></div>
+        <div class="tdr">${ready?`<button class="gel pink tdgo" data-harv="${i}">Pick</button>`:`<button class="gel lilac tdgo" data-water="${i}"${wet?' disabled':''}>Water</button>`}</div></div>`}).join('')+'</div>'}
+  else if(lifeTab==='calendar'){const ev=[0,1,2,3,4,5,6].map(i=>{const d=dayPlus(i);return[i,d,EVENTS.filter(x=>x.dow===dowOf(d)),bdaySoon(7).filter(b=>b[1]===i)]}),F2=FESTS.map(f=>f);
+    html+=`<div class="row-label">Weather</div><div class="lifewxrow">${[0,1,2].map(i=>{const w=WEATHER[weatherOf(dayPlus(i))];return`<div><b>${i?i===1?'Tomorrow':dayName(dayPlus(i)):'Today'}</b><span>${LIFE_IC[w.ic]}</span><small>${esc(w.n)}</small></div>`}).join('')}</div>
+      <div class="row-label">This week</div><div class="tdlist">${ev.map(([i,d,es,bs])=>es.map(e=>`<div class="tdc" style="--cc:#FFD21F"><span class="tdi">${lifeFace(e.guests[0])}</span><div class="tdt"><b>${esc(e.n)}</b><small>${i?i===1?'Tomorrow':dayName(d):'Today'}, ${hourName(e.h[0])} to ${hourName(e.h[1])} · ${esc(SHOPS['h_'+e.house]?SHOPS['h_'+e.house].n:'')}</small><small>${esc(e.t)}</small></div></div>`).join('')+
+        bs.map(([k])=>`<div class="tdc" style="--cc:#FF6FB5"><span class="tdi">${lifeFace(k)}</span><div class="tdt"><b>${esc(RESIDENTS[k].n)}’s birthday</b><small>${i?i===1?'Tomorrow':dayName(d):'Today!'} A gift counts extra.</small></div></div>`).join('')).join('')}</div>
+      <div class="row-label">Festivals</div><div class="tdlist">${F2.map(f=>`<div class="tdc" style="--cc:#9B4DF2"><span class="tdi">${LIFE_IC.fest}</span><div class="tdt"><b>${esc(f.n)}</b><small>${f.from.replace('-','/')} to ${f.to.replace('-','/')} at the Town Hall · a ${esc(SETMAP[f.set]?SETMAP[f.set].n:'')} keepsake</small></div></div>`).join('')}</div>`}
+  else if(lifeTab==='parcel'){const me=myId||'me',sent=(state.parcels||[]).filter(p=>p.by===me||p.by===myId).slice(0,5),goods=ITEMS.filter(i=>i.p>0&&(i.k==='food'||i.k==='groom'));
+    html+=`<p class="hint">Parcel will deliver a wrapped treat to your person. It costs the item’s price plus 1 heart for wrapping, and they unwrap it on their phone.</p>
+      <label class="lifenote">Note <input id="pcNote" maxlength="120" placeholder="Thinking of you"></label><div class="lifegoods">${goods.map(i=>`<button class="gel silver" data-pc="${i.id}">${esc(i.n)} <small>${i.p+1}♥</small></button>`).join('')}</div>
+      ${sent.length?`<div class="row-label">Sent</div><ul class="lifelist">${sent.map(p=>`<li>${esc((ITEMS.find(i=>i.id===p.item)||{}).n||'')} · ${p.open&&p.open.length?'unwrapped':'on its way'} · ${ago(p.t)}</li>`).join('')}</ul>`:''}`}
+  body.innerHTML=html;
+  body.querySelectorAll('[data-lt]').forEach(b=>b.onclick=()=>{lifeTab=b.dataset.lt;lifeGiftFor=null;renderSheet()});
+  body.querySelectorAll('[data-lgo]').forEach(b=>b.onclick=()=>{setTab(null);travelTo(b.dataset.lgo)});
+  body.querySelectorAll('[data-lgift]').forEach(b=>b.onclick=()=>{lifeGiftFor=b.dataset.lgift;renderSheet();setTimeout(()=>{const g=$('#lifeGift');if(g)g.scrollIntoView({behavior:'smooth',block:'center'})},60)});
+  body.querySelectorAll('[data-gsrc]').forEach(b=>b.onclick=()=>{const [t,id]=b.dataset.gsrc.split('|'),k=lifeGiftFor,hand=lifeGiftHand,r=giveGift(k,{t,id},hand?'hand':'mail');lifeGiftFor=null;lifeGiftHand=false;
+    if(r&&hand){setTab(null);showReward(RESIDENTS[k].n,'stat-happy',`<p>“${esc(r.line)}”</p><p>+${r.pts} friendship</p>`)}else{if(r)toast(`Parcel is taking it to ${RESIDENTS[k].n}. ${r.grade==='love'?'They’re going to love it!':''}`,true);renderSheet()}});
+  const gx=$('#lifeGiftX');if(gx)gx.onclick=()=>{lifeGiftFor=null;lifeGiftHand=false;renderSheet()};
+  body.querySelectorAll('[data-plant]').forEach(b=>b.onclick=()=>{const [i,s]=b.dataset.plant.split(':');plantSeed(+i,s);renderSheet()});
+  body.querySelectorAll('[data-water]').forEach(b=>b.onclick=()=>{waterPlot(+b.dataset.water);toast('Watered.');renderSheet()});
+  body.querySelectorAll('[data-harv]').forEach(b=>b.onclick=()=>{harvestPlot(+b.dataset.harv);renderSheet()});
+  body.querySelectorAll('[data-pc]').forEach(b=>b.onclick=()=>{if(sendParcel(b.dataset.pc,($('#pcNote')||{}).value)){toast('Parcel is on his way!',true);renderSheet()}})}
+const HODS_N=h=>HOODS[h]?HOODS[h].n:h;
+function lifeGiftHtml(k,mail){const L=lifeGiftables();return`<div class="lifegift" id="lifeGift"><div class="row-label">${mail?'Send':'Give'} ${esc(RESIDENTS[k].n)} a gift ${mail?'<small>Parcel delivers it</small>':''}<button class="gm-x" id="lifeGiftX" aria-label="Close">×</button></div>
+  ${L.length?`<div class="lifegoods">${L.map(s=>`<button class="gel silver" data-gsrc="${s.t}|${s.id}">${esc(s.name)} <small>×${s.n}</small></button>`).join('')}</div>`:'<p class="hint">You have nothing to give yet. Food from the Snack Shack or furniture in storage both make good presents.</p>'}</div>`}
+/* </town-life> */
+function kActs(){const k=away.key,kind=kmode.kind,A=[['chat','Chat','Have a little natter','#E3D4FF','chat']],KK=kmode.K,GIFT=['gift','Give a gift','Something from your bag','#FFF3B8','shop'];
+  if(away.def&&away.def.house||KK&&(KK.customer||KK.guest)){(JOB_ACTS[kind]||[]).forEach(x=>{const y=x.slice();y[2]=kFill(y[2]);A.push(y)});A.push(GIFT);return A}
   if(kind==='hair')A.push(['svc:hair','Restyle antennae','New tips and colours','#FFD6EA','style']);
   else if(kind==='makeup')A.push(['svc:makeup','Makeover','Colours and patterns','#FFD6EA','paint']);
   else if(kind==='polish'){A.push(['svc:hair','Book a restyle','Antenna tips and dyes','#FFD6EA','style']);A.push(['svc:makeup','Book a makeover','Colours and patterns','#FFD6EA','paint'])}
@@ -13667,7 +13915,7 @@ function kActs(){const k=away.key,kind=kmode.kind,A=[['chat','Chat','Have a litt
   else A.push(['shop','Shop',{snack:'Treats and drinks',salon:'Bath and grooming',toys:'Toys to keep',furn:'Today’s furniture',build:'Floors, walls, doors, room size',wear:'Hands, shoes, accessories'}[k]||'See what’s for sale','#FFD6A8','shop']);
   if(k==='toys'||k==='arcade')A.push(['gacha','Capsule machine',`${state.tokens|0} token${(state.tokens|0)===1?'':'s'}`,'#FFE7F3','gacha']);
   if(k==='wear')A.push(['wardrobe','Fitting room','Swap what you own','#D4F0FF','hanger']);
-  return A}
+  A.push(GIFT);return A}
 function kTopics(){const B=KBIB[kmode.kind],f=kfOf(kmode.kind),lv=kfLevel(f.p),others=Object.keys(B.rel||{}).filter(q=>KBIB[q]),st=B.story[f.s],fresh=st&&st[0]<=lv;
   const ask=kmode.ask||(kmode.ask=others.sort(()=>Math.random()-.5).slice(0,2));
   return[['mood','How’s your day going?'],['story',`${fresh?'<span class="new">New</span>':''}Tell me about yourself`],...ask.map(q=>['rel:'+q,`What do you think of ${KBIB[q].n}?`]),['pet',`What do you think of ${esc(state.pet.name)}?`],['tip','Any tips for us?']]}
@@ -13688,7 +13936,7 @@ function kOpen(K){if(!away||!K)return;const kind=K.kind,B=KBIB[kind];if(!B){keep
   const lv=kfLevel(kfOf(kind).p),g=kReqLine(kind)||(Math.random()<.18?cheerTalk():lv>=2&&B.hiF&&Math.random()<.55?pick1(B.hiF):pick1(B.hi[kTod()]));kPanel('menu',0);KB.q=[];setTimeout(()=>{if(kmode&&kmode.K===K)kbShow(kFill(g),K)},280)}
 function kClose(quiet){if(!kmode)return;if(openTab==='shopcat'){kmode.view='closing';setTab(null)}const P=$('#kpanel'),K=kmode.K,B=KBIB[kmode.kind];P.classList.remove('on');setTimeout(()=>{if(!kmode)P.hidden=true},420);kmode=null;document.body.classList.remove('kmode');
   const sh=$('#sheet');if(openTab==='shopcat')setTab(null);sh.classList.remove('kshop');requestAnimationFrame(fitSheet);if(B&&away&&!quiet){KB.q=[];setTimeout(()=>away&&!kmode&&kbShow(kFill(pick1(B.bye)),K),120)}else{KB.q=[];kbT=0;$('#kbub').hidden=true}}
-function kAct(a){const K=kmode.K;if(a==='chat'){kPanel('chat',1);return}
+function kAct(a){const K=kmode.K;if(a==='chat'){kPanel('chat',1);return}if(a.startsWith('job:')||a==='gift'){jobAct(a);return}
   if(a==='shop'){$('#kpanel').classList.remove('on');kmode.view='shop';$('#sheet').classList.add('kshop');setTab('shopcat');return}
   if(a==='gacha'){kClose(true);openGacha();return}
   if(a==='wardrobe'){kClose(true);setTab('wardrobe');return}
@@ -13834,10 +14082,11 @@ const WISH_T={
   nap:{ev:'nap',ic:'act-nap',go:'pet',txt:()=>'a cozy nap'},
   pats:{ev:'pat',n:5,ic:'stat-happy',go:'pat',txt:n=>`${n} pats`},
   look:{ev:'wear',ic:'tab-pet',go:'wardrobe',txt:()=>'a change of outfit'},
+  friend:{ev:'visit:house',ic:'tab-room',go:'map',txt:()=>'a visit to a neighbour'},
   trip:{ev:'visit',ic:'tab-room',go:'map',txt:(n,k)=>`a trip to ${SHOPS[k]?SHOPS[k].n:'town'}`},
   need:{ev:'need',get ic(){const W=state&&state.wish;return W&&W.need?NEED_IC[W.need]:'tab-decorate'},go:'decorate',txt:(n,k,W)=>{W=W||state.wish;return W&&W.need?NEED_WANT[W.need]:'something new'}}};
 const WISH_HOURS=4,WISH_GAP=[25,45];
-function wishPick(){const st=petStats(),P=persOf(),c=['pats','look','trip','trip'];if(st.hunger<60)c.push('snack','snack');if(P&&st.hunger<90)c.push('fav');if(st.clean<60)c.push('bath','bath');
+function wishPick(){const st=petStats(),P=persOf(),c=['pats','look','trip','trip','friend'];if(st.hunger<60)c.push('snack','snack');if(P&&st.hunger<90)c.push('fav');if(st.clean<60)c.push('bath','bath');
   if(st.fun<65)c.push('play','play');if(st.energy<40)c.push('nap','nap');const ok=c.filter(k=>!WISH_T[k].ok||WISH_T[k].ok());return ok[Math.random()*ok.length|0]}
 function wishText(){const W=state.wish,T=W&&WISH_T[W.k];return T?T.txt(W.n,W.shop,W):''}
 function wishTick(){if(!ready||sandbox||!state)return;if(!stageOf(state.pet.xp))return;const now=Date.now(),W=state.wish||{};
@@ -14026,7 +14275,7 @@ const CHEER_TALK=[['It’s been a bit sleepy round here lately. Nice to see a fr
 function cheerLv(p){let l=0;CHEER.forEach((c,i)=>{if((+p||0)>=c[0])l=i});return l}
 function cheerOf(){const C=state.cheer&&typeof state.cheer==='object'?state.cheer:(state.cheer={p:0,lv:0,hp:''});return C}
 function cheerTalk(){const l=cheerLv(cheerOf().p);return pick1(CHEER_TALK[l<3?0:l<6?1:2])}
-function cheerAdd(n,src){if(!state||!(n>0))return;const C=cheerOf();C.p=(+C.p||0)+n;const L=cheerLv(C.p);while((C.lv|0)<L){C.lv=(C.lv|0)+1;cheerLevelUp(C.lv)}
+function cheerAdd(n,src){if(!state||!(n>0))return;const C=cheerOf();C.p=(+C.p||0)+n;const L=cheerLv(C.p);while((C.lv|0)<L){C.lv=(C.lv|0)+1;cheerLevelUp(C.lv);try{const X=CHEER[C.lv];if(X&&RESIDENTS.mayor)resPost("mayor",`Ahem! The town is now “${X[1]}”. We cut the ribbon this morning${X[2]&&TM_DECOR[X[2]]?` on a new ${TM_DECOR[X[2]].n.toLowerCase()}`:""}. Thank you both, truly.`)}catch(_){}}
   saveSoon();if(tm&&tm.open)tmCheerUI();if(openTab==='todo'&&src!=='td')renderSheet()}
 function cheerLevelUp(l){const c=CHEER[l],h=10+l*5;state.hearts+=h;state.tokens=(state.tokens|0)+1;logEvent(`helped the town become “${c[1].toLowerCase()}”`);jrEvent('cheer',{t:c[1].toLowerCase()});
   const un=Object.keys(DECOR_LV).filter(k=>DECOR_LV[k]===l&&TM_DECOR[k]).map(k=>TM_DECOR[k].n.toLowerCase());
@@ -14034,7 +14283,7 @@ function cheerLevelUp(l){const c=CHEER[l],h=10+l*5;state.hearts+=h;state.tokens=
 // a day when every need is looked after makes the town happy too (once a day)
 function cheerTick(){if(!stageOf(state.pet.xp))return;const C=cheerOf(),d=tdDay();if(C.hp===d)return;const s=petStats();
   if(NEEDS.every(n=>s[n[0]]>=60)&&s.hunger<=105){C.hp=d;cheerAdd(6,'happy');jrEvent('happy');toast(`${PN()} is having a really good day, and the whole town can tell. +6 town cheer`,true)}}
-function lifeTick(){if(!state||sandbox)return;try{reqEnsure();dreamTick();cheerTick()}catch(e){console.warn('life',e)}}
+function lifeTick(){if(!state||sandbox)return;try{reqEnsure();dreamTick();cheerTick();townLifeTick()}catch(e){console.warn('life',e)}}
 function cDate(){try{const p=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',year:'numeric',month:'numeric',day:'numeric'}).formatToParts(new Date()),g=t=>+p.find(x=>x.type===t).value;return new Date(Date.UTC(g('year'),g('month')-1,g('day')))}
   catch(_){const d=new Date();return new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()))}}
 let tdDayShift=0;// debug: pretend it's a later day
@@ -15265,11 +15514,11 @@ $('#petwheel').onclick=e=>{if(e.target.id==='petwheel')closeWheel()};
 const NEEDS=[['hunger','Hunger','#FF8A1C','stat-full','feed'],['fun','Fun','#FF3D9A','stat-happy','play'],['energy','Energy','#9B4DF2','stat-energy','nap'],['clean','Hygiene','#3EC8F2','stat-clean','bath'],['affection','Love','#FF7FB8','heart-jar','pat']];
 const BUG_SVG='<svg viewBox="0 0 48 48" aria-hidden="true"><g stroke="#3B1273" stroke-width="3"><circle cx="24" cy="13" r="7" fill="#3B1273"/><ellipse cx="24" cy="29" rx="15" ry="14" fill="#FF5A5A"/><path d="M24 15v28"/></g><g fill="#3B1273"><circle cx="16" cy="25" r="3"/><circle cx="32" cy="25" r="3"/><circle cx="18" cy="35" r="2.6"/><circle cx="30" cy="35" r="2.6"/></g></svg>';
 const MENU_ITEMS=[['decorate','Decorate','tab-decorate','#FFB35C','Furniture, floors, walls','h'],['wardrobe','Wardrobe','wear.svg','#D6F5A8','Dress up your pet','h'],['journal','Journal','journal.svg','#FFF3B8','What your pet did','h'],
-  ['todo','Two-dos','twodo','#FFD6EA','Today’s list','t'],['inbox','Inbox','tab-mail','#BDEBFF','Neighbours and notes','t'],['steps','Footprints','steps.svg','#E3D4FF','What you two did','t'],
+  ['todo','Two-dos','twodo','#FFD6EA','Today’s list','t'],['inbox','Inbox','tab-mail','#BDEBFF','Neighbours and notes','t'],['town','Neighbours','town.svg','#FFE6A8','Gifts, garden, what’s on','t'],['steps','Footprints','steps.svg','#E3D4FF','What you two did','t'],
   ['room','Room & sharing','tab-room','#fff','Light, invite, names','s'],['debug','Debug','','#EDE6F5','Testing tools','']],MENU_KIDS=MENU_ITEMS.map(m=>m[0]);
 function ringSvg(v,sz,w){const r=(sz-w)/2-1,c=2*Math.PI*r;return`<svg viewBox="0 0 ${sz} ${sz}" aria-hidden="true"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" class="tr"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" class="pr" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c*(1-Math.max(.02,Math.min(1,v)))).toFixed(1)}"/></svg>`}
 let dbgOpen='Pet stage';
-const MN_RING={decorate:'#FF8A1C',wardrobe:'#A6E22E',journal:'#FFD21F',todo:'#FF3D9A',inbox:'#3EC8F2',steps:'#9B4DF2',room:'#3EC8F2',debug:'#9B4DF2'};
+const MN_RING={decorate:'#FF8A1C',wardrobe:'#A6E22E',journal:'#FFD21F',todo:'#FF3D9A',inbox:'#3EC8F2',town:'#A6E22E',steps:'#9B4DF2',room:'#3EC8F2',debug:'#9B4DF2'};
 function pgHead(k,o={}){const m=MENU_ITEMS.find(x=>x[0]===k)||[k,k,'','#fff'];return`<div class="pgh" style="--rc:${MN_RING[k]||'#FFD21F'}">${m[2]?`<span class="pi"><img src="${ico(m[2])}" alt=""></span>`:''}<h2>${o.t||m[1]}</h2>${o.right?`<span class="pgr">${o.right}</span>`:''}</div>${o.sub?`<p class="hint pgsub">${o.sub}</p>`:''}`}
 function menuBadges(){const T=state.td,n=T.done.length,m=T.list.length,treat=n>=m&&!T.gift,u=k=>unreadOf(k)?`<i class="badge">${unreadOf(k)}</i>`:'';
   return{todo:treat?'<i class="badge">!</i>':`<i class="badge" style="background:#fff">${n}/${m}</i>`,inbox:u('inbox'),steps:u('steps')}}
@@ -15498,6 +15747,7 @@ ${P?`<p class="pers"><b>${P.n}</b> ${P.d}</p>`:''}${traitRow()}<div class="minds
     const ni=$('#pname');ni.onchange=()=>{const v=ni.value.trim().slice(0,16);if(v&&v!==state.pet.name){logEvent(`renamed the pet to ${v}`);state.pet.name=v;saveSoon();updHUD()}}}
   else if(openTab==='journal')renderJournal(body);
   else if(openTab==='inbox')renderInbox(body);
+else if(openTab==='town')renderTown(body);
   else if(openTab==='steps')renderSteps(body);
   else if(openTab==='debug'){const p=state.pet,st=stageOf(p.xp),s=petStats();
     body.innerHTML=`<h2>Debug</h2>
@@ -15533,7 +15783,7 @@ ${P?`<p class="pers"><b>${P.n}</b> ${P.d}</p>`:''}${traitRow()}<div class="minds
     <p class="hint">Traits: ${esc(JSON.stringify(state.pet.tr||{}))}</p>
     </div></details>
     <details class="dbg-sec" data-sec="Neighbours"${dbgOpen==="Neighbours"?" open":""}><summary>Neighbours and houses</summary><div class="dbg-in">
-    <div class="dbg-grid"><button class="gel lilac" id="dbgInv">Get invited everywhere</button><button class="gel ${dbgAllHome?'sun':'lilac'}" id="dbgHome">Everyone home: ${dbgAllHome?'on':'off'}</button></div>
+    <div class="dbg-grid"><button class="gel lilac" id="dbgInv">Get invited everywhere</button><button class="gel ${dbgAllHome?'sun':'lilac'}" id="dbgHome">Everyone home: ${dbgAllHome?'on':'off'}</button><button class="gel lilac" id="dbgEv">Event: ${dbgEvent||'auto'}</button><button class="gel lilac" id="dbgFest">Festival: ${dbgFest||'auto'}</button><button class="gel lilac" id="dbgVis">Visitor now</button><button class="gel lilac" id="dbgSeed">+4 seeds</button></div>
     <p class="hint">${Object.keys(RESIDENTS).filter(resHere).map(k=>`${esc(RESIDENTS[k].n)}: ${resWhere(k)}`).join(' · ')}</p>
     </div></details>
     <p class="hint">Sandbox lets you try every piece, floor, wall and door. Nothing you do in it is saved or synced, and leaving puts the room back.</p>
@@ -15566,6 +15816,10 @@ ${P?`<p class="pers"><b>${P.n}</b> ${P.d}</p>`:''}${traitRow()}<div class="minds
     $('#dbgRqRe').onclick=()=>{state.req={};reqEnsure();toast('New favours: '+state.req.list.map(e=>RES[e.kp][0]).join(', '))};
     $('#dbgCh').onclick=()=>{cheerAdd(50,'dbg');renderSheet()};
 $('#dbgInv').onclick=()=>{Object.keys(RESIDENTS).forEach(k=>{if(KBIB[k]){const f=kfOf(k),need=KF_LV[RESIDENTS[k].boss?2:1];if(f.p<need)kfAdd(k,need-f.p)}});toast('Everyone has invited you over.',true);renderSheet()};
+$('#dbgEv').onclick=()=>{const ks=[null,...EVENTS.map(e=>e.k)];dbgEvent=ks[(ks.indexOf(dbgEvent)+1)%ks.length];renderSheet()};
+$('#dbgFest').onclick=()=>{const ks=[null,...FESTS.map(e=>e.k)];dbgFest=ks[(ks.indexOf(dbgFest)+1)%ks.length];renderSheet()};
+$('#dbgVis').onclick=()=>{if(away){toast('Go home first.',true);return}setTab(null);const f=Object.keys(RESIDENTS).filter(k=>resHere(k)&&KBIB[k]);if(visitor){scene.remove(visitor.K.g);visitor=null}spawnVisitor(pick1(f))};
+$('#dbgSeed').onclick=()=>{const S=state.seeds||(state.seeds={});Object.keys(SEEDS).slice(0,4).forEach(k=>S[k]=(S[k]|0)+1);saveSoon();toast('+4 seeds',true)};
 $('#dbgHome').onclick=()=>{dbgAllHome=!dbgAllHome;toast(dbgAllHome?'Everyone is at home (shops keep their usual keeper).':'Back to the usual hours.',true);renderSheet()};
     $('#dbgTr').onclick=()=>{const ks=Object.keys(TRAITS),k=ks[Math.random()*ks.length|0];trAdd(k,5);toast('+5 '+TRAITS[k].n);renderSheet()};
     $('#dbgSand').onclick=()=>{setSandbox(!sandbox);if(openTab==='debug')renderSheet()};
@@ -15698,7 +15952,7 @@ let syncBase=null,syncBaseRev=0;
 function snapBase(s,keep){const b={};for(const k in s)b[k]=JSON.stringify(s[k]);syncBase=b;syncBaseRev=+s.rev||0;if(keep!==false)try{localStorage.setItem('r42base:'+roomCode,JSON.stringify(s))}catch(_){}}
 const SYNC_SKIP={rev:1,kr:1,visits:1,jrT:1,cv:1,minV:1};
 // the oldest app version allowed to edit the shared room (older ones refresh themselves when they see this in the doc)
-const SYNC_MIN_V=50;
+const SYNC_MIN_V=51;
 const localChanged=()=>!!syncBase&&Object.keys(state).some(k=>!SYNC_SKIP[k]&&JSON.stringify(state[k])!==syncBase[k]);
 const mNum=(l,r,b)=>(+b||0)+((+l||0)-(+b||0))+((+r||0)-(+b||0));
 const mCounts=(l,r,b)=>{b=b||{};l=l||{};r=r||{};const o={};new Set([...Object.keys(l),...Object.keys(r),...Object.keys(b)]).forEach(k=>{const v=mNum(l[k],r[k],b[k]);if(v>0)o[k]=Math.min(99,v)});return o};
@@ -15726,6 +15980,11 @@ const MERGE={hearts:(l,r,b)=>Math.max(0,mNum(l,r,b)),tokens:(l,r,b)=>Math.max(0,
   dream:(l,r)=>{l=l||{};r=r||{};if((l.n|0)!==(r.n|0))return(l.n|0)>(r.n|0)?l:r;if(l.k!==r.k)return!l.k?r:!r.k?l:JSON.stringify(l)<JSON.stringify(r)?l:r;if((l.s|0)!==(r.s|0))return(l.s|0)>(r.s|0)?l:r;return Object.assign({},l,{got:Math.max(l.got|0,r.got|0)})},
   req:(l,r)=>{l=l||{};r=r||{};if(l.day!==r.day)return(l.day||'')>(r.day||'')?l:r;const lj=JSON.stringify(l.list),rj=JSON.stringify(r.list);if(lj!==rj)return lj<rj?l:r;
     const prog={};[l.prog||{},r.prog||{}].forEach(P=>{for(const n in P){const o=prog[n]=prog[n]||{};for(const id in P[n])o[id]=Math.max(o[id]|0,P[n][id]|0)}});return{day:l.day,list:l.list,prog,done:[...new Set([...(l.done||[]),...(r.done||[])])]}},
+  gifts:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{})if(!o[k]||l[k]>o[k])o[k]=l[k];return o},acts:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{})if(!o[k]||l[k]>o[k])o[k]=l[k];return o},
+  disc:(l,r)=>{const o={};new Set([...Object.keys(l||{}),...Object.keys(r||{})]).forEach(k=>o[k]=[...new Set([...((l||{})[k]||[]),...((r||{})[k]||[])])]);return o},seeds:mCounts,evseen:mSet,
+  garden:(l,r)=>{const n=Math.max((l||[]).length,(r||[]).length),o=[];for(let i=0;i<n;i++){const a=(l||[])[i],b=(r||[])[i];o.push(!a?b||null:!b?a:((a.u|0)>=(b.u|0)?a:b))}return o},
+  hdeco:(l,r)=>{const o={};new Set([...Object.keys(l||{}),...Object.keys(r||{})]).forEach(h=>{const seen=new Set();o[h]=[...((l||{})[h]||[]),...((r||{})[h]||[])].filter(x=>!seen.has(x.id)&&seen.add(x.id))});return o},
+  parcels:(l,r)=>{const m=new Map();[...(l||[]),...(r||[])].forEach(p=>{const q=m.get(p.id);m.set(p.id,q?Object.assign({},q,{open:[...new Set([...(q.open||[]),...(p.open||[])])]}):p)});return[...m.values()].sort((a,b)=>b.t-a.t).slice(0,30)},
   pet:mPet,fwish:mFields,daily:mFields,td:mFields,arc:mFields,tmap:mFields,nmaps:mFields,kr:mMaxMap,minV:mMax,cv:mMax};
 // merge the normalized remote R into the local state L; returns the keys that changed locally
 // kr holds when each key last changed (stamped on write); a remote copy of a key older than the one in our base is a stale write
@@ -15755,7 +16014,7 @@ function adoptRemote(){buildHist.length=0;updUndoBtns();state=normalize(JSON.par
 function tryRemote(){if(sandbox||!remote||writing||dragging)return;if((remote.rev||0)<=Math.max(state.rev||0,syncBaseRev))return;if(!syncBase){if(!dirty)adoptRemote();return}
   // take the other side's changes in (keeping any unsaved ones of ours); if part of their write was stale, write ours back
   try{const R=normalize(JSON.parse(JSON.stringify(remote)));afterMerge(mergeInto(state,R));snapBase(R);if(localChanged())saveSoon()}catch(e){console.warn('merge',e)}}
-function normalize(s){const oldPal=!!s&&!(s.pv>=2);const d=defaultState();s=Object.assign({},d,s||{});s.items=Array.isArray(s.items)?s.items.map(i=>i&&typeof i.k==='string'&&i.k.startsWith('win_')?Object.assign(i,{k:winKeyFix(i.k)}):i).filter(i=>i&&CATMAP[i.k]&&typeof i.id==='string').slice(0,80):[];
+function normalize(s){const oldPal=!!s&&!(s.pv>=2);const d=defaultState();s=Object.assign({},d,s||{});{const ob=v=>v&&typeof v==='object'&&!Array.isArray(v);['gifts','disc','acts','seeds','hdeco'].forEach(k=>{if(!ob(s[k]))s[k]={}});['garden','parcels','evseen'].forEach(k=>{if(!Array.isArray(s[k]))s[k]=[]})}s.items=Array.isArray(s.items)?s.items.map(i=>i&&typeof i.k==='string'&&i.k.startsWith('win_')?Object.assign(i,{k:winKeyFix(i.k)}):i).filter(i=>i&&CATMAP[i.k]&&typeof i.id==='string').slice(0,80):[];
   s.inv=s.inv&&typeof s.inv==='object'?Object.fromEntries(Object.entries(s.inv).filter(([k,v])=>ITEMMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):Object.assign({},d.inv);
   s.toys=Array.isArray(s.toys)?s.toys.filter(k=>ITEMMAP[k]&&ITEMMAP[k].k==='toy'):d.toys.slice();s.daily=s.daily&&typeof s.daily==='object'?s.daily:{};
   s.pet=Object.assign({},d.pet,s.pet||{});if(s.pet.look&&typeof s.pet.look!=='object')delete s.pet.look;if(s.pet.heads&&!(Array.isArray(s.pet.heads)&&s.pet.heads.length===2))delete s.pet.heads;else if(s.pet.heads)s.pet.heads=s.pet.heads.map(x=>String(x||'').slice(0,10));s.tokens=s.tokens==null?3:Math.max(0,Math.min(999,+s.tokens|0));s.capsdex=Array.isArray(s.capsdex)?s.capsdex.filter(k=>typeof k==='string').slice(0,64):[];s.ceil=s.ceil==null?1:clamp(+s.ceil||0,0,1);s.wish=s.wish&&typeof s.wish==='object'&&(!s.wish.k||WISH_T[s.wish.k])?s.wish:{};s.wear=[...new Set(Array.isArray(s.wear)?s.wear.filter(id=>wearDef(id)):[])];s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
@@ -15802,7 +16061,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=50;
+const APP_V=51;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
@@ -15828,7 +16087,7 @@ let skyTick=0;const clock=new THREE.Clock();let tAcc=0,fpsN=0,fpsT=0;const tmp=n
 function loop(){requestAnimationFrame(loop);const raw=clock.getDelta(),dt=Math.min(raw,.05);if(gm&&!$('#game').hidden)return;if(gc&&gc.open)return;if(tm&&tm.open)return;tAcc+=dt;fpsN++;fpsT+=raw;frameIM=away?null:new Map(state.items.map(i=>[i.id,i]));if(fpsT>1){fps=Math.round(fpsN/fpsT);fpsN=0;fpsT=0;if(openTab==='debug')updDbgInfo()}updCam();
   if(away&&away.plan){walls.forEach(w=>{w.g.visible=false});updPlan()}else walls.forEach((w,i)=>{const d=WALLDEF[i];w.g.visible=(camera.position.x-d.c[0])*d.n[0]+(camera.position.z-d.c[1])*d.n[1]>2.5});updArch();
   roomObjs().forEach(o=>{const it=roomItem(o.userData.id);if(it&&defOf(it.k).wall)o.visible=away&&away.plan?(it.cls==null||!!(away.tall&&away.tall[it.cls])):walls[it.w||0].g.visible;if(o.userData.anim)o.userData.anim(tAcc)});
-  updDoor(dt);if(away)updShop(dt,tAcc);
+  updDoor(dt);if(away)updShop(dt,tAcc);else if(visitor)updVisitor(dt,tAcc);
   updateToyPlay(dt,tAcc);updatePet(dt,tAcc);if(selHelper)selHelper.update();
 updEmotes();skyTick+=raw;if(skyTick>15){skyTick=0;updateSky()}updLighting(tAcc);frameIM=null;renderer.render(scene,camera);adaptQuality(raw)}
 try{loop()}catch(e){showErr(e.message)}
