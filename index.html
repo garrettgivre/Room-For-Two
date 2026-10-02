@@ -698,6 +698,18 @@ body.away .tag{visibility:hidden}
 .lsv{display:block}.tdi .lsv{width:36px;height:36px}
 #visBadge{position:fixed;z-index:6}#visBadge[hidden]{display:none}
 .tm-cheer{top:calc(env(safe-area-inset-top,0px) + 112px)}
+.tm-tabs[hidden]{display:none!important}
+.tm-wheel{position:absolute;left:50%;top:50%;width:0;height:0;z-index:4}.tm-wheel[hidden]{display:none}
+.tmw-n,.tmw-c{position:absolute;left:0;top:0;transform:translate(calc(var(--x,0px) - 50%),calc(var(--y,0px) - 50%));display:flex;flex-direction:column;align-items:center;gap:1px;padding:0;border:0;background:none;cursor:pointer;animation:tmwIn .26s cubic-bezier(.3,1.5,.5,1) both}
+.tmw-n svg,.tmw-c img{width:58px;height:58px;padding:9px;box-sizing:border-box;border-radius:50%;background:#fff;border:3px solid var(--ink);box-shadow:0 0 0 4px var(--rc,#FFD21F) inset,0 4px 0 var(--ink)}
+.tmw-c img{width:74px;height:74px;box-shadow:0 0 0 5px var(--sun) inset,0 5px 0 var(--ink)}
+.tmw-n span,.tmw-c span{font-family:var(--disp);font-size:13px;color:#fff;text-shadow:1.5px 0 var(--ink),-1.5px 0 var(--ink),0 1.5px var(--ink),0 -1.5px var(--ink);white-space:nowrap}
+@keyframes tmwIn{from{opacity:0;transform:translate(-50%,-50%) scale(.3)}}
+.tm-wbtn{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);transform:translateX(-50%);z-index:4;font-family:var(--disp);font-size:16px;color:var(--ink);padding:10px 22px;border:3px solid var(--ink);border-radius:22px;background:var(--sun);box-shadow:0 4px 0 var(--ink);cursor:pointer}.tm-wbtn[hidden]{display:none}
+.tm-dock{display:none!important}
+.tmd{pointer-events:auto;border:0;background:none;padding:0;cursor:pointer}.tmd span{display:block;font-family:var(--disp);font-size:15px;color:var(--ink);padding:4px 12px;background:rgba(255,253,246,.94);border:2.5px solid var(--ink);border-radius:14px;box-shadow:0 3px 0 var(--ink);white-space:nowrap}
+.tmlist{display:flex;flex-direction:column;gap:6px;max-height:46vh;overflow:auto;margin-top:6px}.tmrow{display:flex;align-items:center;gap:8px}.tmface{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:50%;background:#F6EEFF;border:2.5px solid var(--ink);overflow:hidden}.tmface img{width:38px;height:38px;object-fit:contain}.tmface b{font-family:var(--disp)}.tmface .lsv{width:30px;height:30px}
+.tmrt{flex:1;min-width:0}.tmrt b{display:block;font-family:var(--disp);font-weight:400;font-size:14px}.tmrt small{display:block;font-size:11.5px;color:#6B4E95}
 .tm-tabs{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;top:calc(env(safe-area-inset-top,0px) + 62px);display:flex;padding:3px;gap:2px;background:rgba(255,251,240,.95);border:3px solid var(--ink);border-radius:18px;box-shadow:0 4px 0 var(--ink)}
 .tm-tabs button{border:0;background:none;font-family:var(--disp);font-size:12px;color:var(--ink);padding:6px 7px;border-radius:13px;cursor:pointer}
 .tm-tabs button.on{background:var(--sun);box-shadow:inset 0 -2px 0 rgba(59,18,115,.25)}
@@ -952,7 +964,7 @@ body.styling .storechip{opacity:0}
   </div></div></div>
 <div class="town3" id="town3" hidden><canvas id="tmSnap" class="tm-fly"></canvas><div class="tm-pop" id="tmPop"><canvas id="tmc"></canvas><div class="tm-lab" id="tmLab"></div>
   <div class="tm-top"><button class="tm-back" id="tmBack" hidden aria-label="Back to the map"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>Map</button><b id="tmTitle">Where to?</b><button class="gel lilac tm-arr" id="tmArr">Arrange</button><button class="gm-x" id="tmX" aria-label="Close the map">×</button></div>
-  <button class="tm-cheer" id="tmCheer" aria-label="Town cheer"></button><div class="tm-tabs" id="tmTabs"></div><div class="tm-card" id="tmCard" hidden></div><div class="tm-tools" id="tmTools" hidden></div><div class="tm-dock" id="tmDock"></div></div></div>
+  <button class="tm-cheer" id="tmCheer" aria-label="Town cheer"></button><div class="tm-tabs" id="tmTabs" hidden></div><div class="tm-wheel" id="tmWheel" hidden></div><button class="tm-wbtn" id="tmWheelBtn" hidden aria-label="Places">Places</button><div class="tm-card" id="tmCard" hidden></div><div class="tm-tools" id="tmTools" hidden></div><div class="tm-dock" id="tmDock"></div></div></div>
 <div class="gacha" id="gacha" hidden><canvas id="gcc"></canvas><div class="gc-top"><button class="gm-x" id="gcX" aria-label="Leave">×</button><b>Capsule Corner</b><span class="gc-tok" id="gcTok"></span></div><div class="gc-hint" id="gcHint"></div><div class="gc-bar" id="gcBar"></div><div class="gc-prize" id="gcPrize" hidden></div><div class="gc-dex" id="gcDex" hidden></div></div>
 <div class="travel" id="travel" hidden><img id="tvIcon" alt=""><b id="tvText"></b></div>
 <div class="game" id="game" hidden><div class="gm-bar"><button class="gm-x" id="gmX" aria-label="Leave the game">×</button><b class="gm-title" id="gmTitle"></b><span class="gm-stat gm-lv" id="gmLv"></span><span class="gm-stat" id="gmTime"></span><span class="gm-score" id="gmScore"></span></div><canvas id="gmc"></canvas><div class="gm-card" id="gmCard" hidden></div></div>
@@ -11523,7 +11535,12 @@ function openDoor(){if(traveling)return;doorTarget=1;setTab(null);if(pet.stage>0
    Tap a building for its card (who runs it, what's inside, Go). Arrange mode (a first georama): move and turn
    buildings, lay paths, place and remove decorations. The layout is shared: state.tmap {b:{key:[gx,gz,rot]},
    r:[[x,z]] path cells, d:[[kind,x,z]] decorations}. The main loop pauses while the map is open. */
-let TM_W=18,TM_D=20;const TM_PS=.3,TM_H0=.85,TM_H1=.62,TM_MAPS={town:[18,20],sugar:[14,13],bay:[13,12],hill:[14,13],meadow:[14,13]};
+let TM_W=18,TM_D=20;const TM_PS=.3,TM_H0=.85,TM_H1=.62,TM_MAPS={town:[18,20],sugar:[14,13],bay:[13,12],hill:[14,13],meadow:[14,13],world:[45,46]};
+// The world: the town in the middle, Sugarloaf Lane north, Lantern Meadow south, Bubble Bay west, Playhouse Hill east
+// (each part keeps its own layout, shifted by its offset; streets join them; the corners are woods).
+const WORLD_PARTS={town:[13,13],sugar:[15,0],meadow:[15,33],bay:[0,17],hill:[31,16]};
+const WORLD_TINT={sugar:'255,214,140',bay:'140,210,255',hill:'200,255,140',meadow:'225,200,255'};
+const WORLD_LINKS=[[21,8,21,15],[24,25,24,38],[6,16,16,16],[27,16,34,16],[34,17,34,21]];
 const TM_FLAT={arcade:1,build:1};
 const TM_OWN={baker:'Bunbun',stylist:'Fizz',toymaker:'Boing',cushion:'Cushy',builder:'Bolt',joy:'Joy',hair:'Pom',makeup:'Blush',tailor:'Stitch',jam:'Pip',sponge:'Loofah',windup:'Tock',dust:'Dusty',pencil:'Sketch',polish:'Gloss',spool:'Bobbin',pixel:'Pixel',mayor:'Mayor Marsh',parcel:'Parcel',crane:'Fold',posy:'Posy',cactus:'Prickles',book:'Dewey',lantern:'Lumi',cloud:'Nimbus',beacon:'Beacon',cone:'Tutti',scone:'Scone',crumb:'Crumb',gramo:'Echo',patch:'Dr. Patch',pebble:'Cobble'};
 const TM_INFO={home:'Your room. Decorate it, care for your pet, and head out whenever you like.',snack:'Fresh snacks, treats and drinks from Bunbun’s kitchen.',salon:'Baths, brushes and grooming with Fizz.',
@@ -11531,18 +11548,32 @@ const TM_INFO={home:'Your room. Decorate it, care for your pet, and head out whe
   wear:'Hands, shoes and accessories, tailored by Stitch.',arcade:'Minigames, high scores and a party floor upstairs.'};
 const tmShops=()=>Object.keys(SHOPS).filter(k=>SHOPS[k].plan&&!SHOPS[k].house);
 const tmHouses=mk=>Object.keys(SHOPS).filter(k=>SHOPS[k].house&&(!mk||SHOPS[k].hood===mk));
-const tmMk=()=>tm&&tm.mk||'town',tmMOf=mk=>isHood(mk)?(state.nmaps||(state.nmaps={}))[mk]:state.tmap,tmM=()=>tmMOf(tmMk());
-const tmSetM=(mk,m)=>{if(isHood(mk))(state.nmaps||(state.nmaps={}))[mk]=m;else state.tmap=m;return m};
-const tmPlacesOf=mk=>isHood(mk)?[...tmHouses(mk),'gate_town']:['home',...tmShops(),'gate_hood'],tmPlaces=()=>tmPlacesOf(tmMk());
+const tmMk=()=>tm&&tm.mk||'world',tmMOf=mk=>mk==='world'?state.wmap:isHood(mk)?(state.nmaps||(state.nmaps={}))[mk]:state.tmap,tmM=()=>tmMOf(tmMk());
+const tmSetM=(mk,m)=>{if(mk==='world')state.wmap=m;else if(isHood(mk))(state.nmaps||(state.nmaps={}))[mk]=m;else state.tmap=m;return m};
+const tmPlacesOf=mk=>mk==='world'?['home',...tmShops(),...tmHouses()]:isHood(mk)?[...tmHouses(mk),'gate_town']:['home',...tmShops(),'gate_hood'],tmPlaces=()=>tmPlacesOf(tmMk());
 const tmGate=k=>k.startsWith('gate_');
 function tmOwners(k){const S=SHOPS[k];if(!S)return[];if(S.house)return S.res.filter(k=>resWhere(k)==='home');return(S.keepers?S.keepers.map(q=>q.k):[S.keeper]).filter(Boolean)}
 function tmFoot(k,r){let w=2,d=2;if(tmGate(k))return[1,1];if(k!=='home'){const P=SHOPS[k].plan;w=Math.ceil(P.W*TM_PS-.01);d=Math.ceil(P.D*TM_PS-.01)}return r%2?[d,w]:[w,d]}
-function tmDefault(mk){if(isHood(mk))return hoodDefault(mk);const b={toys:[1,4,2],arcade:[1,8,2],snack:[1,12,2],glam:[14,4,0],wear:[14,8,0],salon:[14,12,0],furn:[4,0,1],build:[11,0,1],home:[8,17,0],gate_hood:[11,17,0]},r=new Set(),add=(x,z)=>r.add(x+','+z);
+// compose the world from the town's and the neighbourhoods' layouts (saved ones if there are any, so arrangements carry over)
+function worldCompose(fromSaved){const b={},r=new Set(),d=[],put=(L,ox,oz)=>{if(!L)return;for(const k in L.b){if(tmGate(k))continue;const v=L.b[k];b[k]=[v[0]+ox,v[1]+oz,v[2]]}
+    (L.r||[]).forEach(([x,z])=>r.add((x+ox)+','+(z+oz)));(L.d||[]).forEach(q=>d.push([q[0],q[1]+ox,q[2]+oz]))};
+  for(const [mk,[ox,oz]] of Object.entries(WORLD_PARTS)){let L=fromSaved?tmMOf(mk):null;try{L=tmNorm(L&&L.b?JSON.parse(JSON.stringify(L)):null,mk)}catch(_){L=tmDefault(mk)}put(L,ox,oz)}
+  WORLD_LINKS.forEach(([x0,z0,x1,z1])=>{for(let x=Math.min(x0,x1);x<=Math.max(x0,x1);x++)for(let z=Math.min(z0,z1);z<=Math.max(z0,z1);z++)r.add(x+','+z)});
+  // woods in the corners
+  const R=rnd(4242),[W,D]=TM_MAPS.world,free=(x,z)=>!Object.values(WORLD_PARTS).some(([ox,oz],i)=>{const mk=Object.keys(WORLD_PARTS)[i],[w,dd]=TM_MAPS[mk];return x>=ox-1&&x<ox+w+1&&z>=oz-1&&z<oz+dd+1});
+  for(let n=0;n<140;n++){const x=Math.floor(R()*W),z=Math.floor(R()*D);if(free(x,z)&&!r.has(x+','+z))d.push([R()<.45?'pine':R()<.8?'tree':'flowers',x,z])}
+  [['pond',2,3],['pond',40,41],['bench',5,6],['bench',38,38],['lamp',16,15],['lamp',27,17]].forEach(q=>d.push(q));
+  // nothing on top of a building or a street link
+  const L0={b,r:[...r].map(q=>q.split(',').map(Number)),d:[]},taken=tmTakenB(L0);
+  L0.d=d.filter(q=>{const [w,dd]=(TM_DECOR[q[0]]||{}).sz||[1,1];for(let i=0;i<w;i++)for(let j=0;j<dd;j++){const c=(q[1]+i)+','+(q[2]+j);if(taken.has(c)||r.has(c))return false}return q[1]>=0&&q[2]>=0&&q[1]+w<=W&&q[2]+dd<=D});
+  return L0}
+function tmTakenB(m){const t=new Set();for(const k in m.b){const [x,z,r]=m.b[k],[w,d]=tmFoot(k,r);for(let i=0;i<w;i++)for(let j=0;j<d;j++)t.add((x+i)+','+(z+j))}return t}
+function tmDefault(mk){if(mk==='world')return worldCompose(false);if(isHood(mk))return hoodDefault(mk);const b={toys:[1,4,2],arcade:[1,8,2],snack:[1,12,2],glam:[14,4,0],wear:[14,8,0],salon:[14,12,0],furn:[4,0,1],build:[11,0,1],home:[8,17,0],gate_hood:[11,17,0]},r=new Set(),add=(x,z)=>r.add(x+','+z);
   for(let x=4;x<=13;x++){add(x,3);add(x,11)}for(let z=3;z<=15;z++){add(4,z);add(13,z)}for(let z=3;z<=16;z++){add(8,z);add(9,z)}for(let x=7;x<=10;x++)for(let z=10;z<=12;z++)add(x,z);
   const d=[['fountain',8,10],['tree',0,1],['tree',2,16],['pine',0,17],['tree',6,6],['pine',11,6],['flowers',6,9],['flowers',11,14],['flowers',6,13],['lamp',7,5],['lamp',10,5],['lamp',7,15],['lamp',10,15],
     ['bench',11,9],['bench',6,12],['pond',15,16],['tree',17,19],['hedge',5,16],['hedge',12,16],['pine',17,1],['tree',15,1],['flowers',1,2]];
   return{b,r:[...r].map(s=>s.split(',').map(Number)),d}}
-function tmNorm(m,mk){const D=tmDefault(mk);if(!m||typeof m!=='object'||!m.b)return D;m.r=Array.isArray(m.r)?m.r:D.r;m.d=Array.isArray(m.d)?m.d.filter(q=>TM_DECOR[q[0]]):D.d;
+function tmNorm(m,mk){if(mk==='world'&&(!m||typeof m!=='object'||!m.b))return worldCompose(!!(state.tmap&&state.tmap.b));const D=tmDefault(mk);if(!m||typeof m!=='object'||!m.b)return D;m.r=Array.isArray(m.r)?m.r:D.r;m.d=Array.isArray(m.d)?m.d.filter(q=>TM_DECOR[q[0]]):D.d;
   for(const k in m.b)if(!tmPlacesOf(mk).includes(k))delete m.b[k];
   for(const k of tmPlacesOf(mk))if(!Array.isArray(m.b[k])){const df=D.b[k]||[0,0,0],[w,d]=tmFoot(k,df[2]);m.d=m.d.filter(q=>!(q[0]==='lot'&&q[1]<df[0]+w&&q[1]+2>df[0]&&q[2]<df[1]+d&&q[2]+2>df[1]));m.b[k]=df;if(tmFits(m,df[0],df[1],w,d,k)){const sp=tmFree(m,k,df[2]);if(sp)m.b[k]=sp}}return m}
 // the current map's layout, normalised (the town's is state.tmap, each neighbourhood's state.nmaps[key])
@@ -11842,7 +11873,7 @@ let tm=null,tmLast=0;
 function tmInit(){if(tm)return tm;try{const cv=$('#tmc'),R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});R.outputEncoding=THREE.sRGBEncoding;const sc=new THREE.Scene();
     const et=ctex(256,128,(x,w,h)=>{const q=x.createLinearGradient(0,0,0,h);q.addColorStop(0,'#fff');q.addColorStop(.45,'#EAF6FF');q.addColorStop(.55,'#fff');q.addColorStop(1,'#CDEFB0');x.fillStyle=q;x.fillRect(0,0,w,h)},null,1);et.mapping=THREE.EquirectangularReflectionMapping;sc.environment=et;
     sc.add(new THREE.AmbientLight(0xffffff,.55));const dl=new THREE.DirectionalLight(0xFFF1DE,2.9);dl.position.set(-11,11,1.5);dl.castShadow=true;Object.assign(dl.shadow.camera,{left:-15,right:15,top:15,bottom:-15,near:1,far:60});dl.shadow.mapSize.set(2048,2048);dl.shadow.bias=-.0005;dl.shadow.normalBias=.02;R.shadowMap.enabled=true;sc.add(dl);sc.userData.lighting={exposure:1.08,ao:[],points:[],get sh(){const e=sc.environment;if(!e||!e._sh)return null;const k=(tm&&tm.todK)||[.5,.5,.5],key=k.map(v=>v.toFixed(3)).join();if(e._shKey!==key){e._shKey=key;e._shT=e._sh.map((v,i)=>v*k[i%3])}return e._shT}};const cam=new THREE.PerspectiveCamera(30,1,4,260);
-    tm={R,sc,cam,root:G(),world:G(),bld:{},bg:{},yaw:-.35,pitch:.7,zoom:.98,tgt:new THREE.Vector3(),tgtTo:new THREE.Vector3(),open:false,arr:false,tool:'move',sel:null,deco:'tree',t:0,ray:new THREE.Raycaster(),ptr:new Map(),signs:[],mk:'town',maps:{}};
+    tm={R,sc,cam,root:G(),world:G(),bld:{},bg:{},yaw:-.35,pitch:.7,zoom:.98,tgt:new THREE.Vector3(),tgtTo:new THREE.Vector3(),open:false,arr:false,tool:'move',sel:null,deco:'tree',t:0,ray:new THREE.Raycaster(),ptr:new Map(),signs:[],mk:'world',maps:{}};[TM_W,TM_D]=TM_MAPS.world;
     sc.add(tm.root);tm.root.add(tm.world);tmIsland();return tm}catch(e){console.warn('town',e);return null}}
 const tmRR=(a,b,r,n=12)=>{const P=[];[[a-r,b-r,0],[-(a-r),b-r,1],[-(a-r),-(b-r),2],[a-r,-(b-r),3]].forEach(([cx,cz,q])=>{for(let i=0;i<=n;i++){const t=(q+i/n)*Math.PI/2;P.push([cx+Math.cos(t)*r,cz+Math.sin(t)*r])}});return P};
 function tmIsland(){const g=G(),W=TM_W,D=TM_D;tm.ground=G();tm.root.add(tm.ground);
@@ -11852,9 +11883,10 @@ function tmIsland(){const g=G(),W=TM_W,D=TM_D;tm.ground=G();tm.root.add(tm.groun
   {const R=rnd(19),pm=[M(0xF3E7C9,{roughness:.8}),M(0xC9A27A,{roughness:.9}),M(0xE8C39A,{roughness:.85})];for(let n=0;n<70;n++){const t=R(),side=(R()*4)|0,hw=(W+.5)/2-.02,hd=(D+.5)/2-.02,u=(R()-.5)*2;let x,z;if(side<2){x=u*(hw-.8);z=side?hd:-hd}else{z=u*(hd-.8);x=side===2?hw:-hw}
     const p=sp(g,.07+R()*.07,pm[n%3],x,-.25-t*.6,z,1.2,.8,1);p.castShadow=false;ol(p,.003)}}
   bakeStatic(g);tm.ground.add(g);tm.island=g;
-  const S_=48,gt=ctex(TM_W*S_,TM_D*S_,(x,w,h)=>{const R=rnd(77);x.fillStyle='#9BDF6A';x.fillRect(0,0,w,h);for(let i=0;i<TM_W;i++)for(let j=0;j<TM_D;j++)if((i+j)%2){x.fillStyle='rgba(255,255,255,.06)';x.fillRect(i*S_,j*S_,S_,S_)}
+  const S_=TM_W>30?24:48,gt=ctex(TM_W*S_,TM_D*S_,(x,w,h)=>{const R=rnd(77);x.fillStyle='#9BDF6A';x.fillRect(0,0,w,h);
+    if(tmMk()==='world')for(const [mk,[ox,oz]] of Object.entries(WORLD_PARTS)){if(!WORLD_TINT[mk])continue;const [ww,dd]=TM_MAPS[mk],cx=(ox+ww/2)*S_,cz=(oz+dd/2)*S_,rr_=Math.max(ww,dd)*S_*.75,q=x.createRadialGradient(cx,cz,0,cx,cz,rr_);q.addColorStop(0,`rgba(${WORLD_TINT[mk]},.28)`);q.addColorStop(1,`rgba(${WORLD_TINT[mk]},0)`);x.fillStyle=q;x.fillRect(cx-rr_,cz-rr_,rr_*2,rr_*2)}for(let i=0;i<TM_W;i++)for(let j=0;j<TM_D;j++)if((i+j)%2){x.fillStyle='rgba(255,255,255,.06)';x.fillRect(i*S_,j*S_,S_,S_)}
     for(let n=0;n<300;n++){const cx=R()*w,cy=R()*h,r=10+R()*36,c=R()<.55?'70,150,60,':'215,255,175,',q=x.createRadialGradient(cx,cy,0,cx,cy,r);q.addColorStop(0,`rgba(${c}${.08+R()*.08})`);q.addColorStop(1,`rgba(${c}0)`);x.fillStyle=q;x.fillRect(cx-r,cy-r,r*2,r*2)}
-    x.lineCap='round';for(let n=0;n<11000;n++){const px=R()*w,py=R()*h,l=2+R()*3.5,a=-Math.PI/2+(R()-.5)*.9;x.strokeStyle=R()<.55?'rgba(60,138,56,.32)':'rgba(222,255,184,.42)';x.lineWidth=1+R()*.7;x.beginPath();x.moveTo(px,py);x.lineTo(px+Math.cos(a)*l,py+Math.sin(a)*l);x.stroke()}
+    x.lineCap='round';for(let n=0;n<(TM_W>30?16000:11000);n++){const px=R()*w,py=R()*h,l=2+R()*3.5,a=-Math.PI/2+(R()-.5)*.9;x.strokeStyle=R()<.55?'rgba(60,138,56,.32)':'rgba(222,255,184,.42)';x.lineWidth=1+R()*.7;x.beginPath();x.moveTo(px,py);x.lineTo(px+Math.cos(a)*l,py+Math.sin(a)*l);x.stroke()}
     for(let n=0;n<240;n++){const px=R()*w,py=R()*h;if(R()<.35){x.fillStyle='rgba(70,160,70,.55)';for(let p=0;p<3;p++){const a=p/3*6.283+.5;x.beginPath();x.arc(px+Math.cos(a)*2,py+Math.sin(a)*2,1.9,0,7);x.fill()}continue}
       x.fillStyle=['#FFFFFF','#FFE66B','#FFB3DA','#D9C2FF'][(R()*4)|0];for(let p=0;p<5;p++){const a=p/5*6.283;x.beginPath();x.arc(px+Math.cos(a)*1.7,py+Math.sin(a)*1.7,1.3,0,7);x.fill()}x.fillStyle='#FFB21F';x.beginPath();x.arc(px,py,1,0,7);x.fill()}
     [[0,0,w,0,0,26],[0,h,w,h,0,h-26],[0,0,0,h,26,0],[w,0,w,h,w-26,0]].forEach(([x0,y0,x1,y1,ex,ey],n)=>{const q=n<2?x.createLinearGradient(0,y0,0,ey):x.createLinearGradient(x0,0,ex,0);q.addColorStop(0,'rgba(40,110,50,.22)');q.addColorStop(1,'rgba(40,110,50,0)');x.fillStyle=q;n<2?x.fillRect(0,Math.min(y0,ey),w,26):x.fillRect(Math.min(x0,ex),0,26,h)})},null,1);
@@ -11890,14 +11922,19 @@ function tmPaths(){if(tm.paths){tm.world.remove(tm.paths)}const g=G(),m=tmM(),S=
   bakeStatic(g);tm.paths=g;tm.world.add(g)}
 function tmDecor(){if(tm.decor)tm.world.remove(tm.decor);const g=G();tmM().d.forEach((q,n)=>{const D_=TM_DECOR[q[0]];const o=D_.b(),[w,d]=D_.sz||[1,1];o.position.set(q[1]-TM_W/2+w/2,0,q[2]-TM_D/2+d/2);o.userData.td=n;g.add(o)});
   // a festival dresses up the plaza (not saved, not tappable)
-  if(tmMk()==='town'&&typeof festOn==='function'&&festOn())[['bunting',6,9],['bunting',10,9],['balloons',7,13],['balloons',10,13],['lamp',6,11],['lamp',11,11]].forEach(([k,x,z])=>{const D_=TM_DECOR[k],o=D_.b(),[w,d]=D_.sz||[1,1];o.position.set(x-TM_W/2+w/2,0,z-TM_D/2+d/2);g.add(o)});
+  if(tmMk()==='world'&&typeof festOn==='function'&&festOn())[['bunting',6,9],['bunting',10,9],['balloons',7,13],['balloons',10,13],['lamp',6,11],['lamp',11,11]].map(([k,x,z])=>[k,x+WORLD_PARTS.town[0],z+WORLD_PARTS.town[1]]).forEach(([k,x,z])=>{const D_=TM_DECOR[k],o=D_.b(),[w,d]=D_.sz||[1,1];o.position.set(x-TM_W/2+w/2,0,z-TM_D/2+d/2);g.add(o)});
   tm.decor=g;tm.world.add(g)}
 function tmAO(){const A=[];for(const k in tm.bld){const o=tm.bld[k],[w,d]=tmFoot(k,0);A.push([o.position.x,o.position.z,Math.max(w,d)*.5+.25,.42])}
   (tm.decor?tm.decor.children:[]).forEach(o=>{const q=tmM().d[o.userData.td];if(!q||A.length>=24)return;const big=TM_DECOR[q[0]]&&TM_DECOR[q[0]].sz;A.push([o.position.x,o.position.z,big?1.2:.42,big?.3:.36])});tm.sc.userData.lighting.ao=A.slice(0,24)}
 function tmPlace(k){const o=tm.bld[k];if(!o)return;const [x,z,r]=tmM().b[k],[w,d]=tmFoot(k,r);o.position.set(x-TM_W/2+w/2,0,z-TM_D/2+d/2);o.rotation.y=r*Math.PI/2}
 function tmPad(o,k){const [w,d]=tmFoot(k,0),c=k==='home'?0x3EC8F2:parseInt((SHOPS[k].color||'#FF8A1C').slice(1),16),mx=v=>Math.round(255-(255-v)*.24),t=(mx(c>>16&255)<<16)|(mx(c>>8&255)<<8)|mx(c&255);ol(rb(o,w+.34,.04,d+.34,.12,M(t,{roughness:.7}),0,.02,0),.004)}
-function tmSync(full){for(const k of tmPlaces()){if(!(full||k==='home'||!tm.bld[k]))continue;if(tm.bld[k])tm.world.remove(tm.bld[k]);tm.signs=tm.signs.filter(q=>q.k!==k);try{tm.bld[k]=k==='home'?tmHome():tmGate(k)?tmGateM(k):tmShop(k);if(!tmGate(k))tmPad(tm.bld[k],k)}catch(e){console.warn('town '+k,e);delete tm.bld[k];continue}tm.world.add(tm.bld[k])}
+function tmSync(full,budget){let n=0;tm.pending=false;for(const k of tmPlaces()){if(!(full||k==='home'||!tm.bld[k]))continue;if(budget&&n>=budget&&k!=='home'){tm.pending=true;continue}n++;if(tm.bld[k])tm.world.remove(tm.bld[k]);tm.signs=tm.signs.filter(q=>q.k!==k);try{tm.bld[k]=k==='home'?tmHome():tmGate(k)?tmGateM(k):tmShop(k);if(!tmGate(k))tmPad(tm.bld[k],k)}catch(e){console.warn('town '+k,e);delete tm.bld[k];continue}tm.world.add(tm.bld[k])}
   for(const k in tm.bld)if(!tmPlaces().includes(k)){tm.world.remove(tm.bld[k]);delete tm.bld[k]}for(const k in tm.bld)tmPlace(k);tmPaths();tmDecor();tmAO();tm.anims=[];tm.world.traverse(o=>{if(o.userData.anim)tm.anims.push(o)});tmLabels()}
+// build a few more of the missing buildings (called each frame while the map is open, and when idle)
+function tmPump(n){if(!tm||!tm.pending)return false;let built=0;tm.pending=false;for(const k of tmPlaces()){if(tm.bld[k])continue;if(built>=n){tm.pending=true;break}built++;
+    tm.signs=tm.signs.filter(q=>q.k!==k);try{tm.bld[k]=k==='home'?tmHome():tmShop(k);tmPad(tm.bld[k],k);tm.world.add(tm.bld[k]);tmPlace(k);tm.bld[k].traverse(o=>{if(o.userData.anim)tm.anims.push(o)})}catch(e){console.warn('town '+k,e);delete tm.bld[k]}}
+  if(built){tmAO();tm.snapOk=0}return built>0}
+function tmPumpIdle(){if(!tm||!tm.pending||tm.open)return;tmPump(2);if(tm.pending)(window.requestIdleCallback?requestIdleCallback(tmPumpIdle,{timeout:800}):setTimeout(tmPumpIdle,200));else try{tmFresh()}catch(_){}}
 const tmLogo=function(k){return k==='home'?ico('tab-room'):SHOPS[k]&&SHOPS[k].house?(thumbs['fig_'+SHOPS[k].owner]||(queueThumbs(['fig_'+SHOPS[k].owner]),clearTimeout(tmLogo.t),tmLogo.t=setTimeout(()=>{if(tm&&tm.open)tmLabels()},1800),ico('tab-room'))):`assets/logos/${k}-nt.webp`};
 /* <house-models> */
 TM_BODY.h_beacon=function(g,o){const {hw,hd,dz}=o,J=(c,q)=>{const m=M(c,Object.assign({roughness:.65},q));m.detail=3;return m},
@@ -12996,7 +13033,48 @@ const TM_SIGN={
 function tmSignFor(g,fg,k){const ms=[],L=(bg,round)=>{const m=M(0xffffff,{map:tmLogoTex(k,bg,round),roughness:.45,emissive:0xFFFFFF,emissiveIntensity:.02});ms.push(m);return m};
   const p=(TM_SIGN[k]||(SHOPS[k]&&SHOPS[k].house?TM_SIGN._house:TM_SIGN._))(fg,L,k);let anim=false;p.traverse(q=>{if(q.userData.anim)anim=true});if(!anim)bakeStatic(p);tm.signs.push({k,ms})}
 // ---------- labels, card, pin ----------
-function tmLabels(){const el=$('#tmDock'),here=away?away.key:'home',wish=state.wish&&state.wish.k==='trip'&&state.wish.shop;$('#tmLab').innerHTML='';
+function tmLabels(){if(tmMk()==='world'){tmDistrictLabels();return}tmLabelsOld()}
+function tmDistrictLabels(){const lab=$('#tmLab'),D=[['town','Town square'],...HOOD_KEYS.map(h=>[h,HOODS[h].n])];$('#tmDock').innerHTML='';
+  lab.innerHTML=D.map(([mk,n])=>{const [ox,oz]=WORLD_PARTS[mk],[w,d]=TM_MAPS[mk];return`<button class="tml tmd" data-wx="${ox+w/2-TM_W/2}" data-wz="${oz+d/2-TM_D/2}" data-mk="${mk}"><span>${esc(n)}</span></button>`}).join('');
+  lab.querySelectorAll('.tmd').forEach(b=>b.onclick=e=>{e.stopPropagation();tmFlyDistrict(b.dataset.mk)})}
+function tmFlyTo(x,z,zoom){tm.focus=null;$('#tmCard').hidden=true;tm.tgtTo.set(x,0,z);tm.zoomTo=zoom}
+function tmFlyDistrict(mk){const [ox,oz]=WORLD_PARTS[mk],[w,d]=TM_MAPS[mk];tmWheelOpen(false);tmFlyTo(ox+w/2-TM_W/2,oz+d/2-TM_D/2,mk==='town'?.42:.33)}
+// open the map where you are: your house, the shop or the house you're in
+function tmWhere(){const k=away?away.key:'home',o=tm.bld[k],m=tmM(),v=m&&m.b[k];if(v){const [w,d]=tmFoot(k,v[2]);tm.tgtTo.set(v[0]+w/2-TM_W/2,0,v[1]+d/2-TM_D/2)}else tm.tgtTo.set(0,0,0);tm.tgt.copy(tm.tgtTo);tm.focus=null;tm.zoom=.55;tm.zoomTo=null}
+// the Explore wheel: districts round the edge, Home in the middle, plus who's around and what's on
+const TM_WHEEL=[['town','Town square','#FFD21F'],['sugar','Sugarloaf','#FFB35C'],['hill','Playhouse','#A6E22E'],['people','Who’s around','#FF6FB5'],['meadow','Meadow','#C9A2F5'],['bay','Bubble Bay','#3EC8F2'],['whatson','What’s on','#FF8A1C']];
+const TMW_IC={town:'<path d="M5 20h14M7 20v-4h10v4M9 16v-3h6v3M12 13V8M10 8h4l-2-4z" fill="#BDEBFF"/>',sugar:'<path d="M4 15c0-5 4-8 8-8s8 3 8 8v4H4z" fill="#F2B45A"/><path d="M8 11l2 3M12 10l2 3M16 11l1 2" fill="none"/>',
+  bay:'<path d="M3 15c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 19c2-2 4-2 6 0s4 2 6 0 4-2 6 0" fill="none" stroke-width="2.2"/><path d="M8 11l4-7 4 7z" fill="#FF8AC4"/>',
+  hill:'<rect x="4" y="8" width="16" height="11" rx="3" fill="#A6E22E"/><path d="M8 12v3M6.5 13.5h3" fill="none"/><circle cx="15" cy="12.5" r="1.3" fill="#FF6FB5"/><circle cx="17" cy="15" r="1.3" fill="#3EC8F2"/>',
+  meadow:'<path d="M12 21v-6" fill="none"/><rect x="8.5" y="6" width="7" height="9" rx="3" fill="#FFE27A"/><path d="M9 6h6M12 3v3" fill="none"/>',
+  people:'<circle cx="9" cy="9" r="3.4" fill="#FFB3DA"/><circle cx="16" cy="10" r="2.8" fill="#BDEBFF"/><path d="M3.5 20c.5-4 3-6 5.5-6s5 2 5.5 6zM12.5 20c.4-3.3 2.2-5 3.9-5s3.5 1.7 3.9 5z" fill="#FFB3DA"/>',
+  whatson:'<rect x="4" y="5" width="16" height="15" rx="3" fill="#fff"/><path d="M4 10h16M9 3v4M15 3v4" fill="none"/><path d="M12 12.3l1 2 2.2.3-1.6 1.5.4 2.2-2-1-2 1 .4-2.2-1.6-1.5 2.2-.3z" fill="#FFD21F" stroke-width="1.2"/>'};
+function tmWheelOpen(on){const w=$('#tmWheel');if(!w)return;if(on===undefined)on=w.hidden;if(on){tmWheelBuild();$('#tmCard').hidden=true}w.hidden=!on}
+function tmWheelBuild(){const w=$('#tmWheel'),R=Math.min(118,innerWidth*.3);
+  w.innerHTML=TM_WHEEL.map(([k,n,c],i)=>{const a=-Math.PI/2+i*Math.PI*2/TM_WHEEL.length,x=Math.round(Math.cos(a)*R),y=Math.round(Math.sin(a)*R);
+    return`<button class="tmw-n" data-w="${k}" style="--x:${x}px;--y:${y}px;--rc:${c}"><svg viewBox="0 0 24 24" width="34" height="34" stroke="#3B1273" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round">${TMW_IC[k]}</svg><span>${n}</span></button>`}).join('')+
+    `<button class="tmw-c" data-w="home"><img src="${ico('tab-room')}" alt=""><span>${away?'Go home':'Home'}</span></button>`;
+  w.querySelectorAll('[data-w]').forEach(b=>b.onclick=e=>{e.stopPropagation();const k=b.dataset.w;
+    if(k==='home'){if(away){closeMap();travelTo('home');return}tmWheelOpen(false);const v=tmM().b.home;if(v)tmFlyTo(v[0]+1-TM_W/2,v[1]+1-TM_D/2,.22);return}
+    if(k==='people'){tmWheelOpen(false);tmPeopleCard();return}if(k==='whatson'){tmWheelOpen(false);tmWhatsOnCard();return}tmFlyDistrict(k)})}
+function tmGoBtn(dest,label){return`<button class="gel pink tdgo" data-tgo="${dest}">${label||'Go'}</button>`}
+function tmBindGo(c){c.querySelectorAll('[data-tgo]').forEach(b=>b.onclick=()=>{const d=b.dataset.tgo;closeMap();travelTo(d)});const x=$('#tmcX');if(x)x.onclick=()=>{c.hidden=true;tmWheelOpen(true)}}
+function tmPeopleCard(){const c=$('#tmCard'),E=eventNow(),rows=Object.keys(RESIDENTS).filter(k=>resHere(k)&&KBIB[k]).map(k=>{const w=resWhere(k),R=RESIDENTS[k];let dest=null;
+    if(w==='shop')dest=R.shop;else if(w==='visit')dest=shopVisitOf(k);else if(w==='event')dest='h_'+E.house;else if(w==='home'&&houseOf(k))dest='h_'+houseOf(k);
+    const ok=dest&&SHOPS[dest]&&(!SHOPS[dest].house||houseVisit(SHOPS[dest].hid).ok);return{k,R,dest,ok,where:lifeWhere(k)}}).sort((a,b)=>(b.ok-a.ok)||a.R.n.localeCompare(b.R.n));
+  c.innerHTML=`<button class="tmc-x" id="tmcX" aria-label="Close">×</button><div class="tmh"><div><h3>Who’s around</h3><small>Tap Go to hop over and say hi</small></div></div><div class="tmlist">${rows.map(q=>`<div class="tmrow"><span class="tmface">${lifeFace(q.k)}</span><span class="tmrt"><b>${esc(q.R.n)}</b><small>${esc(q.where)}</small></span>${q.ok?tmGoBtn(q.dest):''}</div>`).join('')}</div>`;
+  c.hidden=false;tmBindGo(c)}
+function tmWhatsOnCard(){const c=$('#tmCard'),E=eventNow(),F=festOn(),bd=bdayToday(),W=lifeWish(),wish=state.wish&&state.wish.k?wishText():'',rows=[];
+  if(E)rows.push(`<div class="tmrow"><span class="tmface">${lifeFace(E.guests[0])}</span><span class="tmrt"><b>${esc(E.n)} is on now</b><small>${esc(E.t)}</small></span>${tmGoBtn('h_'+E.house)}</div>`);
+  const next=EVENTS.map(e=>{for(let i=0;i<7;i++){const d=dayPlus(i);if(dowOf(d)===e.dow&&(i>0||townHour()<e.h[0]))return[e,i,d]}return null}).filter(Boolean).sort((a,b)=>a[1]-b[1]||a[0].h[0]-b[0].h[0]).slice(0,3);
+  next.forEach(([e,i,d])=>rows.push(`<div class="tmrow"><span class="tmface">${lifeFace(e.guests[0])}</span><span class="tmrt"><b>${esc(e.n)}</b><small>${i?i===1?'Tomorrow':dayName(d):'Today'}, ${hourName(e.h[0])} · ${esc(SHOPS['h_'+e.house]?SHOPS['h_'+e.house].n:'')}</small></span></div>`));
+  bd.forEach(k=>rows.push(`<div class="tmrow"><span class="tmface">${lifeFace(k)}</span><span class="tmrt"><b>${esc(RESIDENTS[k].n)}’s birthday</b><small>A gift counts extra today.</small></span></div>`));
+  if(F)rows.unshift(`<div class="tmrow"><span class="tmface">${LIFE_IC.fest}</span><span class="tmrt"><b>${esc(F.n)}</b><small>All week at the Town Hall, 10 am to 8 pm.</small></span>${tmGoBtn('h_mayor')}</div>`);
+  if(wish)rows.push(`<div class="tmrow"><span class="tmface">${lifeFace('baker').replace(/.*/s,'<b>♥</b>')}</span><span class="tmrt"><b>${esc(state.pet.name)} wants ${esc(wish)}</b><small>Wish</small></span></div>`);
+  if(W)rows.push(`<div class="tmrow"><span class="tmface">${lifeFace(W.k)}</span><span class="tmrt"><b>${esc(RESIDENTS[W.k].n)} would love ${esc(tagName(W.tag))}</b><small>For their house, today</small></span></div>`);
+  c.innerHTML=`<button class="tmc-x" id="tmcX" aria-label="Close">×</button><div class="tmh"><div><h3>What’s on</h3><small>${esc(WEATHER[weatherOf(lifeDay())].n)} today</small></div></div><div class="tmlist">${rows.join('')||'<p class="hint">A quiet day in town.</p>'}</div>`;
+  c.hidden=false;tmBindGo(c)}
+function tmLabelsOld(){const el=$('#tmDock'),here=away?away.key:'home',wish=state.wish&&state.wish.k==='trip'&&state.wish.shop;$('#tmLab').innerHTML='';
   el.classList.toggle('many',isHood(tmMk()));el.innerHTML=tmPlaces().filter(k=>tm.bld[k]&&!tmGate(k)).map(k=>{const n=k==='home'?'Home':SHOPS[k].n;return`<button class="${k===here?'here':''}" data-k="${k}" aria-label="${esc(n)}" title="${esc(n)}"><img src="${tmLogo(k)}" alt="">${k===wish?'<b></b>':''}</button>`}).join('');
   el.querySelectorAll('button').forEach(b=>b.onclick=e=>{e.stopPropagation();tmSelect(b.dataset.k)});}
 function tmSelect(k){if(tm.arr){tmPick('b:'+k);return}if(tmGate(k)){tmSwitch(k==='gate_hood'?(tm.lastHood||'sugar'):'town');return}if(SHOPS[k]&&SHOPS[k].house){tmHouseCard(k);return}tm.focus=k;const o=tm.bld[k];if(o)tm.tgtTo.set(o.position.x,0,o.position.z);const here=(away?away.key:'home')===k,S=SHOPS[k],c=$('#tmCard');
@@ -13005,13 +13083,13 @@ function tmSelect(k){if(tm.arr){tmPick('b:'+k);return}if(tmGate(k)){tmSwitch(k==
   c.innerHTML=`<button class="tmc-x" id="tmcX" aria-label="Close">×</button><div class="tmh"><img${SHOP_LOGO.has(k)?' class="lg"':''} src="${SHOP_LOGO.has(k)?shopLogo(k):ico(k==='home'?'tab-room':S.icon)}" alt=""><div><h3>${esc(k==='home'?'Home':S.n)}</h3><small>${k==='home'?`${esc(state.pet.name)}’s room`:'Run by '+own.join(' & ')}</small></div></div>
     <p>${TM_INFO[k]||''}</p>${P?`<p class="tmx">${P.levels.length>1?P.levels.length+' floors':'1 floor'} · ${rooms} rooms${staff?` (${staff} staff only)`:''}</p>`:''}${extra}
     <button class="gel ${here?'lilac':'pink'} tmgo" id="tmGo"${here?' disabled':''}>${here?'You’re here':k==='home'?'Go home':'Go inside'}</button>`;
-  c.hidden=false;$('#tmcX').onclick=()=>{c.hidden=true;tm.focus=null;tm.tgtTo.set(0,0,0)};const go=$('#tmGo');if(go&&!here)go.onclick=()=>{closeMap();travelTo(k)}}
+  c.hidden=false;$('#tmcX').onclick=()=>{c.hidden=true;tm.focus=null;tmWheelOpen(true)};const go=$('#tmGo');if(go&&!here)go.onclick=()=>{closeMap();travelTo(k)}}
 function tmHouseCard(k){tm.focus=k;const o=tm.bld[k];if(o)tm.tgtTo.set(o.position.x,0,o.position.z);const S=SHOPS[k],here=(away?away.key:'home')===k,c=$('#tmCard'),v=houseVisit(S.hid);
   const who=S.res.map(r=>{const R=RESIDENTS[r];return`${R.n} · ${R.role}`}).join('<br>');
   c.innerHTML=`<button class="tmc-x" id="tmcX" aria-label="Close">×</button><div class="tmh"><img src="${tmLogo(k)}" alt=""><div><h3>${esc(S.n)}</h3><small>${who}</small></div></div>
     <p>${esc(S.blurb||'')}</p><p class="tmx">${esc(v.why)}</p>
     <button class="gel ${here?'lilac':v.ok?'pink':'silver'} tmgo" id="tmGo"${here||!v.ok?' disabled':''}>${here?'You’re here':v.ok?'Knock':v.btn}</button>`;
-  c.hidden=false;$('#tmcX').onclick=()=>{c.hidden=true;tm.focus=null;tm.tgtTo.set(0,0,0)};const go=$('#tmGo');if(go&&v.ok&&!here)go.onclick=()=>{closeMap();travelTo(k)}}
+  c.hidden=false;$('#tmcX').onclick=()=>{c.hidden=true;tm.focus=null;tmWheelOpen(true)};const go=$('#tmGo');if(go&&v.ok&&!here)go.onclick=()=>{closeMap();travelTo(k)}}
 // ---------- town cheer on the map ----------
 function tmCheerUI(){const el=$('#tmCheer');if(!el||!state)return;const C=cheerOf(),L=cheerLv(C.p),a=CHEER[L][0],b=CHEER[L+1]?CHEER[L+1][0]:a;
   el.innerHTML=`<span class="tclv"><small>Town</small><b>${L}</b></span><span class="tct"><b>${esc(CHEER[L][1])}</b><span class="tdbar"><i style="width:${b>a?(C.p-a)/(b-a)*100:100}%"></i></span></span>`;el.onclick=e=>{e.stopPropagation();tmCheerCard()}}
@@ -13024,7 +13102,7 @@ function tmCheerCard(){if(!tm)return;tm.focus=null;tm.tgtTo.set(0,0,0);const c=$
   c.hidden=false;$('#tmcX').onclick=()=>{c.hidden=true};$('#tmGo').onclick=()=>{closeMap();setTimeout(()=>setTab('todo'),120)}}
 // each cheer level puts a landmark on the map, near the middle, off the paths (tmap.gl = levels already placed)
 function tmSpot(m,k){const [w,d]=TM_DECOR[k].sz||[1,1],c=[];for(let z=0;z<=TM_D-d;z++)for(let x=0;x<=TM_W-w;x++)c.push([x,z,Math.hypot(x+w/2-TM_W/2,z+d/2-TM_D/2)]);c.sort((a,b)=>a[2]-b[2]||a[1]-b[1]||a[0]-b[0]);for(const [x,z] of c)if(!tmFits(m,x,z,w,d,null,false))return[x,z];return null}
-function tmGifts(){const m=state.tmap,lv=cheerLv(cheerOf().p),got=[];let gl=m.gl|0;if(gl>=lv)return got;while(gl<lv){gl++;const k=CHEER[gl]&&CHEER[gl][2];if(k&&TM_DECOR[k]&&m.d.length<80){const sp_=tmSpot(m,k);if(sp_){m.d.push([k,sp_[0],sp_[1]]);got.push(k)}}}m.gl=gl;saveSoon();return got}
+function tmGifts(){const m=tmM(),lv=cheerLv(cheerOf().p),got=[];let gl=m.gl|0;if(gl>=lv)return got;while(gl<lv){gl++;const k=CHEER[gl]&&CHEER[gl][2];if(k&&TM_DECOR[k]&&m.d.length<80){const sp_=tmSpot(m,k);if(sp_){m.d.push([k,sp_[0],sp_[1]]);got.push(k)}}}m.gl=gl;saveSoon();return got}
 const decoLocked=k=>(DECOR_LV[k]|0)>cheerLv(cheerOf().p);
 // ---------- arrange (the georama) ----------
 function tmTools(){const T=$('#tmTools');if(!tm.arr){T.hidden=true;return}const t=tm.tool,sel=tm.sel;
@@ -13043,7 +13121,7 @@ function tmRotate(){const s=tm.sel;if(!s||!s.startsWith('b:'))return;const k=s.s
 function tmCell(cx,cy){const r=$('#tmc').getBoundingClientRect(),n=new THREE.Vector2((cx-r.left)/r.width*2-1,-((cy-r.top)/r.height)*2+1);tm.ray.setFromCamera(n,tm.cam);return n}
 function tmTap(cx,cy){tmCell(cx,cy);const hits=tm.ray.intersectObjects([...Object.values(tm.bld),tm.decor],true);let id=null;for(const h of hits){let o=h.object;while(o&&o!==tm.world){if(o.userData.tb){id='b:'+o.userData.tb;break}if(o.userData.td!=null){id='d:'+o.userData.td;break}o=o.parent}if(id)break}
   const p=new THREE.Vector3(),hit=tm.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),p),gx=Math.floor(p.x+TM_W/2),gz=Math.floor(p.z+TM_D/2);
-  if(!tm.arr){if(id&&id.startsWith('b:'))tmSelect(id.slice(2));else{$('#tmCard').hidden=true;tm.focus=null;tm.tgtTo.set(0,0,0)}return}
+  if(!tm.arr){if(id&&id.startsWith('b:')){tmWheelOpen(false);tmSelect(id.slice(2))}else{$('#tmCard').hidden=true;tm.focus=null;tmWheelOpen(!$('#tmWheel').hidden?false:true)}return}
   const m=tmM();if(tm.tool==='move'){if(tm.sel&&id&&id!==tm.sel){tmPick(id);return}if(tm.sel&&hit){const s=tm.sel;if(s.startsWith('b:')){const k=s.slice(2),r=m.b[k][2],[w,d]=tmFoot(k,r),x=gx-Math.floor((w-1)/2),z=gz-Math.floor((d-1)/2),why=tmFits(m,x,z,w,d,k);
         if(id===s)return;if(why){toast(why==='road'?'Buildings can’t sit on a path. Lift the path first.':why==='edge'?'That’s off the edge of the island.':'Something is already there.');return}m.b[k]=[x,z,r];tmPlace(k);tmPick(null);tmSave();return}
       const n=+s.slice(2),q=m.d[n],[w,d]=TM_DECOR[q[0]].sz||[1,1],x=gx-Math.floor((w-1)/2),z=gz-Math.floor((d-1)/2);if(id===s)return;const why=tmFits(m,x,z,w,d,s,true);if(why){toast('Something is already there.');return}q[1]=x;q[2]=z;tmPick(null);tmSave();tmDecor();return}
@@ -13056,8 +13134,8 @@ function tmRoad(gx,gz,val){const m=tmM();if(gx<0||gz<0||gx>=TM_W||gz>=TM_D)retur
 // ---------- open, close, input, frame ----------
 tmPlacesOf('town').filter(k=>!tmGate(k)).forEach(k=>{try{tmImg(k)}catch(_){}});
 {const warm=()=>{try{if(!tm)tmInit();if(tm)setTimeout(()=>{try{tmNormCur();tmFresh()}catch(e){}},250)}catch(e){}};setTimeout(()=>window.requestIdleCallback?requestIdleCallback(warm,{timeout:1500}):warm(),1600)}
-function tmOpen(){const T=tmInit();if(!T)return false;document.body.classList.add('mapopen');tmUse(away&&away.def&&away.def.house?away.def.hood:'town');tmTabs();tmNormCur();{const gifts=tmMk()==='town'?tmGifts():[];if(gifts.length){tmDecor();T.snapOk=0;setTimeout(()=>toast('New in town: '+jrList(gifts.map(k=>TM_DECOR[k].n.toLowerCase()))+'!',true),700)}}tmCheerUI();const el=$('#town3');el.hidden=false;el.classList.add('on');T.open=true;tmArrange(false);tm.tgt.set(0,0,0);$('#tmArr').hidden=false;
-  $('#tmPop').classList.add('gen');if(!T.snapOk){tmSync(false);tmDraw(0);tmSnapNow()}T.snapOk=0;tmLast=performance.now();tmTick(tmLast);tmGenie(true);return true}
+function tmOpen(){const T=tmInit();if(!T)return false;document.body.classList.add('mapopen');tmUse('world');tmTabs();tmNormCur();{const gifts=tmGifts();if(gifts.length){tmDecor();T.snapOk=0;setTimeout(()=>toast('New in town: '+jrList(gifts.map(k=>TM_DECOR[k].n.toLowerCase()))+'!',true),700)}}tmCheerUI();const el=$('#town3');el.hidden=false;el.classList.add('on');T.open=true;tmArrange(false);tmWhere();$('#tmArr').hidden=false;tmWheelOpen(true);
+  $('#tmPop').classList.add('gen');if(!T.snapOk){tmSync(false,8);tmDraw(0);tmSnapNow()}T.snapOk=0;tmLast=performance.now();tmTick(tmLast);tmGenie(true);return true}
 function tmQuad(W,H,q){const[x0,y0,x1,y1,x2,y2,x3,y3]=q,dx1=x1-x2,dx2=x3-x2,dx3=x0-x1+x2-x3,dy1=y1-y2,dy2=y3-y2,dy3=y0-y1+y2-y3,D=dx1*dy2-dx2*dy1,g=(dx3*dy2-dx2*dy3)/D,h=(dx1*dy3-dx3*dy1)/D,a=x1-x0+g*x1,b=x3-x0+h*x3,c=x0,d=y1-y0+g*y1,e=y3-y0+h*y3,f=y0;
   return`matrix3d(${a/W},${d/W},0,${g/W},${b/H},${e/H},0,${h/H},0,0,1,0,${c},${f},0,1)`}
 const genA=new WeakMap();
@@ -13084,7 +13162,7 @@ function sheetGenie(open,t){const sh=$('#sheet'),btn=$(t==='pet'?'#dkPet':'#dkMe
 function tmClose(){if(!tm||!tm.open)return;tm.open=false;document.body.classList.remove('mapopen');const el=$('#town3');try{tmDraw(0);tmSnapNow()}catch(_){}tmGenie(false);el.classList.remove('on');setTimeout(()=>{if(!tm.open)el.hidden=true},1500);$('#tmCard').hidden=true;clock.getDelta()}
 function tmFit(){const a=tm.cam.aspect,t=Math.tan(tm.cam.fov*Math.PI/360),r=Math.hypot(TM_W,TM_D)/2;return r/(t*Math.min(1,a*1.12)*1.05)}
 function tmSnapNow(){const c=$('#tmc'),s=tm.snap||(tm.snap=document.createElement('canvas'));if(s.width!==c.width||s.height!==c.height){s.width=c.width;s.height=c.height}const x=s.getContext('2d');x.clearRect(0,0,s.width,s.height);x.drawImage(c,0,0)}
-function tmFresh(){if(!tm||tm.open)return;tmSync(false);tmArrange(false);tm.focus=null;tm.tgt.set(0,0,0);tmDraw(0);tmSnapNow();tm.snapOk=1}
+function tmFresh(){if(!tm||tm.open)return;tmSync(false,6);if(tm.pending){tmPumpIdle()}tmArrange(false);tm.focus=null;tm.tgt.set(0,0,0);tmDraw(0);tmSnapNow();tm.snapOk=1}
 function tmSize(){const pp=$('#tmPop');return[pp.clientWidth||Math.round(Math.min(innerWidth*.94,600)),pp.clientHeight||Math.round(Math.min(innerHeight*.76,700))]}
 // Time of day on the map follows US Central time (and the debug sky slider), like the room's sky:
 // [hour, sun/moon colour, intensity, sky fill, fill tint, lamp/emissive boost, night 0..1]
@@ -13103,22 +13181,23 @@ function tmTOD(){const now=performance.now();if(now-tmTodT<1000&&skyHourOverride
   $('#town3').style.setProperty('--tmn',night.toFixed(3));tm.night=night}
 function tmDraw(dt){const[W_,H_]=tmSize(),R=tm.R;tmTOD();{const d=$('#tmDock'),bk=$('#tmBack'),sh=!!tm.focus&&!tm.arr&&!$('#tmCard').hidden;if(bk.hidden===sh)bk.hidden=!sh;if(d&&d._f!==tm.focus){d._f=tm.focus;d.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.k===tm.focus))}}
   if(R.__w!==W_||R.__h!==H_){R.setPixelRatio(Math.min(2,devicePixelRatio||1));R.setSize(W_,H_,false);R.__w=W_;R.__h=H_;tm.cam.aspect=W_/H_;tm.cam.updateProjectionMatrix()}
-  vlerp(tm.tgt,tm.tgtTo,Math.min(1,dt*4));const d=tmFit()*(tm.focus?.45:1)*tm.zoom,cp=Math.cos(tm.pitch),c=tm.cam;tm.off=(tm.off??1.9)+((tm.focus?.75:1.9)-(tm.off??1.9))*Math.min(1,dt*4);const ox=tm.tgt.x+Math.sin(tm.yaw)*tm.off,oz=tm.tgt.z+Math.cos(tm.yaw)*tm.off;c.position.set(ox+Math.sin(tm.yaw)*cp*d,Math.sin(tm.pitch)*d,oz+Math.cos(tm.yaw)*cp*d);c.lookAt(new THREE.Vector3(ox,0,oz));
+  if(tm.zoomTo!=null){tm.zoom+=(tm.zoomTo-tm.zoom)*Math.min(1,dt*4);if(Math.abs(tm.zoomTo-tm.zoom)<.002)tm.zoomTo=null}tm.tgtTo.x=clamp(tm.tgtTo.x,-TM_W/2,TM_W/2);tm.tgtTo.z=clamp(tm.tgtTo.z,-TM_D/2,TM_D/2);
+  vlerp(tm.tgt,tm.tgtTo,Math.min(1,dt*4));const d=tm.focus?Math.min(9,tmFit()*.45):tmFit()*tm.zoom,cp=Math.cos(tm.pitch),c=tm.cam;tm.off=(tm.off??1.9)+((tm.focus?.75:1.9)-(tm.off??1.9))*Math.min(1,dt*4);const ox=tm.tgt.x+Math.sin(tm.yaw)*tm.off,oz=tm.tgt.z+Math.cos(tm.yaw)*tm.off;c.position.set(ox+Math.sin(tm.yaw)*cp*d,Math.sin(tm.pitch)*d,oz+Math.cos(tm.yaw)*cp*d);c.lookAt(new THREE.Vector3(ox,0,oz));
   tm.cl&&tm.cl.forEach(p=>p.rotation.y=tm.t*p.userData.sp);tm.mills&&tm.mills.forEach(o=>o.userData.anim(tm.t));tm.anims.forEach(o=>{try{o.userData.anim(tm.t)}catch(_){}});const so=tmObj(tm.sel);if(so)so.position.y=.25+Math.sin(tm.t*5)*.06;
   R.render(tm.sc,c);return[c,W_,H_]}
-function tmFrame(dt){const[c,W_,H_]=tmDraw(dt),v=new THREE.Vector3();$('#tmLab').querySelectorAll('.tml').forEach(b=>{const o=tm.bld[b.dataset.k];if(!o)return;const T=o.userData.top||{y:1};v.set(o.position.x,(T.y||1)+.5+o.position.y,o.position.z).project(c);
+function tmFrame(dt){const[c,W_,H_]=tmDraw(dt),v=new THREE.Vector3(),wh=$('#tmWheel'),card=!$('#tmCard').hidden,far=!tm.focus&&tm.zoom>.3&&wh.hidden&&!card;{const pb=$('#tmWheelBtn'),hb=!wh.hidden||card||tm.arr;if(pb&&pb.hidden!==hb)pb.hidden=hb}if(tm.arr&&!wh.hidden)wh.hidden=true;$('#tmLab').querySelectorAll('.tml').forEach(b=>{if(b.dataset.wx!=null){v.set(+b.dataset.wx,1.2,+b.dataset.wz).project(c);b.style.transform=`translate(${(v.x*.5+.5)*W_}px,${(-v.y*.5+.5)*H_}px) translate(-50%,-100%)`;b.style.visibility=far&&v.z<1?'visible':'hidden';return}const o=tm.bld[b.dataset.k];if(!o)return;const T=o.userData.top||{y:1};v.set(o.position.x,(T.y||1)+.5+o.position.y,o.position.z).project(c);
     b.style.transform=`translate(${(v.x*.5+.5)*W_}px,${(-v.y*.5+.5)*H_}px) translate(-50%,-100%)`;b.style.visibility=v.z<1?'visible':'hidden'})}
-function tmTick(ts){if(!tm||!tm.open)return;requestAnimationFrame(tmTick);const dt=Math.min(.05,(ts-tmLast)/1000);tmLast=ts;tm.t+=dt;if($('#tmPop').classList.contains('gen'))return;tmFrame(dt)}
+function tmTick(ts){if(!tm||!tm.open)return;requestAnimationFrame(tmTick);const dt=Math.min(.05,(ts-tmLast)/1000);tmLast=ts;tm.t+=dt;if($('#tmPop').classList.contains('gen'))return;tmPump(1);tmFrame(dt)}
 {const cv=$('#tmc');let down=null,paint=null,pinch=0;
-  cv.addEventListener('pointerdown',e=>{if(!tm)return;try{cv.setPointerCapture(e.pointerId)}catch(_){}tm.ptr.set(e.pointerId,[e.clientX,e.clientY]);if(tm.ptr.size===2){const [a,b]=[...tm.ptr.values()];pinch=Math.hypot(a[0]-b[0],a[1]-b[1]);down=null;return}
+  let twist=null;cv.addEventListener('pointerdown',e=>{if(!tm)return;try{cv.setPointerCapture(e.pointerId)}catch(_){}tm.ptr.set(e.pointerId,[e.clientX,e.clientY]);if(tm.ptr.size===2){const [a,b]=[...tm.ptr.values()];pinch=Math.hypot(a[0]-b[0],a[1]-b[1]);twist=Math.atan2(b[1]-a[1],b[0]-a[0]);down=null;return}
     down={x:e.clientX,y:e.clientY,mv:0};paint=null;if(tm.arr&&tm.tool==='road'){tmCell(e.clientX,e.clientY);const p=new THREE.Vector3();if(tm.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),p)){paint=tmRoad(Math.floor(p.x+TM_W/2),Math.floor(p.z+TM_D/2),null);down.painted=1}}});
   cv.addEventListener('pointermove',e=>{if(!tm||!tm.ptr.has(e.pointerId))return;const pr=tm.ptr.get(e.pointerId);tm.ptr.set(e.pointerId,[e.clientX,e.clientY]);
-    if(tm.ptr.size===2){const [a,b]=[...tm.ptr.values()],dd=Math.hypot(a[0]-b[0],a[1]-b[1]);if(pinch)tm.zoom=clamp(tm.zoom*pinch/dd,.35,1.7);pinch=dd;return}if(!down)return;const dx=e.clientX-pr[0],dy=e.clientY-pr[1];down.mv+=Math.abs(dx)+Math.abs(dy);
+    if(tm.ptr.size===2){const [a,b]=[...tm.ptr.values()],dd=Math.hypot(a[0]-b[0],a[1]-b[1]),an=Math.atan2(b[1]-a[1],b[0]-a[0]);tm.zoomTo=null;if(pinch)tm.zoom=clamp(tm.zoom*pinch/dd,.12,1.4);pinch=dd;if(twist!=null){let da=an-twist;if(da>Math.PI)da-=2*Math.PI;if(da<-Math.PI)da+=2*Math.PI;tm.yaw-=da}twist=an;return}if(!down)return;const dx=e.clientX-pr[0],dy=e.clientY-pr[1];down.mv+=Math.abs(dx)+Math.abs(dy);
     if(paint!=null){tmCell(e.clientX,e.clientY);const p=new THREE.Vector3();if(tm.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),p))tmRoad(Math.floor(p.x+TM_W/2),Math.floor(p.z+TM_D/2),paint);return}
-    if(down.mv>6){tm.yaw-=dx*.008;tm.pitch=clamp(tm.pitch+dy*.004,.55,1.35)}});
-  const up=e=>{if(!tm)return;tm.ptr.delete(e.pointerId);if(tm.ptr.size<2)pinch=0;if(down&&down.mv<8&&!down.painted)tmTap(e.clientX,e.clientY);down=null;paint=null};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',e=>{tm&&tm.ptr.delete(e.pointerId);down=null});
-  cv.addEventListener('wheel',e=>{if(!tm)return;e.preventDefault();tm.zoom=clamp(tm.zoom*(e.deltaY>0?1.1:.9),.35,1.7)},{passive:false});
-  $('#tmBack').onclick=()=>{$('#tmCard').hidden=true;tm.focus=null;tm.tgtTo.set(0,0,0)};$('#tmX').onclick=()=>closeMap();$('#town3').addEventListener('pointerdown',e=>{if(e.target===e.currentTarget&&!tm.arr)closeMap()});$('#tmArr').onclick=()=>tmArrange(true)}
+    if(down.mv>6){const k=(tm.focus?Math.min(9,tmFit()*.45):tmFit()*tm.zoom)/(cv.clientHeight||600)*.6,c=Math.cos(tm.yaw),sn=Math.sin(tm.yaw);tm.focus=null;$('#tmCard').hidden=true;tm.tgtTo.x-=(dx*c+dy*sn)*k;tm.tgtTo.z-=(-dx*sn+dy*c)*k;tm.tgt.copy(tm.tgtTo);tmWheelOpen(false)}});
+  const up=e=>{if(!tm)return;tm.ptr.delete(e.pointerId);if(tm.ptr.size<2){pinch=0;twist=null}if(down&&down.mv<8&&!down.painted)tmTap(e.clientX,e.clientY);down=null;paint=null};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',e=>{tm&&tm.ptr.delete(e.pointerId);down=null});
+  cv.addEventListener('wheel',e=>{if(!tm)return;e.preventDefault();tm.zoomTo=null;tm.zoom=clamp(tm.zoom*(e.deltaY>0?1.1:.9),.12,1.4)},{passive:false});
+  $('#tmBack').onclick=()=>{$('#tmCard').hidden=true;tm.focus=null;tmWheelOpen(true)};$('#tmX').onclick=()=>closeMap();$('#town3').addEventListener('pointerdown',e=>{if(e.target===e.currentTarget&&!tm.arr)closeMap()});$('#tmArr').onclick=()=>tmArrange(true);$('#tmWheelBtn').onclick=e=>{e.stopPropagation();tmWheelOpen(true)}}
 
 function showMap(){if(tmOpen())return;const m=$('#map'),here=away?away.key:'home';$('#mapHome').hidden=!away;$('#mapTitle').textContent=away?'Where next?':'Where to?';m.querySelectorAll('[data-go]').forEach(b=>b.classList.toggle('here',b.dataset.go===here));m.hidden=false;requestAnimationFrame(()=>m.classList.add('on'))}
 function closeMap(){tmClose();const m=$('#map');m.classList.remove('on');setTimeout(()=>{m.hidden=true},250);if(!traveling)doorTarget=0}
@@ -15952,7 +16031,7 @@ let syncBase=null,syncBaseRev=0;
 function snapBase(s,keep){const b={};for(const k in s)b[k]=JSON.stringify(s[k]);syncBase=b;syncBaseRev=+s.rev||0;if(keep!==false)try{localStorage.setItem('r42base:'+roomCode,JSON.stringify(s))}catch(_){}}
 const SYNC_SKIP={rev:1,kr:1,visits:1,jrT:1,cv:1,minV:1};
 // the oldest app version allowed to edit the shared room (older ones refresh themselves when they see this in the doc)
-const SYNC_MIN_V=51;
+const SYNC_MIN_V=52;
 const localChanged=()=>!!syncBase&&Object.keys(state).some(k=>!SYNC_SKIP[k]&&JSON.stringify(state[k])!==syncBase[k]);
 const mNum=(l,r,b)=>(+b||0)+((+l||0)-(+b||0))+((+r||0)-(+b||0));
 const mCounts=(l,r,b)=>{b=b||{};l=l||{};r=r||{};const o={};new Set([...Object.keys(l),...Object.keys(r),...Object.keys(b)]).forEach(k=>{const v=mNum(l[k],r[k],b[k]);if(v>0)o[k]=Math.min(99,v)});return o};
@@ -15985,7 +16064,7 @@ const MERGE={hearts:(l,r,b)=>Math.max(0,mNum(l,r,b)),tokens:(l,r,b)=>Math.max(0,
   garden:(l,r)=>{const n=Math.max((l||[]).length,(r||[]).length),o=[];for(let i=0;i<n;i++){const a=(l||[])[i],b=(r||[])[i];o.push(!a?b||null:!b?a:((a.u|0)>=(b.u|0)?a:b))}return o},
   hdeco:(l,r)=>{const o={};new Set([...Object.keys(l||{}),...Object.keys(r||{})]).forEach(h=>{const seen=new Set();o[h]=[...((l||{})[h]||[]),...((r||{})[h]||[])].filter(x=>!seen.has(x.id)&&seen.add(x.id))});return o},
   parcels:(l,r)=>{const m=new Map();[...(l||[]),...(r||[])].forEach(p=>{const q=m.get(p.id);m.set(p.id,q?Object.assign({},q,{open:[...new Set([...(q.open||[]),...(p.open||[])])]}):p)});return[...m.values()].sort((a,b)=>b.t-a.t).slice(0,30)},
-  pet:mPet,fwish:mFields,daily:mFields,td:mFields,arc:mFields,tmap:mFields,nmaps:mFields,kr:mMaxMap,minV:mMax,cv:mMax};
+  pet:mPet,fwish:mFields,daily:mFields,td:mFields,arc:mFields,tmap:mFields,nmaps:mFields,wmap:mFields,kr:mMaxMap,minV:mMax,cv:mMax};
 // merge the normalized remote R into the local state L; returns the keys that changed locally
 // kr holds when each key last changed (stamped on write); a remote copy of a key older than the one in our base is a stale write
 // (e.g. a device still running old code saving its whole copy) and is ignored.
@@ -16061,7 +16140,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=51;
+const APP_V=52;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
