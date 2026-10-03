@@ -10,8 +10,8 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v65** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v65'` in `sw.js`; bump both for anything
-user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 65 (older clients refresh
+**Current build: v66** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v66'` in `sw.js`; bump both for anything
+user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 66 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
 **Who and how**
@@ -489,3 +489,13 @@ Pet page order: name + bond chip, bond bar, Today, needs and actions, looks-afte
   it now draws a soft five-point star. Seats: with the pet always grown, every single chair/stool (perch `w` ~.3) failed the fit
   check in `perchSpots`, so the pet never sat on them; the check now lets the pet overhang (`hw*.5>P.w+.1`), and `P.x` may be a
   number or an array. 145 of 146 perches fit (the Space egg chair's hood is genuinely too low).
+
+## Through the pet (v66)
+The two of you reach each other through the pet (block before `function td(`): **surprises** (`state.surp` [{id,by,it,note,t,got}],
+merged by id; pet page "Leave a surprise for <person>" → `petView='surp'`, `surpHtml`/`surpBind`, `surpLeave` takes the food out
+of the bag, toys are just shared; max 3 waiting); **delivery** (`petDeliver`, every 20 s while visible, idle at home: the giver's
+head turns to you (`pet.myH`) and the pet hands over the surprise, or carries over your person's newest unseen Inbox note, last one
+remembered per device in `localStorage['r42petnote:'+room]`, with "Write back" → Inbox); **together** (every device stamps
+`state.visits[pid]` every 2 min while open; `togetherCheck`: when your person's stamp is under 2.5 min old, a toast "<name> is here
+too!", the pet dances and both heads cheer, once per 3-hour window). `partnerId()` = the other head's person.
+Also in this round: house interiors refurnished with each resident's own set, and a second character polish pass (see git log).

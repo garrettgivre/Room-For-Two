@@ -685,6 +685,7 @@ body.mkmode #dock,body.mkmode #tmBtn{display:none!important}body.mkmode header.t
 .selby{position:absolute;left:50%;bottom:100%;transform:translate(-50%,-6px) rotate(1deg);white-space:nowrap;background:#fff;color:var(--ink);border:2.5px solid var(--ink);border-radius:999px;padding:2px 10px;font-size:.8em}.selby[hidden]{display:none}
 .today{background:#FFF6FB;border:2.5px solid var(--ink);border-radius:18px;padding:10px 10px 8px;margin:8px 0 10px;box-shadow:0 3px 0 var(--ink)}.today h3{margin:0 0 6px;display:flex;justify-content:space-between;align-items:center;color:var(--ink)}.today h3 small{font-size:.7em;opacity:.7}.today .wishrow{margin:0 0 8px}.today .tdlist{margin:0}.today .tdtreat,.today .tdtreatb{margin-top:8px}.bondxp{margin-top:2px}
 .bigm summary{cursor:pointer;color:var(--ink);font-weight:700;margin:10px 0 4px}.hcard input.hname{font:inherit;font-weight:700;color:var(--ink);border:0;background:transparent;padding:0;width:100%;outline:none}
+.surpb{display:block;margin:0 auto 10px}.surpnote{width:100%;box-sizing:border-box;font:inherit;padding:10px 12px;border:2.5px solid var(--ink);border-radius:14px;margin:0 0 10px;background:#fff}
 .bondbar{display:flex;align-items:center;gap:10px;margin:6px 2px 2px}.bondbar b{font-family:var(--display,inherit);color:var(--ink);white-space:nowrap}.bondbar span{flex:1;height:12px;border-radius:8px;background:#fff;border:2.5px solid var(--ink);overflow:hidden}.bondbar i{display:block;height:100%;background:linear-gradient(90deg,#FF3D9A,#9B4DF2)}
 .tmr.chat{animation:tmrChat 1.1s ease-in-out infinite}@keyframes tmrChat{50%{box-shadow:0 2px 0 var(--ink),0 0 0 5px rgba(255,255,255,.85)}}.tmr{position:absolute;left:0;top:0;width:36px;height:36px;padding:0;border-radius:50% 50% 50% 12%;transform-origin:50% 100%;border:2.5px solid var(--ink);background:var(--c,#fff);box-shadow:0 2px 0 var(--ink);display:grid;place-items:center;overflow:hidden;pointer-events:auto;cursor:pointer}.tmr[hidden]{display:none}.tmr img{width:33px;height:33px;object-fit:contain}.tmr b{font-family:var(--disp);font-size:16px;color:var(--ink)}
 .twline{font-size:14px;line-height:1.35;margin:8px 0}.twacts{display:flex;flex-wrap:wrap;gap:6px}.twacts .gel{width:auto;flex:1;min-height:38px;font-size:14px;padding:0 10px}
@@ -20689,6 +20690,43 @@ function headHello(){const i=headMine();if(i<0||!pet.rig){emote('💗');return}p
 function byLabel(it){if(!it||!it.by)return'';return it.by===pid()?'You picked this':`${who(it.by)} picked this`}
 // when the pet uses something one of you placed, that person's head is pleased about it now and then
 function headUses(id){const it=state.items.find(i=>i.id===id);if(!it||!it.by)return;const i=headOfPerson(it.by);if(i<0||Math.random()>.3)return;setTimeout(()=>{try{emote('',{head:i,icon:'emo-star'})}catch(_){}},1500)}
+// ---- through the pet (v66): the two of you reach each other through it. It carries your person's notes over to you, it hands
+// you a surprise they left (something from the bag, with a note), and when you're both in the app at once it makes a fuss.
+// state.surp [{id, by, it (item id), note, t, got}]; notes are the Inbox notes (state.feed k 'note'), last one shown per device
+// in localStorage r42petnote. Presence: every device stamps state.visits[pid] about every 2 minutes while it's open.
+function partnerId(){return headPeople().find(id=>id!==pid())||null}
+function surpLeave(id,note){const S=state.surp||(state.surp=[]),it=ITEMMAP[id];if(!it)return false;
+  if(S.filter(s=>s.by===pid()&&!s.got).length>=3){toast('Three surprises are already waiting to be found.');return false}
+  if(it.k!=='toy'){if(!((state.inv[id]|0)>0))return false;state.inv[id]--;if(!state.inv[id])delete state.inv[id]}
+  S.unshift({id:uid(),by:pid(),it:id,t:Date.now(),note:String(note||'').trim().slice(0,100),got:0});if(S.length>20)S.length=20;
+  logEvent(`left a surprise with ${PN()}`);saveSoon();return true}
+function petDeliver(){if(!state||!ready||sandbox||away||!pet.rig||openTab||kmode||wheelOn()||!$('#game').hidden||rewardQ.length||styling())return;
+  const me=pid(),hn=headNames(),S=state.surp||[],s=S.find(x=>x.by!==me&&x.by!==myId&&!x.got);
+  const carry=by=>{const i=headOfPerson(by);if(i>=0){pet.myH=i;pet.myHT=3}pet.happyT=1.5;pet.hop=.6;return i>=0?hn[i]:PN()};
+  if(s){const it=ITEMMAP[s.it];s.got=Date.now();if(it&&it.k!=='toy')state.inv[it.id]=(state.inv[it.id]|0)+1;const h=carry(s.by);saveSoon();updHUD();
+    try{petGreet()}catch(_){}
+    showReward(`A surprise from ${who(s.by)}`,'emo-party',`<p>${esc(h)} has been hiding something for you: <b>${esc(it?it.n:'a little something')}</b>!</p>${s.note?`<p class="wb-j">“${esc(s.note)}”</p>`:''}<p class="rwsub">${it&&it.k!=='toy'?'It’s in your bag.':'Play with it any time.'}</p>`,{ok:'Aww'});return}
+  let seen=0;try{seen=+localStorage.getItem('r42petnote:'+roomCode)||0}catch(_){}
+  const n=state.feed.filter(f=>f.k==='note'&&f.by&&f.by!==me&&f.by!==myId&&f.t>Math.max(seen,Date.now()-3*864e5)).sort((a,b)=>a.t-b.t)[0];
+  if(n){try{localStorage.setItem('r42petnote:'+roomCode,String(n.t))}catch(_){}const h=carry(n.by);try{petGreet()}catch(_){}
+    showReward(`${h} brought you a note`,'tab-mail',`<p class="wb-j">“${esc(n.text)}”</p><p class="rwsub">From ${esc(who(n.by))}, ${ago(n.t)}</p>`,{ok:'Write back',fn:()=>setTab('inbox')})}}
+// both of you here at once
+let togetherShown='';
+function togetherCheck(){if(!state||!ready||sandbox)return;const o=partnerId();if(!o)return;const t=(state.visits||{})[o]||0,now=Date.now();
+  if(now-t>150e3)return;const key=tdDay()+'|'+Math.floor(now/(3*36e5));if(togetherShown===key)return;togetherShown=key;
+  toast(`${who(o)} is here too!`,true);if(!away&&pet.rig&&!styling()){pet.happyT=2.5;pet.hop=.8;try{petAct('dance')}catch(_){}emote('',{head:0,icon:'emo-party'});setTimeout(()=>emote('',{head:1,icon:'emo-party'}),400)}
+  if(Math.random()<.5)jrAdd(`${headNames()[0]} and ${headNames()[1]} noticed you were both here at the same time. They did a little dance about it.`,'','together',0,'')}
+setInterval(()=>{if(document.visibilityState!=='visible'||!state||!ready||sandbox)return;state.visits=state.visits||{};state.visits[pid()]=Date.now();saveSoon();setTimeout(togetherCheck,1500)},120e3);
+setInterval(()=>{if(document.visibilityState==='visible'){try{petDeliver()}catch(e){console.warn('deliver',e)}}},20e3);
+setTimeout(()=>{try{togetherCheck()}catch(_){}},9000);
+// the pet page's "Leave a surprise" view
+function surpHtml(){const o=partnerId(),bag=ITEMS.filter(i=>i.p>0&&(i.k==='toy'?state.toys.includes(i.id):(state.inv[i.id]|0)>0)),mine=(state.surp||[]).filter(s=>s.by===pid()&&!s.got);
+  return`<div class="pv-head"><button class="chip" id="pvBack">Back</button><h2>A surprise</h2><span class="stage">for ${esc(who(o))}</span></div>
+  <p class="hint">${esc(PN())} will keep it safe and hand it to ${esc(who(o))} next time they come by.${mine.length?` ${mine.length} waiting already.`:''}</p>
+  <input class="surpnote" id="surpNote" maxlength="100" placeholder="Add a little note (optional)">
+  <div class="items">${bag.length?bag.map(it=>`<button class="item" data-surp="${it.id}"><span class="ii">${PROP_BUILD[it.id]?`<img data-tt="toy:${it.id}" class="${thumbs['toy:'+it.id]?'model':''}" src="${thumbs['toy:'+it.id]||'assets/icons/emo-ball.webp'}" alt="">`:`<img src="assets/icons/${KIND_ICON[it.k]}.webp" alt="">`}</span><span class="it"><b>${esc(it.n)}</b><small>${it.k==='toy'?'A toy to share':'×'+state.inv[it.id]+' in your bag'}</small></span><span class="iq">Leave</span></button>`).join(''):'<p class="hint">Your bag is empty. Pick up a treat in town first.</p>'}</div>`}
+function surpBind(body){$('#pvBack').onclick=()=>{petView=null;renderSheet()};queueThumbs(ITEMS.filter(i=>PROP_BUILD[i.id]).map(i=>'toy:'+i.id));
+  body.querySelectorAll('[data-surp]').forEach(b=>b.onclick=()=>{if(surpLeave(b.dataset.surp,$('#surpNote').value)){petView=null;renderSheet();toast(`${PN()} will hide it for ${who(partnerId())}.`);pet.happyT=1.2;emote('💗')}})}
 function td(ev,amt,val){if(!state||sandbox)return;wishHit(ev);try{hcHit(ev)}catch(_){}try{trHit(ev,amt)}catch(e){console.warn('life',e)}tdEnsure();const T=state.td,id=pid();let hit=false;if(ev==='note')T.notes=(T.notes|0)+1;
   T.list.forEach(e=>{const t=TD_T[e.k];if(!t||t.ev!==ev||T.done.includes(e.k))return;const P=T.prog[e.k]=T.prog[e.k]||{};
     if(t.score){if(!((val|0)>(P[id]|0)))return;P[id]=val|0}else P[id]=(P[id]|0)+(amt||1);hit=true;if(tdCount(e)>=e.n)tdComplete(e)});
@@ -22040,7 +22078,8 @@ function renderSheet(){const body=$('#sheetBody');
 
   else if(openTab==='pet'){const p=state.pet,st=stageOf(p.xp),s=petStats(),P=persOf();
     const next=STAGE_XP[st+1];
-    if(st>0&&petView){const kind=petView,title={food:'Pantry',groom:'Grooming',toy:'Toy box'}[kind],act={food:'feed',groom:'bath',toy:'play'}[kind];
+    if(petView==='surp'&&partnerId()){body.innerHTML=surpHtml();surpBind(body);return}
+    if(st>0&&petView&&petView!=='surp'){const kind=petView,title={food:'Pantry',groom:'Grooming',toy:'Toy box'}[kind],act={food:'feed',groom:'bath',toy:'play'}[kind];
       const list=ITEMS.filter(i=>i.k===kind).sort((a,b)=>(owned(b)-owned(a))||(a.p-b.p));
       body.innerHTML=`<div class="pv-head"><button class="chip" id="pvBack">Back</button><h2>${title}</h2><span class="stage">${state.hearts} hearts</span></div>
       <p class="hint">${kind==='food'?`${esc(p.name)} is ${tier('hunger',s.hunger).toLowerCase()}. ${P?`Loves ${FOOD_CATS[P.fav].toLowerCase()}, not big on ${FOOD_CATS[P.bad].toLowerCase()}.`:''}`:kind==='toy'?`Toys are yours to keep. ${P?`${esc(p.name)} goes wild for ${P.toy} toys.`:''}`:`${esc(p.name)} is ${tier('clean',s.clean).toLowerCase()}. Fancier products clean more.`}</p>
@@ -22056,13 +22095,14 @@ function renderSheet(){const body=$('#sheetBody');
     (`    <div class="stats rings">${NEEDS.map(([k,n,c,ic])=>`<div class="sr" style="--c:${c}"><span>${ringSvg(Math.min(100,s[k])/100,56,8)}<img src="assets/icons/${ic}.webp" alt=""></span>${n}<small>${tier(k,s[k])}</small></div>`).join('')}</div>
     <div class="actions">${Object.entries(ACTS).map(([k,a])=>`<button class="gel ${a.cls}" data-act="${k}"><img class="bi" src="assets/icons/act-${k}.webp" alt="">${a.label}</button>`).join('')}</div>${selfCareRow()}
     <div class="spirit"><span>Spirit</span><b>${tier('spirit',sp)}</b><div class="bar"><i style="width:${sp|0}%;--c:#A6E22E"></i></div></div>
-<div class="row-label">A head for each of you</div>${headRow()}
+<div class="row-label">A head for each of you</div>${headRow()}${partnerId()?`<button class="gel lilac surpb" id="goSurp">Leave a surprise for ${esc(who(partnerId()))}</button>`:''}
     <div class="row-label">About ${esc(p.name)}</div>${P?`<p class="pers"><b>${P.n}</b> ${P.d}</p>`:''}${traitRow()}<p class="xp">${bag} ${bag===1?'item':'items'} in your bag. Needs drain while you're away, but the things in your room help ${esc(p.name)} look after itself.</p>${bigMomentsHtml()}`)+
     (st?`<div class="row-label">Style</div><div class="actions"><button class="gel" id="goWard">Wardrobe</button><button class="gel" id="goGlam">Glow Up Studio</button></div>`:'');
     body.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>doAct(b.dataset.act));
     bindToday(body);body.querySelectorAll('[data-sn]').forEach(b=>b.onclick=()=>openDecoNeed(b.dataset.sn));
     body.querySelectorAll('[data-hn]').forEach(inp=>inp.onchange=()=>{const n=headNames().slice(),v=inp.value.trim().slice(0,10);if(!v)return;n[+inp.dataset.hn]=v;state.pet.heads=n;logEvent(`named the ${inp.dataset.hn==='1'?'right':'left'} head ${v}`);saveSoon()})
     {const a=$('#goWard'),b=$('#goGlam');if(a)a.onclick=()=>setTab('wardrobe');if(b)b.onclick=()=>{setTab(null);travelTo('glam')}}
+    {const gs=$('#goSurp');if(gs)gs.onclick=()=>{petView='surp';renderSheet()}}
     {const hs=$('#hSwap');if(hs)hs.onclick=()=>{state.pet.hsw=!state.pet.hsw;logEvent('swapped heads');saveSoon();renderSheet()}}
     const ni=$('#pname');ni.onchange=()=>{const v=ni.value.trim().slice(0,16);if(v&&v!==state.pet.name){logEvent(`renamed the pet to ${v}`);state.pet.name=v;saveSoon();updHUD()}}}
   else if(openTab==='journal')renderJournal(body);
@@ -22267,7 +22307,7 @@ let syncBase=null,syncBaseRev=0;
 function snapBase(s,keep){const b={};for(const k in s)b[k]=JSON.stringify(s[k]);syncBase=b;syncBaseRev=+s.rev||0;if(keep!==false)try{localStorage.setItem('r42base:'+roomCode,JSON.stringify(s))}catch(_){}}
 const SYNC_SKIP={rev:1,kr:1,visits:1,jrT:1,cv:1,minV:1};
 // the oldest app version allowed to edit the shared room (older ones refresh themselves when they see this in the doc)
-const SYNC_MIN_V=65;
+const SYNC_MIN_V=66;
 const localChanged=()=>!!syncBase&&Object.keys(state).some(k=>!SYNC_SKIP[k]&&JSON.stringify(state[k])!==syncBase[k]);
 const mNum=(l,r,b)=>(+b||0)+((+l||0)-(+b||0))+((+r||0)-(+b||0));
 const mCounts=(l,r,b)=>{b=b||{};l=l||{};r=r||{};const o={};new Set([...Object.keys(l),...Object.keys(r),...Object.keys(b)]).forEach(k=>{const v=mNum(l[k],r[k],b[k]);if(v>0)o[k]=Math.min(99,v)});return o};
@@ -22291,6 +22331,7 @@ const MERGE={hearts:(l,r,b)=>Math.max(0,mNum(l,r,b)),tokens:(l,r,b)=>Math.max(0,
   visits:mMaxMap,names:(l,r)=>Object.assign({},r,l),
   kf:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{}){const a=l[k],c=o[k];o[k]=!c?a:{p:Math.max(a.p,c.p),s:Math.max(a.s,c.s),d:a.d>c.d?a.d:c.d}}return o},
   cheer:(l,r,b)=>{l=l||{};r=r||{};b=b||{};return{p:Math.max(0,mNum(l.p,r.p,b.p)),lv:mMax(l.lv,r.lv),hp:(l.hp||'')>(r.hp||'')?l.hp||'':r.hp||''}},
+  surp:(l,r)=>{const m=new Map();[...(l||[]),...(r||[])].forEach(x=>{const y=m.get(x.id);m.set(x.id,!y?x:Object.assign({},y,{got:Math.max(y.got|0,x.got|0)}))});return[...m.values()].sort((a,b)=>b.t-a.t).slice(0,20)},
   mk:(l,r)=>{l=l||{};r=r||{};const a=(l.n|0)>=(r.n|0)?l:r,b=a===l?r:l,rooms=Object.assign({},b.rooms||{});for(const k in a.rooms||{}){const x=a.rooms[k],y=rooms[k];rooms[k]=!y||(x.at|0)>=(y.at|0)?x:y}return Object.assign({},a,{rooms,req:a.req||((b.n|0)===(a.n|0)?b.req||null:null)})},
   heads:(l,r)=>{const o={};new Set([...Object.keys(l||{}),...Object.keys(r||{})]).forEach(k=>{const a=(l||{})[k],b=(r||{})[k];if(!a||!b){o[k]=a||b;return}const w=hcTotal(a)>=hcTotal(b)?a:b;o[k]=Object.assign({},w,{s:Math.min(a.s||Infinity,b.s||Infinity)})});return o},
   finds:(l,r)=>{if(!l)return r;if(!r)return l;if(l.day!==r.day)return l.day>r.day?l:r;return{day:l.day,got:[...new Set([...(l.got||[]),...(r.got||[])])]}},
@@ -22337,6 +22378,7 @@ function normalize(s){const oldPal=!!s&&!(s.pv>=2);const d=defaultState();s=Obje
   if(!(s.pet.xv>=2)){if(s.pet.xp>=150)s.pet.xp=400+(s.pet.xp-150);s.pet.xv=2}
   s.pet.tr=s.pet.tr&&typeof s.pet.tr==='object'?Object.fromEntries(Object.entries(s.pet.tr).filter(([k,v])=>TRAITS[k]&&+v>0).map(([k,v])=>[k,Math.min(9999,+v)])):{};s.pet.trS=typeof s.pet.trS==='string'?s.pet.trS.slice(0,40):'';
   delete s.dream;delete s.req;
+  s.surp=Array.isArray(s.surp)?s.surp.filter(x=>x&&typeof x.id==='string'&&typeof x.it==='string').slice(0,20).map(x=>({id:x.id,by:String(x.by||'').slice(0,64),it:x.it,t:+x.t||0,note:String(x.note||'').slice(0,100),got:+x.got||0})):[];
   {const M=s.mk;s.mk=M&&typeof M==='object'&&!Array.isArray(M)?{req:M.req&&typeof M.req==='object'&&typeof M.req.k==='string'?{k:M.req.k,i:M.req.i|0,t:+M.req.t||0}:null,next:+M.next||0,n:Math.max(0,M.n|0),
     rooms:Object.fromEntries(Object.entries(M.rooms&&typeof M.rooms==='object'?M.rooms:{}).filter(([k,r])=>r&&Array.isArray(r.items)).slice(0,40).map(([k,r])=>[k,{i:r.i|0,items:r.items.filter(i=>i&&CATMAP[i.k]).slice(0,80),tf:Array.isArray(r.tf)?r.tf:null,tw:Array.isArray(r.tw)?r.tw:null,stars:clamp(r.stars|0,0,3),at:+r.at||0,by:typeof r.by==='string'?r.by.slice(0,64):''}]))}:{req:null,next:0,n:0,rooms:{}}}
   {const H=s.heads;s.heads={};if(H&&typeof H==='object'&&!Array.isArray(H))for(const k in H){const e=H[k];if(!e||typeof e!=='object')continue;const cnt=o=>{const r={};if(o&&typeof o==='object')for(const q in o)if(+o[q]>0)r[q]=Math.min(1e6,+o[q]|0);return r};s.heads[k]={s:+e.s||0,c:cnt(e.c),f:cnt(e.f)}}}
@@ -22386,7 +22428,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=65;
+const APP_V=66;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
