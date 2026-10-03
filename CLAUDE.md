@@ -10,8 +10,8 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v61** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v61'` in `sw.js`; bump both for anything
-user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 54 (older clients refresh
+**Current build: v62** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v62'` in `sw.js`; bump both for anything
+user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 62 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
 **Who and how**
@@ -416,3 +416,15 @@ Garrett wants residents walking around a real town (an overworld after all), com
   bigger relaxed eyes with friendly brows; he stays sleepy, it's in his sheet), Echo (`gramo`: bigger eyes, a resting smile `sml`
   that swaps for the open mouth when talking), Sketch (`pencil`: each lens sits on its own facet so the glasses don't float off the
   face from the side), Dewey (`book`: glasses closer to the cover). All poses (idle, cheer, greet) were checked for every resident.
+
+## One pet form, bond levels (v62)
+Garrett: "Room for Two" means one body for two heads and one pet for two people, so the game centres on that, and the life stages
+no longer fit. **No egg, no growing up**: `stageOf()` always returns `PET_FORM` (5, the Young adult shape everything is tuned to);
+the old curve is `stageOfOld`. All stage checks (egg gates, `smartAge`, perch fit, foot 'auto' style) still work and simply see the
+grown form. New rooms start hatched at xp 0. Old saves keep their xp (the elder migration in `normalize` still runs).
+- **Bond level** replaces growth: care xp counts towards `bondOf(xp)` {lv, n title from `BOND_N`, cur, need, left}; each level needs
+  5 more care moments than the last (`bondAt(lv)`: 0, 10, 25, 45, 70...), endless. `commitPet` calls `bondUp(B)` on a level up
+  (reward card, 5+lv hearts, a token every 5th level, Journal `JR_T.bond`, Footprints). Shown on the pet wheel (`Bond n · title`),
+  the pet page (`.bondbar`), Dr. Patch's check-up, debug. Big moments `bond5`/`bond10` replace hatch/child/adult.
+- `SYNC_MIN_V` 62 so an old phone refreshes instead of showing stages. Next (agreed plan): a head for each of you (each head's likes
+  grow from how that person cares for it), furniture that remembers who placed it, ways to reach each other through the pet.
