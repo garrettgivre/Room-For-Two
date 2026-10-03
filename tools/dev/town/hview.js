@@ -6,7 +6,8 @@
 // Prints errors. Uses solo mode (never touches live data).
 const {execFileSync}=require('child_process'),fs=require('fs'),path=require('path');
 const [kind,outA]=process.argv.slice(2);if(!kind){console.log('usage: node hview.js <kind> [outPrefix]');process.exit(1)}
-const H=path.join(__dirname,'houses'),CR=path.join(__dirname,'creatures'),idx=fs.readFileSync(path.join(__dirname,'..','..','index.html'),'utf8'),
+const ROOT=(()=>{let d=__dirname;while(!fs.existsSync(path.join(d,'index.html'))&&path.dirname(d)!==d)d=path.dirname(d);return d})();
+const H=path.join(ROOT,'.claude','town','houses'),CR=path.join(ROOT,'.claude','town','creatures'),idx=fs.readFileSync(path.join(ROOT,'index.html'),'utf8'),
   cre=fs.readdirSync(CR).filter(f=>f.endsWith('.js')&&!idx.includes('KEEPERS.'+f.slice(0,-3)+'=function')).map(f=>path.join(CR,f)),
   files=[...cre,...[`${kind}_home.js`,`${kind}_ext.js`].map(f=>path.join(H,f)).filter(f=>fs.existsSync(f))];
 const out=outA||path.join(ROOT,'.claude','town','out','h_'+kind);

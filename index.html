@@ -16329,44 +16329,49 @@ function crewPlace(KQ,P,objs,items){const auto=KQ.filter(q=>q.auto);if(!auto.len
 /* <house-plans> */
 HOUSE_DEF.beacon={
   n:'Beacon’s Lamp Cottage',
-  blurb:'A keeper’s cottage at the end of the pier, with a wall of ropes, a shelf of adopted lost things and the kettle always on.',
-  door:'sea',color:'#E8384F',
+  blurb:'A keeper’s cottage at the end of the pier, with a spyglass at the window, a ship’s wheel on the wall, a shelf of adopted lost things and the kettle always on.',
+  door:'rbeacon',color:'#E8384F',
   plan:{W:6,D:5,ext:0xFFF0EC,base:0xFFF8F2,door:[0,3,'w'],arrive:[[.9,3.5]],levels:[{
     grid:['LLLLBB','LLLLBB','LLLLBB','LLLLTT','LLLLTT'],
-    rooms:{L:{n:'Keeper’s cabin',f:'s_sea',w:'s_sea'},B:{n:'Bedroom',f:'s_lagoon',w:'s_lagoon'},T:{n:'Lamp room',f:'s_camp',w:'s_roadtrip'}},
-    doors:[[3,1,'e'],[3,3,'e']],open:[],rugs:[[1,2,3,4,'s_roadtrip']]}]},
+    rooms:{L:{n:'Keeper’s cabin',f:'s_rbeacon',w:'s_rbeacon'},B:{n:'Bedroom',f:'s_rbeacon',w:'s_rbeacon'},T:{n:'Lamp room',f:'s_rbeacon',w:'s_rbeacon'}},
+    doors:[[3,1,'e'],[3,3,'e']],open:[],rugs:[]}]},
   layout:[
-    // chart and spyglass corner by the window
-    {k:'window',wl:[3.0,0,'n'],y:1.7},{k:'telescope',g:[3.2,.75]},{k:'starmap',wl:[1.4,0,'n'],y:1.8},{k:'hammock',g:[1.9,.8]},
-    // lost things shelf along the west wall, with the adopted bits
-    {k:'coralshelf',g:[.5,1.2],r:Math.PI/2},{k:'coralshelf',g:[.5,2.1],r:Math.PI/2},{k:'teddy',g:[1.05,1.2],r:Math.PI/3},{k:'lifebuoy',wl:[0,.9,'w'],y:1.7},
-    // ship's-wheel table, a chair facing the sea, cocoa
-    {k:'driftable',g:[2.2,2.5]},{k:'deckchair',g:[3.2,2.8],r:Math.PI/1.3},{k:'shelllamp',g:[3.6,1.6]},
-    {k:'suitcase',g:[.7,4.5]},{k:'treasurechest',g:[1.8,4.5]},{k:'palm',g:[3.5,4.5]},
-    // bedroom with a porthole
-    {k:'window',wl:[4.9,0,'n'],y:1.8},{k:'crescentbed',g:[5.0,.9],r:Math.PI},{k:'fishbowllamp',g:[4.2,.5]},{k:'starfishrug',g:[5.0,1.9]},
+    // the sea wall: sea chest under the wheel, spyglass at the big window, a lantern post
+    {k:'bcchest',g:[1.0,.3]},{k:'bcwheel',wl:[1.0,0,'n'],y:1.7},{k:'telescope',g:[2.55,.45]},{k:'win_rbeacon',wl:[2.55,0,'n'],y:1.85},
+    {k:'bcpost',g:[3.65,.35]},
+    // lost and found along the west wall, with the adopted bits
+    {k:'bcfound',wl:[0,1.6,'w'],y:1.6},{k:'teddy',g:[.45,1.0],r:Math.PI/2},{k:'bcbuoy',g:[.35,2.3]},
+    // the rocking chair by the barrel table
+    {k:'bcrug',g:[2.2,2.3]},{k:'bcbarrel',g:[2.35,2.3]},{k:'bcrocker',g:[1.45,2.3],r:Math.PI/2},
+    {k:'suitcase',g:[.7,4.6]},{k:'bccoil',g:[3.3,4.4]},
+    // bedroom
+    {k:'bcbunk',g:[5.3,.95]},{k:'fishbowllamp',g:[4.35,.4]},{k:'starfishrug',g:[5.0,2.35]},
     // lamp room
-    {k:'bubblecolumn',g:[5.2,3.4]},{k:'camplantern',g:[4.3,4.5]},{k:'sandcastle',g:[5.4,4.6]}
+    {k:'bcsignal',g:[5.55,3.4]},{k:'camplantern',g:[4.4,4.6]},{k:'sandcastle',g:[5.45,4.55]}
   ],
-  kg:{beacon:[2.9,1.95]},
+  kg:{beacon:[2.3,4.3]},
   lines:{beacon:{hi:['Ahoy. Come in out of the wind. I counted you from the road.','Oh good, a visitor. The kettle’s on. It’s been on a while.','Mind the rope. It’s mine, but it’ll trip anybody.']}}
 };
 HOUSE_DEF.bolt={
   n:'Bolt’s Toolbox',
-  blurb:'A red-and-yellow toolbox of a house with a workshop that never quite closes.',
-  door:'work',
+  blurb:'A red-and-yellow toolbox of a house: a workshop that never quite closes, a fire to warm up by and a pallet bed Bolt built himself.',
+  door:'rbuilder',
   color:'#E8384F',
   plan:{W:6,D:5,ext:0xFFD9B0,base:0xFFF1DC,door:[0,2,'w'],arrive:[[.9,2.5]],levels:[{
     grid:['WWWLLL','WWWLLL','WWWLLL','WWWBBB','WWWBBB'],
-    rooms:{W:{n:'Workshop',f:'wood',w:'pegboard'},L:{n:'Living room',f:'herring',w:'s_work'},B:{n:'Bedroom',f:'s_camp',w:'s_camp'}},
-    doors:[[2,1,'e'],[2,3,'e'],[4,2,'s']],open:[],rugs:[]}]},
+    rooms:{W:{n:'Workshop',f:'s_rbuilder',w:'pegboard'},L:{n:'Living room',f:'herring',w:'s_rbuilder'},B:{n:'Bedroom',f:'s_rbuilder',w:'s_rbuilder'}},
+    doors:[[2,1,'e'],[5,2,'s']],open:[],rugs:[]}]},
   layout:[
-    {k:'workbench',g:[1.45,.55]},{k:'pinboard',wl:[1.0,0,'n'],y:1.75},{k:'whiteboard',wl:[2.2,0,'n'],y:1.7},{k:'win_work',wl:[0,.9,'w'],y:1.9},
-    {k:'lumber',g:[.5,4.3],r:Math.PI/2},{k:'crate',g:[2.5,3.2]},{k:'camplantern',g:[.5,3.3]},
-    {k:'oaktable',g:[1.9,4.0]},{k:'campchair',g:[1.2,4.1],r:Math.PI/2},
-    {k:'fireplace',g:[4.5,.45]},{k:'logchair',g:[3.6,1.6],r:.5},{k:'braidrug',g:[4.4,1.7]},{k:'cubeshelf',g:[5.35,1.0],r:-Math.PI/2},
-    {k:'arclamp',g:[3.4,.45]},{k:'pinetree',g:[5.4,.45]},{k:'win_work',wl:[5.0,0,'n'],y:1.9},
-    {k:'tentbed',g:[4.6,3.6]},{k:'cablebed',g:[3.4,4.4]},{k:'camppennant',wl:[3.0,3.5,'w'],y:1.7},{k:'deskplant',g:[5.4,4.5]}
+    // workshop: the sawhorse table under the pegboard, the peg bench, a coffee-break corner
+    {k:'bwtable',g:[1.35,.42]},{k:'bwpeg',wl:[1.35,0,'n'],y:1.7},{k:'bwlamp',g:[.4,.42],r:.5},{k:'bwpeg2',g:[2.45,.42]},
+    {k:'win_rbuilder',wl:[0,.95,'w'],y:1.9},{k:'whiteboard',wl:[0,4.1,'w'],y:1.7},
+    {k:'bwrug',g:[1.55,4.0]},{k:'oaktable',g:[1.6,4.05]},{k:'bwchair',g:[.6,4.05],r:Math.PI/2},
+    {k:'bwcrates',g:[2.7,4.45],r:-Math.PI/2},{k:'bwplant',g:[.42,4.7]},
+    // living room: fire, two chairs turned to it
+    {k:'fireplace',g:[4.55,.42]},{k:'bwlamp',g:[3.35,.4],r:.6},{k:'bwplant',g:[5.62,.42]},{k:'win_rbuilder',wl:[5.6,0,'n'],y:1.95},
+    {k:'bwrug',g:[4.55,1.75]},{k:'bwchair',g:[3.75,2.4],r:2.6},{k:'logchair',g:[5.45,1.35],r:-1.9},
+    // bedroom
+    {k:'bwbed',g:[3.85,3.9]},{k:'bwpetbed',g:[5.4,4.45],r:-Math.PI/2}
   ],
   kg:{builder:[1.9,1.9]},
   lines:{builder:{hi:[
@@ -16377,56 +16382,55 @@ HOUSE_DEF.bolt={
 };
 HOUSE_DEF.bunbun={
   n:'The Warm Loaf',
-  blurb:'A bread-loaf cottage that smells of Sunday. There is always a kettle on and a chair pulled out for you.',
-  door:'cafe',
+  blurb:'A bread-loaf cottage that smells of Sunday. There is always a kettle on, a loaf in the hutch and a chair pulled out for you.',
+  door:'rbaker',
   color:'#F2A93B',
   plan:{W:6,D:6,ext:0xFFF1DC,base:0xFFF6EA,door:[0,4,'w'],arrive:[[.9,4.5]],levels:[{
     grid:['LLLBBB','LLLBBB','LLLBBB','KKKKKK','KKKKKK','KKKKKK'],
-    rooms:{K:{n:'Kitchen',f:'s_cafe',w:'s_cafe'},L:{n:'Cosy nook',f:'wood',w:'gingham'},B:{n:'Bedroom',f:'s_spring',w:'s_spring'}},
-    doors:[[1,2,'s'],[4,2,'s']],open:[],rugs:[[0,0,2,2,'candyborder']]}]},
+    rooms:{K:{n:'Kitchen',f:'s_rbaker',w:'s_rbaker'},L:{n:'Cosy nook',f:'s_rbaker',w:'s_rbaker'},B:{n:'Bedroom',f:'wood',w:'s_rbaker'}},
+    doors:[[1,2,'s'],[4,2,'s']],open:[],rugs:[]}]},
   layout:[
-    // kitchen
-    {k:'potrack',wl:[0,3.5,'w'],y:2.1},{k:'cakecounter',g:[2.3,3.5]},{k:'stove',g:[3.4,3.5]},{k:'herbcrate',g:[4.4,3.45]},{k:'retrofridge',g:[5.45,3.6],r:-Math.PI/2},
-    {k:'win_cafe',wl:[0,5.5,'w'],y:1.9},
-    {k:'checkrug',g:[3.4,4.75]},
-    {k:'bistrotable',g:[2.4,4.75]},{k:'bistrotable',g:[3.35,4.75]},{k:'bistrotable',g:[4.3,4.75]},
-    {k:'bistrochair',g:[2.9,4.1]},{k:'bistrochair',g:[3.9,4.1]},{k:'bistrochair',g:[2.9,5.45],r:Math.PI},{k:'bistrochair',g:[3.9,5.45],r:Math.PI},
-    {k:'bistrochair',g:[5.1,4.75],r:-Math.PI/2},
-    {k:'cuplamp',g:[5.4,5.5]},{k:'mixbowl',g:[1.3,5.6]},
-    // cosy nook
-    {k:'bonbon',g:[1.5,.75]},{k:'cakestand',g:[1.5,1.95]},{k:'bookcase',g:[.45,1.6],r:Math.PI/2},
-    {k:'lolli',g:[2.55,.45]},{k:'win_candy',wl:[0,1.5,'w'],y:1.9},{k:'swirlclock',wl:[2.4,0,'n'],y:1.8},
+    // kitchen: counter and stove between the two doorways, the big table in the middle
+    {k:'cakecounter',g:[2.55,3.3]},{k:'stove',g:[3.55,3.33]},
+    {k:'retrofridge',g:[5.62,3.5],r:-Math.PI/2,c:3},
+    {k:'rb_spoons',wl:[0,3.55,'w'],y:1.65},{k:'win_rbaker',wl:[0,5.4,'w'],y:1.75},
+    {k:'rb_rug',g:[3.6,5.15]},{k:'rb_table',g:[3.6,5.15]},{k:'bistrochair',g:[2.62,5.15],r:Math.PI/2},{k:'bistrochair',g:[4.58,5.15],r:-Math.PI/2},
+    {k:'rb_churn',g:[5.6,4.5]},{k:'rb_wheat',g:[5.55,5.5]},{k:'rb_pie',g:[4.45,3.45]},
+    // cosy nook: tub chair by the window, the bread hutch, a basket for the pet
+    {k:'rb_hutch',g:[1.75,.3]},{k:'rb_lamp',g:[.45,.42]},{k:'win_rbaker',wl:[0,1.6,'w'],y:1.75},
+    {k:'rb_rug',g:[1.7,1.65]},{k:'rb_chair',g:[.72,1.6],r:Math.PI/2},{k:'bistrotable',g:[1.62,1.6]},{k:'rb_chair',g:[2.5,1.65],r:-Math.PI/2},
+    {k:'rb_bed',g:[.6,2.55]},{k:'swirlclock',wl:[2.75,0,'n'],y:1.85},
     // bedroom
-    {k:'platbed',g:[4.6,1.0],c:0xFFD6A5},{k:'quiltrug',g:[4.6,2.2]},{k:'egglamp',g:[5.5,.5]},{k:'tulips',g:[3.4,2.55]},
-    {k:'win_spring',wl:[4.6,0,'n'],y:1.9},{k:'eggbed',g:[3.45,.55]}
+    {k:'sleighbed',g:[4.75,1.0],c:3},{k:'win_rbaker',wl:[3.6,0,'n'],y:1.75},{k:'rb_lamp',g:[5.62,.42]},
+    {k:'quiltrug',g:[4.6,2.3]},{k:'tulips',g:[3.4,.35]}
   ],
-  kg:{baker:[1.6,3.7]},
+  kg:{baker:[1.55,5.3]},
   lines:{baker:{hi:['Sweetie! Come in, come in, mind the flour. Have you eaten?','Oh, you caught me humming. Sit down, I will fetch the tea.','There is a loaf cooling on the sill. Cut it while it is warm, hon.']}}
 };
 HOUSE_DEF.clockwork={
   n:'The Clockwork Cottage',
-  blurb:'Tock and Sketch keep a tidy house: every jar labelled, every plan checked twice, tea at four.',
-  door:'books',
+  blurb:'Tock and Sketch keep a tidy house: every drawer labelled, every plan checked twice, tea at four.',
+  door:'rwindup',
   color:'#3FB5A8',
   plan:{W:6,D:6,ext:0xBFEDE6,base:0xF1FBF8,door:[0,3,'w'],arrive:[[.9,3.9]],levels:[{
     grid:['BBBWWW','BBBWWW','LLLLLL','LLLLLL','LLLLLL','LLLLLL'],
-    rooms:{L:{n:'Sitting room',f:'s_books',w:'s_books'},B:{n:'Our bedroom',f:'s_calm',w:'s_calm'},W:{n:'Workshop',f:'s_work',w:'s_work'}},
-    doors:[[2,1,'s'],[4,1,'s']],open:[],rugs:[]}]},
+    rooms:{L:{n:'Sitting room',f:'s_rwindup',w:'s_rwindup'},B:{n:'Our bedroom',f:'s_rwindup',w:'s_rpencil'},W:{n:'Sketch’s drafting room',f:'s_rpencil',w:'s_rpencil'}},
+    doors:[[2,1,'s'],[5,1,'s']],open:[],rugs:[]}]},
   layout:[
-    // sitting room
-    {k:'writedesk',g:[2.1,2.45]},{k:'deskchair',g:[2.1,2.62],r:Math.PI},
-    {k:'bistrotable',g:[3.3,4.6]},{k:'bistrochair',g:[2.55,4.6],r:Math.PI/2},{k:'bistrochair',g:[4.05,4.6],r:-Math.PI/2},{k:'braidrug',g:[3.3,4.6]},
-    {k:'teacart',g:[4.1,5.6],r:Math.PI},{k:'readchair',g:[5.35,4.1],r:-Math.PI/2},{k:'recordplayer',g:[5.6,5.4],r:-Math.PI/2},{k:'arclamp',g:[5.6,2.7]},
-    {k:'bookcase',g:[.55,5.45],r:Math.PI/2},{k:'grandclock',g:[1.55,5.7],r:Math.PI},{k:'pothos',g:[.55,4.6]},
-    {k:'win_books',wl:[0,4.75,'w'],y:1.9},{k:'starmap',wl:[0,2.6,'w'],y:2.15},
-    // bedroom
-    {k:'platbed',g:[1.5,.95]},{k:'moonlamp',g:[.5,.45]},{k:'moonlamp',g:[2.5,.45]},{k:'jute',g:[1.5,1.7]},
-    {k:'win_books',wl:[0,1.4,'w'],y:1.9},{k:'lineart',wl:[1.5,0,'n'],y:2.2},
-    // workshop
-    {k:'workbench',g:[4.1,.55]},{k:'deskchair',g:[4.1,1.45],r:Math.PI},{k:'cubeshelf',g:[5.45,.5]},{k:'cubeshelf',g:[3.35,.5]},
-    {k:'pinboard',wl:[4.1,0,'n'],y:2.2},{k:'crate',g:[5.4,1.6]},{k:'orrery',g:[3.4,1.6]}
+    // sitting room: Tock's parlour, with Sketch's chair across the rug
+    {k:'cksofa',g:[4.0,2.48]},{k:'ckrug',g:[4.0,3.6]},{k:'cktable',g:[4.0,3.65]},
+    {k:'ckchair',g:[4.0,4.62],r:Math.PI},{k:'dfchair',g:[2.75,3.65],r:Math.PI/2},
+    {k:'cklamp',g:[.45,4.5]},{k:'dfplant',g:[2.5,5.4]},{k:'grandclock',g:[1.3,2.3]},
+    {k:'ckcabinet',g:[.3,5.25],r:Math.PI/2},{k:'ckbed',g:[1.55,5.3]},{k:'ckfun',g:[5.35,5.3]},{k:'ckbowl',g:[4.55,5.45]},
+    {k:'win_rwindup',wl:[0,5.2,'w'],y:1.9},{k:'win_rpencil',wl:[0,2.45,'w'],y:1.9},
+    // bedroom (shared)
+    {k:'platbed',g:[1.2,.85]},{k:'dfrug',g:[1.2,1.35]},{k:'cktable',g:[2.6,.4]},
+    {k:'ckclocks',wl:[1.2,0,'n'],y:2.1},{k:'win_rwindup',wl:[0,1.35,'w'],y:1.9},
+    // Sketch's drafting room
+    {k:'dftable',g:[4.35,.45]},{k:'dfstool',g:[4.35,1.25]},{k:'dflamp',g:[3.35,.3]},{k:'dfchest',g:[5.4,.35]},
+    {k:'dfboard',wl:[4.35,0,'n'],y:1.85},
   ],
-  kg:{windup:[2.2,3.55],pencil:[3.7,3.5]},
+  kg:{windup:[1.9,3.6],pencil:[3.0,4.6]},
   lines:{
     windup:{hi:['Come in. Tick. Mind the rug, it is squared to the table.','Good day. Tea is at four. It is three fifty-nine.','Ah, you are on time. I wound the clock for you.']},
     pencil:{hi:['Oh! Hello. I measured the doorway this morning. You fit.','Welcome. Don’t mind the paper on the floor. It’s a draft.','Hi! Tock set out an extra cup. I double-checked. There’s room.']}
@@ -16434,21 +16438,23 @@ HOUSE_DEF.clockwork={
 };
 HOUSE_DEF.cobble={
   n:'Cobble’s Cottage',
-  blurb:'A fitted-stone cottage on Playhouse Hill with a mossy roof, a rocking chair by the stove and one stone in the path that is meant to wobble.',
-  door:'zen',
+  blurb:'A fitted-stone cottage on Playhouse Hill with a mossy roof, a boulder chair by the stove and one stone in the path that is meant to wobble.',
+  door:'rpebble',
   color:'#9C94B8',
   plan:{W:6,D:5,ext:0xD9D4E6,base:0xEEEAF4,door:[0,2,'w'],arrive:[[.9,2.5]],levels:[{
     grid:['LLLLBB','LLLLBB','LLLLBB','LLLLBB','LLLLBB'],
-    rooms:{L:{n:'Stove room',f:'s_zen',w:'s_snow'},B:{n:'Hammock nook',f:'s_camp',w:'s_green'}},
+    rooms:{L:{n:'Stove room',f:'s_rpebble',w:'s_rpebble'},B:{n:'Bedroom',f:'s_rpebble',w:'s_green'}},
     doors:[[3,2,'e']],open:[],rugs:[]}]},
   layout:[
-    {k:'fireplace',g:[2.4,.5]},{k:'logchair',g:[3.2,1.7],r:Math.PI+.35},{k:'furrug',g:[2.7,2.1]},
-    {k:'cubeshelf',g:[.5,1.2],r:Math.PI/2},{k:'wallshelf',wl:[1.2,0,'n'],y:1.8},{k:'wallshelf',wl:[3.6,0,'n'],y:1.8},
-    {k:'oaktable',g:[2.0,3.7]},{k:'zabuton',g:[2.0,4.5]},{k:'camplantern',g:[.55,3.3]},{k:'win_zen',wl:[0,4.1,'w'],y:1.9},
-    {k:'fern',g:[3.6,4.5]},{k:'cacti',g:[.55,4.5]},{k:'hangplanter',g:[3.7,.5]},
-    {k:'hammock',g:[5.0,1.5]},{k:'win_zen',wl:[5.0,0,'n'],y:1.9},{k:'zenbasketbed',g:[4.9,3.7]},{k:'pinetree',g:[5.45,4.5]},{k:'camppennant',wl:[4.0,3.4,'w'],y:1.7}
+    // stove room: fire, a felted rug, the boulder chair and the bench
+    {k:'fireplace',g:[2.3,.45]},{k:'rsrug',g:[2.3,1.95]},{k:'rstable',g:[2.3,1.85]},
+    {k:'rschair',g:[3.25,1.6],r:-1.9},{k:'rsbench',g:[2.0,4.65],r:Math.PI},
+    {k:'rsshelf',g:[.28,1.0],r:Math.PI/2},{k:'rslamp',g:[3.55,.42]},{k:'rspegs',wl:[1.0,0,'n'],y:1.75},{k:'wallshelf',wl:[3.5,0,'n'],y:1.9},
+    {k:'rsstack',g:[.45,4.55]},{k:'rsmoss',g:[3.5,4.45]},{k:'rslamp',g:[.45,3.6]},{k:'win_rpebble',wl:[0,4.1,'w'],y:1.9},
+    // bedroom
+    {k:'rsbed',g:[5.0,.95]},{k:'win_rpebble',wl:[5.0,0,'n'],y:2.05},{k:'rsnest',g:[5.0,3.15]},{k:'pinetree',g:[5.45,4.5]},{k:'hangplanter',g:[4.4,4.5]}
   ],
-  kg:{pebble:[1.8,2.4]},
+  kg:{pebble:[2.0,3.4]},
   lines:{pebble:{hi:[
     'Mm. Hello. Mind the stove. It takes its time, and so does the kettle.',
     'Oh. You are here. Good. Sit anywhere, it is all level.',
@@ -16457,157 +16463,119 @@ HOUSE_DEF.cobble={
 };
 HOUSE_DEF.cushy={
   n:'Cushy’s Big Nest',
-  blurb:'A house that is mostly one very large bed, with a blanket fort in the front room and rain on the window.',
-  door:'fort',color:'#C9A8FF',
+  blurb:'A soft lilac house where every seat is half a bed, there is a cocoon swing in the corner and the canopy bed is never quite made.',
+  door:'rcushion',color:'#C9A8FF',
   plan:{W:6,D:5,ext:0xE9DDFF,base:0xFFF6EA,door:[0,2,'w'],arrive:[[.9,2.5]],levels:[{
     grid:['LLLLNN','LLLLNN','LLLLNN','LLLLTT','LLLLTT'],
-    rooms:{L:{n:'Pillow fort',f:'s_fort',w:'s_fort'},N:{n:'The nest',f:'s_cloud9',w:'s_cloud9'},T:{n:'Rainy window seat',f:'s_cloud9',w:'s_cloud9'}},
+    rooms:{L:{n:'Lounging room',f:'s_rcushion',w:'s_rcushion'},N:{n:'The nest',f:'s_rcushion',w:'s_rcushion'},T:{n:'Rainy window seat',f:'s_cloud9',w:'s_cloud9'}},
     doors:[],open:['LN','LT','NT'],rugs:[]}]},
   layout:[
-    {k:'nimbusbed',g:[4.7,1.0],r:0},
-    {k:'cloudtable',g:[3.55,.55]},
-    {k:'raincloudlamp',g:[3.6,.55],y:.5},
-    {k:'fortbed',g:[1.3,.8],r:0},
-    {k:'pennant',wl:[2,0,'n'],y:1.9},
-    {k:'fairylights',g:[2.9,.4]},
-    {k:'quiltrug',g:[2.8,2.9]},
-    {k:'beanbag',g:[1.0,4.0],r:.5},
-    {k:'beanbag',g:[2.0,4.1],r:-.4},
-    {k:'pillowbed',g:[.6,4.2]},
-    {k:'zentable',g:[2.8,2.9]},
-    {k:'zabuton',g:[2.1,2.9],r:Math.PI/2},
-    {k:'zabuton',g:[3.45,2.9],r:-Math.PI/2},
-    {k:'win_cloud9',wl:[4.6,0,'n'],y:1.6},
-    {k:'weatherclock',wl:[5.3,0,'n'],y:1.8},
-    {k:'cloudsofa',g:[4.6,4.2],r:Math.PI},
-    {k:'puddlerug',g:[4.6,3.5]},
-    {k:'sunmoonmobile',g:[4.7,2.4]},
-    {k:'cloudlight',g:[3.6,4.3]},
-    {k:'dewfern',g:[5.5,4.4]}
+    // the nest
+    {k:'rc_bed',g:[5.25,.95]},{k:'rc_lamp',g:[4.25,.4]},{k:'rc_chest',g:[5.25,2.32]},{k:'win_rcushion',wl:[5.25,0,'n'],y:2.3},
+    // lounging room
+    {k:'rc_swing',g:[.55,.62]},{k:'rc_chaise',g:[1.95,.48]},{k:'rc_hang',wl:[1.95,0,'n'],y:1.95},
+    {k:'win_rcushion',wl:[3.3,0,'n'],y:1.85},{k:'rc_plant',g:[3.4,.36]},
+    {k:'rc_rug',g:[2.4,2.6]},{k:'rc_table',g:[2.4,2.55]},{k:'rc_pouf',g:[1.6,3.0]},{k:'rc_pouf',g:[3.2,3.0]},
+    {k:'rc_nest',g:[.75,3.95]},{k:'rc_lamp',g:[.4,4.62]},{k:'cushbed',g:[2.1,4.35],r:Math.PI/2},
+    // rainy window seat
+    {k:'cloudsofa',g:[5.58,4.05],r:-Math.PI/2},{k:'puddlerug',g:[4.6,4.0]},{k:'raincloudlamp',g:[4.35,4.6]}
   ],
-  kg:{cushion:[3.0,1.7]},
+  kg:{cushion:[3.4,1.65]},
   lines:{cushion:{hi:['Mm... welcome in. Mind the cushions. Or don’t. They’re sturdy.','Oh... you came by. Come sit. Anywhere is a bed in here.','Mm, rain’s coming. I can tell. It makes the whole house a little softer...']}}
 };
 HOUSE_DEF.dewey={
   n:'Dewey’s Reading Room',
-  blurb:'A row of giant books with a very quiet cottage inside, a chair with a Dewey-shaped dent and tea that is always going cold.',
-  door:'books',color:'#8E4FA8',
+  blurb:'A row of giant books with a very quiet cottage inside, a club chair with a Dewey-shaped dent and tea that is always going cold.',
+  door:'rbook',color:'#8E4FA8',
   plan:{W:6,D:5,ext:0xF1E4F5,base:0xFBF3EC,door:[0,3,'w'],arrive:[[.9,3.5]],levels:[{
     grid:['LLLLBB','LLLLBB','LLLLBB','LLLLTT','LLLLTT'],
-    rooms:{L:{n:'Reading room',f:'s_books',w:'s_books'},B:{n:'Bedroom',f:'s_stars',w:'s_stars'},T:{n:'Tea corner',f:'s_zen',w:'s_zen'}},
+    rooms:{L:{n:'Reading room',f:'s_rbook',w:'s_rbook'},B:{n:'Bedroom',f:'s_rbook',w:'s_stars'},T:{n:'Tea corner',f:'s_zen',w:'s_zen'}},
     doors:[[3,1,'e'],[3,3,'e']],open:[],rugs:[]}]},
   layout:[
-    // book-lined walls
-    {k:'bookcase',g:[.7,.5]},{k:'bookcase',g:[1.7,.5]},{k:'bookcase',g:[2.7,.5]},
-    {k:'bookcase',g:[.45,1.7],r:Math.PI/2},{k:'bookcase',g:[.45,2.7],r:Math.PI/2},
-    {k:'wallshelf',wl:[3.3,0,'n'],y:1.7},
-    // reading nook: the armchair with the dent, lamp, a globe
-    {k:'braidrug',g:[2.2,2.1]},{k:'readchair',g:[2.2,2.0],r:Math.PI/5},{k:'boomlamp',g:[1.4,2.6]},{k:'globe',g:[3.2,1.8]},
-    // desk with the card catalogue
-    {k:'writedesk',g:[1.5,4.4],r:Math.PI},{k:'sideboard',g:[2.8,4.5],r:Math.PI},{k:'pothos',g:[3.5,4.5]},
+    // book-lined back wall and the card catalogue
+    {k:'qsstack',g:[.75,.25]},{k:'qsstack',g:[1.95,.25]},{k:'qscards',g:[3.3,.32]},{k:'qsclock',wl:[3.3,0,'n'],y:2.05},
+    // reading nook: the club chair with the dent, a lamp, the fern
+    {k:'qsrug',g:[2.0,2.0]},{k:'qschair',g:[1.45,2.0],r:.7},{k:'qslamp',g:[.45,2.0],r:Math.PI/2},{k:'globe',g:[2.6,1.75]},{k:'qsfern',g:[3.45,2.2]},
+    {k:'win_rbook',wl:[0,1.6,'w'],y:1.95},{k:'qsmoths',wl:[0,4.55,'w'],y:1.7},
+    // the long reading table
+    {k:'qstable',g:[2.2,4.3]},{k:'qsbench',g:[2.2,4.85],r:Math.PI},{k:'qsbed',g:[.55,4.5]},{k:'pothos',g:[3.55,4.55]},
     // bedroom
-    {k:'cloudbed',g:[5.0,.9],r:Math.PI},{k:'moonlamp',g:[4.3,.45]},{k:'starmap',wl:[4.6,0,'n'],y:1.8},{k:'telescope',g:[5.4,2.3],r:-Math.PI/3},{k:'starrug',g:[4.9,2.0]},
+    {k:'bookbed',g:[5.0,.95]},{k:'qslamp',g:[4.4,.3]},{k:'starmap',wl:[5.0,0,'n'],y:2.0},{k:'telescope',g:[5.45,2.4],r:-Math.PI/3},{k:'starrug',g:[4.9,2.1]},
     // tea corner
     {k:'tatami',g:[5.0,3.9]},{k:'zentable',g:[5.0,3.9]},{k:'zabuton',g:[4.4,3.9],r:Math.PI/2},{k:'zabuton',g:[5.6,3.9],r:-Math.PI/2},
     {k:'bonsai',g:[5.5,4.6]},{k:'teacart',g:[4.3,4.6]}
   ],
-  kg:{book:[2.5,3.4]},
+  kg:{book:[2.6,3.3]},
   lines:{book:{hi:['Oh. Hello. Come in, mind the step, it creaks. It’s in the book that it creaks.','Shh, no, it’s fine, you’re allowed. Hello, you two.','I put the kettle on at ten. There’s room on the reading cushion.']}}
 };
 HOUSE_DEF.dusty={
   n:'Dusty’s Tidy Nook',
-  blurb:'Everything has a label and a place, and there is exactly one thing in the house that Dusty bought just because it was pretty.',
-  door:'zen',color:'#CDB8F5',
-  plan:{W:5,D:4,ext:0xEFE6FF,base:0xFBF7FF,door:[0,1,'w'],arrive:[[.9,2.0]],levels:[{
-    grid:['MMMMB','MMMMB','MMMMC','MMMMC'],
-    rooms:{M:{n:'Tidy room',f:'s_zen',w:'s_washday'},B:{n:'Bed nook',f:'s_washday',w:'s_washday'},C:{n:'Cleaning cupboard',f:'s_washday',w:'s_zen'}},
+  blurb:'Everything has a label and a place, and there is exactly one thing in the house that Dusty bought just because it was pretty: the feather mirror.',
+  door:'rdust',color:'#CDB8F5',
+  plan:{W:6,D:4,ext:0xEFE6FF,base:0xFBF7FF,door:[0,1,'w'],arrive:[[.9,2.0]],levels:[{
+    grid:['MMMMBB','MMMMBB','MMMMCC','MMMMCC'],
+    rooms:{M:{n:'Tidy room',f:'s_rdust',w:'s_rdust'},B:{n:'Bed nook',f:'s_rdust',w:'s_rdust'},C:{n:'Cleaning cupboard',f:'s_washday',w:'s_washday'}},
     doors:[[3,0,'e'],[3,2,'e']],open:[],rugs:[]}]},
   layout:[
-    {k:'tatami',g:[2.0,1.7]},
-    {k:'zentable',g:[2.0,1.6]},
-    {k:'zabuton',g:[2.85,1.7],r:-Math.PI/2,c:0xE5D4FF},
-    {k:'toychest',g:[.55,.4],c:0xD9C8F5},
-    {k:'basket',g:[1.4,.4],c:0xFFD9E8},
-    {k:'sideboard',g:[2.4,.4],c:0xE5D4FF},
-    {k:'win_zen',wl:[1.6,0,'n'],y:1.7},
-    {k:'cakestand',g:[3.0,3.4],c:0xFF9ECF},
-    {k:'bonsai',g:[.6,3.4]},
-    {k:'paperlantern',g:[1.6,3.4]},
-    {k:'kidbed',g:[4.4,.8],c:0xD9C8F5},
-    {k:'sockrug',g:[4.4,1.55],c:0xE5D4FF},
-    {k:'lantern',g:[3.7,.4]},
-    {k:'washer',g:[4.4,2.5]},
-    {k:'soapshelf',g:[4.35,3.4]},
-    {k:'dryingrack',g:[3.65,3.45]}
+    // tidy room: bookcase, the armchair under the pretty mirror, a lamp in the corner
+    {k:'rd_books',g:[.6,.27]},{k:'rd_arm',g:[1.75,.5]},{k:'rd_mirror',wl:[1.75,0,'n'],y:1.95},{k:'rd_table',g:[2.55,.45]},
+    {k:'win_rdust',wl:[3.25,0,'n'],y:1.8},{k:'rd_lamp',g:[3.55,.3]},
+    {k:'rd_rug',g:[2.1,2.3]},{k:'rd_trunk',g:[2.1,2.25]},{k:'zabuton',g:[2.1,3.0],r:Math.PI},
+    {k:'rd_radio',g:[.4,3.6],r:Math.PI/2},{k:'rd_plant',g:[3.6,3.65]},{k:'basket',g:[1.2,3.65]},
+    // bed nook
+    {k:'rd_bed',g:[5.4,.95]},{k:'win_rdust',wl:[5.4,0,'n'],y:1.85},{k:'rd_hatbox',g:[4.45,1.6]},
+    // cleaning cupboard
+    {k:'washer',g:[5.6,2.5],r:-Math.PI/2},{k:'dryingrack',g:[5.2,3.55]},{k:'soapshelf',g:[4.35,3.75],r:Math.PI}
   ],
-  kg:{dust:[2.4,2.7]},
+  kg:{dust:[3.3,2.55]},
   lines:{dust:{hi:['Oh! Hello. Sorry, I just tidied, so it’s very... square in here.','Come in, come in. Mind the boxes. They’re labelled, so you can’t get lost.','Hi. I’d offer tea, but I’m still deciding which cup is the nicest one.']}}
 };
 HOUSE_DEF.echo={
   n:'Echo’s Music Box',
-  blurb:'A cherry-wood music box of a cottage with a brass horn on the roof, a tiny stage in the corner and a sofa made for listening.',
-  door:'studio',color:'#C94A3A',
+  blurb:'A cherry-wood music box of a cottage with a brass horn on the roof, a tiny stage under a spotlight and a velvet sofa made for listening.',
+  door:'rgramo',color:'#C94A3A',
   plan:{W:6,D:5,ext:0xF2C9B5,base:0xFFF6EA,door:[0,1,'w'],arrive:[[.9,1.5]],levels:[{
     grid:['MMMSSS','MMMSSS','MMMSSS','LLLBBB','LLLBBB'],
-    rooms:{M:{n:'Music room',f:'s_studio',w:'s_studio'},S:{n:'Little stage',f:'s_movie',w:'s_movie'},L:{n:'Listening lounge',f:'s_groovy',w:'s_groovy'},B:{n:'Bedroom',f:'s_date',w:'s_date'}},
-    doors:[[1,2,'s'],[4,2,'s'],[2,3,'e']],open:['MS'],rugs:[[3,0,5,2,'s_movie']]}]},
+    rooms:{M:{n:'Music room',f:'s_rgramo',w:'s_rgramo'},S:{n:'Little stage',f:'s_movie',w:'s_rgramo'},L:{n:'Listening lounge',f:'s_rgramo',w:'s_groovy'},B:{n:'Bedroom',f:'s_date',w:'s_rgramo'}},
+    doors:[[1,2,'s'],[4,2,'s'],[2,3,'e']],open:['MS'],rugs:[]}]},
   layout:[
-    {k:'piano',g:[1.7,.55],r:0},
-    {k:'studiostool',g:[1.7,1.35]},
-    {k:'guitarwall',wl:[2.2,0,'n'],y:1.6},
-    {k:'recordcrate',g:[.5,.5]},
-    {k:'drumkit',g:[2.3,2.5],r:Math.PI/2},
-    {k:'win_studio',wl:[0,2.2,'w'],y:1.5},
-    {k:'reelrug',g:[4.4,1.7]},
-    {k:'beadcurtain',g:[4.6,.3]},
-    {k:'discoball',g:[5.4,.8]},
-    {k:'moviemarquee',wl:[5.3,0,'n'],y:1.9},
-    {k:'velvetrope',g:[3.4,2.5],r:Math.PI/2},
-    {k:'recordplayer',g:[1.9,3.6]},
-    {k:'pitsofa',g:[1.2,4.3],r:Math.PI},
-    {k:'shagrug',g:[1.4,3.9]},
-    {k:'lavalamp',g:[2.6,4.6]},
-    {k:'sunmirror',wl:[0,3.8,'w'],y:1.7},
-    {k:'heartbed',g:[4.7,4.1]},
-    {k:'moonlamp',g:[3.6,3.5]},
-    {k:'heartrug',g:[4.6,3.5]}
+    // music room: piano, record sleeves, the jukebox
+    {k:'piano',g:[2.15,.5]},{k:'studiostool',g:[2.15,1.3]},{k:'recordcrate',g:[.45,.45]},{k:'ghsleeves',wl:[2.15,0,'n'],y:2.15},
+    {k:'ghjuke',g:[.35,2.5],r:Math.PI/2},{k:'guitarwall',wl:[0,2.5,'w'],y:2.0},
+    // the little stage: sunray rug, a stool under two spotlights
+    {k:'ghrug',g:[4.5,1.2]},{k:'beadcurtain',g:[4.5,.3]},{k:'ghstool',g:[4.5,1.05]},
+    {k:'ghlamp',g:[3.4,.45],r:.7},{k:'ghlamp',g:[5.6,.45],r:-.7},{k:'ghsconce',wl:[3.5,0,'n'],y:1.9},{k:'ghsconce',wl:[5.5,0,'n'],y:1.9},
+    {k:'ghpalm',g:[5.4,2.35]},
+    // listening lounge
+    {k:'ghbooth',g:[.4,4.0],r:Math.PI/2},{k:'shagrug',g:[1.4,4.0]},{k:'ghtable',g:[1.45,4.0]},{k:'lavalamp',g:[2.55,4.55]},
+    {k:'sunmirror',wl:[0,4.0,'w'],y:2.0},
+    // bedroom
+    {k:'ghrug',g:[4.6,4.0]},{k:'heartbed',g:[4.75,4.1]},{k:'ghtable',g:[5.6,3.4]},{k:'ghbed',g:[3.55,4.5]}
   ],
-  kg:{gramo:[2.3,1.4]},
+  kg:{gramo:[1.5,2.25]},
   lines:{gramo:{hi:['Oh... hello. I didn’t see you there. Mind the horn, it’s mid-hum.','Come in, come in. Sit, and I’ll find your tune.','Hush a moment... there. Now it’s a good day.']}}
 };
 HOUSE_DEF.fizz={
   n:'Fizz’s Bubble Dome',
-  blurb:'A bathtub with a roof of bubbles. Fizz narrates every arrival, so knock loudly.',
-  door:'bath',
+  blurb:'A bathtub with a roof of bubbles, a pearl-pink parlour inside and a clam-shell bed. Fizz narrates every arrival, so knock loudly.',
+  door:'rstylist',
   color:'#7FD8FF',
   plan:{W:6,D:5,ext:0xE9FAFF,base:0xFFFFFF,door:[0,1,'w'],arrive:[[.9,1.5]],levels:[{
     grid:['BBBBSS','BBBBSS','BBBBSS','DDDDDD','DDDDDD'],
-    rooms:{B:{n:'Spa bath',f:'s_bath',w:'s_bath'},S:{n:'Bedroom',f:'s_date',w:'s_date'},D:{n:'Dressing room',f:'s_lagoon',w:'s_lagoon'}},
+    rooms:{B:{n:'Bath parlour',f:'s_rstylist',w:'s_rstylist'},S:{n:'Bedroom',f:'s_rstylist',w:'s_rstylist'},D:{n:'Dressing room',f:'s_bath',w:'s_rstylist'}},
     doors:[[3,1,'e'],[1,2,'s'],[4,2,'s']],open:[],rugs:[]}]},
   layout:[
-    {k:'clawtub',g:[2.3,1.0],r:0},
-    {k:'bathmat',g:[2.3,2.1]},
-    {k:'sinkvanity',g:[3.4,.45]},
-    {k:'bathmirror',wl:[3.4,0,'n'],y:1.7},
-    {k:'bubbleart',wl:[1.3,0,'n'],y:1.8},
-    {k:'towelrack',g:[.5,.5],r:Math.PI/2},
-    {k:'ducklamp',g:[3.6,2.5]},
-    {k:'bamboo',g:[3.7,1.7]},
-    {k:'bathstool',g:[.6,2.55]},
-    {k:'shellsofa',g:[1.6,4.35],r:Math.PI},
-    {k:'shellmirror',wl:[0,4,'w'],y:1.7},
-    {k:'sinkvanity',g:[.45,3.4],r:Math.PI/2},
-    {k:'laundry',g:[2.9,3.45]},
-    {k:'towelrack',g:[3.9,4.4],r:Math.PI},
-    {k:'starfishrug',g:[2.4,3.9]},
-    {k:'kelp',g:[5.5,3.5]},
-    {k:'giantclam',g:[5.0,.95]},
-    {k:'heartlamp',g:[4.2,2.5]},
-    {k:'candles',g:[5.6,2.4]},
-    {k:'lightcurtain',wl:[5.0,0,'n'],y:1.5},
-    {k:'rosevase',g:[4.3,.35]}
+    // bath parlour: the tub under the sunburst mirror, the foam fountain, his dressing table
+    {k:'fzdresser',g:[.55,.3]},{k:'bubbleart',wl:[0,.5,'w'],y:1.85},
+    {k:'clawtub',g:[2.4,.5]},{k:'fzmirror',wl:[2.4,0,'n'],y:2.3},{k:'fzfountain',g:[3.55,.5]},
+    {k:'fzrug',g:[2.4,2.0]},{k:'bathmat',g:[2.4,1.3]},{k:'fzpouf',g:[3.3,2.3]},{k:'ducklamp',g:[.4,2.6]},{k:'towelrack',g:[3.6,2.75],r:Math.PI},
+    // bedroom: a giant clam
+    {k:'giantclam',g:[5.15,1.15]},{k:'fzarclamp',g:[5.35,2.55]},
+    // dressing room
+    {k:'fzsettee',g:[.35,4.0],r:Math.PI/2},{k:'fzdrape',wl:[0,4.0,'w'],y:1.8},{k:'fzorbtable',g:[1.05,4.6]},{k:'fzpampas',g:[2.0,4.6]},
+    {k:'fzrug',g:[3.4,4.1]},{k:'fzchaise',g:[5.45,3.95],r:-Math.PI/2},{k:'heartlamp',g:[4.3,4.65]}
   ],
-  kg:{stylist:[1.7,2.5]},
+  kg:{stylist:[1.75,2.2]},
   lines:{stylist:{hi:[
     'Darling! You came! Stand there, let me narrate this properly. Ahem. Our heroes arrive.',
     'Divine timing. The tub is warm, the bubbles are behaving, and I look tragic in this light. Come in.',
@@ -16616,50 +16584,56 @@ HOUSE_DEF.fizz={
 };
 HOUSE_DEF.flat={
   n:'Number Two, Bubble Bay',
-  blurb:'Gloss and Bobbin share a bottle-and-spool flat with a balcony, a dinner table for two and a very full appointment book.',
-  door:'date',
+  blurb:'Gloss and Bobbin share a bottle-and-spool flat: a glossy pink room, a ribbon-and-hammock room, a dinner table for two and a very full appointment book.',
+  door:'rpolish',
   color:'#FF6FB5',
   plan:{W:6,D:5,ext:0xFFD3E8,base:0xFFF1F8,door:[0,2,'w'],arrive:[[.9,2.5]],levels:[{
-    grid:['LLLLGG','LLLLGG','LLLLGG','LLLLOO','LLLLOO'],
-    rooms:{L:{n:'Living room and kitchen',f:'s_date',w:'s_date'},G:{n:'Gloss’s room',f:'s_groovy',w:'s_groovy'},O:{n:'Bobbin’s room',f:'s_washday',w:'s_washday'}},
+    grid:['LLLLGG','LLLLGG','LLLLOO','LLLLOO','LLLLOO'],
+    rooms:{L:{n:'Living room and kitchen',f:'s_rspool',w:'s_rpolish'},G:{n:'Gloss’s room',f:'s_rpolish',w:'s_rpolish'},O:{n:'Bobbin’s room',f:'s_rspool',w:'s_rspool'}},
     doors:[[3,1,'e'],[3,3,'e']],open:[],rugs:[]}]},
   layout:[
-    {k:'retrofridge',g:[.6,.45]},{k:'stove',g:[1.7,.45]},{k:'washer',g:[2.8,.5]},{k:'partybanner',wl:[1.6,0,'n'],y:2.0},{k:'sunmirror',wl:[3.3,0,'n'],y:1.75},
-    {k:'confettirug',g:[2.7,2.5]},{k:'dinnertable',g:[2.7,2.5]},{k:'bistrochair',g:[1.95,2.5],r:Math.PI/2},{k:'bistrochair',g:[3.5,2.5],r:-Math.PI/2},
-    {k:'loveseat',g:[.65,4.1],r:Math.PI/2},{k:'eggchair',g:[2.6,4.35]},{k:'lavalamp',g:[3.5,4.6]},{k:'keyrack',wl:[0,1.0,'w'],y:1.5},{k:'win_date',wl:[0,4.1,'w'],y:1.9},
-    {k:'crescentbed',g:[5.4,1.05]},{k:'vanity',g:[4.55,.5],c:0xFF9EB0,set:'makeup'},{k:'bulbmirror',wl:[4.5,0,'n'],y:2.0,c:0xFF8FC8},{k:'loveboard',wl:[5.5,0,'n'],y:1.7},{k:'heartlamp',g:[4.5,2.55]},
-    {k:'hamperbed',g:[5.3,4.2]},{k:'suitcase',g:[4.55,4.55]},{k:'maprug',g:[4.8,3.7]},{k:'floorcush',g:[4.6,3.7]}
+    // kitchen along the back wall, Bobbin's drawers and memo board, Gloss's calendar
+    {k:'retrofridge',g:[.5,.42]},{k:'stove',g:[1.55,.4]},{k:'rsdrawers',g:[2.55,.3]},{k:'rsboard',wl:[2.55,0,'n'],y:2.15},
+    {k:'rpcal',wl:[3.45,0,'n'],y:1.7},{k:'rplamp',g:[3.55,.3]},{k:'rscoat',g:[.35,1.45]},{k:'rsbasket',wl:[0,.9,'w'],y:1.45},
+    // dinner for two
+    {k:'rprug',g:[2.3,1.95]},{k:'dinnertable',g:[2.3,1.75]},{k:'bbchair',g:[1.55,1.75],r:Math.PI/2},{k:'bbchair',g:[2.3,2.55],r:Math.PI},
+    // sofa corner
+    {k:'rpsofa',g:[.35,4.3],r:Math.PI/2},{k:'win_rpolish',wl:[0,4.3,'w'],y:1.95},{k:'bbrug',g:[1.35,4.2],r:Math.PI/2},
+    {k:'rswagon',g:[3.1,4.6],r:-Math.PI/2},
+    // Gloss's room
+    {k:'crescentbed',g:[5.4,.95]},{k:'rpcabinet',g:[4.45,.3]},{k:'rpledge',wl:[4.45,0,'n'],y:1.55},
+    // Bobbin's room
+    {k:'rshammock',g:[5.4,3.5]},{k:'bblamp',g:[4.45,2.3]},{k:'bbrug',g:[4.55,3.6],r:Math.PI/2},{k:'rscrate',g:[4.55,4.6]}
   ],
-  kg:{polish:[1.4,1.5],spool:[3.1,3.4]},
+  kg:{polish:[1.5,4.35],spool:[4.5,4.0]},
   lines:{
     polish:{hi:['Hello, lovely. The kettle is on, and I wrote you in for tea.','Perfect, you’re early. Bobbin has been running laps since breakfast.','Mind the rug, it’s new. Well, it’s confetti, so it was always going to be messy.']},
     spool:{hi:['Oh hi! Hi hi. Come in, Gloss made tea and I made toast, and also I found a button.','You’re here! I was already at the door. Well, near the door. Mind my thread.','Hello! We have a dinner table for two. I mean for four. For you too!']}}
 };
 HOUSE_DEF.gamenight={
   n:'The Game Night House',
-  blurb:'Boing and Joy share a games room, a ball pit and a very loud sofa. Game Night is every night.',
-  door:'games',
+  blurb:'Boing’s tinker loft and Joy’s neon bedroom meet in one big games room with a marble run, a claw machine and a sofa for two.',
+  door:'rtoymaker',
   color:'#9B4DF2',
   plan:{W:6,D:6,ext:0xFFE27A,base:0xFFF3C4,door:[0,3,'w'],arrive:[[.9,3.7]],levels:[{
     grid:['BBBJJJ','BBBJJJ','GGGGGG','GGGGGG','GGGGGG','GGGGGG'],
-    rooms:{G:{n:'Game Night room',f:'s_games',w:'s_games'},B:{n:'Boing’s workshop',f:'s_play',w:'s_play'},J:{n:'Joy’s room',f:'s_stars',w:'s_stars'}},
-    doors:[[1,1,'s'],[4,1,'s']],open:[],rugs:[]}]},
+    rooms:{G:{n:'Game Night room',f:'s_rtoymaker',w:'s_rjoy'},B:{n:'Boing’s workshop',f:'s_rtoymaker',w:'s_rtoymaker'},J:{n:'Joy’s room',f:'s_rjoy',w:'s_rjoy'}},
+    doors:[[2,1,'s'],[3,1,'s']],open:[],rugs:[]}]},
   layout:[
-    // games room
-    {k:'moviescreen',g:[3.4,2.55]},{k:'neonrug',g:[3.4,3.7]},{k:'cinemacouch',g:[3.4,4.75],r:Math.PI},
-    {k:'beanbag',g:[1.8,4.5],r:.5,c:0xFF3D9A},{k:'beanbag',g:[4.8,4.4],r:-.5,c:0x3EC8F2},
-    {k:'trophyshelf',g:[.55,5.4],r:Math.PI/2},{k:'popcorncart',g:[1.7,5.6],r:Math.PI},{k:'snacktable',g:[2.5,5.65],r:Math.PI},
-    {k:'pinball',g:[5.5,5.5],r:Math.PI},{k:'miniarcade',g:[5.65,2.5]},{k:'clawmini',g:[.6,2.4]},
-    {k:'balloons',g:[4.3,5.65]},{k:'joylamp',g:[3.0,5.7]},
-    {k:'win_games',wl:[0,4.1,'w'],y:1.9},{k:'moviemarquee',wl:[0,5.3,'w'],y:2.3},{k:'neonsign',wl:[0,2.3,'w'],y:2.2},
+    // games room: Boing's half (west), Joy's half (east), the middle kept clear for playing
+    {k:'clawmini',g:[.55,2.45]},{k:'tkmarble',g:[1.45,2.4]},{k:'miniarcade',g:[4.4,2.45]},{k:'jypalm',g:[5.4,2.6]},
+    {k:'jysofa',g:[5.6,4.05],r:-Math.PI/2},{k:'jyrug',g:[4.6,4.05]},{k:'jytable',g:[4.55,4.05],r:Math.PI/2},{k:'jypouf',g:[3.6,4.3]},
+    {k:'tkrug',g:[2.1,4.75]},{k:'tkstool',g:[1.4,5.1]},{k:'popcorncart',g:[.5,5.45],r:Math.PI/2},
+    {k:'tklamp',g:[.45,4.35],r:Math.PI/2},{k:'jylamp',g:[5.6,5.5]},{k:'jypetbed',g:[3.4,5.4]},
+    {k:'win_rjoy',wl:[0,4.85,'w'],y:1.9},{k:'win_rtoymaker',wl:[0,2.4,'w'],y:1.95},
     // Boing's workshop
-    {k:'workbench',g:[.9,.55]},{k:'ballpit',g:[.75,1.6]},{k:'robot',g:[1.75,1.7]},{k:'kidbed',g:[2.4,1.0]},
-    {k:'bunting',wl:[1.5,0,'n'],y:3.0},{k:'kiddrawing',wl:[0,1.6,'w'],y:2.1},
+    {k:'tkbed',g:[.75,.88]},{k:'tkbench',g:[2.35,.42]},{k:'tkstool',g:[2.35,1.2]},{k:'tkclock',wl:[2.35,0,'n'],y:1.7},
+    {k:'win_rtoymaker',wl:[0,1.0,'w'],y:1.95},
     // Joy's room
-    {k:'cloudbed',g:[5.3,.6]},{k:'moonlamp',g:[3.55,.5]},{k:'telescope',g:[3.55,1.55]},{k:'starrug',g:[4.8,1.55]},{k:'planetchair',g:[5.6,1.7],r:-.4},
-    {k:'cometart',wl:[4.0,0,'n'],y:1.9},{k:'movieposter',wl:[5.4,0,'n'],y:1.9},{k:'neonsign',wl:[3.0,0,'n'],y:2.3}
+    {k:'jybed',g:[5.3,.88]},{k:'jydeck',g:[4.25,.35]},{k:'jyshelf',g:[3.35,.28]},{k:'jypouf',g:[4.3,1.3]},
+    {k:'jywave',wl:[5.3,0,'n'],y:2.05},{k:'win_rjoy',wl:[4.2,0,'n'],y:2.05}
   ],
-  kg:{toymaker:[2.0,3.55],joy:[2.95,3.4]},
+  kg:{toymaker:[2.1,3.5],joy:[3.15,3.3]},
   lines:{
     toymaker:{hi:['BOING! You came! Okay okay okay, sit anywhere, the sofa is a prototype!','Game Night starts in, um, whenever! Joy, is it on?','I made a new thing! It does not do what I thought! You have to see it!']},
     joy:{hi:['Player one, player two! The co-op team is here! Grab a controller.','Welcome in. I kept the good beanbag warm. GG already.','Boing built the sofa, I built the snack table. Teamwork!']}
@@ -16667,53 +16641,51 @@ HOUSE_DEF.gamenight={
 };
 HOUSE_DEF.garden={
   n:'The Potted Lodge',
-  blurb:'Posy’s sunroom and Prickles’ travel den under one roof, with a kettle that is always on and a seedling that is always new.',
-  door:'green',color:'#7FCB6A',
+  blurb:'Posy’s sunroom and Prickles’ trail den under one roof, with a kettle that is always on and a seedling that is always new.',
+  door:'rposy',color:'#7FCB6A',
   plan:{W:6,D:5,ext:0xFFE2C4,base:0xFFF4E6,door:[0,2,'w'],arrive:[[.9,2.5]],levels:[{
     grid:['SSSSBB','SSSSBB','DDDDBB','DDDDBB','DDDDBB'],
-    rooms:{S:{n:'Sunroom',f:'s_green',w:'s_green'},D:{n:'Travel den',f:'s_books',w:'s_camp'},B:{n:'Bedroom',f:'s_garden',w:'s_garden'}},
-    doors:[[3,3,'e']],open:['SD'],rugs:[[0,2,2,4,'s_green']]}]},
+    rooms:{S:{n:'Sunroom',f:'s_rposy',w:'s_rposy'},D:{n:'Trail den',f:'s_rcactus',w:'s_rcactus'},B:{n:'Bedroom',f:'s_rposy',w:'s_rcactus'}},
+    doors:[[3,3,'e']],open:['SD'],rugs:[]}]},
   layout:[
-    // sunroom (north-west), full of green things
-    {k:'pottingbench',g:[1.3,.45]},{k:'flowercart',g:[3.0,.5]},{k:'fern',g:[.45,.5]},{k:'terrarium',g:[2.2,.5]},
-    {k:'win_green',wl:[2.0,0,'n'],y:1.85},{k:'hangplanter',wl:[3.2,0,'n'],y:2.1},{k:'wallplanter',wl:[0,1.2,'w'],y:1.6},
-    {k:'leafrug',g:[2.3,1.45]},{k:'cacti',g:[3.6,1.5]},{k:'wateringlamp',g:[.4,1.0]},
-    // den (south-west): door at the west wall, Prickles' corner
-    {k:'readchair',g:[3.1,3.7],r:Math.PI*.75},{k:'braidrug',g:[2.4,3.5]},{k:'globe',g:[3.65,2.55]},
-    {k:'bookcase',g:[.5,4.45],r:0},{k:'suitcase',g:[1.5,4.55]},{k:'camppennant',wl:[0,4.3,'w'],y:1.9},{k:'starmap',wl:[0,3.4,'w'],y:1.7},
-    {k:'bankerlamp',g:[3.65,4.5]},{k:'teacart',g:[1.35,3.45]},
-    // shared bedroom (east)
-    {k:'leafbed',g:[5.0,.9]},{k:'potbed',g:[5.1,2.0]},{k:'mossrug',g:[5.0,1.45]},{k:'flowerlamp',g:[4.5,.5]},
-    {k:'win_garden',wl:[4.6,0,'n'],y:1.85},{k:'butterflyart',wl:[5.6,0,'n'],y:1.7},{k:'sunflower',g:[5.4,3.6]},{k:'logseat',g:[4.7,4.4]}
+    // Posy's sunroom (north-west): the arranging table, seed drawers, flower stand, seedlings
+    {k:'pttable',g:[1.45,.35]},{k:'ptchair',g:[1.45,1.05],r:Math.PI},{k:'ptstand',g:[2.65,.5]},{k:'ptseed',g:[3.45,.32]},
+    {k:'ptdrawers',g:[.25,.95],r:Math.PI/2},{k:'ptrug',g:[2.4,1.3]},{k:'ptlamp',g:[3.55,1.55]},
+    {k:'ptframes',wl:[1.45,0,'n'],y:1.9},{k:'ptherbs',wl:[3.3,0,'n'],y:2.0},{k:'win_rposy',wl:[0,.95,'w'],y:1.95},
+    // Prickles' den (south-west): the bench with cushions, the map table, the trunk
+    {k:'dxbanco',g:[.3,4.25],r:Math.PI/2},{k:'dxrug',g:[1.6,4.2]},{k:'dxtable',g:[1.6,4.2],r:Math.PI/2},{k:'dxchair',g:[2.65,4.2],r:-Math.PI/2},
+    {k:'dxlamp',g:[.4,3.3]},{k:'dxtrunk',g:[3.5,4.6],r:-Math.PI/2},{k:'dxcompass',g:[3.55,2.4]},
+    {k:'dxmap',wl:[0,4.25,'w'],y:1.75},
+    // shared bedroom (east): sunhats over the bed, the wheelbarrow and the basket nest
+    {k:'leafbed',g:[5.0,.95]},{k:'dxhats',wl:[5.0,0,'n'],y:2.1},{k:'dxsage',g:[5.65,2.45]},
+    {k:'dxnest',g:[5.0,2.55]},{k:'ptbarrow',g:[5.0,4.35]},{k:'sunflower',g:[5.6,3.4]}
   ],
-  kg:{posy:[1.3,1.6],cactus:[2.3,2.9]},
+  kg:{posy:[2.5,1.75],cactus:[2.1,3.1]},
   lines:{
     posy:{hi:['Oh, hello. Mind the tulips. They are fine with you, just not with the pigeons.','Come in, come in. Prickles is telling the geraniums about the desert again.','Careful, that is a seedling. It is new, it does not know about people yet.']},
     cactus:{hi:['Hmph. Visitors. Sit, sit. Mind the pot.','Back again, youngster? Good. The kettle is already on.','Don’t touch the stick. ...Alright, you can touch the stick.']}}
 };
 HOUSE_DEF.lamp={
   n:'Lamp & Drizzle Cottage',
-  blurb:'Lumi keeps the lights low and Nimbus keeps the forecast. The kettle is never cold.',
-  door:'stars',
+  blurb:'Lumi keeps the lights low and Nimbus keeps the forecast. There is a porch swing indoors and the kettle is never cold.',
+  door:'rlantern',
   color:'#C9A8FF',
   plan:{W:6,D:5,ext:0xF4EAFF,base:0xFFF6EA,door:[0,2,'w'],arrive:[[.9,2.7]],levels:[{
     grid:['LLLNNN','LLLNNN','SSSSSS','SSSSSS','SSSSSS'],
-    rooms:{S:{n:'Sky-watching room',f:'s_zen',w:'s_movie'},L:{n:'Lumi’s room',f:'s_stars',w:'s_stars'},N:{n:'Nimbus’s room',f:'s_cloud9',w:'s_cloud9'}},
-    doors:[[1,1,'s'],[4,1,'s']],open:[],rugs:[]}]},
+    rooms:{S:{n:'Sky-watching room',f:'s_rcloud',w:'s_rlantern'},L:{n:'Lumi’s room',f:'s_rlantern',w:'s_rlantern'},N:{n:'Nimbus’s room',f:'s_rcloud',w:'s_rcloud'}},
+    doors:[[2,1,'s'],[3,1,'s']],open:[],rugs:[]}]},
   layout:[
-    // shared living room: big window seat on the west wall, tea table, lanterns
-    {k:'cinemacouch',g:[.6,4.1],r:Math.PI/2},{k:'win_stars',wl:[0,4.1,'w'],y:1.9},
-    {k:'tatami',g:[3.6,3.7]},{k:'zentable',g:[3.6,3.7]},{k:'zabuton',g:[2.6,3.7],r:Math.PI/2},{k:'zabuton',g:[4.6,3.8],r:-Math.PI/2},
-    {k:'paperlantern',g:[5.5,2.5]},{k:'paperlantern',g:[1.9,2.45]},{k:'bonsai',g:[5.5,5.4]},{k:'koibowl',g:[3.3,5.5]},
-    {k:'projector',g:[4.4,5.5]},{k:'movieposter',wl:[3.5,5,'n'],y:2.2},
-    // Lumi: starry corner
-    {k:'cloudbed',g:[1.3,.9]},{k:'moonlamp',g:[2.55,.5]},{k:'starrug',g:[1.6,1.55]},{k:'telescope',g:[.55,1.6],r:Math.PI/2},
-    {k:'cometart',wl:[1.5,0,'n'],y:2.0},{k:'orrery',g:[2.55,1.45]},
-    // Nimbus: cloud bed, barometers, rainbow shelf
-    {k:'nimbusbed',g:[4.2,.95]},{k:'puddlerug',g:[4.8,1.65]},{k:'rainbowshelf',g:[5.55,1.2],r:-Math.PI/2},
-    {k:'weatherclock',wl:[3.3,0,'n'],y:2.2},{k:'raincloudlamp',g:[3.15,.5]},{k:'dewfern',g:[5.5,.5]}
+    // shared room: Lumi's porch swing and kettle table, Nimbus's window seat and puddle pouf
+    {k:'llswing',g:[5.0,2.45]},{k:'llrug',g:[4.6,3.75]},{k:'lltable',g:[4.75,3.65]},
+    {k:'rnpouf',g:[3.85,3.95]},{k:'lllamp',g:[5.6,4.55]},{k:'rnstand',g:[5.65,3.25]},
+    {k:'rnseat',g:[.28,4.3],r:Math.PI/2},
+    {k:'rnfern',g:[1.5,4.6]},{k:'llbed',g:[3.4,2.6]},
+    // Lumi's room
+    {k:'cloudbed',g:[1.0,.85]},{k:'lljars',g:[2.45,.3]},{k:'llstring',wl:[1.0,0,'n'],y:2.25},{k:'win_rlantern',wl:[0,1.0,'w'],y:1.9},
+    // Nimbus's room
+    {k:'nimbusbed',g:[5.0,.95]},{k:'rnlamp',g:[3.6,.35]},{k:'rnbaro',wl:[5.0,0,'n'],y:2.05},{k:'win_rcloud',wl:[4.0,0,'n'],y:2.0}
   ],
-  kg:{lantern:[2.6,3.2],cloud:[4.5,3.1]},
+  kg:{lantern:[1.7,3.55],cloud:[2.9,3.95]},
   lines:{
     lantern:{hi:['Oh, hello. I was just resting my eyes. It is only four in the afternoon.','Come in, come in. Mind the pole. It is always in the way.','You came at a good time. I am warm and the kettle is on.']},
     cloud:{hi:['Oh, hello. Chance of you staying for tea: moderate to good.','Welcome. Mind the drip by the door. Sorry. It is mostly harmless.','Hi! Clear skies today, I think. I checked twice.']}
@@ -16721,35 +16693,26 @@ HOUSE_DEF.lamp={
 };
 HOUSE_DEF.loofah={
   n:'Loofah’s Sunny Hut',
-  blurb:'Butter-yellow and a bit squishy. There is always a warm towel and a kettle on.',
-  door:'sea',
+  blurb:'Butter-yellow outside, warm cedar inside, with a hot stone stove, a bench for two and a soaking tub. There is always a warm towel and a kettle on.',
+  door:'rsponge',
   color:'#FFD966',
   plan:{W:6,D:5,ext:0xFFEFA8,base:0xFFF4C8,door:[0,1,'w'],arrive:[[.9,1.5]],levels:[{
     grid:['LLLLBB','LLLLBB','LLLLBB','LLLLBB','SSSSBB'],
-    rooms:{L:{n:'Sunny room',f:'s_sea',w:'s_sea'},B:{n:'Bedroom',f:'s_green',w:'s_green'},S:{n:'Soak corner',f:'s_bath',w:'s_bath'}},
+    rooms:{L:{n:'Steam room',f:'s_rsponge',w:'s_rsponge'},B:{n:'Bedroom',f:'s_rsponge',w:'s_rsponge'},S:{n:'Soak corner',f:'s_bath',w:'s_rsponge'}},
     doors:[[3,1,'e'],[1,3,'s']],open:['LS'],rugs:[]}]},
   layout:[
-    {k:'hammock',g:[2.4,.75]},
-    {k:'beachtowel',g:[1.3,3.1]},
-    {k:'palm',g:[.4,.4]},
-    {k:'lifebuoy',wl:[0,2.5,'w'],y:1.7},
-    {k:'driftable',g:[3.35,1.7]},
-    {k:'shelllamp',g:[3.4,.4]},
-    {k:'deckchair',g:[3.3,2.7],r:-.5},
-    {k:'surfrack',g:[.5,3.2],r:Math.PI/2},
-    {k:'clawtub',g:[1.7,4.35],r:0},
-    {k:'towelrack',g:[3.4,4.4],r:Math.PI},
-    {k:'bathstool',g:[.55,4.4]},
-    {k:'bamboo',g:[3.6,3.3]},
-    {k:'platbed',g:[5.0,1.0]},
-    {k:'wallplanter',wl:[5.0,0,'n'],y:1.6},
-    {k:'fern',g:[5.55,.4]},
-    {k:'cacti',g:[4.4,2.6]},
-    {k:'hangplanter',g:[5.5,2.6]},
-    {k:'leafrug',g:[5.0,2.3]},
-    {k:'sandcastle',g:[2.9,3.25]}
+    // steam room: towel cubby, hot stones, a bench for two under the window
+    {k:'lfcubby',g:[.6,.25]},{k:'lftimer',wl:[.6,0,'n'],y:1.8},{k:'lfstove',g:[1.85,.3]},
+    {k:'lfbench',g:[3.2,.3]},{k:'win_rsponge',wl:[3.2,0,'n'],y:1.9},{k:'lfrobe',wl:[0,2.9,'w'],y:1.65},
+    {k:'lfrug',g:[2.5,2.2]},{k:'lftable',g:[2.5,2.15]},{k:'lfroll',g:[1.65,2.15]},{k:'lfroll',g:[3.35,2.15]},
+    {k:'lfeuca',g:[.4,3.4]},{k:'lflantern',g:[3.6,3.5]},
+    // soak corner
+    {k:'clawtub',g:[1.8,4.6]},{k:'towelrack',g:[3.3,4.75],r:Math.PI},{k:'bathstool',g:[.5,4.5]},
+    // bedroom
+    {k:'lfbed',g:[5.25,.95]},{k:'win_rsponge',wl:[5.25,0,'n'],y:1.9},{k:'lfeuca',g:[4.35,.35]},
+    {k:'hangplanter',g:[5.4,2.4]},{k:'leafrug',g:[5.0,3.3]},{k:'deckchair',g:[5.1,3.6],r:-Math.PI/2},{k:'fern',g:[5.45,4.5]}
   ],
-  kg:{sponge:[2.2,2.55]},
+  kg:{sponge:[2.4,3.45]},
   lines:{sponge:{hi:[
     'Mm, you made it. Shoes anywhere. No rush.',
     'Oh good. Kettle is warm. Hammock is free if you want it.',
@@ -16759,104 +16722,98 @@ HOUSE_DEF.loofah={
 HOUSE_DEF.mayor={
   n:'Marsh Manor',
   blurb:'Mayor Marsh lives behind a very small pair of columns. The ribbon on the gate is always freshly cut.',
-  door:'date',
+  door:'rmayor',
   color:'#FF7DB8',
   plan:{W:6,D:5,ext:0xFFF4E2,base:0xFFF6EA,door:[0,3,'w'],arrive:[[.9,3.7]],levels:[{
     grid:['OOOBBB','OOOBBB','PPPPPP','PPPPPP','PPPPPP'],
-    rooms:{P:{n:'Parlour',f:'s_date',w:'s_date'},O:{n:'Office',f:'s_books',w:'s_books'},B:{n:'Bedroom',f:'s_cloud9',w:'s_cloud9'}},
+    rooms:{P:{n:'Parlour',f:'s_rmayor',w:'s_rmayor'},O:{n:'Office',f:'s_books',w:'s_rmayor'},B:{n:'Bedroom',f:'s_rmayor',w:'s_cloud9'}},
     doors:[[2,1,'s'],[3,1,'s']],open:[],rugs:[]}]},
   layout:[
-    // parlour: fancy sofa, tea table, fireplace corner, topiary
-    {k:'loveseat',g:[3.6,2.55]},{k:'heartrug',g:[3.6,3.65]},{k:'teacart',g:[3.6,3.55]},
-    {k:'readchair',g:[5.35,3.4],r:-.9},{k:'mantel',g:[1.6,2.4]},{k:'heartlamp',g:[5.45,2.5]},
-    {k:'dinnertable',g:[4.9,4.7]},{k:'candles',g:[3.9,4.8]},
-    {k:'xmastree',g:[5.5,5.5]},{k:'dewfern',g:[.55,5.45]},{k:'rosevase',g:[2.8,2.45]},
-    {k:'win_date',wl:[0,4.8,'w'],y:1.9},{k:'lightcurtain',wl:[3.2,5,'n'],y:2.1},
-    // office: big desk, portrait, birthday book shelves
-    {k:'writedesk',g:[1.1,.7]},{k:'readchair',g:[1.1,1.5],r:Math.PI},{k:'bookcase',g:[.5,1.55],r:Math.PI/2},
-    {k:'globe',g:[2.5,.55]},{k:'starmap',wl:[2.0,0,'n'],y:1.9},{k:'wallshelf',wl:[.5,.2,'w'],y:1.8},
-    // bedroom: canopy bed, scissors on the wall
-    {k:'nimbusbed',g:[5.0,.95]},{k:'cloudtable',g:[3.55,.5]},{k:'raincloudlamp',g:[3.55,.5],y:.5},
-    {k:'puddlerug',g:[4.3,1.6]},{k:'wreath',wl:[4.0,0,'n'],y:1.9},{k:'weatherclock',wl:[3.3,0,'n'],y:2.2}
+    // parlour: the chesterfield on a laurel rug, the mantel, the ribbon-cutting posts
+    {k:'mpsofa',g:[5.0,2.4]},{k:'mprug',g:[4.95,3.55]},{k:'teacart',g:[4.95,3.5]},{k:'readchair',g:[3.85,3.6],r:Math.PI/2},
+    {k:'mantel',g:[1.3,2.38]},{k:'mpcab',g:[.28,4.55],r:Math.PI/2},{k:'mptopiary',g:[.45,2.45]},
+    {k:'mpribbon',g:[2.4,4.6]},{k:'mplamp',g:[5.65,4.6]},{k:'mpbed',g:[4.0,4.65]},
+    {k:'win_rmayor',wl:[0,2.5,'w'],y:1.95},
+    // office: guest book desk, portrait mirror, the birthday book shelves
+    {k:'mpdesk',g:[1.2,.45]},{k:'readchair',g:[1.2,1.3],r:Math.PI},{k:'globe',g:[2.5,.5]},
+    {k:'mpmirror',wl:[1.2,0,'n'],y:1.85},{k:'win_rmayor',wl:[0,1.2,'w'],y:1.9},{k:'bookcase',g:[.4,1.45],r:Math.PI/2},
+    // bedroom: canopy bed under the bunting
+    {k:'nimbusbed',g:[5.0,.95]},{k:'mplamp',g:[3.45,.35]},{k:'mpbunting',wl:[4.9,0,'n'],y:2.25}
   ],
-  kg:{mayor:[2.4,3.7]},
+  kg:{mayor:[2.5,3.6]},
   lines:{mayor:{hi:['Ahem! Welcome, dear resident, to Marsh Manor. Mind the carpet, it is ceremonial.','Guests! How splendid. I shall prepare a few remarks. Tea first, remarks second.','Come in, come in. The scissors on the bedroom wall are for display only. Mostly.']}}
 };
 HOUSE_DEF.patch={
   n:'Dr. Patch’s Little Clinic',
-  blurb:'A tidy peach clinic cottage with a heart over the door, a lollipop jar on the porch and a very large bed for the doctor’s own naps.',
-  door:'nursery',color:'#FFC9A8',
+  blurb:'A tidy peach clinic cottage with a heart over the door, a tea trolley in the waiting room and a nap daybed for the doctor’s own naps.',
+  door:'rpatch',color:'#FFC9A8',
   plan:{W:6,D:5,ext:0xFFE2CC,base:0xFFF6EA,door:[0,1,'w'],arrive:[[.9,1.5]],levels:[{
     grid:['WWWEEE','WWWEEE','WWWEEE','TTTBBB','TTTBBB'],
-    rooms:{W:{n:'Waiting room',f:'s_cloud9',w:'s_nursery'},E:{n:'Check-up corner',f:'s_petpal',w:'s_nursery'},T:{n:'Tea nook',f:'s_zen',w:'s_zen'},B:{n:'Nap room',f:'s_cloud9',w:'s_cloud9'}},
-    doors:[[1,2,'s'],[4,2,'s'],[2,3,'e']],open:['WE'],rugs:[[1,1,2,2,'s_nursery']]}]},
+    rooms:{W:{n:'Waiting room',f:'s_rpatch',w:'s_rpatch'},E:{n:'Check-up corner',f:'s_rpatch',w:'s_rpatch'},T:{n:'Tea nook',f:'s_zen',w:'s_rpatch'},B:{n:'Nap room',f:'s_rpatch',w:'s_rpatch'}},
+    doors:[[1,2,'s'],[4,2,'s'],[2,3,'e']],open:['WE'],rugs:[]}]},
   layout:[
-    {k:'rainbowshelf',g:[1.6,.45],r:0},
-    {k:'win_nursery',wl:[.7,0,'n'],y:1.5},
-    {k:'rattlebox',g:[.5,.5]},
-    {k:'playmat',g:[1.7,2.3]},
-    {k:'blockstack',g:[1.3,2.5],r:.4},
-    {k:'cloudsofa',g:[.7,3.0],r:Math.PI/2},
-    {k:'glider',g:[2.6,2.4],r:-Math.PI/2},
-    {k:'cloudtable',g:[2.75,1.0]},
-    {k:'growthchart',wl:[3.4,0,'n'],y:1.5},
-    {k:'petsofa',g:[4.9,.65],r:0},
-    {k:'snacktable',g:[3.7,.55]},
-    {k:'incubator',g:[5.45,1.75],r:-Math.PI/2},
-    {k:'pawrug',g:[4.4,1.8]},
-    {k:'win_nursery',wl:[0,2.1,'w'],y:1.5},
-    {k:'zentable',g:[1.2,4.0]},
-    {k:'zabuton',g:[.55,4.0],r:Math.PI/2},
-    {k:'zabuton',g:[1.85,4.0],r:-Math.PI/2},
-    {k:'bonsai',g:[2.6,4.5]},
-    {k:'paperlantern',g:[.4,4.6]},
-    {k:'tatami',g:[1.2,4.0]},
-    {k:'nimbusbed',g:[4.7,4.1],r:0},
-    {k:'raincloudlamp',g:[3.6,3.5]},
-    {k:'sunmoonmobile',g:[3.6,4.6]},
-    {k:'cloudpetbed',g:[5.55,3.45]}
+    // waiting room
+    {k:'dp_cabinet',g:[.5,.3]},{k:'cloudsofa',g:[1.65,.45]},{k:'win_rpatch',wl:[1.65,0,'n'],y:1.95},
+    {k:'dp_trolley',g:[2.75,.3]},{k:'dp_print',wl:[2.75,0,'n'],y:1.8},
+    {k:'dp_rug',g:[1.65,1.55]},{k:'dp_aloe',g:[.4,2.6]},
+    // check-up corner
+    {k:'dp_recliner',g:[4.0,.55]},{k:'dp_shelf',wl:[4.0,0,'n'],y:1.75},{k:'dp_mist',g:[4.95,.4]},{k:'dp_lamp',g:[5.65,.35]},
+    {k:'growthchart',wl:[5.3,0,'n'],y:1.6},{k:'incubator',g:[5.6,1.6],r:-Math.PI/2},{k:'pawrug',g:[4.5,1.85]},{k:'dp_bottle',g:[4.4,1.9]},
+    // tea nook
+    {k:'tatami',g:[1.4,4.15]},{k:'zentable',g:[1.4,4.15]},{k:'zabuton',g:[.7,4.15],r:Math.PI/2},{k:'zabuton',g:[2.1,4.15],r:-Math.PI/2},
+    {k:'bonsai',g:[2.65,4.6]},{k:'dp_lamp',g:[.35,3.35]},{k:'win_rpatch',wl:[0,4.15,'w'],y:1.9},
+    // nap room
+    {k:'dp_daybed',g:[5.1,4.2],r:-Math.PI/2},{k:'raincloudlamp',g:[3.4,4.6]}
   ],
-  kg:{patch:[2.3,1.7]},
+  kg:{patch:[3.15,1.95]},
   lines:{patch:{hi:['Come in, come in. Sit anywhere. Nothing hurts? Good.','Oh, hello. I was just checking my heartbeat. Still going.','Welcome to the house. The kettle is warm, and the big bed is for emergencies.']}}
 };
 HOUSE_DEF.pip={
   n:'The Jam Jar',
-  blurb:'A little strawberry studio flat next door to Bunbun, with practice batches on every shelf and every label a bit crooked.',
-  door:'fruity',
+  blurb:'A little berry-red studio flat next door to Bunbun, with practice batches on every shelf and every label a bit crooked.',
+  door:'rjam',
   color:'#E8384F',
   plan:{W:6,D:5,ext:0xFFE3E6,base:0xFFF1F2,door:[0,3,'w'],arrive:[[.9,3.5]],levels:[{
     grid:['SSSSSS','SSSSSS','SSSSSS','SSSSSS','SSSSSS'],
-    rooms:{S:{n:'The jar',f:'s_fruity',w:'s_fruity'}},
+    rooms:{S:{n:'The jar',f:'s_rjam',w:'s_rjam'}},
     doors:[],open:[],rugs:[]}]},
   layout:[
     // practice-baking corner along the back wall
-    {k:'cakecounter',g:[1.6,.6]},{k:'stove',g:[3.0,.55]},{k:'mixbowl',g:[4.2,.5]},{k:'potrack',wl:[3.0,0,'n'],y:2.2},
-    {k:'breadshelf',g:[.5,1.9],r:Math.PI/2},{k:'win_fruity',wl:[4.6,0,'n'],y:1.9},{k:'citrusclock',wl:[2.0,0,'n'],y:1.9},
-    // living bit
-    {k:'lemonrug',g:[3.0,3.2]},{k:'orangechair',g:[2.0,3.4],r:Math.PI/4},{k:'cherrypoufs',g:[3.7,3.2]},{k:'cuplamp',g:[1.4,4.4]},
-    {k:'bistrotable',g:[2.9,2.2]},{k:'herbcrate',g:[5.45,1.6]},{k:'caketable',g:[4.9,2.2]},{k:'partybanner',wl:[3.6,0,'n'],y:2.0},{k:'mixbowl',g:[.6,.5]},
-    // bed and strawberry decor
-    {k:'melonbed',g:[4.8,3.6],r:-Math.PI/2},{k:'pineapplelamp',g:[5.4,4.5]},{k:'lemontree',g:[.5,4.5]},{k:'win_fruity',wl:[0,1.2,'w'],y:1.9}
+    {k:'rj_shelf',g:[.55,.28]},{k:'cakecounter',g:[1.6,.33]},{k:'stove',g:[2.65,.38]},{k:'potrack',wl:[2.65,0,'n'],y:2.25},
+    {k:'rj_plant',g:[3.55,.42]},{k:'win_rjam',wl:[3.6,0,'n'],y:1.85},
+    {k:'rj_board',wl:[0,1.45,'w'],y:1.65},{k:'rj_bowl',g:[2.9,1.35]},
+    // tasting table
+    {k:'rj_table',g:[1.6,2.0]},{k:'bistrochair',g:[.82,2.0],r:Math.PI/2},{k:'bistrochair',g:[2.38,2.0],r:-Math.PI/2},
+    // bed in the corner
+    {k:'melonbed',g:[5.25,1.0]},{k:'rj_lamp',g:[4.3,.3]},
+    // sitting bit
+    {k:'rj_rug',g:[4.25,3.65]},{k:'rj_sofa',g:[5.6,3.65],r:-Math.PI/2},{k:'rj_crate',g:[3.3,3.65],r:Math.PI/2},
+    {k:'rj_lamp',g:[5.7,2.35]},{k:'rj_bed',g:[2.45,4.45]},{k:'rj_barrow',g:[1.0,4.35],r:Math.PI/2},
+    {k:'win_rjam',wl:[0,4.4,'w'],y:1.85}
   ],
-  kg:{jam:[2.6,1.5]},
+  kg:{jam:[3.25,2.4]},
   lines:{jam:{hi:['Oh! Hi! Um, come in, mind the sticky bit by the door.','You came to see my practice batch? It is the seventh. Bunbun says seven is lucky.','Hello! Sit anywhere. Not there, that is the jam. Sorry! Sit there.']}}
 };
 HOUSE_DEF.pixel={
   n:'Pixel’s Stack',
-  blurb:'A dim, tidy gamer den built out of cubes, with a ticket jar sorted by colour.',
-  door:'cyber',
+  blurb:'A tidy cottage built out of cubes: a gaming desk, a couch for one, a ticket jar sorted by colour and a voxel bed.',
+  door:'rpixel',
   color:'#3EC8F2',
   plan:{W:6,D:5,ext:0x6B7BE8,base:0xE9E4FF,door:[0,2,'w'],arrive:[[.9,2.5]],levels:[{
     grid:['DDDDBB','DDDDBB','DDDDBB','DDDDBB','DDDDBB'],
-    rooms:{D:{n:'Game den',f:'cyber',w:'cyber'},B:{n:'Bedroom',f:'s_games',w:'cyberrun'}},
-    doors:[[3,2,'e']],open:[],rugs:[[1,1,3,3,'cyberrug']]}]},
+    rooms:{D:{n:'Game den',f:'s_rpixel',w:'s_rpixel'},B:{n:'Bedroom',f:'s_rpixel',w:'cyberrun'}},
+    doors:[[3,2,'e']],open:[],rugs:[]}]},
   layout:[
-    {k:'doubledesk',g:[1.45,.55]},{k:'deskchair',g:[1.45,1.45],r:Math.PI,c:0x9B4DF2},{k:'neonsign',wl:[2.55,0,'n'],y:1.85},{k:'retrotv',g:[3.35,.5]},
-    {k:'scores',wl:[0,3.5,'w'],y:1.6},{k:'win_cyber',wl:[0,.9,'w'],y:1.9},{k:'candyjar',g:[.5,4.45]},{k:'trophyshelf',g:[1.5,4.55],r:Math.PI/2*0},
-    {k:'cinemacouch',g:[2.9,3.6],r:Math.PI},{k:'clawmini',g:[3.4,1.6],r:-Math.PI/2},{k:'cablebed',g:[.5,.5]},
-    {k:'cushbed',g:[4.6,3.9]},{k:'deskplant',g:[5.4,.5]},{k:'joylamp',g:[4.5,.45]},{k:'movieposter',wl:[4.0,0,'n'],y:1.7},{k:'monstera',g:[5.45,4.5]},{k:'padbed',g:[4.8,2.3]},{k:'movieposter',wl:[5.0,0,'n'],y:1.7}
+    // den: desk and screen on the back wall, couch facing them
+    {k:'doubledesk',g:[1.3,.5]},{k:'deskchair',g:[1.3,1.35],r:Math.PI,c:0x9B4DF2},{k:'retrotv',g:[3.1,.45]},
+    {k:'pxframe',wl:[2.25,0,'n'],y:1.95},{k:'win_rpixel',wl:[0,1.0,'w'],y:1.9},{k:'scores',wl:[0,4.1,'w'],y:1.7},
+    {k:'pxrug',g:[2.4,2.55]},{k:'pxcouch',g:[2.6,3.7],r:Math.PI},{k:'pxtable',g:[1.45,3.7]},{k:'pxlamp',g:[3.65,3.65]},
+    {k:'pxshelf',g:[.28,3.75],r:Math.PI/2},{k:'pxtree',g:[.5,4.55]},{k:'candyjar',g:[1.45,4.6]},{k:'pxtree',g:[3.55,4.55]},
+    // bedroom
+    {k:'pxbed',g:[5.05,1.0]},{k:'pxlamp',g:[4.25,.3]},{k:'pxpetbed',g:[5.35,2.95]},{k:'pxcube',g:[4.45,4.45]},{k:'clawmini',g:[5.4,4.4],r:-Math.PI/2},
+    {k:'movieposter',wl:[5.05,0,'n'],y:2.0}
   ],
-  kg:{pixel:[2.3,2.35]},
+  kg:{pixel:[1.8,2.45]},
   lines:{pixel:{hi:[
     'Hi. Cables are tidy. Sit anywhere.',
     'Player {n}. Home screen is ready.',
@@ -16865,87 +16822,78 @@ HOUSE_DEF.pixel={
 };
 HOUSE_DEF.post={
   n:'The Paper Post',
-  blurb:'Parcel sorts the mail downstairs-ish and Fold paints the signs next door-ish, and everything in between is labelled twice.',
-  door:'roadtrip',color:'#E7B27A',
+  blurb:'Parcel sorts the mail by the door and Fold folds things in the room upstairs-ish, and everything in between is labelled twice.',
+  door:'rparcel',color:'#E7B27A',
   plan:{W:6,D:5,ext:0xFFE6C2,base:0xFFF4E4,door:[0,3,'w'],arrive:[[.9,3.5]],levels:[{
     grid:['FFFPPP','FFFPPP','SSSSKK','SSSSKK','SSSSKK'],
-    rooms:{S:{n:'Sorting room',f:'s_roadtrip',w:'s_work'},K:{n:'Kitchen nook',f:'s_work',w:'gingham'},P:{n:'Parcel’s room',f:'s_books',w:'s_roadtrip'},F:{n:'Fold’s studio',f:'s_studio',w:'s_studio'}},
-    doors:[[1,1,'s'],[3,1,'s']],open:['SK'],rugs:[[0,2,2,4,'s_roadtrip']]}]},
+    rooms:{S:{n:'Sorting room',f:'s_rparcel',w:'s_rcrane'},K:{n:'Kitchen nook',f:'s_rcrane',w:'gingham'},P:{n:'Parcel’s room',f:'s_rparcel',w:'s_rparcel'},F:{n:'Fold’s studio',f:'s_rcrane',w:'s_rcrane'}},
+    doors:[[0,1,'s'],[3,1,'s']],open:['SK'],rugs:[]}]},
   layout:[
-    // sorting room: pigeonholes, parcels, the scale desk
-    {k:'cubeshelf',g:[.4,2.45],r:Math.PI/2},{k:'cubeshelf',g:[.4,4.6],r:Math.PI/2},{k:'keyrack',wl:[0,3.2,'w'],y:1.5},{k:'pinboard',wl:[0,4.0,'w'],y:1.6},
-    {k:'maprug',g:[2.2,3.7]},{k:'doubledesk',g:[2.5,4.55]},{k:'suitcase',g:[1.3,4.6]},{k:'vending',g:[3.55,2.5]},{k:'floatchair',g:[3.5,4.3]},
+    // sorting room: the string-tied sofa, pigeonholes by the door, the big stamp
+    {k:'ppsofa',g:[2.0,2.38]},{k:'pprug',g:[2.0,3.3]},{k:'pptable',g:[2.0,3.25]},{k:'ppchair',g:[3.3,3.25],r:-1.9},
+    {k:'ppshelf',g:[.3,2.47],r:Math.PI/2},{k:'ppfun',g:[.45,4.55]},
+    {k:'keyrack',wl:[0,4.55,'w'],y:1.5},{k:'win_rcrane',wl:[0,2.5,'w'],y:1.95},
     // kitchen nook
-    {k:'retrofridge',g:[5.5,2.5]},{k:'stove',g:[4.6,2.5]},{k:'bistrotable',g:[5.0,3.8]},{k:'bistrochair',g:[4.5,3.8],r:Math.PI/2},{k:'coffeemaker',g:[5.5,4.6]},
-    // Parcel's room (north-east): maps on every wall
-    {k:'crescentbed',g:[4.9,.9]},{k:'maprug',g:[4.3,1.5]},{k:'starmap',wl:[3.5,0,'n'],y:1.7},{k:'win_roadtrip',wl:[4.7,0,'n'],y:1.85},{k:'boomlamp',g:[3.6,1.6]},{k:'suitcase',g:[5.4,1.7],r:.3},
-    // Fold's studio-bedroom (north-west): paint table, paper, mobiles
-    {k:'writedesk',g:[1.0,.5]},{k:'studiostool',g:[1.0,1.25]},{k:'easel',g:[2.3,.7],r:.4},{k:'bookbed',g:[.6,1.7],r:Math.PI/2},{k:'splatrug',g:[1.8,1.4]},
-    {k:'brushlamp',g:[2.55,1.6]},{k:'win_studio',wl:[1.5,0,'n'],y:1.85},{k:'wallshelf',wl:[2.5,0,'n'],y:1.9},{k:'wallshelf',wl:[0,.6,'w'],y:1.9}
+    {k:'retrofridge',g:[5.5,2.5]},{k:'stove',g:[4.6,2.5]},{k:'bistrotable',g:[5.0,3.8]},{k:'coffeemaker',g:[5.5,4.6]},{k:'ppbowl',g:[4.4,4.6]},
+    // Parcel's room: stamps over the bed, a postbox lamp
+    {k:'crescentbed',g:[5.0,.95]},{k:'pplamp',g:[3.45,.3]},{k:'ppstamps',wl:[5.0,0,'n'],y:2.05},{k:'win_rparcel',wl:[3.95,0,'n'],y:1.9},
+    // Fold's studio: cubbies of paper, the lantern, the signboard over the bed
+    {k:'bookbed',g:[2.15,.9]},{k:'pfcubby',g:[.25,.65],r:Math.PI/2},{k:'pflamp',g:[1.15,.3]},{k:'pfrug',g:[1.5,1.35]},
+    {k:'pfsign',wl:[2.15,0,'n'],y:2.1},{k:'win_rcrane',wl:[0,1.45,'w'],y:1.95},{k:'pffun',g:[2.6,1.65]},{k:'pfplant',g:[2.75,.35]}
   ],
-  kg:{parcel:[1.6,3.1],crane:[3.0,3.5]},
+  kg:{parcel:[1.4,4.15],crane:[2.8,4.25]},
   lines:{
     parcel:{hi:['Morning! Delivery for you, and it’s from the other half of you. Here.','Oh, you caught me between stops. Come in, the kettle’s on, and so is my schedule.','Ten past nine and you’re at my door. That’s a first. I like it.']},
     crane:{hi:['Oh. Hello. Mind the floor, I have paper everywhere.','Come in. I made you a boat. It is small. So is the table.','You are early. The paint is not dry. Neither am I.']}}
 };
 HOUSE_DEF.stitch={
   n:'The Basket',
-  blurb:'Stitch’s round sewing-basket house, with a thimble chimney and yarn spilling out of the lid.',
-  door:'washday',
+  blurb:'Stitch’s round sewing-basket house, with a thimble chimney, a treadle machine under the clothesline and a patchwork armchair for the long hems.',
+  door:'rtailor',
   color:'#FF8FC8',
   plan:{W:6,D:5,ext:0xE9C98C,base:0xFFF1DC,door:[0,2,'w'],arrive:[[.9,2.5]],levels:[{
     grid:['NNNNBB','NNNNBB','NNNNBB','NNNNRR','NNNNRR'],
-    rooms:{N:{n:'Sewing nook',f:'s_washday',w:'s_washday'},B:{n:'Bedroom',f:'s_nursery',w:'s_nursery'},R:{n:'Reading corner',f:'s_books',w:'s_books'}},
+    rooms:{N:{n:'Sewing nook',f:'s_rtailor',w:'s_rtailor'},B:{n:'Bedroom',f:'s_rtailor',w:'s_rtailor'},R:{n:'Reading corner',f:'s_rtailor',w:'s_books'}},
     doors:[[3,1,'e'],[3,3,'e']],open:[],rugs:[]}]},
   layout:[
-    {k:'sewing',g:[1.15,.55]},{k:'fabric',g:[2.65,.45]},{k:'bookcase',g:[3.5,.4]},{k:'clothesline',wl:[2,0,'n'],y:1.95},
-    {k:'mannequin',g:[.5,4.25],c:0xFFE27A},{k:'braidrug',g:[2.3,2.9]},{k:'foldtable',g:[2.2,4.35]},{k:'soaplamp',g:[3.4,4.5]},
-    {k:'win_washday',wl:[0,4.1,'w'],y:1.9},{k:'win_washday',wl:[0,.9,'w'],y:1.9},{k:'lintbunny',g:[1.5,3.4]},
-    {k:'readchair',g:[5.2,4.3],r:-Math.PI/2},{k:'sockrug',g:[4.75,4.3]},{k:'rattlebox',g:[5.45,3.45]},{k:'wallshelf',wl:[5,0,'n'],y:1.65},
-    {k:'hamperbed',g:[5.25,1.0]},{k:'growthchart',wl:[4.45,0,'n'],y:1.5},{k:'sockbed',g:[4.65,2.5]},{k:'starmobile',g:[5.4,2.4]},{k:'win_nursery',wl:[5.4,0,'n'],y:1.9}
+    // sewing corner along the back wall
+    {k:'stlamp',g:[.4,.35]},{k:'win_rtailor',wl:[0,.95,'w'],y:1.95},
+    {k:'stsewing',g:[1.3,.3]},{k:'stpinstool',g:[1.3,.95]},{k:'clothesline',wl:[1.3,0,'n'],y:2.05},
+    {k:'stdrawers',g:[2.5,.3]},{k:'sthoops',wl:[2.5,0,'n'],y:1.8},{k:'stfern',g:[3.55,.38]},
+    // the armchair corner
+    {k:'strug',g:[2.0,3.9]},{k:'starmchair',g:[1.3,3.9],r:Math.PI/2},{k:'stspool',g:[2.15,3.9]},
+    {k:'mannequin',g:[.5,4.55],c:0xFFE27A},{k:'win_rtailor',wl:[0,3.9,'w'],y:1.95},{k:'stbasket',g:[3.2,4.45]},
+    // bedroom
+    {k:'stbed',g:[5.2,.95]},{k:'win_rtailor',wl:[5.2,0,'n'],y:2.15},{k:'stlamp',g:[4.32,.35]},{k:'sockrug',g:[5.0,2.35]},
+    // reading corner
+    {k:'readchair',g:[5.4,4.15],r:-Math.PI/2},{k:'braidrug',g:[5.0,4.1]},{k:'bankerlamp',g:[5.6,3.3]}
   ],
-  kg:{tailor:[2.3,2.2]},
+  kg:{tailor:[3.3,2.5]},
   lines:{tailor:{hi:['Oh, hello. Mind the pins, there are a few. Just a smidge to your left.','Come in, come in. I was about to put the kettle on. Or a hem.','You caught me with a loose thread. Don’t look. Right, now look, it’s fine.']}}
 };
 HOUSE_DEF.studio={
   n:'Pom & Blush’s Place',
-  blurb:'Two bedrooms, two moods, one living room with a vanity that gets used all night. Pom’s side is loud and Blush’s side is quiet.',
-  door:'groovy',
+  blurb:'Two bedrooms, two moods, one living room with a vanity that gets used all night. Pom’s side is curly cane and loud, Blush’s side is rose paint and quiet.',
+  door:'rhair',
   color:'#C49BFF',
   plan:{W:6,D:6,ext:0xEBDDFF,base:0xFFF1F6,door:[0,3,'w'],arrive:[[.9,3.5]],levels:[{grid:['AAABBB','AAABBB','AAABBB','LLLLLL','LLLLLL','LLLLLL'],
-    rooms:{A:{n:'Pom’s room',f:'s_groovy',w:'s_groovy'},B:{n:'Blush’s studio room',f:'s_studio',w:'s_studio'},L:{n:'Living room',f:'wood',w:'plaster'}},
-    doors:[[1,2,'s'],[4,2,'s']],open:[],rugs:[[1,3,5,5,'candyborder']]}]},
+    rooms:{A:{n:'Pom’s room',f:'s_rhair',w:'s_rhair'},B:{n:'Blush’s studio room',f:'s_rmakeup',w:'s_rmakeup'},L:{n:'Living room',f:'s_rhair',w:'s_rmakeup'}},
+    doors:[[1,2,'s'],[4,2,'s']],open:[],rugs:[]}]},
   layout:[
-    // Pom: loud, round, groovy
-    {k:'bed',g:[2.1,1.0],c:0xFF8FC8},
-    {k:'sunmirror',wl:[2.1,0,'n'],y:1.75},
-    {k:'macrame70',wl:[0,1.4,'w'],y:1.8},
-    {k:'lavalamp',g:[.55,.55]},
-    {k:'discoball',g:[.6,2.45]},
-    {k:'shagrug',g:[1.5,2.0]},
-    {k:'eggchair',g:[2.5,2.3],r:-.5},
-    {k:'recordcrate',g:[.5,1.9],r:Math.PI/2},
-    // Blush: calm, plants and paint
-    {k:'platbed',g:[4.8,1.0],c:0xFFC7D6},
-    {k:'wallplanter',wl:[4.0,0,'n'],y:1.6},
-    {k:'easel',g:[3.6,1.35],r:.5},
-    {k:'studiostool',g:[3.7,2.35]},
-    {k:'splatrug',g:[4.1,1.9]},
-    {k:'fern',g:[5.55,.5]},
-    {k:'brushlamp',g:[5.55,2.4]},
-    {k:'cacti',g:[3.4,.45]},
-    // shared living room
-    {k:'vanity',g:[.5,5.45],r:Math.PI/2,c:0xC49BFF,set:'hair'},
-    {k:'bulbmirror',wl:[0,5.45,'w'],y:1.9,c:0xFF8FC8},
-    {k:'pitsofa',g:[5.1,4.6],r:-Math.PI/2,c:0xFFB347},
-    {k:'zentable',g:[3.9,4.6]},
-    {k:'bonsai',g:[3.9,4.6],y:.38},
-    {k:'hangplanter',g:[.5,4.4]},
-    {k:'paperlantern',g:[1.7,5.5]},
-    {k:'recordplayer',g:[2.9,3.45]},
-    {k:'terrarium',g:[5.5,3.5]}
+    // Pom: cane, curls, a hanging pod and her records
+    {k:'cushbed',g:[1.3,1.0]},{k:'win_rhair',wl:[1.5,0,'n'],y:1.85},{k:'rhlamp',g:[.38,.35]},
+    {k:'rhswing',g:[2.5,.55]},{k:'rhmirror',wl:[0,2.2,'w'],y:1.75},{k:'rhcabinet',g:[.35,2.3],r:Math.PI/2},
+    {k:'rhrug',g:[1.6,2.05]},{k:'recordplayer',g:[2.55,2.45]},
+    // Blush: the easel vanity, rose paint, a quiet bed under her sunset
+    {k:'rmeasel',g:[3.65,.6]},{k:'rmstool',g:[3.65,1.3]},{k:'rmlamp',g:[4.45,.35]},
+    {k:'sleighbed',g:[5.3,1.0],c:0},{k:'rmsunset',wl:[5.3,0,'n'],y:2.05},
+    {k:'rmrug',g:[4.3,2.25]},{k:'rmchest',g:[5.62,2.45],r:-Math.PI/2},{k:'rmpeony',g:[3.35,2.65]},
+    // shared living room: the vanity by the door, a sitting corner that mixes both
+    {k:'vanity',g:[.85,5.05],r:Math.PI/2,c:0xC49BFF,set:'hair'},{k:'rmmirror',wl:[0,5.05,'w'],y:1.95},
+    {k:'rhrug',g:[4.4,4.6]},{k:'rmchaise',g:[5.65,4.6],r:-Math.PI/2},{k:'rmtray',g:[4.5,4.6]},{k:'rhpeacock',g:[3.6,4.6],r:Math.PI/2},
+    {k:'rhlamp',g:[5.6,3.35]},{k:'rmlamp',g:[5.6,5.6]},{k:'rhrush',g:[4.4,5.65]},{k:'rhbasket',g:[3.4,5.55]}
   ],
-  kg:{hair:[2.3,4.3],makeup:[3.0,5.1]},
+  kg:{hair:[2.15,4.3],makeup:[2.2,5.4]},
   lines:{
     hair:{hi:['Okay come in come in, don’t look at the laundry. It’s a look.','Hiii! Blush and I were just arguing about lilac versus lavender. Settle it!','You’re here! Sit on the sofa, I have a mood board and zero patience.']},
     makeup:{hi:['Welcome. The kettle is warm and the afternoon is slow.','Hello. Mind the paint on the stool. It was a good blue once.','Come in. Pom is vibrating, but she means well.']}
@@ -16953,23 +16901,28 @@ HOUSE_DEF.studio={
 };
 HOUSE_DEF.tutti={
   n:'The Sundae Cottage',
-  blurb:'Tutti and the muffin twins live behind the ice-cream cart: a waffle-walled house with a freezer that hums, two small beds side by side and a pebble shelf nobody may touch.',
-  door:'bday',
+  blurb:'Tutti and the muffin twins live behind the ice-cream cart: a soda-fountain kitchen with a freezer that hums, a bunk bed with a climbing frame and a pebble shelf nobody may touch.',
+  door:'rcone',
   color:'#FF9EC4',
   plan:{W:6,D:5,ext:0xFFD98A,base:0xFFF1D6,door:[0,1,'w'],arrive:[[1.05,1.9]],levels:[{
     grid:['KKKBBB','KKKBBB','LLLBBB','LLLTTT','LLLTTT'],
-    rooms:{K:{n:'Kitchen',f:'s_cafe',w:'s_cafe'},L:{n:'Table and sofa',f:'s_bday',w:'s_bday'},B:{n:'The twins’ room',f:'s_nursery',w:'s_nursery'},T:{n:'Tutti’s room',f:'s_fruity',w:'s_fruity'}},
+    rooms:{K:{n:'Soda fountain kitchen',f:'s_rcone',w:'s_rcone'},L:{n:'Parlour',f:'s_rcone',w:'s_rcone'},B:{n:'The twins’ room',f:'s_rscone',w:'s_rcrumb'},T:{n:'Tutti’s room',f:'s_rcone',w:'s_rcone'}},
     doors:[[2,1,'e'],[2,3,'e'],[4,2,'s']],open:['KL'],rugs:[]}]},
   layout:[
-    {k:'retrofridge',g:[.42,.3],c:0xFFC4DD},{k:'cakecounter',g:[1.75,.33]},{k:'stove',g:[2.65,.4]},{k:'potrack',wl:[1.7,0,'n'],y:2.1},
-    {k:'keyrack',wl:[0,2.5,'w'],y:1.5},{k:'win_fruity',wl:[0,3.6,'w'],y:1.9},
-    {k:'bistrotable',g:[1.7,2.9]},{k:'bistrochair',g:[.95,2.9],r:Math.PI/2},{k:'bistrochair',g:[2.45,2.9],r:-Math.PI/2},{k:'bistrochair',g:[1.7,3.6],r:Math.PI},
-    {k:'confettirug',g:[1.9,4.3]},{k:'loveseat',g:[.65,4.4],r:Math.PI/2},{k:'floorcush',g:[2.5,4.5]},{k:'partylamp',g:[.5,3.55]},
-    {k:'kidbed',g:[3.6,.75],c:0x7FB8FF},{k:'kidbed',g:[4.5,.75],c:0xD9C8F5},{k:'cubeshelf',g:[5.55,.7]},{k:'partybanner',wl:[4.1,0,'n'],y:2.0},
-    {k:'playmat',g:[4.4,2.0]},{k:'blockstack',g:[3.7,2.45]},{k:'ringtoss',g:[5.2,2.45]},{k:'balloons',g:[5.6,1.6]},
-    {k:'cakebed',g:[5.1,4.2],r:-Math.PI/2},{k:'lemonrug',g:[4.2,4.1]},{k:'cottonlamp',g:[5.6,3.4]},{k:'cherrypoufs',g:[3.7,4.55]}
+    // soda fountain kitchen
+    {k:'tc_swirl',g:[.45,.32]},{k:'tc_counter',g:[1.45,.3]},{k:'tc_freezer',g:[2.5,.34]},{k:'tc_shelf',wl:[1.45,0,'n'],y:2.0},
+    {k:'tc_stool',g:[1.15,.98]},{k:'tc_stool',g:[1.8,.98]},
+    // parlour: the booth by the window
+    {k:'win_rcone',wl:[0,3.6,'w'],y:1.95},{k:'keyrack',wl:[0,2.45,'w'],y:1.5},
+    {k:'tc_rug',g:[1.35,3.7]},{k:'tc_booth',g:[.35,3.6],r:Math.PI/2},{k:'bistrotable',g:[1.05,3.6]},
+    {k:'tc_lamp',g:[.35,4.65]},{k:'tc_cherry',g:[2.55,4.55]},{k:'tc_bowl',g:[2.45,2.45]},
+    // the twins: Scone's climbing-frame bunk and kit locker, Crumb's pebble shelf and magnifier lamp
+    {k:'sc_bunk',g:[5.1,.95]},{k:'cr_shelf',g:[3.6,.3]},{k:'sc_ribbons',wl:[3.6,0,'n'],y:1.75},{k:'cr_buttons',wl:[4.2,0,'n'],y:1.6},
+    {k:'cr_rug',g:[4.2,1.85]},{k:'sc_locker',g:[5.65,2.45],r:-Math.PI/2},{k:'cr_lamp',g:[3.35,2.7]},
+    // Tutti's room
+    {k:'tc_bed',g:[5.1,4.25],r:-Math.PI/2},{k:'tc_lamp',g:[3.35,4.65]},{k:'lemonrug',g:[4.0,4.1]}
   ],
-  kg:{cone:[1.75,1.6],scone:[2.5,1.7],crumb:[1.7,4.1]},
+  kg:{cone:[2.3,2.1],scone:[3.9,1.55],crumb:[1.8,3.65]},
   lines:{
     cone:{hi:['Sweet pea! Come in, come in, mind the sprinkles.','Oh, you caught me mid-scoop! Hello, my loves. Have you eaten?','Hush a second, I’m listening for the twins. Okay, hi! Sit, sit.']},
     scone:{hi:['You’re here! Race you to the table! Three, two, oh, you’re not ready.','Hi hi hi! Look, I’ve got a plaster AND a cap! Watch this!','Aunt Tutti says no running indoors. I’m jogging very fast.']},

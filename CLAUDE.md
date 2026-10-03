@@ -499,3 +499,10 @@ remembered per device in `localStorage['r42petnote:'+room]`, with "Write back" â
 `state.visits[pid]` every 2 min while open; `togetherCheck`: when your person's stamp is under 2.5 min old, a toast "<name> is here
 too!", the pet dances and both heads cheer, once per 3-hour window). `partnerId()` = the other head's person.
 Also in this round: house interiors refurnished with each resident's own set, and a second character polish pass (see git log).
+- Houses refurnished (v66): all 23 `HOUSE_DEF` interiors now use their residents' own sets (furniture, `s_r<key>` tiles,
+  `win_r<key>` windows, `door:'r<key>'`), shared homes give each resident a room in their set and mix the shared rooms. Sources
+  in `.claude/town/houses/<id>_home.js` (gitignored), swapped into index.html. Things found: a layout item's `c` is a TINTS index,
+  not a hex (old houses passed hex values, so tints were random); the grown pet needs ~1 clear cell (1.25) to pass furniture and
+  each resident blocks ~1.7 cells, so rooms must stay sparser than they look; interior walls are knee-high, so wall pieces only
+  work on the outer north/west walls; `clearKeepers` pushes a counter/vanity in front of a resident towards the camera.
+  `tools/dev/town/hview.js <houseId> [outPrefix]` previews a house (fixed: it had an undefined ROOT).
