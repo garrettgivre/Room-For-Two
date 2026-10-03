@@ -11918,10 +11918,18 @@ function tmHome(){const g=G(),Bd=M(0xFFF6EA,{roughness:.55}),Wh=M(0xFFFFFF,{roug
 let tm=null,tmLast=0;
 function tmInit(){if(tm)return tm;try{const cv=$('#tmc'),R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});R.outputEncoding=THREE.sRGBEncoding;const sc=new THREE.Scene();
     const et=ctex(256,128,(x,w,h)=>{const q=x.createLinearGradient(0,0,0,h);q.addColorStop(0,'#fff');q.addColorStop(.45,'#EAF6FF');q.addColorStop(.55,'#fff');q.addColorStop(1,'#CDEFB0');x.fillStyle=q;x.fillRect(0,0,w,h)},null,1);et.mapping=THREE.EquirectangularReflectionMapping;sc.environment=et;
-    sc.add(new THREE.AmbientLight(0xffffff,.55));const dl=new THREE.DirectionalLight(0xFFF1DE,2.9);dl.position.set(-11,11,1.5);dl.castShadow=true;Object.assign(dl.shadow.camera,{left:-15,right:15,top:15,bottom:-15,near:1,far:60});dl.shadow.mapSize.set(...(matchMedia('(pointer:coarse)').matches?[1024,1024]:[2048,2048]));dl.shadow.bias=-.0005;dl.shadow.normalBias=.02;R.shadowMap.enabled=true;sc.add(dl);sc.userData.lighting={exposure:1.08,ao:[],points:[],get sh(){const e=sc.environment;if(!e||!e._sh)return null;const k=(tm&&tm.todK)||[.5,.5,.5],key=k.map(v=>v.toFixed(3)).join();if(e._shKey!==key){e._shKey=key;e._shT=e._sh.map((v,i)=>v*k[i%3])}return e._shT}};const cam=new THREE.PerspectiveCamera(30,1,4,260);
+    sc.add(new THREE.AmbientLight(0xffffff,.55));const dl=new THREE.DirectionalLight(0xFFF1DE,2.9);dl.position.set(-11,11,1.5);dl.castShadow=true;Object.assign(dl.shadow.camera,{left:-15,right:15,top:15,bottom:-15,near:1,far:60});dl.shadow.mapSize.set(...(matchMedia('(pointer:coarse)').matches?[1024,1024]:[2048,2048]));dl.shadow.bias=-.0005;dl.shadow.normalBias=.02;R.shadowMap.enabled=true;sc.add(dl);sc.userData.lighting={exposure:1.08,ao:[],points:[],get sh(){const e=sc.environment;if(!e||!e._sh)return null;const k=(tm&&tm.todK)||[.5,.5,.5],key=k.map(v=>v.toFixed(3)).join();if(e._shKey!==key){e._shKey=key;e._shT=e._sh.map((v,i)=>v*k[i%3])}return e._shT}};const cam=new THREE.PerspectiveCamera(30,1,.3,600);
     R.cull=true;tm={R,sc,cam,root:G(),world:G(),bld:{},bg:{},yaw:-.35,pitch:.7,zoom:.98,tgt:new THREE.Vector3(),tgtTo:new THREE.Vector3(),open:false,arr:false,tool:'move',sel:null,deco:'tree',t:0,ray:new THREE.Raycaster(),ptr:new Map(),signs:[],mk:'world',maps:{}};[TM_W,TM_D]=TM_MAPS.world;
     sc.add(tm.root);tm.root.add(tm.world);tmIsland();return tm}catch(e){console.warn('town',e);return null}}
 const tmRR=(a,b,r,n=12)=>{const P=[];[[a-r,b-r,0],[-(a-r),b-r,1],[-(a-r),-(b-r),2],[a-r,-(b-r),3]].forEach(([cx,cz,q])=>{for(let i=0;i<=n;i++){const t=(q+i/n)*Math.PI/2;P.push([cx+Math.cos(t)*r,cz+Math.sin(t)*r])}});return P};
+// a flat ring between radii r0 and r1 in rings x segs pieces (radii spaced wider further out), lying in the XY plane like CircleGeometry
+function tmRingGeo(r0,r1,rings,segs,pow){const P=[],N=[],U=[],I=[];for(let r=0;r<=rings;r++){const t=Math.pow(r/rings,pow||1),rr=r0+(r1-r0)*t;for(let s_=0;s_<segs;s_++){const a=s_/segs*Math.PI*2;P.push(Math.cos(a)*rr,Math.sin(a)*rr,0);N.push(0,0,1);U.push(s_/segs,t)}}
+  for(let r=0;r<rings;r++)for(let s_=0;s_<segs;s_++){const a=r*segs+s_,b=r*segs+(s_+1)%segs,c=a+segs,d=b+segs;I.push(a,d,b,a,c,d)}return new THREE.BufferGeometry(P,N,U,I)}
+function tmSea(g){const sea=M(0x5CC8E8,{roughness:.25,metalness:.05}),deep=M(0x3FA6D6,{roughness:.3}),sand=M(0xF6DFA8,{roughness:.9});sand.detail=3;
+  const ring=(geo,m,y)=>{const o=add(g,geo,m,0,y,0);o.rotation.x=-Math.PI/2;o.outline=0;o.castShadow=false;return o};
+  ring(tmRingGeo(ISLAND_R-.6,ISLAND_R+2.2,6,120,1),sand,-.02);ring(tmRingGeo(ISLAND_R+2.2,ISLAND_R+9,10,120,1),sea,-.16);ring(tmRingGeo(ISLAND_R+9,260,30,96,1.8),deep,-.17);
+  // a soft white foam line where the sand meets the water
+  const fm=M(0xFFFFFF,{roughness:.6});ring(tmRingGeo(ISLAND_R+2,ISLAND_R+2.45,1,120,1),fm,-.12)}
 // the grass disc in many small pieces (rings x segments): the world-curve bends each vertex, so big triangles would sag below it
 function tmDiscGeo(R,W,D){const rings=26,segs=120,P=[0,0,0],N=[0,0,1],U=[.5,.5],I=[];
   for(let r=1;r<=rings;r++){const rr=R*r/rings;for(let s=0;s<segs;s++){const a=s/segs*Math.PI*2,x=Math.cos(a)*rr,y=Math.sin(a)*rr;P.push(x,y,0);N.push(0,0,1);U.push(x/W+.5,y/D+.5)}}
@@ -11942,7 +11950,7 @@ function tmIsland(){const g=G(),W=TM_W,D=TM_D,RND=tmMk()==='world',rr_=(a,b,r,n)
     for(let n=0;n<240;n++){const px=R()*w,py=R()*h;if(R()<.35){x.fillStyle='rgba(70,160,70,.55)';for(let p=0;p<3;p++){const a=p/3*6.283+.5;x.beginPath();x.arc(px+Math.cos(a)*2,py+Math.sin(a)*2,1.9,0,7);x.fill()}continue}
       x.fillStyle=['#FFFFFF','#FFE66B','#FFB3DA','#D9C2FF'][(R()*4)|0];for(let p=0;p<5;p++){const a=p/5*6.283;x.beginPath();x.arc(px+Math.cos(a)*1.7,py+Math.sin(a)*1.7,1.3,0,7);x.fill()}x.fillStyle='#FFB21F';x.beginPath();x.arc(px,py,1,0,7);x.fill()}
     [[0,0,w,0,0,26],[0,h,w,h,0,h-26],[0,0,0,h,26,0],[w,0,w,h,w-26,0]].forEach(([x0,y0,x1,y1,ex,ey],n)=>{const q=n<2?x.createLinearGradient(0,y0,0,ey):x.createLinearGradient(x0,0,ex,0);q.addColorStop(0,'rgba(40,110,50,.22)');q.addColorStop(1,'rgba(40,110,50,0)');x.fillStyle=q;n<2?x.fillRect(0,Math.min(y0,ey),w,26):x.fillRect(Math.min(x0,ex),0,26,h)})},null,1);
-  const gp0=add(tm.ground,RND?tmDiscGeo(ISLAND_R+.25,TM_W,TM_D):new THREE.PlaneGeometry(TM_W,TM_D,24,24),M(0xffffff,{map:gt,roughness:.9}),0,.006,0);gp0.rotation.x=-Math.PI/2;gp0.outline=0;
+  if(RND)tmSea(tm.ground);const gp0=add(tm.ground,RND?tmDiscGeo(ISLAND_R+.25,TM_W,TM_D):new THREE.PlaneGeometry(TM_W,TM_D,24,24),M(0xffffff,{map:gt,roughness:.9}),0,.006,0);gp0.rotation.x=-Math.PI/2;gp0.outline=0;
   const gt2=ctex(TM_W*32,TM_D*32,(x,w,h)=>{x.clearRect(0,0,w,h);x.strokeStyle='rgba(59,18,115,.28)';x.lineWidth=2;for(let i=0;i<=TM_W;i++){x.beginPath();x.moveTo(i*32,0);x.lineTo(i*32,h);x.stroke()}for(let j=0;j<=TM_D;j++){x.beginPath();x.moveTo(0,j*32);x.lineTo(w,j*32);x.stroke()}},null,1);
   const gp=add(tm.ground,new THREE.PlaneGeometry(TM_W,TM_D),M(0xffffff,{map:gt2,roughness:.9,transparent:true}),0,.012,0);gp.rotation.x=-Math.PI/2;gp.outline=0;gp.visible=false;gp.castShadow=false;tm.grid=gp}
 const tmCX=x=>x-TM_W/2+.5,tmCZ=z=>z-TM_D/2+.5;
@@ -13263,7 +13271,12 @@ function tmDraw(dt){const[W_,H_]=tmSize(),R=tm.R;if(tm.mergeDirty&&!tm.arr&&!tm.
   if(R.__w!==W_||R.__h!==H_){R.setPixelRatio(Math.min(1.5,devicePixelRatio||1));R.setSize(W_,H_,false);R.__w=W_;R.__h=H_;tm.cam.aspect=W_/H_;tm.cam.updateProjectionMatrix()}
   if(tm.zoomTo!=null){tm.zoom+=(tm.zoomTo-tm.zoom)*Math.min(1,dt*4);if(Math.abs(tm.zoomTo-tm.zoom)<.002)tm.zoomTo=null}tm.tgtTo.x=clamp(tm.tgtTo.x,-TM_W/2,TM_W/2);tm.tgtTo.z=clamp(tm.tgtTo.z,-TM_D/2,TM_D/2);
   {const L=Math.hypot(tm.tgtTo.x,tm.tgtTo.z),mx=ISLAND_R-2;if(tmMk()==='world'&&L>mx){tm.tgtTo.x*=mx/L;tm.tgtTo.z*=mx/L}}
-  vlerp(tm.tgt,tm.tgtTo,Math.min(1,dt*4));const d=tm.focus?Math.min(9,tmFit()*.45):tmFit()*tm.zoom;if(tmMk()==='world'&&tm.cam.fov!==50){tm.cam.fov=50;tm.cam.updateProjectionMatrix()}const cp=Math.cos(tm.pitch),c=tm.cam;tm.off=(tm.off??0)+((tm.focus?.75:0)-(tm.off??0))*Math.min(1,dt*4);const ox=tm.tgt.x+Math.sin(tm.yaw)*tm.off,oz=tm.tgt.z+Math.cos(tm.yaw)*tm.off;c.position.set(ox+Math.sin(tm.yaw)*cp*d,Math.sin(tm.pitch)*d,oz+Math.cos(tm.yaw)*cp*d);c.lookAt(new THREE.Vector3(ox,0,oz));
+  vlerp(tm.tgt,tm.tgtTo,Math.min(1,dt*4));const d=tm.focus?Math.min(9,tmFit()*.45):tmFit()*tm.zoom;if(tmMk()==='world'){const nr=clamp(d*.06,.05,4);if(tm.cam.fov!==50||Math.abs(tm.cam.near-nr)>nr*.25){tm.cam.fov=50;tm.cam.near=nr;tm.cam.far=600;tm.cam.updateProjectionMatrix()}}// keep the camera out of buildings: if it would sit inside one (low and close), tilt it up just enough to clear the roof
+  // keep the view of the pet clear: tilt up (just enough) until the line from the camera to the target passes over every roof
+  let pit=tm.pitch;if(tmMk()==='world'&&tw.grid&&!tm.focus){const G_=tw.grid,topAt=(x,z)=>{const [gi,gj]=twCell(x,z);if(gi<0||gj<0||gi>=G_.W||gj>=G_.D)return 0;const bk=G_.own.get(gj*G_.W+gi);return bk&&tm.bld[bk]?((tm.bld[bk].userData.top||{}).y||1.5)+.35:G_.block[gj*G_.W+gi]?1:0};
+    for(let it=0;it<16&&pit<1.35;it++){const hd=Math.cos(pit)*d,hc=Math.sin(pit)*d,n=Math.ceil(hd/.4);let ok=true;
+      for(let q=1;q<=n&&ok;q++){const f=q/n,x=tm.tgt.x+Math.sin(tm.yaw)*hd*f,z=tm.tgt.z+Math.cos(tm.yaw)*hd*f;if(f>.08&&topAt(x,z)>hc*f+.2)ok=false}if(ok)break;pit+=.06}}
+  const cp=Math.cos(pit),c=tm.cam;tm.off=(tm.off??0)+((tm.focus?.75:0)-(tm.off??0))*Math.min(1,dt*4);const ox=tm.tgt.x+Math.sin(tm.yaw)*tm.off,oz=tm.tgt.z+Math.cos(tm.yaw)*tm.off;c.position.set(ox+Math.sin(tm.yaw)*cp*d,Math.sin(pit)*d,oz+Math.cos(tm.yaw)*cp*d);c.lookAt(new THREE.Vector3(ox,0,oz));
   if(tmMk()==='world'){const k=clamp(.8/(d*d),.0002,.016);R.curve=tm.curveP=[c.position.x,c.position.z,k,k*.12,-Math.sin(tm.yaw),-Math.cos(tm.yaw)];
     tm.far=d>26;if(tm.dl)tm.dl.castShadow=!tm.far;
     if(tm.dl&&tm.dlBase){tm.dl.position.set(tm.dlBase[0]+tm.tgt.x,tm.dlBase[1],tm.dlBase[2]+tm.tgt.z);tm.dl.userData.tgt={x:tm.tgt.x,y:0,z:tm.tgt.z};const e=clamp(d*.55,9,30);Object.assign(tm.dl.shadow.camera,{left:-e,right:e,top:e,bottom:-e})}}else R.curve=null;
@@ -14084,7 +14097,8 @@ function twGrid(){const m=tmM();if(!m)return null;const key=JSON.stringify(m.b)+
   const W=TM_W,D=TM_D,block=new Uint8Array(W*D),road=new Uint8Array(W*D);tmTakenB(m).forEach(c=>{const [x,z]=c.split(',').map(Number);if(x>=0&&z>=0&&x<W&&z<D)block[z*W+x]=1});
   m.d.forEach(q=>{const D_=TM_DECOR[q[0]];if(!D_||q[0]==='flowers'||q[0]==='lot')return;const [w,d]=D_.sz||[1,1];for(let i=0;i<w;i++)for(let j=0;j<d;j++){const x=q[1]+i,z=q[2]+j;if(x<W&&z<D)block[z*W+x]=1}});
   m.r.forEach(([x,z])=>{if(x>=0&&z>=0&&x<W&&z<D){road[z*W+x]=1;block[z*W+x]=0}});
-  tw.grid={W,D,block,road};tw.gkey=key;tw.doors={};return tw.grid}
+  const own=new Map();for(const k in m.b){const [x,z,r]=m.b[k],[w,d]=tmFoot(k,r);for(let i=0;i<w;i++)for(let j=0;j<d;j++)own.set((z+j)*W+x+i,k)}
+  tw.grid={W,D,block,road,own};tw.gkey=key;tw.doors={};return tw.grid}
 const twCell=(x,z)=>[Math.floor(x+TM_W/2),Math.floor(z+TM_D/2)],twPos=(i,j)=>[i-TM_W/2+.5,j-TM_D/2+.5];
 function twNearestFree(G,i,j){if(i>=0&&j>=0&&i<G.W&&j<G.D&&!G.block[j*G.W+i])return[i,j];for(let r=1;r<8;r++)for(let a=-r;a<=r;a++)for(const [di,dj] of [[a,-r],[a,r],[-r,a],[r,a]]){const x=i+di,z=j+dj;if(x>=0&&z>=0&&x<G.W&&z<G.D&&!G.block[z*G.W+x])return[x,z]}return[i,j]}
 // A* on the grid (4 directions, streets cost less), then straight-line smoothing
@@ -16342,7 +16356,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=58;
+const APP_V=59;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

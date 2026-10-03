@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v58** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v58'` in `sw.js`; bump both for anything
+**Current build: v59** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v59'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 54 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -392,3 +392,9 @@ Garrett wants residents walking around a real town (an overworld after all), com
 - v58: the map camera works like the room's (Garrett asked): one finger orbits (turn + tilt, pitch .22-1.3, same rates as the room),
   two fingers pinch to zoom, twist to turn and drag to pan (`tmPanPx`; panning stops following the pet, tapping to walk resumes it),
   fov 50 like the room, no automatic tilt (it starts at .6 when you step outside). The world-curve is unchanged.
+- v59 (from Garrett's phone screenshots): zooming in close showed grey: the map camera's near plane was 4 units; it now scales with the
+  distance (`near=clamp(d*.06,.05,4)`, far 600). He shouldn't see the island's edge ("wrap around like Animal Crossing"): the island now
+  sits in a sea (`tmSea`: a sand beach ring, a foam line, a shallow and a deep sea ring out to radius 260, built with `tmRingGeo` in many
+  pieces so the world-curve rolls it away into the horizon). The camera keeps the pet in view: in `tmDraw` it tilts up just enough that
+  the line from the camera to the target clears every roof (`tw.grid.own` maps cells to buildings, heights from `userData.top`).
+  Note: flat ring/disc geometry must wind so its front faces +z before the -90° x rotation (a wrong winding gets back-face culled).
