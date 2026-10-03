@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v55** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v55'` in `sw.js`; bump both for anything
+**Current build: v56** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v56'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 54 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -51,7 +51,7 @@ themselves instead of saving; bump it when you add or reshape shared state that 
   residents walk their schedules and show as portrait pins when far, the Places wheel hops anywhere.
 
 **Open items / what to do next**
-1. **Map performance on phones is the top issue.** Garrett reported heavy lag at v54. v55 added culling, low-detail town geometry,
+1. **Map performance on phones** (v56 fixed the worst of it, see the v56 section; verify on a phone). Garrett reported heavy lag at v54. v55 added culling, low-detail town geometry,
    merged static meshes with vertex colours and a preloading progress bar, but it hasn't been checked on a phone. Zoomed out still
    draws ~1450 meshes (many small animated pieces, per-texture signs/windows). Ideas: draw the far view at half rate and without
    shadows/outlines, lower `GEO_LOD` further, fewer decorations, merge animated pieces per building, measure with `tm.R.drawn`.
@@ -373,3 +373,16 @@ Garrett wants residents walking around a real town (an overworld after all), com
 - Town map: buildings/decorations/streets are built at low geometry detail (`GEO_LOD`/`setGeoLod`, `tmLod` wrapper around `tmShop`, `tmHome`, `tmDecor`, `tmIsland`; sphere/cylinder/lathe segments and rounded-box subdivisions scale with it, cache keys include it). Decorations merge into a few meshes (single objects again while arranging). `tmMergeWorld` merges every static opaque mesh into one mesh per 12-cell area × surface kind × outline × shadow (colours per vertex; textured ones per texture), hiding the originals (taps still hit them); animated pieces are merged into themselves first; arranging unmerges (`tmUnmerge`), changes set `tm.mergeDirty`. Pixel ratio capped at 1.5, 1024 shadow map on touch devices, 5 full-detail residents (baked like keepers; townsfolk motion is pre-worked out in idle time after load).
 - The whole town is built behind the startup loader with a progress bar (`preloadTown`, `finishLoad` → `finishLoad2`).
 - Measured on software GL: island ~2M → ~0.94M vertices, street view draws ~420 of ~1700 meshes. Still ~1450 drawn zoomed out: the remaining cost is many small animated pieces and per-texture sign/window meshes. Next steps if it's still slow on phones: render the far view at half rate or without shadows, skip outlines when zoomed far out, lower `GEO_LOD` further, fewer decorations, and test on a real phone.
+
+## Map fixes (v56)
+- The land looked lower than everything else: the grass was one big disc of long triangles, and the world-curve bends vertices, so
+  big triangles sagged below the true curve while the small pieces of paths/buildings followed it. The grass is now a tessellated disc
+  (`tmDiscGeo`, 26 rings x 120 segments). Anything big and flat on the curved map needs enough vertices.
+- Performance, measured on software GL after the town is built: street ~19 ms, mid ~13-19 ms, far ~20 ms per frame (v55 had
+  multi-second frames). Causes found: merged town meshes *receiving* shadows was pathologically slow (merged pieces now
+  `receiveShadow=false`; the ground, pet and residents still receive, so shadows still fall on the ground); merged meshes are split
+  into batches under 60k vertices (16-bit indices, better culling); zoomed far out (`tm.far`, camera distance > 26) the sun casts
+  no shadows and the map redraws every other frame unless the camera moves (`tmTick`).
+- Known: building a resident's full model + bake costs ~50-85 ms on software GL (a short hitch the first time someone walks into view;
+  townsfolk bakes are pre-warmed in idle time after load). Any `tmSync` (e.g. a logo image loading while the map is closed) unmerges and
+  the next frame re-merges (~0.4 s), which only happens while the map isn't on screen.

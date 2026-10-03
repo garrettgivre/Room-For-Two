@@ -11922,6 +11922,12 @@ function tmInit(){if(tm)return tm;try{const cv=$('#tmc'),R=new THREE.WebGLRender
     R.cull=true;tm={R,sc,cam,root:G(),world:G(),bld:{},bg:{},yaw:-.35,pitch:.7,zoom:.98,tgt:new THREE.Vector3(),tgtTo:new THREE.Vector3(),open:false,arr:false,tool:'move',sel:null,deco:'tree',t:0,ray:new THREE.Raycaster(),ptr:new Map(),signs:[],mk:'world',maps:{}};[TM_W,TM_D]=TM_MAPS.world;
     sc.add(tm.root);tm.root.add(tm.world);tmIsland();return tm}catch(e){console.warn('town',e);return null}}
 const tmRR=(a,b,r,n=12)=>{const P=[];[[a-r,b-r,0],[-(a-r),b-r,1],[-(a-r),-(b-r),2],[a-r,-(b-r),3]].forEach(([cx,cz,q])=>{for(let i=0;i<=n;i++){const t=(q+i/n)*Math.PI/2;P.push([cx+Math.cos(t)*r,cz+Math.sin(t)*r])}});return P};
+// the grass disc in many small pieces (rings x segments): the world-curve bends each vertex, so big triangles would sag below it
+function tmDiscGeo(R,W,D){const rings=26,segs=120,P=[0,0,0],N=[0,0,1],U=[.5,.5],I=[];
+  for(let r=1;r<=rings;r++){const rr=R*r/rings;for(let s=0;s<segs;s++){const a=s/segs*Math.PI*2,x=Math.cos(a)*rr,y=Math.sin(a)*rr;P.push(x,y,0);N.push(0,0,1);U.push(x/W+.5,y/D+.5)}}
+  const v=(r,s)=>r===0?0:1+(r-1)*segs+((s%segs)+segs)%segs;
+  for(let s=0;s<segs;s++)I.push(0,v(1,s),v(1,s+1));for(let r=1;r<rings;r++)for(let s=0;s<segs;s++){const a=v(r,s),b=v(r,s+1),c=v(r+1,s),d=v(r+1,s+1);I.push(a,c,d,a,d,b)}
+  return new THREE.BufferGeometry(P,N,U,I)}
 function tmIsland(){const g=G(),W=TM_W,D=TM_D,RND=tmMk()==='world',rr_=(a,b,r,n)=>RND?tmRR(a,a,a,n*4):tmRR(a,b,r,n);tm.ground=G();tm.root.add(tm.ground);
   {const m=flat(g,rr_((W+.7)/2,(D+.7)/2,.9,10),.12,M(0xF3E7C9,{roughness:.9}),0,-.13,0);m.rotation.x=-Math.PI/2;ol(m,.02)}
   {const m=flat(g,rr_((W+.5)/2-.1,(D+.5)/2,.8,10),.8,M(0xDDA36B,{roughness:.95}),0,-.93,0);m.rotation.x=-Math.PI/2;ol(m,.02);m.castShadow=false}
@@ -11936,7 +11942,7 @@ function tmIsland(){const g=G(),W=TM_W,D=TM_D,RND=tmMk()==='world',rr_=(a,b,r,n)
     for(let n=0;n<240;n++){const px=R()*w,py=R()*h;if(R()<.35){x.fillStyle='rgba(70,160,70,.55)';for(let p=0;p<3;p++){const a=p/3*6.283+.5;x.beginPath();x.arc(px+Math.cos(a)*2,py+Math.sin(a)*2,1.9,0,7);x.fill()}continue}
       x.fillStyle=['#FFFFFF','#FFE66B','#FFB3DA','#D9C2FF'][(R()*4)|0];for(let p=0;p<5;p++){const a=p/5*6.283;x.beginPath();x.arc(px+Math.cos(a)*1.7,py+Math.sin(a)*1.7,1.3,0,7);x.fill()}x.fillStyle='#FFB21F';x.beginPath();x.arc(px,py,1,0,7);x.fill()}
     [[0,0,w,0,0,26],[0,h,w,h,0,h-26],[0,0,0,h,26,0],[w,0,w,h,w-26,0]].forEach(([x0,y0,x1,y1,ex,ey],n)=>{const q=n<2?x.createLinearGradient(0,y0,0,ey):x.createLinearGradient(x0,0,ex,0);q.addColorStop(0,'rgba(40,110,50,.22)');q.addColorStop(1,'rgba(40,110,50,0)');x.fillStyle=q;n<2?x.fillRect(0,Math.min(y0,ey),w,26):x.fillRect(Math.min(x0,ex),0,26,h)})},null,1);
-  const gp0=add(tm.ground,RND?new THREE.CircleGeometry(ISLAND_R+.25,96):new THREE.PlaneGeometry(TM_W,TM_D),M(0xffffff,{map:gt,roughness:.9}),0,.006,0);if(RND)gp0.scale.set((ISLAND_R+.25)*2/TM_W>0?1:1,1,1);gp0.rotation.x=-Math.PI/2;gp0.outline=0;
+  const gp0=add(tm.ground,RND?tmDiscGeo(ISLAND_R+.25,TM_W,TM_D):new THREE.PlaneGeometry(TM_W,TM_D,24,24),M(0xffffff,{map:gt,roughness:.9}),0,.006,0);gp0.rotation.x=-Math.PI/2;gp0.outline=0;
   const gt2=ctex(TM_W*32,TM_D*32,(x,w,h)=>{x.clearRect(0,0,w,h);x.strokeStyle='rgba(59,18,115,.28)';x.lineWidth=2;for(let i=0;i<=TM_W;i++){x.beginPath();x.moveTo(i*32,0);x.lineTo(i*32,h);x.stroke()}for(let j=0;j<=TM_D;j++){x.beginPath();x.moveTo(0,j*32);x.lineTo(w,j*32);x.stroke()}},null,1);
   const gp=add(tm.ground,new THREE.PlaneGeometry(TM_W,TM_D),M(0xffffff,{map:gt2,roughness:.9,transparent:true}),0,.012,0);gp.rotation.x=-Math.PI/2;gp.outline=0;gp.visible=false;gp.castShadow=false;tm.grid=gp}
 const tmCX=x=>x-TM_W/2+.5,tmCZ=z=>z-TM_D/2+.5;
@@ -11990,15 +11996,17 @@ function tmMergeWorld(){if(!tm||tm.arr||tm.pending)return;tmUnmerge();tm.mergeDi
       e=mt.emissive||{r:0,g:0,b:0},key=mt.map?'m'+(mid.get(mt.map)||(mid.set(mt.map,++mn),mn))+'|'+[mt.roughness*5,(mt.emissiveIntensity||0)*4,mt.basic?1:0,mt.side|0].map(v=>Math.round(v)).join(','):[mt.roughness*5,mt.metalness*3,e.r*4,e.g*4,e.b*4,(mt.emissiveIntensity||0)*4,mt.detail|0,mt.side|0,mt.basic?1:0].map(v=>Math.round(v)).join(','),
       K=ci+','+cj+'|'+key+'|'+ob+'|'+(m.castShadow?1:0)+(m.receiveShadow?1:0);let g=groups.get(K);if(!g)groups.set(K,g={mt,ob,cs:m.castShadow,rs:m.receiveShadow,vc:!mt.map,list:[]});g.list.push(m)}));
   const G0=G(),done=[];
-  groups.forEach(g=>{if(g.list.length<2)return;const P=[],N=[],U=[],C=[],I=[];let base=0;
+  // split each group into batches under 16-bit index range (and smaller pieces cull better)
+  const batches=[];groups.forEach(g=>{if(g.list.length<2)return;let cur=[],n=0;g.list.forEach(m=>{const v=m.geometry.pos.length/3;if(n+v>60000&&cur.length){batches.push(Object.assign({},g,{list:cur}));cur=[];n=0}cur.push(m);n+=v});if(cur.length>1||(cur.length&&batches.length))batches.push(Object.assign({},g,{list:cur}))});
+  batches.forEach(g=>{if(g.list.length<1)return;const P=[],N=[],U=[],C=[],I=[];let base=0;
     g.list.forEach(m=>{const geo=m.geometry,p=geo.pos,n=geo.nrm,a=m.matrixWorld,col=m.material.color;
       const a00=a[0],a01=a[1],a02=a[2],a10=a[4],a11=a[5],a12=a[6],a20=a[8],a21=a[9],a22=a[10],det=a00*(a11*a22-a12*a21)-a01*(a10*a22-a12*a20)+a02*(a10*a21-a11*a20),iv=1/(det||1);
       const c=[(a11*a22-a12*a21)*iv,-(a10*a22-a12*a20)*iv,(a10*a21-a11*a20)*iv,-(a01*a22-a02*a21)*iv,(a00*a22-a02*a20)*iv,-(a00*a21-a01*a20)*iv,(a01*a12-a02*a11)*iv,-(a00*a12-a02*a10)*iv,(a00*a11-a01*a10)*iv];
       for(let i=0;i<p.length;i+=3){const x=p[i],y=p[i+1],z=p[i+2];P.push(a[0]*x+a[4]*y+a[8]*z+a[12],a[1]*x+a[5]*y+a[9]*z+a[13],a[2]*x+a[6]*y+a[10]*z+a[14]);
         const nx=n[i],ny=n[i+1],nz=n[i+2],X=c[0]*nx+c[3]*ny+c[6]*nz,Y=c[1]*nx+c[4]*ny+c[7]*nz,Z=c[2]*nx+c[5]*ny+c[8]*nz,l=Math.hypot(X,Y,Z)||1;N.push(X/l,Y/l,Z/l);if(g.vc)C.push(col.r,col.g,col.b)}
       for(let i=0;i<geo.uv.length;i++)U.push(geo.uv[i]);const flip=det<0;for(let i=0;i<geo.idx.length;i+=3)I.push(geo.idx[i]+base,geo.idx[flip?i+2:i+1]+base,geo.idx[flip?i+1:i+2]+base);base+=p.length/3});
-    const geo=new THREE.BufferGeometry(P,N,U,I);let mt=g.mt;if(g.vc){geo.col=new Float32Array(C);const o=g.mt;mt=M(0xffffff,{roughness:o.roughness,metalness:o.metalness});if(o.emissive)mt.emissive.copy(o.emissive);mt.emissiveIntensity=o.emissiveIntensity||0;mt.detail=o.detail|0;mt.side=o.side|0;mt.basic=o.basic;mt.rim=o.rim||0}
-    const mm=add(G0,geo,mt,0,0,0);mm.outline=g.ob;mm.castShadow=g.cs;mm.receiveShadow=g.rs;g.list.forEach(m=>{m.visible=false;done.push(m)})});
+    const geo=new THREE.BufferGeometry(P,N,U,I);if(base>65535)geo.idx=new Uint32Array(I);let mt=g.mt;if(g.vc){geo.col=new Float32Array(C);const o=g.mt;mt=M(0xffffff,{roughness:o.roughness,metalness:o.metalness});if(o.emissive)mt.emissive.copy(o.emissive);mt.emissiveIntensity=o.emissiveIntensity||0;mt.detail=o.detail|0;mt.side=o.side|0;mt.basic=o.basic;mt.rim=o.rim||0}
+    const mm=add(G0,geo,mt,0,0,0);mm.outline=g.ob;mm.castShadow=g.cs;mm.receiveShadow=false;g.list.forEach(m=>{m.visible=false;done.push(m)})});
   tm.world.add(G0);tm.mergedG=G0;tm.mergedList=done}
 const tmLod=f=>function(...a){const o=GEO_LOD;setGeoLod(.45);try{return f.apply(this,a)}finally{setGeoLod(o)}};
 tmShop=tmLod(tmShop);tmHome=tmLod(tmHome);tmDecor=tmLod(tmDecor);tmIsland=tmLod(tmIsland);
@@ -13256,13 +13264,16 @@ function tmDraw(dt){const[W_,H_]=tmSize(),R=tm.R;if(tm.mergeDirty&&!tm.arr&&!tm.
   {const L=Math.hypot(tm.tgtTo.x,tm.tgtTo.z),mx=ISLAND_R-2;if(tmMk()==='world'&&L>mx){tm.tgtTo.x*=mx/L;tm.tgtTo.z*=mx/L}}
   vlerp(tm.tgt,tm.tgtTo,Math.min(1,dt*4));const d=tm.focus?Math.min(9,tmFit()*.45):tmFit()*tm.zoom;if(tmMk()==='world'){const u=clamp((d-6)/(70-6),0,1);tm.pitch=.34+.8*Math.pow(u,.55);const fv=46-16*Math.pow(u,.5);if(Math.abs(tm.cam.fov-fv)>.05){tm.cam.fov=fv;tm.cam.updateProjectionMatrix()}}const cp=Math.cos(tm.pitch),c=tm.cam;tm.off=(tm.off??0)+((tm.focus?.75:0)-(tm.off??0))*Math.min(1,dt*4);const ox=tm.tgt.x+Math.sin(tm.yaw)*tm.off,oz=tm.tgt.z+Math.cos(tm.yaw)*tm.off;c.position.set(ox+Math.sin(tm.yaw)*cp*d,Math.sin(tm.pitch)*d,oz+Math.cos(tm.yaw)*cp*d);c.lookAt(new THREE.Vector3(ox,0,oz));
   if(tmMk()==='world'){const k=clamp(.8/(d*d),.0002,.016);R.curve=tm.curveP=[c.position.x,c.position.z,k,k*.12,-Math.sin(tm.yaw),-Math.cos(tm.yaw)];
+    tm.far=d>26;if(tm.dl)tm.dl.castShadow=!tm.far;
     if(tm.dl&&tm.dlBase){tm.dl.position.set(tm.dlBase[0]+tm.tgt.x,tm.dlBase[1],tm.dlBase[2]+tm.tgt.z);tm.dl.userData.tgt={x:tm.tgt.x,y:0,z:tm.tgt.z};const e=clamp(d*.55,9,30);Object.assign(tm.dl.shadow.camera,{left:-e,right:e,top:e,bottom:-e})}}else R.curve=null;
   tm.cl&&tm.cl.forEach(p=>p.rotation.y=tm.t*p.userData.sp);tm.mills&&tm.mills.forEach(o=>o.userData.anim(tm.t));tm.anims.forEach(o=>{try{o.userData.anim(tm.t)}catch(_){}});const so=tmObj(tm.sel);if(so)so.position.y=.25+Math.sin(tm.t*5)*.06;
   R.render(tm.sc,c);return[c,W_,H_]}
 const tmCurveY=(x,z)=>{const P=tm.curveP;if(!P)return 0;const dx=x-P[0],dz=z-P[1],f=dx*P[4]+dz*P[5],sd=-dx*P[5]+dz*P[4];return P[2]*f*f+P[3]*sd*sd};
 function tmFrame(dt){const[c,W_,H_]=tmDraw(dt),v=new THREE.Vector3(),wh=$('#tmWheel'),card=!$('#tmCard').hidden,far=!tm.focus&&tm.zoom>.3&&wh.hidden&&!card;{const pb=$('#tmWheelBtn'),hb=!wh.hidden||card||tm.arr;if(pb&&pb.hidden!==hb)pb.hidden=hb}if(tm.arr&&!wh.hidden)wh.hidden=true;$('#tmLab').querySelectorAll('.tml').forEach(b=>{if(b.dataset.wx!=null){v.set(+b.dataset.wx,1.2-tmCurveY(+b.dataset.wx,+b.dataset.wz),+b.dataset.wz).project(c);b.style.transform=`translate(${(v.x*.5+.5)*W_}px,${(-v.y*.5+.5)*H_}px) translate(-50%,-100%)`;b.style.visibility=far&&v.z<1?'visible':'hidden';return}const o=tm.bld[b.dataset.k];if(!o)return;const T=o.userData.top||{y:1};v.set(o.position.x,(T.y||1)+.5+o.position.y-tmCurveY(o.position.x,o.position.z),o.position.z).project(c);
     b.style.transform=`translate(${(v.x*.5+.5)*W_}px,${(-v.y*.5+.5)*H_}px) translate(-50%,-100%)`;b.style.visibility=v.z<1?'visible':'hidden'})}
-function tmTick(ts){if(!tm||!tm.open)return;requestAnimationFrame(tmTick);const dt=Math.min(.05,(ts-tmLast)/1000);tmLast=ts;tm.t+=dt;if($('#tmPop').classList.contains('gen'))return;tmPump(1);twTick(dt,tm.t);tmFrame(dt)}
+function tmTick(ts){if(!tm||!tm.open)return;requestAnimationFrame(tmTick);let dt=Math.min(.05,(ts-tmLast)/1000);tmLast=ts;tm.t+=dt;if($('#tmPop').classList.contains('gen'))return;tmPump(1);twTick(dt,tm.t);
+  // zoomed far out (no shadows, slow-looking motion) the picture is redrawn every other frame unless the camera is moving
+  const mv=Math.abs(tm.tgt.x-tm.tgtTo.x)+Math.abs(tm.tgt.z-tm.tgtTo.z)>.01||tm.zoomTo!=null||tm.ptr.size>0;tm.skip=!tm.skip;if(tm.far&&!mv&&tm.skip){tm.acc=(tm.acc||0)+dt;return}dt+=tm.acc||0;tm.acc=0;tmFrame(dt)}
 {const cv=$('#tmc');let down=null,paint=null,pinch=0;
   let twist=null;cv.addEventListener('pointerdown',e=>{if(!tm)return;try{cv.setPointerCapture(e.pointerId)}catch(_){}tm.ptr.set(e.pointerId,[e.clientX,e.clientY]);if(tm.ptr.size===2){const [a,b]=[...tm.ptr.values()];pinch=Math.hypot(a[0]-b[0],a[1]-b[1]);twist=Math.atan2(b[1]-a[1],b[0]-a[0]);down=null;return}
     down={x:e.clientX,y:e.clientY,mv:0};paint=null;if(tm.arr&&tm.tool==='road'){tmCell(e.clientX,e.clientY);const p=new THREE.Vector3();if(tm.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),p)){paint=tmRoad(Math.floor(p.x+TM_W/2),Math.floor(p.z+TM_D/2),null);down.painted=1}}});
@@ -16328,7 +16339,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=55;
+const APP_V=56;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
