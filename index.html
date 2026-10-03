@@ -13441,9 +13441,12 @@ KEEPERS.sponge=function(){const g=G(),b=G();g.add(b);
     F=yy=>{const rr=prof(yy+BY);return Math.pow(Math.abs(x)/(RX*rr),N)+Math.pow(z/(RZ*rr),N)},ny=(F(y+.004)-F(y-.004))/.008,l=Math.hypot(nx,ny,nz),o=off||0;
     const yaw=piv(par,x+nx/l*o,y+ny/l*o,z+nz/l*o);yaw.rotation.y=Math.atan2(nx,nz);const pt=piv(yaw);pt.rotation.x=-Math.asin(ny/l);return pt};
   const E=[-1,1].map(s_=>kEye(fb(body,s_*.2,.46,0),.105,eyeTex('spE',{pr:24}),Yl,{sink:.26,open:-.35}));const ES={};
-  [-1,1].forEach(s_=>{const cp=fb(body,s_*.34,.35,.004);const c=add(cp,SPH(1,14,10),M(0xFF8FB8,{roughness:.7}),0,0,.002);c.scale.set(.07,.04,.006);ol(c,0)});
-  const mp=fb(body,0,.33,.004),mg=piv(mp,0,0,.006);
-  ol(add(mg,gcache('sponge_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.07,.012);m.quadraticCurveTo(0,-.075,.07,.012);m.quadraticCurveTo(0,-.03,-.07,.012);return new THREE.ExtrudeGeometry(m,{depth:.008})}),M(0x6A1840,{roughness:.6}),0,0,0),.005);
+  [-1,1].forEach(s_=>{const cp=fb(body,s_*.34,.35,.004);const c=add(cp,SPH(1,14,10),M(0xFF8FB8,{roughness:.7}),0,0,.002);c.scale.set(.075,.042,.006);ol(c,0);const w=add(cp,SPH(1,8,6),M(0xffffff,{roughness:.5}),-.025,.014,.006);w.scale.set(.014,.009,.003);w.outline=0});
+  // relaxed brows
+  const brows=[-1,1].map(s_=>{const p=fb(body,s_*.2,.645,.006),q=piv(p,0,0,0);const a=to(q,.065,.012,M(0xC98A2A,{roughness:.7}),0,-.05,0,0,0,Math.PI*.3,Math.PI*.4);a.outline=.003;q.rotation.z=s_*.1;return q});
+  const mp=fb(body,0,.31,.004),mg=piv(mp,0,0,.006);
+  ol(add(mg,gcache('sponge_mouth2',()=>{const m=new THREE.Shape();m.moveTo(-.075,.01);m.quadraticCurveTo(0,-.012,.075,.01);m.quadraticCurveTo(.068,-.07,0,-.074);m.quadraticCurveTo(-.068,-.07,-.075,.01);return new THREE.ExtrudeGeometry(m,{depth:.008,bevelEnabled:false})}),M(0x6A1840,{roughness:.6}),0,0,0),.006);
+  const tng=add(mg,SPH(1,12,8),M(0xFF6F9F,{roughness:.6}),0,-.05,.006);tng.scale.set(.032,.016,.005);
   // towel turban: a low dome with three slanted twisted wraps, a knot at the front and a tucked tail
   const hat=piv(body,0,H-.04,-.02);
   const DR=[[0,.5],[.05,.52],[.13,.5],[.22,.43],[.3,.32],[.36,.18],[.385,.07],[.39,0]];
@@ -13462,7 +13465,8 @@ KEEPERS.sponge=function(){const g=G(),b=G();g.add(b);
   const foam=piv(hat,0,.37,-.02);
   [[0,.03,0,.065],[.05,.025,.03,.05],[-.05,.02,.02,.05],[.01,.08,-.01,.05],[-.02,.07,.05,.04]].forEach(([x,y,z,r])=>ol(sp(foam,r,Fm,x,y,z),.01));
   // arms: clearly visible, held out a little; the right hand holds a shampoo bottle
-  const armL=kArm2(body,-.57,.42,.08,Yl,.26,.085,.105),armR=kArm2(body,.57,.42,.08,Yl,.26,.085,.105);
+  const Ya=M(0xFFD04F,{roughness:.6});Ya.detail=3;
+  const armL=kArm2(body,-.6,.4,.14,Ya,.24,.08,.105),armR=kArm2(body,.6,.4,.14,Ya,.24,.08,.105);
   const bot=piv(armR.userData.tip,0,.02,.04);
   ol(cy(bot,.065,.07,.2,Cy,0,.1,0,16),.01);ol(cy(bot,.066,.066,.06,Li,0,.1,0,16),.006);ol(cy(bot,.03,.035,.04,Cp,0,.22,0,12),.008);ol(cy(bot,.012,.012,.05,Cp,0,.27,0,8),.006);ol(rb(bot,.07,.012,.012,.005,Cp,.03,.3,0),.005);
   // legs and big flip-flops
@@ -13488,7 +13492,7 @@ KEEPERS.sponge=function(){const g=G(),b=G();g.add(b);
     armL.rotation.z=aL;armR.rotation.z=aR;armL.rotation.x=qk*.3;armR.rotation.x=qk*.3;bot.rotation.z=-aR*.85;
     bubs.forEach(q=>{q.t+=dt;const k=q.t/1.8;q.m.visible=k>0&&k<1;if(q.m.visible){const sw=Math.sin(k*7+q.x*9)*.03;q.m.position.set(q.x*(.4+k)+sw,1.55+jy+k*.45,q.z+.1);q.m.scale.setScalar(q.r/.05*(k<.8?1:Math.max(.15,1-(k-.8)*5)))}});
     kEyesUpd(ES,E,dt,{talk,happy:cheer||greet});
-    const syl=talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1))):0;ES.mo=approach(ES.mo||0,Math.max(syl,cheer||greet?.5:0),dt*18);mg.scale.set(1,1+ES.mo*2.2,1)}}
+    const syl=talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1))):0;ES.mo=approach(ES.mo||0,Math.max(syl,cheer||greet?.5:0),dt*18);mg.scale.set(1+ES.mo*.1,.38+ES.mo*1.1,1);tng.visible=ES.mo>.25;brows.forEach(q=>{q.position.y=(cheer||greet?.015:0)+qk*.02+(talk?Math.abs(Math.sin(t*4))*.008:0)})}}
 };
 KEEPERS.windup=function(){
   const g=G(),b=G();g.add(b);
@@ -13834,7 +13838,8 @@ KEEPERS.polish=function(){
     const e=kEye(pv,.098,eyeTex('polish',{iris:['#C06BFF','#5A2BB0'],ir:44,pr:27}),Lm,{sink:.2,sy:1.12});
     const lp=piv(pv,0,0,.03);[[.95,.07],[1.3,.075],[1.65,.06]].forEach(([an,len])=>{const a=s>0?an:Math.PI-an,r=.108,ln=cy(lp,.004,.011,len,Dk,Math.cos(a)*(r+len*.45),Math.sin(a)*(r*1.1+len*.4),0,6);ln.rotation.z=a-Math.PI/2;ol(ln,0)});
     return e});
-  [-1,1].forEach(s=>{const cp=piv(bd,s*.26,.43,fz(s*.26)-.002);cp.rotation.y=s*.5;const c=add(cp,SPH(1,14,10),M(0xFF3D9A,{roughness:.7}),0,0,.002);c.scale.set(.06,.034,.006);ol(c,0)});
+  [-1,1].forEach(s=>{const cp=piv(bd,s*.26,.43,fz(s*.26)-.002);cp.rotation.y=s*.5;const c=add(cp,SPH(1,14,10),M(0xFF3D9A,{roughness:.7}),0,0,.002);c.scale.set(.06,.034,.006);ol(c,0);const w=add(cp,SPH(1,8,6),M(0xffffff,{roughness:.4}),-.02,.012,.006);w.scale.set(.012,.008,.003);w.outline=0});
+  const brows=[];// her lashes do the brows' job
   const mp=piv(bd,0,.37,fz(0)+.002),mg=piv(mp,0,0,0);
   {ol(add(mg,gcache('polish_lip',()=>{const m=new THREE.Shape();m.moveTo(-.115,.012);m.quadraticCurveTo(-.05,.04,0,.028);m.quadraticCurveTo(.05,.04,.115,.012);m.bezierCurveTo(.105,-.14,-.105,-.14,-.115,.012);return new THREE.ExtrudeGeometry(m,{depth:.012})}),M(0xE01E5A,{roughness:.2}),0,0,0),.008);
     ol(add(mg,gcache('polish_in',()=>{const m=new THREE.Shape();m.moveTo(-.085,.0);m.quadraticCurveTo(0,.012,.085,.0);m.bezierCurveTo(.075,-.1,-.075,-.1,-.085,.0);return new THREE.ExtrudeGeometry(m,{depth:.004})}),M(0x5A0A2C,{roughness:.6}),0,0,.012),0);
@@ -13853,6 +13858,9 @@ KEEPERS.polish=function(){
   ol(rb(board,.24,.31,.025,.02,M(0xFFB3DA,{roughness:.4}),0,.1,0),.01);ol(rb(board,.2,.26,.012,.01,M(0xFFFBFF,{roughness:.6}),0,.095,.018),.004);
   ol(rb(board,.09,.04,.03,.012,Gold,0,.25,.012),.006);
   [0,1,2].forEach(i=>{bx(board,.13,.01,.006,M(i%2?0x9B4DF2:0xFF3D9A,{roughness:.6}),.01,.15-i*.06,.026);ol(sp(board,.012,M(0x3EC8F2),-.075,.15-i*.06,.027),0)});
+  // gold bangles and a pencil clipped to the board
+  [aL,aR].forEach(A=>{const bg2=to(A.el,.042,.011,Gold,0,-.17,0,Math.PI/2);bg2.outline=.004});
+  {const pc=piv(board,.07,.24,.03);pc.rotation.z=-.5;ol(cy(pc,.012,.012,.16,M(0xFFD21F,{roughness:.5}),0,0,0,6),.004);ol(cy(pc,.012,.002,.035,M(0xF7D8B0,{roughness:.6}),0,-.097,0,6),.003);ol(cy(pc,.012,.012,.025,M(0xFF8FB8,{roughness:.6}),0,.092,0,6),.003)}
   // little hand mirror (shown for the quirk)
   const mir=piv(aR.tip,0,0,0);mir.visible=false;ol(cy(mir,.012,.012,.14,Gold,0,.07,0,8),.005);
   const mf=piv(mir,0,.2,0);mf.scale.set(1,1.15,.4);ol(sp(mf,.075,Gold,0,0,0),.008);const mgl=sp(mf,.062,M(0xCFF2FF,{roughness:.05,emissive:0x8FD8FF,emissiveIntensity:.35,metalness:.3}),0,0,.04,1,1,.5);mgl.outline=0;
@@ -13877,7 +13885,7 @@ KEEPERS.polish=function(){
     else if(talk){R.sh.rotation.set(-.6+Math.sin(t*3.2)*.3,0,.5+Math.abs(Math.sin(t*2.2))*.3);R.el.rotation.set(-.6,0,0)}
     else if(qa&&qK===0){const k=Math.min(1,qP/.5)*fade;mir.visible=true;R.sh.rotation.set(-1.2*k-.1,0,.3);R.el.rotation.set(-1.7*k-.1,0,0);mir.rotation.set(-(R.sh.rotation.x+R.el.rotation.x)-.15,0,.25+Math.sin(t*3)*.05)}
     else if(qa&&qK===2){const k=Math.min(1,qP/.45)*fade;R.sh.rotation.set(-.25*k,0,.3-2.6*k);R.el.rotation.set(0,0,-.8*k+Math.sin(t*10)*.2*k)}
-    const happy=cheer||greet||(qa&&qK===2);kEyesUpd(ES,E,dt,{talk,happy});
+    const happy=cheer||greet||(qa&&qK===2);brows.forEach(q=>{q.position.y=(happy?.012:0)+(talk?Math.abs(Math.sin(t*5))*.01:0)+(qa&&qK===0?-.006:0)});kEyesUpd(ES,E,dt,{talk,happy});
     const syl=talk?Math.max(0,Math.sin(t*10.5+Math.sin(t*2.7)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.9+1))):0;
     ES.mo=approach(ES.mo||0,Math.max(syl,happy?.7:.15),dt*18);mg.scale.set(1+ES.mo*.12,.55+ES.mo*.65,1)}};
 };
@@ -13888,7 +13896,7 @@ KEEPERS.spool=function(){
   const WD=M(0xF0BE7A,{roughness:.5}),WD2=M(0xD99A54,{roughness:.55}),TH=M(0x84E6BA,{roughness:.55}),THd=M(0x4FC596,{roughness:.55}),
     FE=M(0xFFF1D6,{roughness:.8}),FEd=M(0xF2DCB4,{roughness:.8}),PK=M(0xF06AA8,{roughness:.6}),FT=M(0xFF7DB9,{roughness:.6}),
     SIL=M(0xE6EBF5,{metalness:.5,roughness:.28,map:gcache('spool_dim',()=>ctex(64,64,(x,w,h)=>{x.fillStyle='#fff';x.fillRect(0,0,w,h);
-      for(let r=0;r<4;r++)for(let c=-1;c<5;c++){const cx=(c+(r%2?.5:0))*16+8,cy=r*16+8;const gr=x.createRadialGradient(cx-1,cy-1,0,cx,cy,7);gr.addColorStop(0,'#6F7C9A');gr.addColorStop(.7,'#B4BED4');gr.addColorStop(1,'#fff');x.fillStyle=gr;x.beginPath();x.arc(cx,cy,7,0,7);x.fill()}},[10,5],2))}),
+      for(let r=0;r<4;r++)for(let c=-1;c<5;c++){const cx=(c+(r%2?.5:0))*16+8,cy=r*16+8;const gr=x.createRadialGradient(cx-1,cy-1,0,cx,cy,7);gr.addColorStop(0,'#98A3BE');gr.addColorStop(.7,'#CBD2E2');gr.addColorStop(1,'#fff');x.fillStyle=gr;x.beginPath();x.arc(cx,cy,7,0,7);x.fill()}},[10,5],2))}),
     THm=M(0xFFFFFF,{roughness:.55,map:gcache('spool_wind',()=>ctex(16,200,(x,w,h)=>{const n=24,bh=h/n;for(let k=0;k<n;k++){const gr=x.createLinearGradient(0,k*bh,0,(k+1)*bh);gr.addColorStop(0,'#A6F5D2');gr.addColorStop(.55,'#7EE0B2');gr.addColorStop(1,'#3FB88A');x.fillStyle=gr;x.fillRect(0,k*bh,w,bh+1)}},null,2))}),
     NDL=M(0xF3F6FB,{metalness:.6,roughness:.22});
   WD.detail=2;WD2.detail=2;TH.detail=1;THd.detail=1;FE.detail=1;FEd.detail=1;PK.detail=1;FT.detail=1;
@@ -13905,14 +13913,22 @@ KEEPERS.spool=function(){
   for(let i=-4;i<=4;i++){const q=onCyl(i*.043,py1-.022,.001),s=add(q,gcache('spool_st',()=>new THREE.BoxGeometry(.034,.007,.006)),i%2?PK:THd,0,0,0);s.outline=0}
   // eyes: big and bright, cream felt lids
   const ES={},E=[-1,1].map(s=>kEye(onCyl(s*.1,.5,0),.092,eyeTex('spE',{iris:['#6FE3C4','#1F8C7C'],ir:33,pr:20}),FEd,{sink:.2,open:-1.3}));
-  [-1,1].forEach(s=>{const q=onCyl(s*.16,.395,.003),c=add(q,SPH(1,14,10),M(0xFF8FB8,{roughness:.7}),0,0,0);c.scale.set(.05,.03,.006);ol(c,0)});
+  [-1,1].forEach(s=>{const q=onCyl(s*.17,.4,.003),c=add(q,SPH(1,16,10),M(0xFF8FB8,{roughness:.7}),0,0,0);c.scale.set(.06,.036,.006);ol(c,0);
+    const w=add(q,SPH(1,8,6),M(0xffffff,{roughness:.5}),-.02,.012,.004);w.scale.set(.012,.008,.003);w.outline=0});
+  // felt brows, pinned on with a stitch
+  const brows=[-1,1].map(s=>{const q=onCyl(s*.105,.615,.004),r=piv(q,0,0,0);ol(rb(r,.07,.017,.01,.008,M(0xB86A55,{roughness:.8}),0,0,0),.003);r.rotation.z=-s*.14;return r});
+  // pins stuck in the thread (ball heads) and a sewn-on button at the side
+  [[-.8,.62,0xFFD21F],[-1.05,.56,0x9B4DF2],[1.25,.66,0xFF3D9A]].forEach(([a,y,c])=>{const q=piv(Y,Math.sin(a)*RB,y,Math.cos(a)*RB);q.rotation.y=a;const pn=piv(q,0,0,0);pn.rotation.x=-.5;
+    ol(cy(pn,.005,.005,.07,NDL,0,0,.01,6),.003).rotation.x=Math.PI/2;ol(sp(pn,.026,M(c,{roughness:.3}),0,0,.048),.005)});
+  {const a=-2.3,q=piv(Y,Math.sin(a)*(RB+.01),.42,Math.cos(a)*(RB+.01));q.rotation.y=a;const bm=M(0xFFD21F,{roughness:.35});
+    ol(cy(q,.055,.055,.02,bm,0,0,0,20),.006).rotation.x=Math.PI/2;[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([u,v])=>{const h=cy(q,.009,.009,.024,M(0xB8860B,{roughness:.5}),u*.017,v*.017,.002,6);h.rotation.x=Math.PI/2;h.outline=0})}
   // open happy mouth
   const mq=onCyl(0,.345,.004),mg=piv(mq,0,.03,0);
   ol(add(mg,gcache('spool_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.07,0);m.quadraticCurveTo(0,.025,.07,0);m.bezierCurveTo(.065,-.1,-.065,-.1,-.07,0);return new THREE.ExtrudeGeometry(m,{depth:.008})}),M(0x6A1034,{roughness:.6}),0,0,0),.006);
   {const tg=add(mg,SPH(1,14,10),M(0xFF6F9F,{roughness:.6}),0,-.062,.006);tg.scale.set(.036,.02,.006);tg.outline=0}
   ol(sp(onCyl(0,.435,.004),.016,M(0xF07FA6,{roughness:.5}),0,0,0,1.3,.9,.6),.005);
   // ---- thimble hat (silver, dimpled) with a pink ribbon and a needle tucked in
-  const hat=piv(Y,0,.835,0);hat.rotation.set(.05,0,-.1);
+  const hat=piv(Y,0,.835,0);hat.rotation.set(.05,0,-.1);hat.scale.setScalar(.9);
   ol(lathe(hat,[[0,0],[.19,0],[.207,.01],[.207,.04],[.19,.052],[.178,.06],[.18,.17],[.172,.24],[.14,.285],[.075,.31],[0,.318]],SIL,0,0,0,36),.014);
   ol(to(hat,.195,.014,PK,0,.034,0,Math.PI/2),.004);
   {const bow=piv(hat,.0,.042,.2);[-1,1].forEach(s=>{const l=to(bow,.036,.014,PK,s*.04,0,0,0,0,s*.3);l.scale.set(1.2,.8,1);ol(l,.004)});ol(sp(bow,.022,PK,0,0,.004),.004)}
@@ -13924,11 +13940,11 @@ KEEPERS.spool=function(){
   [-1,1].forEach(s=>{const f=piv(Y,s*.15,.055,.15);ol(sp(f,.095,FT,0,0,.03,1,.62,1.3),.012);ol(sp(f,.04,FEd,0,.015,.1,1,.7,.7),.006)});
   // ---- arms: thread loops ending in round hands
   const arms=[-1,1].map(s=>{const sh=piv(Y,s*.265,.5,.0),pts=[[0,0,0],[s*.07,-.03,.01],[s*.14,-.1,.04],[s*.17,-.2,.05],[s*.12,-.27,.07]];
-    ol(sp(sh,.04,TH,0,0,0),.008);
-    ol(add(sh,gcache('spool_arm'+s,()=>sweepGeo(pts,t=>[.03+.004*Math.sin(t*20),.03+.004*Math.sin(t*20)],{len:24,seg:10})),TH,0,0,0),.01);
+    ol(sp(sh,.046,TH,0,0,0),.008);
+    ol(add(sh,gcache('spool_arm'+s,()=>sweepGeo(pts,t=>[.036+.005*Math.sin(t*20),.036+.005*Math.sin(t*20)],{len:24,seg:10})),TH,0,0,0),.01);
     [.4,.7].forEach(t=>{const q=crPt(pts,t);const l=to(sh,.036,.009,THd,q[0],q[1],q[2],.5,.3,0);l.outline=.004});
-    const h=sp(sh,.06,FE,pts[4][0],pts[4][1]-.03,pts[4][2],1,1.05,.9);ol(h,.01);
-    ol(sp(sh,.026,FE,pts[4][0]+s*.045,pts[4][1]-.01,pts[4][2]+.02),.006);return sh});
+    const h=sp(sh,.07,FE,pts[4][0],pts[4][1]-.035,pts[4][2],1,1.05,.9);ol(h,.01);
+    ol(sp(sh,.03,FE,pts[4][0]+s*.055,pts[4][1]-.01,pts[4][2]+.02),.006);return sh});
   // ---- the loose thread tail: a chain that sways
   const NS=8,SL=.062,tail=[],tbase=piv(Y,0,.3,-RB+.02);let par=tbase;
   ol(sp(tbase,.03,TH,0,0,0),.006);
@@ -13958,7 +13974,8 @@ KEEPERS.spool=function(){
     if(greet){aR.rotation.z=2.4+Math.sin(t*14)*.35;aL.rotation.z=-.25}
     if(cheer){const u=Math.min(1,p*3);aL.rotation.z=-(.4+u*2.2)+Math.sin(t*14)*.12;aR.rotation.z=.4+u*2.2+Math.sin(t*14+1)*.12}
     nd.rotation.z=-.7+Math.sin(t*3)*.03+(q>=0?wob*.8:0);hat.rotation.z=-.1+Math.sin(t*1.6)*.02+(talk?Math.sin(t*7)*.03:0)+(q>=0?wob*.6:0);
-    kEyesUpd(ES,E,dt,{talk,happy:cheer||greet});
+    brows.forEach((r,i)=>{r.position.y=(talk?Math.abs(Math.sin(t*6))*.012:0)+(cheer||greet?.018:0)+(q>=0&&qt>1.5?.015:0)});
+    kEyesUpd(ES,E,dt,{talk,happy:cheer||greet,surprise:q>=0&&qt>1.5&&qt<2.2});
     const syl=talk?Math.max(0,Math.sin(t*12+Math.sin(t*2.9)*2.2))*(.45+.55*Math.abs(Math.sin(t*2.1+1))):0;ES.mo=approach(ES.mo||0,Math.max(syl,cheer||greet?.55:0),dt*18);mg.scale.set(1+ES.mo*.08,.85+ES.mo*1.7,1)}}
 };
 KEEPERS.pixel=function(){
@@ -14452,12 +14469,15 @@ KEEPERS.posy=function(){
   // ---- face ----
   const hd=piv(body,0,.6,.3),ES={};
   const et=eyeTex('posyE',{iris:['#4E9A3A','#1E3A14'],ir:34,pr:22});
-  const E=[-1,1].map(s=>kEye(onLoft(body,f,s*.14,.58,0),.088,et,Tc,{sink:.22,open:-1.2}));
-  const brows=[-1,1].map(s=>{const p=onLoft(body,f,s*.14,.68,.006),q=piv(p,0,0,0);ol(rb(q,.08,.018,.014,.008,Soil,0,0,0),.005);q.rotation.z=-s*.22;return q});
-  [-1,1].forEach(s=>{const p=onLoft(body,f,s*.255,.485,.004),c=add(p,SPH(1,14,10),Pk,0,0,0);c.scale.set(.06,.036,.006);ol(c,0)});
-  const mp=onLoft(body,f,0,.485,.007),mg=piv(mp,0,0,0);
+  const E=[-1,1].map(s=>kEye(onLoft(body,f,s*.15,.585,0),.1,et,Tc,{sink:.24,open:-1.15}));
+  const brows=[-1,1].map(s=>{const p=onLoft(body,f,s*.15,.7,.006),q=piv(p,0,0,0);ol(rb(q,.08,.018,.014,.008,Soil,0,0,0),.005);q.rotation.z=-s*.22;return q});
+  [-1,1].forEach(s=>{const p=onLoft(body,f,s*.27,.48,.004),c=add(p,SPH(1,14,10),Pk,0,0,0);c.scale.set(.068,.04,.006);ol(c,0);const w=add(p,SPH(1,8,6),Cr,-.022,.013,.005);w.scale.set(.013,.009,.003);w.outline=0});
+  const mp=onLoft(body,f,0,.475,.007),mg=piv(mp,0,0,0);
   ol(add(mg,gcache('posy_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.05,.008);m.lineTo(.05,.008);m.quadraticCurveTo(.045,-.07,0,-.072);m.quadraticCurveTo(-.045,-.07,-.05,.008);return new THREE.ExtrudeGeometry(m,{depth:.008})}),M(0x5A0A22,{roughness:.6}),0,0,0),.005);
+  mg.parent.scale.setScalar(1.2);
   const tg=add(mg,SPH(1,12,8),M(0xFF6F9F,{roughness:.6}),0,-.05,.006);tg.scale.set(.026,.014,.005);
+  // a seedling sprout in the soil and a ladybird on a leaf
+  {const spr=piv(body,-.12,1.05,.24);spr.rotation.z=.2;ol(cy(spr,.008,.01,.08,Gd,0,.04,0,6),.004);[-1,1].forEach(s=>{const l=sp(spr,.03,Gr,s*.03,.085,0,1.3,.5,.8);l.rotation.z=s*.5;l.outline=.004})}
   // ---- rain boots ----
   [-1,1].forEach(s=>{const bo=piv(b,s*.17,0,.06);
     ol(sp(bo,.12,Bt,0,.075,.03,1,.62,1.25),.012);ol(cy(bo,.075,.082,.08,Bt,0,.14,-.015,16),.01);
@@ -14468,7 +14488,9 @@ KEEPERS.posy=function(){
   ol(cy(stem,.024,.032,.5,Gd,0,.25,0,12),.008);
   const LV=[-1,1].map(s=>{const pv=piv(sw,s*.12,.0,.05);pv.rotation.z=-s*.95;pv.rotation.x=.1;
     ol(add(pv,gcache('posy_leaf',()=>leafGeo(.42,.19)),Gr,0,0,0),.008);
-    add(pv,gcache('posy_lrib',()=>new THREE.BoxGeometry(.014,.3,.02)),Gd,0,.18,0);return pv});
+    add(pv,gcache('posy_lrib',()=>new THREE.BoxGeometry(.014,.3,.02)),Gd,0,.18,0);
+    if(s>0){const lb=piv(pv,.03,.26,.03);ol(sp(lb,.03,jel(0xE8263C),0,0,0,1,1.2,.6),.004);ol(sp(lb,.016,Soil,0,.03,.004,1,.8,.6),.003);[[-.012,-.008],[.012,.004],[-.008,.016]].forEach(([x,y])=>{const d=sp(lb,.006,Soil,x,y,.017);d.outline=0})}
+    return pv});
   const fh=piv(stem,0,.52,0);fh.rotation.x=.42;fh.scale.setScalar(1.35);
   const PET=[0,1,2,3,4].map(i=>{const pv=piv(fh,0,0,-.01);pv.rotation.z=i*Math.PI*2/5;
     ol(sp(pv,.1,i%2?Pt:Pl,0,.17,0,.88,1.3,.36),.011);return pv});
@@ -14476,8 +14498,8 @@ KEEPERS.posy=function(){
   ol(to(fh,.08,.012,Or,0,0,.05),.005);
   [[0,0],[.04,.02],[-.04,.02],[.02,-.04],[-.02,-.04]].forEach(([x,y])=>{const s=sp(fh,.012,Or,x,y,.075);s.outline=.003});
   // ---- arms with little gloves ----
-  const L=.32,mkArm=s=>{const a=piv(body,s*.38,.52,.07);ol(sp(a,.052,Gr,0,0,0),.01);ol(cy(a,.034,.042,L,Gr,0,-L/2,0,12),.01);
-    const m=piv(a,0,-L-.03,0);ol(sp(m,.075,Gl,0,0,0,1,1.05,.9),.01);ol(sp(m,.036,Gl,-s*.06,.0,.02),.008);ol(cy(a,.054,.054,.04,Cr,0,-L,0,14),.008);return{a,m}};
+  const L=.32,mkArm=s=>{const a=piv(body,s*.38,.52,.07);ol(sp(a,.056,Gr,0,0,0),.01);ol(cy(a,.04,.048,L,Gr,0,-L/2,0,12),.01);
+    const m=piv(a,0,-L-.03,0);ol(sp(m,.082,Gl,0,0,0,1,1.05,.9),.01);ol(sp(m,.036,Gl,-s*.06,.0,.02),.008);ol(cy(a,.054,.054,.04,Cr,0,-L,0,14),.008);return{a,m}};
   const AL=mkArm(-1),AR=mkArm(1);
   // ---- watering can (only during the quirk) ----
   const can=piv(body,0,0,0),cg=piv(can,0,0,0);can.visible=false;can.scale.setScalar(1.35);
@@ -14487,7 +14509,7 @@ KEEPERS.posy=function(){
   const rose=piv(spo,0,.21,0);rose.rotation.z=-.55;ol(cy(rose,.045,.02,.035,Mx,0,0,0,14),.005);
   const DR=[0,1,2,3,4,5].map(()=>{const s=sp(body,.016,Wt,0,0,0,.8,1.4,.8);s.outline=.003;s.visible=false;return s});
   // ---- animation ----
-  let qT=5+Math.random()*3,qP=-1,tw_=0,perk=0,aR=.62,aL=-.62;
+  let qT=5+Math.random()*3,qP=-1,tw_=0,perk=0,aR=.5,aL=-.5;
   const SH=[.38,.52];
   return{g,head:hd,upd(dt,t,act,p,talk){const cheer=act==='cheer',greet=act==='greet';dt=Math.min(dt,.05);
     b.position.y=cheer?Math.sin(Math.min(1,p*1.4)*Math.PI)*.28:0;
@@ -14509,7 +14531,7 @@ KEEPERS.posy=function(){
     fh.rotation.x=.42-perk*.22+(talk?Math.abs(Math.sin(t*4))*.05:0);fh.rotation.y=tw_;
     const pr=1+perk*.14;PET.forEach((q,i)=>{q.scale.set(1+perk*.08,pr,1);q.rotation.z=i*Math.PI*2/5+Math.sin(t*1.4+i)*.04*(1-perk)+Math.sin(t*2.2+i*2)*.02*perk});
     LV.forEach((q,i)=>{const s=i?1:-1;q.rotation.z=-s*(.95+Math.sin(t*1.6+i*2)*.06+perk*.22+(cheer?.4*Math.sin(p*Math.PI):0)+(greet?.15*Math.sin(t*9+i):0)+(talk?.07*Math.abs(Math.sin(t*4.5+i)):0))});
-    let tR=.62+Math.sin(t*1.2)*.03,tL=-.62-Math.sin(t*1.2)*.03;
+    let tR=.48+Math.sin(t*1.2)*.03,tL=-.48-Math.sin(t*1.2)*.03;
     if(greet){tR=1.95+Math.sin(t*11)*.3}
     if(cheer){tR=2.7;tL=-2.7}
     if(talk&&!greet&&!cheer)tL=-.62-Math.max(0,Math.sin(t*2.6))*.6;
@@ -14759,13 +14781,14 @@ KEEPERS.book=function(){
 KEEPERS.lantern=function(){
   const g=G(),b=G();g.add(b);const bd=piv(b,0,0,0);
   const PI=Math.PI,sm=u=>u<=0?0:u>=1?1:u*u*(3-2*u);
-  const tex=gcache('lantern_paper',()=>{const c=mkCanvas(256,256),x=c.getContext('2d');
+  const tex=gcache('lantern_paper2',()=>{const c=mkCanvas(256,256),x=c.getContext('2d');
     const gr=x.createLinearGradient(0,0,0,256);gr.addColorStop(0,'#FFE08A');gr.addColorStop(.5,'#FFF3C4');gr.addColorStop(1,'#FFD36B');x.fillStyle=gr;x.fillRect(0,0,256,256);
+    x.strokeStyle='rgba(214,140,40,.22)';x.lineWidth=2;for(let k=1;k<16;k++){x.beginPath();x.moveTo(0,k*16);x.lineTo(256,k*16);x.stroke()}
     for(let i=0;i<500;i++){x.fillStyle='rgba(255,'+(200+Math.random()*40|0)+',120,'+(.05+Math.random()*.09)+')';x.fillRect(Math.random()*256,Math.random()*256,1+Math.random()*7,1)}
     const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t});
   const Sh=M(0xffffff,{roughness:.9,map:tex,emissive:0xFFAE3A,emissiveIntensity:.6});Sh.detail=1;
   const Pl=M(0x4A1E66,{metalness:.5,roughness:.3}),Pd=M(0x351049,{roughness:.5}),Au=M(0xFFD21F,{metalness:.55,roughness:.3}),
-    Sk=M(0xF7C26A,{roughness:.6}),Wd=M(0x6A3F8F,{roughness:.55}),Pk=M(0xFF7FB0,{roughness:.7}),Mo=M(0x6A1830,{roughness:.6}),
+    Sk=M(0xF0B060,{roughness:.6}),Wd=M(0x6A3F8F,{roughness:.55}),Pk=M(0xFF7FB0,{roughness:.7}),Mo=M(0x6A1830,{roughness:.6}),
     Dk=M(0x3B1273,{roughness:.5}),
     Fl1=M(0xFF8A1C,{emissive:0xFF7A10,emissiveIntensity:.9,roughness:.4}),Fl2=M(0xFFE46B,{emissive:0xFFD21F,emissiveIntensity:1,roughness:.4});
   // body profile (a lantern: widest at the middle, pinched into the cap and base)
@@ -14787,16 +14810,24 @@ KEEPERS.lantern=function(){
   // feet
   const feet=[-1,1].map(s=>{const p=piv(b,s*.11,.04,.04);const ft=sp(p,.075,Pd,0,0,.03,1,.58,1.25);ol(ft,.012);return p});
   // face
-  const EC=eyeTex('lantern_e',{bg:'#35125F',edge:'#24094A',pr:30,iris:['#8A52DA','#3B1273'],ir:50});
-  const E=[-1,1].map(s=>kEye(onLoft(bd,f,s*.105,.52,-.012),.082,EC,Sh,{sink:.2,open:-.85}));
+  const EC=eyeTex('lantern_e2',{pr:26,iris:['#9A62E8','#3B1273'],ir:44});
+  const E=[-1,1].map(s=>kEye(onLoft(bd,f,s*.11,.515,-.012),.092,EC,Sh,{sink:.22,open:-.95}));
   const ER=E;
-  [-1,1].forEach(s=>{const p=onLoft(bd,f,s*.185,.4,.002),c=sp(p,1,Pk,0,0,0,.05,.032,.008);c.material=Pk;ol(c,0)});
-  [-1,1].forEach(s=>{const p=onLoft(bd,f,s*.105,.605,.004);ol(rb(p,.085,.016,.014,.007,Dk,0,0,0),.003).rotation.z=-s*.14});
-  const mp=onLoft(bd,f,0,.385,.002),mg=piv(mp,0,0,.002);
-  const smile=to(mg,.045,.01,Dk,0,.014,0,0,0,PI,PI);ol(smile,0);
+  [-1,1].forEach(s=>{const p=onLoft(bd,f,s*.195,.41,.002),c=sp(p,1,Pk,0,0,0,.058,.034,.008);ol(c,0);const w=sp(p,1,M(0xffffff,{roughness:.5}),-.02,.012,.004,.012,.008,.003);w.outline=0});
+  [-1,1].forEach(s=>{const p=onLoft(bd,f,s*.11,.615,.004);ol(rb(p,.075,.016,.012,.007,Dk,0,0,0),.003).rotation.z=-s*.12});
+  const mp=onLoft(bd,f,0,.4,.002),mg=piv(mp,0,0,.002);
+  const smile=to(mg,.05,.012,Dk,0,.018,0,0,0,PI,PI);ol(smile,0);
   const open=sp(mg,1,Mo,0,-.005,.002,.04,.004,.01);ol(open,0);
+  [-1,1].forEach(s=>{const d=sp(mg,.009,Dk,s*.05,.018,0);d.outline=0});
+  // pink silk tassels hanging off the lower ring; they swing
+  const Tp=jel(0xFF4FA3);const tas=[-1,1].map(s=>{const th=s*1.5,y=.21,p=piv(bd,rx(y)*Math.sin(th)*1.02,y,rx(y)*.92*Math.cos(th)*1.02);
+    ol(sp(p,.022,Au,0,0,0),.004);const sw=piv(p,0,0,0);ol(cy(sw,.007,.007,.05,Pd,0,-.03,0,6),.003);
+    ol(sp(sw,.02,Au,0,-.06,0,1,.8,1),.004);ol(lathe(sw,[[0,-.14],[.03,-.138],[.032,-.115],[.025,-.08],[.014,-.068],[0,-.065]],Tp,0,0,0,14),.006);return sw});
+  // a little gold crescent moon charm hanging from the carrying ring
+  const charm=piv(cap,.12,.0,.14);{const ch=piv(charm,0,0,0);ol(sp(ch,.012,Au,0,0,0),.003);ol(cy(ch,.004,.004,.05,Au,0,-.025,0,4),0);
+    const mo=to(ch,.03,.011,Au,0,-.075,0,0,0,0,PI*1.25);mo.rotation.z=-PI*.1;ol(mo,.004)}
   // arms: the left (screen right) holds the lamplighter's pole
-  const armF=kArm2(bd,.285,.42,.03,Sk,.17,.03,.045),armP=kArm2(bd,-.285,.42,.03,Sk,.17,.03,.045);
+  const armF=kArm2(bd,.285,.42,.08,Sk,.17,.03,.045),armP=kArm2(bd,-.285,.42,.03,Sk,.17,.03,.045);
   // pole (pivot at the hand), gold hook and a glowing flame cup
   const GP=[-.43,.4,.14],pole=piv(b,GP[0],GP[1],GP[2]);
   ol(cy(pole,.017,.02,1.06,Wd,0,.135,0,10),.006);
@@ -14807,6 +14838,7 @@ KEEPERS.lantern=function(){
   const f1=ol(lathe(flame,[[0,0],[.04,.012],[.058,.055],[.045,.105],[.02,.16],[0,.215]],Fl1,0,0,0,16),.008),f2=lathe(flame,[[0,.0],[.022,.012],[.03,.045],[.02,.085],[0,.12]],Fl2,0,.01,0,12);
   const glowRing=to(crown,.07,.006,Au,0,.06,0,PI/2);glowRing.scale.set(1,1,1);
   let qT=5,qP=-1,ES={},fl=0,eo=0;
+  Pk.detail=1;
   const ref=.2,SA=[-.285,.42,.03],FA=[GP[0]-.0,GP[1]-.02,GP[2]-.01];
   return{g,head:E[0].eg.parent.parent,upd(dt,t,act,p,talk){dt=Math.min(dt,.05);const cheer=act==='cheer',greet=act==='greet';
     if(qP<0&&!talk&&act==='idle'){qT-=dt;if(qT<0)qP=0}
@@ -14817,7 +14849,7 @@ KEEPERS.lantern=function(){
     const flick=q>=0&&q<1.6?Math.sin(q*31)*.12+Math.sin(q*17)*.08:0;
     let glow=.62+Math.sin(t*1.7)*.1+Math.sin(t*4.3)*.03+(cheer?.35:greet?.2:0)+(talk?Math.sin(t*6)*.03:0);
     glow=glow-yawn*.38+flick*yawn+flare*.75;
-    Sh.emissiveIntensity=Math.max(.12,glow);
+    Sh.emissiveIntensity=Math.max(.1,glow*.72);
     // body
     const hop=cheer?Math.abs(Math.sin(Math.min(1,p*1.5)*PI*2))*.2:greet?Math.abs(Math.sin(p*PI*2))*.04:Math.sin(Math.min(1,flare*1.4)*PI)*.05*flare;
     b.position.y=hop+(Math.sin(t*1.3)*.012);
@@ -14826,6 +14858,8 @@ KEEPERS.lantern=function(){
     bd.rotation.x=(talk?Math.sin(t*4)*.03:0)-yawn*.1+flare*.06;
     feet.forEach((fp,i)=>{fp.position.y=.04+(cheer?Math.max(0,Math.sin(t*14+i*PI))*.02:0)});
     ringG.rotation.z=Math.sin(t*1.9)*.15+yawn*.1;
+    tas.forEach((s_,i)=>{s_.rotation.z=Math.sin(t*1.7+i*1.3)*.12-bd.rotation.z*2+(cheer?Math.sin(t*12+i)*.35:0);s_.rotation.x=Math.sin(t*1.3+i)*.08+(talk?Math.sin(t*5+i)*.06:0)});
+    charm.rotation.z=Math.sin(t*2.1)*.2+(cheer?Math.sin(t*13)*.4:0);
     // flame
     fl=approach(fl,Math.sin(t*9.1)*.08+Math.sin(t*5.3)*.06,dt*12);
     const fs=.9+fl+glow*.12-yawn*.25+flare*.35;
@@ -14836,8 +14870,8 @@ KEEPERS.lantern=function(){
     // arms
     armP.scale.y=1;armF.scale.y=1;
     kAim(armP,SA,FA,ref);armP.rotation.y=0;
-    if(cheer)armF.rotation.set(0,0,2.55+Math.sin(t*15)*.25);
-    else if(greet)armF.rotation.set(0,0,2.5-Math.sin(t*12)*.3);
+    if(cheer)armF.rotation.set(.55,0,2.55+Math.sin(t*15)*.25);
+    else if(greet)armF.rotation.set(.6,0,2.5-Math.sin(t*12)*.3);
     else if(flare>.05)armF.rotation.set(0,0,.5+flare*2,0);
     else if(talk)armF.rotation.set(-.55+Math.sin(t*3)*.3,0,-.4-Math.abs(Math.sin(t*2.3))*.35);
     else armF.rotation.set(-.15+Math.sin(t*.9)*.05,0,-.3+yawn*-.9+Math.sin(t*1.1)*.03);
@@ -14875,20 +14909,24 @@ KEEPERS.cloud=function(){
   const et=eyeTex('cloudE',{iris:['#6AA8E8','#2A4FA0'],ir:36,pr:22});
   const E=[-1,1].map(s=>kEye(onFace(s*EX,FY+.04,0),.088,et,W2,{sink:.22,open:-1.2}));
   const brows=[-1,1].map(s=>{const p=onFace(s*EX,FY+.15,.012),q=piv(p,0,0,0);ol(rb(q,.08,.018,.012,.007,Pl,0,0,0),.005);q.rotation.z=s*.3;return q});
-  [-1,1].forEach(s=>{const p=onFace(s*.27,FY-.07,.004),c=add(p,SPH(1,14,10),Pk,0,0,0);c.scale.set(.06,.035,.006)});
+  [-1,1].forEach(s=>{const p=onFace(s*.27,FY-.07,.004),c=add(p,SPH(1,14,10),Pk,0,0,0);c.scale.set(.06,.035,.006);const w=add(p,SPH(1,8,6),W1,-.02,.012,.004);w.scale.set(.012,.008,.003);w.outline=0});
   const mp=onFace(0,FY-.1,.008),mg=piv(mp,0,0,0);
   ol(add(mg,gcache('cloud_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.045,.006);m.lineTo(.045,.006);m.quadraticCurveTo(.04,-.06,0,-.062);m.quadraticCurveTo(-.04,-.06,-.045,.006);return new THREE.ExtrudeGeometry(m,{depth:.008})}),Mo,0,0,0),.005);
   const tg=add(mg,SPH(1,12,8),Tn,0,-.042,.006);tg.scale.set(.024,.012,.005);
   const hd=piv(body,0,0,.2);
   // ---- arms: soft puffs on little noodles ----
-  const AL=kArm2(body,-(RX-.06),-.13,.1,W1,.15,.04,.075),AR=kArm2(body,RX-.06,-.13,.1,W1,.15,.04,.075);
+  const Hn=M(0xD9CCF7,{roughness:.75});Hn.detail=1;
+  const AL=kArm2(body,-(RX+.04),-.08,.14,W1,.1,.05,.095),AR=kArm2(body,RX+.04,-.08,.14,W1,.1,.05,.095);
+  [AL,AR].forEach(A=>{[[-.05,.0,.03],[.05,.01,.02]].forEach(([x,y,z])=>ol(sp(A.userData.tip,.05,Hn,x,y+.03,z),.008))});
   // ---- umbrella in the right hand ----
   const um=piv(AR.userData.tip,.04,.02,.02);
   ol(cy(um,.012,.012,.6,Gd,0,.26,0,8),.005);ol(to(um,.04,.012,Gd,.04,-.04,0,0,0,0,Math.PI*1.2),.004);
   const canopy=piv(um,0,.54,0);
   ol(lathe(canopy,[[0,.0],[.25,-.03],[.26,0],[.22,.06],[.15,.12],[.07,.16],[.0,.18]],Um,0,0,0,24),.01);
   ol(sp(canopy,.018,Gd,0,.185,0),.004);
-  [0,1,2,3,4,5].forEach(i=>{const a=i*Math.PI*2/6;sp(canopy,.022,i%2?Um:Um2,Math.cos(a)*.255,-.015,Math.sin(a)*.255)});
+  [0,1,2,3,4,5,6,7].forEach(i=>{const a=i*Math.PI*2/8;ol(sp(canopy,.03,Um2,Math.cos(a)*.25,-.02,Math.sin(a)*.25,1.3,.7,1.3),.004)});
+  ol(to(canopy,.225,.012,Um2,0,.012,0,Math.PI/2),.003);
+  [0,1,2,3,4,5,6,7].forEach(i=>{const a=(i+.5)*Math.PI*2/8,r=sweepGeo([[0,.18,0],[Math.cos(a)*.12,.14,Math.sin(a)*.12],[Math.cos(a)*.24,.02,Math.sin(a)*.24]],()=>[.006,.006],{len:8,seg:5});const m=add(canopy,r,Gd,0,.004,0);m.outline=0});
   um.rotation.z=-.15;
   // ---- raindrops that drip from underneath (round at the bottom, point up) ----
   const dropGeo=gcache('cloud_drop',()=>latheGeo([[0,0],[.02,.004],[.045,.03],[.05,.06],[.04,.095],[.022,.13],[.006,.15],[0,.155]],14));
@@ -14927,7 +14965,7 @@ KEEPERS.cloud=function(){
     const ws=talk?4:2.2;
     AL.rotation.z=.12+Math.sin(t*ws)*.05;AR.rotation.z=-.12-Math.sin(t*ws+1)*.04;AL.rotation.x=0;
     if(greet){AL.rotation.z=Math.PI*.78+Math.sin(t*12)*.2}
-    if(cheer){AL.rotation.z=Math.PI*.7;AR.rotation.z=-Math.PI*.7}
+    if(cheer){AL.rotation.z=Math.PI*.75+Math.sin(t*14)*.12;AR.rotation.z=-Math.PI*.62;AL.rotation.x=-.55;AR.rotation.x=-.45}else AR.rotation.x=0;
     if(q>=0&&q<5.6){AL.rotation.z=.3;AL.rotation.x=-Math.max(inh,q>1.7?1:0)*1.0}
     um.rotation.z=-.15+Math.sin(t*1.3)*.06-AR.rotation.z;
     const happy=cheer||greet||pleased>.4;
@@ -14972,28 +15010,31 @@ KEEPERS.beacon=function(){
   ol(to(cap,.225,.012,Au,0,.02,0,PI/2),.004);ol(sp(cap,.03,Au,0,.215,0),.006);
   // turning beam (outside the glass)
   const beam=piv(bal,0,.17,0);
-  {const c=add(beam,new THREE.CylinderGeometry(.04,.008,.26,12),Bm,.32,0,0);c.rotation.z=PI/2;c.scale.set(1,1,.5)}
+  {const c=add(beam,new THREE.CylinderGeometry(.05,.012,.24,14),Bm,.31,0,0);c.rotation.z=PI/2;c.scale.set(1,1,.7)}
   // boots
   const feet=[-1,1].map(s=>{const p=piv(b,s*.14,.05,.2);const ft=sp(p,.095,Bt,0,0,.03,1,.6,1.3);ol(ft,.012);ol(cy(p,.075,.08,.05,Bt,0,.07,-.03,16),.01);return p});
   // scarf
-  const scy=.5,sr=rx(scy)*1.03;
-  const scarf=to(bd,sr,.04,Sc,0,scy,0,PI/2);scarf.scale.set(1,.92,1.45);ol(scarf,.01);
+  const scy=.47,sr=rx(scy)*1.03;
+  const scarf=to(bd,sr,.036,Sc,0,scy,0,PI/2);scarf.scale.set(1,.92,1.3);ol(scarf,.01);
   const tail=piv(bd,.15,scy-.02,rx(scy)*.92*.98);tail.rotation.z=.12;
   ol(rb(tail,.085,.22,.04,.018,Sc,0,-.1,.01),.008);
   [-.07,-.14].forEach(y=>add(tail,new THREE.BoxGeometry(.088,.025,.044),Sc2,0,y,.01));
   ol(sp(bd,.05,Sc,.04,scy+.01,rx(scy)*.92*1.0,1.1,.9,.8),.008);
   // face (on the white band under the balcony)
   const EC=eyeTex('beacon_e',{bg:'#1D3A6B',edge:'#122850',pr:30,iris:['#5BC0EB','#1D3A6B'],ir:50});
-  const E=[-1,1].map(s=>kEye(onLoft(bd,f,s*.1,.655,-.012),.078,EC,Wh,{sink:.2,open:-.9}));
-  [-1,1].forEach(s=>{const p=onLoft(bd,f,s*.19,.595,.002),c=sp(p,1,Pk,0,0,0,.05,.032,.008);c.material=Pk;ol(c,0)});
-  const brows=[-1,1].map(s=>{const p=onLoft(bd,f,s*.1,.725,.004);const m=ol(rb(p,.08,.016,.014,.007,Dk,0,0,0),.003);m.rotation.z=-s*.1;return m});
-  const mp=onLoft(bd,f,0,.585,.002),mg=piv(mp,0,0,.002);
-  const smile=to(mg,.045,.01,Dk,0,.014,0,0,0,PI,PI);ol(smile,0);
-  const open=sp(mg,1,Mo,0,-.005,.002,.04,.004,.01);ol(open,0);
+  const E=[-1,1].map(s=>kEye(onLoft(bd,f,s*.105,.648,-.012),.088,EC,Wh,{sink:.22,open:-.95}));
+  [-1,1].forEach(s=>{const p=onLoft(bd,f,s*.2,.585,.002),c=sp(p,1,Pk,0,0,0,.056,.034,.008);ol(c,0);const w=sp(p,1,Wh,-.02,.012,.004,.012,.008,.003);w.outline=0});
+  const brows=[-1,1].map(s=>{const p=onLoft(bd,f,s*.105,.728,.004);const m=ol(rb(p,.08,.016,.014,.007,Dk,0,0,0),.003);m.rotation.z=-s*.1;return m});
+  const mp=onLoft(bd,f,0,.575,.002),mg=piv(mp,0,0,.002);
+  const smile=piv(mg,0,.012,0);ol(add(smile,gcache('beacon_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.05,0);m.quadraticCurveTo(0,-.012,.05,0);m.quadraticCurveTo(.046,-.06,0,-.062);m.quadraticCurveTo(-.046,-.06,-.05,0);return new THREE.ExtrudeGeometry(m,{depth:.008,bevelEnabled:false})}),Mo,0,0,0),.005);
+  const open=add(smile,SPH(1,12,8),M(0xFF6F9F,{roughness:.6}),0,-.043,.006);open.scale.set(.024,.012,.004);
+  // a little red door at the back and a round porthole window
+  {const bk=piv(bd,0,0,0);bk.rotation.y=PI;const dp=onLoft(bk,f,0,.2,.003);ol(rb(dp,.17,.22,.02,.07,Au,0,0,0),.006);ol(rb(dp,.14,.19,.025,.06,M(0x2F8FBF,{roughness:.6}),0,-.005,.006),.005);ol(sp(dp,.015,Au,.04,-.01,.024),.003);
+    const wp=onLoft(bk,f,.05,.49,.003);ol(to(wp,.045,.012,Au,0,0,0),.004);ol(cy(wp,.042,.042,.01,Gl,0,0,0,18),0).rotation.x=PI/2}
+  // the rope coil hangs at the hip
+  {const rp=piv(bd,.0,.3,0);rp.rotation.y=PI*.62;const rq=piv(rp,0,0,rx(.3)*.97);for(let i=0;i<3;i++)ol(to(rq,.06,.016,Ro,0,-.01*i,.02+i*.02,0,0,0),.004);ol(cy(rq,.012,.012,.08,Ro,.0,.07,.03,6),.003)}
   // arms (from below the scarf): -x holds the spyglass, +x waves and carries the rope coil
-  const AW=kArm3(bd,.31,.42,.06,Sk,.1,.1,.036,.055),AS=kArm3(bd,-.31,.42,.06,Sk,.1,.1,.036,.055);
-  const rope=piv(AW.el,.0,-.19,.04);rope.rotation.set(0,1.2,0);
-  for(let i=0;i<3;i++)ol(to(rope,.055,.017,Ro,0,-.02,i*.028-.03,0,0,0),.004);
+  const AW=kArm3(bd,.31,.42,.06,Sk,.1,.1,.042,.062),AS=kArm3(bd,-.31,.42,.06,Sk,.1,.1,.042,.062);
   const sg=piv(AS.tip,0,.05,0);sg.rotation.x=-.9;
   ol(cy(sg,.032,.032,.12,Br,0,-.04,0,14),.006);
   ol(cy(sg,.04,.032,.14,Au,0,-.15,0,14),.006);
@@ -15037,8 +15078,7 @@ KEEPERS.beacon=function(){
     brows[0].position.y=raise*.012;
     const syl=talk?Math.max(0,Math.sin(t*10+Math.sin(t*2.5)*2.2))*(.45+.55*Math.abs(Math.sin(t*1.8+1))):0;
     ES.mo=approach(ES.mo||0,Math.max(syl,cheer||greet?.55:happy?.3:0),dt*14);
-    open.scale.set(.034+ES.mo*.016,.003+ES.mo*.04,.01);
-    smile.scale.set(1+(happy?.25:0),Math.max(.001,1-ES.mo*3),1);
+    smile.scale.set(1+ES.mo*.1+(happy?.1:0),.42+ES.mo*1.1,1);open.visible=ES.mo>.25;
   }}
 };
 KEEPERS.cone=function(){
@@ -15500,6 +15540,7 @@ KEEPERS.patch=function(){
     Sv=M(0xDCE3F0,{metalness:.55,roughness:.28}),Sd=M(0x8D96AE,{metalness:.5,roughness:.35}),Tb=M(0x5C6CA8,{roughness:.4}),
     Pk=jel(0xFF3D9A),Pb=M(0xFF8FB8,{roughness:.6}),Lm=M(0xA6E22E,{roughness:.5}),Dk=M(0x6A3B4A,{roughness:.6}),Mo=M(0x7A2438,{roughness:.6}),
     Gl=M(0xBFEAFF,{metalness:.4,roughness:.12});
+  const Sh=M(0xFFB894,{roughness:.55});
   Pe.detail=1;Cr.detail=1;Wh.detail=1;
   // ---- plaster body: a puffy rounded pill, cream pad in the middle ----
   const BW=.44,BH=.4,BD=.3,BY=.6;
@@ -15523,29 +15564,42 @@ KEEPERS.patch=function(){
     const ho=cy(md,.016,.016,.024,Dk,0,0,.006,12);ho.rotation.x=Math.PI/2;ho.outline=0}
   // ---- face on the pad ----
   const et=eyeTex('patchE',{iris:['#6FC6E0','#1F6E8E'],ir:36,pr:21});
-  const E=[-1,1].map(s=>kEye(pivAt(padG,pg,s*.1,.05,.004),.062,et,Pe,{sink:.2,open:-1.15}));
-  const brows=[-1,1].map(s=>{const p=pivAt(padG,pg,s*.1,.14,.012),q=piv(p,0,0,0);ol(rb(q,.08,.02,.012,.006,Pd,0,0,0),.005);q.rotation.z=s*.12;return q});
-  [-1,1].forEach(s=>{const p=pivAt(padG,pg,s*.185,-.04,.006),c=add(p,SPH(1,14,10),Pb,0,0,0);c.scale.set(.05,.03,.006);ol(c,0)});
-  const mp=pivAt(padG,pg,0,-.06,.01),mg=piv(mp,0,0,0);
-  ol(add(mg,gcache('patch_mouth',()=>{const m=new THREE.Shape();m.moveTo(-.04,.008);m.lineTo(.04,.008);m.quadraticCurveTo(.036,-.05,0,-.052);m.quadraticCurveTo(-.036,-.05,-.04,.008);return new THREE.ExtrudeGeometry(m,{depth:.008})}),Mo,0,0,0),.005);
-  const tg=add(mg,SPH(1,12,8),Pb,0,-.036,.005);tg.scale.set(.02,.011,.005);
-  // heart badge on the pad
-  {const bp2=pivAt(padG,pg,.18,-.17,.01),h=add(bp2,gcache('patch_bheart',()=>{const q=heartGeo();q.center();return q}),Pk,0,0,0);h.scale.set(.06,.06,.5);ol(h,.005)}
+  const E=[-1,1].map(s=>kEye(pivAt(padG,pg,s*.112,.045,.004),.084,et,Pe,{sink:.24,open:-1.1}));
+  const brows=[-1,1].map(s=>{const p=pivAt(padG,pg,s*.115,.165,.012),q=piv(p,0,0,0);ol(rb(q,.085,.024,.014,.008,Pd,0,0,0),.005);q.rotation.z=s*.12;return q});
+  [-1,1].forEach(s=>{const p=pivAt(padG,pg,s*.205,-.06,.006),c=add(p,SPH(1,16,10),Pb,0,0,0);c.scale.set(.06,.036,.006);ol(c,0);
+    const w=add(p,SPH(1,8,6),Wh,-.02,.01,.004);w.scale.set(.012,.008,.003);w.outline=0});
+  const mp=pivAt(padG,pg,0,-.075,.01),mg=piv(mp,0,0,0);
+  ol(add(mg,gcache('patch_mouth2',()=>{const m=new THREE.Shape();m.moveTo(-.055,.01);m.quadraticCurveTo(0,-.004,.055,.01);m.quadraticCurveTo(.05,-.066,0,-.07);m.quadraticCurveTo(-.05,-.066,-.055,.01);return new THREE.ExtrudeGeometry(m,{depth:.008,bevelEnabled:false})}),Mo,0,0,0),.006);
+  const tg=add(mg,SPH(1,12,8),Pb,0,-.048,.006);tg.scale.set(.03,.015,.005);
+  // heart badge on the pad, on a little gold pin
+  {const bp2=pivAt(padG,pg,.2,-.18,.01);ol(cy(bp2,.05,.05,.012,M(0xFFD21F,{metalness:.5,roughness:.3}),0,0,.002,20),.004).rotation.x=Math.PI/2;
+    const h=add(bp2,gcache('patch_bheart',()=>{const q=heartGeo();q.center();return q}),Pk,0,0,.01);h.scale.set(.07,.07,.5);ol(h,.005)}
+  // stitched edge round the pad
+  {const dash=gcache('patch_dash',()=>SPH(1,6,4));
+    for(let i=0;i<30;i++){const th=i/30*Math.PI*2,q=pg.B(th),pp=pivAt(padG,pg,q[0]*.88,q[1]*.88,.003),d=add(pp,dash,Pd,0,0,0);d.scale.set(.012,.005,.003);d.rotation.z=th+Math.PI/2;d.outline=0}}
+  // breathing holes on the back too
+  {const bk=piv(bp,0,0,0);bk.rotation.y=Math.PI;[-1,1].forEach(s=>{for(let r=0;r<5;r++)for(let c=0;c<2;c++){const x=s*(.335+c*.05),y=-.2+r*.1+(c?.05:0);
+    const p=pivAt(bk,bg,x,y,.001),h=add(p,hole,Pd,0,0,0);h.scale.set(1,1,.25);h.outline=0}});
+    const pp=pivAt(bk,bg,0,0,.002),cpad=add(pp,SPH(1,20,12),Cr,0,0,0);cpad.scale.set(.2,.16,.012);cpad.outline=.006}
   // ---- legs and shoes ----
-  [-1,1].forEach(s=>{ol(cy(b,.04,.045,.14,Cr,s*.17,.2,0,12),.008);
-    const sh=sp(b,.1,Cr,s*.17,.065,.05,1,.6,1.35);ol(sh,.01);ol(to(b,.085,.012,Pb,s*.17,.04,.05,Math.PI/2),.004).scale.set(1,1.4,.7)});
-  // ---- stethoscope: two tubes from the top corners to a Y piece, then a stick to the chest piece ----
-  const YP=[0,.455,.335];
-  [-1,1].forEach(s=>{const pts=[[s*.2,.99,.0],[s*.31,.9,.16],[s*.31,.72,.27],[s*.2,.52,.325],[0,.455,.34]];
-    ol(add(body,sweepGeo(pts,()=>[.014,.014],{len:34,seg:8,ref:()=>[0,0,1]}),Tb,0,0,0),.008)});
+  [-1,1].forEach(s=>{ol(cy(b,.045,.05,.14,Pe,s*.17,.2,0,12),.008);
+    const sh=sp(b,.105,Sh,s*.17,.07,.05,1,.62,1.35);ol(sh,.01);ol(to(b,.09,.014,Pb,s*.17,.035,.05,Math.PI/2),.004).scale.set(1,1.4,.7);
+    ol(sp(b,.062,Wh,s*.17,.08,.15,1.1,.62,.8),.006);
+    [-1,1].forEach(k=>{const l=to(b,.018,.006,Pb,s*.17+k*.02,.13,.06,0,0,k*.5);l.outline=.003})});
+  // ---- stethoscope: two tubes from the top corners down the sides of the pad to a Y piece, then a stick to the chest piece ----
+  const YP=[0,.33,.3];
+  const sZ=(x,y)=>{const P=bg.pos;let bd=1e9,z=0;for(let i=0;i<P.length;i+=3){if(P[i+2]<=0)continue;const d=(P[i]-x)**2+(P[i+1]-y)**2;if(d<bd){bd=d;z=P[i+2]}}return z};
+  [-1,1].forEach(s=>{const pts=[[s*.2,.99,.0],[s*.33,.95,sZ(.33,.35)*.6]];[.86,.74,.62,.5,.42].forEach(y=>pts.push([s*.355,y,sZ(.355,y-BY)+.016]));pts.push([s*.3,.355,sZ(.3,.355-BY)+.03],[s*.14,.33,.3],[0,.33,.305]);
+    ol(add(body,sweepGeo(pts,()=>[.014,.014],{len:40,seg:8,ref:()=>[0,0,1]}),Tb,0,0,0),.008);
+    ol(sp(body,.02,Sd,s*.2,.99,0),.004)});
   ol(sp(body,.026,Sd,YP[0],YP[1],YP[2]),.006);
   const stick=piv(body,YP[0],YP[1],YP[2]);ol(cy(stick,.011,.011,1,Tb,0,-.5,0,8),.006);
-  const cp=piv(body,0,.3,.35);
+  const cp=piv(body,0,.25,.25);
   ol(cy(cp,.056,.056,.026,Sv,0,0,0,24),.01).rotation.x=Math.PI/2;
   ol(cy(cp,.04,.04,.03,Sd,0,0,.006,20),.005).rotation.x=Math.PI/2;
   ol(to(cp,.05,.009,Sv,0,0,.004),.004);
   const aimS=(a,S,F)=>{const d=[F[0]-S[0],F[1]-S[1],F[2]-S[2]],l=Math.hypot(...d)||1,u=d.map(v=>v/l);a.rotation.set(Math.atan2(-u[2],-u[1]),0,Math.asin(Math.max(-1,Math.min(1,u[0]))));a.scale.y=l};
-  const CPR=[0,.3,.35];aimS(stick,YP,CPR);
+  const CPR=[0,.25,.25];aimS(stick,YP,CPR);
   // ---- arms ----
   const L=.24,HS=.062,SL=[-.46,.62,0],SR=[.46,.62,0];
   const AL=kArm2(body,-.46,.62,0,Pe,L,.038,HS),AR=kArm2(body,.46,.62,0,Pe,L,.038,HS);
@@ -15553,8 +15607,9 @@ KEEPERS.patch=function(){
   const lp=piv(AR.userData.tip,0,0,0);lp.rotation.x=.3;
   ol(cy(lp,.008,.008,.2,Wh,0,.08,0,8),.004);
   const cd=piv(lp,0,.22,0);cd.rotation.y=.4;
-  ol(sp(cd,.07,Pb,0,0,0,1,1,.45),.008);
-  ol(to(cd,.045,.011,Wh,0,0,.03),.004);ol(to(cd,.024,.011,Lm,0,0,.03),.004);
+  ol(sp(cd,.085,Pb,0,0,0,1,1,.45),.008);
+  ol(to(cd,.06,.012,Wh,0,0,.036),.004);ol(to(cd,.034,.012,Lm,0,0,.037),.004);ol(sp(cd,.014,Wh,0,0,.04,1,1,.4),.003);
+  {const bw=piv(lp,0,.12,0);[-1,1].forEach(s=>{const l=sp(bw,.022,Pk,s*.022,0,0,1.3,.8,.6);l.outline=.004});ol(sp(bw,.01,Pk,0,0,0),.003)}
   // ---- puffing heart ----
   const hp=piv(b,.1,1.15,.12);hp.visible=false;
   {const h=add(hp,gcache('patch_bheart',()=>{const q=heartGeo();q.center();return q}),Pk,0,0,0);h.scale.set(.15,.15,.6);ol(h,.008)}
@@ -15589,7 +15644,7 @@ KEEPERS.patch=function(){
         if(q>1.4&&q<2.6)mo=.2;
         if(q>3.6){qP=-1;qT=8+Math.random()*5}}
     }
-    if(greet){tr=[.6+Math.sin(t*12)*.1,.88,.15]}
+    if(greet){tr=[.62+Math.sin(t*12)*.1,.92,.26]}
     else if(cheer){tl=[-.62,.9,.12];tr=[.62,.9,.12]}
     else if(talk&&qP<0){tl=[-.56,.45+Math.max(0,Math.sin(t*2.6))*.08,.12]}
     const k=init?Math.min(1,dt*12):1;init=1;
