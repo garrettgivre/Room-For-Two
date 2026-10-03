@@ -702,6 +702,9 @@ body.away .tag{visibility:hidden}
 .tm-tabs[hidden]{display:none!important}
 .tm-rain{position:absolute;inset:0;pointer-events:none;z-index:2;opacity:.5;background:repeating-linear-gradient(105deg,transparent 0 22px,rgba(255,255,255,.55) 22px 23.5px,transparent 23.5px 47px);background-size:200px 200px;animation:tmrain .5s linear infinite}.tm-rain[hidden]{display:none}
 @keyframes tmrain{to{background-position:-40px 200px}}
+.headrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.hcard{display:flex;gap:8px;align-items:flex-start;background:#fff;border:2.5px solid var(--ink);border-radius:16px;padding:8px 9px;box-shadow:0 3px 0 var(--ink)}.hcard.me{background:#FFF6D6}.hcard .hdot{flex:none;width:22px;height:22px;border-radius:50%;background:var(--hc);border:2.5px solid var(--ink);margin-top:2px}.hcard b{display:block;color:var(--ink)}.hcard small{display:block;opacity:.75}.hcard p{margin:3px 0 0;font-size:.82em;line-height:1.25}
+.hswap{display:block;margin:-2px auto 8px}
+.selby{position:absolute;left:50%;bottom:100%;transform:translate(-50%,-6px) rotate(1deg);white-space:nowrap;background:#fff;color:var(--ink);border:2.5px solid var(--ink);border-radius:999px;padding:2px 10px;font-size:.8em}.selby[hidden]{display:none}
 .bondbar{display:flex;align-items:center;gap:10px;margin:6px 2px 2px}.bondbar b{font-family:var(--display,inherit);color:var(--ink);white-space:nowrap}.bondbar span{flex:1;height:12px;border-radius:8px;background:#fff;border:2.5px solid var(--ink);overflow:hidden}.bondbar i{display:block;height:100%;background:linear-gradient(90deg,#FF3D9A,#9B4DF2)}
 .tmr.chat{animation:tmrChat 1.1s ease-in-out infinite}@keyframes tmrChat{50%{box-shadow:0 2px 0 var(--ink),0 0 0 5px rgba(255,255,255,.85)}}.tmr{position:absolute;left:0;top:0;width:36px;height:36px;padding:0;border-radius:50% 50% 50% 12%;transform-origin:50% 100%;border:2.5px solid var(--ink);background:var(--c,#fff);box-shadow:0 2px 0 var(--ink);display:grid;place-items:center;overflow:hidden;pointer-events:auto;cursor:pointer}.tmr[hidden]{display:none}.tmr img{width:33px;height:33px;object-fit:contain}.tmr b{font-family:var(--disp);font-size:16px;color:var(--ink)}
 .twline{font-size:14px;line-height:1.35;margin:8px 0}.twacts{display:flex;flex-wrap:wrap;gap:6px}.twacts .gel{width:auto;flex:1;min-height:38px;font-size:14px;padding:0 10px}
@@ -983,7 +986,7 @@ body.styling .storechip{opacity:0}
   <button class="gel lilac pbi" id="pbUndo" aria-label="Undo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
   <button class="gel slime pbi" id="pbDone" aria-label="Done painting"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg></button>
 </div>
-<div class="seltools" id="seltools">
+<div class="seltools" id="seltools"><span class="selby" id="selBy" hidden></span>
   <button class="gel sun" id="bTurn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg>Turn</button>
   <button class="gel lilac" id="bColor"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="9" r="3.4"/><circle cx="16" cy="9" r="3.4"/><circle cx="12" cy="16" r="3.4"/></svg>Paint</button>
   <button class="gel pink" id="bStore"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 8h16l-1.5 11h-13z"/><path d="M9 8V5h6v3"/></svg>Store</button>
@@ -6693,7 +6696,7 @@ function pickUse(stats,avg,only){const S=pet.rig.S,c=[];roomObjs().forEach(o=>{c
     if(C.u.kind==='nap'){petGo(at.at,()=>{pet.mode='sleep';pet.sleepT=(9+Math.random()*9)*(petNight()?2:1);pet.lastUse=C.it.id;pet.napBed=C.it.id;remember(C.it.id);autoUseStart(C.it.id);emote('💤')});return true}
     petGo(at.at,()=>startUse(C,at));return true}
   return false}
-function startUse(C,at){if(!roomObjs().has(C.it.id))return;const u=C.u;if(u.greet&&away&&away.keeper){keeperReact('greet',2.2);keeperSay(pick1(away.keeper.lines.hi))}const st=petStats(),d=u.d*(.85+Math.random()*.3);pet.mode='use';pet.lastUse=C.it.id;remember(C.it.id);if(!away)jrUse(C.it.id);
+function startUse(C,at){if(!roomObjs().has(C.it.id))return;const u=C.u;if(u.greet&&away&&away.keeper){keeperReact('greet',2.2);keeperSay(pick1(away.keeper.lines.hi))}const st=petStats(),d=u.d*(.85+Math.random()*.3);pet.mode='use';pet.lastUse=C.it.id;remember(C.it.id);if(!away){jrUse(C.it.id);headUses(C.it.id)}
   pet.use={id:C.it.id,u,t:0,d,face:at.face,emoAt:[.3,d>8?.75:2].map(f=>f*d),emo:typeof u.emo==='function'?u.emo(st):u.emo};pet.act={k:u.anim,t:0,d};if(!u.inspect)autoUseStart(C.it.id)}
 function endUse(done){const U=pet.use;if(!U)return;pet.use=null;const o=roomObjs().get(U.id);if(o){delete o.userData.flick;if(o.userData.use)o.userData.use(-1,-1);if(U.u.wob)o.rotation.z=0}
   if(pet.act&&pet.act.k===U.u.anim)pet.act=null;if(done){pet.mode='idle';pet.timer=1.5+Math.random()*2.5;const th=U.u.then;if(th&&Math.random()<th[1])setTimeout(()=>petAct(th[0]),250)}}
@@ -6879,7 +6882,7 @@ function needMissing(k,urgent){const t=Date.now(),M=needMissing.t||(needMissing.
   state.wish={k:'need',need:k,ev:'need:'+k,n:1,got:0,t,until:t+WISH_HOURS*36e5};saveSoon();updWish();setTimeout(()=>{wishEmote();toast(`${PN()} wishes for ${wishText()}.`)},1800);if(openTab==='pet')renderSheet()}
 // Come over and say hello (on opening the app, coming back to it, or when lonely)
 function petGreet(){if(away||!pet.rig||pet.stage<1||styling()||toyPlay||kmode||!['idle','walk'].includes(pet.mode))return;const f=new THREE.Vector3(Math.sin(cam.yaw),0,Math.cos(cam.yaw)).multiplyScalar(HALF*.45);
-  petGo(f,()=>{pet.waveT=1.8;pet.happyT=1.2;pet.hop=.7;emote('💗');pet.timer=3})}
+  petGo(f,()=>{pet.waveT=1.8;pet.happyT=1.2;pet.hop=.7;pet.timer=3;try{headHello()}catch(_){emote('💗')}})}
 let hiddenAt=0;document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>15*60e3){hiddenAt=0;setTimeout(()=>{try{petGreet()}catch(_){}},900)}});
 setTimeout(()=>{try{petGreet()}catch(_){}},4200);
 // While nobody had the app open: the pet used what it had (once per load, gap measured from the last save)
@@ -7021,6 +7024,7 @@ function updatePet(dt,t){
     const o=A&&A.arms&&A.arms[i];if(o){rz+=(o.rz-rz)*o.w;rx+=(o.rx-rx)*o.w}
     Ar.p.rotation.z=approach(Ar.p.rotation.z,rz,dt*12);Ar.p.rotation.x=approach(Ar.p.rotation.x,rx,dt*12)});
   // heads: each bobs on its own, they glance at each other, and lean together to sleep
+  if(pet.myHT>0)pet.myHT-=dt;
   R.heads.forEach((H,i)=>{const s=H.s,ph=i*1.9;let rz=-s*.1+Math.sin(t*1.3+ph)*.05,rx=Math.sin(t*1.1+ph)*.04,ry=0;
     if(walking)rz+=Math.sin(pet.ph*2+ph)*.07;
     if(sleeping){rz=s*.32;rx=.18}
@@ -7028,6 +7032,7 @@ function updatePet(dt,t){
     if(avg<35&&!sleeping)rx+=.15;
     if(S.elder)rx+=.1;
     if(pet.hop>0)rz+=Math.sin(t*20+ph)*.12;
+    if(pet.myHT>0&&i===pet.myH&&!sleeping){const k=Math.min(1,pet.myHT);ry=ry*(1-k);rx-=.16*k;rz+=(-s*.1+Math.sin(t*9)*.09)*k;if(pet.lookH)pet.lookH[i].x=pet.lookH[i].y=0}
     if(pet.soft){rz-=pet.soft.lz*1.6+pet.soft.vz*.05;rx-=pet.soft.lx*1.3+pet.soft.vx*.04}
     const o=A&&A.heads&&A.heads[i];if(o){rz+=((o.rz??rz)-rz)*o.w;rx+=((o.rx??rx)-rx)*o.w;ry+=((o.ry??ry)-ry)*o.w}
     H.p.rotation.z=approach(H.p.rotation.z,rz,dt*8);H.p.rotation.x=approach(H.p.rotation.x,rx,dt*8);H.p.rotation.y=approach(H.p.rotation.y,ry,dt*8)});
@@ -13558,7 +13563,7 @@ let selId=null,selHelper=null;
 function select(id){if(id!==selId){const pl=document.getElementById('palette');if(pl)pl.hidden=true}selId=id;if(selHelper){scene.remove(selHelper);selHelper=null}
   if(id&&itemObjs.get(id)){selHelper=new THREE.BoxHelper(itemObjs.get(id),0xFF3FB8);selHelper.material.depthTest=false;selHelper.material.transparent=true;selHelper.renderOrder=999;scene.add(selHelper);
     $('#bTurn').style.display=CATMAP[itemById(id).k].wall?'none':''}
-  $('#seltools').classList.toggle('on',!!id)}
+  $('#seltools').classList.toggle('on',!!id);{const sb=$('#selBy'),it=id&&itemById(id),t=it?byLabel(it):'';sb.textContent=t;sb.hidden=!t}}
 const ptrs=new Map();let gest=null,dragging=false,liveHinted=false;
 function pdist(){const a=[...ptrs.values()];return Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)}
 function pang(){const a=[...ptrs.values()];return Math.atan2(a[1].y-a[0].y,a[1].x-a[0].x)}
@@ -13639,7 +13644,7 @@ $('#bTurn').onclick=()=>{const it=itemById(selId);if(!it)return;const U=beginBui
 function visibleWall(){let best=0,bd=-1e9;walls.forEach((w,i)=>{if(!w.g.visible)return;const d=WALLDEF[i];const v=(camera.position.x-d.c[0])*d.n[0]+(camera.position.z-d.c[1])*d.n[1];if(v>bd){bd=v;best=i}});return best}
 function spawn(k){const d=CATMAP[k];if(!(state.fown[k]>0)){goBuy(k);return null}
   if(state.items.length>=80){toast('Your room is full. Store something first.');return null}
-  state.fown[k]--;if(!state.fown[k])delete state.fown[k];const it={id:uid(),k,c:d.dc||0};
+  state.fown[k]--;if(!state.fown[k])delete state.fown[k];const it={id:uid(),k,c:d.dc||0,by:pid()};
   if(d.wall){it.w=visibleWall();it.u=(Math.random()-.5)*2;it.y=d.y}else{it.x=(Math.random()-.5)*1.5;it.z=(Math.random()-.5)*1.5;it.r=0}
   state.items.push(it);syncScene();clampPlaced(it);select(it.id);updHUD();td('place');needKeys(d).forEach(k=>wishHit('need:'+k));return it}
 
@@ -13712,6 +13717,7 @@ const JR_T={
   event:['We went to {s}! Everyone was there and nobody minded that I sat on two cushions.','{s} tonight. I stayed up past my bedtime and nobody noticed. Well, {b} noticed.'],
   visit:['{p} and I went round to {s}. I wiped my feet twice, once for each head.','We visited {s}! I wanted to see where everyone sleeps. It was very nice and very theirs.','{p} knocked at {s} and we stayed for a while. I didn’t want to leave.'],
   shop:['{p} took me to {s}. So much to look at that I forgot where my feet were.','A trip to {s}! I met everyone and only knocked over one thing.'],
+  useby:['Spent a while with the {i} {p} picked out. {h} thinks it is the best thing in the room. {h} is a little biased.','{h} dragged us over to the {i} again. {p} chose it, so of course.','The {i} {p} put in is perfect. {h} said so first, and loudest.'],
   bond:['We got a little closer today. {a} noticed first. {b} says it noticed first.','I think we are {i} now. That sounds right. It feels right too.','Somebody looked after me so well today that both my heads went quiet and happy.'],
   grow:['Big news: I grew up into a {st}! Everything looks a little smaller now.','I’m a {st} now. {a} says it feels the same. {b} says everything is different. We are both right.'],
   hatch:['I hatched! Hello. I have two heads and a lot of questions.'],
@@ -13728,7 +13734,7 @@ const JR_AWAY={
   miss:['It was quiet without you two. I talked to the {i} so it wouldn’t feel left out.','I kept an eye on the door. You two always come back, but I like to check.']};
 function jrEvent(k,x){if(!state||!state.journal)return;const pool=JR_T[k];if(!pool||(stageOf(state.pet.xp)===0&&k!=='hatch'&&k!=='warm'))return;jrAdd(jrFill(pickJ(pool),jrCtx(x)),k.startsWith('self_')?'':myId||'me',k,0,x&&(x.i||x.s||x.st)||'')}
 function jrUse(id){const it=state.items.find(i=>i.id===id);if(!it)return;const c=CATMAP[it.k];if(!c||c.fn==='window'||/^win_/.test(c.k)||stageOf(state.pet.xp)===0)return;
-  const now=Date.now();if(now-(jrUse.t||0)<25*6e4||Math.random()>.35)return;jrUse.t=now;const TT=traitsOf(),pool=TT.length&&Math.random()<.4?TRAITS[TT[Math.random()*TT.length|0]].jr:JR_T.use;jrAdd(jrFill(pickJ(pool),jrCtx({i:c.n.toLowerCase()})),'','use',0,c.n.toLowerCase())}
+  const now=Date.now();if(now-(jrUse.t||0)<25*6e4||Math.random()>.35)return;jrUse.t=now;const TT=traitsOf(),hb=it.by?headOfPerson(it.by):-1,pool=hb>=0&&Math.random()<.35?JR_T.useby:TT.length&&Math.random()<.4?TRAITS[TT[Math.random()*TT.length|0]].jr:JR_T.use;jrAdd(jrFill(pickJ(pool),jrCtx({i:c.n.toLowerCase(),h:headNames()[hb>=0?hb:0]})),pool===JR_T.useby?it.by:'','use',0,c.n.toLowerCase())}
 function jrCatchUp(){const now=Date.now(),gap=now-(state.jrT||now),p=state.pet;if(!state.jrT||stageOf(p.xp)===0||gap<50*6e4)return;
   const hrs=gap/36e5,n=Math.min(4,1+Math.floor(hrs/4)),st=petStats(),used=new Set();
   for(let i=0;i<n;i++){const t=state.jrT+gap*(i+1)/(n+1)+Math.random()*6e5,h=new Date(t).getHours(),band=h>=5&&h<11?'am':h<17?'day':h<22?'eve':'night';
@@ -14436,7 +14442,7 @@ function doAct(k,itemId){const a=ACTS[k],P=persOf();if(k!=='nap'&&!itemId){petVi
   else if(k==='play'){startToyPlay(it.id);if(note==='fav')setTimeout(()=>emote('💗'),1200)}
   else startToyPlay(it.id);
   if(note==='fav')toast(`${nm} loved that! It's a favorite.`);else if(note==='bad')toast(`${nm} ate it, but it's not a fan.`);else if(note==='full')toast(`${nm} is stuffed. Easy on the snacks.`);else if(!gained)toast(`${nm} is already set on that. Try something else.`);
-  petView=null;td('care');td(k);if(note==='fav')td('feed:fav');saveSoon();updHUD();if(openTab==='pet')renderSheet()}
+  if(k==='feed'&&it)hcFood(it.cat);petView=null;td('care');td(k);if(note==='fav')td('feed:fav');saveSoon();updHUD();if(openTab==='pet')renderSheet()}
 function warm(){td('warm');commitPet((s,p)=>{p.xp+=1});state.hearts+=1;pet.hop=.7;pet.waveT=1.3;pet.happyT=1.3;emote('💗');if(stageOf(state.pet.xp)===0){logEvent('warmed the egg');if(Math.random()<.3)jrEvent('warm')}saveSoon();updHUD();if(openTab==='pet')renderSheet()}
 let lastPat=0;
 let lastPatTd=0;function petTap(){if(stageOf(state.pet.xp)===0){warm();return}if(styling()){pet.happyT=.8;return}if(pet.mode==='sleep'){emote('💤');return}if(Date.now()-lastPatTd>700){lastPatTd=Date.now();td('pat')}if(pet.mode==='perch'){pet.waveT=1.3;pet.happyT=.9;emote('💗')}else if(Math.random()<.35&&petAct('nuzzle')){}else{pet.hop=1;emote('💗')}
@@ -14730,7 +14736,33 @@ function tdEnsure(){if(!state)return false;const T=state.td=state.td&&typeof sta
 function tdText(e){return TD_T[e.k].txt(e.n)}
 function tdCount(e){const v=Object.values(state.td.prog[e.k]||{});return TD_T[e.k].score?Math.max(0,...v):v.reduce((a,b)=>a+b,0)}
 // Something happened (feed, place, score:catch...). Every matching two-do on today's list moves along.
-function td(ev,amt,val){if(!state)return;wishHit(ev);try{trHit(ev,amt);dreamHit(ev,amt);reqHit(ev,amt)}catch(e){console.warn('life',e)}tdEnsure();const T=state.td,id=pid();let hit=false;if(ev==='note')T.notes=(T.notes|0)+1;
+// ---- a head for each of you (v63): the first two people in the room each get a head; it learns what its person does with it.
+// state.heads {pid:{s:since, c:{kind:count}, f:{food cat:count}}}: each phone only writes its own entry, merged per person
+const HC_LOVE={feed:'mealtimes',bath:'bath time',play:'playtime',nap:'being tucked in',pat:'pats',home:'watching you decorate',trip:'trips into town',games:'the arcade'};
+function hcKind(ev){if(/^feed/.test(ev))return'feed';if(ev==='bath'||ev==='play'||ev==='nap'||ev==='pat')return ev;if(['place','move','paint','tint'].includes(ev))return'home';if(/^visit:/.test(ev))return'trip';if(ev==='arcade')return'games';return null}
+function headPeople(){const H=state.heads||{},L=Object.keys(H).filter(k=>k!=='me'||mode==='solo').sort((a,b)=>((H[a].s||0)-(H[b].s||0))||(a<b?-1:1)).slice(0,2);if(state.pet.hsw&&L.length===2)L.reverse();return L}
+function headEntry(id){id=id||pid();const H=state.heads||(state.heads={});return H[id]||(H[id]={s:Date.now(),c:{},f:{}})}
+function headOfPerson(id){id=id||pid();return headPeople().indexOf(id)}
+function headMine(){headEntry();return headOfPerson()}
+function hcHit(ev){const k=hcKind(ev);if(!k||!state)return;const E=headEntry();E.c[k]=(E.c[k]|0)+1}
+function hcFood(cat){if(!cat||!state)return;const E=headEntry();E.f[cat]=(E.f[cat]|0)+1}
+function hcTop(o){let b=null,v=0;for(const k in o||{})if(o[k]>v){v=o[k];b=k}return b}
+function hcTotal(E){return Object.values(E&&E.c||{}).reduce((a,b)=>a+b,0)}
+// what a head is like: its person, what it loves most, its favourite food
+function headInfo(i){const ids=headPeople(),id=ids[i],E=id&&(state.heads||{})[id],nm=headNames()[i],me=!!id&&id===pid();
+  const top=E&&hcTop(E.c),f=E&&hcTop(E.f),n=hcTotal(E);
+  return{i,nm,id,me,top,f,n,
+    own:!id?'Waiting for its person':me?'Your head':`${who(id)}’s head`,
+    line:!id?`When your person joins, ${nm} becomes theirs.`:n<3?`Still getting to know ${me?'you':who(id)}.`:`Loves ${HC_LOVE[top]}${f?` and ${(FOOD_CATS[f]||f).toLowerCase()}`:''}.`}}
+function headRow(){const A=[headInfo(0),headInfo(1)],L=petLook(),col=[L.headL,L.headR].map(c=>'#'+((+c||0)>>>0).toString(16).padStart(6,'0'));
+  return`<div class="headrow">${A.map(h=>`<div class="hcard${h.me?' me':''}" style="--hc:${col[h.i]}"><span class="hdot"></span><div><b>${esc(h.nm)}</b><small>${esc(h.own)}</small><p>${esc(h.line)}</p></div></div>`).join('')}</div>${A[0].id&&A[1].id?'<button class="chip hswap" id="hSwap">Swap heads</button>':''}`}
+// the person's own head says hello when they come back to the app
+function headHello(){const i=headMine();if(i<0||!pet.rig){emote('💗');return}pet.myH=i;pet.myHT=2.6;emote('',{head:i,icon:'emo-party'})}
+// furniture remembers who placed it
+function byLabel(it){if(!it||!it.by)return'';return it.by===pid()?'You picked this':`${who(it.by)} picked this`}
+// when the pet uses something one of you placed, that person's head is pleased about it now and then
+function headUses(id){const it=state.items.find(i=>i.id===id);if(!it||!it.by)return;const i=headOfPerson(it.by);if(i<0||Math.random()>.3)return;setTimeout(()=>{try{emote('',{head:i,icon:'emo-star'})}catch(_){}},1500)}
+function td(ev,amt,val){if(!state)return;wishHit(ev);try{hcHit(ev)}catch(_){}try{trHit(ev,amt);dreamHit(ev,amt);reqHit(ev,amt)}catch(e){console.warn('life',e)}tdEnsure();const T=state.td,id=pid();let hit=false;if(ev==='note')T.notes=(T.notes|0)+1;
   T.list.forEach(e=>{const t=TD_T[e.k];if(!t||t.ev!==ev||T.done.includes(e.k))return;const P=T.prog[e.k]=T.prog[e.k]||{};
     if(t.score){if(!((val|0)>(P[id]|0)))return;P[id]=val|0}else P[id]=(P[id]|0)+(amt||1);hit=true;if(tdCount(e)>=e.n)tdComplete(e)});
   tdMilestones();if(hit||ev==='note')saveSoon();tdUI();if(hit&&openTab==='todo')renderSheet()}
@@ -16111,7 +16143,7 @@ function renderSheet(){const body=$('#sheetBody');
         <span class="iq">${canBuy?`<span class="shopat">${SHOPS[SHOP_FOR[it.k]].n}</span>`:it.k==='toy'?'Owned':'×'+have}</span></button>`}).join('')}</div>`;
       $('#pvBack').onclick=()=>{petView=null;renderSheet()};queueThumbs(list.filter(i=>PROP_BUILD[i.id]).map(i=>'toy:'+i.id));body.querySelectorAll('[data-item]').forEach(b=>b.onclick=()=>{const it=ITEMMAP[b.dataset.item];if(owned(it)){doAct(act,it.id);return}const sk=SHOP_FOR[it.k];if(away&&away.key===sk){setTab(null);openProduct(it.id);return}toast(`${it.n} is sold at ${SHOPS[sk].n}.`);travelTo(sk,null,it.id)});return}
     const sp=spiritOf(s),bag=Object.values(state.inv).reduce((a,b)=>a+b,0);
-    body.innerHTML=`<div class="pet-head"><input id="pname" maxlength="16" value="${esc(p.name)}" aria-label="Pet name"><span class="stage">Bond ${bondOf(p.xp).lv}</span></div>`+(st?wishRow()+dreamRow():'')+
+    body.innerHTML=`<div class="pet-head"><input id="pname" maxlength="16" value="${esc(p.name)}" aria-label="Pet name"><span class="stage">Bond ${bondOf(p.xp).lv}</span></div>`+headRow()+(st?wishRow()+dreamRow():'')+
     (st===0?`<p class="hint">A mystery egg lives in your room. Warm it together to hatch it. Either of you can tap the egg or the button.</p><div class="actions"><button class="gel pink" id="warm" style="grid-column:span 2">Warm the egg (${p.xp}/3)</button></div>`:
     `    <div class="stats rings">${NEEDS.map(([k,n,c,ic])=>`<div class="sr" style="--c:${c}"><span>${ringSvg(Math.min(100,s[k])/100,56,8)}<img src="assets/icons/${ic}.webp" alt=""></span>${n}<small>${tier(k,s[k])}</small></div>`).join('')}</div>
     <div class="actions">${Object.entries(ACTS).map(([k,a])=>`<button class="gel ${a.cls}" data-act="${k}"><img class="bi" src="assets/icons/act-${k}.webp" alt="">${a.label}</button>`).join('')}</div>${selfCareRow()}
@@ -16123,6 +16155,7 @@ ${P?`<p class="pers"><b>${P.n}</b> ${P.d}</p>`:''}${traitRow()}<div class="minds
     {const wg=$('#wishGo');if(wg)wg.onclick=wishGo}body.querySelectorAll('[data-dgo]').forEach(b=>b.onclick=()=>reqGo(b.dataset.dgo));body.querySelectorAll('[data-sn]').forEach(b=>b.onclick=()=>openDecoNeed(b.dataset.sn));
     body.querySelectorAll('[data-hn]').forEach(inp=>inp.onchange=()=>{const n=headNames().slice(),v=inp.value.trim().slice(0,10);if(!v)return;n[+inp.dataset.hn]=v;state.pet.heads=n;logEvent(`named the ${inp.dataset.hn==='1'?'right':'left'} head ${v}`);saveSoon()})
     {const a=$('#goWard'),b=$('#goGlam');if(a)a.onclick=()=>setTab('wardrobe');if(b)b.onclick=()=>{setTab(null);travelTo('glam')}}
+    {const hs=$('#hSwap');if(hs)hs.onclick=()=>{state.pet.hsw=!state.pet.hsw;logEvent('swapped heads');saveSoon();renderSheet()}}
     const ni=$('#pname');ni.onchange=()=>{const v=ni.value.trim().slice(0,16);if(v&&v!==state.pet.name){logEvent(`renamed the pet to ${v}`);state.pet.name=v;saveSoon();updHUD()}}}
   else if(openTab==='journal')renderJournal(body);
   else if(openTab==='inbox')renderInbox(body);
@@ -16331,7 +16364,7 @@ let syncBase=null,syncBaseRev=0;
 function snapBase(s,keep){const b={};for(const k in s)b[k]=JSON.stringify(s[k]);syncBase=b;syncBaseRev=+s.rev||0;if(keep!==false)try{localStorage.setItem('r42base:'+roomCode,JSON.stringify(s))}catch(_){}}
 const SYNC_SKIP={rev:1,kr:1,visits:1,jrT:1,cv:1,minV:1};
 // the oldest app version allowed to edit the shared room (older ones refresh themselves when they see this in the doc)
-const SYNC_MIN_V=62;
+const SYNC_MIN_V=63;
 const localChanged=()=>!!syncBase&&Object.keys(state).some(k=>!SYNC_SKIP[k]&&JSON.stringify(state[k])!==syncBase[k]);
 const mNum=(l,r,b)=>(+b||0)+((+l||0)-(+b||0))+((+r||0)-(+b||0));
 const mCounts=(l,r,b)=>{b=b||{};l=l||{};r=r||{};const o={};new Set([...Object.keys(l),...Object.keys(r),...Object.keys(b)]).forEach(k=>{const v=mNum(l[k],r[k],b[k]);if(v>0)o[k]=Math.min(99,v)});return o};
@@ -16359,6 +16392,7 @@ const MERGE={hearts:(l,r,b)=>Math.max(0,mNum(l,r,b)),tokens:(l,r,b)=>Math.max(0,
   dream:(l,r)=>{l=l||{};r=r||{};if((l.n|0)!==(r.n|0))return(l.n|0)>(r.n|0)?l:r;if(l.k!==r.k)return!l.k?r:!r.k?l:JSON.stringify(l)<JSON.stringify(r)?l:r;if((l.s|0)!==(r.s|0))return(l.s|0)>(r.s|0)?l:r;return Object.assign({},l,{got:Math.max(l.got|0,r.got|0)})},
   req:(l,r)=>{l=l||{};r=r||{};if(l.day!==r.day)return(l.day||'')>(r.day||'')?l:r;const lj=JSON.stringify(l.list),rj=JSON.stringify(r.list);if(lj!==rj)return lj<rj?l:r;
     const prog={};[l.prog||{},r.prog||{}].forEach(P=>{for(const n in P){const o=prog[n]=prog[n]||{};for(const id in P[n])o[id]=Math.max(o[id]|0,P[n][id]|0)}});return{day:l.day,list:l.list,prog,done:[...new Set([...(l.done||[]),...(r.done||[])])]}},
+  heads:(l,r)=>{const o={};new Set([...Object.keys(l||{}),...Object.keys(r||{})]).forEach(k=>{const a=(l||{})[k],b=(r||{})[k];if(!a||!b){o[k]=a||b;return}const w=hcTotal(a)>=hcTotal(b)?a:b;o[k]=Object.assign({},w,{s:Math.min(a.s||Infinity,b.s||Infinity)})});return o},
   finds:(l,r)=>{if(!l)return r;if(!r)return l;if(l.day!==r.day)return l.day>r.day?l:r;return{day:l.day,got:[...new Set([...(l.got||[]),...(r.got||[])])]}},
   gifts:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{})if(!o[k]||l[k]>o[k])o[k]=l[k];return o},acts:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{})if(!o[k]||l[k]>o[k])o[k]=l[k];return o},
   disc:(l,r)=>{const o={};new Set([...Object.keys(l||{}),...Object.keys(r||{})]).forEach(k=>o[k]=[...new Set([...((l||{})[k]||[]),...((r||{})[k]||[])])]);return o},seeds:mCounts,evseen:mSet,
@@ -16403,6 +16437,7 @@ function normalize(s){const oldPal=!!s&&!(s.pv>=2);const d=defaultState();s=Obje
   if(!(s.pet.xv>=2)){if(s.pet.xp>=150)s.pet.xp=400+(s.pet.xp-150);s.pet.xv=2}
   s.pet.tr=s.pet.tr&&typeof s.pet.tr==='object'?Object.fromEntries(Object.entries(s.pet.tr).filter(([k,v])=>TRAITS[k]&&+v>0).map(([k,v])=>[k,Math.min(9999,+v)])):{};s.pet.trS=typeof s.pet.trS==='string'?s.pet.trS.slice(0,40):'';
   {const D=s.dream&&typeof s.dream==='object'&&!Array.isArray(s.dream)?s.dream:{};s.dream={k:DREAMS[D.k]?D.k:null,s:clamp(D.s|0,0,5),got:Math.max(0,D.got|0),n:Math.max(0,D.n|0),t:+D.t||0,next:+D.next||0,last:typeof D.last==='string'?D.last.slice(0,16):''}}
+  {const H=s.heads;s.heads={};if(H&&typeof H==='object'&&!Array.isArray(H))for(const k in H){const e=H[k];if(!e||typeof e!=='object')continue;const cnt=o=>{const r={};if(o&&typeof o==='object')for(const q in o)if(+o[q]>0)r[q]=Math.min(1e6,+o[q]|0);return r};s.heads[k]={s:+e.s||0,c:cnt(e.c),f:cnt(e.f)}}}
   {const F=s.finds;s.finds=F&&typeof F==='object'&&typeof F.day==='string'&&Array.isArray(F.got)?{day:F.day,got:F.got.filter(n=>Number.isInteger(n)&&n>=0&&n<20).slice(0,20)}:null}
   {const Q=s.req;s.req=Q&&typeof Q==='object'&&typeof Q.day==='string'&&Array.isArray(Q.list)?{day:Q.day,list:Q.list.filter(e=>e&&REQ_T[e.kp]&&REQ_T[e.kp][e.i]).slice(0,4).map(e=>({kp:e.kp,i:e.i|0,n:e.n|0})),prog:Q.prog&&typeof Q.prog==='object'&&!Array.isArray(Q.prog)?Q.prog:{},done:Array.isArray(Q.done)?Q.done.filter(n=>Number.isInteger(n)):[]}:{}}
   {const C=s.cheer&&typeof s.cheer==='object'?s.cheer:{};s.cheer={p:Math.max(0,+C.p||0),lv:Math.max(0,C.lv|0),hp:typeof C.hp==='string'?C.hp.slice(0,10):''}}
@@ -16450,7 +16485,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=62;
+const APP_V=63;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
