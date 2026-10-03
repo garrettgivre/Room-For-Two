@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v56** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v56'` in `sw.js`; bump both for anything
+**Current build: v57** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v57'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 54 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -386,3 +386,6 @@ Garrett wants residents walking around a real town (an overworld after all), com
 - Known: building a resident's full model + bake costs ~50-85 ms on software GL (a short hitch the first time someone walks into view;
   townsfolk bakes are pre-warmed in idle time after load). Any `tmSync` (e.g. a logo image loading while the map is closed) unmerges and
   the next frame re-merges (~0.4 s), which only happens while the map isn't on screen.
+- v57: stray yellow bits on the plaza came from `tmMergeWorld` reading world matrices before the animation check put moving parts back;
+  it now calls `tm.sc.updateMatrixWorld(true)` right before collecting meshes. Residents grow out of a door when they set off and shrink
+  into it when they arrive (`r.sc`, `r.out` in the walk code).
