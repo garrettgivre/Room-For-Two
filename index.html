@@ -702,7 +702,7 @@ body.away .tag{visibility:hidden}
 .tm-tabs[hidden]{display:none!important}
 .tm-rain{position:absolute;inset:0;pointer-events:none;z-index:2;opacity:.5;background:repeating-linear-gradient(105deg,transparent 0 22px,rgba(255,255,255,.55) 22px 23.5px,transparent 23.5px 47px);background-size:200px 200px;animation:tmrain .5s linear infinite}.tm-rain[hidden]{display:none}
 @keyframes tmrain{to{background-position:-40px 200px}}
-.tmr{position:absolute;left:0;top:0;width:36px;height:36px;padding:0;border-radius:50% 50% 50% 12%;transform-origin:50% 100%;border:2.5px solid var(--ink);background:var(--c,#fff);box-shadow:0 2px 0 var(--ink);display:grid;place-items:center;overflow:hidden;pointer-events:auto;cursor:pointer}.tmr[hidden]{display:none}.tmr img{width:33px;height:33px;object-fit:contain}.tmr b{font-family:var(--disp);font-size:16px;color:var(--ink)}
+.tmr.chat{animation:tmrChat 1.1s ease-in-out infinite}@keyframes tmrChat{50%{box-shadow:0 2px 0 var(--ink),0 0 0 5px rgba(255,255,255,.85)}}.tmr{position:absolute;left:0;top:0;width:36px;height:36px;padding:0;border-radius:50% 50% 50% 12%;transform-origin:50% 100%;border:2.5px solid var(--ink);background:var(--c,#fff);box-shadow:0 2px 0 var(--ink);display:grid;place-items:center;overflow:hidden;pointer-events:auto;cursor:pointer}.tmr[hidden]{display:none}.tmr img{width:33px;height:33px;object-fit:contain}.tmr b{font-family:var(--disp);font-size:16px;color:var(--ink)}
 .twline{font-size:14px;line-height:1.35;margin:8px 0}.twacts{display:flex;flex-wrap:wrap;gap:6px}.twacts .gel{width:auto;flex:1;min-height:38px;font-size:14px;padding:0 10px}
 .tm-wheel{position:absolute;left:50%;top:50%;width:0;height:0;z-index:4}.tm-wheel[hidden]{display:none}
 .tmw-n,.tmw-c{position:absolute;left:0;top:0;transform:translate(calc(var(--x,0px) - 50%),calc(var(--y,0px) - 50%));display:flex;flex-direction:column;align-items:center;gap:1px;padding:0;border:0;background:none;cursor:pointer;animation:tmwIn .26s cubic-bezier(.3,1.5,.5,1) both}
@@ -11930,6 +11930,36 @@ function tmSea(g){const sea=M(0x5CC8E8,{roughness:.25,metalness:.05}),deep=M(0x3
   ring(tmRingGeo(ISLAND_R-.6,ISLAND_R+2.2,6,120,1),sand,-.02);ring(tmRingGeo(ISLAND_R+2.2,ISLAND_R+9,10,120,1),sea,-.16);ring(tmRingGeo(ISLAND_R+9,260,30,96,1.8),deep,-.17);
   // a soft white foam line where the sand meets the water
   const fm=M(0xFFFFFF,{roughness:.6});ring(tmRingGeo(ISLAND_R+2,ISLAND_R+2.45,1,120,1),fm,-.12)}
+// The countryside round the town (the town isn't an island): grass running on in every direction, a hedge round the town with
+// gaps where the streets leave, dirt roads heading off N/S/E/W, a belt of woods, flower meadows, and soft hills on the horizon.
+// Everything is built in small pieces so the world-curve can roll it away, and merged into a few meshes.
+function tmCountry(par){const g=G(),R=rnd(2718),RR=ISLAND_R,gate=a=>[0,Math.PI/2,Math.PI,Math.PI*1.5].some(b=>{let d=Math.abs(a-b)%(Math.PI*2);d=Math.min(d,Math.PI*2-d);return d<.13});
+  const grass=M(0x93D561,{roughness:.95});grass.detail=3;{const o=add(g,tmRingGeo(RR-.4,260,34,120,1.8),grass,0,.001,0);o.rotation.x=-Math.PI/2;o.outline=0;o.castShadow=false}
+  // dirt roads out of town
+  const dirt=M(0xE3CC9C,{roughness:.95});dirt.detail=3;
+  const strip=(x0,z0,x1,z1,w)=>{const L=Math.hypot(x1-x0,z1-z0),n=Math.ceil(L/1.5),P=[],N=[],U=[],I=[],dx=(x1-x0)/L,dz=(z1-z0)/L,px=-dz*w/2,pz=dx*w/2;
+    for(let i=0;i<=n;i++){const x=x0+dx*L*i/n,z=z0+dz*L*i/n;P.push(x+px,0,z+pz,x-px,0,z-pz);N.push(0,1,0,0,1,0);U.push(0,i,1,i);if(i<n){const a=i*2;I.push(a,a+2,a+1,a+1,a+2,a+3)}}
+    const o=add(g,new THREE.BufferGeometry(P,N,U,I),dirt,0,.012,0);o.outline=0;o.castShadow=false};
+  strip(0,-RR+.5,0,-220,2.2);strip(0,RR-.5,0,220,2.2);strip(-RR+.5,0,-220,0,2.2);strip(RR-.5,0,220,0,2.2);
+  // no wall round the town: the woods start at a wobbly edge, in clumps, with clearings, and thin out into fields
+  const edge=a=>RR+1.6+Math.sin(a*3+1.3)*2.2+Math.sin(a*7+.4)*1.1+Math.sin(a*13)*.5,hg=[M(0x5FB548,{roughness:.8}),M(0x6CC152,{roughness:.8})];
+  for(let n=0;n<70;n++){const a=R()*Math.PI*2,r=edge(a)-.6+R()*1.5;if(gate(a))continue;ol(sp(g,.35+R()*.25,hg[(R()*2)|0],Math.cos(a)*r,.22,Math.sin(a)*r,1.1,.75,1.1),.008)}
+  const tree=TM_DECOR.tree.b,pine=TM_DECOR.pine.b,clear=[...Array(7)].map(()=>[R()*Math.PI*2,RR+8+R()*8,3+R()*3]);
+  for(let n=0;n<360;n++){const a=R()*Math.PI*2,r=edge(a)+Math.pow(R(),.9)*16;if(clear.some(([ca,cr,cs])=>Math.hypot(Math.cos(a)*r-Math.cos(ca)*cr,Math.sin(a)*r-Math.sin(ca)*cr)<cs))continue;if(gate(a)&&r<RR+30){const near=[0,Math.PI/2,Math.PI,Math.PI*1.5].some(b=>{let d=Math.abs(a-b)%(Math.PI*2);d=Math.min(d,Math.PI*2-d);return d*r<2.2});if(near)continue}
+    const o=(R()<.5?pine:tree)();o.position.set(Math.cos(a)*r,0,Math.sin(a)*r);o.rotation.y=R()*6;o.scale.setScalar(.9+R()*.6);g.add(o)}
+  // patchwork fields beyond the woods: rows of crops, alongside the roads
+  const soil=M(0xC9A16E,{roughness:1}),crop=[0x8BCB4E,0xF2D35B,0xB7E07A,0xE9A23B].map(c=>M(c,{roughness:.9}));soil.detail=3;
+  for(let n=0;n<10;n++){const q=n%4,ax=[[1,0],[0,1],[-1,0],[0,-1]][q],side=n<4?1:-1,dist=RR+24+R()*30,w=6+R()*5,dd=5+R()*4,cx=ax[0]*dist+ax[1]*side*(w/2+2.2),cz=ax[1]*dist+ax[0]*side*(dd/2+2.2),f=G();
+    const b=add(f,new THREE.BoxGeometry(w,.06,dd),soil,0,.03,0);b.outline=0;b.castShadow=false;const cm=crop[(R()*4)|0];
+    for(let i=0;i<Math.floor(w/1.1);i++){const r=add(f,new THREE.BoxGeometry(.55,.22,dd-.6),cm,-w/2+.8+i*1.1,.14,0);r.outline=.006;r.castShadow=false}
+    f.position.set(cx,0,cz);g.add(f)}
+  // flower meadows further out
+  const fl=[0xFFB3DA,0xFFE27A,0xFFFFFF,0xD9C2FF].map(c=>M(c,{roughness:.9}));
+  for(let n=0;n<26;n++){const a=R()*Math.PI*2,r=RR+20+R()*40,o=add(g,tmRingGeo(0,2.5+R()*3,3,24,1),fl[n%4],Math.cos(a)*r,.02,Math.sin(a)*r);o.rotation.x=-Math.PI/2;o.outline=0;o.castShadow=false}
+  // hills on the horizon
+  const hl=[0x86CC5A,0x7BC253,0x9BDB6B,0x70B84C].map(c=>M(c,{roughness:.95}));
+  for(let n=0;n<34;n++){const a=n/34*Math.PI*2+R()*.12,r=70+R()*90,sz=14+R()*22,o=sp(g,1,hl[n%4],Math.cos(a)*r,-sz*.12,Math.sin(a)*r,sz,sz*(.28+R()*.18),sz*(.8+R()*.4));o.outline=.0;o.castShadow=false}
+  bakeStatic(g);par.add(g);return g}
 // the grass disc in many small pieces (rings x segments): the world-curve bends each vertex, so big triangles would sag below it
 function tmDiscGeo(R,W,D){const rings=26,segs=120,P=[0,0,0],N=[0,0,1],U=[.5,.5],I=[];
   for(let r=1;r<=rings;r++){const rr=R*r/rings;for(let s=0;s<segs;s++){const a=s/segs*Math.PI*2,x=Math.cos(a)*rr,y=Math.sin(a)*rr;P.push(x,y,0);N.push(0,0,1);U.push(x/W+.5,y/D+.5)}}
@@ -11937,11 +11967,13 @@ function tmDiscGeo(R,W,D){const rings=26,segs=120,P=[0,0,0],N=[0,0,1],U=[.5,.5],
   for(let s=0;s<segs;s++)I.push(0,v(1,s),v(1,s+1));for(let r=1;r<rings;r++)for(let s=0;s<segs;s++){const a=v(r,s),b=v(r,s+1),c=v(r+1,s),d=v(r+1,s+1);I.push(a,c,d,a,d,b)}
   return new THREE.BufferGeometry(P,N,U,I)}
 function tmIsland(){const g=G(),W=TM_W,D=TM_D,RND=tmMk()==='world',rr_=(a,b,r,n)=>RND?tmRR(a,a,a,n*4):tmRR(a,b,r,n);tm.ground=G();tm.root.add(tm.ground);
+  if(!RND){
   {const m=flat(g,rr_((W+.7)/2,(D+.7)/2,.9,10),.12,M(0xF3E7C9,{roughness:.9}),0,-.13,0);m.rotation.x=-Math.PI/2;ol(m,.02)}
   {const m=flat(g,rr_((W+.5)/2-.1,(D+.5)/2,.8,10),.8,M(0xDDA36B,{roughness:.95}),0,-.93,0);m.rotation.x=-Math.PI/2;ol(m,.02);m.castShadow=false}
   {const m=flat(g,rr_((W+.3)/2-.5,(D+.3)/2,.7,10),.2,M(0xB9784C,{roughness:.95}),0,-1.13,0);m.rotation.x=-Math.PI/2;ol(m,.02);m.castShadow=false}
   {const R=rnd(19),pm=[M(0xF3E7C9,{roughness:.8}),M(0xC9A27A,{roughness:.9}),M(0xE8C39A,{roughness:.85})];for(let n=0;n<70;n++){const t=R(),side=(R()*4)|0,hw=(W+.5)/2-.02,hd=(D+.5)/2-.02,u=(R()-.5)*2;let x,z;if(RND){const a=R()*Math.PI*2,rad=hw-.12;x=Math.cos(a)*rad;z=Math.sin(a)*rad}else if(side<2){x=u*(hw-.8);z=side?hd:-hd}else{z=u*(hd-.8);x=side===2?hw:-hw}
     const p=sp(g,.07+R()*.07,pm[n%3],x,-.25-t*.6,z,1.2,.8,1);p.castShadow=false;ol(p,.003)}}
+  }
   bakeStatic(g);tm.ground.add(g);tm.island=g;
   const S_=TM_W>30?24:48,gt=ctex(TM_W*S_,TM_D*S_,(x,w,h)=>{const R=rnd(77);x.fillStyle='#9BDF6A';x.fillRect(0,0,w,h);
     if(tmMk()==='world')for(const [mk,[ox,oz]] of Object.entries(WORLD_PARTS)){if(!WORLD_TINT[mk])continue;const [ww,dd]=TM_MAPS[mk],cx=(ox+ww/2)*S_,cz=(oz+dd/2)*S_,rr_=Math.max(ww,dd)*S_*.75,q=x.createRadialGradient(cx,cz,0,cx,cz,rr_);q.addColorStop(0,`rgba(${WORLD_TINT[mk]},.28)`);q.addColorStop(1,`rgba(${WORLD_TINT[mk]},0)`);x.fillStyle=q;x.fillRect(cx-rr_,cz-rr_,rr_*2,rr_*2)}for(let i=0;i<TM_W;i++)for(let j=0;j<TM_D;j++)if((i+j)%2){x.fillStyle='rgba(255,255,255,.06)';x.fillRect(i*S_,j*S_,S_,S_)}
@@ -11950,7 +11982,7 @@ function tmIsland(){const g=G(),W=TM_W,D=TM_D,RND=tmMk()==='world',rr_=(a,b,r,n)
     for(let n=0;n<240;n++){const px=R()*w,py=R()*h;if(R()<.35){x.fillStyle='rgba(70,160,70,.55)';for(let p=0;p<3;p++){const a=p/3*6.283+.5;x.beginPath();x.arc(px+Math.cos(a)*2,py+Math.sin(a)*2,1.9,0,7);x.fill()}continue}
       x.fillStyle=['#FFFFFF','#FFE66B','#FFB3DA','#D9C2FF'][(R()*4)|0];for(let p=0;p<5;p++){const a=p/5*6.283;x.beginPath();x.arc(px+Math.cos(a)*1.7,py+Math.sin(a)*1.7,1.3,0,7);x.fill()}x.fillStyle='#FFB21F';x.beginPath();x.arc(px,py,1,0,7);x.fill()}
     [[0,0,w,0,0,26],[0,h,w,h,0,h-26],[0,0,0,h,26,0],[w,0,w,h,w-26,0]].forEach(([x0,y0,x1,y1,ex,ey],n)=>{const q=n<2?x.createLinearGradient(0,y0,0,ey):x.createLinearGradient(x0,0,ex,0);q.addColorStop(0,'rgba(40,110,50,.22)');q.addColorStop(1,'rgba(40,110,50,0)');x.fillStyle=q;n<2?x.fillRect(0,Math.min(y0,ey),w,26):x.fillRect(Math.min(x0,ex),0,26,h)})},null,1);
-  if(RND)tmSea(tm.ground);const gp0=add(tm.ground,RND?tmDiscGeo(ISLAND_R+.25,TM_W,TM_D):new THREE.PlaneGeometry(TM_W,TM_D,24,24),M(0xffffff,{map:gt,roughness:.9}),0,.006,0);gp0.rotation.x=-Math.PI/2;gp0.outline=0;
+  if(RND)tmCountry(tm.ground);const gp0=add(tm.ground,RND?tmDiscGeo(ISLAND_R+.25,TM_W,TM_D):new THREE.PlaneGeometry(TM_W,TM_D,24,24),M(0xffffff,{map:gt,roughness:.9}),0,.006,0);gp0.rotation.x=-Math.PI/2;gp0.outline=0;
   const gt2=ctex(TM_W*32,TM_D*32,(x,w,h)=>{x.clearRect(0,0,w,h);x.strokeStyle='rgba(59,18,115,.28)';x.lineWidth=2;for(let i=0;i<=TM_W;i++){x.beginPath();x.moveTo(i*32,0);x.lineTo(i*32,h);x.stroke()}for(let j=0;j<=TM_D;j++){x.beginPath();x.moveTo(0,j*32);x.lineTo(w,j*32);x.stroke()}},null,1);
   const gp=add(tm.ground,new THREE.PlaneGeometry(TM_W,TM_D),M(0xffffff,{map:gt2,roughness:.9,transparent:true}),0,.012,0);gp.rotation.x=-Math.PI/2;gp.outline=0;gp.visible=false;gp.castShadow=false;tm.grid=gp}
 const tmCX=x=>x-TM_W/2+.5,tmCZ=z=>z-TM_D/2+.5;
@@ -13271,15 +13303,19 @@ function tmDraw(dt){const[W_,H_]=tmSize(),R=tm.R;if(tm.mergeDirty&&!tm.arr&&!tm.
   if(R.__w!==W_||R.__h!==H_){R.setPixelRatio(Math.min(1.5,devicePixelRatio||1));R.setSize(W_,H_,false);R.__w=W_;R.__h=H_;tm.cam.aspect=W_/H_;tm.cam.updateProjectionMatrix()}
   if(tm.zoomTo!=null){tm.zoom+=(tm.zoomTo-tm.zoom)*Math.min(1,dt*4);if(Math.abs(tm.zoomTo-tm.zoom)<.002)tm.zoomTo=null}tm.tgtTo.x=clamp(tm.tgtTo.x,-TM_W/2,TM_W/2);tm.tgtTo.z=clamp(tm.tgtTo.z,-TM_D/2,TM_D/2);
   {const L=Math.hypot(tm.tgtTo.x,tm.tgtTo.z),mx=ISLAND_R-2;if(tmMk()==='world'&&L>mx){tm.tgtTo.x*=mx/L;tm.tgtTo.z*=mx/L}}
-  vlerp(tm.tgt,tm.tgtTo,Math.min(1,dt*4));const d=tm.focus?Math.min(9,tmFit()*.45):tmFit()*tm.zoom;if(tmMk()==='world'){const nr=clamp(d*.06,.05,4);if(tm.cam.fov!==50||Math.abs(tm.cam.near-nr)>nr*.25){tm.cam.fov=50;tm.cam.near=nr;tm.cam.far=600;tm.cam.updateProjectionMatrix()}}// keep the camera out of buildings: if it would sit inside one (low and close), tilt it up just enough to clear the roof
+  vlerp(tm.tgt,tm.tgtTo,1-Math.exp(-dt*(tw.on&&tw.follow?6:4)));const d=tm.focus?Math.min(9,tmFit()*.45):tmFit()*tm.zoom;if(tmMk()==='world'){const nr=clamp(d*.06,.05,4);if(tm.cam.fov!==50||Math.abs(tm.cam.near-nr)>nr*.25){tm.cam.fov=50;tm.cam.near=nr;tm.cam.far=600;tm.cam.updateProjectionMatrix()}}// keep the camera out of buildings: if it would sit inside one (low and close), tilt it up just enough to clear the roof
   // keep the view of the pet clear: tilt up (just enough) until the line from the camera to the target passes over every roof
   let pit=tm.pitch;if(tmMk()==='world'&&tw.grid&&!tm.focus){const G_=tw.grid,topAt=(x,z)=>{const [gi,gj]=twCell(x,z);if(gi<0||gj<0||gi>=G_.W||gj>=G_.D)return 0;const bk=G_.own.get(gj*G_.W+gi);return bk&&tm.bld[bk]?((tm.bld[bk].userData.top||{}).y||1.5)+.35:G_.block[gj*G_.W+gi]?1:0};
     for(let it=0;it<16&&pit<1.35;it++){const hd=Math.cos(pit)*d,hc=Math.sin(pit)*d,n=Math.ceil(hd/.4);let ok=true;
       for(let q=1;q<=n&&ok;q++){const f=q/n,x=tm.tgt.x+Math.sin(tm.yaw)*hd*f,z=tm.tgt.z+Math.cos(tm.yaw)*hd*f;if(f>.08&&topAt(x,z)>hc*f+.2)ok=false}if(ok)break;pit+=.06}}
+  {const lift=Math.max(0,pit-tm.pitch);tm.lift=(tm.lift||0)+(lift-(tm.lift||0))*Math.min(1,dt*(lift>(tm.lift||0)?5:2.5));pit=tm.pitch+tm.lift}
   const cp=Math.cos(pit),c=tm.cam;tm.off=(tm.off??0)+((tm.focus?.75:0)-(tm.off??0))*Math.min(1,dt*4);const ox=tm.tgt.x+Math.sin(tm.yaw)*tm.off,oz=tm.tgt.z+Math.cos(tm.yaw)*tm.off;c.position.set(ox+Math.sin(tm.yaw)*cp*d,Math.sin(pit)*d,oz+Math.cos(tm.yaw)*cp*d);c.lookAt(new THREE.Vector3(ox,0,oz));
   if(tmMk()==='world'){const k=clamp(.8/(d*d),.0002,.016);R.curve=tm.curveP=[c.position.x,c.position.z,k,k*.12,-Math.sin(tm.yaw),-Math.cos(tm.yaw)];
     tm.far=d>26;if(tm.dl)tm.dl.castShadow=!tm.far;
-    if(tm.dl&&tm.dlBase){tm.dl.position.set(tm.dlBase[0]+tm.tgt.x,tm.dlBase[1],tm.dlBase[2]+tm.tgt.z);tm.dl.userData.tgt={x:tm.tgt.x,y:0,z:tm.tgt.z};const e=clamp(d*.55,9,30);Object.assign(tm.dl.shadow.camera,{left:-e,right:e,top:e,bottom:-e})}}else R.curve=null;
+    if(tm.dl&&tm.dlBase){// the shadow box follows the view but only moves in whole shadow-map texels (in the light's own frame), and its size in whole units, so shadows don't shimmer as the camera glides
+      const e=Math.round(clamp(d*.55,9,30)),B=tm.dlBase,bl=Math.hypot(...B),f=[-B[0]/bl,-B[1]/bl,-B[2]/bl],rl=Math.hypot(f[2],f[0])||1,Rr=[-f[2]/rl,0,f[0]/rl],U=[Rr[1]*f[2]-Rr[2]*f[1],Rr[2]*f[0]-Rr[0]*f[2],Rr[0]*f[1]-Rr[1]*f[0]],tx=2*e/(tm.dl.shadow.mapSize.x||2048);
+      let px=tm.tgt.x,pz=tm.tgt.z;const r=px*Rr[0]+pz*Rr[2],u=px*U[0]+pz*U[2],dr=r-Math.round(r/tx)*tx,du=u-Math.round(u/tx)*tx;px-=Rr[0]*dr+U[0]*du;let py=-(Rr[1]*dr+U[1]*du);pz-=Rr[2]*dr+U[2]*du;
+      tm.dl.position.set(B[0]+px,B[1]+py,B[2]+pz);tm.dl.userData.tgt={x:px,y:py,z:pz};Object.assign(tm.dl.shadow.camera,{left:-e,right:e,top:e,bottom:-e})}}else R.curve=null;
   tm.cl&&tm.cl.forEach(p=>p.rotation.y=tm.t*p.userData.sp);tm.mills&&tm.mills.forEach(o=>o.userData.anim(tm.t));tm.anims.forEach(o=>{try{o.userData.anim(tm.t)}catch(_){}});const so=tmObj(tm.sel);if(so)so.position.y=.25+Math.sin(tm.t*5)*.06;
   R.render(tm.sc,c);return[c,W_,H_]}
 const tmCurveY=(x,z)=>{const P=tm.curveP;if(!P)return 0;const dx=x-P[0],dz=z-P[1],f=dx*P[4]+dz*P[5],sd=-dx*P[5]+dz*P[4];return P[2]*f*f+P[3]*sd*sd};
@@ -13287,7 +13323,7 @@ function tmFrame(dt){const[c,W_,H_]=tmDraw(dt),v=new THREE.Vector3(),wh=$('#tmWh
     b.style.transform=`translate(${(v.x*.5+.5)*W_}px,${(-v.y*.5+.5)*H_}px) translate(-50%,-100%)`;b.style.visibility=v.z<1?'visible':'hidden'})}
 function tmTick(ts){if(!tm||!tm.open)return;requestAnimationFrame(tmTick);let dt=Math.min(.05,(ts-tmLast)/1000);tmLast=ts;tm.t+=dt;if($('#tmPop').classList.contains('gen'))return;tmPump(1);twTick(dt,tm.t);
   // zoomed far out (no shadows, slow-looking motion) the picture is redrawn every other frame unless the camera is moving
-  const mv=Math.abs(tm.tgt.x-tm.tgtTo.x)+Math.abs(tm.tgt.z-tm.tgtTo.z)>.01||tm.zoomTo!=null||tm.ptr.size>0;tm.skip=!tm.skip;if(tm.far&&!mv&&tm.skip){tm.acc=(tm.acc||0)+dt;return}dt+=tm.acc||0;tm.acc=0;tmFrame(dt)}
+  tmFrame(dt)}
 {const cv=$('#tmc');let down=null,paint=null,pinch=0;
   let twist=null;cv.addEventListener('pointerdown',e=>{if(!tm)return;try{cv.setPointerCapture(e.pointerId)}catch(_){}tm.ptr.set(e.pointerId,[e.clientX,e.clientY]);if(tm.ptr.size===2){const [a,b]=[...tm.ptr.values()];pinch=Math.hypot(a[0]-b[0],a[1]-b[1]);twist=Math.atan2(b[1]-a[1],b[0]-a[0]);down=null;return}
     down={x:e.clientX,y:e.clientY,mv:0};paint=null;if(tm.arr&&tm.tool==='road'){tmCell(e.clientX,e.clientY);const p=new THREE.Vector3();if(tm.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),p)){paint=tmRoad(Math.floor(p.x+TM_W/2),Math.floor(p.z+TM_D/2),null);down.painted=1}}});
@@ -14150,16 +14186,16 @@ function twDot(k){const c=parseInt(((RES[k]||[])[1]||'#FFFFFF').slice(1),16),g=G
 function twFull(r){if(r.full)return r.full;try{const K=KEEPERS[r.k]();kPolish(K,r.k);bakeKeeper(K,r.k);const L=G();L.add(K.g);K.g.scale.setScalar(TW_RES_SCALE);L.userData.twk=r.k;K.g.traverse(o=>o.userData.twk=r.k);tm.world.add(L);r.full={K,g:L}}catch(e){console.warn('tw full',e)}return r.full}
 function twResTick(dt,t){const cam=tm.tgt,close=tmFit()*tm.zoom<16,near=[...tw.res.values()].sort((a,b)=>Math.hypot(a.x-cam.x,a.z-cam.z)-Math.hypot(b.x-cam.x,b.z-cam.z));
   near.forEach((r,i)=>{const full=close&&i<TW_FULL&&Math.hypot(r.x-cam.x,r.z-cam.z)<12;r.t+=dt;const talking=tw.card&&tw.card.k===r.k;let mv=false;
-    if(!talking){if(r.path&&r.path.length){const [tx,tz]=r.path[0],dx=tx-r.x,dz=tz-r.z,d=Math.hypot(dx,dz),st=TW_RSPEED*dt;if(d<=st){r.x=tx;r.z=tz;r.path.shift()}else{r.x+=dx/d*st;r.z+=dz/d*st;r.ry=Math.atan2(dx,dz)}mv=true}
+    if(r.chat){}else if(!talking){if(r.path&&r.path.length){const [tx,tz]=r.path[0],dx=tx-r.x,dz=tz-r.z,d=Math.hypot(dx,dz),st=TW_RSPEED*dt;if(d<=st){r.x=tx;r.z=tz;r.path.shift()}else{r.x+=dx/d*st;r.z+=dz/d*st;r.ry=Math.atan2(dx,dz)}mv=true}
       else{r.wait-=dt;if(r.wait<0){const P=r.plan;let to=null;if(P.mode==='go'){const d=twDoor(P.to);if(d&&Math.hypot(d.x-r.x,d.z-r.z)<.3){r.out=1}else if(d)to=[d.x,d.z]}
         else if(P.mode==='mingle'){r.wait=3+Math.random()*4}else if(P.mode==='stroll'){const d=twDoor(P.near);to=twRandomRoad(null,d||{x:r.x,z:r.z})}else to=twRandomRoad(P.area);
         if(to){r.path=twPath(r.x,r.z,to[0],to[1])||[to];r.wait=1+Math.random()*3}}}}
     else{const p=tw.pet;if(p)r.ry=Math.atan2(p.x-r.x,p.z-r.z)}
     if(r.out){r.sc=Math.max(0,r.sc-dt*2.5);if(r.sc<=0)r.gone=1}else if(r.sc<1)r.sc=Math.min(1,r.sc+dt*2.5);
     if(r.gone){r.dot.hidden=true;if(r.full)r.full.g.visible=false;return}
-    {const pin=r.dot,cam=tm.cam;if(!pin.isConnected)$('#tmLab').appendChild(pin);if(full)pin.hidden=true;else{const v=new THREE.Vector3(r.x,.62-tmCurveY(r.x,r.z)+(mv?Math.abs(Math.sin(r.t*9))*.05:0),r.z).project(cam),[W_,H_]=tmSize();pin.hidden=v.z>1;pin.style.transform=`translate(${(v.x*.5+.5)*W_}px,${(-v.y*.5+.5)*H_}px) translate(-50%,-100%) scale(${clamp(1.15-tm.zoom*.5,.62,1)*Math.max(.05,ease(r.sc))})`;
+    {const pin=r.dot,cam=tm.cam;if(!pin.isConnected)$('#tmLab').appendChild(pin);if(pin.classList.contains('chat')!==!!r.chat)pin.classList.toggle('chat',!!r.chat);if(full)pin.hidden=true;else{const v=new THREE.Vector3(r.x,.62-tmCurveY(r.x,r.z)+(mv?Math.abs(Math.sin(r.t*9))*.05:0),r.z).project(cam),[W_,H_]=tmSize();pin.hidden=v.z>1;pin.style.transform=`translate(${(v.x*.5+.5)*W_}px,${(-v.y*.5+.5)*H_}px) translate(-50%,-100%) scale(${clamp(1.15-tm.zoom*.5,.62,1)*Math.max(.05,ease(r.sc))})`;
       if(!pin.querySelector('img')&&thumbs['fig_'+r.k])pin.innerHTML=lifeFace(r.k)}}
-    if(full){const F=twFull(r);if(F){F.g.visible=true;F.g.scale.setScalar(Math.max(.001,ease(r.sc)));F.g.position.set(r.x,mv?Math.abs(Math.sin(r.t*9))*.03:0,r.z);F.g.rotation.y=r.ry;try{F.K.upd(dt,t,'idle',0,talking)}catch(_){}}}else if(r.full)r.full.g.visible=false})}
+    if(full){const F=twFull(r);if(F){F.g.visible=true;F.g.scale.setScalar(Math.max(.001,ease(r.sc)));F.g.position.set(r.x,mv?Math.abs(Math.sin(r.t*9))*.03:0,r.z);F.g.rotation.y=r.ry;try{F.K.upd(dt,t,'idle',0,talking||!!(r.chat&&Math.sin(r.t*1.4+(r.chat.first?0:Math.PI))>.1))}catch(_){}}}else if(r.full)r.full.g.visible=false})}
 // ---- tapping outdoors: a resident (chat card), a building (walk to its door and go in), the ground (walk there)
 function twTap(cx,cy){tmCell(cx,cy);const objs=[...tw.res.values()].map(r=>r.full&&r.full.g.visible?r.full.g:null).filter(Boolean),hr=tm.ray.intersectObjects(objs,true);
   for(const h of hr){let o=h.object;while(o&&o.userData.twk==null)o=o.parent;if(o){twTalk(o.userData.twk);return}}
@@ -14171,7 +14207,7 @@ function twWalk(x,z,cb){const P=tw.pet;if(!P)return;const path=twPath(P.x,P.z,x,
 function twGoIn(k){const S=SHOPS[k];if(k!=='home'&&S&&S.house){const v=houseVisit(S.hid);if(!v.ok){tmSelect(k);return}}const d=twDoor(k);if(!d){tmSelect(k);return}
   if((away?away.key:'home')===k){closeMap();return}twWalk(d.x,d.z,()=>{closeMap();travelTo(k)})}
 function twTalk(k){const R=RESIDENTS[k],B=KBIB[k],r=tw.res.get(k);if(!R||!B)return;tw.card={k};const p=tw.pet;if(p&&r&&Math.hypot(p.x-r.x,p.z-r.z)>1){const a=Math.atan2(p.x-r.x,p.z-r.z);twWalk(r.x+Math.sin(a)*.7,r.z+Math.cos(a)*.7,null)}
-  const f=kfOf(k),day=tdDay(),first=f.d!==day;if(first){f.d=day;kfAdd(k,2)}const hi=kFill(pick1(B.hi.d||B.hi.m));tw.cardGift=false;twCard(k,hi)}
+  const f=kfOf(k),day=tdDay(),first=f.d!==day;if(first){f.d=day;kfAdd(k,2)}const hi=twChatLine(k)||kFill(pick1(B.hi.d||B.hi.m));tw.cardGift=false;twCard(k,hi)}
 function twDoing(k){const r=tw.res.get(k),P=r&&r.plan;if(!P)return lifeWhere(k);return P.mode==='rounds'?(RESIDENTS[k].away||'out and about'):P.mode==='stroll'?'out for a stroll':P.mode==='go'?'on the way to '+(P.to==='home'?'home':SHOPS[P.to]?SHOPS[P.to].n:'somewhere'):lifeWhere(k)}
 function twCard(k,line){const c=$('#tmCard'),R=RESIDENTS[k],hm=houseOf(k),home=hm&&SHOPS['h_'+hm];
   c.innerHTML=`<button class="tmc-x" id="tmcX" aria-label="Close">×</button><div class="tmh"><span class="tmface">${lifeFace(k)}</span><div><h3>${esc(R.n)}</h3><small>${esc(R.role)} · ${esc(twDoing(k))}</small></div></div>
@@ -14185,13 +14221,52 @@ function twCard(k,line){const c=$('#tmCard'),R=RESIDENTS[k],hm=houseOf(k),home=h
 // ---- step outside / come back in
 function tmBuildOne(k){if(tm.bld[k]||!tmPlaces().includes(k))return;try{tm.bld[k]=k==='home'?tmHome():tmShop(k);tmPad(tm.bld[k],k);tm.world.add(tm.bld[k]);tmPlace(k)}catch(e){console.warn('town '+k,e);delete tm.bld[k]}}
 function twStart(){if(!tm)return;const k=away?away.key:'home';tmBuildOne(k);twGrid();const d=twDoor(k)||{x:0,z:0,ry:0};tw.on=twPetAttach(d);tw.follow=true;tw.res.forEach(twResDrop);tw.res.clear();
-  if(tw.on){tm.zoom=Math.max(.02,9/tmFit());tm.zoomTo=null;tm.pitch=.6;tm.yaw=(d.ry||0)+.45;tm.tgtTo.set(d.x,0,d.z);tm.tgt.copy(tm.tgtTo);twResSync();tw.sync=0}}
-function twEnd(){if(!tw.on&&!tw.save)return;tw.on=false;twPetDetach();tw.res.forEach(twResDrop);tw.res.clear();tw.card=null}
+  if(tw.on){tm.zoom=Math.max(.02,9/tmFit());tm.zoomTo=null;tm.pitch=.6;tm.yaw=(d.ry||0)+.45;tm.tgtTo.set(d.x,0,d.z);tm.tgt.copy(tm.tgtTo);twResSync();tw.sync=0;findsShow()}}
+function twEnd(){if(!tw.on&&!tw.save)return;tw.on=false;findsHide();twPetDetach();tw.res.forEach(twResDrop);tw.res.clear();tw.card=null}
 function twTick(dt,t){if(!tw.on||!tw.pet)return;const P=tw.pet;let mv=false;tw.sync+=dt;if(tw.sync>4){tw.sync=0;twResSync()}
   if(P.path&&P.path.length){const [tx,tz]=P.path[0],dx=tx-P.x,dz=tz-P.z,d=Math.hypot(dx,dz),st=TW_SPEED*dt;if(d<=st){P.x=tx;P.z=tz;P.path.shift();if(!P.path.length){P.path=null;const cb=P.cb;P.cb=null;cb&&cb()}}else{P.x+=dx/d*st;P.z+=dz/d*st;P.ry=Math.atan2(dx,dz)}mv=true}
-  const g=pet.group;g.position.set(P.x,0,P.z);g.rotation.y=approach(g.rotation.y,P.ry,Math.min(1,dt*10));twPetPose(dt,t,mv);
-  if(tw.follow&&!tm.arr){tm.tgtTo.set(P.x,0,P.z)}twResTick(dt,t);
+  if(mv)P.still=0;else{P.still=(P.still||0)+dt;P.idle=(P.idle??3)-dt;if(P.still>3&&P.idle<=0&&!tw.card){P.idle=4+Math.random()*4;let nb=null,bd=3.5;tw.res.forEach(r=>{const d=Math.hypot(r.x-P.x,r.z-P.z);if(!r.gone&&d<bd){bd=d;nb=r}});
+    if(nb&&Math.random()<.6)P.ry=Math.atan2(nb.x-P.x,nb.z-P.z);else if(Math.random()<.5)P.hop=.5;else P.ry+=(Math.random()-.5)*2.2}}
+  if(P.hop>0)P.hop=Math.max(0,P.hop-dt);
+  const g=pet.group;g.position.set(P.x,P.hop>0?Math.sin(Math.PI*(1-P.hop/.5))*.14:0,P.z);g.rotation.y=approach(g.rotation.y,P.ry,Math.min(1,dt*10));twPetPose(dt,t,mv);
+  if(tw.follow&&!tm.arr){tm.tgtTo.set(P.x,0,P.z)}twChats(dt);twResTick(dt,t);findsTick(dt,t);
   const el=$('#tmTitle');if(el){const[i,j]=twCell(P.x,P.z);let n='Town square';for(const [mk,[ox,oz]] of Object.entries(WORLD_PARTS)){const [w,d_]=TM_MAPS[mk];if(i>=ox&&j>=oz&&i<ox+w&&j<oz+d_){n=mk==='town'?'Town square':HOODS[mk].n;break}}if(el.textContent!==n)el.textContent=n}}
+// ---- daily finds: a few things lying about the streets each day (the same spots on both phones), picked up by walking over them
+const FIND_N=7;
+function findsToday(){const day=lifeDay();let F=state.finds;if(!F||F.day!==day)F=state.finds={day,got:[]};return F}
+function findSpots(){const m=tmM();if(!m||!m.r||!m.r.length)return[];const day=lifeDay(),R=jrRand('finds|'+(roomCode||'solo')+'|'+day),G=twGrid(),out=[],used=new Set();
+  for(let n=0;n<FIND_N*6&&out.length<FIND_N;n++){const q=m.r[Math.floor(R()*m.r.length)],key=q[0]+','+q[1];if(used.has(key))continue;
+    if([...used].some(u=>{const [a,b]=u.split(',').map(Number);return Math.abs(a-q[0])+Math.abs(b-q[1])<5}))continue;used.add(key);
+    const r=R(),kind=r<.34?'heart':r<.58?'flower':r<.84?'gift':r<.96?'clover':'coin',[x,z]=twPos(q[0],q[1]);out.push({i:out.length,kind,x:x+(R()-.5)*.4,z:z+(R()-.5)*.4,r:R()})}
+  return out}
+function findMesh(kind){const g=G(),O=.012;
+  if(kind==='heart'){const h=add(g,gcache('fheart',()=>heartGeo()),M(0xFF3D9A,{roughness:.3}),0,.2,0);h.scale.setScalar(.022);h.rotation.z=Math.PI;h.position.y=.32;ol(h,O)}
+  else if(kind==='gift'){const c=[0x3EC8F2,0xFFD21F,0x9B4DF2][Math.random()*3|0];ol(bx(g,.26,.22,.26,M(c,{roughness:.5}),0,.11,0),O);const rb=M(0xFF3D9A,{roughness:.4});bx(g,.27,.23,.06,rb,0,.11,0).outline=0;bx(g,.06,.23,.27,rb,0,.11,0).outline=0;ol(sp(g,.05,rb,-.04,.24,0,1.2,.8,1),O);ol(sp(g,.05,rb,.04,.24,0,1.2,.8,1),O)}
+  else if(kind==='flower'){const st=M(0x5FB548,{roughness:.8}),cs=[0xFFB3DA,0xFFE27A,0xD9C2FF];[[-.06,0],[.06,.02],[0,-.06]].forEach(([x,z],i)=>{cy(g,.012,.012,.26,st,x,.13,z,6).outline=0;const pm=M(cs[i],{roughness:.6});for(let p=0;p<5;p++){const a=p/5*Math.PI*2;sp(g,.035,pm,x+Math.cos(a)*.04,.28,z+Math.sin(a)*.04).outline=0}sp(g,.025,M(0xFFD21F,{roughness:.5}),x,.29,z).outline=0});const tie=M(0xFF3D9A,{roughness:.5});cy(g,.05,.05,.04,tie,0,.08,0,10).outline=O}
+  else if(kind==='clover'){const lm=M(0x6CC152,{roughness:.6});for(let p=0;p<4;p++){const a=p/4*Math.PI*2;ol(sp(g,.06,lm,Math.cos(a)*.06,.2,Math.sin(a)*.06,1,.35,1),O)}cy(g,.012,.012,.2,lm,0,.1,0,6).outline=0}
+  else{const c=ol(cy(g,.12,.12,.04,M(0xFFD21F,{roughness:.25,metalness:.6}),0,.18,0,20),O);c.rotation.x=Math.PI/2;sp(g,.04,M(0xFF8A1C,{roughness:.4}),0,.18,.025,1,1,.3).outline=0}
+  g.traverse(o=>{if(o.isMesh)o.castShadow=false});return g}
+function findsShow(){findsHide();if(!tw.on||tmMk()!=='world')return;const F=findsToday();tw.finds=findSpots().filter(f=>!F.got.includes(f.i)).map(f=>{const g=findMesh(f.kind);g.scale.setScalar(1.6);g.position.set(f.x,0,f.z);g.rotation.y=f.r*6;tm.world.add(g);return Object.assign({g},f)})}
+function findsHide(){(tw.finds||[]).forEach(f=>tm.world.remove(f.g));tw.finds=[]}
+function findGrant(f){const F=findsToday();if(F.got.includes(f.i))return;F.got.push(f.i);let txt;
+  if(f.kind==='heart'){const n=2+Math.floor(f.r*3);state.hearts+=n;txt=`Found a heart candy on the path: +${n} hearts`}
+  else if(f.kind==='clover'){state.hearts+=6;txt='A four-leaf clover! +6 hearts'}
+  else if(f.kind==='coin'){state.tokens=(state.tokens|0)+1;txt='A shiny capsule token, just lying there'}
+  else if(f.kind==='flower'){const ks=Object.keys(SEEDS),s=ks[Math.floor(f.r*ks.length)];state.seeds=state.seeds||{};state.seeds[s]=(state.seeds[s]|0)+1;txt=`A posy with a ${SEEDS[s].n.toLowerCase()} seed tucked in it`}
+  else{const fs=ITEMS.filter(i=>i.k==='food'&&i.p>0&&i.p<6),it=fs[Math.floor(f.r*fs.length)];if(it){state.inv[it.id]=(state.inv[it.id]|0)+1;txt=`A little present: ${it.n.toLowerCase()}!`}else{state.hearts+=3;txt='A little present: +3 hearts'}}
+  toast(txt,true);try{td('find')}catch(_){}saveSoon();updHUD&&updHUD();
+  const left=findSpots().filter(s=>!F.got.includes(s.i)).length;if(!left)setTimeout(()=>toast('That’s everything lying about today. More tomorrow!',true),1800)}
+function findsTick(dt,t){const P=tw.pet;if(!P||!tw.finds)return;for(let i=tw.finds.length-1;i>=0;i--){const f=tw.finds[i];
+  if(f.pick!=null){f.pick+=dt;const k=f.pick/.45;f.g.position.y=k*.6;f.g.scale.setScalar(1.6*Math.max(.01,1-k));f.g.rotation.y+=dt*12;if(k>=1){tm.world.remove(f.g);tw.finds.splice(i,1)}continue}
+  f.g.position.y=.03+Math.sin(t*2.4+f.r*9)*.03;f.g.rotation.y+=dt*.8;if(Math.hypot(P.x-f.x,P.z-f.z)<.45){f.pick=0;findGrant(f);P.hop=.5}}}
+// ---- neighbours stop to chat when they meet on the street
+const TW_CHAT_T=6;
+function twChats(dt){const L=[...tw.res.values()].filter(r=>!r.gone&&!r.out&&r.plan.mode!=='go'&&!(tw.card&&tw.card.k===r.k));
+  L.forEach(r=>{if(r.chat){r.chat.t-=dt;const o=tw.res.get(r.chat.w);if(o)r.ry=Math.atan2(o.x-r.x,o.z-r.z);if(r.chat.t<=0||!o){r.chat=null;r.cool=25+Math.random()*20;r.wait=.5}}else if(r.cool>0)r.cool-=dt});
+  for(let i=0;i<L.length;i++){const a=L[i];if(a.chat||a.cool>0)continue;for(let j=i+1;j<L.length;j++){const b=L[j];if(b.chat||b.cool>0)continue;
+    if(Math.hypot(a.x-b.x,a.z-b.z)<1.1){const T=TW_CHAT_T+Math.random()*3;a.chat={w:b.k,t:T,first:1};b.chat={w:a.k,t:T};a.path=b.path=null;break}}}}
+function twChatLine(k){const r=tw.res.get(k);if(!r||!r.chat)return null;const B=KBIB[k],o=RESIDENTS[r.chat.w],rel=B&&B.rel&&B.rel[r.chat.w];
+  return rel?kFill(typeof rel==='string'?rel:rel.t||''):o?`Oh, I was just catching up with ${o.n}. Hello!`:null}
 /* </town-walk> */
 function kActs(){const k=away.key,kind=kmode.kind,A=[['chat','Chat','Have a little natter','#E3D4FF','chat']],KK=kmode.K,GIFT=['gift','Give a gift','Something from your bag','#FFF3B8','shop'];
   if(away.def&&away.def.house||KK&&(KK.customer||KK.guest)){(JOB_ACTS[kind]||[]).forEach(x=>{const y=x.slice();y[2]=kFill(y[2]);A.push(y)});A.push(GIFT);return A}
@@ -16267,6 +16342,7 @@ const MERGE={hearts:(l,r,b)=>Math.max(0,mNum(l,r,b)),tokens:(l,r,b)=>Math.max(0,
   dream:(l,r)=>{l=l||{};r=r||{};if((l.n|0)!==(r.n|0))return(l.n|0)>(r.n|0)?l:r;if(l.k!==r.k)return!l.k?r:!r.k?l:JSON.stringify(l)<JSON.stringify(r)?l:r;if((l.s|0)!==(r.s|0))return(l.s|0)>(r.s|0)?l:r;return Object.assign({},l,{got:Math.max(l.got|0,r.got|0)})},
   req:(l,r)=>{l=l||{};r=r||{};if(l.day!==r.day)return(l.day||'')>(r.day||'')?l:r;const lj=JSON.stringify(l.list),rj=JSON.stringify(r.list);if(lj!==rj)return lj<rj?l:r;
     const prog={};[l.prog||{},r.prog||{}].forEach(P=>{for(const n in P){const o=prog[n]=prog[n]||{};for(const id in P[n])o[id]=Math.max(o[id]|0,P[n][id]|0)}});return{day:l.day,list:l.list,prog,done:[...new Set([...(l.done||[]),...(r.done||[])])]}},
+  finds:(l,r)=>{if(!l)return r;if(!r)return l;if(l.day!==r.day)return l.day>r.day?l:r;return{day:l.day,got:[...new Set([...(l.got||[]),...(r.got||[])])]}},
   gifts:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{})if(!o[k]||l[k]>o[k])o[k]=l[k];return o},acts:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{})if(!o[k]||l[k]>o[k])o[k]=l[k];return o},
   disc:(l,r)=>{const o={};new Set([...Object.keys(l||{}),...Object.keys(r||{})]).forEach(k=>o[k]=[...new Set([...((l||{})[k]||[]),...((r||{})[k]||[])])]);return o},seeds:mCounts,evseen:mSet,
   garden:(l,r)=>{const n=Math.max((l||[]).length,(r||[]).length),o=[];for(let i=0;i<n;i++){const a=(l||[])[i],b=(r||[])[i];o.push(!a?b||null:!b?a:((a.u|0)>=(b.u|0)?a:b))}return o},
@@ -16310,6 +16386,7 @@ function normalize(s){const oldPal=!!s&&!(s.pv>=2);const d=defaultState();s=Obje
   if(!(s.pet.xv>=2)){if(s.pet.xp>=150)s.pet.xp=400+(s.pet.xp-150);s.pet.xv=2}
   s.pet.tr=s.pet.tr&&typeof s.pet.tr==='object'?Object.fromEntries(Object.entries(s.pet.tr).filter(([k,v])=>TRAITS[k]&&+v>0).map(([k,v])=>[k,Math.min(9999,+v)])):{};s.pet.trS=typeof s.pet.trS==='string'?s.pet.trS.slice(0,40):'';
   {const D=s.dream&&typeof s.dream==='object'&&!Array.isArray(s.dream)?s.dream:{};s.dream={k:DREAMS[D.k]?D.k:null,s:clamp(D.s|0,0,5),got:Math.max(0,D.got|0),n:Math.max(0,D.n|0),t:+D.t||0,next:+D.next||0,last:typeof D.last==='string'?D.last.slice(0,16):''}}
+  {const F=s.finds;s.finds=F&&typeof F==='object'&&typeof F.day==='string'&&Array.isArray(F.got)?{day:F.day,got:F.got.filter(n=>Number.isInteger(n)&&n>=0&&n<20).slice(0,20)}:null}
   {const Q=s.req;s.req=Q&&typeof Q==='object'&&typeof Q.day==='string'&&Array.isArray(Q.list)?{day:Q.day,list:Q.list.filter(e=>e&&REQ_T[e.kp]&&REQ_T[e.kp][e.i]).slice(0,4).map(e=>({kp:e.kp,i:e.i|0,n:e.n|0})),prog:Q.prog&&typeof Q.prog==='object'&&!Array.isArray(Q.prog)?Q.prog:{},done:Array.isArray(Q.done)?Q.done.filter(n=>Number.isInteger(n)):[]}:{}}
   {const C=s.cheer&&typeof s.cheer==='object'?s.cheer:{};s.cheer={p:Math.max(0,+C.p||0),lv:Math.max(0,C.lv|0),hp:typeof C.hp==='string'?C.hp.slice(0,10):''}}
   s.kr=s.kr&&typeof s.kr==='object'&&!Array.isArray(s.kr)?s.kr:{};
@@ -16356,7 +16433,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=59;
+const APP_V=60;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

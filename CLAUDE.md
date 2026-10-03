@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v59** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v59'` in `sw.js`; bump both for anything
+**Current build: v60** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v60'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 54 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -398,3 +398,15 @@ Garrett wants residents walking around a real town (an overworld after all), com
   pieces so the world-curve rolls it away into the horizon). The camera keeps the pet in view: in `tmDraw` it tilts up just enough that
   the line from the camera to the target clears every roof (`tw.grid.own` maps cells to buildings, heights from `userData.top`).
   Note: flat ring/disc geometry must wind so its front faces +z before the -90° x rotation (a wrong winding gets back-face culled).
+- v60: "I don't want it to be an island either": the world map has no sea now (`tmSea` is unused). `tmCountry` surrounds the town
+  with countryside out to radius 260: grass, dirt roads out of the four gates, woods that start at a wobbly edge with clearings and
+  bushes (no ring hedge, it read as an island rim), patchwork crop fields along the roads, flower meadows and hills on the horizon.
+  Camera jitter: the roof-clearing tilt is eased (`tm.lift`), the map draws every frame (no half-rate frames when far), the follow is
+  frame-rate independent (`1-exp(-dt*k)`), and the town's shadow box only moves in whole shadow-map texels in the light's frame and
+  resizes in whole units (moving it continuously made every shadow shimmer as the camera glided).
+  Town life outdoors (in the town-walk block): **daily finds** (`findSpots`, 7 per day on road cells, seeded by room + day so both
+  phones agree; kinds heart candy / posy with a seed / present with a snack / four-leaf clover / capsule token; walking over one picks
+  it up, `findGrant`, `td('find')`; `state.finds` {day, got:[index]}, normalised, merged as a union for the same day). **Neighbours
+  chat** when they meet on the street (`twChats`: they stop, face each other and talk in turns for ~6-9 s, then a cooldown; their pins
+  pulse; tapping one mid-chat opens with their `KBIB.rel` line about the other, `twChatLine`). **The pet idles outside**: after standing
+  still a few seconds it looks at a nearby resident, hops or turns (`P.still`, `P.idle`, `P.hop`; it also hops on picking something up).
