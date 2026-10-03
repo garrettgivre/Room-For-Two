@@ -7952,11 +7952,11 @@ KEEPERS.pencil=function(){
   const E=[-1,1].map(s=>kEye(surf(body,s*.125,.655,-.012),.105,EC,Lm,{sink:.2}));
   const zR=surf(body,.125,.655,0).position.z;
   // round glasses
-  const gl=piv(body,0,.655,zR+.05);
-  [-1,1].forEach(s=>{const x=s*.128;ol(to(gl,.126,.017,Gr,x,0,0),.006);
-    const gg=add(gl,new THREE.PlaneGeometry(2,2),B(0xffffff,{transparent:true,opacity:.5,map:glossTex(),depthWrite:false}),x-.04,.05,.012);gg.scale.set(.032,.016,1);gg.rotation.z=.7;gg.castShadow=false;gg.outline=0});
-  ol(cy(gl,.012,.012,.05,Gr,0,.028,-.003,10),.005).rotation.z=PI/2;
-  [-1,1].forEach(s=>{const t=ol(cy(gl,.011,.011,.17,Gr,s*.262,.0,-.088,10),.005);t.rotation.x=PI/2});
+  const gl=piv(body,0,.655,zR+.035);
+  [-1,1].forEach(s=>{const lp=surf(body,s*.128,.655,.045);ol(to(lp,.126,.017,Gr,0,0,0),.006);
+    const gg=add(lp,new THREE.PlaneGeometry(2,2),B(0xffffff,{transparent:true,opacity:.5,map:glossTex(),depthWrite:false}),-.04,.05,.012);gg.scale.set(.032,.016,1);gg.rotation.z=.7;gg.castShadow=false;gg.outline=0;
+    const t=ol(cy(lp,.011,.011,.16,Gr,s*.13,.0,-.08,10),.005);t.rotation.x=PI/2});
+  ol(cy(gl,.012,.012,.03,Gr,0,.028,0,10),.005).rotation.z=PI/2;
   // brows: thick little dashes, worried when idle
   const BR=[-1,1].map(s=>{const p=surf(body,s*.125,.835,.0);ol(rb(p,.1,.024,.02,.01,Dk,0,0,0),.004);return p});
   // blush
@@ -8513,9 +8513,13 @@ KEEPERS.parcel=function(){
     const syl=talk?Math.max(0,Math.sin(t*12+Math.sin(t*2.9)*2.2))*(.45+.55*Math.abs(Math.sin(t*2.1+1))):0;ES.mo=approach(ES.mo||0,Math.max(syl,cheer||greet?.55:0),dt*18);mg.scale.set(1+ES.mo*.08,.85+ES.mo*1.7,1)}}
 };
 KEEPERS.crane=function(){
-  const g=G(),b=G();g.add(b);const bd=G();b.add(bd);
+  const g=G(),b=G();g.add(b);const bd=G();b.add(bd);bd.position.y=-.1;
   const PI=Math.PI,sm=u=>u<=0?0:u>=1?1:u*u*(3-2*u);
-  const P1=M(0xFFA8D0,{roughness:.55}),P2=M(0xFFC8E0,{roughness:.55}),P3=M(0xFFD9EA,{roughness:.55}),Pd=M(0xE5609A,{roughness:.55}),
+  const pt=gcache('crane_paper',()=>{const c=mkCanvas(256,256),x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,256,256);
+    for(let i=0;i<900;i++){x.fillStyle=`rgba(${i%3?200:255},${i%2?190:215},${i%2?205:230},.35)`;const a=Math.random()*PI,l=2+Math.random()*7,X=Math.random()*256,Y=Math.random()*256;x.fillRect(X,Y,Math.cos(a)*l+1,Math.sin(a)*l+1)}
+    for(let i=0;i<80;i++){x.fillStyle='rgba(255,255,255,.6)';x.beginPath();x.arc(Math.random()*256,Math.random()*256,1.3,0,PI*2);x.fill()}
+    const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t});
+  const P1=M(0xFF8CC2,{roughness:.6,map:pt}),P2=M(0xFFAED4,{roughness:.6,map:pt}),P3=M(0xFFC9E2,{roughness:.6,map:pt}),Pd=M(0xE5609A,{roughness:.55}),
     Gd=M(0xFFC247,{roughness:.5}),Gd2=M(0xFF9A2E,{roughness:.5}),Dk=M(0x3B1273,{roughness:.5}),Mo=M(0x6A1830,{roughness:.6}),Bl=M(0xFF6FA6,{roughness:.7}),
     Ink=M(0x5B2A9E,{roughness:.4}),Wood=M(0xE8B86A,{roughness:.6}),Red=M(0xFF4D6D,{roughness:.5}),Leg=M(0xFFC2DB,{roughness:.55});
   // washi paper for the wings: lime, wave arcs and dots
@@ -8546,8 +8550,8 @@ KEEPERS.crane=function(){
     const T2=[];for(let i=0;i<4;i++){const j=(i+1)%4;T2.push([i,j,4+j],[i,4+j,4+i])}
     return ol(add(par,solid(P,[...T2,[0,1,2],[0,2,3],[4,5,6],[4,6,7]],[(a[0]+c[0])/2,(a[1]+c[1])/2,(a[2]+c[2])/2]),mat,0,0,0),.006)};
   // ---- legs: two thin folded rods with a bent knee, a flat triangle foot each
-  const leg=s=>{const x=s*.085;rod(b,[x,.4,-.02],[x,.21,-.07],.017,Leg);rod(b,[x,.21,-.07],[x,.02,.0],.015,Leg);
-    paper(b,[[x,.012,.17],[x-.075,.012,-.05],[x+.075,.012,-.05]],.024,P1,0,0,0,.006);ol(sp(b,.02,Leg,x,.215,-.07),.005)};
+  const leg=s=>{const x=s*.095;rod(b,[x,.32,-.02],[x,.17,-.06],.02,Leg);rod(b,[x,.17,-.06],[x,.02,.0],.018,Leg);
+    paper(b,[[x,.012,.17],[x-.075,.012,-.05],[x+.075,.012,-.05]],.024,P1,0,0,0,.006);ol(sp(b,.024,Leg,x,.17,-.06),.005)};
   leg(-1);leg(1);
   // ---- body: a folded paper bipyramid, facets in two pinks
   const BP=[[0,.87,.0],[0,.32,.03],[-.35,.6,.0],[0,.68,.37],[.35,.6,.0],[0,.63,-.42]];
@@ -8567,17 +8571,17 @@ KEEPERS.crane=function(){
     const nv=p=>{const l=Math.hypot(...p);return p.map(v=>v/l)};
     F.forEach(f=>{const [a,c,d]=f.map(i=>V[i]),ab=nv([a[0]+c[0],a[1]+c[1],a[2]+c[2]]),bc_=nv([c[0]+d[0],c[1]+d[1],c[2]+d[2]]),ca=nv([d[0]+a[0],d[1]+a[1],d[2]+a[2]]);
       [[a,ab,ca],[ab,c,bc_],[ca,bc_,d],[ab,bc_,ca]].forEach(t=>{const k=P.length;P.push(...t);T.push([k,k+1,k+2])})});return{P,T}})();
-  const hg=piv(bd,0,1.19,.2);const HR=.19;
+  const hg=piv(bd,0,1.15,.22);const HR=.25;
   const hP=ico.P.map(p=>[p[0]*HR*1.06,p[1]*HR*.96,p[2]*HR]);
   [0,1].forEach(k=>ol(add(hg,solid(hP,ico.T.filter((_,i)=>i%2===k),[0,0,0]),k?P2:P3,0,0,0),.009));
   // red crown fold on top of the head (tancho)
   paper(hg,[[-.05,HR*.9,-.02],[.05,HR*.9,-.02],[.0,HR*.92,.09]],.02,Red,0,.012,0,.005);
   // eyes: big dark dots, glossy, with paper lids
   const EC=eyeTex('crane_e',{pr:46,iris:['#4B2A8E','#2A1360'],ir:40});
-  const E=[-1,1].map(s=>{const p=piv(hg,s*.088,-.005,HR*.86);p.rotation.y=s*.5;return kEye(p,.058,EC,P2,{sink:.25})});
-  [-1,1].forEach(s=>{const c=sp(hg,1,Bl,s*.135,-.062,HR*.7);c.scale.set(.04,.025,.008);c.rotation.y=s*.95;ol(c,0)});
+  const E=[-1,1].map(s=>{const p=piv(hg,s*.105,-.01,HR*.84);p.rotation.y=s*.42;return kEye(p,.078,EC,P2,{sink:.25})});
+  [-1,1].forEach(s=>{const c=sp(hg,1,Bl,s*.16,-.085,HR*.7);c.scale.set(.05,.03,.01);c.rotation.y=s*.85;ol(c,0)});
   // beak: an upper wedge, a lower wedge that opens when talking
-  const bk=piv(hg,0,-.045,HR*.92);
+  const bk=piv(hg,0,-.07,HR*.9);bk.scale.setScalar(.85);
   paper(bk,[[-.045,.012,0],[.045,.012,0],[0,0,.15]],.022,Gd,0,0,0,.006);
   paper(bk,[[-.04,.0,0],[.04,.0,0],[0,.014,.12]],.02,Gd,0,.03,0,.0);
   const lb=piv(bk,0,-.004,.0);paper(lb,[[-.035,-.002,.0],[.035,-.002,.0],[0,-.008,.1]],.016,Gd2,0,0,0,.005);
@@ -8897,7 +8901,7 @@ KEEPERS.book=function(){
   const EC=eyeTex('book_e',{pr:24,iris:['#D79A55','#6B3E1E'],ir:38});
   const E=[-1,1].map(s=>kEye(fp(s*.135,.68,.02),.08,EC,Pm,{sink:0,sz:.45}));
   // round reading glasses, gold rims, bridge, and a chain looping under the chin
-  const gl=fp(0,.68,.082);
+  const gl=fp(0,.68,.05);
   [-1,1].forEach(s=>{ol(to(gl,.105,.011,Gd,s*.135,0,0),.005);
     const gg=add(gl,new THREE.PlaneGeometry(2,2),B(0xffffff,{transparent:true,opacity:.35,map:glossTex(),depthWrite:false}),s*.135-.035,.045,.004);gg.scale.set(.03,.016,1);gg.rotation.z=.7;gg.castShadow=false;gg.outline=0});
   ol(to(gl,.03,.008,Gd,0,.03,0,0,0,0,PI),.004);
@@ -9617,12 +9621,13 @@ KEEPERS.gramo=function(){
   // face
   const faceG=piv(b,0,cy0-.02,fz+.03);
   const lid=M(0xF0C79A,{roughness:.45});
-  const E=[-1,1].map(s=>{const e=kEye(piv(faceG,s*.095,.05,0),.072,eyeTex('grE',{iris:['#8A4A2A','#3A1A12'],ir:24,pr:13}),lid,{open:-.9,sink:.25});
-    ol(cy(e.eg,.005,.004,.045,Dk,s*.07,.085,0,6),0).rotation.z=-s*1.0;return e});
-  [-1,1].forEach(s=>{const c=add(faceG,SPH(1,10,8),Pk,s*.185,-.04,.002);c.scale.set(.05,.03,.006);ol(c,0)});
-  const mp=piv(faceG,0,-.075,.004),mg=piv(mp,0,0,0);
-  const mo=add(mg,SPH(1,12,8),Dk,0,0,0);mo.scale.set(.04,.022,.012);ol(mo,0);
-  const tg=add(mg,SPH(1,12,8),Pk,0,-.012,.006);tg.scale.set(.026,.012,.006);
+  const E=[-1,1].map(s=>{const e=kEye(piv(faceG,s*.105,.035,0),.092,eyeTex('grE',{iris:['#8A4A2A','#3A1A12'],ir:24,pr:13}),lid,{open:-.9,sink:.25});
+    ol(cy(e.eg,.006,.005,.05,Dk,s*.085,.105,0,6),0).rotation.z=-s*1.0;return e});
+  [-1,1].forEach(s=>{const c=add(faceG,SPH(1,10,8),Pk,s*.175,-.055,.002);c.scale.set(.05,.03,.006);ol(c,0)});
+  const mp=piv(faceG,0,-.088,.004),mg=piv(mp,0,0,0);
+  const mo=add(mg,SPH(1,12,8),Dk,0,0,0);mo.scale.set(.055,.03,.012);ol(mo,0);
+  const sml=add(mp,gcache('gramo_smile',()=>new THREE.TorusGeometry(.045,.008,6,16,Math.PI*.7)),Dk,0,.025,0);sml.rotation.z=-Math.PI/2-Math.PI*.35;sml.outline=0;
+  const tg=add(mg,SPH(1,12,8),Pk,0,-.012,.006);tg.scale.set(.034,.015,.006);
     const ES={};
   // horn (outer brass, pink lining), tilted up and back, with a bob pivot
   const hornP=piv(b,0,top-.01,-.13),horn=piv(hornP,0,0,0);horn.rotation.x=-.32;
@@ -9704,7 +9709,7 @@ KEEPERS.gramo=function(){
     kEyesUpd(ES,E,dt,{talk,happy:cheer||greet||Q});
     const syl=talk?Math.max(0,Math.sin(t*10+Math.sin(t*2.7)*2.2))*(.5+.5*Math.abs(Math.sin(t*1.9+1))):0;
     const open=cheer||greet?.6:Q?.35+Math.abs(beat)*.2:syl;
-    mg.scale.set(1+open*.2,.45+open*1.4,1);tg.visible=open>.3;
+    mg.scale.set(1+open*.2,.45+open*1.4,1);tg.visible=open>.3;mg.visible=open>.12;sml.visible=!mg.visible;
     faceG.position.x=0;
   }};
 };
@@ -9853,8 +9858,8 @@ KEEPERS.pebble=function(){
   // ---- face ----
   const ES={};
   const et=eyeTex('pebbleE',{iris:['#6C7A8E','#2A2D44'],ir:34,pr:22});
-  const E=[-1,1].map(s=>kEye(onLoft(body,f,s*.17,.66,0),.075,et,St2,{sink:.22,open:-.12}));
-  const brows=[-1,1].map(s=>{const p=onLoft(body,f,s*.17,.745,.008),q=piv(p,0,0,0);ol(rb(q,.1,.02,.016,.009,Sd,0,0,0),.005);q.rotation.z=s*.14;return q});
+  const E=[-1,1].map(s=>kEye(onLoft(body,f,s*.175,.67,0),.09,et,St2,{sink:.22,open:-.4}));
+  const brows=[-1,1].map(s=>{const p=onLoft(body,f,s*.175,.77,.008),q=piv(p,0,0,0);ol(rb(q,.1,.02,.016,.009,Sd,0,0,0),.005);q.rotation.z=-s*.12;return q});
   [-1,1].forEach(s=>{const p=onLoft(body,f,s*.3,.57,.004),c=add(p,SPH(1,14,10),Pk,0,0,0);c.scale.set(.06,.034,.006);ol(c,0)});
   const mp=onLoft(body,f,0,.555,.008),mg=piv(mp,0,0,0);
   const smile=piv(mg,0,.012,0);
@@ -9864,15 +9869,15 @@ KEEPERS.pebble=function(){
   // ---- reflective vest (two panels with a gap at the front) ----
   const vest=(y0,y1,k,m,e)=>{const rows=Array.from({length:6},(_,i)=>{const y=y0+i/5*(y1-y0),r=profAt(R,y)*k;return[y,r,r*rz]});
     [[.3,Math.PI],[-Math.PI,-.3]].forEach(([a0,a1])=>{const gm=gcache('pebble_v'+[y0,y1,k,a0],()=>loftGeo(rows,{seg:26,a0,a1}));ol(add(body,gm,m,0,0,0),e||.01)})};
-  vest(.13,.5,1.035,Or,.012);
-  vest(.3,.365,1.05,Lm,.004);vest(.322,.343,1.058,Sv,0);
+  vest(.12,.47,1.035,Or,.012);
+  vest(.2,.25,1.05,Lm,.004);vest(.215,.235,1.058,Sv,0);vest(.36,.41,1.05,Lm,.004);vest(.375,.395,1.058,Sv,0);
   // ---- moss tuft (cowlick) ----
-  const moss=piv(body,-.1,.93,.02);
+  const moss=piv(body,-.22,.88,.02);moss.rotation.z=.35;
   const MB=[0,1,2,3,4].map(i=>{const pv=piv(moss,0,0,0);pv.rotation.z=-.5+i*.25;pv.rotation.x=(i%2?.3:-.1);
     ol(sp(pv,.032,i%2?Mo:Mo2,0,.07+(i%3)*.012,0,.8,2.2+(i%2)*.4,.8),.005);return pv});
   ol(sp(moss,.06,Mo2,0,.01,0,1,.55,1),.006);
   // ---- hard hat, perched on the right ----
-  const hat=piv(body,.16,.93,.0);hat.scale.setScalar(1.2);hat.rotation.z=-.2;hat.rotation.x=.12;
+  const hat=piv(body,.07,.9,.0);hat.scale.setScalar(1.85);hat.rotation.z=-.16;hat.rotation.x=.1;
   ol(lathe(hat,[[0,.0],[.1,.0],[.115,.012],[.115,.03],[.1,.05],[.08,.08],[.04,.1],[0,.105]],Hy,0,0,0,26),.01);
   ol(add(hat,gcache('pebble_brim',()=>new THREE.CylinderGeometry(.14,.14,.014,28)),Hd,0,.006,.0),.007);
   { const bill=sp(hat,.08,Hd,0,.012,.12,1.1,.12,.8);bill.outline=.006}
@@ -9932,7 +9937,7 @@ KEEPERS.pebble=function(){
     const open=ES.mo>.22;mouth.visible=open;smile.visible=!open;
     mouth.scale.set(1+ES.mo*.25,.4+ES.mo*1.1,1);
     smile.scale.set(1+(happy?.2:0),1+(happy?.3:0),1);
-    brows.forEach((q,i)=>{const s=i?1:-1;q.position.y=(happy?.016:0)+yawn*.014;q.rotation.z=s*(.14+(happy?.1:0))});
+    brows.forEach((q,i)=>{const s=i?1:-1;q.position.y=(happy?.016:0)+yawn*.014;q.rotation.z=-s*(.12+(happy?.08:0))});
     kEyesUpd(ES,E,dt,{talk,happy:happy});
     if(yawn>.4)E.forEach(e=>{e.lid.rotation.x=1.67*Math.min(1,(yawn-.4)/.4)});
   }};
@@ -16433,7 +16438,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=60;
+const APP_V=61;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

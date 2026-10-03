@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v60** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v60'` in `sw.js`; bump both for anything
+**Current build: v61** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v61'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 54 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -410,3 +410,9 @@ Garrett wants residents walking around a real town (an overworld after all), com
   chat** when they meet on the street (`twChats`: they stop, face each other and talk in turns for ~6-9 s, then a cooldown; their pins
   pulse; tapping one mid-chat opens with their `KBIB.rel` line about the other, `twChatLine`). **The pet idles outside**: after standing
   still a few seconds it looks at a nearby resident, hops or turns (`P.still`, `P.idle`, `P.hop`; it also hops on picking something up).
+- v61 character quality pass: every resident was rendered side by side (`tools/dev/town/kall.js`: front, three-quarter, face
+  close-ups with `KZ=.5 KL=.2`, cheer and greet) and the weak ones refined in their creature code: Fold (`crane`: bigger head and eyes,
+  shorter legs, paper-fibre texture, stronger pinks), Cobble (`pebble`: proper hard hat on top, two reflective stripes on the vest,
+  bigger relaxed eyes with friendly brows; he stays sleepy, it's in his sheet), Echo (`gramo`: bigger eyes, a resting smile `sml`
+  that swaps for the open mouth when talking), Sketch (`pencil`: each lens sits on its own facet so the glasses don't float off the
+  face from the side), Dewey (`book`: glasses closer to the cover). All poses (idle, cheer, greet) were checked for every resident.

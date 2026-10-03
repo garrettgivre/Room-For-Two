@@ -11,5 +11,6 @@ Setup (once): `mkdir -p .claude/pw && cd .claude/pw && npm init -y && npm i play
   inside the app's closure and returns JSON. Screens: `pg.screenshot({path,animations:'disabled'})`. While the town map is open,
   freeze it before screenshots (`tm.open=false;gc={open:true};tmFrame(.1)`) or the screenshot can time out.
 - `node tools/dev/town/kview.js <file.js|-> <keeperKey> <outPrefix> [cheer|greet|talk]` — renders one keeper model (front/three/side/back/act).
+- `node tools/dev/town/kall.js [keys] [outdir]` — renders every resident (front, three-quarter, cheer, greet) in one page load, for lineups and quality passes.
 - `node tools/dev/town/hview.js <houseId>` — injects `.claude/town/houses/<id>_home.js`/`_ext.js` if present, shoots the house on the map and inside.
 - `BRIEF.md`, `TOWN_BRIEF.md`, `HOUSE_BRIEF.md` — the briefs given to helper agents that modelled creatures and houses (reuse for new townsfolk).
