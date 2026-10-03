@@ -10,8 +10,8 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v63** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v63'` in `sw.js`; bump both for anything
-user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 63 (older clients refresh
+**Current build: v64** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v64'` in `sw.js`; bump both for anything
+user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 64 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
 **Who and how**
@@ -442,3 +442,23 @@ grown form. New rooms start hatched at xp 0. Old saves keep their xp (the elder 
   (`JR_T.useby`, `{p}` = the placer, `{h}` = their head). Older pieces have no `by`.
 - Next from the plan: ways to reach each other through the pet (leave something for the other, a message carried by the pet,
   a moment when you're both online).
+
+## The game loop, simplified (v64) — read this before adding any new daily system
+Garrett agreed the game had become overwhelming: about a dozen daily things (two-dos, favours, dreams, wishes, finds, garden,
+jobs, sticker card, story levels, town cheer...). The loop is now three layers:
+1. **Any visit:** check on the pet, care for it, see what your person did (the pet, Journal, Footprints, Welcome back).
+2. **Daily: one list, "Today with <pet>"** on the pet page (`todayHtml`/`bindToday`, state still `state.td`, made by `tdMake`):
+   the pet's wish of the moment on top ("Right now", `wishRow`), then 3 things phrased as what the pet wants (`TD_T`: a care
+   one, a home/town/play one, and **always one together**; `both:1` templates need each of you once, only offered when two
+   people have heads), then the treat (+5 hearts, +2 tokens, a snack/toy or furniture, +2 bond). Each item: hearts + 2 bond
+   (`bondAdd`). One swap a day each. The Pet dock button gets the "!" badge (`#petBadge`) when the treat is ready.
+3. **Long term: the bond.** `bondUp` now also gives a whole room theme every even level (`tdThemeGift`, what story levels
+   did) and moves the town along: town cheer is no longer its own track, `cheerOf().p` is the care-moment count and
+   `cheerSync()` levels the town (title, map landmark via `tmGifts`, Arrange decorations `DECOR_LV`, Mayor's letter);
+   `cheerSync(true)` runs quietly in `lifeCheck`. Big moments (`TD_MS`) are a fold-out under About.
+**Removed:** favours (`REQ_T`, `state.req`), dreams (`DREAMS`, `state.dream`), the weekly sticker card, story levels, the
+Two-dos menu page (`openTab==='todo'` redirects to the pet page), the map's town-cheer chip/card, cheer bonuses for gifts,
+garden and events, the egg code paths (`warm`, egg branches in the wheel/tap/mood). `normalize` deletes `dream`/`req`
+and old td fields. Optional, never on a list: wishes, finds, the garden, jobs, events, keeper chats.
+Pet page order: name + bond chip, bond bar, Today, needs and actions, looks-after-itself, spirit, a head for each of you
+(names editable on the cards), About (personality, traits, bag, big moments), Style.
