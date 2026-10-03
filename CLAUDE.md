@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v57** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v57'` in `sw.js`; bump both for anything
+**Current build: v58** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v58'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 54 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -389,3 +389,6 @@ Garrett wants residents walking around a real town (an overworld after all), com
 - v57: stray yellow bits on the plaza came from `tmMergeWorld` reading world matrices before the animation check put moving parts back;
   it now calls `tm.sc.updateMatrixWorld(true)` right before collecting meshes. Residents grow out of a door when they set off and shrink
   into it when they arrive (`r.sc`, `r.out` in the walk code).
+- v58: the map camera works like the room's (Garrett asked): one finger orbits (turn + tilt, pitch .22-1.3, same rates as the room),
+  two fingers pinch to zoom, twist to turn and drag to pan (`tmPanPx`; panning stops following the pet, tapping to walk resumes it),
+  fov 50 like the room, no automatic tilt (it starts at .6 when you step outside). The world-curve is unchanged.
