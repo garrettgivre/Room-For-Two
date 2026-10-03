@@ -10,8 +10,8 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v64** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v64'` in `sw.js`; bump both for anything
-user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 64 (older clients refresh
+**Current build: v65** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v65'` in `sw.js`; bump both for anything
+user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 65 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
 **Who and how**
@@ -20,8 +20,10 @@ themselves instead of saving; bump it when you add or reshape shared state that 
   and tested; no PRs, no other branches. Commit messages: short title, a few bullets, the Co-Authored-By line; no model names.
 - He asks in plain language, often several things at once, likes a short plain summary, screenshots, refinement over redesign,
   cozy not RPG, never streaks or penalties. He said "it's turning Animal Crossing-esque" and wants that direction.
-- He watches usage: prefer doing work yourself over spawning many agents; when agents are used, keep 5-7 at a time
-  (17 in parallel hit the usage limit once). Sonnet agents modelled all the townsfolk and houses from the briefs in
+- Agents on Garrett's laptop: **at most 4 at once**. Every agent's preview runs a headless browser with software GL on the CPU,
+  so 8 at once made each one several times slower (the 32 resident sets took well over an hour) and ran the laptop hot. For big
+  batches suggest a cloud session (Claude Code on the web) so the work runs off his machine. He's on the $100 plan and usage
+  is fine; speed and the laptop are the constraint now (17 agents in parallel once hit the usage limit on the old plan). Sonnet agents modelled all the townsfolk and houses from the briefs in
   `tools/dev/town/` and Claude reviewed every screenshot, sending fixes back.
 
 **Working method**
@@ -39,28 +41,23 @@ themselves instead of saving; bump it when you add or reshape shared state that 
   change them (three-way merge against `syncBase`, per-key revisions `kr`).
 - Top-level const order matters (TDZ): code that runs at load can only use what's defined above it.
 
-**Where the game is now (v49-v55, details in the sections at the bottom)**
-- 32 residents (`RESIDENTS`): 9 shopkeepers, 8 shop assistants (shifts: keepers 7-17, assistants the rest, so shops never close),
-  15 townsfolk with jobs and daily rounds. All have KBIB dialog, Inbox letters, Capsule Pals, character sheets in
-  `tools/writing/townsfolk/` and the bible `tools/writing/keepers-bible.md`.
-- 23 houses (`HOUSES`, `HOUSE_DEF`, `TM_BODY['h_'+id]`) in four neighbourhoods; some shared (roommates, couples, Tutti + twins).
-- Town life (v51): Neighbours page (people, gifts, garden, calendar, parcels between the two of you), birthdays, weather, jobs as
-  close-up actions, weekly events and seasonal festivals at houses, customers in shops, visitors knocking at home.
-- The outdoors (v52-v55): the Explore map is one walkable round island (`worldDesign`, plaza + shops ring + 4 neighbourhood lanes),
-  full screen, a curved "rolling hill" world (engine shader bend), the pet walks the streets (`tw`, `twStart`, `twWalk`), doors lead in,
-  residents walk their schedules and show as portrait pins when far, the Places wheel hops anywhere.
+**What the game is (Oct 2026; Garrett's framing: "Room for Two" = one body for two heads, one pet for two people)**
+- The heart is the room, the two-headed pet and the two of you. One pet form (no egg, no life stages, v62); care builds an
+  endless **bond level** (room themes every other level, and the town grows with it). Each person has a head that learns from
+  how they care (v63); furniture remembers who placed it. Not too Animal Crossing: the town is the world outside your room.
+- **The daily loop is one list** (v64): "Today with <pet>" on the pet page (the pet's wish + 3 things it wants, always one for
+  the two of you), then a treat. Never add more daily systems or streaks; optional extras (finds, garden, jobs, events) stay off lists.
+- **Beau's side**: decorating (Decorate, ~70 furniture sets, painted tiles, doors/windows) and room makeovers for residents (v65).
+- **The town**: 32 residents with schedules, houses in four neighbourhoods, a walkable map in a countryside (v52-v60), shops with
+  keepers, friendships, gifts, events. Each resident has their own furniture set (v65).
 
 **Open items / what to do next**
-1. **Map performance on phones** (v56 fixed the worst of it, see the v56 section; verify on a phone). Garrett reported heavy lag at v54. v55 added culling, low-detail town geometry,
-   merged static meshes with vertex colours and a preloading progress bar, but it hasn't been checked on a phone. Zoomed out still
-   draws ~1450 meshes (many small animated pieces, per-texture signs/windows). Ideas: draw the far view at half rate and without
-   shadows/outlines, lower `GEO_LOD` further, fewer decorations, merge animated pieces per building, measure with `tm.R.drawn`.
-2. **Rolling-hill feel:** Garrett wanted the Animal Crossing rolling landscape, not a round island. v55 lowered/widened the street camera and
-   made the bend forward-only; he hasn't confirmed it's right. He also hasn't said whether the round island shape itself should stay.
-3. Not verified on a phone: everything from v49 on (assistants, houses, town life, walking, residents outdoors).
-4. `firestore.rules` requires `cv >= 44` on writes and must be published by hand in the Firebase console; ask Garrett before assuming.
-5. Ideas he liked but not built: residents going in/out of doors visibly, benches to sit on, a plaza market, residents asking you to
-   redecorate a room in their house (Happy Home Designer), new townsfolk moving into the empty lots, ambient sound.
+1. Not verified on a phone: almost everything from v49 on (town walking and performance, the map camera, v62-v65).
+2. `firestore.rules` requires `cv >= 44` on writes and must be published by hand in the Firebase console; ask Garrett before assuming.
+3. Ideas not built: makeover rooms shown inside the residents' own houses, new townsfolk moving into the empty lots, ambient
+   sound, ways to reach each other through the pet (leave something for the other, a message carried by the pet, a moment
+   when you're both online).
+4. Working setup: Garrett drives sessions from his phone via Remote Control on his PC (no cloud sessions: cost). Max 4 agents at once.
 
 ## Files
 - `index.html` — the whole app (~565 KB): CSS, a custom WebGL2 engine, game logic, UI. No build step, no framework.
@@ -462,3 +459,33 @@ garden and events, the egg code paths (`warm`, egg branches in the wheel/tap/moo
 and old td fields. Optional, never on a list: wishes, finds, the garden, jobs, events, keeper chats.
 Pet page order: name + bond chip, bond bar, Today, needs and actions, looks-after-itself, spirit, a head for each of you
 (names editable on the cards), About (personality, traits, bag, big moments), Style.
+
+## Resident sets and room makeovers (v65)
+- **A furniture set per resident** (32 sets, ~350 pieces, each with its own floor, wallpaper, icon, and a matching door and
+  window), made by helper agents from `tools/dev/town/SET_BRIEF.md` / `DOOR_BRIEF.md` and reviewed set by set. Each set is one
+  `SET_DEF({set:{k,n,c,res},tiles,cat,build,use,dw})` call (defined just before `/* <resident-sets> */`, which registers the set,
+  its CAT entries, BUILD builders, USE_ITEM entries, tile sets and THEME_DW door/window); they live between the
+  `/* <resident-sets> */` markers in index.html (sources in gitignored `.claude/sets/r*.js`, put in by `.claude/sets/integrate.py`).
+  Set keys are `r<resident key>` (rbaker, rjoy...), `set.res` is the resident. Not on the nose by design: a mood and materials
+  that fit the character (Bunbun = "Butter Hearth" farmhouse bakehouse, Cobble = "Riverstone", Pixel = "Voxel Cottage"...).
+  Cozy Nest's rotation is now `NEST_CYC=12` (~6 sets a day from ~70). Builders often wrap helpers in an IIFE: `build:(()=>{...;return{...}})()`.
+  Gotcha the agents found: inside furniture `makePiece` turns every BoxGeometry into a 768-triangle rounded box and bumps spheres
+  to 20x14, so small details should use hand-built low-poly geometry. The engine has no `THREE.Path`.
+- `tools/dev/town/sview.js <setfile.js> <outPrefix>` (or `--set <existing key> <outPrefix>`) renders a set: every piece on a contact
+  sheet, its door and window, and a room furnished with the whole set on its floor and wallpaper.
+- **Room makeovers** (Happy Home Designer style, Beau's side; `/* <makeovers> */` block before `kActs`): `MK_REQ` (3 requests per
+  resident in their voice: t, ask, need [fns], like [set or fn], mood, love/ok/meh reactions; written from the character sheets).
+  `state.mk` {req:{k,i,t}, next, n, rooms:{resident:{i,items,tf,tw,stars,at,by}}}: one request at a time (`mkTick` from `lifeTick`,
+  seeded by room + count so both phones agree; a new one 20 h after finishing; never expires), arriving as an Inbox letter.
+  Start it from Decorate's home page (`mkDecoHtml`: request banner + "Rooms you've made") or the resident's close-up ("Design their
+  room" / "See the room you made", `kActs` wraps `kActs0`). Designing is a sandbox (`sandbox.mk`): your room shell, empty, size 8,
+  the whole catalogue; the bar `#mkbar` (`mkBar`) shows the checklist (`mkCheck`: needed kinds, a style they love = their `like`
+  set or their own resident set, 6+ pieces) and Later / Furniture / Show <name>. `mkFinish` scores 1-3 stars, saves the design,
+  restores your room, rewards hearts + friendship (3 stars: a piece from their set) and posts their reaction. Visiting a finished
+  room (`mkStart(k,true)`) shows it with the resident standing in it (`mkHost`, a visitor with `mk:1`). `td()` ignores events while
+  any sandbox is on. Merge: more makeovers done wins, rooms by newest `at`. Fixed here too: the v64 cleanup had cut the `heads` and
+  `finds` merge rules by accident; they're back.
+- Also in v65: `spark()` (a canvas helper used by 8 older textures, e.g. the Space set's Orbit poster) drew a four-point sparkle;
+  it now draws a soft five-point star. Seats: with the pet always grown, every single chair/stool (perch `w` ~.3) failed the fit
+  check in `perchSpots`, so the pet never sat on them; the check now lets the pet overhang (`hw*.5>P.w+.1`), and `P.x` may be a
+  number or an array. 145 of 146 perches fit (the Space egg chair's hood is genuinely too low).

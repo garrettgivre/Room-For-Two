@@ -9,7 +9,7 @@ const extra=(inj?inj.split(','):[]).map(f=>fs.readFileSync(f,'utf8')).join('\n;\
 const srv=http.createServer((q,r)=>{const p=decodeURIComponent(q.url.split('?')[0]);
   if(p.endsWith('/firebase-config.js')){r.writeHead(200,{'Content-Type':'text/javascript'});return r.end('window.R42_FIREBASE=null;')}
   if(p.endsWith('/sw.js')){r.writeHead(404);return r.end()}
-  if(p==='/'||p.endsWith('/index.html')){let h=fs.readFileSync(path.join(ROOT,'index.html'),'utf8');h=h.replace('const clock=',()=>extra+'\n;window.__T={f:c=>eval(c)};const clock=');r.writeHead(200,{'Content-Type':'text/html'});return r.end(h)}
+  if(p==='/'||p.endsWith('/index.html')){let h=fs.readFileSync(process.env.R42_INDEX||path.join(ROOT,'index.html'),'utf8');h=h.replace('const clock=',()=>extra+'\n;window.__T={f:c=>eval(c)};const clock=');r.writeHead(200,{'Content-Type':'text/html'});return r.end(h)}
   const f=path.join(ROOT,p);fs.readFile(f,(e,b)=>{if(e){r.writeHead(404);return r.end()}r.writeHead(200,{'Content-Type':MIME[path.extname(f)]||'application/octet-stream'});r.end(b)})});
 let errs=[];srv.listen(0,'127.0.0.1',async()=>{const port=srv.address().port;let br;
   try{br=await chromium.launch({args:['--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
