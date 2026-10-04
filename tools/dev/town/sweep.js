@@ -30,6 +30,6 @@ module.exports=async({ev,pg,wait,log})=>{const errs=[];pg.on('pageerror',e=>errs
  }
  if(PART.includes('5')){// 5. a conversation with a few residents on the map
  await ev("showMap();1");await wait(2500);
- await R('talk',`(()=>{tm.open=false;twResSync();const out=[];for(const k of ['baker','book','mayor','jam','cloud']){try{cvStart(k);for(let i=0;i<4&&cv;i++){const b=document.querySelector('#cvCh button');if(b)b.click()}if(cv)cvEnd();out.push(k)}catch(e){out.push(k+':'+e.message)}}return out.join(',')})()`);
+ await R('talk',`(()=>{tm.open=false;twResSync();const out=[];for(const k of ['baker','book','mayor','jam','cloud']){try{cvBegin(k);for(let i=0;i<4&&cv;i++){const b=document.querySelector('#cvCh button');if(b)b.click()}if(cv)cvEnd();out.push(k)}catch(e){out.push(k+':'+e.message)}}return out.join(',')})()`);
  }
  log('events/zoom/buildings/tabs done, errors '+errs.length);errs.slice(0,40).forEach(e=>log(e))};

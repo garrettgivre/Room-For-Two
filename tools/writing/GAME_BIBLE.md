@@ -49,8 +49,13 @@ Contents
 - Cozy, not RPG. No battles, weapons, crafting, villains or danger. Multiple pets were left out on purpose.
 - **No streaks, no penalties, no guilt.** Wishes expire without punishment; nobody is ever disappointed in you for being away.
   The pet looks after itself while you're gone and writes about it kindly.
-- No real conflict in town: only teasing, fond rivalries, crushes on colours, and too many cookies. Gossip is always fond.
-  The worst word anyone uses about anyone is "brave" (Fizz on Bolt's paint).
+- **Neighbours don't all get along (Garrett, 2026-10-04: "that old school Animal Crossing mean villager vibe").** Most residents
+  are kind or indifferent to each other, close pairs adore each other, and a few are mean: snide remarks, backhanded compliments,
+  eye-rolls, grudges, "I'm not talking to you". Some are mean to everyone (Prickles, Dewey), some only to certain people (Blush to
+  Bolt, Gloss to Parcel, Cobble about the Mayor), some only in weather they hate (Fold in the rain). Kid-safe: never cruel about
+  bodies, no threats, no villains, nobody is ever mean to the player or the pet beyond a sniff, and every mean one has a soft spot.
+  Who feels what about whom is fixed data (chapter 5, "How residents feel about each other"); every line must agree with it.
+  (This replaces the earlier rule "no real conflict, gossip is always fond".)
 - No romance between residents and the players. Resident couples exist (Tock and Sketch, Posy and Prickles).
 - Nothing scary. Swap-Face Night has "never a monster". Dr. Patch's clinic has hearts, never a red cross.
 - Residents warm up over time: friendship levels (New face, Regular, Friend, Good friend, Bestie) gate their stories and
@@ -1321,7 +1326,8 @@ Cushy & Loofah (thunderstorm nap); Cushy & Lumi (nap shifts); Cushy & Dr. Patch 
 Fold & Sketch (curves and straight lines); Stitch & Sketch (tape measures); Tock & Pixel (scores); Tock & Parcel (letters); Echo & Lumi (last song, first lamp); Posy & Cobble
 (roots and stones); Pip & Bobbin (started the same week); Pip & Crumb (careful tasting); Boing & Crumb (the pebble that rolled).
 
-## Fond rivalries and running feuds (never real conflict)
+## Fond rivalries and running feuds
+(Since v80 two of these have teeth: Bunbun and Tutti's crumb rivalry is icy-polite on both sides, and Blush genuinely looks down on Bolt's colour sense. See "How residents feel about each other" below.)
 - Fizz vs Blush: what "glow" means (years; "our love language").
 - Bolt vs Blush: colour names ("orange" vs "apricot sunrise").
 - Joy vs Fizz: Bubble Pop. Pixel vs Fizz: Bubble Pop (unmentioned).
@@ -1339,6 +1345,170 @@ Bunbun feeds the town (Bolt's lunch, the Mayor's ten o'clock bun, Cobble's wall 
 and Dr. Patch, cookies for Dusty and Joy). Dr. Patch looks after everyone, especially Bunbun (sit down), Bolt (Tuesday thumb) and Joy (wrists). Loofah calms Fizz. Tock winds Boing
 down; Sketch winds Tock up. Dusty tidies around Cushy. Gloss keeps Pom on time and Blush unhurried. Posy waters Prickles. Lumi lights everyone's lamp first. Beacon counts everyone in.
 Stitch mends Prickles' scarf for free. Nimbus forecasts for Bunbun. Tutti raises the twins and checks if everyone's eaten.
+
+## How residents feel about each other (v80, canon; data in `RREL_SRC` in index.html)
+
+Feelings run one way and can differ each way: -2 can't stand them, -1 irritated, 0 indifferent, 1 friendly, 2 close. Every pair not listed falls back on personality (below) and housemates and workmates are at least friendly. Weather moods shift a resident's feelings toward everyone by one (loved weather warmer, hated weather crankier).
+
+### Personalities (old Animal Crossing types)
+| Resident | Type | Loves the weather | Hates the weather |
+|---|---|---|---|
+| Bunbun | normal |  | hot |
+| Fizz | smug | rain |  |
+| Boing | peppy | wind |  |
+| Cushy | lazy | rain, storm |  |
+| Bolt | jock |  | rain |
+| Pom | peppy |  | rain |
+| Blush | snooty | fog |  |
+| Stitch | sisterly |  | wind |
+| Joy | jock | storm |  |
+| Pip | normal |  | hot |
+| Loofah | lazy | rain |  |
+| Tock | normal |  | rain |
+| Dusty | normal |  | wind |
+| Sketch | normal |  | rain |
+| Gloss | snooty |  | wind |
+| Bobbin | peppy |  | wind |
+| Pixel | lazy |  | hot |
+| Mayor Marsh | smug | sun | rain |
+| Parcel | jock |  | rain |
+| Fold | normal |  | rain, wind |
+| Posy | sisterly | rain |  |
+| Prickles | cranky | sun, hot | rain, snow, cold |
+| Dewey | cranky |  | rain, fog |
+| Lumi | lazy |  | wind |
+| Nimbus | normal | rain, storm, fog | sun, hot |
+| Beacon | sisterly | fog, storm |  |
+| Tutti | sisterly | sun, hot | cold, rain, snow |
+| Scone | jock | wind, snow |  |
+| Crumb | normal | rain |  |
+| Echo | smug |  | fog |
+| Dr. Patch | normal |  | cold |
+| Cobble | lazy |  |  |
+
+Defaults between types: cranky dislikes peppy, jock and smug, likes other cranky ones; snooty dislikes lazy and jock, likes smug; smug likes snooty; lazy is worn out by jock; peppy likes peppy and jock; sisterly dislikes snooty; jock likes peppy.
+
+### Close and family
+- **Sketch and Tock** (couple): Sketch 2, Tock 2. Met comparing rulers, measure things together.
+- **Prickles and Posy** (couple): Prickles 2, Posy 2. She found him asleep under her sunflower.
+- **Tutti and Scone** (family): Tutti 2, Scone 2. Aunt and nephew.
+- **Tutti and Crumb** (family): Tutti 2, Crumb 2. Aunt and niece.
+- **Crumb and Scone** (family): Crumb 2, Scone 1. Twins.
+- **Bunbun and Cushy** (close): Bunbun 2, Cushy 2. Sunday tea.
+- **Joy and Boing** (house): Joy 2, Boing 2. Best friends, housemates, Game Night.
+- **Pom and Blush** (house): Pom 2, Blush 2. Best friends and co-owners.
+- **Nimbus and Lumi** (house): Nimbus 2, Lumi 2. Share a kettle and a window.
+- **Fold and Parcel** (house): Fold 1, Parcel 2. Flatmates.
+- **Gloss and Bobbin** (house): Gloss 2, Bobbin 2. Flatmates.
+- **Bolt and Cobble** (close): Bolt 2, Cobble 2. Talker and listener.
+- **Beacon and Lumi** (close): Beacon 2, Lumi 2. Goodnight flashes across the bay.
+- **Beacon and Bobbin** (close): Beacon 1, Bobbin 2. The scarf.
+- **Echo and Lumi** (close): Echo 2, Lumi 2. Last song, first lamp.
+- **Pip and Bobbin** (close): Pip 2, Bobbin 2. Started the same week.
+- **Bunbun and Pip** (boss): Bunbun 2, Pip 2. She taught him everything.
+- **Loofah and Fizz** (boss): Loofah 2, Fizz 1. Loofah calms Fizz.
+- **Pom and Fizz** (close): Pom 2, Fizz 2. Mentor and protege, like a big brother.
+- **Bobbin and Stitch** (boss): Bobbin 2, Stitch 2. The cedar drawer.
+- **Joy and Pixel** (boss): Joy 2, Pixel 1. Joy adores it.
+- **Bunbun and Bolt** (close): Bunbun 2, Bolt 1. She makes his lunch, he forgets it.
+- **Bunbun and Dr. Patch** (close): Bunbun 1, Dr. Patch 2. Patch tells her to sit down.
+- **Blush and Gloss** (close): Blush 2, Gloss 2. Gloss keeps her unhurried.
+- **Pom and Gloss** (boss): Pom 2, Gloss 1. She keeps Pom on time, sighing.
+- **Dewey and Crumb** (close): Dewey 2, Crumb 2. A quiet reader who labels things properly.
+- **Bunbun and Mayor Marsh** (close): Bunbun 1, Mayor Marsh 2. The ten o'clock bun.
+- **Bunbun and Dusty** (close): Bunbun 2, Dusty 2. She leaves her porch light on for Dusty.
+
+### Friendly
+- **Cushy and Cobble** (close): Cushy 1, Cobble 1. Comfortable silence.
+- **Cushy and Loofah** (close): Cushy 1, Loofah 1. The thunderstorm nap.
+- **Cushy and Lumi** (close): Cushy 1, Lumi 1. Nap shifts.
+- **Cushy and Dr. Patch** (close): Cushy 1, Dr. Patch 1. Pillows.
+- **Fold and Stitch** (close): Fold 1, Stitch 1. Scraps.
+- **Fold and Sketch** (close): Fold 1, Sketch 1. Curves and straight lines.
+- **Sketch and Stitch** (close): Sketch 1, Stitch 1. Tape measures.
+- **Pixel and Tock** (close): Pixel 1, Tock 1. Scores.
+- **Cobble and Posy** (close): Cobble 1, Posy 1. Roots and stones.
+- **Crumb and Pip** (close): Crumb 1, Pip 1. Careful tasting.
+- **Crumb and Boing** (close): Crumb 1, Boing 1. The pebble that rolled.
+- **Bolt and Sketch** (boss): Bolt 1, Sketch 1. Sketch plans, Bolt builds, they argue about inches.
+- **Cushy and Dusty** (boss): Cushy 1, Dusty 1. Dusty tidies round a boss who is always asleep.
+- **Boing and Tock** (boss): Boing 1, Tock 1. Tock winds Boing down.
+- **Bolt and Tock** (close): Bolt 1, Tock 1. The toolbox fence.
+- **Beacon and Prickles** (close): Beacon 1, Prickles 1. Two old sailors of different seas, swapping stories.
+- **Joy and Dr. Patch** (close): Joy 1, Dr. Patch 1. Her wrists.
+- **Blush and Stitch** (close): Blush 1, Stitch 1. Good taste recognises good taste.
+- **Prickles and Cobble** (close): Prickles 1, Cobble 1. Someone who does not talk.
+- **Bunbun and Prickles** (close): Bunbun 1, Prickles 1. The burnt batch.
+- **Prickles and Stitch** (close): Prickles 1, Stitch 1. Mends his scarf for free and asks no questions.
+- **Dewey and Sketch** (close): Dewey 1, Sketch 1. Neat margins.
+- **Dewey and Tock** (close): Dewey 1, Tock 1. Tidy shelves.
+- **Dewey and Fold** (close): Dewey 1, Fold 1. Paper kin.
+- **Dewey and Lumi** (close): Dewey 1, Lumi 1. A good reading light.
+- **Echo and Mayor Marsh** (close): Echo 1, Mayor Marsh 1. Music for the ribbon cuttings.
+- **Fold and Mayor Marsh** (close): Fold 1, Mayor Marsh 1. Signs for the ribbon cuttings.
+- **Joy and Lumi** (close): Joy 1, Lumi 1. They wave across the plaza at ten.
+- **Loofah and Bobbin** (close): Loofah 1, Bobbin 1. Tea on the boardwalk.
+- **Beacon and Parcel** (close): Beacon 1, Parcel 1. Beacon counts Parcel in every evening.
+- **Bolt and Dr. Patch** (close): Bolt 1, Dr. Patch 1. The Tuesday thumb.
+
+### Fond rivals
+- **Parcel and Tock** (rival): Parcel 1, Tock 1. The letter count, friendly.
+- **Blush and Fizz** (rival): Blush 0, Fizz 1. What glow means. Fizz calls it their love language.
+- **Joy and Fizz** (rival): Joy 1, Fizz 1. Bubble Pop.
+- **Bunbun and Joy** (rival): Bunbun 1, Joy 1. The cookie jar.
+- **Cushy and Joy** (rival): Cushy 1, Joy 1. Staring contests (Cushy is asleep).
+- **Pixel and Boing** (rival): Pixel 1, Boing 1. Who tires first at Game Night.
+- **Bolt and Fold** (rival): Bolt 0, Fold 1. A bit bigger versus a large medium.
+- **Pip and Joy** (rival): Pip 0, Joy 1. Pip is the cookie-jar goalie and dreads her.
+- **Pip and Scone** (rival): Pip 1, Scone 1. The race Pip may have lost on purpose.
+
+### Mean: feuds and snubs
+- **Bunbun and Tutti** (feud): Bunbun -1, Tutti -1. Whose crumb is better. Polite, sweet, icy.
+- **Bolt and Blush** (feud): Bolt -1, Blush -2. Colour names. She thinks he has no eye at all and says so.
+- **Blush and Pixel** (snub): Blush -1, Pixel -1. She calls its palette blocky.
+- **Blush and Cobble** (snub): Blush -1, Cobble 0. She finds him grey.
+- **Blush and Parcel** (snub): Blush -1, Parcel 0. Beige. Parcel does not know what they did.
+- **Parcel and Gloss** (feud): Parcel -1, Gloss -2. Parcel is late on Bubble Bay every single day and Gloss keeps a list.
+- **Joy and Gloss** (snub): Joy 0, Gloss -1. Too loud for a front desk.
+- **Pixel and Gloss** (snub): Pixel 0, Gloss -1. Leaves crumbs of voxel on the waiting chairs.
+- **Cushy and Gloss** (snub): Cushy 0, Gloss -1. Late, asleep, late again.
+- **Prickles and Scone** (feud): Prickles -2, Scone -1. The noise, the ball over the fence, the nickname Scone gave him.
+- **Prickles and Boing** (feud): Prickles -2, Boing 0. Springs, squeaking, joy before breakfast. Boing thinks they are pals.
+- **Prickles and Nimbus** (feud): Prickles -2, Nimbus -1. A rain cloud, on his patio, on purpose (it is not on purpose). Nimbus is hurt and sulks.
+- **Prickles and Mayor Marsh** (feud): Prickles -2, Mayor Marsh 0. A windbag in a hat. The Mayor thinks Prickles adores his speeches.
+- **Prickles and Joy** (snub): Prickles -1, Joy 0. The arcade jingle carries all the way to the Meadow.
+- **Prickles and Echo** (snub): Prickles -1, Echo 0. Music at three o'clock every single day.
+- **Prickles and Fizz** (snub): Prickles -1, Fizz 0. All that narrating.
+- **Prickles and Dr. Patch** (snub): Prickles -1, Dr. Patch 1. Refuses check-ups.
+- **Dewey and Joy** (feud): Dewey -2, Joy 0. Loud, everywhere.
+- **Dewey and Scone** (feud): Dewey -2, Scone -1. Overdue books, muddy pages, running in the stacks. Scone calls it Shushy.
+- **Dewey and Boing** (snub): Dewey -1, Boing 1. Boing in the reading room, once, never forgotten.
+- **Dewey and Pixel** (snub): Dewey -1, Pixel 0. Screens.
+- **Dewey and Fizz** (snub): Dewey -1, Fizz 0. Narrates in the library.
+- **Dewey and Echo** (snub): Dewey -1, Echo 1. Music through the wall during the ten o'clock quiet.
+- **Dewey and Mayor Marsh** (snub): Dewey -1, Mayor Marsh 1. The Mayor's book is nine years overdue.
+- **Mayor Marsh and Cobble** (snub): Mayor Marsh 0, Cobble -1. He calls him that little road fellow and has promised new stone for six years.
+- **Nimbus and Mayor Marsh** (snub): Nimbus -1, Mayor Marsh 1. He keeps announcing sunny days without checking.
+- **Bolt and Fizz** (feud): Bolt -1, Fizz -1. Brave paint and pompous bubbles.
+- **Dusty and Fizz** (snub): Dusty -1, Fizz 0. Bubbles everywhere, on the showroom sofas.
+- **Dusty and Joy** (snub): Dusty -1, Joy 1. Crumbs.
+- **Dusty and Scone** (snub): Dusty -1, Scone 0. Mud on the rugs.
+- **Joy and Tock** (snub): Joy 1, Tock -1. Scores shouted at teatime.
+- **Scone and Tock** (snub): Scone 1, Tock -1. Touches the stock.
+- **Echo and Joy** (snub): Echo -1, Joy 1. The arcade drowns the plaza music.
+- **Echo and Pixel** (feud): Echo -1, Pixel -1. Chiptune is not music.
+- **Parcel and Pixel** (snub): Parcel 0, Pixel -1. Too much energy before one o'clock.
+- **Cobble and Scone** (snub): Cobble -1, Scone 0. Skidded through his wet cement, twice.
+- **Parcel and Cobble** (snub): Parcel 0, Cobble -1. Tramples fresh mortar on the round.
+
+### Only in some weather
+- Fold toward Nimbus in rain: -2. Fold goes soggy and blames Nimbus out loud.
+- Parcel toward Nimbus in rain: -1. soggy cardboard, every parcel late.
+- Tutti toward Nimbus in rain: -1. no customers, and Nimbus looks pleased about it.
+- Tutti toward Nimbus in cold: -1. same again.
+- Prickles toward Nimbus in sun: 0. on a sunny day Prickles can just about stand Nimbus.
+- Nimbus toward Prickles in rain: 0. on a rainy day Nimbus is too happy to sulk.
+- Dewey toward Joy in fog: -2. nothing changes.
 
 ---
 
@@ -1705,6 +1875,56 @@ lit first.
   Sunday market and the park became real (see "The town's civic places"). New furniture sets named for them: Town Square (`ctownhall`),
   Lending Library (`clibrary`), First Class (`cpostoffice`, Parcel's Bestie nickname for you), Fair Weather (`cweather`), Wick & Ladder
   (`clampshed`), Market Morning (`cmarket`). Story hour, the bake sale and the festivals still happen at the hosts' houses.
+
+### Neighbours talking (v80): Playhouse Hill
+- Joy's 88,400 at pinball is the 305th entry in Tock's score notebook (marked "loud": shouted during tea); Tock and Pixel have agreed on Joy's scores 42 times (91,240 is one).
+- Parcel knocks once at Pixel's before one o'clock, twice after. A gull on Pixel's friend list posted it a postcard.
+- Blush posted Parcel a pink ink pad; Parcel took it for mystery mail and gave it to the Mayor. Parcel's stamp is a brown heart.
+- Blush's colour names: wet Parcel is "wet oatmeal"; Bolt's rain-streaked paint is "Bolt after a long day". Bolt's "Bolt's Best Blue" is secretly "twilight harbour" on the order form.
+- Joy's level-three jingle rhymes "bonus" with "bonus". Dewey keeps a grudge "page sixty" for anyone who sides against it.
+- Echo's last song of the day, "First Lamp", has no words; Lumi lights the lamps to it; Joy turns off the arcade's attract loop while it plays.
+- Boing added a second tower and a slide to Dewey's pop-up castle (a knight afraid of stairs) and once caught page 91 of chapter nine in the wind.
+- Boing fell asleep upside down on the claw machine at 11:30 one Game Night (it ends at midnight). Prototypes: Sir Flapsworth (a flapping fan) and two "Wobbles Two" (one upside down; Tock labelled them A and B).
+- Bolt threw his hammer over the toolbox fence at 7:12 to celebrate a birdhouse; Tock labelled it and gave it back with a bow. Bolt knows three of about 400 part numbers.
+- Sketch measured Cushy's shelf at 87 cm ("yay big"). Bolt drew a shed with no roof, "for the stars". Fold's paper ruler for Sketch is 0.4 mm crooked on purpose with a heart at the end.
+- Parcel stamped DELIVERED on the kettle again ("lovingly", Fold allowed); Parcel counts Fold's paper hearts every night (206).
+- The Mayor has opened Cobble's bench three times and calls him "my little road fellow"; Cobble corrects him: "Cobble". The Mayor keeps a towel at the Town Hall "for emergencies, and speeches". Fold's three-part ribbon banner has a goose in part two.
+- The arcade sign stays on all night through storms. Cobble likes standing in the rain after work.
+### Neighbours talking (v80): Lantern Meadow
+- Scone calls Prickles "Old Pokey" ("Old is for cheese," says Prickles). Captain the lizard ate the north half of Prickles' map, which is why north was wrong.
+- Boing made Prickles a wind-up cactus with googly eyes; Boing's new robot sings four songs (one a sea shanty for Prickles) and wakes him at seven. Prickles has given in on the camel: "small, sandy".
+- Prickles snored through the Mayor's last speech; the Mayor took it as being moved to silence.
+- The Mayor borrowed "Speeches for All Occasions" nine years ago on a Tuesday and added a goose chapter; Dewey jokes about a "four thousand stamps" fine.
+- Echo practises scales at ten (they carry through the library wall); its library song is mostly silence with a page turn, played Thursdays, and Dewey leaves the back door open to hear it. Echo sings the shanty as "heave away, my jelly boys", holds its opening C for 40 seconds (Pixel timed it; Pixel calls Echo's songs "lift music"). Part three of the town song: the goose honks in C.
+- Nimbus gave the Mayor a pink umbrella from the forgetful-people stand. Cobble's hard hat "fits two. Nearly." (he shares it with Prickles in the rain).
+- Bunbun leaves a Monday cookie (lavender shortbread) in Posy's watering can for Prickles; Posy knows and pretends to water.
+- Tock reshelved 42 picture books for Dewey; the library has 31 shelves plus a crooked one by Bolt that holds the poetry. The library porch gives 2.1 metres of dry.
+- Fold folded Dewey a paper moth for the desk. Crumb labels Dewey's returns in tiny letters ("Damp, forgive it." "Has a moth.").
+- The Mayor's Summer Fair speech has Bunbun in part two; he is planning ribbon cuttings for a new bench beside the old bench and a new noticeboard.
+- Prickles' planned sea trip is a secret Posy pretends not to know about.
+### Neighbours talking (v80): Sugarloaf Lane
+- Tutti crumbles Bunbun's burnt edges into her vanilla; Bunbun recognises her own crunch.
+- Scone returned the dinosaur book with pages 40-52 jammed together, spoiled a 400-page book at story hour ("the bear goes home"; Crumb hummed for an hour), and calls Dewey "Shushy". The library has two racing books in the back corner.
+- Scone put a playground frog in the Nest's laundry basket; it ended up on the display sofa and Dusty couldn't move it. Scone's two footprints in the cement by the bench were kept by Cobble as a reminder.
+- Joy hid a cookie in a display cushion; Cushy ate it asleep. Pip counts to a hundred out the back every morning, exactly when Joy comes in; Bunbun allows Joy one official cookie a day.
+- Bunbun's tickets: one rubber duck per 20; she keeps eleven on the shelf next to her mum's book. Boing made Joy a cap with a fan in it.
+- Dr. Patch sleeps on a crunchy buckwheat pillow (Cushy's: feather, medium, turned twice a night). Bunbun is owed 31 "sit-downs" by Patch (plans to take one at Long Table). Patch leaves leaflets in Prickles' letterbox; he burns them.
+- Bolt's Tuesday thumb is the left one, because Bobbin has the small hammer that day. The Wednesday thumb involved Cushy's ladder. "An arch holds itself up by leaning on itself."
+- Cushy is making Dusty a secret lavender cushion with a pink tassel; Dusty has guessed and will act surprised. This Two-Heart Day's heart cushion for Bunbun is the twelfth (she sleeps on four); this year's heart buns are raspberry.
+- Pip and Bunbun tap the wall: two taps = goodnight and thank you, one back = you're welcome.
+- Crumb gave Pip a red pebble ("Jam. Pip's. Don't eat.") and Scone a round one ("Rolls. Scone's. Speed."); she hums "Aunt Tutti's song", which Tutti thinks she made up. Boing is building Crumb a pebble ramp with a fast/slow switch.
+- Gloss once booked Cushy a nap in their own shop (2 to 3) so they'd be awake for a delivery. Fizz's bubbles left nine rings on the Nest's velvet chaise.
+### Neighbours talking (v80): Bubble Bay
+- Gloss's list of Parcel's lateness is laminated and colour-coded (Parcel's colour: beige). Parcel was on time once by doing the Bay round backwards (a hedge ended up in their flap). Gloss's private book has a "friends" page with Bobbin first, in ink. Gloss and Bobbin keep a "quiet thing" evening, seven till eight. Gloss books Pom nine minutes late in pencil every day and has a blue "fluffing time" tab for rainy mornings.
+- Pom has nine named alarms and none of them work. The front curl Pom named after Fizz popped mid-appointment and Duchess sulked.
+- Pixel collected its stray voxels from Gloss's waiting chairs into a jar labelled "Gloss, sorry". Blush dabbed "new pea at dusk" on its cabinet and it won't wipe off. Its top voxels go soft in the heat.
+- Beacon gave Bobbin a blue button off the tide line (43 buttons now). A small crab lives under plank 112 of the boardwalk (204 planks); Bobbin is knitting it a scarf. Bobbin labelled the teapot "Teapot: no thread" in thread.
+- Blush wants one pink stone in Cobble's road; he says pink stones crack in frost. Cobble never notices her digs and thanks her for them.
+- Sketch kept Stitch's centimetre and checks it every morning, and is secretly drawing a shelf for Stitch's someday drawer.
+- The library's quiet sign was painted by Fold. Fizz once narrated someone reading a road map for forty minutes; a bubble from his hair let the paper moth out of chapter nine. At a bake sale Bolt called Fizz's bubbles "pompous" and then sat on Fizz's cake box. The salon has a poster of Fizz at the circus lifting a teacup (dusted daily); a "Loofah, our calm" poster is planned (Loofah wants small letters).
+- On fog nights Beacon sounds the horn twice for Lumi; Lumi taps the pole twice back (as well as the goodnight flashes).
+- Fold's signs "know Tuesday is windy". Stitch's window star from Fold has a crinkle on its third point (Fold blames the wind).
+- Gloss has booked Blush every sunset this summer for dreaming time at the studio window (with a cushion and a pear).
 
 ## Open questions (undecided; ask Garrett before writing as fact)
 1. **Is there a sea?** Bubble Bay, the pier, the beach, the harbour, boats, gulls and Beacon's lighthouse are all over the lore, and Prickles dreams of the sea; the v60 map is countryside with

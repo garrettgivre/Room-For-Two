@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v79** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v79'` in `sw.js`; bump both for anything
+**Current build: v80** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v80'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 75 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -721,3 +721,33 @@ friendship (max 2 per chat); the first chat of the day +2. Residents without TAL
   a house (Sunday tea...) threw "Maximum call stack size exceeded" every frame and the map stopped responding (no zoom).
 - v79: Arrange refused new decorations once a layout had 80 (the world has 300+), now 900 on the world map; "edge of the island" text.
   Regression sweeps added (see Working method).
+
+## Map taps, shop logos, quieter pins, neighbours talking to each other (v80)
+Garrett's phone test asked for these.
+- **Tapping a building outdoors opens its card first** (`twTap` -> `tmSelect`); the card's button walks the pet there and in (`tmEnter` ->
+  `twGoIn`). Outdoors the card doesn't zoom (`tmFocusB` keeps the zoom, stops following; `tmCardClose` resumes it); the place you just
+  stepped out of says "Go back in" (`tmBack`).
+- **Shop logo stickers** (`.tms`, made in `tmDistrictLabels`, placed in `tmFrame`) over every shop and home at middle zoom only
+  (camera distance > 24 and not `far`, where the district names take over). Tap = card.
+- **Resident pins** (`.tmr`) are 26px white faces with a ring in their colour, slightly see-through, a bigger invisible tap area;
+  chatting shows a small bobbing "···" (`i.dots`).
+- **Talking waits until you're side by side**: `cvStart` makes the resident stop (`tw.card`), walks the pet over (`tw.cvPend`,
+  `cvPendTick`), then `cvBegin` opens the conversation. Tapping the ground or walking elsewhere cancels it.
+- **Residents talk to each other** (block `/* <res-chat> */` after `/* </talk> */`; sources in gitignored `.claude/rchat/`: `rel.js`,
+  `engine.js`, the four dialogue files `sugar/bay/hill/meadow.js`, put in by `.claude/rchat/integrate.py`; brief
+  `tools/dev/town/RCHAT_BRIEF.md`). **Relationships are data and canon** (bible chapter 5, "How residents feel about each other"):
+  `RTYPE` (Animal Crossing personalities; cranky Prickles and Dewey, snooty Blush and Gloss, smug Fizz, the Mayor and Echo), `RWX`
+  weather loves/hates (shift feelings to everyone by one), `RREL_SRC` ~105 written pairs (-2..2 each way, tag, reason), `RREL_WX`
+  weather-only feelings, `RTYPE_DEF` defaults by personality, housemates/workmates at least 1. `rFeel(a,b,W)` = how a feels about b now.
+  Content `RCHAT.v[k]` (a voice kit per resident: hi re small back about bye wx snub join won lost peace caught; arrays by feeling) and
+  `RCHAT.p['a|b']` (325 written scenes for the 105 pairs: `l` lines, optional `w` weather, `j` join block). `rcScene` picks a pair scene
+  (72%, weather ones first) or builds one from the kits (greeting, reply, small talk / gossip about a third resident / weather, goodbyes);
+  people who can't stand each other sometimes just snub and walk on. `twChats` (replaces `twChatsOld`) starts scenes when two off-duty
+  residents meet (not on rounds, not at a market stall; same pair at most every 10 min) and steps the lines; the line being said shows
+  over the speaker when you're close (`rcBubTick`). Walking within ~3.4 of a chat shows a chip (`rcPromptTick`): **Listen** (the
+  dialogue box plays the scene with both name tags, `rcOpen`/`rcLine`; at the end one may notice you, `caught.warm/cold`, cold for mean
+  types under Good friend), **Join in** (`rcJoin`: side with one, the other, or change the subject; siding gives that resident +1
+  friendship once a day per pair, nobody loses any), or × to ignore. Tapping a chatting resident offers Listen / Join / Talk to them
+  (`rcTapChatting`). Then Talk to either one or leave. Camera framing in `rcTick`.
+- New facts the writers invented are in the bible's Canon log ("Neighbours talking (v80)").
+
