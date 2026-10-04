@@ -1,15 +1,17 @@
 // Furniture set preview: injects a set file (a single SET_DEF({...}) call), renders every piece of that set on a contact sheet,
 // then furnishes the room with the whole set (its floor and wallpaper painted everywhere) and shoots it from two angles.
-// Usage: node tools/dev/town/sview.js <setfile.js> <outPrefix>   or   node tools/dev/town/sview.js --set <existingSetKey> <outPrefix>
+// Usage: node tools/dev/town/sview.js <setfile.js> <outPrefix>   or   node tools/dev/town/sview.js <override.js> <outPrefix> --key <existing set key>   or   node tools/dev/town/sview.js --set <existingSetKey> <outPrefix>
 // Writes <outPrefix>_pieces.png, <outPrefix>_room.png, <outPrefix>_room2.png and prints per-piece size/mesh/triangle counts and errors.
 const http=require('http'),fs=require('fs'),path=require('path');
 const {chromium}=(()=>{for(const p of [path.join(__dirname,'..','pw','node_modules','playwright'),path.join(__dirname,'..','..','..','.claude','pw','node_modules','playwright'),'playwright']){try{return require(p)}catch(_){}}throw new Error('Install Playwright: cd .claude/pw && npm i playwright')})();
 const ROOT=(()=>{let d=__dirname;while(!fs.existsSync(path.join(d,'index.html'))&&path.dirname(d)!==d)d=path.dirname(d);return d})();
 let [file,out]=process.argv.slice(2);const OUT3=process.argv[4];
+// `--key <setkey>` after the other args: the file is a BUILD override (Object.assign(BUILD,{...})) for an existing set
+const KI=process.argv.indexOf('--key'),OVKEY=KI>0?process.argv[KI+1]:null;
 if(!file||!out){console.log('usage: node sview.js <setfile.js> <outPrefix>');process.exit(1)}
 const MIME={'.html':'text/html','.js':'text/javascript','.webp':'image/webp','.png':'image/png','.svg':'image/svg+xml','.woff2':'font/woff2','.json':'application/json','.webmanifest':'application/json','.css':'text/css'};
 // `--set <key>` renders a set that's already in index.html
-const EXIST=file==='--set';const src=EXIST?'':fs.readFileSync(file,'utf8');const KEY=EXIST?out:(src.match(/set\s*:\s*\{\s*k\s*:\s*['"]([\w]+)['"]/)||[])[1];
+const EXIST=file==='--set';const src=EXIST?'':fs.readFileSync(file,'utf8');const KEY=OVKEY||(EXIST?out:(src.match(/set\s*:\s*\{\s*k\s*:\s*['"]([\w]+)['"]/)||[])[1]);
 if(EXIST)out=OUT3;
 if(!KEY){console.log('could not find set:{k:\'...\'} in the file');process.exit(1)}
 const srv=http.createServer((q,r)=>{const p=decodeURIComponent(q.url.split('?')[0]);
