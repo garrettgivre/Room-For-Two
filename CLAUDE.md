@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v68** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v68'` in `sw.js`; bump both for anything
+**Current build: v69** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v69'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 67 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -525,3 +525,15 @@ Requests now read "<name> is adding a room"; a resident stops asking once all th
   (who's walking around, nearest first; tap = fly to them and chat), and a cork **noticeboard** for what's on (festival, event now
   with Go, birthdays, next events as pinned notes). "Everyone in town" opens the old people list. Close with ×, a tap on the map,
   or the phone's back button.
+
+## Conversations on the map (v69)
+Tapping a resident on the map starts a conversation (`cvStart`, end of the town-walk block): the pet walks up, the camera closes in
+low and side-on on the two of them (`cvTick` eases target/yaw/pitch/zoom; `cvEnd` restores and resumes following), and the map card
+becomes a dialogue box (`.cvbox`: name tag in their colour, friendship hearts, typed line, reply choices). Content is `TALK[key]`
+(between `/* <talk> */` markers; sources `.claude/talk/<key>.js`, written by helper agents from the character sheets with
+`tools/dev/town/TALK_BRIEF.md`, ~6,000 lines for 32 residents): `busy` (brush-offs), `out` (openers), `topics` (branching scenes),
+`ask` (they ask you), `gossip`, `deep` (Good friend and up, in order, `kf.dp`), `bye`. Nodes are strings or `{t, r:[[you say, reply
+node, 1 = extra friendship]]}`. Placeholders {n} {a} {b} {me}. They don't feel like talking (`cvBusy`) when rushing somewhere
+(often), after 4 chats with you that day, or ~12% at random (seeded per 15 min); they still take a gift. Kind choices give +1
+friendship (max 2 per chat); the first chat of the day +2. Residents without TALK fall back to KBIB lines (`cvT`). The old
+`twCard` card is still used for "Everyone in town". Visitors no longer knock at home while the map is open.
