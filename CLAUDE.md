@@ -10,8 +10,8 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v70** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v70'` in `sw.js`; bump both for anything
-user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 67 (older clients refresh
+**Current build: v71** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v71'` in `sw.js`; bump both for anything
+user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 71 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
 **Who and how**
@@ -562,3 +562,25 @@ friendship (max 2 per chat); the first chat of the day +2. Residents without TAL
   residents have wx/tod/hol/fest lines (`.claude/talk2/<key>.js`, brief `tools/dev/town/TALK2_BRIEF.md`).
 - Gotcha: writing regexes through a bash heredoc into Python turned `\b` into a backspace character; write code with the
   Write tool and check index.html has no control characters.
+
+## Coast, sky, world decorations (v71)
+- **Coast** (`TM_COAST`, `tmCoastR(angle)`, `tmWet`, `tmCoast` inside `tmCountry`): a bay east-south-east of town (Bubble Bay's
+  side), shore curving away at both ends so the town is not an island. Beach, wet sand, foam, shallow and deep sea bands (finely
+  tessellated polar strips so the world-curve bends them; winding matters: wrong winding = invisible from above), shore rocks, a pier
+  where the east road ends, a lighthouse on a rock (`tm.lighthouse`, lamp brighter at night), bobbing sailboats (`tm.coastAnim`,
+  called from `tmDraw`). The countryside (woods, fields, meadows, hills) keeps clear of the water.
+- **Sky** (`tmSkyDraw`, `#tmSky` 2D canvas under the WebGL `#tmc`, drawn every frame from `tmFrame`, ~0.3 ms): keyframes `SKY_KF`
+  through night/dawn/day/golden/twilight (US Central); everything is placed relative to the *visible, curved* horizon (the world-
+  curve puts it far below the flat one): x by compass direction, y by elevation above that horizon. Sun from the map light's
+  direction (agrees with shadows), moon with craters and stars (round dots) at night, flat-bottomed cumulus drawn solid on an
+  offscreen layer then faded in (`tmSkyDraw.cl`), horizon haze.
+- **World decorations**: 62 new `TM_DECOR` entries (between `/* <world-decor> */` markers; sources `.claude/decor/{nature,
+  landmark,street}.js` by helper agents from `tools/dev/town/DECOR_BRIEF.md`, previewed with `tools/dev/town/dview.js`). Each has
+  `cat` (nature/water/landmark/street/fun; old ones are "classic"); Arrange's decoration palette has category chips (`TM_CATS`,
+  `tm.decoCat`). Streams are 6 keys (straight both ways + 4 bends); `archbridge` 3x1 crosses a north-south stream in its middle cell,
+  `footbridge` 1x3 an east-west one. Nature kit lives on `TM_DECOR.cherrytree.kit()`, water kit in `stream.b('kit')`.
+- **Layout v3** (`worldV3`, run once by `tmNorm` on saved v2 world layouts and by `worldDesign`): ~40% of outskirt trees/flowers
+  become still species (palms near the coast; moving ones like willows only as a few showpieces, since animated pieces can't be
+  merged), and landmarks/playground/street furniture go into free spots near targets (only generic greenery makes way; nothing
+  placed by the players moves). `SYNC_MIN_V` 71: older apps don't know the new decoration keys.
+- Perf (software GL, warm): far view ~20 ms/frame, street ~19 ms (no worse than v70).

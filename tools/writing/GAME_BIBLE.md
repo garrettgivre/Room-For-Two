@@ -1684,3 +1684,9 @@ What is still open:
 - **Open questions 1 and 4** (is there a sea; Boing, Blush and Joy's pronouns) stay open; lines that depend on them were not changed.
 
 Re-scan for pronouns after any new writing (a regex scan can miss a pronoun two sentences after a name; check replies against the question they answer).
+
+
+### 2026-10-04 (later): settled by Garrett
+- Pronouns: Boing he, Blush she, Joy she are final (Garrett: "whatever feels right").
+- There is a sea: the town sits on a coast. A bay opens to the east-south-east beyond the woods, by Bubble Bay: a sandy beach, rocks, a pier at the end of the east road, a lighthouse on its own rock out in the bay, sailboats. The town is not an island; the shore curves away at both ends.
+- New landmarks on the map (v71): a windmill in Lantern Meadow, a water tower on Playhouse Hill, a clock tower on the plaza, an observatory at the east lookout, a greenhouse by the Potted Lodge, a waterfall and stream in Bubble Bay under a stone bridge on the south lane, a playground west of Sugarloaf Lane, a carousel and a hot-air balloon on Playhouse Hill, market stalls and bus stops near the plaza.
