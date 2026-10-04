@@ -38598,6 +38598,1676 @@ Object.assign(TALK.windup,{
     ]
   }
 });
+// ---- talk3: friendship levels and milestones
+Object.assign(TALK.baker,{
+  lv:{
+    hi:[
+      [ // 0 New face
+        "Oh! Hello there. I'm Bunbun, I run the Snack Shack by the plaza. You look like you could use a bun.",
+        "Welcome, welcome. Sorry about the flour. It gets everywhere, me included.",
+        {t:"Hello, hon. I don't think I've caught your name yet. And who's this with two heads?",r:[
+          ["I'm {me}. This is {n}.","{me} and {n}. I'll write it in flour on the counter so I don't forget. Hello, {n}! Hello, other bit of {n}!",1],
+          ["Just neighbours saying hi.","Well, hello, just-neighbours. Come by the shop and we'll fix the 'just' part."]]},
+        "Good day to you! If you're ever hungry, the bell rings at seven and the door's open till late."
+      ],
+      [ // 1 Regular
+        "There you are! I was wondering when you'd come by. {n}, sweetie, I saved you a crust.",
+        "Hello again, hon! The usual? I'm joking. I don't know your usual yet. I'm still learning you.",
+        "Oh, it's my two regulars and their two-headed regular. Hello, all of you.",
+        "Back again! Good. People who come back are people who've eaten."
+      ],
+      [ // 2 Friend
+        "Hello, hon! Come here, let me get the flour off your shoulder. Now it's on mine. Fair trade.",
+        "There's my favourite trio. Did you eat? Don't answer, I can see it in your faces. Here.",
+        {t:"Oh, perfect timing. I need a taster and Pip's too polite to say anything but 'lovely'. Open up.",r:[
+          ["Mm! What is it?","Cardamom knots. You liked it, I saw your face go soft. That's the face I bake for.",1],
+          ["Is this a trick?","The only trick is butter, hon. A great deal of butter."]]},
+        "You two! I was just telling Cushy about you. Cushy was asleep. I think they agreed."
+      ],
+      [ // 3 Good friend
+        "Oh, hon, come here. I've been saving up things to tell you all morning.",
+        "There you are. I was having a fretful sort of day and now I'm not. Funny how that works.",
+        "Hello, sweetie. Sit. No, really sit, I'll fetch the tea. Dr. Patch would be proud of one of us.",
+        "My dears. {n} gets the first bite, you two get the second. That's the order now, I've decided."
+      ],
+      [ // 4 Bestie
+        "Crumpet! And {n}! Get over here, the kettle's been singing for you since six.",
+        "There's my crumpet. I made far too much again. That's your fault. I bake with you in mind now.",
+        "Hello, my loves. Ears are white, so I've been kneading, and pink at the tips, so I've been happy. You can read me by now.",
+        {t:"Don't say anything, let me guess. Hungry, a bit tired, and {b} wants crumbs. Am I right?",r:[
+          ["Every word.","Of course I am. I've known you long enough to bake for you blindfolded.",1],
+          ["{a} wants crumbs today.","No! Swapped heads? That's thrown my whole morning. Here, crumbs for both."]]}
+      ]
+    ],
+    topics:[
+      [ // 0 New face
+        {t:"So, what brings you to town? Most people come for the bread. I like to think so, anyway.",r:[
+          ["We live south of the plaza.","Oh, the cottage with the lime and blue roof! I've been dying to know who lived there. Welcome, hon.",1],
+          ["The bread, obviously.","Ha! Correct answer. You'll fit right in."],
+          ["Still working that out.","That's alright. Work it out over a bun. Most things are easier with a bun."]]},
+        {t:"I open at seven. The bell's mine. Has it woken you yet?",r:[
+          ["We like it.","Oh, good. I ring it gently. Some mornings I just tap it and hope.",1],
+          ["It's a bit early...","Sorry, hon! I'll ring it softer. Seven's late for me, you see. I'm up at four."]]},
+        {t:"Is that a two-headed... sorry, I don't want to be rude. What do I call your friend?",r:[
+          ["This is {n}.","{n}. Lovely name. Sounds like something warm out of the oven. Hello, {n}.",1],
+          ["Each head has a name too.",{t:"Oh, does it? Go on, tell me. I'll get it right.",r:[
+            ["{a} and {b}.","{a} on the left, {b} on the right. I remember everyone's order, so I can remember heads.",1],
+            ["You'll learn them.","I will! Give me two visits. Three if they keep swapping places."]]}]]},
+        {t:"Do you have a favourite kind of bread yet? Don't worry if you don't. That's what I'm here for.",r:[
+          ["Something with seeds.","Seeded rye, Tuesdays. I'll tell Pip to set a slice aside. He'll write a label for it. A crooked one.",1],
+          ["Anything sweet.","Ooh, a sweet tooth. Try the honey knot. Mind your tongue, they come out hot."],
+          ["We don't eat much bread.","Not yet, hon. Not yet."]]},
+        {t:"I hope you don't mind me asking. Have you met many people in town?",r:[
+          ["A few!","Good, good. Everybody's nice here. A bit odd. The nice kind of odd.",1],
+          ["Not really.",{t:"Well, that's easy. At three the whole street walks past my window. Want me to point people out?",r:[
+            ["Yes, please.","That's Fizz in the robe, that's Bolt with the mallet, that one asleep on the bench is Cushy. You'll have everyone by Friday.",1],
+            ["We're a bit shy.","Then start with me. I'm the easy one. I just hand people things."]]}]]},
+        {t:"That's my apprentice, Pip, in the window. The jar. He's ever so good, he just doesn't know it yet.",r:[
+          ["He looks busy.","He's always busy. Busy and a bit sticky. Say hello, it'll make his day.",1],
+          ["A jar of jam?","Strawberry. I found him on a back shelf and thought, you look useful. He was."]]}
+      ],
+      [ // 1 Regular
+        {t:"I've worked out your order, I think. Something warm, something to share, and a crust for {n}.",r:[
+          ["Spot on.","Ha! I'm getting good at you two.",1],
+          ["Add a cookie.","Oh, a cookie person now? Noted. I'm writing it down. In my head. Mostly."]]},
+        {t:"Do you know when I'm happiest? About half past six. First tray out, nobody in yet, the whole shop warm.",r:[
+          ["Sounds peaceful.","It is. Then the bell, and it's lovely in a different way. Loud lovely.",1],
+          ["We'll come at half six.","Then you'd catch me in my slippers! Come at seven, hon, I'll have my shoes on."]]},
+        {t:"I have opinions on toast. Would you like to hear them?",r:[
+          ["Always.",{t:"Butter goes on while it's hot, right to the edges. Edges matter. Do you two do edges?",r:[
+            ["Edge to edge.","Oh, good. I knew I liked you.",1],
+            ["We do the middle.","Then the edges are lonely, hon. Think of the edges."]]},1],
+          ["Is it a long opinion?","Only medium. Butter, hot, edges. Done. See, that was quick."]]},
+        {t:"{n} came right up to the counter last time and put both chins on it. Did you see?",r:[
+          ["They love your counter.","It's the crumbs. I don't sweep that end on purpose. Don't tell Dusty.",1],
+          ["Sorry about the smudges.","Smudges! Hon, I've got floury handprints up to the ceiling. Two little chin marks are nothing."]]},
+        {t:"Cushy's coming to Sunday tea, as always. I've got the good cushion out. Cushy fills it right in.",r:[
+          ["How long have you done that?","Oh, years now. It started as two of us. Now I need a bigger teapot every spring.",1],
+          ["Is the cushion for sleeping?","It's for sitting. It gets used for sleeping. Cushy can't help it."]]},
+        {t:"Bolt's fixed my oven door again. Eight times now. I don't know what I'm doing to it.",r:[
+          ["Maybe it likes him.","Ha! Maybe it does. It's always so shiny after he leaves.",1],
+          ["Slamming it?","I don't slam. I close it with enthusiasm. When the buns are ready. Which is often."]]}
+      ],
+      [ // 2 Friend
+        {t:"How are you two getting on? Really, I mean. Not a 'fine, thanks' fine.",r:[
+          ["We're good. Really good.","Oh, I'm glad. You can tell, you know. You come in leaning on each other a bit.",1],
+          ["A bit tired lately.",{t:"Tired how? Sleepy tired or busy tired? They need different buns.",r:[
+            ["Busy tired.","Then something you can eat walking. Here. A hand pie. Don't argue.",1],
+            ["Sleepy tired.","A warm milk bun and an early night. Dr. Patch would say the same, only slower."]]}],
+          ["Ask {n}.","Ha! {a} looks content and {b} looks like it wants a biscuit. That's my reading."]]},
+        {t:"Pip burned his sugar this morning and apologised to the pan. Then to the spoon. Then to me.",r:[
+          ["Poor Pip.","He's fine! I gave him a cookie. Cookies stop apologising. It's a known thing.",1],
+          ["Did the pan forgive him?","The pan's been through worse, hon. I've burned it four hundred times myself."]]},
+        {t:"A secret about Dusty. It thinks I don't know who returns my cookie tin washed and dried every week.",r:[
+          ["Who could it be?","A little lavender puff who leaves no footprints. There's always one bit of fluff on the lid, though.",1],
+          ["Does Dusty know you know?","Oh, no. And I'll never say. I just keep the porch light on."]]},
+        {t:"Can I tell you a small worry? A silly one. I think my bell's getting quieter.",r:[
+          ["Maybe you ring it softer.","Do you know, I think I do. People were sleeping. Oh, I'm a big softie.",1],
+          ["We'll listen tomorrow.",{t:"Would you? And tell me how it sounds?",r:[
+            ["Like breakfast.","That's exactly what I want it to sound like. You dear.",1],
+            ["Like a very polite bell.","Ha! That's my bell. Polite to a fault."]]}]]},
+        {t:"Joy tried a new trick. She took a cookie and left an arcade ticket in its place. A whole ticket.",r:[
+          ["That's practically paying.","That's what she said! I've got eleven tickets in a jar now. I might win a plush.",1],
+          ["Will you stop her?","Never. I've started putting a little jam heart on her cookie. She noticed. She went pink."]]},
+        {t:"Tutti brought me a sundae on Friday and said 'tell me mine's better'. I nearly did. Don't repeat that.",r:[
+          ["Your secret's safe.","Thank you, hon. Fridays only work if we both keep pretending.",1],
+          ["Hers IS good.","Oh, I know. I had two spoons. Hush."]]},
+        {t:"I watch you two split a bun right down the middle. Who does the splitting?",r:[
+          ["{me} does.","And the other picks first? That's how my mum taught me. Fair and square, and nobody sulks.",1],
+          ["We take turns.","Of course you do. You're a turns sort of pair."],
+          ["{n} eats it first.","Ha! The two-headed tax. Well, that's fair too."]]}
+      ],
+      [ // 3 Good friend
+        {t:"My mum's recipe book is over the oven, on the shelf Bolt built. I don't open it much.",r:[
+          ["Why not?","Her handwriting makes my ears go pink. So I bake from memory, and check the book when the shop's quiet.",1],
+          ["What's in it?",{t:"Bread, mostly. And one page that just says 'be kind to the dough, it's doing its best'. That's the one I read.",r:[
+            ["That's lovely.","I think it was about me, really. I was a very floury child.",1],
+            ["Good advice for people.","I always thought so. I've just never said it out loud. Look at that, now I have."]]}]]},
+        {t:"Can I ask your advice? Pip wants to do the morning bake by himself one day. I want to say yes. I'm frightened to.",r:[
+          ["Say yes.","You're right. I'll say yes and then hide in the pantry and listen.",1],
+          ["Stay near, but quiet.","Upstairs in my slippers, ears out. That's a plan I can live with.",1],
+          ["What frightens you?","That he'll do it perfectly and not need me. Silly, isn't it? That's the whole point of teaching."]]},
+        {t:"I'm scared of one thing, hon. Not the oven. A cold kitchen. Coming down at four and nobody ever coming in.",r:[
+          ["We'll always come.","I know. I do know. That's why it's only a small fear now. It fits in a teacup.",1],
+          ["You'd still bake.","I would. I'd bake and walk it round the doors. But it's nicer when the doors come to me."]]},
+        {t:"Six seconds. That's my record for sitting down. Dr. Patch timed it. Do you think I could beat it?",r:[
+          ["Try now, we'll count.",{t:"Alright. Sitting. One, two, three... is something burning? Four, five...",r:[
+            ["Nothing's burning!","Six! Seven! Oh my, seven! Write it down. On a bun. Seven seconds.",1],
+            ["Go and check, it's fine.","See, you know me. Back in a tick. That counts as six and a half."]]},1],
+          ["Never. You're a stander.","I'm a stander! I'm telling Dr. Patch that. It's a medical term now."]]},
+        {t:"You two make this shop feel like a kitchen at home. People slow down when you're in.",r:[
+          ["That's your doing.","Oh, hush. I bring the buns. You bring the slow. It takes both.",1],
+          ["Really?","Really. Bolt sat for three whole minutes last time you were in. Three. I nearly fetched the Mayor."]]},
+        {t:"The spring picnic. I've stopped calling it a dream and started calling it a plan. Will you help me with it?",r:[
+          ["We're in.","Then you're on blankets. And lemonade. And keeping Joy away from the lemon cake.",1],
+          ["What's step one?","Asking the Mayor nicely. Step two, a bun so he says yes. Step three, the lemon cake."]]}
+      ],
+      [ // 4 Bestie
+        {t:"Do the hum with me, crumpet. You know how it goes by now.",r:[
+          ["Hmm-hmm-HMM.","Up at the end! You've got it better than Pip has. Don't tell Pip.",1],
+          ["Hmm-hmm-hmm?","Down at the end. You're a Pip. That's alright, Pip's lovely."]]},
+        {t:"You've got more than a line in my notebook now. You've got a page. Want to hear the newest bit?",r:[
+          ["Read it.","'Comes in together. Always shares. Keep something warm.' And underneath, new: 'Stays for the washing up.'",1],
+          ["Save it for later.","For a cold day, then. It'll keep. It's in pencil and flour."]]},
+        {t:"Crumpet, I've had a silly idea. A bun with two heads. One sweet, one savoury. For {n}.",r:[
+          ["Make it today.","Already in the oven! I couldn't wait. The sweet head's rising faster, of course.",1],
+          ["Which head gets which?","{a} sweet, {b} crumbs. I've had them sorted for ages."]]},
+        {t:"I don't say it enough. Thank you. For coming in. For eating. For letting me fuss.",r:[
+          ["Thank you for fussing.","Oh, now my ears are pink. Look at them. That's your fault, crumpet.",1],
+          ["Fuss away.","Then I will. Forever, probably. Starting with a scarf. Is that a cold neck I see?"]]},
+        {t:"I burn my tongue on the first cookie on purpose now, you know. It means the day's started.",r:[
+          ["We know.","Of course you do. You've watched me do it a hundred times. Ow. There it goes.",1],
+          ["Let it cool!","Never, crumpet. A cooled first cookie is a sad first cookie."]]},
+        {t:"Right, before you say anything. Did you...",r:[
+          ["Eat? Yes. Twice.","Twice! Look at you. I've trained you so well. Have a third.",1],
+          ["...eat? Not yet.","I knew it. Sit there. Don't move. Three minutes."]]}
+      ]
+    ],
+    bye:[
+      ["Lovely to meet you, hon. Do come by the shop.","Bye now! The door's open till late.","Off you go. And eat something, if you don't mind me saying."],
+      ["Bye, you two! Bye, {n}! I'll keep a crust back.","See you at the counter, hon.","Mind the step! Everyone trips on that step."],
+      ["Bye, hon! Take this. No, take it. It's still warm.","Say hello to the cottage for me. And eat.","Go on, I've kept you. Tell {n} the crumbs are waiting."],
+      ["Bye, sweetie. Come back when you're hungry. Or when you're not.","Go carefully, my dears. I'll think of you at half six.","Bye, hon. Thank you for the chat. I needed it more than the tea."],
+      ["Bye, crumpet! Love to {a}, love to {b}, love to you.","Off you pop, crumpet. The first bite's yours tomorrow.","Bye bye, my loves. The kettle's on whenever."]
+    ]
+  },
+  mile:{
+    met:[
+      "Oh, a new face! And two new faces on one pet! Hello, I'm Bunbun. You'll be wanting a bun.",
+      {t:"Welcome to town, hon. Have you eaten today? It's the first thing I ask everyone.",r:[
+        ["Not yet.","Then the first thing I give everyone is a roll. Here. Welcome.",1],
+        ["We have!","Oh, good! Then take this for later. Everyone needs a later."]]}
+    ],
+    week:[
+      "A whole week of you two! I've started setting a crust aside before you even walk in.",
+      "One week, hon. I know your faces now. Next week I'll know your order."
+    ],
+    month:[
+      "A month already! I put you in my notebook today. Proper ink, not pencil.",
+      {t:"It's been a month since you two first walked in hungry. Do you remember what you had?",r:[
+        ["A warm roll.","A warm roll! Exactly right. I remember everyone's first.",1],
+        ["I don't, sorry.","That's alright. I do. A warm roll, and {n} had the crumbs."]]}
+    ],
+    season:[
+      "A whole season of you. The ovens have changed their bread three times since you came, and you're still my favourite thing at the counter.",
+      "Three months, hon. Long enough that if you didn't come in, I'd notice. I'd send Pip round with a basket."
+    ],
+    year:[
+      {t:"A year, sweetie. A whole year of you two at my counter. I baked a little cake. It's shaped like a bun. Of course it is.",r:[
+        ["We'll share it.","Of course you will. Right down the middle, and {n} gets the first bite.",1],
+        ["Thank you, Bunbun.","No, thank you. A year of feeding you is a year well spent."]]},
+      "One year! My ears have gone pink. I'm going to have to stand in the pantry for a minute."
+    ],
+    talk10:[
+      "Ten chats, hon. I counted on my fingers. Then I ran out of fingers that weren't floury.",
+      "That's ten good talks now. I'm getting used to the sound of you at my counter."
+    ],
+    talk50:[
+      "Fifty chats! If you were cookies I'd have baked a whole tray of you. That came out strange. You know what I mean.",
+      {t:"Fifty times you've stopped to chat. Do you know how many people stop when I'm floury? Not fifty.",r:[
+        ["We like the flour.","Then you'll always be covered in it. That's the price.",1],
+        ["Fifty more, please.","Oh, at least. Bring your appetite each time."]]}
+    ],
+    talk100:[
+      "A hundred chats, hon. I'd give you a medal, but all I've got is a bun. Here's the bun.",
+      "One hundred! I tell the dough about you two when you're not here, you know. The dough says hello."
+    ]
+  },
+  nick:"crumpet"
+});
+Object.assign(TALK.cone,{
+  lv:{
+    hi:[
+      [ // 0 New face
+        "Hello, hello! I'm Tutti, sweet pea. I'm the cart on the plaza. Well, the lady with the cart. You know what I mean, hm?",
+        {t:"Oh, new faces! Hello, my loves! And who's this with the two heads? Hm? Tell me, tell me.",r:[
+          ["This is {n}. I'm {me}.","{n} and {me}! Lovely! I'm very good with names. Twins teach you that, hm?",1],
+          ["Just a friendly pet.","A very friendly pet with two very friendly faces! Hello, both of you!"]]},
+        "Hello there! Twelve till six, that's my cart. Sprinkles free, always free. Come by, hm?",
+        "Oh, hello! Half a second. Was that a crash? No. Good. Hello! I'm Tutti!"
+      ],
+      [ // 1 Regular
+        "Sweet pea! And {n}! I remembered! I've been saying '{n}' to the twins all week. They think it's a flavour.",
+        "Hello again, my loves! First shake of sprinkles is yours. Hold out your hand. There.",
+        "Oh, it's you two! Lovely! Have you eaten? You've been here before, so you knew I'd ask, hm?",
+        "Hello, hello! Scone says hi. He said it from the top of the swing, very loudly, so I'm passing it on."
+      ],
+      [ // 2 Friend
+        "There they are! My favourite pair after my favourite pair! Come here, let me look at you.",
+        {t:"Sweet pea! Quick, taste this and don't tell me it's like anything else. Hm?",r:[
+          ["It's like nothing else.","Exactly what I wanted! Oh, you're good at this. You're hired. Paid in scoops.",1],
+          ["It's like a sunny Tuesday.","A sunny Tuesday! I'm putting that on a label. No, I'm keeping it for myself."]]},
+        "My loves! I was telling Crumb about you and she went pink. That means she likes you. Don't tell her I said.",
+        "Hello! You've got that look. That 'we walked here hungry' look. Scoop first, talk after, hm?"
+      ],
+      [ // 3 Good friend
+        "Oh, sweet pea. Come here. It's been a morning. You're exactly what the morning needed.",
+        "Hello, my loves. I kept your spot by the cart. The shady side. I put a napkin on it so nobody took it.",
+        "There you are! I've a thing to ask you and a thing to tell you. Ask first. No, tell first. Hm. Hello first.",
+        "Hello, you two. Hello, {n}. I've stopped half-turning when I hear you coming. I know your footsteps now."
+      ],
+      [ // 4 Bestie
+        "Cherry! My cherry on top! And {n}, my littlest customer! Come here, all of you. Mind the drip.",
+        "Hello, cherry! I scooped yours before you got here. I just knew. Mint's melting, eat fast, hm?",
+        {t:"Cherry, guess what the twins did this morning. Go on. Guess.",r:[
+          ["Touched the cart?","Both of them! At once! Holding hands! I couldn't even be cross, it was too sweet!",1],
+          ["Sat still?","Ha! For eleven seconds! I counted! I nearly got the camera! Nearly, cherry."]]},
+        "Cherry! Crumb says I said your name in my sleep. Well, I said 'cherry'. She knew who I meant."
+      ]
+    ],
+    topics:[
+      [ // 0 New face
+        {t:"Ice cream, sweet pea? Strawberry, mint, vanilla, and whatever I dreamed about last night. What do you fancy?",r:[
+          ["Strawberry, please.","Like my left scoop! Good choice. Here, with sprinkles. Free. Always free, hm?",1],
+          ["What did you dream about?","Peaches and a bit of honey. It's in the tub with no label. Brave choice! Here!"],
+          ["Just looking today.","Looking's free too, my loves! Look all you like. The cart enjoys it."]]},
+        {t:"Do you live round here? I'm on Sugarloaf Lane with my niece and nephew. Two muffins. You'll hear them before you see them.",r:[
+          ["South of the plaza.","Oh! Near my Sunday queue! You'll see me wheeling the cart up every noon. Wave, hm?",1],
+          ["Two muffins?","Scone and Crumb! Twins! One very loud and one very quiet. Together they're just right."]]},
+        {t:"Sorry, my loves, I keep looking over your shoulder. The playground. I'm counting. One... two. Good. Where was I?",r:[
+          ["Telling us about ice cream.","Was I? Then I'll keep going! Ice cream, wonderful, free sprinkles. That's the gist.",1],
+          ["Are they alright?","They're fine! They're always fine! I'm the one who isn't. It's called being an aunt, sweet pea."]]},
+        {t:"Can {n} have ice cream? I always ask first. Some little ones get the hiccups. Hm?",r:[
+          ["A small one, please.","A small one! A Tutti small. Which is medium. Here, {n}. Ooh, both heads went for it.",1],
+          ["They'd love some.","Then here you are! A little cone with two little cherries. One each, no fighting."]]},
+        {t:"I warm the waffle cones every morning so the street smells sweet. Have you noticed? Tell me true, hm?",r:[
+          ["Every single morning.","Oh, good! That's the whole point, sweet pea. It's a hello you can smell.",1],
+          ["We thought it was Bunbun.","Ha! Bunbun's is the bread. Mine's the sweet. Between us the lane smells of breakfast and pudding."]]},
+        {t:"It was just me and a cart, for years, my loves. Then two muffins. Now look. A whole household.",r:[
+          ["It suits you.","Does it? I think it does. I'm louder now. I used to be a quiet cart lady, can you believe it? Hm?",1],
+          ["Sounds busy.","Busy! Sweet pea, you've no idea. Busy and sticky. I wouldn't trade a sprinkle of it."]]}
+      ],
+      [ // 1 Regular
+        {t:"I know your order now. Strawberry for one, something new for the other, and a tiny one for {n}. Am I right?",r:[
+          ["Exactly right.","Ha! I'm good, aren't I? Twins teach you to keep track. Two of everything.",1],
+          ["Mix it up today.","Ooh! Adventurous! Mint for one, the no-name tub for the other. I'll watch your faces."]]},
+        {t:"My day: cones in the oven at seven, twins to the playground at nine, cart up the hill at twelve. Then no sitting till six. Hm?",r:[
+          ["When do you eat?","At four, standing up, a cone. Don't tell Dr. Patch. Dr. Patch knows. Dr. Patch always knows.",1],
+          ["That's a lot!","It's a lot of lovely, sweet pea. I'd be bored with less. I'd invent a third twin."]]},
+        {t:"Mild opinion, my loves. Cones are better than cups. A cup is just a bowl that gave up. Hm?",r:[
+          ["Cones forever.","Cones forever! I'm putting that on the cart. In pink.",1],
+          ["Cups don't drip, though.","True, sweet pea. But the drip's half the fun. You catch it with a lick. That's the skill."]]},
+        {t:"Bunbun came by for her Friday cone and stayed to help scoop. She got sprinkles in her ears. Both of them.",r:[
+          ["Did she get them out?","Pip got them out with a pastry brush. Very gently. She was still finding them at teatime.",1],
+          ["She suits sprinkles.","She does! I told her! She said 'oh, hush'. Then she checked her reflection in the freezer."]]},
+        {t:"The wind-up toy Boing gave Scone lives in the cart. It goes off at six every morning. I've grown fond of it. Don't tell anyone.",r:[
+          ["Your secret's safe.","Thank you, sweet pea. I gave it a name. Six O'Clock. Very creative, hm?",1],
+          ["Can we hear it?","Come at six! No, don't, that's very early. Come at noon, I'll wind it for you."]]},
+        {t:"Crumb asked me what {n} likes best. She's shy, so she asked me to ask you. So I'm asking. Hm?",r:[
+          ["Tell her: her pebbles.","Oh, she'll go so pink. I'll tell her at bedtime. She'll pretend she's asleep and smile.",1],
+          ["Both heads like sweets.","Then she'll save her sweets for {n}. She will. She's a saver, that one."]]},
+        {t:"Posy says my cherry tree in the pail is the happiest bucket in town. Do you think a bucket can be happy, sweet pea?",r:[
+          ["That one can.","Then it's settled! I'll tell the bucket. I talk to it while I scoop. It never interrupts, hm?",1],
+          ["Ask Posy, she'd know.","She would! She'd put her ear to it and say 'thirsty'. She's always right. It's always thirsty."]]}
+      ],
+      [ // 2 Friend
+        {t:"How are you two, really? I ask everyone if they've eaten. I don't ask enough how they are. So. How are you?",r:[
+          ["Really happy, Tutti.","Oh, good. Good! You look it, my loves. You've got that full-freezer look.",1],
+          ["Stretched a bit thin.",{t:"Oh, sweet pea. I know that one. Thin as a wafer. Want to tell me, or want a scoop and no talking?",r:[
+            ["A scoop, no talking.","Here. Sit on the cart step. Just this once you may touch the cart. Don't tell the twins.",1],
+            ["I'll tell you.","Then I'm listening. Both ears. I'm only half-turning once, I promise."]]}]]},
+        {t:"Scone raced the pigeon again. Lost again. Then he made me give the pigeon a cone for 'good racing'. Hm?",r:[
+          ["That's so sweet of him.","Isn't it? He's soft right through, under all that noise. Like a good muffin.",1],
+          ["Did the pigeon eat it?","Every bit! It's been back every day since. I think it's training. Scone's doomed."]]},
+        {t:"Dr. Patch asked how I was sleeping. I said 'like an aunt'. It wrote that down. I don't know what it means medically.",r:[
+          ["Light and listening.","Exactly! One ear on the bunk beds. Patch says I need a nap. I said 'when they're twenty'.",1],
+          ["Patch worries about you.","It does. It's sweet. It prescribed me shade and a smaller scoop. I took the shade."]]},
+        {t:"Can I tell you a worry, sweet pea? Crumb's very quiet at the playground. Should I worry? Or is that just Crumb?",r:[
+          ["That's just Crumb.","That's what I keep telling myself. She's happy quiet, isn't she? She hums. Happy people hum.",1],
+          ["Ask her gently.",{t:"Gently. Yes. She tells me things in the dark, at bedtime. Should I ask then?",r:[
+            ["At bedtime, yes.","Bedtime it is. With the lamp off. She's braver with the lamp off. Thank you, my love.",1],
+            ["Or ask Scone.","Oh, Scone knows everything about her. He'll tell me in one loud breath. Good thinking!"]]}]]},
+        {t:"I saw you two share one cone on Sunday. One cone, two people, one pet. Very sweet. Very sticky.",r:[
+          ["It was a big cone.","It was a Tutti cone! Of course it was big. Next time two cones. Less sharing, less sticky.",1],
+          ["{n} ate most of it.","Ha! Both heads at once! I saw! The cherry went flying. Scone caught it. In his mouth."]]},
+        {t:"Fizz brought me a flavour idea. 'Bath time'. Lavender. With bubbles. I said 'interesting'. Fizz said 'tragic'.",r:[
+          ["Was it good?","It was nice! Soap-adjacent, sweet pea. I'm keeping the lavender. Losing the bubbles.",1],
+          ["Make it anyway!","For Fizz, I might. One scoop. Pink cone. He'd cry. Happy crying. He's like me."]]}
+      ],
+      [ // 3 Good friend
+        {t:"Can I ask your advice, my loves? The twins want separate beds. Scone's ready. Crumb isn't. What do I do?",r:[
+          ["Let Crumb choose.","Let her choose. Yes. She'll choose slowly. That's alright. We've got time, haven't we?",1],
+          ["Keep the bunk for now.","The bunk for now. Scone falls off the top. Crumb catches his pillow. It works, hm?"],
+          ["Ask Scone to wait.","He would, you know. For Crumb he'd wait forever. He holds her hand at night. Did you know?"]]},
+        {t:"I remember the first night with them. Two little muffins in a basket by the freezer, warm as anything. I didn't sleep. I just listened to them breathe.",r:[
+          ["You were already an aunt.","I was, wasn't I? From that first night. I didn't know the word fitted till Scone said it. Very loudly.",1],
+          ["Did you ever sleep again?","Not properly, sweet pea! Not for a year. Then Crumb started humming and I slept like a cone in a freezer."]]},
+        {t:"Here's a fear, sweet pea. One day they won't need me to scoop for them. What will I do with my hands?",r:[
+          ["Scoop for us.","For you two! And {n}! Oh, that's a plan. I'll still have people who need me, hm?",1],
+          ["They'll always need you.","You think so? Crumb walks to me slowly. She'll still walk to me when she's big, won't she?"]]},
+        {t:"I'm going to try for the family photo again. Both twins, sitting still. At the Spring Picnic. Will you hold the camera?",r:[
+          ["We'll hold it steady.","Oh, sweet pea. If anyone can, it's you two. Patient people. I'll bring bribe cones.",1],
+          ["We'll make funny faces.","Oh! Scone would laugh, Crumb would giggle into her bow, and click. That's the one."]]},
+        {t:"You two are good with the twins. You talk to Scone at his speed and Crumb at hers. Not everyone does that.",r:[
+          ["They're easy to love.","They are, aren't they? Loud and quiet. I wouldn't change either of them by a sprinkle.",1],
+          ["We copy you.","Me? Oh, sweet pea. Well. I've had practice. Years of it. Two at once."]]},
+        {t:"Say it with me, my loves. One, two, three...",r:[
+          ["Don't touch the cart!","DON'T TOUCH THE CART! Ha! Scone heard that from the swings. He's waving. He's touching the cart. How?",1],
+          ["Have you eaten?","Ha! That's my other one! You've caught me twice. Well? Have you?"]]},
+        {t:"Can I tell you what I'd like for my birthday, my loves? Nothing big. One whole cone, eaten sitting down, without a single crash.",r:[
+          ["We'll mind the twins.","Would you? For one cone's worth? Oh, sweet pea. That's the best present I can think of.",1],
+          ["We'll bring a chair.","A chair! By the cart! I'll sit in it like a queen. For about four minutes. Then I'll hear a crash."]]}
+      ],
+      [ // 4 Bestie
+        {t:"Cherry, I made a new flavour just for you two. It already has a name. I've told nobody. Not even the twins.",r:[
+          ["Tell us!","'Two Spoons'. For sharing. Strawberry and mint, half and half. Like my scoops. Like {n}.",1],
+          ["Let us guess.","You'll never get it! It's 'Two Spoons'. Oh, I couldn't wait. Half strawberry, half mint, all yours."]]},
+        {t:"Silly question, cherry. If you were a flavour, what would you be?",r:[
+          ["Vanilla, but fancy.","Vanilla with a cherry! Classic, never boring. That's you, cherry.",1],
+          ["The no-name tub.","A mystery flavour! Oh, you're a sneaky one. It's peaches and honey this week."],
+          ["Mint. Melts fast.","Like my right scoop! Oh, cherry, you're soft-hearted. I knew it."]]},
+        {t:"Right, cherry, you know how this goes. Sprinkles first, then the cone, then...",r:[
+          ["The lick for the drip.","The lick! You've got it! Catch it before the cherry falls. See? Professional.",1],
+          ["Then 'have you eaten?'","Ha! You know me too well. So? Have you? Don't answer. I know. Here."]]},
+        {t:"Can I tell you something, cherry? Some days I'm so tired I could lie down in the freezer. Then you two walk up and I'm fine. How do you do that?",r:[
+          ["You do it for us too.","Do I? Oh. Then we're even, cherry. A scoop for a scoop. That's a good friendship, hm?",1],
+          ["Have you told anyone?","Just you. And the freezer. The freezer hums back. You hum back better."]]},
+        {t:"Thank you, cherry. For asking about the twins every time. You never forget. Even when I forget to say how I am.",r:[
+          ["How ARE you, Tutti?","Oh! See? You did it again. I'm wonderful. Sticky and wonderful. Thank you for asking twice.",1],
+          ["They're our favourite muffins.","Don't tell Bunbun! She thinks her muffins are the favourites. Ha! You'll get me in trouble, cherry."]]},
+        {t:"Cherry, I want you two in the family photo. When I finally get it. You and {n}. Is that strange?",r:[
+          ["We'd be honoured.","Then it's settled. Me, two muffins, two of you, two heads. Nobody sitting still. Perfect.",1],
+          ["Only if the cart's in it.","The cart! Of course the cart! With nobody touching it. That's the hardest part of the photo."]]}
+      ]
+    ],
+    bye:[
+      ["Bye, sweet pea! Come back and try a scoop, hm?","Bye bye, my loves! Twelve till six! Sprinkles free!","Off you go! Oh, was that a crash? No. Bye!"],
+      ["Bye, you two! Bye, {n}! I'll keep the no-name tub cold for you.","See you, sweet pea! Did you eat? Go and eat!","Bye, my loves! If you see Scone running, tell him to walk. He won't. Tell him anyway."],
+      ["Bye, sweet pea! Take a cone for the walk. Hold it from the bottom!","Go on, my loves. Thanks for asking how I am. I'll ask you back tomorrow.","Bye bye! Crumb says bye too. She said it very quietly from behind the cart."],
+      ["Bye, my loves. Thank you. I mean it. Don't make me drip.","Go carefully, sweet pea. And come back. I'll keep your shady spot.","Bye, you two. Hug {n} for me. Two hugs. One per head."],
+      ["Bye, cherry! Bye, {a}! Bye, {b}! Love you all, eat something!","See you tomorrow, cherry. I'll scoop before you get here. I'll just know.","Off you go, cherry! Don't touch the cart! Ha! Couldn't help it."]
+    ]
+  },
+  mile:{
+    met:[
+      "Oh, hello, sweet pea! New faces! I'm Tutti, the ice-cream lady. First scoop's on me. Every scoop's on me, really, hm?",
+      {t:"New in town, my loves? Welcome, welcome! Have you eaten? You haven't. I can tell. Here!",r:[
+        ["Thank you, Tutti!","You know my name already! The twins have been talking. Scone talks to everyone.",1],
+        ["Is it free?","The first one's free, the sprinkles are always free, and after that we'll see. Mostly free."]]}
+    ],
+    week:[
+      "A whole week, sweet pea! I know your faces now. Scone calls {n} 'the fast one'. It isn't. He's being kind.",
+      "One week of you two! I've started saving you cherries. Two cherries. For the two heads, hm?"
+    ],
+    month:[
+      "A month already, my loves! You've had more scoops than anyone except Scone. And Scone had a head start.",
+      {t:"It's a month since we met, sweet pea! Do you remember your first flavour?",r:[
+        ["Strawberry.","Strawberry! I remember too! You had a pink nose for an hour. So cute, hm?",1],
+        ["The mystery tub.","The mystery tub! Peach. You made a face. A good face. A brave face."]]}
+    ],
+    season:[
+      "A whole season, my loves! Three months of cones! You've seen me in sun and drizzle and that awful windy week. Still here. Good.",
+      "Three months, sweet pea. The twins put you in the family drawing. In the corner. With {n}. That's big, in our house."
+    ],
+    year:[
+      {t:"A year, sweet pea! A whole year of you two at my cart. I made an ice-cream cake. It's melting. Eat fast!",r:[
+        ["Best cake ever.","Oh, stop! No, don't stop. One year! Here's to a hundred more, my loves. And a hundred more scoops.",1],
+        ["You made a cake?","Bunbun helped with the sponge. Don't tell anyone. I'll say I did it all. You can say Bunbun. Ha!"]]},
+      "One year, my loves. Crumb's made you a card. It took her a week. It says 'thank you' and has a pebble glued on. Don't cry. I am."
+    ],
+    talk10:[
+      "Ten chats, sweet pea! I counted on the cone wrappers. Scone helped. He got to eleven. Close enough!",
+      "That's ten good natters now, my loves. You're officially Sunday-queue people."
+    ],
+    talk50:[
+      "Fifty chats! Fifty! That's more than I've managed with the Mayor, and he talks a lot, hm?",
+      {t:"Fifty times you've stopped at my cart for a chat. Even with the twins shouting. Thank you, my loves.",r:[
+        ["The shouting's the best bit.","It is, isn't it? A quiet cart is a sad cart, sweet pea.",1],
+        ["Fifty more, please.","Fifty more! With sprinkles! I'll write it in my diary. My diary's a napkin."]]}
+    ],
+    talk100:[
+      "A hundred chats, sweet pea! I'm painting your names on the cart. Small. By the wheel. Nobody touch it.",
+      "One hundred! You know what, my loves? You're family now. That's how it works in our house. A hundred chats and you're in."
+    ]
+  },
+  nick:"cherry"
+});
+Object.assign(TALK.crumb,{
+  lv:{
+    hi:[
+      [ // 0 New face
+        "Oh. Um. Hello. I'm Crumb. Scone's sister. He's the loud one. I'm... the other one.",
+        {t:"Um. Hi. Is that your pet? Does it... um. What's its name? You don't have to say.",r:[
+          ["It's {n}. I'm {me}.","{n}. And {me}. ...Okay. I said them in my head. Now I'll remember.",1],
+          ["You can guess.","Um. I'm bad at guessing. I'll just wait. Until you tell me. That's okay."]]},
+        "Hello. Sorry. I was looking at the ground. There's a good pebble there. Not for you. Sorry. For me.",
+        "Hi. Um. I'm not very good at hello. That was it. That was hello."
+      ],
+      [ // 1 Regular
+        "Oh. It's you. And {n}. I remembered. I didn't say it out loud, but I remembered.",
+        "Hi. Um. I found a pebble on your lane yesterday. Is that okay? I put it back.",
+        "Hello again. Scone told me you were coming. He told the whole playground.",
+        "Hi, {n}. Um. Hi, both heads. I'm trying to say it to both now."
+      ],
+      [ // 2 Friend
+        "Oh, good. It's you. I saved you a spot under the slide. It's dry today.",
+        {t:"Hi. Um. Can you guess what's in my hand? It's a pebble. You knew that. What kind?",r:[
+          ["One with a hole?","Yes! How did you... oh. Because I like those. You know what I like.",1],
+          ["A stripy one?","No. But close. It's spotty. Spotty is stripy's cousin. I think."]]},
+        "Hello. I whispered your names to the snail this morning. So he knows you too now.",
+        "Hi. Um. I have three things to tell you. I'll start with the small one. Okay. Hi."
+      ],
+      [ // 3 Good friend
+        "Oh. Hi. I was hoping. I was looking at the path a lot. In case.",
+        "Hello, you two. I brought my bag. It's very full. I want to show you the top layer.",
+        "Hi. I don't feel shy right now. I'm going to talk while it lasts. Okay?",
+        "Um. Hello. You're my favourite grown-ups to be quiet with. That's a good thing. I promise."
+      ],
+      [ // 4 Bestie
+        "Pebble. Hi. ...Is it okay if I call you that? I've been calling you that in my head.",
+        "Hi, pebble. Hi, {n}. I'm not whispering. Did you notice? This is my normal voice. For you.",
+        {t:"Pebble, shh. Look. What does that cloud look like? You go first.",r:[
+          ["A pebble with a hole.","...That's what I was going to say. Exactly that. We think the same now.",1],
+          ["A snail.","Oh. Yes. It's going so slowly. Like him. I'm going to tell him he's in the sky."]]},
+        "Hello, pebble. I've been waiting by the slide. I counted to a hundred. Slowly. Twice."
+      ]
+    ],
+    topics:[
+      [ // 0 New face
+        {t:"Um. Do you like pebbles? You don't have to. Most people don't.",r:[
+          ["We do, actually.","Oh. Really? ...Okay. Then maybe I'll show you one. Not today. Another day.",1],
+          ["We don't know much.","That's okay. I didn't know either. You just look. Closely. That's all."],
+          ["{n} might.","Oh. {n}'s looking at my bag. Maybe {n} does. Hi, {n}."]]},
+        {t:"I live with Aunt Tutti. And Scone. On Sugarloaf Lane. Do you live near?",r:[
+          ["South of the plaza.","Oh. By the fountain. I put a pebble in the fountain once. It's still there. Probably.",1],
+          ["Not far away.","Not far. Good. Um. Not far is a nice amount."]]},
+        {t:"Um. Is it okay if I stand here? I'll be quiet. I'm usually quiet.",r:[
+          ["Stay as long as you want.","...Thank you. I'll stay a bit. Not too long. Just a bit.",1],
+          ["You can talk too.","Maybe. If I think of something. I'm thinking. ...Not yet."]]},
+        {t:"Does {n} talk? Or is it shy? Like me?",r:[
+          ["A bit shy, like you.","Oh. Then we can be shy at each other. That's a kind of talking.",1],
+          ["It chatters a lot.","With two heads? That's a lot of chatter. Scone would like that. Two Scones."]]},
+        {t:"Um. I go to the playground every day. Nine till two. I sit under the slide. What do you do all day?",r:[
+          ["We look after {n}.","That's a good job. Is it hard? With two heads? I think it's hard. And nice.",1],
+          ["We decorate our room.","Oh. Like a museum? I want a museum. For pebbles. Maybe one day."]]},
+        {t:"Scone said you were nice. He says everyone's nice. Um. Are you nice?",r:[
+          ["We try to be.","Trying is good. Aunt Tutti says trying is most of it. ...Okay. I believe Scone.",1],
+          ["Very nice.","Oh. That's what a nice person would say. Or not. Um. I'll find out slowly."]]}
+      ],
+      [ // 1 Regular
+        {t:"Um. I have a pebble that looks like {n}. Two bumps on top. Do you want to see?",r:[
+          ["Yes, please!","Here. See? Two bumps. One's a bit bigger. Like {a}. Or {b}. I'm not sure which.",1],
+          ["Does it wobble?","Um. No. It's a pebble. But I wobble it in my hand sometimes. So it feels like {n}."]]},
+        {t:"Aunt Tutti gives me the second scoop. Scone gets the first. I like second. You get to watch first.",r:[
+          ["Second is underrated.","Under... rated. Is that a good word? It sounds good. I'll keep it.",1],
+          ["Do you ever want first?","Um. Once. On our birthday. I said it very quietly. She heard. She always hears."]]},
+        {t:"I counted the ahems at the bake sale. Twenty-one. Scone says twenty-two. Um. He counts loud ones twice.",r:[
+          ["Twenty-one, then.","Thank you. I knew. I just like someone else to know too.",1],
+          ["Maybe a quiet one?","...Oh. Maybe. A quiet ahem. I'd miss a quiet one. Scone wouldn't. Hm."]]},
+        {t:"Pip gave me a new jam to taste. I said 'um, good?' He wrote it on the label. Is that okay? My words on a jar?",r:[
+          ["It's very okay.","Okay. Then I'm on a jar. That's the most famous I've ever been.",1],
+          ["Was it good?","Yes. I said it like a question. But it was an answer. Pip knows."]]},
+        {t:"Um. Do you think the snail sleeps? He's very still in the mornings.",r:[
+          ["He's dreaming.","About what? ...Leaves. Probably leaves. Or me. I hope a bit of me.",1],
+          ["Snails sleep a lot.","Like Cushy. I think Cushy and the snail would be friends. Very slow friends."]]},
+        {t:"I like the bakery bell. Bunbun rings it softly. Do you hear it at your house?",r:[
+          ["Every morning.","Me too. It's my favourite bell. It doesn't shout. It just says 'morning'.",1],
+          ["Not from our room.","Oh. Then I'll tell you when it rings. Um. Every day? That's a lot of telling. Maybe sometimes."]]}
+      ],
+      [ // 2 Friend
+        {t:"How are you? Um. Aunt Tutti says ask. I'm asking. You can say a short answer.",r:[
+          ["Good. And you?","Me? Um. Good. Really good. My bag's full and Scone's happy. That's my good.",1],
+          ["A bit tired.",{t:"Oh. Do you want to hold a pebble? A smooth one. It helps me when I'm tired.",r:[
+            ["Yes, please.","Here. Warm side up. ...Better? It's a good one. It's very calm.",1],
+            ["You hold it for us.","Okay. I'll hold it for you. I'll think of you while I hold it. That's how it works."]]}]]},
+        {t:"Scone fell off the top bunk last night. Again. He landed on my pillow. I let him stay there. He snores.",r:[
+          ["That's very kind.","He was holding my hand anyway. So it was easier. He snores like a little engine.",1],
+          ["Did he wake you?","Um. Yes. But I like being woken by Scone more than by bells. He says sorry. Loudly."]]},
+        {t:"Can I tell you a worry? It's small. Um. What if the snail moves away? Snails go places.",r:[
+          ["He'll come back.","You think? ...He did come back last time. After the rain. Okay. I'll wait.",1],
+          ["Then you'll find him.","Slowly. Looking at the ground. That's what I'm good at. Okay. That helps."]]},
+        {t:"Um. Posy says my seed is still thinking. It's been ages. Do seeds think slowly? Like me?",r:[
+          ["The best ones do.","Then it'll be a good flower. A thought-about one. I'll keep watering it.",1],
+          ["Maybe it's shy.","Oh. Maybe. I'll stop looking at it so much. Shy things don't like being watched."]]},
+        {t:"You two hold hands sometimes. Like me and Scone. Do you hold hands at night too?",r:[
+          ["Sometimes, yes.","Good. It helps you sleep. And if one of you falls out of bed, the other one knows.",1],
+          ["That's a secret.","Oh. Okay. Sorry. I won't ask. I have secrets too. It's fair."]]},
+        {t:"Boing wound up another pebble. On purpose this time. It went all the way to the door. Tock counted it again. Pebble, two.",r:[
+          ["Pebble, two!","Pebble, two. Tock wrote it very neatly. I asked to see the list. I'm on it. Twice.",1],
+          ["Was it a happy pebble?","I think so. It went very fast. Scone said it was racing. It won. Against nothing."]]},
+        {t:"Um. Dr. Patch said I'm a careful asker. Is that a good thing to be? It sounded good.",r:[
+          ["It's a very good thing.","Okay. Then I'll keep asking carefully. Even when Scone asks loudly first.",1],
+          ["What did you ask?",{t:"If pebbles get poorly. Patch said no. Then it read about snails for me. For six days. Isn't that kind?",r:[
+            ["That's really kind.","It is. I gave Patch a pebble with a hole. As a thank-you. It put it on the windowsill.",1],
+            ["Do snails get poorly?","Only if it's too dry. So I keep his wall damp. With a little cup. Nobody knows. Except you now."]]}]]}
+      ],
+      [ // 3 Good friend
+        {t:"Can I ask you something? Um. Is it okay that I like being alone sometimes? Even from Scone?",r:[
+          ["It's very okay.","Okay. I wasn't sure. I go under the slide. Then I come back. I always come back.",1],
+          ["Everyone needs that.","Even Aunt Tutti? ...Oh. The freezer. She sits by the freezer. That's her slide."],
+          ["Does Scone mind?","He says no. He runs round the slide while I'm under it. So he's near. That's his way."]]},
+        {t:"Um. A scary thing. Not very scary. When I'm big, will I have to talk loud? For jobs?",r:[
+          ["Some jobs are quiet.","Like what? ...Like Dewey's? The library? Oh. I'd be good at the library.",1],
+          ["You'll find your way.","Slowly. Looking at the ground. That's my way. Okay. I'll trust that."]]},
+        {t:"I remember the first time I held a pebble up to the light. I saw it was a bit see-through. I didn't know pebbles could do that.",r:[
+          ["What happened next?","I held up every pebble I found. For a whole summer. Most aren't see-through. That one was special.",1],
+          ["Do you still have it?","Yes. Label says 'Light comes in.' It's on the windowsill. So the light comes in every day."]]},
+        {t:"Um. Can I tell you what I want? I want to give Aunt Tutti something she can't scoop. Something that stays.",r:[
+          ["A pebble that stays.","...Yes. The heart one. If I find it. That's who it might be for. Maybe. Shh.",1],
+          ["A drawing?","Maybe. She keeps all my drawings. In a tin. The tin's very full. She needs a second tin."]]},
+        {t:"You never laugh when I take a long time to say a thing. Even when it's a really long time.",r:[
+          ["Your things are worth it.","...Okay. Then I'll take my time. Even more. No. The same amount. That's enough.",1],
+          ["We like waiting.","Me too. Waiting's good. You see things while you wait. Like you two. I saw you."]]},
+        {t:"Um. I found a pebble that's almost a heart. Not quite. One side's flat. Do you think almost counts?",r:[
+          ["Almost is beautiful.","...Okay. Then I'll keep it. For practice. Like Scone's one. I give him the almosts.",1],
+          ["Keep looking for the real one.","I will. But I'll keep this one too. It tried very hard to be a heart."]]},
+        {t:"Can I ask your advice? Echo plays on the plaza and I want to tell it I like the songs. But I can't. My voice goes away.",r:[
+          ["Write it a note.","A note. Yes. I wrote one on Two-Heart Day. Unsigned. Maybe this time I'll sign it. Small.",1],
+          ["Just clap. It'll know.","Clapping. Quietly. ...It would hear. Echo hears everything. That's its whole job. Okay."]]}
+      ],
+      [ // 4 Bestie
+        {t:"Pebble. I made a new label. For your sparkly one. Do you want to hear it?",r:[
+          ["Yes, please.","'Theirs. Forever. Sparkle side up.' I wrote it very small. So it fits. And so it's ours.",1],
+          ["Read it in a whisper.","...'Theirs. Forever. Sparkle side up.' That's how I'd say it anyway. Whispering's mine."]]},
+        {t:"Silly question. If I was a pebble, what kind would I be? You can't say grey. Or you can.",r:[
+          ["One with a secret hole.","...Yes. That's me. You look through and see a different place. Same place, but different.",1],
+          ["The sparkly one we have.","Oh. That's... um. Then you've had me all along. That's silly. That's nice silly."],
+          ["Grey. And perfect.","...Like my first one. Aunt Tutti said that. Grey and perfect. You remembered."]]},
+        {t:"Pebble. You know what I do when I find a good one. I hold it up, and then I...",r:[
+          ["Gasp. Tiny gasp.","Ha. Yes. A tiny gasp. You've heard it. Nobody notices the gasp. You do.",1],
+          ["Draw round it.","Yes. And colour it in. Wobbly. Like you said. I do them wobbly now. On purpose."]]},
+        {t:"Can I say a true thing, pebble? I talk more since you came. Aunt Tutti says so. Scone says so. Loud.",r:[
+          ["We love hearing you.","...Then I'll keep going. A bit more each time. Not loud. Just more.",1],
+          ["You always had words.","Yes. I kept them in my bag. With the pebbles. Now some come out. Only for you, mostly."]]},
+        {t:"Um. Thank you. For holding pebbles right. For not asking me to be louder. For coming back.",r:[
+          ["Thank you, Crumb.","...You said thank you back. Nobody does that. Okay. I'm going to go pink now. There.",1],
+          ["Always, pebble.","'Always.' Okay. I'll write that on a label too. I'm running out of labels. That's good."]]},
+        {t:"Pebble, will you come and see the snail with me? He's on the wall today. I want him to meet you properly.",r:[
+          ["We'd love to.","Okay. Shh. Sit here. Slowly. ...He's looking. He's coming out. He likes you. I knew he would.",1],
+          ["Will he mind {n}?","No. {n}'s slow when it's careful. Like him. They'll understand each other. I think."]]}
+      ]
+    ],
+    bye:[
+      ["Bye. Um. Nice to meet you. Probably.","Okay. Bye. I'll go back under the slide now.","Bye, {n}. Um. Bye, you."],
+      ["Bye. See you at the playground. If you come.","Bye. I'll say your names to the snail.","Okay. Bye. Mind the pebbles on the path. Not mine. Cobble's."],
+      ["Bye. Thank you for asking. And for the short answer.","See you. I'll save you a dry spot. Under the slide.","Bye, you two. Bye, {a}. Bye, {b}. I said them all."],
+      ["Bye. Come back soon. Not because I'm sad. Because I'm happy.","Okay. Bye. I'll draw you tonight. Wobbly.","Bye. Hold the sparkly one if you miss me. I mean, if you want to."],
+      ["Bye, pebble. Bye, {n}. I'm not whispering. Bye!","See you, pebble. I'll find you a good one tomorrow.","Bye, pebble. ...That was a loud bye. For me. Did you hear it?"]
+    ]
+  },
+  mile:{
+    met:[
+      "Oh. Um. Hello. You're new. I'm Crumb. I'll just... stand here. Next to Scone. He'll do the talking.",
+      {t:"Um. Hi. Is that a pet with two heads? ...Can I look? Just look. Not touch.",r:[
+        ["You can look all you like.","...Thank you. Hello, {n}. Both of you. I'm Crumb. That's all. Hello.",1],
+        ["You can pat it, gently.","Gently. ...Oh. It's wobbly. And warm. Like a pebble in the sun. Thank you."]]}
+    ],
+    week:[
+      "Um. It's been a week. Since we met. I put a pebble in a carton for each day. Seven. It looks nice.",
+      "A week. Scone said 'they're our friends now'. I didn't say anything. But I nodded. Did you see?"
+    ],
+    month:[
+      "A month. Um. I made a label for it. 'A month of them.' It's on a pebble with a little dot. Like a full stop.",
+      {t:"It's a month since we met. Do you remember what I said the first day?",r:[
+        ["Hello. That was all.","Yes. That was all. Now I say more. A bit more. Did you notice?",1],
+        ["Not exactly.","That's okay. It was very quiet. I don't think anyone heard. Except you, maybe."]]}
+    ],
+    season:[
+      "A whole season. Um. I've seen you in the rain and the sun. The pebbles look different in each. So do you. Nice different.",
+      "Three months. Aunt Tutti says I talk about you at dinner. I don't think I do. Scone says I do. Quietly."
+    ],
+    year:[
+      {t:"Um. It's been a year. I made you a card. It took a week. There's a pebble glued on. It's a good one. Is that okay?",r:[
+        ["It's perfect, Crumb.","...Good. I picked the pebble for a whole month. It has a ring. Like a hug.",1],
+        ["You used a good pebble?","For you. Yes. The good ones are for the good people. That's my rule."]]},
+      "A year. Um. I'm going to say something loud. Ready? HAPPY YEAR. ...That's the loudest I've ever been."
+    ],
+    talk10:[
+      "Um. That's ten talks. I counted with pebbles. Ten in a row, on the windowsill.",
+      "Ten. We've talked ten times. That's more than I talk to most people. Except Scone. And the snail."
+    ],
+    talk50:[
+      "Fifty talks. Um. I ran out of windowsill. The pebbles go round the corner now.",
+      {t:"Fifty. Can I tell you something? I used to practise what to say before you came. Now I don't.",r:[
+        ["That's lovely.","It is. It means I'm not scared. Of you. I'm still a bit scared of the Mayor's moustache.",1],
+        ["Just say anything.","Okay. ...Anything. Ha. That was a joke. Did you get it? I made a joke."]]}
+    ],
+    talk100:[
+      "A hundred talks. Um. That's a whole egg carton row and then lots more. You've got your own carton now.",
+      "One hundred. Scone says that's a record. I say it's a collection. A collection of talks. The best kind."
+    ]
+  },
+  nick:"pebble"
+});
+Object.assign(TALK.cushion,{
+  lv:{
+    hi:[
+      [ // 0 New face
+        "Mm... oh, hello. I'm Cushy... I run Cozy Nest. The furniture shop. I make the soft things...",
+        {t:"Hello... I don't think we've met. I was asleep for most of the introductions in this town. Who are you?",r:[
+          ["I'm {me}. This is {n}.","Mm... {me} and {n}. Two names... three heads. I'll remember. I'll try very hard...",1],
+          ["We're new in town.","Welcome... sit anywhere. Well, not there. That's a display. Dusty just squared it..."]]},
+        "Oh... hello. Sorry, I was resting my eyes. They're rested now. Mostly...",
+        "Mm... good day. If you need a sofa, I'm your cushion. That's what I say to new people..."
+      ],
+      [ // 1 Regular
+        "Mm... it's you two. And {n}. I remembered before I opened my eyes. That's a good sign...",
+        "Oh... hello again. I kept the window seat warm. Not on purpose. I was sitting on it...",
+        "Hi... I recognised your footsteps. Soft ones. I like soft footsteps...",
+        "Mm... hello, {n}. Both heads awake today? Good. One of us should be..."
+      ],
+      [ // 2 Friend
+        "There you are... I was just thinking about you. Or dreaming. It was nice either way...",
+        "Mm... hello, you two. Come and sit. The good end of the sofa is my end. You can share it.",
+        {t:"Oh... hello. Quick question before I forget. Are you warm enough?",r:[
+          ["Toasty.","Mm... good. Toasty is the best word. Bunbun taught it to me.",1],
+          ["A bit chilly.","Here... lean on my side. I'm warm all the way through. It's the stuffing."]]},
+        "Hi... I stayed awake all through the morning delivery. Dusty was amazed. I'm telling you because you'd be amazed too..."
+      ],
+      [ // 3 Good friend
+        "Mm... I hoped you'd come. I kept my eyes open for you. Look. Both. Mostly...",
+        "Oh... hello, dears. I've been saving a thought for you. A slow one. It's nearly ready...",
+        "Hello... the light landed at four and I thought, I should tell those two. So. It landed.",
+        "Mm... there you are. The shop feels softer already. I don't think that's the light..."
+      ],
+      [ // 4 Bestie
+        "Nest-mate... hello. I'm wide awake. Look at me. That's for you. Don't tell Joy...",
+        "Mm... nest-mate. And {n}. Come here... the good corner's free. I made it free.",
+        {t:"Hello, nest-mate... guess how long I've been awake today.",r:[
+          ["An hour?","Three hours and a bit. I had a lot to tell you. Then I forgot most of it. Here's the bit I kept...",1],
+          ["Not long at all.","Ha... you know me. Eleven minutes. But they were very good minutes."]]},
+        "Mm... my two favourite nest-makers. My tassels are wiggling. That's happy. I can't seem to stop them..."
+      ]
+    ],
+    topics:[
+      [ // 0 New face
+        {t:"Mm... do you two have furniture yet? Or are you sitting on boxes? Lots of people start on boxes...",r:[
+          ["A few pieces.","A few is a beginning... beginnings are the best part. You get to choose everything...",1],
+          ["We're decorating now.","Mm... then come in often. The stock changes every day. I change my mind every hour."],
+          ["Boxes, mostly.","Oh... poor boxes. They're doing their best. I'll find you a cushion for one."]]},
+        {t:"This is Cozy Nest... I make the soft parts. Bolt makes the hard parts. Dusty keeps them straight. Have you met Dusty?",r:[
+          ["Not yet.","Mm... you will. Look under the sofa display. Gently. It's shy...",1],
+          ["The little dust bunny?","Yes... the best helper in town. Don't call it little where it can hear. It agrees too much."]]},
+        {t:"Is it alright if I ask... what's your friend called? The one with two very nice heads.",r:[
+          ["This is {n}.","{n}... mm. Soft name. A good name to say when you're sleepy...",1],
+          ["Guess.",{t:"Mm... Pillow? I always guess Pillow. It's never Pillow...",r:[
+            ["It's {n}.","{n}. Better than Pillow. Don't tell the pillows...",1],
+            ["It could be Pillow.","Ha... no. They look like a {n}. Both of them do."]]}]]},
+        {t:"Do you sleep well, you two? I ask everyone. It's like asking how someone is, only more honest...",r:[
+          ["Like logs.","Mm... logs are hard. I hope you sleep like pillows. Soft and deep...",1],
+          ["Not always.","Oh... I'll find you something for that. A heavy blanket. Or a lighter one. We'll try both..."]]},
+        {t:"Sorry if I yawn while you're talking. It isn't you... it's everyone. It's the day...",r:[
+          ["Yawn away.","Mm... thank you. Here comes one. There. Much better. What were we...",1],
+          ["Are we boring you?","No, no... boring people don't make me yawn. Comfy people do. You're comfy."]]},
+        {t:"Mm... what's the first thing you look for in a chair? I'm asking for the shop. And for me.",r:[
+          ["How soft it is.","Mm... a soft-chair person. I knew. You had the look...",1],
+          ["How it looks.","Ah... a looks person. That's alright. Pretty chairs need sitting in too..."],
+          ["Room for two.","Mm... of course. A chair for one is a bit lonely. I'll show you the loveseats..."]]}
+      ],
+      [ // 1 Regular
+        {t:"Mm... I put {n}'s favourite pouf in the window today. Just in case you came by. You came by...",r:[
+          ["How did you know?","I saw {n} lie on it last time... both heads went soft at once. That's how you know...",1],
+          ["We'll take a look.","Mm... take your time. The pouf isn't going anywhere. Neither am I."]]},
+        {t:"My day goes... open the shop, nap, a customer, nap, Bunbun's bun, nap. Is that a routine or a lifestyle?",r:[
+          ["A lifestyle.","Mm... I'll put that on a sign. 'Cozy Nest, a lifestyle.' Fold could paint it. Slowly.",1],
+          ["A very good routine.","Thank you... it took years to get right. The naps used to be shorter."]]},
+        {t:"Can I tell you my opinion on blankets? It's a mild one. Strong opinions are too tiring...",r:[
+          ["Go on.","Mm... a blanket should be bigger than you think you need. Always. Then you can share.",1],
+          ["Is it about fringes?","Oh... you've heard. Fringes are fine. Good for fiddling with when you're dropping off."]]},
+        {t:"Bunbun asked if I'd stay awake for all of Sunday tea this week. I'm practising now. By talking to you...",r:[
+          ["You're doing great.","Mm... I am. Four minutes. Bunbun's tea lasts three hours. I need more practice...",1],
+          ["Bring a pillow anyway.","I always do... in case Bunbun needs one. She never does. I use it."]]},
+        {t:"Dusty said 'forty-two cushions' this morning, then I sat down and it said 'forty-three'. It thinks I don't hear...",r:[
+          ["That's sweet.","Mm... it's my favourite thing anyone says. I sit down on purpose now. Just to hear it...",1],
+          ["Are you for sale?","No... Dusty made a little card that sits next to me. It says 'not this one'."]]},
+        {t:"Mm... is {a} the sleepy head, or is {b}? I've been watching. I can't decide...",r:[
+          ["{a}, definitely.","Ah... {a} and I should nap together. One day. When {b} isn't looking...",1],
+          ["{b}, oddly.","Mm... the quiet ones always surprise you. Like me. I'm very surprising. Slowly."],
+          ["Both, equally.","Then {n}'s a perfect pet. Two sleepy heads. Twice the naps."]]},
+        {t:"Lumi and I nap in shifts... noon for me, then Lumi. We wave across the yawn. Have you seen it?",r:[
+          ["We'll watch for it.","Mm... it's very slow. You'll need patience. Lumi waves with the whole lantern...",1],
+          ["Who wakes up first?","Me, at one... then Lumi lies down. We're never both awake at noon. It works perfectly."]]}
+      ],
+      [ // 2 Friend
+        {t:"How are you two... really? Give me the pillow answer. Lumpy or smooth?",r:[
+          ["Smooth today.","Mm... good. Smooth is nice. I'll fluff you anyway, for luck...",1],
+          ["A little lumpy.",{t:"Oh... a lump. That's alright. Lumps move if you shake them. Want to sit and say nothing for a minute?",r:[
+            ["Yes, please.","Mm... here. Sit. ... ... There. Did that help? It helps me.",1],
+            ["Talking helps more.","Then talk... I'm awake. I'll keep one eye open for you. Both, actually."]]}]]},
+        {t:"Bolt brought me a new sofa frame yesterday... very loud. Then he sat on it and fell asleep before I did. First time ever.",r:[
+          ["Did you nap too?","Mm... on the other end. Dusty found us at five and put a blanket on each of us...",1],
+          ["You won the shop!","Ha... it's not a contest. But yes. I'll tell him at the next sofa. He'll hammer louder."]]},
+        {t:"I'm making Dusty a cushion from Stitch's scraps. It's very slow. I sew a little, then I nap on it to test it...",r:[
+          ["How's it coming?","Mm... one corner. Lavender with a rose bit. It'll be done by spring. Some spring...",1],
+          ["Won't Dusty find it?","Dusty straightens everything except my sewing basket. I said it's untidy on purpose. It believed me."]]},
+        {t:"A small worry... mm. Sometimes I fall asleep while someone's telling me something important. I hope they know I care.",r:[
+          ["They know.","Mm... I hope so. Bunbun says she tells me her worries while I'm asleep. She says it works better...",1],
+          ["We'll poke you.","Gently... on this corner. It's the waking corner. The other three are for sleeping."]]},
+        {t:"Mm... Joy came in for a staring contest. I was awake this time. I lost. She was so surprised she cried a little.",r:[
+          ["Did you lose on purpose?","No... I just blinked. I'm out of practice at being awake. She hugged me anyway...",1],
+          ["Rematch!","She wants one... I'll go back to sleeping through them. It's better for both of us."]]},
+        {t:"Do you two ever sit together and do nothing? It's my favourite thing to see two people do...",r:[
+          ["All the time.","Mm... good. It's the softest kind of busy. I'm very good at it...",1],
+          ["We should more.","Yes... try tonight. Sofa, a blanket, no plans. {n} will join in. Pets know."]]}
+      ],
+      [ // 3 Good friend
+        {t:"Mm... can I ask your advice? I still haven't found the perfect sofa corner. Am I looking in the wrong places?",r:[
+          ["Maybe it's at home.","Oh... at home. I never nap at home. I'm always out napping. Mm... I'll try tonight...",1],
+          ["Maybe it's a person.","Mm... a person-shaped corner. Bunbun's shoulder at Sunday tea... you might be right. Don't tell her. She'll cry."],
+          ["Keep looking. It's fun.","It is... looking is half the nap. I'll look slowly. Forever, if I have to."]]},
+        {t:"Before Bunbun found me, I slept on a bench by the bakery for... a while. I don't remember how long. Things were blurry then.",r:[
+          ["Was it lonely?","Mm... I didn't know the word then. I knew the bench was cold at night. Now I know the word. I don't need it.",1],
+          ["Lucky bench.","Ha... maybe. I sit on it sometimes still. To say thank you to it."]]},
+        {t:"I have a small fear. That I'll sleep through something that matters. A goodbye. Or a hello.",r:[
+          ["We'd wait for you.","Mm... would you? Then I can stop being afraid of that one. One less thing under the pillow...",1],
+          ["We'd wake you up.","Please do... on the corner. Any corner, for that. Even the sleeping ones."]]},
+        {t:"You know what you two are? A four o'clock. When the light lands just right. I don't say that about many people...",r:[
+          ["What time are you?","Mm... half past two. Right after lunch, when everyone wants a lie-down. That's me...",1],
+          ["That's the nicest thing.","It's the top of my scale... next to 'a very good nest'. You're both."]]},
+        {t:"I remember the first sofa I ever made. Lumpy. Bolt called it 'characterful'. Bunbun still has it. She still sits on it.",r:[
+          ["Lumpy is charming.","Mm... Bunbun says she likes knowing where the lumps are. Like old friends...",1],
+          ["Can we see it?","At Sunday tea... the one by the window. The one I always end up on. Of course it is."]]},
+        {t:"I've been staying awake longer lately. On purpose. There's more I want to see. Is that odd for a cushion?",r:[
+          ["Not odd at all.","Mm... good. I'll still nap. I'll just nap after. Not during. Mostly...",1],
+          ["What do you want to see?","The lamps going on... Lumi's face when they do. And you two walking home. I've never seen that. I'm always asleep."]]},
+        {t:"Can I ask... what does your room look like at night? I picture it sometimes. A lamp, a blanket, {n} in a heap...",r:[
+          ["Exactly like that.","Mm... I knew it. I can always tell a good nest from outside. The windows go soft...",1],
+          ["Messier than that.","Ha... messy means lived in. The best nests have a sock somewhere. Dusty would disagree."]]}
+      ],
+      [ // 4 Bestie
+        {t:"Nest-mate... I stayed awake for a whole Sunday tea. All three hours. Bunbun cried into the scones.",r:[
+          ["Cushy! That's huge!","Mm... I know. Then I slept for fourteen hours. Worth every minute...",1],
+          ["What did you talk about?","You two, mostly... and the scones. Bunbun says you'll come to the next one. You will, won't you?"]]},
+        {t:"Silly question, nest-mate. If you were a cushion... what shape?",r:[
+          ["Round. Easy to hug.","Mm... a round one. I'd sit next to you on the sofa every day...",1],
+          ["Heart-shaped.","Oh... like the ones I make Bunbun. Eleven of them... twelve with you. I like that number."],
+          ["Square, like you.","Ha... then we'd be a pair. Dusty would line us up. Very straight."]]},
+        {t:"Mm... you know my days by now. Open the shop, nap, a customer, nap...",r:[
+          ["Bun, then nap.","Bunbun's bun... then nap. Yes. You know it better than I do...",1],
+          ["Then us!","Then you... yes. You're in the routine now. Right after the bun. That's a very good spot."]]},
+        {t:"Can I tell you something, nest-mate? I'm awake more since I met you two. I think I don't want to miss things.",r:[
+          ["We're glad.","Mm... me too. It's tiring... a nice tired. The kind you earn.",1],
+          ["Don't get too awake!","Ha... no danger. I'll always be a cushion. Just a slightly more awake one."]]},
+        {t:"Thank you... for lowering your voices when I'm dozing. Most people get louder. You get softer.",r:[
+          ["Of course, Cushy.","Mm... that 'of course' is the best part. You don't even think about it. That's kind all the way through...",1],
+          ["We learned it from you.","Then I taught something... that's new. I'll tell Dusty. Dusty will make a little card."]]},
+        {t:"I named a cushion in the shop after you. It's not for sale. It sits next to me. I talk to it when you're not here.",r:[
+          ["What does it say back?","Mm... nothing. It's a cushion. Like me. We understand each other perfectly...",1],
+          ["Can we meet it?","By the window... the lilac one. Dusty squares it every morning. Dusty knows whose it is."]]}
+      ]
+    ],
+    bye:[
+      ["Mm... nice to meet you. Come back when you need a sit...","Bye... the door's soft. Push gently...","Off you go... I'll be here. Probably asleep. Still here."],
+      ["Bye, you two... bye, {n}... sleep well tonight...","Mm... come back soon. I'll keep the corner warm.","Bye... I'm going to close my eyes now. Not because of you. Because of the sofa."],
+      ["Bye, dears... wrap up warm...","Mm... see you at the shop. Bring your lumpy days too...","Bye... I'll tell Dusty you said hello. Very quietly."],
+      ["Bye... thank you for staying. It meant more than a nap...","Mm... go softly. And come back. That's the important part...","Bye, you two... I'll keep my eyes open for you. Well... one."],
+      ["Bye, nest-mate... I'll dream about the good corner. You're in it...","Mm... night, nest-mate. Night, {a}. Night, {b}. Everyone gets a night...","Bye bye... I'm staying awake till you're round the corner. I'll watch you go."]
+    ]
+  },
+  mile:{
+    met:[
+      "Mm... oh, new people. Hello... I'm Cushy. I was having a lovely nap, and now I'm having a lovely hello...",
+      {t:"Oh... hello. You're the two with the two-headed pet. I heard about you in a dream. Or from Bunbun. Same voice...",r:[
+        ["Bunbun told you?","Mm... she said 'Cushy, they're lovely'. She's always right about people. Welcome...",1],
+        ["Nice to meet you.","Nice to be met... I'm usually just found. Meeting is nicer."]]}
+    ],
+    week:[
+      "A week of you two... mm. You've been in the shop four times. I was awake for three. That's a record...",
+      "One week... Dusty says you're 'nice to tidy up after'. That's Dusty's highest praise..."
+    ],
+    month:[
+      "Mm... a month since we met. I made a note. Well, I thought about making a note. That's nearly the same...",
+      {t:"A whole month... you know your way round the shop now. Where's the softest seat? It's a test.",r:[
+        ["The window chaise.","Mm... yes. You've been paying attention. Most people take a year...",1],
+        ["Your spot.","Ha... true. But I'd move for you. Slowly. I'd move."]]}
+    ],
+    season:[
+      "A whole season of you two... the light at four has moved twice since you came. You're still here. I like that...",
+      "Mm... three months. I fall asleep less when you're talking now. Bunbun noticed. She was jealous. A tiny bit."
+    ],
+    year:[
+      {t:"A year, mm... a whole year. I made you a cushion. It took the whole year. One stitch a nap...",r:[
+        ["It's perfect.","Mm... there's a lumpy bit. That's where I fell asleep sewing. It's my favourite bit...",1],
+        ["A whole year of naps?","Two hundred and twelve, for this cushion alone. Dusty counted. Dusty counts for me."]]},
+      "One year... I stayed awake all morning to say it. Happy year, you two. Happy year, {n}. Now I'll have a little lie-down..."
+    ],
+    talk10:[
+      "Ten chats... I was awake for all ten. Mostly. Nine and a half...",
+      "Mm... that's ten talks now. I can tell your voices from the back room. Even through a nap."
+    ],
+    talk50:[
+      "Fifty chats... mm. That's more than I've talked with anyone but Bunbun. And she talks for both of us...",
+      {t:"Fifty times you've stopped for me. Even when I was slow to answer. Thank you for waiting...",r:[
+        ["You're worth waiting for.","Mm... that's going under the pillow. To keep...",1],
+        ["You're never slow.","Ha... I'm very slow. But you're kind. That's better than fast."]]}
+    ],
+    talk100:[
+      "A hundred chats... I didn't sleep through one. Well, one. The forty-third. Sorry about the forty-third...",
+      "Mm... one hundred. If every chat were a cushion, I'd have a whole sofa of you. A very good sofa."
+    ]
+  },
+  nick:"nest-mate"
+});
+Object.assign(TALK.dust,{
+  lv:{
+    hi:[
+      [ // 0 New face
+        "Oh! Sorry. I didn't see you. I was, um, behind the sofa. I'm Dusty. I help at Cozy Nest...",
+        {t:"Sorry, hello... um, I don't think I know your name. Sorry. You don't have to tell me...",r:[
+          ["I'm {me}. And this is {n}.","{me}. And {n}. Oh, and two heads. Sorry, I'll remember. I'll write it on a label...",1],
+          ["We're just passing.","Oh. Of course. Sorry. Pass, um, freely. Mind the step, I polished it..."]]},
+        "Hello... sorry. Do you need anything? The prices are on little cards. I can, um, whisper them...",
+        "Oh. Hi. Sorry, there's a bit of fluff on... no, that's mine. Sorry. Hello."
+      ],
+      [ // 1 Regular
+        "Oh, it's you. Hi. Sorry, I peeked first. I always peek first. It was you, so...",
+        "Hello again... and {n}. I remembered {n}. Sorry, I remembered you too. I just said {n} first.",
+        "Oh, hi! Sorry. I just squared the cushions, so if you sit, um, sit squarely? Sorry. Sit however.",
+        "Hello... you came back. That's nice. Sorry. Nice for the shop. And me."
+      ],
+      [ // 2 Friend
+        "Oh, hi! I came out from behind the sofa before you said anything. Did you see? Sorry, I'm proud of that.",
+        "Hello, you two. I dusted the window you like. Sorry, I don't know if you like it. You stand by it a lot.",
+        {t:"Oh, hi. Sorry, can I... there's a crumb on your sleeve. Can I? Sorry.",r:[
+          ["Go ahead.","There. Gone. Sorry. That was very satisfying. Thank you for letting me.",1],
+          ["It's from Bunbun's.","Oh, then it's a good crumb. Sorry. I'll leave it. No, I can't. Sorry. There."]]},
+        "Hi! Sorry, I sneezed just before you came in, so the air's a bit, um, fluffy. Hello."
+      ],
+      [ // 3 Good friend
+        "Oh, hello. I'm really glad it's you. I said sorry to the door eleven times today. You're a nice change.",
+        "Hi... I saved you the gold bit of the floor. Sorry, it's nearly four. Come and stand in it.",
+        "Hello, you two. I didn't hide this time. I thought about it. Then I thought, it's them.",
+        "Oh, hi. I've got something to show you. Sorry, it's small. It's always small with me."
+      ],
+      [ // 4 Bestie
+        "Sunbeam! Hi. Sorry. I mean, hi. I'm not sorry. Hi.",
+        "Oh, sunbeam, it's you. I've been tidying all day waiting. Not for you. Sorry. A bit for you.",
+        {t:"Hi, sunbeam. Guess how many times I've said sorry today. Go on.",r:[
+          ["Forty?","Four! Only four! And one was to a lamp, which doesn't count. Sorry. Oh. Five.",1],
+          ["None?","Ha. No. Sorry. Six. But that's the lowest ever. Cushy wrote it down."]]},
+        "Hello, sunbeam. Hello, {n}. Sorry, I've started saying hello before my fluff settles. That's new."
+      ]
+    ],
+    topics:[
+      [ // 0 New face
+        {t:"Sorry, um, are you looking for anything? I'm not supposed to be pushy. I'm not pushy. Sorry.",r:[
+          ["Just looking.","Oh, good. Looking's good. I'll be over here. Sorry. Behind this. Call if you need me...",1],
+          ["A comfy chair.","Oh! The slipper armchair is very comfy. Sorry, I'm whispering the price. It's, um, very reasonable."],
+          ["Where's Cushy?","Asleep. On the canopy bed. Sorry, it's a display. It's also Cushy's. Both."]]},
+        {t:"I'm Dusty. I, um, help. I dust. That's where the name came from. Sorry, that's obvious.",r:[
+          ["It's a lovely name.","Oh. Thank you. Cushy picked it. I'd have picked something smaller. Sorry.",1],
+          ["Did you name yourself?","No. Cushy said 'Dusty' when I came out from under the sofa. I said sorry. Then I said yes."]]},
+        {t:"Is that your pet? Sorry. Silly question. It's obviously your pet. Two heads. It's lovely.",r:[
+          ["That's {n}.","{n}. Hello, {n}. Sorry, both of you. I'll say it twice next time.",1],
+          ["Want to say hi?",{t:"Oh. Can I? Sorry. I'll be gentle. Um, hello. Oh, they're looking at my bow.",r:[
+            ["They like your bow.","Stitch made it. Sorry, I tell everyone. I never take it off.",1],
+            ["They're curious.","Me too. Sorry. About them. I've never met two heads before. They seem very, um, tidy."]]}]]},
+        {t:"Sorry if I ask. Do you two live nearby? I know most of the houses. From the outside. Not in a strange way.",r:[
+          ["South of the plaza.","Oh, the cottage with the two-colour roof. Sorry. It's very well kept. The gate's very straight.",1],
+          ["Not far.","Oh, good. Not far is good. Sorry. I'll stop asking. I'm not good at asking."]]},
+        {t:"Sorry, you're looking at my duster. It's pastel. I didn't pick the colours. They, um, picked me.",r:[
+          ["It's very pretty.","Oh. Thank you. It's very soft. Sorry, you can touch it. Gently. It's shy too.",1],
+          ["Do you have spares?","Three. At home. In a row. Sorry, by colour. And size. And, um, mood."]]},
+        {t:"Sorry. Are you new? I didn't want to assume. I meet people very slowly.",r:[
+          ["Fairly new.","Oh. Then we can be slow together. Sorry. That came out nicer than I meant. No. As nice as I meant.",1],
+          ["We've been around.","Oh! Sorry. I've probably seen you. From behind something. Hello, properly, now."]]}
+      ],
+      [ // 1 Regular
+        {t:"Oh, sorry, {n} sat on the blue pouf last time. I left it exactly where it was. With the dent. Is that strange?",r:[
+          ["That's very sweet.","Oh. Okay. It's the only dent I've ever kept. Sorry. It's a nice dent.",1],
+          ["You can fluff it now.","Oh, thank you. Sorry. I'll fluff it after you go. So it's there while you're here."]]},
+        {t:"My mornings are, um, wake up, fluff myself, dust the house, check the bow. Sorry, that's boring. What are yours?",r:[
+          ["Not boring at all.","Oh. Thank you. The bow part's the best part. Sorry. It's always still there.",1],
+          ["Ours are messier.","Oh, that's alright. Sorry. Somebody has to be messy, or I'd have nothing to do."]]},
+        {t:"Sorry, I have a mild opinion. Lamps are better than ceiling lights. Sorry. That's my whole opinion.",r:[
+          ["Totally agree.","Oh! Good. Sorry, I'm so pleased. Lamps make little pools. Ceiling lights show everything.",1],
+          ["Both have a place.","Oh, yes. Sorry. Ceiling lights for finding fluff. Lamps for after."]]},
+        {t:"Um, Bunbun waved at me today. From across the lane. I waved back. Sorry, I just wanted to tell someone.",r:[
+          ["That's lovely, Dusty.","It was. Sorry. I waved for quite a long time. Longer than her. She'd gone in.",1],
+          ["Did you say hi?","No. Sorry. Waving is easier. Waving doesn't have words in it."]]},
+        {t:"Sorry, you two always put the cushions back when you get up. Nobody does that. Sorry. Thank you.",r:[
+          ["Of course!","Oh. 'Of course.' Sorry. I'm going to remember the 'of course'.",1],
+          ["We learned from you.","Oh. Oh no. Sorry. I'm going pink under the fluff. You can't see. It's there."]]},
+        {t:"Cushy fell asleep on a customer's chair today. The customer sat on the other chair. Sorry. They were very polite about it.",r:[
+          ["Did they buy it?","Both chairs. Sorry. I don't know why. I think Cushy sells things by sleeping on them.",1],
+          ["Did you wake Cushy?","Oh, no. Sorry. You don't wake Cushy. You put a blanket on and lower your voice."]]},
+        {t:"Sorry, Tutti still gives me a free scoop every week. For the sprinkles. It was ages ago. I only picked them up.",r:[
+          ["Every sprinkle, though.","Every one. Sorry. Four thousand and something. The blue ones were hardest. They hide.",1],
+          ["Which flavour do you get?","Vanilla. Sorry. With no sprinkles. Tutti laughs every time. I don't know why. Sorry. I do know why."]]}
+      ],
+      [ // 2 Friend
+        {t:"How are you two? Sorry. I practised asking that. I've only ever asked Cushy. How are you?",r:[
+          ["Really well. And you?","Me? Oh. Um. Sorry, nobody asks back. I'm... well. Sorry. I'm very well.",1],
+          ["A bit tired.",{t:"Oh. Sorry. Do you want me to tidy something for you? It helps me when I'm tired. Maybe it helps everyone?",r:[
+            ["That's really kind.","I'll do your doorstep. Tomorrow. Before you're up. Sorry, you won't see me. That's the point.",1],
+            ["We'll be alright.","Okay. Sorry. But the offer's folded and put away for when you need it."]]}]]},
+        {t:"Sorry, I have to tell you. Joy came in and lay on every sofa in a row. Like a test. She left glitter on three.",r:[
+          ["Oh no. Glitter.","I know. Sorry. I picked it out with tweezers. Forty minutes. I'm still finding it in my dreams.",1],
+          ["Did she buy one?","A beanbag. Sorry. The only seat without glitter. I think that's why. She's kind like that."]]},
+        {t:"Um, I found a gold button under the stock shelf. Sorry, I think it's Stitch's. Should I return it, or keep it safe?",r:[
+          ["Give it back.","Yes. Sorry. I knew. I just wanted it a bit longer. It's very shiny. Tomorrow.",1],
+          ["Keep it safe for now.","Oh. In my jar. With the first fluff. Sorry. Then I'll return it. When it's been safe enough."]]},
+        {t:"Sorry, a worry. Bolt's coming to fix the shop door and I don't know if I should sweep before or after. It keeps me up.",r:[
+          ["After.","After. Yes. Before is pointless. Sorry, I know that. I just like sweeping before too.",1],
+          ["Both.","Oh, thank you. Sorry. I needed someone to say both. Both is what I was going to do."]]},
+        {t:"Bunbun calls me 'the other bunny'. Sorry. I think it's a mistake. But I'd miss it if she stopped.",r:[
+          ["She means it kindly.","I know. Sorry. I know she does. That's the part that's hard to hear without going pink.",1],
+          ["You're both bunnies.","Sorry, I'm a dust bunny. It's... oh. Bunny is still in it. Sorry. I never looked at it that way."]]},
+        {t:"Sorry. Can I say something? You two both tidy one thing before you leave a room. Did you know?",r:[
+          ["We don't!","You do. Sorry. Last time it was a cushion. Before that, a chair. I notice tidying. It's my job.",1],
+          ["We got it from you.","Oh. Did you? Sorry. Nobody's ever learned anything from me. Except where the lint goes."]]}
+      ],
+      [ // 3 Good friend
+        {t:"Can I ask your advice? Sorry. Cushy says I can have a whole day off. What do I do with my, um, hands? I don't have hands.",r:[
+          ["Visit us.","Oh. Could I? Sorry. I'd sit very still. I'd only dust one thing. Maybe two.",1],
+          ["Watch the sunbeams.","Yes. Oh, yes. Without dusting them. Just watching. Sorry. That might be the nicest day ever."],
+          ["Make a mess on purpose.","A mess. On purpose. Oh. Sorry. One crooked cushion. Then I'll fix it. Probably."]]},
+        {t:"Sorry. A small fear. That one day the town will be so clean nobody needs me. Silly. Sorry.",r:[
+          ["We'll always need you.","Oh. Okay. Sorry. I needed that more than I thought. I'll keep it under the bow.",1],
+          ["Then you'd get the sofa.","Oh. That's the dream, isn't it. Sorry. It's my dream and my fear. The same thing, both ways round."]]},
+        {t:"Sorry, can I tell you something about Cushy? Cushy is making something for me. In secret. I'm not supposed to know.",r:[
+          ["How do you know?","Lavender scraps in Cushy's basket. Sorry. I tidy round it. I never look in. I just, um, noticed.",1],
+          ["Act surprised!","I'll practise. Sorry. I'm very bad at surprised. I'll probably just cry. That counts."]]},
+        {t:"Sorry, a memory. My first day under the sofa display, a sunbeam came in at four and I could see all of myself in it. I thought, oh no.",r:[
+          ["And now?","Now I think, oh, there I am. Sorry. That took a long time. Years. And you helped.",1],
+          ["You looked lovely.","Oh. Sorry. You weren't there. But you'd have said that. Thank you for saying it now."]]},
+        {t:"You two are very easy to be around. Sorry. I mean, I don't hide. That's the biggest thing I can say.",r:[
+          ["We love that you don't.","Oh. Sorry. I'm staying right here, then. Out in the open. Look. Out.",1],
+          ["You can hide if you want.","I know. Sorry. That's why I don't need to. If that makes sense. It does to me."]]},
+        {t:"Sorry, we have a thing now, don't we? You say 'forty-two', and I say...",r:[
+          ["Forty-three when Cushy sits.","Yes! Sorry. That's ours. Well, mine and Cushy's and now yours. That's three. That's a lot for me.",1],
+          ["Forty-four with us?","Oh. Oh no. That would be... sorry. That would be the best count. I'd write it down."]]},
+        {t:"Sorry, can I ask... is it alright that I like my fluff now? A bit? I used to hate it.",r:[
+          ["It's part of you.","Oh. Yes. Sorry. That's what I'm learning. It grows back by teatime. I always come back too.",1],
+          ["We like it too.","Sorry. I know you do. That's probably why I started liking it. You liked it first."]]}
+      ],
+      [ // 4 Bestie
+        {t:"Sunbeam, I did it. I sat on a sofa. In the shop. In the day. For a whole minute. Sorry. I had to tell you first.",r:[
+          ["Dusty! How was it?","Soft. Very soft. Sorry. I straightened it after. But I sat on it first. That's the order now.",1],
+          ["Did anyone see?","Cushy. Cushy opened one eye and said 'mm, finally'. Sorry. I nearly cried. I did cry. Tidily."]]},
+        {t:"Silly question, sunbeam. If I let my fluff grow for a week, how big would I get? Sorry. I've never tried.",r:[
+          ["Sofa-sized.","Oh no. Then Cushy would sleep on me. Sorry. Actually, that sounds nice.",1],
+          ["Big as a cloud.","Then Nimbus and I could float together. Sorry. I'd sneeze on the whole town."],
+          ["Don't. This size is best.","Oh. Okay. This size it is. Sorry. Forever. I'll sneeze extra to keep it."]]},
+        {t:"Before I go home, sunbeam, I check the bow, I check the duster, and then I...",r:[
+          ["Say sorry to the door.","Ha. Yes. Sorry. I do. It's a nice door. It deserves it.",1],
+          ["Wave at Bunbun's porch.","Yes. How did you... sorry. Of course you know. You've walked me home."]]},
+        {t:"Can I be honest, sunbeam? I say sorry so much because I don't want to take up room. With you I don't mind taking up room. A little.",r:[
+          ["Take all the room.","Oh. All of it? Sorry. I'll start with a chair. A whole chair. Mine.",1],
+          ["You're worth the room.","Oh. That's... sorry. That one's going in the jar. With the first fluff."]]},
+        {t:"Thank you. Sorry. I mean, thank you without the sorry. For never brushing me off. The fluff, or me.",r:[
+          ["Thank you, Dusty.","Oh. Sorry. Nobody thanks the duster. I'll pass it on to the duster.",1],
+          ["Never, ever, Dusty.","'Never ever.' Oh. Sorry. I'm going to sneeze. A happy one. Here it comes."]]},
+        {t:"I made something for {n}. Sorry. It's a tiny duster. Two feathers. One for each head. It's silly.",r:[
+          ["It's perfect.","Oh. They're holding it! Both of them! Sorry. {a} is dusting {b}. That's the best thing I've ever seen.",1],
+          ["They'll love it.","I hope so. Sorry. If they don't, it can be a tickle. Tickles are useful too."]]}
+      ]
+    ],
+    bye:[
+      ["Oh, bye. Sorry. Thank you for coming in. Mind the step. I polished it.","Bye... sorry. Come back if you need, um, anything soft.","Okay. Bye. Sorry. Bye, {n}."],
+      ["Bye, you two. I'll keep the cushions straight for you.","Oh, bye! Sorry, I'm waving with the duster. It's clean.","See you. Sorry. I'll peek out next time. Before you look."],
+      ["Bye! Sorry. That was nice. I'll tidy the bit of air you were in. Fondly.","Bye, you two. Tell the cottage I said hello. Sorry. Houses can't hear. Tell it anyway.","Bye! I'll save you a gold bit at four."],
+      ["Bye. Thank you. Sorry. I mean just thank you.","Go carefully. Sorry. The lane's swept. Cobble did it. I checked it after.","Bye, you two. I'll keep a porch light on for you. In my head. Sorry, it's a thought, not a light."],
+      ["Bye, sunbeam! Bye, {a}! Bye, {b}! Not sorry!","See you, sunbeam. I'll keep a corner exactly as messy as you left it.","Bye bye. I'm going to sit on a sofa now. In your honour. A whole minute."]
+    ]
+  },
+  mile:{
+    met:[
+      "Oh! Sorry. Hello. I'm Dusty. I was, um, under that. Hello. Sorry. You're new. Welcome.",
+      {t:"Sorry, hello. You're the new ones, aren't you? With the... oh. Two heads. Hello, two heads.",r:[
+        ["Hello, Dusty.","Oh. You know my name. Sorry. Cushy must have... hello. It's nice that you know it.",1],
+        ["Are you hiding?","Only a bit. Sorry. I'm coming out now. There. This is all of me."]]}
+    ],
+    week:[
+      "Sorry, um, it's been a week since we met. I counted. I count things. Seven. Sorry. That's all.",
+      "A week. Sorry. I peeked out for you four times this week. That's more than for anyone. Except Cushy."
+    ],
+    month:[
+      "A month, sorry. I've started dusting the bit of the shop you stand in first. It's, um, your bit now.",
+      {t:"Sorry, it's a month since we met. Do you remember? I was under the sofa display.",r:[
+        ["You came out to say hi.","I did. Sorry. I'd never done that for anyone new before. I'm glad it was you.",1],
+        ["We remember your bow.","Oh. Of course. Sorry. Everyone remembers the bow. I'm glad the bow made a good start."]]}
+    ],
+    season:[
+      "Three months. Sorry. A whole season of you two coming in. The shop floor knows your footsteps now. So do I.",
+      "Sorry. It's been a season. I don't hide when I hear you anymore. I didn't decide that. It just happened."
+    ],
+    year:[
+      {t:"Sorry, I have to say. It's been a year since we met. I made you a label. It says 'Friends. Do not dust.'",r:[
+        ["We'll keep it forever.","Oh. Sorry. I put it on straight. It took forty minutes. It's very straight.",1],
+        ["You'll still dust us.","Only a little. Sorry. On the shoulders. It's how I say I'm glad you came."]]},
+      "A year. Sorry. I've kept a petal from Posy's path for every month since we met. Twelve petals in a jar. Sorry. It's yours."
+    ],
+    talk10:[
+      "Ten chats. Sorry. I counted. I said sorry thirty-one times. That's quite good for me.",
+      "That's ten times we've talked. Sorry, I keep a tally on the inside of the stockroom door. Ten. It looks nice."
+    ],
+    talk50:[
+      "Fifty chats. Sorry. The tally on the stockroom door has gone round the corner. Cushy asked what it was. I said, um, inventory.",
+      {t:"Fifty. Sorry. Fifty times you didn't mind the fluff. Do you know how many that is?",r:[
+        ["Fifty?","Fifty. Yes. Sorry. I knew. I just wanted to say it out loud with someone.",1],
+        ["Not enough.","Oh. Sorry. That's the nicest arithmetic I've ever heard."]]}
+    ],
+    talk100:[
+      "A hundred chats. Sorry. I ran out of door. The tally's on the shelf now. Cushy says that's alright. Cushy says, um, 'keep going'.",
+      "One hundred. Sorry. I sat down for this one. On the sofa. You get the sofa now. That's how I say it."
+    ]
+  },
+  nick:"sunbeam"
+});
+Object.assign(TALK.jam,{
+  lv:{
+    hi:[
+      [ // 0 New face
+        "Oh! Hi! Sorry! I'm Pip. I work at the Snack Shack. With Bunbun. Um, for Bunbun. Both.",
+        {t:"Hello! Sorry, I don't think we've met? I'm Pip. I'm the jam. Who are you? Sorry. Hello.",r:[
+          ["I'm {me}, and this is {n}.","{me}. And {n}. Hi, {n}! Um, both of you. Sorry, which head do I say hi to first?",1],
+          ["Hi, Pip. We're new.","New! Me too, a bit. Well, not new. Newer than Bunbun. Everyone's newer than Bunbun."]]},
+        "Hi! Um, sorry about my mitts. They're jammy. I'd shake your hand but I'd stick to it.",
+        "Oh, hello! Are you here for bread? Bunbun does the bread. I do the jam. And the mop. Sorry."
+      ],
+      [ // 1 Regular
+        "Oh! It's you! And {n}! Hi! I remembered the name! I said it in my head all week.",
+        "Hi again! Sorry, I've got flour on my lid. Bunbun says that's the sign of a good morning.",
+        "Hello! You came back! People come back for Bunbun's bread, I know. But still. Hi.",
+        "Hi, hi! {n}, I've got a spoon for you. A clean one. I checked it twice."
+      ],
+      [ // 2 Friend
+        "Hi! Oh good, it's you. I need someone to tell me if this label's straight. Is it? Don't lie. Lie a bit.",
+        "It's you two! Bunbun said 'your friends are outside' and I dropped a lid. Good drop. It didn't break.",
+        {t:"Hi! Quick, which is better, 'Strawberry Morning' or 'Morning Strawberry'? It's for a label.",r:[
+          ["Strawberry Morning.","Yes! That's the one I wanted! I just needed someone else to want it too.",1],
+          ["Just 'Strawberry'.","Oh. That's simpler. Bunbun would say that. Okay. Strawberry. Bold."]]},
+        "Hi! Sorry I'm sticky. I'm always sticky. You know that by now. Hi!"
+      ],
+      [ // 3 Good friend
+        "Oh, hi. I'm really glad it's you. It's been a dropping kind of morning. Two lids and a spoon.",
+        "Hi! I've got something to tell you and it's good, I think. Wait. Let me breathe first. Okay. Hi.",
+        "Hello, you two. I saved you the end of the batch. The end's the best bit, Bunbun says. She's right.",
+        "Hi! I didn't say sorry once on the way over. I practised. That's for you. Oh. Sorry. That one doesn't count."
+      ],
+      [ // 4 Bestie
+        "Chief taster! You're here! I've got three jars and I need your face on all of them.",
+        "Hi, chief taster! Hi, {n}! I did the hum today and it went up at the end. Once. By accident.",
+        "It's you! Sorry, I mean, it's you! That's the whole sentence. I'm just happy.",
+        {t:"Chief taster, quick, close your eyes and open your mouth. Trust me. You trust me?",r:[
+          ["Always, Pip.","Then here! Plum and ginger! Batch thirty-one! Don't say anything yet. Okay, now say something.",1],
+          ["Is it jam? It's jam.","It's always jam! But it's NEW jam! Okay, you got me. Here."]]}
+      ]
+    ],
+    topics:[
+      [ // 0 New face
+        {t:"I'm the apprentice. That means I'm learning. Bunbun's teaching me everything. Um, what do you do?",r:[
+          ["We look after {n}.","That's a big job! Two heads! That's like two apprentices! Sorry, that's not the same at all.",1],
+          ["Mostly eat bread.","That's the best job! That's the job I'm trying to make happy. Sorry, that came out backwards."],
+          ["Decorating, mostly.","Oh! Like Cushy and Bolt! I can't decorate. I put a picture up once and it fell in the jam."]]},
+        {t:"Do you like jam? Sorry, that's a big question to ask someone you just met.",r:[
+          ["We love jam.","Oh, good. Oh, phew. I'd have been so sad, and I'd have hidden it, and you'd have seen.",1],
+          ["Depends on the jam.","That's fair! That's very fair. I'll find the jam it depends on."],
+          ["{n} does!","Then {n} and I are friends already. Sorry, is that fast? It's fast."]]},
+        {t:"Um, can I ask {n} something? Hi, {n}. Do you like the shop? Blink once for yes. Or twice. Both is fine.",r:[
+          ["They blinked!","Both heads! Both heads blinked! That's two yeses. I'm telling Bunbun.",1],
+          ["They're a bit shy.","Oh, me too. That's alright, {n}. We can be shy together. I'll go first. Um. Hi."]]},
+        {t:"Have you tried Bunbun's honey knot? I tell everyone about it. Sorry, I really do tell everyone.",r:[
+          ["Not yet.","You have to! Mind your tongue, though. Bunbun burns hers every time. Then she does it again.",1],
+          ["It's amazing.","Isn't it? I've watched her make three hundred. I still can't do the twist. I do a sort of lump."]]},
+        {t:"Sorry if I'm talking a lot. I talk a lot when I'm nervous. And when I'm happy. And at jars.",r:[
+          ["We don't mind.","Really? Oh. Okay. I'll keep going, then. Um. Now I can't think of anything. Sorry.",1],
+          ["Why nervous?","You're new and I want you to like the shop. And Bunbun. And me. In that order. Sorry."]]},
+        {t:"I've got a cap and mitts and a whisk now. Stitch made the cap. Bunbun gave me the whisk. I did the bow.",r:[
+          ["The cap suits you.","Thank you! The bow's a bit lopsided. That's the bit I did. I'm proud of it anyway.",1],
+          ["Can we see the whisk?","It's tiny! It's for small jobs. Important small jobs. Don't touch it, sorry. You can look."]]}
+      ],
+      [ // 1 Regular
+        {t:"I've noticed you two come in after the rush. Is that on purpose? It's the nicest time.",r:[
+          ["It's on purpose.","I knew it! The quiet bit! When Bunbun sits down for six seconds.",1],
+          ["Pure luck.","Then you're very lucky. Or the shop likes you. I think the shop likes you."]]},
+        {t:"My mornings go: lid, cap, bow, mitts, whisk, Bunbun's door. In that order. Do you have an order?",r:[
+          ["Coffee, then everything.","Bunbun says coffee is a drink, not a breakfast. Sorry. She makes me say it.",1],
+          ["{n} first, always.","Of course! {n} first. That's the right order. That's a good order."],
+          ["No order at all.","No order? Oh. That's brave. I'd put my cap on my mitt."]]},
+        {t:"Do you think strawberries know they're going to be jam? I hope they're pleased about it.",r:[
+          ["They're thrilled.","Oh, good. I say thank you to them anyway. Just in case.",1],
+          ["That's a big question, Pip.","I know! I thought about it all through the stirring. I stirred a bit too long."]]},
+        {t:"Bunbun let me ring the bell on Monday! Just once! Did you hear it? Was it too loud?",r:[
+          ["Just right.","Oh, phew! I practised on a teacup. The teacup survived.",1],
+          ["A tiny bit loud.","Sorry! Sorry. I got excited. Next time I'll ring it like Bunbun. Like a whisper with a handle."]]},
+        {t:"Crumb tasted my new jam and said 'um, good?' That's the best review I've ever had. With the question mark.",r:[
+          ["Was it a happy um?","A very happy um! Her eyes went big. I wrote it on the label. 'Um, good?' Batch nineteen.",1],
+          ["What did Scone say?","He said 'FAST JAM' and ran off. I don't know what fast jam is. I'm going to try to make it."]]},
+        {t:"Joy came in today and I did the goalie thing. You know the goalie thing? Arms out?",r:[
+          ["Did it work?","She went under my arm! Under! I didn't know you could go under! I'm adding a knee.",1],
+          ["Show us.","Like this! Arms out! Wobble! Sorry, I wobbled a drip onto your shoe. Sorry!"]]},
+        {t:"Tutti came in and called me 'sweet pea'. Then she called the bread 'sweet pea'. Is it a name or just a nice noise?",r:[
+          ["A nice noise.","Oh good. I liked it as a noise. I'll keep liking it.",1],
+          ["She means it.","She does mean it! She means it at everybody. That's even better, I think."]]}
+      ],
+      [ // 2 Friend
+        {t:"How are you two? Like, really? Bunbun says ask properly, so I'm asking properly. How are you?",r:[
+          ["Really good, Pip.","Good! Good. I'm so glad. I'm writing it down. In my head. Next to the jam list.",1],
+          ["A bit busy.",{t:"Oh no. Busy is hard. Do you want a jam tart? That's all I've got. It's a good tart.",r:[
+            ["Yes, please.","Here! It's a broken one. Broken ones taste better. I broke it on purpose.",1],
+            ["We'll be fine.","Okay. But the tart's here if you're not fine. It'll wait. Tarts are patient."]]}]]},
+        {t:"Bobbin and I have lunch on Wednesdays now. We're both nervous, so it's very quiet. 'And also nice.' That's how Bobbin says it.",r:[
+          ["That sounds lovely.","It is! We said four whole sentences last time. Each. Eight sentences!",1],
+          ["What do you talk about?","Thread and jam. Mostly how sticky jam gets on thread. Very sticky. We know now."]]},
+        {t:"I hear Bunbun humming through the wall at night. Sometimes she stops halfway and I worry. Is that silly?",r:[
+          ["It's kind.","I tap the wall twice. She taps back once. That means 'fine, go to sleep, Pip'.",1],
+          ["She's probably tired.","Yeah. She gets tired. I'm going to get good, so she can be less tired. Soon."]]},
+        {t:"Boing calls me 'the jam kid'. I'm not a kid! I'm an apprentice jar. Should I tell him?",r:[
+          ["You love it, admit it.","...I do love it. Don't tell him. He'll make me a badge. I want the badge.",1],
+          ["Say 'jam apprentice'.","'Jam apprentice'! That sounds so official. He'll shout it. He shouts everything. Okay."]]},
+        {t:"Um, a small worry. What if I make a jam nobody likes? A whole flavour nobody likes?",r:[
+          ["We'd still try it.","You would? Even beetroot? I've been thinking about beetroot. Blush called it 'deep garnet'.",1],
+          ["Then you'd make another.","Right. Right! The next one. There's always a next one. Bunbun says that about burnt trays."]]},
+        {t:"You two make the same face when you taste something good. Both of you. Did you know? Sorry, it's very sweet.",r:[
+          ["We didn't know!","It's like this. Eyes shut, little nod. {n} does it too, with both heads. It's a family face.",1],
+          ["You're making it up.","I'm not! I've seen it eleven times. I count things when I'm watching the jam."]]}
+      ],
+      [ // 3 Good friend
+        {t:"Can I ask your advice? Bunbun said I can do the Sunday tea jam. All of it. What if it's runny on Sunday?",r:[
+          ["Do a cold plate test.","Yes. Yes! Eleven plates if I have to. You remembered the plates! You listen to me.",1],
+          ["Runny jam is still jam.","On a scone it's still lovely. Runny on a scone is just generous. Okay. Generous."],
+          ["We'll come and eat it.","Then even if it's runny, it'll get eaten. By you. That helps so much."]]},
+        {t:"Before Bunbun, someone walked past my shelf and said 'just jam'. Only that. I still think about it sometimes.",r:[
+          ["Nothing about you is 'just'.","Oh. Um. Can you say that again, slower? I want to keep it under my lid with the recipe card.",1],
+          ["They didn't know you.","No. They didn't. Not like you do. You know about Batch fourteen. That's knowing someone."]]},
+        {t:"I've been practising saying 'good enough' about my own jam. Just to see. It feels like fibbing. Should it?",r:[
+          ["It's not fibbing.","Then... Batch thirty is good enough. There. I said it. My lid went hot.",1],
+          ["Try 'it's good'.","'It's good.' Oh. That's easier. That's much easier. Who knew."]]},
+        {t:"Want to know a secret? I've got a jar at home just for Bunbun's birthday. There's no jam in it yet. Only a plan.",r:[
+          ["What's the plan?","Apricot and honey. She loves apricots and pretends she doesn't. August is so far away! I check on the plan every week.",1],
+          ["We won't tell.","You'd better not! If she asks, say 'Pip who?' Sorry. That's a terrible plan."]]},
+        {t:"I want my own table at the Summer Fair. Just one, with a sign that says 'Pip's, with Bunbun'. Is that too much?",r:[
+          ["It's perfect.","You think? Fold could paint the sign! Crooked on purpose, so it matches my labels.",1],
+          ["Put your name first?","It is first! Oh. It is first. That's so bold. Maybe in small letters. Bigger next year."]]},
+        {t:"You two never rush me. Everyone's kind, but they rush a bit. You don't. I talk better around you.",r:[
+          ["Take all the time.","See? That. That's what I mean. Okay. I'm going to breathe and say a whole sentence without sorry.",1],
+          ["You talk great, Pip.","Sorry. Oh! Ha! I did that on purpose. Mostly."]]},
+        {t:"Do you think Bunbun was ever nervous? Like me? She's so good at everything.",r:[
+          ["Everyone starts nervous.",{t:"Even Bunbun? Should I ask her? I want to ask her. What if she says no?",r:[
+            ["Ask her over the dough.","Over the dough. Yes. She tells the truth over dough. You know her so well.",1],
+            ["Then you're the first.","The first nervous baker! Oh. That's actually quite a nice thing to be first at."]]},1],
+          ["She burns her tongue daily.","She does! Every batch! So she's not perfect! That's the most helpful thing anyone's ever said."]]}
+      ],
+      [ // 4 Bestie
+        {t:"Chief taster, I made a jam just for you two. Two flavours in one jar, half and half. Like {n}.",r:[
+          ["Which side is ours?","The left side's for {a}'s person and the right's for {b}'s. You can argue about the middle.",1],
+          ["You made us a jar?","It took two months! I wrote 'for my best friends' on the label. Straight! Fold checked."]]},
+        {t:"Okay, silly question. If I was a different jam, not strawberry, what jam would I be?",r:[
+          ["Rhubarb. Brave and pink.","Brave! Nobody's called me brave except Scone, and Scone calls pigeons brave.",1],
+          ["Marmalade. Takes time.","Takes time but worth it. Oh. That's the nicest thing. I'm putting it on a label."],
+          ["Still strawberry.","Ha! You're right. I tried being plum in my head and it felt wrong."]]},
+        {t:"I did the hum for Bunbun today. Out loud. It went up at the end. She stopped kneading and looked at me.",r:[
+          ["What did she say?","Nothing! She just hummed the next bit. So I did the bit after. We did a whole hum. Together.",1],
+          ["You've been practising!","On the way to your door. It goes up best on your lane. Something about the lamp."]]},
+        {t:"Thank you for being my first real friends here that aren't Bunbun. Sorry. That came out in one breath.",r:[
+          ["Thank YOU, Pip.","For what? The jam? The dropping? Okay, I'll take it. Thank you for thanking me.",1],
+          ["Always, jam kid.","Not you too! I don't mind from you. Only Boing and you. That's the whole list."]]},
+        {t:"Okay, you know the drill. Spoon for {n}, {a} first, then...",r:[
+          ["{b}. Fair's fair.","Fair's fair! You know it! You're basically an apprentice now. Apprentice taster.",1],
+          ["{b} goes first today.","Swapping! Oh, you rascal. Okay, {b} first. Don't tell {a}. Sorry, {a}."]]},
+        {t:"I don't think about dropping trays anymore. I still drop them sometimes. But I don't think about it first. That's new.",r:[
+          ["We're so proud of you.","Don't! I'll leak! Okay, I'm leaking a bit. It's happy jam.",1],
+          ["What changed?","Bunbun said 'you're my right hand, Pip.' I've got mitts, not hands. But I knew what she meant."]]}
+      ]
+    ],
+    bye:[
+      ["Bye! Sorry! Um, nice to meet you! Come to the shop!","Okay, bye! I'm waving with a mitt. It's the clean one.","Bye, {n}! Sorry, bye, both of you. All of you."],
+      ["Bye! See you at the counter! I'll have a spoon ready!","Bye, you two! I'll tell Bunbun you said hi. Did you say hi? I'll say you did.","See you! Mind the drip on the step. It's mine."],
+      ["Bye! Thank you for asking properly! Sorry, for answering properly!","See you soon! I'll save you the broken tarts.","Bye! I'm going to fix that label now. Wish me luck."],
+      ["Bye. Thank you. I always mean it, but I mean it more today.","See you, you two. I'll try a whole day without sorry. Sorry. Starting now.","Bye! Come and taste on Sunday. Bring the good face."],
+      ["Bye, chief taster! Bye, {a}! Bye, {b}! I love all three of you! Sorry! Not sorry!","See you tomorrow, chief taster. Same spoon. I washed it twice.","Okay, bye! I'm doing the hum all the way home. Up at the end."]
+    ]
+  },
+  mile:{
+    met:[
+      "Oh! New people! Hi! I'm Pip. I make the jam. Sorry, I'm also jam. Both.",
+      {t:"Hi! Are you the new people? With the two-headed... oh! Hello! Can I give {n} a spoon of jam? Is that allowed?",r:[
+        ["Of course!","Here! Strawberry! My best one! Don't tell Bunbun it was my best. I want her to think they all are.",1],
+        ["Maybe a small one.","A small one. A Pip spoon. Here. Oh, both heads liked it!"]]}
+    ],
+    week:[
+      "You've been here a whole week! I counted. I count everything. Seven days. Seven good days.",
+      "A week! Bunbun said 'Pip, those two are regulars now' and I nearly dropped a tray. I didn't! Nearly."
+    ],
+    month:[
+      {t:"It's a month since you first came in! I wrote it on a label. 'One month. Good.' No question mark!",r:[
+        ["No question mark!","None! I didn't need one! I knew!",1],
+        ["Two months next?","Two months, then three, then forever. Sorry, I skipped some."]]},
+      "A whole month of you two. I've made eleven batches since then and you've tasted nine. That's a tasting record."
+    ],
+    season:[
+      "Three months! That's a whole season of jam. Strawberries, then raspberries, then plums. You were here for all of them.",
+      "It's been a season since we met. I don't say sorry as much around you now. Did you notice? Sorry. Oh no."
+    ],
+    year:[
+      {t:"It's been a whole year! I made a jar for it. It says 'One year of friends'. The label's straight. Mostly.",r:[
+        ["We'll keep it forever.","Don't keep it! Eat it! Then I'll make another next year. That's the plan.",1],
+        ["A year already, Pip?","I know! I was so scared of you at first. Now I'm not scared of anything. Except burnt sugar."]]},
+      "One year! Bunbun says I've grown up a bit this year. I think you two helped. Thank you. I'm going to leak."
+    ],
+    talk10:[
+      "That's ten chats! I've been making a little tick on the till for each one. Sorry, there's jam on the ticks.",
+      "We've talked ten times now. I said sorry fewer times on the tenth than the first. I counted. Progress!"
+    ],
+    talk50:[
+      "Fifty chats! That's more than I've talked to anyone except Bunbun and the jars!",
+      {t:"Fifty times! Do you know what I do after we talk? I go back and stir better. Is that strange?",r:[
+        ["It's lovely.","Then I'll keep doing it. Fifty more chats, fifty more batches. Sorry, that's a lot of maths.",1],
+        ["Better how?","Calmer. Slower. Bunbun says slower is better for jam. And for me, I think."]]}
+    ],
+    talk100:[
+      "A hundred chats. I made a tiny jar for it. It's the best jar I've ever made. It's yours.",
+      "One hundred! Bunbun says I'm a talker now. I was never a talker. Only with you two. And the jars."
+    ]
+  },
+  nick:"chief taster"
+});
+Object.assign(TALK.patch,{
+  lv:{
+    hi:[
+      [ // 0 New face
+        "Hello. I'm Dr. Patch, the town doctor. And the pet vet. Nothing's wrong, I hope? That's alright either way.",
+        {t:"Good day. I don't believe we've met. May I ask your names? I like to know who I'm looking after.",r:[
+          ["I'm {me}. This is {n}.","{me}, and {n}. Thank you. I'll remember. Doctors keep good notes. In pencil, then in pen.",1],
+          ["Just saying hello.","That's alright. Hello is a good start. Most of my best patients started with hello."]]},
+        "Hello. The clinic is the peach cottage on Sugarloaf Lane, with the heart over the door. In case you ever need it.",
+        "Good day to you both. And to your pet. Two heads? That's alright. I'm good with twos."
+      ],
+      [ // 1 Regular
+        "Hello again, you two. And {n}. Looking well, all three. Four, counting heads.",
+        "Ah, it's you. Have you had some water? I ask everyone twice. You're on the second time.",
+        "Hello. I remembered {n}'s name before yours. That's alright. It's a vet thing.",
+        "Good to see you. You walked in without limping. I always notice. Well done."
+      ],
+      [ // 2 Friend
+        "Hello, you two. Sit, if you like. I'm off duty for five minutes. I've prescribed them to myself.",
+        {t:"Hello. Quick check, no stethoscope. How are you sleeping? One word.",r:[
+          ["Soundly.","Good word. Best word. I'll write it on your chart. You don't have a chart. I'll make one.",1],
+          ["Patchily.","Ha. That's alright. Patchily I can work with. It's my name, after all."]]},
+        "Hello, both. Call me Patch, if you like. The 'Doctor' is for when something hurts.",
+        "Ah, my favourite non-patients. Nobody hurt, everybody here. A very good visit already."
+      ],
+      [ // 3 Good friend
+        "Hello. I'm glad it's you. It's been a busy morning. Three thumbs and a hiccup. You're the nice part.",
+        "Hello, you two. Come in. The kettle's just boiled. I'll pour, you sit. That's the order.",
+        "There you are. I was listening to my heartbeat on the bench and it went a little quicker when I saw you. Interesting.",
+        "Hello. I've saved you the armchair that doesn't creak. It's the best one. Don't tell Bolt."
+      ],
+      [ // 4 Bestie
+        "Dear heart. Hello. And {n}. Come here, all of you. No check-up. Just a hello.",
+        "Hello, dear heart. I've had a long day, and now I've had a good one. That's what you do.",
+        {t:"Dear heart. Before you say anything. Water?",r:[
+          ["Two glasses already.","Two! Oh, that's alright. That's more than alright. I might cry. Doctors do, sometimes.",1],
+          ["You first, Patch.","Me first? Ha. You've turned it round. Fine. I'm drinking. There. Your turn."]]},
+        "Hello, dear heart. I listened to {n}'s heartbeat in my head on the way here. Two of them, chatting. It helps me walk."
+      ]
+    ],
+    topics:[
+      [ // 0 New face
+        {t:"I'm on call from eight till two. Rounds start at Bunbun's, then Bolt's. Do you know anyone in town yet?",r:[
+          ["Bunbun, a bit.","Then you know the warmest place in town. She'll feed you. I'll check you've sat down after.",1],
+          ["Not really.","That's alright. You will. Everyone here is kind. Some of them are just loud about it."]]},
+        {t:"May I ask how {n} is eating? I ask every new pet. It isn't a test. It's a hello with a clipboard.",r:[
+          ["Very well!","Good. Hungry pets are happy pets. Both heads eating, I assume? Yes. I can tell.",1],
+          ["One head's fussy.","That's alright. Two heads, two opinions. Offer both a choice. They'll settle it between them."]]},
+        {t:"You'll notice I have no cross on my coat. Only hearts. A cross looks like 'stop'. A heart looks like 'come in'.",r:[
+          ["That's lovely.","Thank you. Stitch sewed the badge. It's slightly crooked. That's alright. So is my smile.",1],
+          ["What's the mirror for?","The head mirror? Looking in ears. Mostly it reflects the lollipop jar. Very cheerful."]]},
+        {t:"May I give you some advice? It's free. All my advice is free. The lollipops are free too.",r:[
+          ["Please do.","Drink water before you're thirsty. That's it. That's the advice. Most people never need more.",1],
+          ["What's not free?","Nothing. Well. Bunbun pays me in burnt cookies. That's a price. I don't ask it."]]},
+        {t:"If {n} ever feels poorly, come straight over. Any hour I'm in. Even if it turns out to be nothing.",r:[
+          ["Even nothing?","Especially nothing. Nothing is my favourite diagnosis. I say it with a smile.",1],
+          ["We will, thank you.","That's alright. Thank you for listening. Most people nod and forget. You'll remember."]]},
+        {t:"I take my own pulse sometimes. In front of people. I hope that doesn't alarm you. It's a habit.",r:[
+          ["Not at all.","Good. It's still going. Seventy, nice and steady. That's my hello to the day.",1],
+          ["Can we take ours?","Two fingers, here, at the wrist. Count for fifteen seconds. ...There. You're both alive. Excellent."]]}
+      ],
+      [ // 1 Regular
+        {t:"You two come by when nothing's wrong. Do you know how rare that is? Most visits start with 'ow'.",r:[
+          ["We just like you.","That's alright. That's very alright. I'll put that in my notes. 'Visit: social.'",1],
+          ["Is that alright?","It's better than alright. It means I'm a neighbour and not just a doctor."]]},
+        {t:"My week: Tuesdays, Bolt's thumb. Wednesdays, Story hour at Dewey's, I listen from the back. Fridays, Joy's wrists.",r:[
+          ["Busy Fridays!","After Game Night, yes. She holds the wrist up like a trophy. I wrap it like one.",1],
+          ["Story hour?","I sit by the door. Dewey reads, I rest my eyes. Dewey says I'm the best listener. I don't correct it."]]},
+        {t:"A mild opinion. Hot water bottles are underrated. I prescribe them freely. Do you two have one?",r:[
+          ["We should get one.","You should. One each. And a small one for {n}. Wrap it in a sock. Two socks for two heads.",1],
+          ["We have a heated blanket.","Ah. Modern. That's alright. A hot water bottle is a blanket that hugs one spot. Different medicine."]]},
+        {t:"Scone came in this morning for his plaster. His knee was fine. He said it 'felt like it might get hurt later'.",r:[
+          ["Did you give him one?","A preventive heart. On his knee. He ran out. He'll be back in an hour. He always is.",1],
+          ["That's very Scone.","It is. He's brave about once an hour, and he collects the proof."]]},
+        {t:"{n} looks well rested today. Both eyes bright. Have you been keeping their bedtime?",r:[
+          ["Mostly, yes.","Mostly is good. Mostly is what medicine is made of. Keep it up.",1],
+          ["They nap all day.","Then they're very healthy. Pets nap to top up their good mood. It works on people too."]]},
+        {t:"Lumi came in after a big yawn. I gave Lumi a heart sticker. Lumi wore it on the lantern all night. Do you think that's a symptom?",r:[
+          ["A symptom of happy.","Ha. Yes. That's my diagnosis too. Chronic happiness. No cure. I'll keep monitoring.",1],
+          ["Did the yawn get better?","It got smaller once it was said out loud. Yawns are like 'ow'. They shrink when they're shared."]]},
+        {t:"Cushy came in for a check-up and asked if I'd compare pillows again. We did. It took an hour. Neither of us won.",r:[
+          ["Whose was softer?","Cushy's. Cushy is a pillow. That's an unfair advantage. I said so. Cushy was asleep.",1],
+          ["That's a good hour.","It was. Very restful. I've written it up as a professional consultation."]]}
+      ],
+      [ // 2 Friend
+        {t:"How are you two? Not medically. Just how are you?",r:[
+          ["Really well, Patch.","Good. That's my favourite thing to hear without a stethoscope.",1],
+          ["A bit worn out.",{t:"That's alright. Worn out is a kind of tired that needs company, not medicine. Shall I make tea?",r:[
+            ["Yes, please.","Kettle's on. Sit. Breathe in for four, out for six. By the time you've done ten, it's ready.",1],
+            ["Just a sit-down.","Then sit. I'll sit too. That's a prescription I can share."]]}]]},
+        {t:"Bunbun sat down for seven seconds yesterday. Seven! You'd have thought she'd won a medal. She hasn't stopped telling people.",r:[
+          ["Seven is a medal.","It is, medically speaking. I gave her a sticker. A heart. She's wearing it on her apron.",1],
+          ["Can she do ten?","With a bun in her hand, perhaps. She sits longer if she's eating. I've noticed."]]},
+        {t:"Bolt has a punch card now. Every tenth thumb is free. They're all free. He likes the stamps.",r:[
+          ["How many stamps?","Nine. He's very excited about the tenth. I'm a little worried he'll hit it on purpose.",1],
+          ["That's adorable.","He asked for a gold stamp for the tenth. I'll ask Gloss for some glitter. Dusty must never know."]]},
+        {t:"A small worry. Tutti doesn't sit down either. She stands at the cart for six hours. Should I say something again?",r:[
+          ["Bring her a stool.","A stool by the cart. Yes. Bolt could make one. She'll say she doesn't need it. She'll sit on it.",1],
+          ["She'd ignore you.","She would. Fondly. Then she'd feed me a scoop. I'd forget why I came. She's very clever."]]},
+        {t:"You two do something I like. You always check on {n} first, before yourselves. But you do check on yourselves after. Keep that.",r:[
+          ["We'll try.","Trying is half of it. The other half is water. Ha. I can't help it.",1],
+          ["Who checks on you?","Me? Ha. Cushy, in a sleepy way. And now you, it seems. That's alright. That's very alright."]]},
+        {t:"Crumb asked me last week if snails can get poorly. I said I'd look into it. I've been reading about snails for six days.",r:[
+          ["What did you find?","They like it damp and quiet. I told her. She said 'like me'. I said 'yes, exactly like you'.",1],
+          ["That's very kind.","She asked so carefully. Careful questions deserve careful answers. That's alright. I like snails now."]]}
+      ],
+      [ // 3 Good friend
+        {t:"Can I ask your advice? Patients bring me presents now. Jam, cookies, a pebble. I don't know where to put them all.",r:[
+          ["A shelf of thank-yous.","A shelf. Yes. Right by the door, so people see them on the way in. They'll feel less nervous.",1],
+          ["Eat the jam, keep the pebble.","Sensible. The pebble's from Crumb. It has a hole in it. I'll keep it on the windowsill."]]},
+        {t:"I'll tell you something. After the day of Bunbun's oven, I went home and shook for an hour. Some days I still shake a little. Afterwards.",r:[
+          ["That's alright.","Ha. You said it. My own words. Thank you. It's nice to hear them from outside.",1],
+          ["What helps?","Tea. The hammock. And knowing the next morning will be ordinary. Ordinary mornings are the best medicine."]]},
+        {t:"I'm afraid of one thing. An empty lollipop jar on a day someone brave comes in. It's a small fear. I keep a spare bag.",r:[
+          ["We'll bring lollipops.","Would you? Then I'll have two spare bags. I'd feel very prepared. Doctors like feeling prepared.",1],
+          ["Being brave is enough.","It is. But a lollipop says 'I saw you be brave'. People need to be seen. Even Scone. Especially Scone."]]},
+        {t:"My first patient was a pillow with a tear. Do you know what it did, when I'd stitched it? It purred. I didn't know pillows purred.",r:[
+          ["Was it Cushy?","No. Cushy's never torn. A cushion from the Nest, years ago. Cushy says it was a cousin. Cushy might be joking.",1],
+          ["That's wonderful.","It was. I think that's when I decided. If you mend something and it purrs, you keep mending."]]},
+        {t:"My hope, since you asked. I'd like to visit everyone once a month. With tea. Not for check-ups. Just to sit.",r:[
+          ["Start with us.","Then you're the first of the month. I'll bring my kettle and nothing in my bag but biscuits.",1],
+          ["The town would love that.","You think so? Even Cobble? Cobble might like a silent tea. I'm good at silent tea."]]},
+        {t:"I'll say this once, clinically. You two are the healthiest pair I see. Not the bodies. The way you are together.",r:[
+          ["Thank you, Patch.","That's alright. I mean it. I don't say clinical things I don't mean. I'd lose my licence.",1],
+          ["What's your secret?","Mine? Breathe slowly. Care loudly. Nap at noon. You've got the second one. Work on the third."]]},
+        {t:"May I ask you a medical question, for once? What do you two do when one of you is poorly?",r:[
+          ["Soup, blankets, {n}.","Soup, blankets and a two-headed hot water bottle. That's a better clinic than mine.",1],
+          ["We fuss a lot.","Good. Fussing is underrated medicine. Bunbun proves it daily. Fuss within reason. Then nap."],
+          ["We call you.","Then I'll come with the kettle. And the lollipops. One each, for being poorly bravely."]]},
+        {t:"Can I tell you something I've never told a patient? I've never been ill. Not once. Sometimes I wonder what it's like to be looked after.",r:[
+          ["We'd look after you.","Would you? With soup? ...That's alright. I believe you. I almost want a sniffle now. Almost.",1],
+          ["It's nice. Mostly.","Mostly. Yes. That's what people tell me. The being-looked-after part sounds like the nice bit."]]}
+      ],
+      [ // 4 Bestie
+        {t:"Dear heart, I made you something. A prescription pad. For you. So you can prescribe me things. Go on. Try it.",r:[
+          ["Prescribed: one long nap.","Ha. Signed and stamped. I'll take it after rounds. Doctor's orders. Your orders.",1],
+          ["Prescribed: a day off.","A whole day? That's a strong dose. Alright. Sunday. I'll sit at Bunbun's and let her fuss me."]]},
+        {t:"A silly question, dear heart. If I were a different kind of plaster, what would I be?",r:[
+          ["A big round one.","A round one. For elbows. Ha. I'd roll everywhere. Very cheerful. I'd like that.",1],
+          ["A star-shaped one.","Five points? For the bravest knees. Scone would want me in a jar. I'd be very popular."],
+          ["Just you. Exactly you.","...That's alright. That's the best answer, isn't it. I'll stay exactly me."]]},
+        {t:"You know my order by now, dear heart. Water, then a snack, then...",r:[
+          ["A nap. In that order.","In that order. Perfect. I could hire you. I won't. You'd prescribe me naps all day.",1],
+          ["A hug. New rule.","A hug? That's not on the list. ...It's on the list now. Come here."]]},
+        {t:"May I be honest, dear heart? Sometimes I come and find you on purpose. Not to check on you. To be checked on.",r:[
+          ["How are you, Patch?","Well. Better now. A little tired. Very glad. That's my chart for today. Thank you for reading it.",1],
+          ["Come any time.","I will. I'll knock twice so you know it's me. Once for the doctor, once for the friend."]]},
+        {t:"Thank you. For saying 'ow' out loud around me. Most people hide it. You trusted me with it.",r:[
+          ["You made it safe to.","That's the whole job. All of it. You've just summed up my whole job. That's alright. I'll frame it.",1],
+          ["You told us it helps.","It does. And now you tell others. I've heard you. Ow is spreading. Good."]]},
+        {t:"Dear heart, would you listen to my heartbeat? I've listened to everyone's. Nobody's ever listened to mine.",r:[
+          ["Of course. ...Steady.","Steady. Good. And a little bit quick, I think. That's you. That's alright.",1],
+          ["It says 'still going'.","Ha. It always says that. Today it says something else too. It says 'glad'. You can hear glad."]]}
+      ]
+    ],
+    bye:[
+      ["Good day to you both. Water when you get home, if you remember.","Goodbye. The heart over the door means you're always welcome. It isn't decoration.","That's alright, off you go. Nice to meet you, {n}."],
+      ["Bye, you two. Walk, don't rush. Bye, {n}.","See you soon. Hopefully not professionally.","Goodbye. A snack this afternoon, please. Doctor's suggestion."],
+      ["Bye, both. Breathe in for four, out for six, on the way home.","Off you go. And thank you for asking how I am. I'll be thinking about the answer.","Goodbye. Say hello to the cottage from me. Houses need checking too."],
+      ["Goodbye, you two. That was the best part of my rounds.","Off you go. I'll keep the creakless armchair for you.","Bye. Come back with nothing wrong. That's my favourite kind of visit."],
+      ["Goodbye, dear heart. Take care of each other. You know the rest.","Bye, dear heart. Bye, {a}. Bye, {b}. Two hugs owed. I'm keeping count.","Off you go, dear heart. I'll be on the bench listening to my heartbeat. It'll be quick for a bit."]
+    ]
+  },
+  mile:{
+    met:[
+      "Hello. You must be new. I'm Dr. Patch. Here's a lollipop for being brave enough to move somewhere new. One for {n} too.",
+      {t:"Good day. I'm the town doctor. Before anything else: have you had some water today?",r:[
+        ["We have!","Excellent. Then we're off to a very good start. I'm Dr. Patch. Welcome.",1],
+        ["Not yet.","That's alright. Now you'll remember me as the one who asked. That's how I like to be remembered."]]}
+    ],
+    week:[
+      "A week since we met. I've written you up in my notes. 'New neighbours. Healthy. Kind to their pet.' That's a good chart.",
+      "One week. That's alright. You've settled in nicely. No limps, no sniffles. Just two people and a wobbly pet."
+    ],
+    month:[
+      "A month since we met. Do you know you're the only regulars I've never had to put a plaster on? I'm very proud of you.",
+      {t:"It's been a month. A good time for a check-up. Not of you. Of us. Are we friends yet, would you say?",r:[
+        ["Definitely friends.","Good. I'll move you from 'patients' to 'friends' in my notes. It's a better drawer.",1],
+        ["Getting there.","That's alright. Getting there is the healthy way. Slowly, like a good recovery."]]}
+    ],
+    season:[
+      "A whole season of you two. Three months. I've measured something: I smile more on the days you come by. Clinically significant.",
+      "Three months. I've started keeping a lollipop just for {n}. Two, actually. One for each head. That's alright, isn't it?"
+    ],
+    year:[
+      {t:"A year since we met. I'd like to give you something. A plaster with both your names on it. Not for using. For keeping.",r:[
+        ["We'll keep it forever.","That's alright. Good. It's the only plaster I've ever made that I hope never gets used.",1],
+        ["Like Bolt's?","Like Bolt's. But Bolt uses his every Tuesday. Yours is just for remembering."]]},
+      "One year. A year of water, snacks and naps. You've been very good patients and better friends. Thank you."
+    ],
+    talk10:[
+      "That's ten talks. I counted. Doctors count things. Pulses, glasses of water, conversations. Ten. Healthy number.",
+      "Ten chats. That's alright. You're regulars now. The armchair knows your shape."
+    ],
+    talk50:[
+      "Fifty conversations. That's more than I've had with anyone but Cushy, and half of Cushy's were asleep.",
+      {t:"Fifty chats. I've noticed I breathe slower when we talk. Four in, six out, without trying. Do you know why that is?",r:[
+        ["We feel safe too.","That's it, isn't it. That's the whole reason. Thank you for knowing.",1],
+        ["Practice?","Ha. Perhaps. Fifty chats of practice. Let's do fifty more. For science."]]}
+    ],
+    talk100:[
+      "One hundred chats. I'm prescribing a celebration. A cup of tea, a burnt cookie each, and a sit-down. Together.",
+      "A hundred. I have a hundred little ticks in the back of my notebook under your names. It's the healthiest page in there."
+    ]
+  },
+  nick:"dear heart"
+});
+Object.assign(TALK.scone,{
+  lv:{
+    hi:[
+      [ // 0 New face
+        "Hi! Who are YOU? I'm Scone! I'm the fast one! Crumb's the quiet one! She's over there looking at a rock!",
+        {t:"Whoa! Is that a pet? With TWO heads? What's it called? What are YOU called? Quick!",r:[
+          ["I'm {me}. That's {n}.","{me} and {n}! Got it! I remembered in under one second! That's a record!",1],
+          ["Guess!","Um... Zoom? Rocket? Sir Speedy? No? Okay, tell me later! I'm busy guessing!"]]},
+        "Hi! I'm Scone! Tutti's my aunt! The ice cream one! You've probably heard of me. I'm very fast.",
+        "Hey! Are you new? I can tell, you're walking. Everyone who lives here runs. Well, I do."
+      ],
+      [ // 1 Regular
+        "Hey! It's you! And {n}! I remembered! I ALWAYS remember people who watch me run!",
+        "Hi again! Want to see something? It's me. Running. To that tree. Watch! ...Did you watch?",
+        "Oh! It's you two! Hi! Crumb says hi too. She said it in her head. I could tell.",
+        "{n}! Hi, {n}! Hi, other head of {n}! Are you ready to race? You look ready!"
+      ],
+      [ // 2 Friend
+        "IT'S YOU! I yelled that from the swings! Did you hear? Everyone heard! Hi!",
+        {t:"Hi! Quick! Am I faster than yesterday? Look at my legs. Do they look faster?",r:[
+          ["Way faster.","I KNEW it! I ate two scoops! That's the trick! Don't tell anyone the trick!",1],
+          ["Same as always.","Same as always is still VERY fast. Okay. That's okay. I'll take it."]]},
+        "Hey hey hey! I saved you a spot on the bench! I sat on it to save it. Now you sit! Go!",
+        "Hi! I've got a new plaster! Heart again! Dr. Patch says hearts are still faster! Hi!"
+      ],
+      [ // 3 Good friend
+        "Hi. Hi! Sorry, I'm out of breath. I ran from home because I saw you from the window.",
+        "Oh good, it's you. I was having a not-fast day. Now I'm having a medium day. Going up!",
+        "Hey! Team Scone's here! That's you! You're Team Scone! You've been Team Scone for ages!",
+        "Hi, you two. Want to sit for a bit? I can sit. I'm good at sitting now. Watch. ...See? Four seconds."
+      ],
+      [ // 4 Bestie
+        "CO-CAPTAIN! Co-captain's here! Everybody, look! Okay, nobody's looking. Crumb's looking. Hi!",
+        "Co-captain! And {n}! Team Scone is FULL STRENGTH! What do we do? Run! Obviously!",
+        {t:"Co-captain! I did a thing! Guess the thing! Three, two, one, guess!",r:[
+          ["You beat the pigeon!","Not yet! But I was SO close! It was a hop away! A hop! Next time!",1],
+          ["You walked on the cobbles?","For ELEVEN steps! Cobble said 'mm'! That's a medal from Cobble! Basically!"]]},
+        "Hi, co-captain! I said your name at dinner. Well, I said 'co-captain'. Aunt Tutti knew who I meant."
+      ]
+    ],
+    topics:[
+      [ // 0 New face
+        {t:"Do you like running? You have to say yes. No, you don't have to. But do you?",r:[
+          ["We love running!","YES! Then you can race me! Not now. Now. No, later! Now!",1],
+          ["We like walking.","Walking's okay. It's slow running. You can do it. I believe in you."],
+          ["{n} loves it.","Then {n} and me are a team already! A two-head-and-a-muffin team!"]]},
+        {t:"I'm the older twin. Crumb's my sister. We live with Aunt Tutti. You know Aunt Tutti? Everyone knows Aunt Tutti.",r:[
+          ["The ice cream lady?","YES! She gives me the first scoop every day! That makes me the first! I'm always first!",1],
+          ["Not yet!","You HAVE to! Come to the cart! Don't touch the cart though. Big rule. Biggest rule."]]},
+        {t:"Where do you live? I can run there. I can run anywhere. I just need to know where.",r:[
+          ["South of the plaza.","That's SO close! I can do that in... um... I'll find out! Tomorrow! Time me!",1],
+          ["That's a secret.","A secret! Okay! I'll find it! I'll look in every window! No, Aunt Tutti says don't. I'll just guess."]]},
+        {t:"Can {n} run? Does it have legs under there? I can't see the legs. Show me the legs!",r:[
+          ["Little legs, yes!","LITTLE LEGS! Little legs are fast! Like a mouse! Mice are very fast!",1],
+          ["{n} mostly wobbles.","Wobbling's a kind of running! A wobbly kind! I'll learn it. Watch. Wobble wobble. Hard!"]]},
+        {t:"I'm in charge of the playground. Well, not in charge. But I'm there the most. Nine o'clock till two. Every day!",r:[
+          ["What's the best bit?","The swings! Jumping off at the top! Don't tell Aunt Tutti I said that. She knows anyway.",1],
+          ["That's a long time!","It goes SO fast. Because I go so fast. Time goes the same speed as me. That's how it works."]]},
+        {t:"Do you know any races? I know eleven. Running, hopping, backwards, crab, sack, and six I made up.",r:[
+          ["What's a made-up one?","The Pigeon Race! You race a pigeon! I've done it twice. Don't ask how it went.",1],
+          ["Crab sounds hard.","It IS hard! Sideways! On your hands! I fell in the sandpit. I won, though. Against nobody."]]}
+      ],
+      [ // 1 Regular
+        {t:"You came back! People who come back are on Team Scone. That's the rule. I just made it. Want to join?",r:[
+          ["We're in!","YES! Team Scone has... one, two, three, and {n}'s two heads... five! That's a big team!",1],
+          ["What does the team do?","Win! And go fast! And sometimes eat ice cream. Mostly win."]]},
+        {t:"Every morning I race the bakery bell to the gate. The bell's never won. Well, once. I tripped.",r:[
+          ["The bell can't run!","That's why I always win! Except the once. The bell was very proud.",1],
+          ["Does Crumb race too?","She walks to the gate. Very slowly. She says she's not racing. But she always gets there. That's a kind of winning."]]},
+        {t:"Pip says I'm the bravest kid in town. I asked why. He said 'you just are'. That's the best reason!",r:[
+          ["It is the best reason.","I KNOW! I'm going to say it to Crumb! 'You're the best rock finder. You just are.' Ha!",1],
+          ["Were you being brave?","I was eating a tart. I think tarts make you brave. That's why Pip gives them out."]]},
+        {t:"I counted how many ahems the Mayor did at the bake sale. Twenty-two! Crumb counted twenty-one. She missed a small one.",r:[
+          ["A small ahem counts.","It COUNTS! I told her! She said 'um, okay'. That means I won.",1],
+          ["Did you laugh?","At ahem fifteen. The moustache went up. I had to hide behind Parcel."]]},
+        {t:"Is {n} faster with two heads or would it be faster with one? I think two. Two heads, two times as fast.",r:[
+          ["Two, definitely.","Then I need another head! Can I borrow one? Kidding! Kind of kidding!",1],
+          ["Heads don't run.","They LOOK where you're going! Two lookers! That's double looking! That's speed!"]]},
+        {t:"I skip stones. Seven skips. Crumb says six. Do you skip stones? Don't say more than seven. Say less.",r:[
+          ["Three, on a good day.","Three's good! For a beginner! I'll teach you! Flat ones! Crumb finds the flat ones!",1],
+          ["Eight.","EIGHT? No. No! Okay. Okay. I have to train. I'm going to the pond. RIGHT now. Bye. No, wait, talk first."]]}
+      ],
+      [ // 2 Friend
+        {t:"How are you? Aunt Tutti says ask people how they are. I'm asking! How ARE you? Fast? Slow?",r:[
+          ["Medium fast.","Medium fast is good! That's a happy speed! Mine's always fast. Except at bedtime.",1],
+          ["A bit slow today.",{t:"Oh. Slow days. I get those. When it rains wrong. Do you want me to cheer for you?",r:[
+            ["Yes, please.","GO, YOU TWO! YOU CAN DO IT! TEAM SCONE! ...Better? I can do it louder.",1],
+            ["Just sit with us.","Okay. Sitting. This is me sitting. I'm doing it for you. It's very hard. I'm doing it."]]}]]},
+        {t:"Crumb found a pebble that looks like Aunt Tutti. She won't show anyone except me. Do you want to know what it looks like?",r:[
+          ["Only if Crumb says.","Ohh. That's a Crumb answer. Okay. I'll ask her. She'll say 'um, maybe'. That means yes.",1],
+          ["Tell us!","It's pointy at the bottom and lumpy on top! Like a cone! Oh no. Don't tell Crumb I told."]]},
+        {t:"I raced Boing. He bounced over my head THREE times. Then he said 'you win, Scone!' But I didn't win. Did I?",r:[
+          ["He let you win.","I KNOW. Grown-ups do that. I want to win for REAL. I'll be bigger. Then he'll see.",1],
+          ["Bouncing's not running.","See? SEE? That's what I said! No bouncing! New rule! Same as no wings!"]]},
+        {t:"Can I tell you a secret worry? Sometimes I wake up Crumb by accident because I'm loud even when I'm asleep.",r:[
+          ["Does she mind?","She says no. She holds my hand till I'm quiet. Then she goes back to sleep. She's good at that.",1],
+          ["Sleep-running?","I DO! My legs go! Aunt Tutti says I win races in my dreams. I hope I do. Probably I do."]]},
+        {t:"You two walk the SAME speed. Every time. Even when one of you is slow. How do you do that?",r:[
+          ["We wait for each other.","Oh. Like me and Crumb at the gate. I wait. I hate waiting. I wait anyway. For her.",1],
+          ["Practice.","Practice! Like racing! You practise walking together! That's a sport! I'm inventing it!"]]},
+        {t:"Cobble said I could help mend a path. With the little mallet. I tapped a stone forty times. He said 'mm. Twice was enough.'",r:[
+          ["Forty is very thorough.","THOROUGH! Is that good? That sounds good! I'm thorough! I'm going to tell Cobble!",1],
+          ["Was it a happy stone?","He tapped it twice after and said 'happy'. I think it was happy because of me. And him."]]},
+        {t:"Joy let me play pinball again! I lost all three balls in one minute! She said 'speedrun'! Is that good? It sounds good!",r:[
+          ["It's very good.","I KNEW it! I'm a speedrunner! Fastest loser in the arcade! That's still fastest!",1],
+          ["Did Pixel see?","Pixel said 'Scone. Sixty seconds. Noted.' I'm on a list! A real list! Number one on it!"]]},
+        {t:"Aunt Tutti says I can help at the cart on Sunday. Holding the napkins. Only holding. Not touching. Is holding touching?",r:[
+          ["Holding is helping.","HELPING! Yes! I'm a helper! I'm going to hold them SO well. The best napkin holding ever!",1],
+          ["Ask Aunt Tutti.",{t:"I did! She said 'hm?' That's not an answer! What does 'hm' mean?",r:[
+            ["It means yes, carefully.","Yes carefully! I can do carefully! For one whole Sunday! Maybe half!",1],
+            ["It means 'we'll see'.","'We'll see' means yes but later! I KNOW that one! Later is the worst word! After 'walk'."]]}]]}
+      ],
+      [ // 3 Good friend
+        {t:"Can I ask you something? A real thing? Am I too loud? Some people say I'm too loud.",r:[
+          ["Never too loud for us.","...Okay. Okay! Good! I'll be exactly this loud then. FOREVER. Ha! Sorry. A bit quieter. Forever.",1],
+          ["Loud for good reasons.","Like when I cheer! And when Crumb needs a turn not talking! Yeah. Those are good reasons.",1],
+          ["Loud and kind.","Loud AND kind. Two things. Like {n}'s two heads. I like that. I'm keeping it."]]},
+        {t:"Here's a scary thing. Sometimes I think Crumb will find a friend who's quiet like her, and she won't need a loud one.",r:[
+          ["She'll always need you.","You think? Even when she's grown up? She holds my hand. She still holds my hand.",1],
+          ["Quiet friends need loud ones.","They DO! Who would shout 'LOOK, A SNAIL' if I wasn't there? Nobody. Crumb would just look at it."]]},
+        {t:"Can I tell you what I'm going to be when I grow up? Don't laugh. Okay, you can laugh a bit.",r:[
+          ["Go on, no laughing.","The person who runs the letters. Like Parcel. But FASTER. I'd get every letter there by lunch!",1],
+          ["The fastest person ever?","Yes, that too. But also a job. Something with running in it. Parcel's job has running. Sort of. Walking."]]},
+        {t:"I remember the ice cream on the ground. Did I tell you? I think about it when I'm sad. Aunt Tutti laughing. It's a good thing to think about.",r:[
+          ["What else helps?","Running. And you two. You count. You always count when I run. That helps a lot.",1],
+          ["We'll make more memories.","Like what? Like a race? A big one? With you at the finish? Okay. That's going in the box."]]},
+        {t:"I'm practising losing nicely. Dr. Patch said it's a skill. Want to see? You win. Go. ...Well done! See? Nice!",r:[
+          ["That was very nice.","It was SO hard! My face did a thing! But I said it! Do I get a lollipop?",1],
+          ["Now you win.","YES! I WIN! ...Wait. Well done to YOU for losing. That's also nice. I'm good at this now."]]},
+        {t:"You're the only grown-ups who race me for real. Not letting me win. Not pretending. Real racing.",r:[
+          ["You're too fast to fake.","I AM too fast to fake! That's going on my ribbon wall. Not a ribbon. A sentence.",1],
+          ["We try very hard.","I can tell! Your face goes red! {n}'s faces go all squished! It's the best!"]]}
+      ],
+      [ // 4 Bestie
+        {t:"Co-captain! Team meeting! Very important! The plan is...",r:[
+          ["Go fast!","GO FAST! Correct! Meeting over! You knew it! You always know it!",1],
+          ["Eat ice cream first?","Ohh. New plan. Ice cream THEN go fast. Co-captain, you're a genius. Brain freeze plan."]]},
+        {t:"Silly question! If you were a race, what kind? I'd be a sprint. Obviously.",r:[
+          ["A three-legged race.","Two people tied together! That's YOU two! Ha! And {n} is the third leg! Perfect!",1],
+          ["An egg-and-spoon race.","Slow and careful! Like Crumb! Okay, but I'd still come and cheer the egg."],
+          ["A pigeon race.","NO. You're on MY side. Fine. You're the pigeon. I'll still beat you. One day."]]},
+        {t:"Co-captain, you know my countdown. Three, two...",r:[
+          ["One, GO!","GO! Ha! You said it at the same time! We're the same speed now! Practically twins!",1],
+          ["Two and a half...","NO! There's no half! ...Okay, there's a half. For you. Only for you. One, GO!"]]},
+        {t:"Can I tell you the truth, co-captain? When I fall over I still want someone to say 'ow' for me. You always do.",r:[
+          ["Ow. For you. Always.","...Thanks. Okay. That's the last one I'll say quietly today. EVERYTHING ELSE LOUD.",1],
+          ["You can say it yourself.","Ow. OW. There. It's easier with you here. Dr. Patch was right. Don't tell it."]]},
+        {t:"Thank you for being on Team Scone. You never left the team. Even when I lost to the pigeon. Both times.",r:[
+          ["Team Scone forever.","FOREVER! I'm putting it on the ribbon wall! A real ribbon! Aunt Tutti's making it!",1],
+          ["The pigeon's not on our team.","NEVER. The pigeon's on Team Pigeon. Team Pigeon is very small. One pigeon."]]},
+        {t:"Co-captain. I'm going to run round the whole town before the bell stops. Next week. I'm ready. Will you be at the finish?",r:[
+          ["With a ribbon. Both ends.","Both ends! And {n} in the middle! Okay. Okay! Don't tell Aunt Tutti what the ribbon's for!",1],
+          ["We'll time you too.","Out loud! Every second! Even if it's a lot of seconds! Even if I lose to the bell!"]]}
+      ]
+    ],
+    bye:[
+      ["Bye! Nice to meet you! Race you next time!","See you! Watch me run home! WATCH!","Bye, {n}! Bye, other head! Bye!"],
+      ["Bye, Team Scone! Train hard!","See you! I'll be at the playground till two! Then ice cream!","Bye bye! Three, two, one, bye!"],
+      ["Bye! Thanks for asking how I am! I'm FAST! Bye!","See you tomorrow! Bring {n}! We're racing!","Bye! Tell Crumb I said bye! She's right there! Tell her anyway!"],
+      ["Bye. Thanks. You know for what. Okay, bye!","See you, you two! I'll run slow so you can watch me go. Medium slow.","Bye! I'm going to tell Aunt Tutti you're my best grown-ups. She'll cry. Bye!"],
+      ["BYE, CO-CAPTAIN! Bye, {a}! Bye, {b}! Team Scone forever!","See you, co-captain! Last one home is a stale muffin! That's YOU! Ha!","Bye, co-captain! I'm saving you the top of the slide! Nobody's allowed! Not even me!"]
+    ]
+  },
+  mile:{
+    met:[
+      "Whoa, new people! Hi! I'm Scone! I'm the fastest kid in town! I'm also the only fast kid. Still counts!",
+      {t:"Hi! Are you the people with the two-headed pet? Can it race? Can I race it? Can I race it NOW?",r:[
+        ["Ready, set, go!","GO! ...I won! Wait, it didn't move. That's okay! Practice round! Hi! I'm Scone!",1],
+        ["Maybe tomorrow.","Tomorrow! Okay! I'll train all night! Hi, by the way. I'm Scone. Bye! See you tomorrow!"]]}
+    ],
+    week:[
+      "A WEEK! You've been here a whole week! I've raced {n} four times! I won four times! Well, three and a half!",
+      "One week! That's seven days! I can count to seven in one second! Onetwothreefourfivesixseven! See!"
+    ],
+    month:[
+      "A month since I met you! That's like thirty races! I didn't do thirty races. I did nine. Still a lot!",
+      {t:"It's been a whole month! Do you remember the first time? I raced {n} and it didn't move!",r:[
+        ["You won, though.","I DID win! The first win of many! Team Scone's oldest win!",1],
+        ["{n} was shy.","Shy! Like Crumb! Now {n} races me properly! Sort of properly. With wobbles."]]}
+    ],
+    season:[
+      "Three months! A whole season! I've grown a bit! Aunt Tutti marked it on the door! Have you grown? You haven't. Grown-ups don't.",
+      "A whole season of Team Scone! We need team shirts! Stitch could make them! With a muffin! And two heads!"
+    ],
+    year:[
+      {t:"A YEAR! You've been my friends for a whole year! That's a ribbon! I made you a ribbon! Out of a cone wrapper!",r:[
+        ["We'll hang it up.","On your wall? Like my wall? YES! Then we've both got ribbon walls!",1],
+        ["What did we win?","Being my friends for a whole year! That's the hardest race! Because it's long!"]]},
+      "One year! Crumb made you a card. I made you a race. It's to the fountain. Ready? This one's for you. GO!"
+    ],
+    talk10:[
+      "That's ten talks! I counted! I counted on my fingers and I ran out! I've only got ten! Perfect!",
+      "Ten chats! Ten! That's a top-ten! You're in my top ten! You're number one! And two!"
+    ],
+    talk50:[
+      "Fifty chats! FIFTY! That's more than I've talked to the pigeon! And I talk to the pigeon a lot!",
+      {t:"Fifty! Do you know what fifty is? It's a LOT! It's more than my ribbons! Should I make you a ribbon for every chat?",r:[
+        ["Just one, for all of them.","One big one! The biggest ribbon! Aunt Tutti will need SO many cone wrappers!",1],
+        ["Save your wrappers.","Okay. I'll save them for when I win the town race. That's a better use. You're right."]]}
+    ],
+    talk100:[
+      "A HUNDRED chats! That's a hundred! That's the biggest number I know that isn't a thousand! You're in the hundred club!",
+      "One hundred! You know what I'm going to do? Run a lap of the fountain for every chat. Okay, ten laps. Okay, one. Watch!"
+    ]
+  },
+  nick:"co-captain"
+});
 /* </talk> */
 /* </town-walk> */
 /* <makeovers> */
