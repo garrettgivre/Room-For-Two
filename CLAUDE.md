@@ -57,17 +57,33 @@ anything the game uses. `tools/writing/holidays.md` is the holiday design doc.
   how they care (v63); furniture remembers who placed it. Not too Animal Crossing: the town is the world outside your room.
 - **The daily loop is one list** (v64): "Today with <pet>" on the pet page (the pet's wish + 3 things it wants, always one for
   the two of you), then a treat. Never add more daily systems or streaks; optional extras (finds, garden, jobs, events) stay off lists.
-- **Beau's side**: decorating (Decorate, ~70 furniture sets, painted tiles, doors/windows) and room makeovers for residents (v65).
-- **The town**: 32 residents with schedules, houses in four neighbourhoods, a walkable map in a countryside (v52-v60), shops with
-  keepers, friendships, gifts, events. Each resident has their own furniture set (v65).
+- **Beau's side**: decorating (Decorate, ~80 furniture sets, painted tiles, doors/windows) and room makeovers for residents (v65/v67).
+- **The town** (v72-v79): 32 residents with schedules and friendship-level conversations, 23 houses, 8 shops, 5 civic places (Town
+  Hall, Library, Post Office, Weather Station, Lamp Shed) that host events, the Sunday market, the park; a grid town with a round
+  plaza, the Loop through the neighbourhoods, 8 path types with a walking hierarchy, circles as real shapes; night light pools;
+  residents sit on benches, browse stalls, doors open. Lore lives in `tools/writing/GAME_BIBLE.md`.
+
+**Note to the next session (written at the end of a very long one, v59 -> v79, Oct 4 2026)**
+- Garrett is starting a fresh chat. Read this Start here section, then the bottom sections (v72 onward) for whatever you touch.
+- Everything is pushed; the working tree is clean apart from an untracked `tools/art/shop-interiors.zip` (his, leave it).
+- **Run `tools/dev/town/sweep.js` and `sweep2.js` before every release.** v76 shipped a crash that only hit events held at houses;
+  the sweeps would have caught it. Test every data shape a change touches, not just the first one that comes to mind.
+- Search-and-replace across index.html is dangerous: it once rewrote a helper's own definition. Assert counts, read the result.
+- The laptop's headless software GL now stalls for seconds at random in every version; judge performance by draw counts
+  (`tm.R.drawn`) and JS time, compare versions with `R42_INDEX`, and ask Garrett how it feels on his phone.
+- Garrett liked: the round plaza, Market Street up to the Town Hall, the grid paths with tidy corners ("less blobby"), the night glow.
+  He asked for edge-hold scrolling on the map (done in v77; ask if he wants it in the room too).
 
 **Open items / what to do next**
-1. Not verified on a phone: almost everything from v49 on (town walking and performance, the map camera, v62-v65).
-2. `firestore.rules` requires `cv >= 44` on writes and must be published by hand in the Firebase console; ask Garrett before assuming.
-3. Ideas not built: makeover rooms shown inside the residents' own houses, new townsfolk moving into the empty lots, ambient
-   sound, ways to reach each other through the pet (leave something for the other, a message carried by the pet, a moment
-   when you're both online).
-4. Working setup: Garrett drives sessions from his phone via Remote Control on his PC (no cloud sessions: cost). Max 4 agents at once.
+1. Not verified on a phone: most of v72-v79 (exteriors, wardrobe, civic places, the market, the new town layout, paths, edge
+   scrolling, the performance pass). Ask Garrett for screenshots and how the map feels.
+2. Ideas offered and not built yet: one shared long-term goal for the two of them (a town project they both chip in to, e.g. restoring
+   the old park bridge, or choosing new neighbours for the empty lots), ambient sound (fountain, birds, crickets, footsteps that change
+   on brick/gravel/boardwalk), makeover rooms shown inside the residents' own houses, edge scrolling in the room camera.
+3. Known small things: the Town Hall sign is too small to read from the map; the snail and Scone's plaster are tiny; the plaza tiles
+   read pale; Game Night's house keeps Boing's spring-head topper (Garrett hasn't said).
+4. `firestore.rules` requires `cv >= 44` on writes and must be published by hand in the Firebase console; ask Garrett before assuming.
+5. Working setup: Garrett drives sessions from his phone via Remote Control on his PC (no cloud sessions: cost). Max 4 agents at once.
 
 ## Files
 - `index.html` — the whole app (~565 KB): CSS, a custom WebGL2 engine, game logic, UI. No build step, no framework.
