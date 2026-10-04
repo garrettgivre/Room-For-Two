@@ -10,8 +10,8 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v66** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v66'` in `sw.js`; bump both for anything
-user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 66 (older clients refresh
+**Current build: v67** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v67'` in `sw.js`; bump both for anything
+user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 67 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
 **Who and how**
@@ -506,3 +506,12 @@ Also in this round: house interiors refurnished with each resident's own set, an
   each resident blocks ~1.7 cells, so rooms must stay sparser than they look; interior walls are knee-high, so wall pieces only
   work on the outer north/west walls; `clearKeepers` pushes a counter/vanity in front of a resident towards the camera.
   `tools/dev/town/hview.js <houseId> [outPrefix]` previews a house (fixed: it had an undefined ROOT).
+
+## Makeover rooms stay as part of the houses (v67)
+Garrett: designs must never disappear. Every finished makeover is kept as an added room of that resident's house, one per request:
+`state.mk.rooms[resident][i]` {items,tf,tw,stars,at,by,ed} (old one-room-per-resident saves migrate in `normalize`; merge per room,
+newest `at`; `SYNC_MIN_V` 67 because older apps would strip the new shape). Helpers `mkRooms(k)`, `mkRoom(k,i)`, `mkAllRooms()`.
+Inside a resident's house a "Rooms you made" list (`#mkhouse`, `mkHouseChips` from `updStoreBar`) steps into each room
+(`mkStart(k,true,i,houseKey)`: the resident stands in it; "Back to the house" travels back). "Rearrange" in a visited room edits it
+and saves it back on leaving (`sandbox.mk.edit`, `mkCancel`). The close-up lists each room ("Your reading nook", `mkv:<i>`).
+Requests now read "<name> is adding a room"; a resident stops asking once all three of their rooms exist.

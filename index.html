@@ -568,7 +568,11 @@ body.away .tag{visibility:hidden}
 .mkl li:before{content:'';position:absolute;left:6px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;border:2px solid rgba(59,18,115,.35)}.mkl li.ok{border-color:var(--ink);color:var(--ink);background:#EFFFD6}.mkl li.ok:before{background:var(--slime);border-color:var(--ink)}
 .mkbtns{display:flex;gap:6px;justify-content:flex-end}.mkbtns .gel{min-height:36px;padding:0 14px;font-size:14px;width:auto}
 body.mkmode #dock,body.mkmode #tmBtn{display:none!important}body.mkmode header.top{visibility:hidden}
-.dnews.mkreq{background:#FFE7F3}.dnews.mkreq .mkf{margin-right:4px}.mkdone{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px}.mkdone button{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;background:#fff;border:2.5px solid var(--ink);border-radius:14px;padding:6px 10px;box-shadow:0 3px 0 var(--ink)}.mkdone b{font-family:var(--disp);font-weight:400;font-size:13px}.mkdone small{color:#E8A400;font-size:12px}
+.dnews.mkreq{background:#FFE7F3}.dnews.mkreq .mkf{margin-right:4px}.mkdone{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px}.mkdone button{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;background:#fff;border:2.5px solid var(--ink);border-radius:14px;padding:6px 10px;box-shadow:0 3px 0 var(--ink)}.mkdone b{font-family:var(--disp);font-weight:400;font-size:13px}.mkdone small.st{color:#E8A400}.mkdone button small{display:block;max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#6B4E95}
+.mkhouse{position:fixed;z-index:7;left:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 112px);display:flex;flex-direction:column;align-items:flex-start;gap:5px}.mkhouse[hidden]{display:none}.mkhouse small{background:var(--ink);color:#fff;border-radius:999px;padding:1px 9px;font-size:11px}
+.mkhouse button{display:flex;align-items:center;gap:6px;background:#fff;border:2.5px solid var(--ink);border-radius:999px;padding:3px 12px 3px 3px;box-shadow:0 3px 0 var(--ink);font-family:var(--disp);font-size:13px;color:var(--ink)}.mkhouse .mkf{width:28px;height:28px}.mkhouse .mkf img{width:25px;height:25px}
+body.kmode .mkhouse,body.mapopen .mkhouse,body.sheet-open .mkhouse,body.gaming .mkhouse{display:none}
+.mkdone small{color:#E8A400;font-size:12px}
 .mkstars{display:flex;gap:6px;justify-content:center}.mkstars i{width:28px;height:28px;background:#EDE6F5;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}.mkstars i.on{background:var(--sun)}
 .sandbar{position:fixed;z-index:7;right:14px;top:calc(env(safe-area-inset-top,0px) + 140px);transform:rotate(2deg);display:flex;align-items:center;gap:8px;padding:5px 6px 5px 10px;background:var(--sun);border:3px solid var(--ink);border-radius:14px 18px 13px 20px;box-shadow:0 5px 0 var(--ink)}
 .sandbar[hidden]{display:none}.sandbar b{font-family:var(--disp);font-weight:400;font-size:15px;color:var(--ink)}
@@ -19130,7 +19134,7 @@ function travelTo(dest,then,focus){if(traveling)return;const here=away?away.key:
       if(away){keeperReact('greet',2.4);setTimeout(()=>away&&away.keeper&&keeperSay(pick1(away.keeper.lines.hi)),500);if(!focus)setTimeout(()=>toast(away?(away.keepers.length>1?`Tap ${away.keepers.map(K=>KBIB[K.kind]?KBIB[K.kind].n:K.n).join(' or ')} to chat${away.def.house?'':' or book'}.`:away.keeper&&KBIB[away.keeper.kind]?(away.def.house?`Tap ${KBIB[away.keeper.kind].n} to chat.`:`Tap ${KBIB[away.keeper.kind].n} to chat or shop. Or tap anything on display.`):''):''),4300);if(focus)setTimeout(()=>typeof focus==='function'?openOffer(focus):openProduct(focus),1400)}
       traveling=false;then&&then()},250)},650)}
 const SHOP_LOGO=new Set(['snack','salon','toys','furn','build','glam','wear','arcade']),shopLogo=k=>'assets/logos/'+k+'.webp';
-function updStoreBar(){$('#kbadges').innerHTML='';kbadgeFor=null;if(kmode&&(!away||kmode.shop!==away)){kmode=null;document.body.classList.remove('kmode');$('#kpanel').hidden=true;$('#kpanel').classList.remove('on');$('#sheet').classList.remove('kshop')}const b=$('#storebar');b.hidden=!away;document.body.classList.toggle('away',!!away);$('#kbub').hidden=true;kbT=0;if(!away)return;const lg=SHOP_LOGO.has(away.key);b.classList.toggle('logo',lg);$('#sbIcon').src=lg?shopLogo(away.key):ico(away.def.icon);$('#sbName').textContent=away.def.n;b.style.setProperty('--sc',away.def.color)}
+function updStoreBar(){$('#kbadges').innerHTML='';kbadgeFor=null;if(kmode&&(!away||kmode.shop!==away)){kmode=null;document.body.classList.remove('kmode');$('#kpanel').hidden=true;$('#kpanel').classList.remove('on');$('#sheet').classList.remove('kshop')}mkHouseChips();const b=$('#storebar');b.hidden=!away;document.body.classList.toggle('away',!!away);$('#kbub').hidden=true;kbT=0;if(!away)return;const lg=SHOP_LOGO.has(away.key);b.classList.toggle('logo',lg);$('#sbIcon').src=lg?shopLogo(away.key):ico(away.def.icon);$('#sbName').textContent=away.def.n;b.style.setProperty('--sc',away.def.color)}
 
 /* --- shopping --- */
 // An offer is anything for sale: {title, sub, desc, price, deal, thumb, have, canBuy, buy(), hop}. Cards are opened with a
@@ -20226,10 +20230,13 @@ pebble:[
 // ~20 h after the last is finished; requests never expire. Picked by room + count so both phones agree.
 const MK_GAP=20*36e5;
 function mkState(){const M=state.mk&&typeof state.mk==='object'?state.mk:(state.mk={req:null,next:0,n:0,rooms:{}});if(!M.rooms||typeof M.rooms!=='object')M.rooms={};return M}
+function mkRooms(k){const R=mkState().rooms[k];return R?Object.keys(R).map(i=>Object.assign({i:+i},R[i])).filter(r=>MK_REQ[k]&&MK_REQ[k][r.i]).sort((a,b)=>a.at-b.at):[]}
+function mkRoom(k,i){const R=mkState().rooms[k];return R&&R[i]||null}
+function mkAllRooms(){return Object.keys(mkState().rooms).filter(k=>RESIDENTS[k]&&MK_REQ[k]).flatMap(k=>mkRooms(k).map(r=>Object.assign({k},r)))}
 function mkReq(){const M=mkState(),q=M.req;return q&&MK_REQ[q.k]&&MK_REQ[q.k][q.i]?Object.assign({},MK_REQ[q.k][q.i],{k:q.k,i:q.i}):null}
 function mkTick(){if(!state||sandbox||!ready||typeof MK_REQ==='undefined')return;const M=mkState();if(M.req||Date.now()<(M.next||0))return;
-  const C=Object.keys(MK_REQ).filter(k=>RESIDENTS[k]&&KBIB[k]&&houseOf(k)),met=C.filter(k=>(kfOf(k).p|0)>0),pool=met.length>=3?met:C;if(!pool.length)return;
-  const R=jrRand('mk|'+(roomCode||'solo')+'|'+(M.n|0)),k=pool[Math.floor(R()*pool.length)],done=M.rooms[k]?[M.rooms[k].i]:[],opts=[0,1,2].filter(i=>MK_REQ[k][i]&&!done.includes(i)),i=opts[Math.floor(R()*opts.length)]??0;
+  const C=Object.keys(MK_REQ).filter(k=>RESIDENTS[k]&&KBIB[k]&&houseOf(k)&&mkRooms(k).length<MK_REQ[k].length),met=C.filter(k=>(kfOf(k).p|0)>0),pool=met.length>=3?met:C;if(!pool.length)return;
+  const R=jrRand('mk|'+(roomCode||'solo')+'|'+(M.n|0)),k=pool[Math.floor(R()*pool.length)],done=mkRooms(k).map(r=>r.i),opts=[0,1,2].filter(i=>MK_REQ[k][i]&&!done.includes(i)),i=opts[Math.floor(R()*opts.length)]??0;
   M.req={k,i,t:Date.now()};if(!state.inbox.some(m=>m.from===k&&m.text===MK_REQ[k][i].ask))resPost(k,MK_REQ[k][i].ask);saveSoon()}
 // what the room needs, and whether the current design has it
 function mkSetOf(k){return SETMAP['r'+k]?'r'+k:null}
@@ -20241,10 +20248,10 @@ function mkCheck(q,items){const defs=items.map(i=>CATMAP[i.k]).filter(Boolean),f
   rows.push({t:'At least 6 pieces',ok:defs.length>=6});
   const needOk=rows.slice(0,q.need.length).every(r=>r.ok),stars=defs.length<2?0:1+(needOk?1:0)+(rows[rows.length-2].ok&&rows[rows.length-1].ok?1:0);return{rows,stars,n:defs.length}}
 // design mode: a sandbox whose room is the resident's (empty, or the design you made for them when visiting)
-function mkStart(k,view){const M=mkState(),q=view?null:mkReq(),D=view?M.rooms[k]:null;if(!view&&(!q||q.k!==k))return;if(view&&!D)return;
-  if(sandbox)setSandbox(false);if(kmode)kClose(true);if(away){travelTo('home',()=>mkStart(k,view));return}setTab(null);closeWheel&&closeWheel();
+function mkStart(k,view,vi,back){const M=mkState(),q=view?null:mkReq();if(view&&vi==null){const L=mkRooms(k);vi=L.length?L[L.length-1].i:null}const D=view?mkRoom(k,vi):null;if(!view&&(!q||q.k!==k))return;if(view&&!D)return;
+  if(sandbox)setSandbox(false);if(kmode)kClose(true);if(away){const from=back||(away.def&&away.def.house?away.key:null);travelTo('home',()=>mkStart(k,view,vi,from));return}setTab(null);closeWheel&&closeWheel();
   select(null);if(brush)endBrush();if(dirty){clearTimeout(saveT);flush()}
-  const saved=JSON.parse(JSON.stringify(state)),blank=normalize(defaultState());sandbox={saved,mk:{k,i:view?D.i:q.i,view:!!view}};
+  const saved=JSON.parse(JSON.stringify(state)),blank=normalize(defaultState());sandbox={saved,mk:{k,i:view?vi:q.i,view:!!view,back:back||null}};
   CAT.forEach(c=>{state.fown[c.k]=9});state.town=[...new Set(state.town.concat(['f','w'].flatMap(kd=>TILE_ORDER[kd].map(t=>kd+':'+t))))];state.downs=DOOR_KEYS.slice();state.hearts=Math.max(state.hearts,999);
   state.size=8;state.items=view?JSON.parse(JSON.stringify(D.items)):[];state.tf=view&&D.tf?D.tf.slice():blank.tf.slice();state.tw=view&&D.tw?D.tw.slice():blank.tw.slice();
   buildHist.length=0;updUndoBtns();syncScene();pet.key=null;buildPet();updHUD();document.body.classList.add('mkmode');$('#sandbar').hidden=true;mkBar();
@@ -20255,28 +20262,35 @@ function mkHostGone(){if(visitor&&visitor.mk){scene.remove(visitor.K.g);visitor=
 function mkEnd(){if(!sandbox||!sandbox.mk)return null;const S=sandbox,design={items:state.items.map(({k,x,z,r,c,w,u,y})=>({id:uid(),k,x,z,r,c,w,u,y})),tf:state.tf.slice(),tw:state.tw.slice()};
   mkHostGone();select(null);if(brush)endBrush();setTab(null);state=S.saved;sandbox=null;dirty=false;document.body.classList.remove('mkmode');$('#mkbar').hidden=true;
   buildHist.length=0;updUndoBtns();syncScene();pet.key=null;buildPet();updHUD();tryRemote();return{S,design}}
-function mkCancel(){const r=mkEnd();if(r&&!r.S.mk.view)toast('Saved for later. Their request is still in Decorate.')}
+function mkCancel(){const r=mkEnd();if(!r)return;const m=r.S.mk;if(!m.view){toast('Saved for later. Their request is still in Decorate.');return}
+  if(m.edit){const R=mkRoom(m.k,m.i);if(R){Object.assign(R,{items:r.design.items,tf:r.design.tf,tw:r.design.tw,ed:Date.now(),at:Math.max(R.at|0,Date.now())});logEvent(`rearranged ${RESIDENTS[m.k].n}’s ${MK_REQ[m.k][m.i].t.toLowerCase()}`);saveSoon();toast('Saved. It stays just like that.')}}
+  if(m.back&&SHOPS[m.back])setTimeout(()=>travelTo(m.back),250)}
 function mkFinish(){if(!sandbox||!sandbox.mk||sandbox.mk.view)return;const k=sandbox.mk.k,q=mkReq();if(!q)return;const C=mkCheck(q,state.items);
   if(C.n<2){toast('Put a few pieces in first.');return}
   const {design}=mkEnd(),M=mkState(),R=RESIDENTS[k],st=C.stars,h=[0,8,16,28][st];
-  M.rooms[k]=Object.assign(design,{i:q.i,stars:st,at:Date.now(),by:pid()});M.req=null;M.n=(M.n|0)+1;M.next=Date.now()+MK_GAP;
+  (M.rooms[k]=M.rooms[k]||{})[q.i]=Object.assign(design,{stars:st,at:Date.now(),by:pid()});M.req=null;M.n=(M.n|0)+1;M.next=Date.now()+MK_GAP;
   state.hearts+=h;kfAdd(k,2+st);let gift='';if(st===3){const own=mkSetOf(k),pool=CAT.filter(c=>c.set===own);if(pool.length){const g=pool[Math.floor(Math.random()*pool.length)];state.fown[g.k]=(state.fown[g.k]||0)+1;gift=g.n}}
   const line=st===3?q.love:st===2?q.ok:q.meh;logEvent(`designed ${q.t.toLowerCase()} for ${R.n}`);jrEvent('makeover',{s:R.n,i:q.t.toLowerCase()});try{td('makeover')}catch(_){}
   setTimeout(()=>{try{resPost(k,line)}catch(_){}},4000);saveSoon();updHUD();
-  showReward(`${R.n} loves it${st===3?'!':st===2?'':'... mostly'}`,'tab-decorate',`<p class="mkstars">${'<i class="on"></i>'.repeat(st)}${'<i></i>'.repeat(3-st)}</p><p>“${esc(line)}”</p><p class="rwsub">+${h} hearts · friendship with ${esc(R.n)}${gift?` · ${esc(R.n)} gave you a ${esc(gift.toLowerCase())} (it’s in storage)`:''}</p>`,{ok:'See it again',fn:()=>mkStart(k,true)})}
+  showReward(`${R.n} loves it${st===3?'!':st===2?'':'... mostly'}`,'tab-decorate',`<p class="mkstars">${'<i class="on"></i>'.repeat(st)}${'<i></i>'.repeat(3-st)}</p><p>“${esc(line)}”</p><p>It’s part of ${esc(R.n)}’s house now. Pop in whenever you visit.</p><p class="rwsub">+${h} hearts · friendship with ${esc(R.n)}${gift?` · ${esc(R.n)} gave you a ${esc(gift.toLowerCase())} (it’s in storage)`:''}</p>`,{ok:'See it again',fn:()=>mkStart(k,true,q.i)})}
 // the bar along the top while designing or visiting
 function mkBar(){const b=$('#mkbar');if(!sandbox||!sandbox.mk){b.hidden=true;return}const {k,view}=sandbox.mk,R=RESIDENTS[k];b.hidden=false;
-  if(view){const D=mkState().rooms[k],q=MK_REQ[k][D.i];b.innerHTML=`<div class="mkt"><span class="mkf">${lifeFace(k)}</span><div><b>${esc(R.n)}’s ${esc(q.t.toLowerCase().replace(/^an? /,''))}</b><small>${'★'.repeat(D.stars|0)} · designed by ${esc(D.by===pid()?'you':who(D.by))}</small></div></div><div class="mkbtns"><button class="gel slime" id="mkBack">Back home</button></div>`;$('#mkBack').onclick=mkCancel;return}
+  if(view){const m=sandbox.mk,D=mkRoom(k,m.i),q=MK_REQ[k][m.i];b.innerHTML=`<div class="mkt"><span class="mkf">${lifeFace(k)}</span><div><b>${esc(R.n)}’s ${esc(q.t.toLowerCase().replace(/^an? /,''))}</b><small>${'★'.repeat(D.stars|0)} · designed by ${esc(D.by===pid()?'you':who(D.by))}${m.edit?' · rearranging, it saves when you leave':''}</small></div></div><div class="mkbtns">${m.edit?'<button class="gel lilac" id="mkDeco">Furniture</button>':'<button class="gel lilac" id="mkEdit">Rearrange</button>'}<button class="gel slime" id="mkBack">${m.back?'Back to the house':'Back home'}</button></div>`;
+    $('#mkBack').onclick=mkCancel;const e=$('#mkEdit');if(e)e.onclick=()=>{m.edit=1;mkHostGone();mkBar();openDecorate('furn')};const dd=$('#mkDeco');if(dd)dd.onclick=()=>openDecorate('furn');return}
   const q=mkReq();if(!q){mkCancel();return}const C=mkCheck(q,state.items);
   b.innerHTML=`<div class="mkt"><span class="mkf">${lifeFace(k)}</span><div><b>${esc(q.t)}</b><small>For ${esc(R.n)} · feels ${esc(q.mood)}</small></div></div><ul class="mkl">${C.rows.map(r=>`<li class="${r.ok?'ok':''}">${esc(r.t)}</li>`).join('')}</ul>
     <div class="mkbtns"><button class="gel silver" id="mkLater">Later</button><button class="gel lilac" id="mkDeco">Furniture</button><button class="gel pink" id="mkDone">Show ${esc(R.n)}</button></div>`;
   $('#mkLater').onclick=mkCancel;$('#mkDeco').onclick=()=>openDecorate('furn');$('#mkDone').onclick=mkFinish}
 setInterval(()=>{if(sandbox&&sandbox.mk&&!sandbox.mk.view){const b=$('#mkbar'),C=mkReq()&&mkCheck(mkReq(),state.items),sig=C?C.rows.map(r=>r.ok?1:0).join(''):'';if(b._sig!==sig){b._sig=sig;mkBar()}}},800);
 // entry points: Decorate's home page, and the resident's close-up
-function mkDecoHtml(){if(sandbox)return'';const M=mkState(),q=mkReq(),done=Object.keys(M.rooms).filter(k=>RESIDENTS[k]&&MK_REQ[k]);
-  return(q?`<button type="button" class="dnews mkreq" id="mkGo"><span class="mkf">${lifeFace(q.k)}</span><span><b>${esc(RESIDENTS[q.k].n)} asked for: ${esc(q.t)}</b><small>Design it with anything from the catalogue. Tap to start.</small></span></button>`:'')+
-    (done.length?`<h3 class="tgh">Rooms you’ve made <small>${done.length}</small></h3><div class="mkdone">${done.map(k=>`<button type="button" data-mkv="${k}"><span class="mkf">${lifeFace(k)}</span><b>${esc(RESIDENTS[k].n)}</b><small>${'★'.repeat(M.rooms[k].stars|0)}</small></button>`).join('')}</div>`:'')}
-function mkDecoBind(root){const g=root.querySelector('#mkGo');if(g)g.onclick=()=>{const q=mkReq();if(q)mkStart(q.k)};root.querySelectorAll('[data-mkv]').forEach(b=>b.onclick=()=>mkStart(b.dataset.mkv,true))}
+function mkDecoHtml(){if(sandbox)return'';const q=mkReq(),done=mkAllRooms();
+  return(q?`<button type="button" class="dnews mkreq" id="mkGo"><span class="mkf">${lifeFace(q.k)}</span><span><b>${esc(RESIDENTS[q.k].n)} is adding a room: ${esc(q.t)}</b><small>Design it with anything from the catalogue. It becomes part of their house.</small></span></button>`:'')+
+    (done.length?`<h3 class="tgh">Rooms you’ve made <small>${done.length}</small></h3><div class="mkdone">${done.map(r=>`<button type="button" data-mkv="${r.k}" data-mki="${r.i}"><span class="mkf">${lifeFace(r.k)}</span><b>${esc(RESIDENTS[r.k].n)}</b><small>${esc(MK_REQ[r.k][r.i].t)}</small><small class="st">${'★'.repeat(r.stars|0)}</small></button>`).join('')}</div>`:'')}
+function mkDecoBind(root){const g=root.querySelector('#mkGo');if(g)g.onclick=()=>{const q=mkReq();if(q)mkStart(q.k)};root.querySelectorAll('[data-mkv]').forEach(b=>b.onclick=()=>mkStart(b.dataset.mkv,true,+b.dataset.mki))}
+function mkHouseChips(){let el=$('#mkhouse');if(!el){el=document.createElement('div');el.id='mkhouse';el.className='mkhouse';document.body.appendChild(el)}
+  const H=away&&away.def&&away.def.house?HOUSES[away.def.hid]:null,L=H?H.res.flatMap(k=>mkRooms(k).map(r=>Object.assign({k},r))):[];el.hidden=!L.length;if(!L.length){el.innerHTML='';return}
+  el.innerHTML=`<small>Rooms you made</small>${L.map(r=>`<button type="button" data-k="${r.k}" data-i="${r.i}"><span class="mkf">${lifeFace(r.k)}</span>${esc(MK_REQ[r.k][r.i].t)}</button>`).join('')}`;
+  el.querySelectorAll('button').forEach(b=>b.onclick=()=>mkStart(b.dataset.k,true,+b.dataset.i,away.key))}
 /* </makeovers> */
 function kActs0(){const k=away.key,kind=kmode.kind,A=[['chat','Chat','Have a little natter','#E3D4FF','chat']],KK=kmode.K,GIFT=['gift','Give a gift','Something from your bag','#FFF3B8','shop'];
   if(away.def&&away.def.house||KK&&(KK.customer||KK.guest)){(JOB_ACTS[kind]||[]).forEach(x=>{const y=x.slice();y[2]=kFill(y[2]);A.push(y)});A.push(GIFT);return A}
@@ -20310,8 +20324,8 @@ function kClose(quiet){if(!kmode)return;if(openTab==='shopcat'){kmode.view='clos
   const sh=$('#sheet');if(openTab==='shopcat')setTab(null);sh.classList.remove('kshop');requestAnimationFrame(fitSheet);if(B&&away&&!quiet){KB.q=[];setTimeout(()=>away&&!kmode&&kbShow(kFill(pick1(B.bye)),K),120)}else{KB.q=[];kbT=0;$('#kbub').hidden=true}}
 // close-up actions plus the makeover ones for this resident
 function kActs(){const A=kActs0(),kind=kmode&&kmode.kind,M=state.mk;if(!kind||typeof MK_REQ==='undefined'||!MK_REQ[kind])return A;const q=mkReq();
-  if(q&&q.k===kind)A.splice(1,0,['mk','Design their room',q.t,'#FFE0EE','paint']);else if(M&&M.rooms&&M.rooms[kind])A.push(['mkview','See the room you made','Pop round for a look','#E3F3FF','paint']);return A}
-function kAct(a){const K=kmode.K;if(a==='mk'){mkStart(kmode.kind);return}if(a==='mkview'){mkStart(kmode.kind,true);return}if(a==='chat'){kPanel('chat',1);return}if(a.startsWith('job:')||a==='gift'){jobAct(a);return}
+  if(q&&q.k===kind)A.splice(1,0,['mk','Design their room',q.t,'#FFE0EE','paint']);else mkRooms(kind).forEach(r=>A.push(['mkv:'+r.i,'Your '+MK_REQ[kind][r.i].t.toLowerCase().replace(/^(an?|the) /,''),'The room you made','#E3F3FF','paint']));return A}
+function kAct(a){const K=kmode.K;if(a==='mk'){mkStart(kmode.kind);return}if(a.startsWith('mkv:')){mkStart(kmode.kind,true,+a.slice(4),away&&away.def&&away.def.house?away.key:null);return}if(a==='chat'){kPanel('chat',1);return}if(a.startsWith('job:')||a==='gift'){jobAct(a);return}
   if(a==='shop'){$('#kpanel').classList.remove('on');kmode.view='shop';$('#sheet').classList.add('kshop');setTab('shopcat');return}
   if(a==='gacha'){kClose(true);openGacha();return}
   if(a==='wardrobe'){kClose(true);setTab('wardrobe');return}
@@ -22260,7 +22274,7 @@ let syncBase=null,syncBaseRev=0;
 function snapBase(s,keep){const b={};for(const k in s)b[k]=JSON.stringify(s[k]);syncBase=b;syncBaseRev=+s.rev||0;if(keep!==false)try{localStorage.setItem('r42base:'+roomCode,JSON.stringify(s))}catch(_){}}
 const SYNC_SKIP={rev:1,kr:1,visits:1,jrT:1,cv:1,minV:1};
 // the oldest app version allowed to edit the shared room (older ones refresh themselves when they see this in the doc)
-const SYNC_MIN_V=66;
+const SYNC_MIN_V=67;
 const localChanged=()=>!!syncBase&&Object.keys(state).some(k=>!SYNC_SKIP[k]&&JSON.stringify(state[k])!==syncBase[k]);
 const mNum=(l,r,b)=>(+b||0)+((+l||0)-(+b||0))+((+r||0)-(+b||0));
 const mCounts=(l,r,b)=>{b=b||{};l=l||{};r=r||{};const o={};new Set([...Object.keys(l),...Object.keys(r),...Object.keys(b)]).forEach(k=>{const v=mNum(l[k],r[k],b[k]);if(v>0)o[k]=Math.min(99,v)});return o};
@@ -22285,7 +22299,7 @@ const MERGE={hearts:(l,r,b)=>Math.max(0,mNum(l,r,b)),tokens:(l,r,b)=>Math.max(0,
   kf:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{}){const a=l[k],c=o[k];o[k]=!c?a:{p:Math.max(a.p,c.p),s:Math.max(a.s,c.s),d:a.d>c.d?a.d:c.d}}return o},
   cheer:(l,r,b)=>{l=l||{};r=r||{};b=b||{};return{p:Math.max(0,mNum(l.p,r.p,b.p)),lv:mMax(l.lv,r.lv),hp:(l.hp||'')>(r.hp||'')?l.hp||'':r.hp||''}},
   surp:(l,r)=>{const m=new Map();[...(l||[]),...(r||[])].forEach(x=>{const y=m.get(x.id);m.set(x.id,!y?x:Object.assign({},y,{got:Math.max(y.got|0,x.got|0)}))});return[...m.values()].sort((a,b)=>b.t-a.t).slice(0,20)},
-  mk:(l,r)=>{l=l||{};r=r||{};const a=(l.n|0)>=(r.n|0)?l:r,b=a===l?r:l,rooms=Object.assign({},b.rooms||{});for(const k in a.rooms||{}){const x=a.rooms[k],y=rooms[k];rooms[k]=!y||(x.at|0)>=(y.at|0)?x:y}return Object.assign({},a,{rooms,req:a.req||((b.n|0)===(a.n|0)?b.req||null:null)})},
+  mk:(l,r)=>{l=l||{};r=r||{};const a=(l.n|0)>=(r.n|0)?l:r,b=a===l?r:l,rooms={};[b.rooms||{},a.rooms||{}].forEach(S=>{for(const k in S){const o=rooms[k]=rooms[k]||{};for(const i in S[k]){const x=S[k][i],y=o[i];o[i]=!y||(x.at|0)>=(y.at|0)?x:y}}});return Object.assign({},a,{rooms,req:a.req||((b.n|0)===(a.n|0)?b.req||null:null)})},
   heads:(l,r)=>{const o={};new Set([...Object.keys(l||{}),...Object.keys(r||{})]).forEach(k=>{const a=(l||{})[k],b=(r||{})[k];if(!a||!b){o[k]=a||b;return}const w=hcTotal(a)>=hcTotal(b)?a:b;o[k]=Object.assign({},w,{s:Math.min(a.s||Infinity,b.s||Infinity)})});return o},
   finds:(l,r)=>{if(!l)return r;if(!r)return l;if(l.day!==r.day)return l.day>r.day?l:r;return{day:l.day,got:[...new Set([...(l.got||[]),...(r.got||[])])]}},
   gifts:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{})if(!o[k]||l[k]>o[k])o[k]=l[k];return o},acts:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{})if(!o[k]||l[k]>o[k])o[k]=l[k];return o},
@@ -22333,7 +22347,9 @@ function normalize(s){const oldPal=!!s&&!(s.pv>=2);const d=defaultState();s=Obje
   delete s.dream;delete s.req;
   s.surp=Array.isArray(s.surp)?s.surp.filter(x=>x&&typeof x.id==='string'&&typeof x.it==='string').slice(0,20).map(x=>({id:x.id,by:String(x.by||'').slice(0,64),it:x.it,t:+x.t||0,note:String(x.note||'').slice(0,100),got:+x.got||0})):[];
   {const M=s.mk;s.mk=M&&typeof M==='object'&&!Array.isArray(M)?{req:M.req&&typeof M.req==='object'&&typeof M.req.k==='string'?{k:M.req.k,i:M.req.i|0,t:+M.req.t||0}:null,next:+M.next||0,n:Math.max(0,M.n|0),
-    rooms:Object.fromEntries(Object.entries(M.rooms&&typeof M.rooms==='object'?M.rooms:{}).filter(([k,r])=>r&&Array.isArray(r.items)).slice(0,40).map(([k,r])=>[k,{i:r.i|0,items:r.items.filter(i=>i&&CATMAP[i.k]).slice(0,80),tf:Array.isArray(r.tf)?r.tf:null,tw:Array.isArray(r.tw)?r.tw:null,stars:clamp(r.stars|0,0,3),at:+r.at||0,by:typeof r.by==='string'?r.by.slice(0,64):''}]))}:{req:null,next:0,n:0,rooms:{}}}
+    rooms:Object.fromEntries(Object.entries(M.rooms&&typeof M.rooms==='object'?M.rooms:{}).slice(0,40).map(([k,R])=>{if(R&&Array.isArray(R.items))R={[R.i|0]:R};const o={};
+      for(const i in R&&typeof R==='object'?R:{}){const r=R[i];if(!r||!Array.isArray(r.items)||!(+i>=0&&+i<5))continue;o[i]={items:r.items.filter(q=>q&&CATMAP[q.k]).slice(0,80),tf:Array.isArray(r.tf)?r.tf:null,tw:Array.isArray(r.tw)?r.tw:null,stars:clamp(r.stars|0,0,3),at:+r.at||0,by:typeof r.by==='string'?r.by.slice(0,64):''}}
+      return[k,o]}).filter(([k,o])=>Object.keys(o).length))}:{req:null,next:0,n:0,rooms:{}}}
   {const H=s.heads;s.heads={};if(H&&typeof H==='object'&&!Array.isArray(H))for(const k in H){const e=H[k];if(!e||typeof e!=='object')continue;const cnt=o=>{const r={};if(o&&typeof o==='object')for(const q in o)if(+o[q]>0)r[q]=Math.min(1e6,+o[q]|0);return r};s.heads[k]={s:+e.s||0,c:cnt(e.c),f:cnt(e.f)}}}
   {const F=s.finds;s.finds=F&&typeof F==='object'&&typeof F.day==='string'&&Array.isArray(F.got)?{day:F.day,got:F.got.filter(n=>Number.isInteger(n)&&n>=0&&n<20).slice(0,20)}:null}
   {const C=s.cheer&&typeof s.cheer==='object'?s.cheer:{};s.cheer={p:Math.max(0,+C.p||0),lv:Math.max(0,C.lv|0),hp:typeof C.hp==='string'?C.hp.slice(0,10):''}}
@@ -22381,7 +22397,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=66;
+const APP_V=67;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
