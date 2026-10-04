@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v67** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v67'` in `sw.js`; bump both for anything
+**Current build: v68** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v68'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 67 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -515,3 +515,13 @@ Inside a resident's house a "Rooms you made" list (`#mkhouse`, `mkHouseChips` fr
 (`mkStart(k,true,i,houseKey)`: the resident stands in it; "Back to the house" travels back). "Rearrange" in a visited room edits it
 and saves it back on leaving (`sandbox.mk.edit`, `mkCancel`). The close-up lists each room ("Your reading nook", `mkv:<i>`).
 Requests now read "<name> is adding a room"; a resident stops asking once all three of their rooms exist.
+
+## Map: talk to residents, Places redesigned (v68)
+- Tapping a resident on the map talks to them (`twPick`: screen-space pick on each walking resident's projected position, curve
+  included, because the bent world made raycasts miss), opening their card (Chat / Give a gift / Visit their place). `tmFlyTo` now
+  stops following the pet (flying somewhere used to snap straight back to the pet).
+- Places (`#tmWheel`, now a bottom panel `.pl`, `tmWheelBuild`) has three looks for three things: neighbourhood **postcards**
+  (striped art, blurb `PL_BLURB`, homes/shops, how many are out there now, "you're here"; tap = fly there), **Out and about** faces
+  (who's walking around, nearest first; tap = fly to them and chat), and a cork **noticeboard** for what's on (festival, event now
+  with Go, birthdays, next events as pinned notes). "Everyone in town" opens the old people list. Close with ×, a tap on the map,
+  or the phone's back button.
