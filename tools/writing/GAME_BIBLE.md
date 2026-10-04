@@ -1359,6 +1359,8 @@ Guests leave home or work to attend; the host house is open to everyone while it
 Other weekly habits in the lore: Bunbun and Tutti's Friday cone-for-cookie swap; the Friday cookie at Pixel's counter; Bunbun's sugar lessons on Thursdays; the salon laundry swap
 on Fridays; Bolt's Tuesday thumb; Bobbin's Tuesday hammer; Echo sings in the library on Thursdays; Dewey's radio on low on Fridays.
 
+- **v76**: Story hour moved to the library (Dewey hosts in the children's corner). New: **Town meeting** (Mondays 17:00-19:00, Town Hall: the Mayor reads the town news from the balcony, tea after; Parcel, Fold, Cobble, Dr. Patch, Tutti, Bolt, Sketch come) and **Stargazing** (Tuesdays 20:00-22:00, the weather station's roof deck: Nimbus points out the stars; Lumi, Beacon, Prickles, Dewey, Posy come). The festivals are held at the Town Hall now.
+
 ## Festivals (`FESTS`, a week each, all day at the Mayor's, with plaza decorations and a keepsake from the season's furniture set)
 | Festival | Dates | Keepsake set |
 |---|---|---|

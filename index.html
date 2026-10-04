@@ -24086,7 +24086,7 @@ const townHour=()=>skyHourOverride??centralHour();
 let dbgAllHome=false;
 const inHours=(h,[a,b])=>a<=b?h>=a&&h<b:h>=a||h<b;
 function resWhere(k,h){const R=RESIDENTS[k];if(!R)return'shop';if(dbgAllHome)return'home';h=h??townHour();
-  if(typeof eventNow==='function'){const E=eventNow(h);if(evGuest(k,E))return HOUSES[E.house].res.includes(k)?'home':'event'}
+  if(typeof eventNow==='function'){const E=eventNow(h);if(evGuest(k,E))return E.house&&HOUSES[E.house]&&HOUSES[E.house].res.includes(k)?'home':'event'}
   if(MARKET.vendors.includes(k)&&marketOn(h))return'market';{const P=R.shop?null:placeOf(k);if(P&&inHours(h,P.h))return'place'}
   const w=!R.shop?(R.out&&inHours(h,R.out)?'out':'home'):R.boss?(h>=7&&h<17?'shop':'home'):(h>=7&&h<13?'home':'shop');
   return w==='home'&&typeof shopVisitOf==='function'&&shopVisitOf(k,h)?'visit':w}
@@ -24139,7 +24139,7 @@ function placeShop(id){const P0=PLACES[id],D=PLACE_DEF[id]||{},st=Object.keys(P0
     kgs:st.map((k,i)=>(D.kg&&D.kg[k])||[1.6+i*1.1,1.2]),layout:D.layout||[],lines:st.map(k=>Object.assign({hi:['Hello! Come in.'],buy:[''],poor:['']},D.lines&&D.lines[k]))}}
 function addPlaces(){for(const id in PLACES)if(PLACE_DEF[id]&&PLACE_DEF[id].plan&&!SHOPS['p_'+id])SHOPS['p_'+id]=placeShop(id)}
 const placeIn=id=>{const S=SHOPS['p_'+id];return S?S.staff.filter(k=>resHere(k)&&resWhere(k)==='place'&&placeOf(k).id===id):[]};
-function placeVisit(id){const P0=PLACES[id],h=townHour(),inn=placeIn(id);
+function placeVisit(id){const P0=PLACES[id],h=townHour(),inn=placeIn(id);{const E=typeof eventNow==='function'&&eventNow();if(E&&evAt(E)==='p_'+id)return{ok:1,why:`${E.n} is on! ${E.t}`}}
   if(sandbox||dbgAllHome||inHours(h,P0.open)||inn.length)return{ok:1,why:inn.length?`${resNames(inn)} ${inn.length>1?'are':'is'} in. Open until ${hourName(P0.open[1])}.`:`Open until ${hourName(P0.open[1])}.`};
   return{ok:0,btn:'Closed',why:`Closed right now. Open ${hourName(P0.open[0])} to ${hourName(P0.open[1])}.`}}
 // the Sunday market on Market Street (the north street): vendors stand at their stalls (decorations mkt_<vendor>)
@@ -24152,7 +24152,8 @@ const RES_NEAR={posy:'park',scone:'park',crumb:'park'};
 // who's working in a shop or home in a house right now: [{k, g|x,z, home, lines, svc}]
 const lifeLines=k=>{const B=KBIB[k];return{hi:B?(B.hi.d||B.hi.m):['Hello!'],buy:[''],poor:['']}};
 function shopCrew(key){const S=SHOPS[key];
-  if(S.place)return S.staff.map((k,i)=>({k,g:S.kgs[i],home:1,lines:S.lines[i],n:RESIDENTS[k].n})).filter(q=>resHere(q.k)&&resWhere(q.k)==='place'&&placeOf(q.k).id===S.pid);
+  if(S.place){const E=eventNow(),on=E&&evAt(E)===key,st=S.staff.map((k,i)=>({k,g:S.kgs[i],home:1,lines:S.lines[i],n:RESIDENTS[k].n})).filter(q=>resHere(q.k)&&(on&&evGuest(q.k,E)||resWhere(q.k)==='place'&&placeOf(q.k).id===S.pid));
+    if(on)[...evHosts(E),...E.guests].filter(g=>!st.some(q=>q.k===g)&&resHere(g)&&KBIB[g]&&resWhere(g)==='event').slice(0,6).forEach(g=>st.push({k:g,auto:1,home:1,guest:1,n:RESIDENTS[g].n,lines:lifeLines(g)}));return st}
   if(S.house){const E=eventNow(),R=S.res.map((k,i)=>({k,g:S.kgs[i],home:1,lines:S.lines[i],n:RESIDENTS[k].n})).filter(q=>resWhere(q.k)==='home');
     if(E&&E.house===S.hid&&R.length)E.guests.filter(g=>!S.res.includes(g)&&resHere(g)&&KBIB[g]).forEach(g=>R.push({k:g,auto:1,home:1,guest:1,n:RESIDENTS[g].n,lines:lifeLines(g)}));return R}
   const cust=Object.keys(RESIDENTS).filter(k=>resHere(k)&&KBIB[k]&&resWhere(k)==='visit'&&shopVisitOf(k)===key).slice(0,2).map(k=>({k,auto:1,home:1,customer:1,n:RESIDENTS[k].n,lines:lifeLines(k)}));
@@ -26367,6 +26368,9 @@ function tmFig(k,h){const d=CATMAP['fig_'+k];if(!d)return null;const f=makePiece
 // a gabled roof over a w x d block whose top is at y (ridge along the longer side)
 function tmGable(g,x,y,z,w,d,rm,wm){const p=piv(g,x,y,z),along=w>=d;if(!along){p.rotation.y=Math.PI/2;[w,d]=[d,w]}const r=Math.min(.42,d*.42),hd=d/2+.05,a=Math.atan2(r,hd),L=Math.hypot(hd,r)+.02;
   [-1,1].forEach(s=>{const sl=ol(add(p,new THREE.BoxGeometry(w+.08,.06,L),rm,0,r/2,s*hd/2),.008);sl.rotation.x=s*a});[-1,1].forEach(s=>{const q=piv(p,s*w/2-(s>0?0:.02),0,0);q.rotation.y=Math.PI/2;ol(flat(q,[[-d/2,0],[d/2,0],[0,r]],.02,wm,0,0,0),.006)})}
+// a door on the map swings open when someone goes in or comes out (tmDoorOpen); the faint wobble keeps the hinge out of the static merge
+function tmDoorHinge(D,k){const h=D.hinge;if(!h)return;h.userData.anim=t=>{const want=tm.dopen&&tm.dopen[k]>performance.now()?1:0,u=h.userData;u.v=(u.v||0)+(want-(u.v||0))*.16;h.rotation.y=-u.v*1.35+Math.sin(t*7)*.002}}
+function tmDoorOpen(k,ms){if(!tm||!k)return;(tm.dopen||(tm.dopen={}))[k]=performance.now()+(ms||1500)}
 function tmShop(k){const S=SHOPS[k],P=S.plan,g=G(),PS=TM_PS,col=parseInt((S.color||'#FF8A1C').slice(1),16),ext=M(P.ext||0xFFF3E6,{roughness:.55}),extD=M(shade(P.ext||0xFFF3E6,.28),{roughness:.7}),
     roof=M(col,{roughness:.45}),roofD=M(shade(col,.45),{roughness:.7}),Gl=tmGlass(),Fr=M(0xFFFFFF,{roughness:.5}),shadeM=M(shade(P.ext||0xFFF3E6,.4),{roughness:.8});ext.detail=1;
   const X=i=>(i-P.W/2+.5)*PS,Z=j=>(j-P.D/2+.5)*PS,L0=P.levels[0],L1=P.levels[1],isF=(L,i,j)=>!!L&&i>=0&&j>=0&&i<P.W&&j<P.D&&L.grid[j][i]!=='.',lockAt=(L,i,j)=>{const R=L.rooms[L.grid[j][i]];return!!(R&&R.lock)};
@@ -26387,7 +26391,7 @@ function tmShop(k){const S=SHOPS[k],P=S.plan,g=G(),PS=TM_PS,col=parseInt((S.colo
   if(gi>=0&&!tb){const r=roofs[gi];top={x:r.x,z:r.z,y:r.y+Math.min(.42,Math.min(r.w,r.dd)*.42)*.8,n:1}}if(top.n>1){top.x/=top.n;top.z/=top.n}
   // the front door (the shop's own door style), a sign, and the owner(s) outside
   const fg=piv(g,ds==='w'?X(di)-PS/2:X(di),0,ds==='w'?Z(dj):Z(dj)-PS/2);fg.rotation.y=ds==='w'?-Math.PI/2:Math.PI;g.userData.fg=fg;fg.userData.out=piv(fg,0,0,.55);
-  const D=buildDoorModel(curDoorKey(S));D.g.scale.setScalar(.2);D.g.position.z=.005;fg.add(D.g);
+  const D=buildDoorModel(curDoorKey(S));D.g.scale.setScalar(.2);D.g.position.z=.005;fg.add(D.g);tmDoorHinge(D,k);
   {const cn=ol(rb(fg,.46,.03,.2,.01,roof,0,.5,.1),.003);cn.rotation.x=.35}
   {const Pt=M(0xE2725B,{roughness:.7}),Lf=M(0x4FA53E,{roughness:.7}),Lt=M(0x3B1273,{roughness:.4});ol(rb(fg,.3,.014,.13,.01,M(shade(col,.2),{roughness:.9}),0,.007,.09),.002);
     [-1,1].forEach(sd=>{ol(cy(fg,.05,.036,.09,Pt,sd*.23,.045,.08,10),.003);ol(sp(fg,.062,Lf,sd*.23,.14,.08),.003);ol(sp(fg,.042,Lf,sd*.23,.22,.08),.003);
@@ -26580,7 +26584,7 @@ function tmHome(){const g=G(),Bd=M(0xFFF6EA,{roughness:.55}),Wh=M(0xFFFFFF,{roug
   // porch: step, striped awning, lanterns, and the player's own door
   ol(rb(g,.44,.05,.18,.02,St,0,.025,-.65),.003);{const aw=ol(rb(g,.38,.025,.17,.012,M(0xffffff,{map:s1Stripe(0xA6E22E,0xFFFFFF,6,true),roughness:.5}),0,.53,-.64),.003);aw.rotation.x=-.32}
   [-1,1].forEach(q=>{ol(rb(g,.03,.06,.03,.008,M(0x3B1273,{roughness:.4}),q*.22,.4,-.565),.002);sp(g,.024,glowM(0xFFE9A8,1.1),q*.22,.4,-.585).outline=0});
-  const fg=piv(g,0,0,-.555);fg.rotation.y=Math.PI;g.userData.fg=fg;fg.userData.out=piv(fg,0,0,.55);const D=buildDoorModel(doorKeyFix(state.door&&state.door.s));D.g.scale.setScalar(.2);fg.add(D.g);
+  const fg=piv(g,0,0,-.555);fg.rotation.y=Math.PI;g.userData.fg=fg;fg.userData.out=piv(fg,0,0,.55);const D=buildDoorModel(doorKeyFix(state.door&&state.door.s));D.g.scale.setScalar(.2);fg.add(D.g);tmDoorHinge(D,'home');
   // front garden: picket fence with a gate gap, stepping stones, flower clumps, mailbox
   {const e=.93,ez=.9,pk=[];for(let x=-e;x<=e+.001;x+=.13){pk.push([x,-ez]);pk.push([x,ez])}for(let z=-ez+.13;z<ez-.05;z+=.13){pk.push([-e,z]);pk.push([e,z])}
     pk.forEach(([x,z])=>{if(z<-ez+.01&&Math.abs(x)<.2)return;ol(rb(g,.035,.15,.035,.008,Wh,x,.075,z),.002)});
@@ -30754,7 +30758,7 @@ function tmWheelBuild(){const w=$('#tmWheel'),C=Object.fromEntries(TM_WHEEL.map(
   const E=eventNow(),F=festOn(),bd=bdayToday(),notes=[];
   {const H=holOn();if(H)notes.push(['#FFC6E0','Today: '+esc(H.n),esc(H.t),null])}
   if(F)notes.push(['#FFE27A',esc(F.n),'All week at the Town Hall','h_mayor']);
-  if(E)notes.push(['#FFD6EA',esc(E.n)+' is on now',esc(E.t),'h_'+E.house]);
+  if(E)notes.push(['#FFD6EA',esc(E.n)+' is on now',esc(E.t),evAt(E)]);
   bd.forEach(k=>notes.push(['#D4F0FF',esc(RESIDENTS[k].n)+'’s birthday','A gift counts extra today',null]));
   EVENTS.map(e=>{for(let d=0;d<7;d++){const day=dayPlus(d);if(dowOf(day)===e.dow&&(d>0||townHour()<e.h[0]))return[e,d,day]}return null}).filter(Boolean).sort((a,b)=>a[1]-b[1]).slice(0,notes.length?2:3)
     .forEach(([e,d,day])=>notes.push(['#E8F7C8',esc(e.n),(d?d===1?'Tomorrow':dayName(day):'Today')+', '+hourName(e.h[0]),null]));
@@ -30773,14 +30777,14 @@ function tmWheelBuild(){const w=$('#tmWheel'),C=Object.fromEntries(TM_WHEEL.map(
 function tmGoBtn(dest,label){return`<button class="gel pink tdgo" data-tgo="${dest}">${label||'Go'}</button>`}
 function tmBindGo(c){c.querySelectorAll('[data-tgo]').forEach(b=>b.onclick=()=>{const d=b.dataset.tgo;closeMap();travelTo(d)});const x=$('#tmcX');if(x)x.onclick=()=>{c.hidden=true}}
 function tmPeopleCard(){const c=$('#tmCard'),E=eventNow(),rows=Object.keys(RESIDENTS).filter(k=>resHere(k)&&KBIB[k]).map(k=>{const w=resWhere(k),R=RESIDENTS[k];let dest=null;
-    if(w==='shop')dest=R.shop;else if(w==='visit')dest=shopVisitOf(k);else if(w==='event')dest='h_'+E.house;else if(w==='home'&&houseOf(k))dest='h_'+houseOf(k);
+    if(w==='shop')dest=R.shop;else if(w==='visit')dest=shopVisitOf(k);else if(w==='event')dest=evAt(E);else if(w==='home'&&houseOf(k))dest='h_'+houseOf(k);
     const ok=dest&&SHOPS[dest]&&(!SHOPS[dest].house||houseVisit(SHOPS[dest].hid).ok);return{k,R,dest,ok,where:lifeWhere(k)}}).sort((a,b)=>(b.ok-a.ok)||a.R.n.localeCompare(b.R.n));
   c.innerHTML=`<button class="tmc-x" id="tmcX" aria-label="Close">×</button><div class="tmh"><div><h3>Who’s around</h3><small>Tap Go to hop over and say hi</small></div></div><div class="tmlist">${rows.map(q=>`<div class="tmrow"><span class="tmface">${lifeFace(q.k)}</span><span class="tmrt"><b>${esc(q.R.n)}</b><small>${esc(q.where)}</small></span>${q.ok?tmGoBtn(q.dest):''}</div>`).join('')}</div>`;
   c.hidden=false;tmBindGo(c)}
 function tmWhatsOnCard(){const c=$('#tmCard'),E=eventNow(),F=festOn(),bd=bdayToday(),W=lifeWish(),wish=state.wish&&state.wish.k?wishText():'',rows=[];
-  if(E)rows.push(`<div class="tmrow"><span class="tmface">${lifeFace(E.guests[0])}</span><span class="tmrt"><b>${esc(E.n)} is on now</b><small>${esc(E.t)}</small></span>${tmGoBtn('h_'+E.house)}</div>`);
+  if(E)rows.push(`<div class="tmrow"><span class="tmface">${lifeFace(E.guests[0])}</span><span class="tmrt"><b>${esc(E.n)} is on now</b><small>${esc(E.t)}</small></span>${tmGoBtn(evAt(E))}</div>`);
   const next=EVENTS.map(e=>{for(let i=0;i<7;i++){const d=dayPlus(i);if(dowOf(d)===e.dow&&(i>0||townHour()<e.h[0]))return[e,i,d]}return null}).filter(Boolean).sort((a,b)=>a[1]-b[1]||a[0].h[0]-b[0].h[0]).slice(0,3);
-  next.forEach(([e,i,d])=>rows.push(`<div class="tmrow"><span class="tmface">${lifeFace(e.guests[0])}</span><span class="tmrt"><b>${esc(e.n)}</b><small>${i?i===1?'Tomorrow':dayName(d):'Today'}, ${hourName(e.h[0])} · ${esc(SHOPS['h_'+e.house]?SHOPS['h_'+e.house].n:'')}</small></span></div>`));
+  next.forEach(([e,i,d])=>rows.push(`<div class="tmrow"><span class="tmface">${lifeFace(e.guests[0])}</span><span class="tmrt"><b>${esc(e.n)}</b><small>${i?i===1?'Tomorrow':dayName(d):'Today'}, ${hourName(e.h[0])} · ${esc(SHOPS[evAt(e)]?SHOPS[evAt(e)].n:'')}</small></span></div>`));
   bd.forEach(k=>rows.push(`<div class="tmrow"><span class="tmface">${lifeFace(k)}</span><span class="tmrt"><b>${esc(RESIDENTS[k].n)}’s birthday</b><small>A gift counts extra today.</small></span></div>`));
   if(F)rows.unshift(`<div class="tmrow"><span class="tmface">${LIFE_IC.fest}</span><span class="tmrt"><b>${esc(F.n)}</b><small>All week at the Town Hall, 10 am to 8 pm.</small></span>${tmGoBtn('h_mayor')}</div>`);
   if(wish)rows.push(`<div class="tmrow"><span class="tmface">${lifeFace('baker').replace(/.*/s,'<b>♥</b>')}</span><span class="tmrt"><b>${esc(state.pet.name)} wants ${esc(wish)}</b><small>Wish</small></span></div>`);
@@ -31649,8 +31653,11 @@ function weatherOf(day){{const W=typeof wxNow==='function'&&wxNow(),i=W&&W.dates
 const dayPlus=n=>{const d=new Date(lifeDay()+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
 const dowOf=day=>new Date(day+'T12:00:00Z').getUTCDay();
 // ---- weekly events at someone's house (US Central): guests leave home (and work) for them; turning up is rewarded once per event
+const evAt=E=>E?(E.at||evAt(E)):null,evHosts=E=>E&&E.house&&HOUSES[E.house]?HOUSES[E.house].res:((E&&E.hosts)||[]);
 const EVENTS=[{k:'tea',n:'Sunday tea',dow:0,h:[15,18],house:'bunbun',guests:['baker','cushion','mayor','posy','cactus'],t:'Tea, cake and a nap on the sofa.'},
-  {k:'story',n:'Story hour',dow:3,h:[16,18],house:'dewey',guests:['book','scone','crumb','cloud','posy'],t:'Dewey reads aloud, everyone gets a cushion.'},
+  {k:'story',n:'Story hour',dow:3,h:[16,18],at:'p_library',hosts:['book'],guests:['scone','crumb','cloud','posy','lantern'],t:'Dewey reads aloud in the children’s corner; everyone gets a cushion.'},
+  {k:'meeting',n:'Town meeting',dow:1,h:[17,19],at:'p_townhall',hosts:['mayor'],guests:['parcel','crane','pebble','patch','cone','builder','pencil'],t:'The Mayor reads the town news from the balcony; tea after.'},
+  {k:'stars',n:'Stargazing',dow:2,h:[20,22],at:'p_weather',hosts:['cloud'],guests:['lantern','beacon','cactus','book','posy'],t:'Nimbus points out the stars from the roof deck. Bring a blanket.'},
   {k:'music',n:'Music night',dow:4,h:[19,22],house:'echo',guests:['gramo','lantern','stylist','hair','makeup'],t:'Echo plays, Lumi dims the lights.'},
   {k:'games',n:'Game Night',dow:5,h:[19,23],house:'gamenight',guests:['toymaker','joy','crane','parcel','pebble','beacon'],t:'Board games, snacks and a lot of shouting.'},
   {k:'market',n:'Bake sale',dow:6,h:[10,14],house:'mayor',guests:['mayor','cone','scone','crumb','parcel','crane'],t:'A bake sale for the town fund at the Mayor’s.'}];
@@ -31663,9 +31670,9 @@ const evMemo={};
 function eventNow(h){h=h??townHour();const key=lifeDay()+'|'+Math.floor(h)+'|'+dbgEvent+'|'+dbgFest;if(key in evMemo)return evMemo[key];return evMemo[key]=eventCalc(h)}
 function eventCalc(h){if(dbgEvent)return EVENTS.find(e=>e.k===dbgEvent);const F=festOn();
   if(F&&h>=10&&h<20){const pool=Object.keys(RESIDENTS).filter(k=>resHere(k)&&!RESIDENTS[k].boss),R=jrRand('fest|'+F.k+'|'+lifeDay()),g=['mayor'];
-    while(g.length<6&&pool.length){const k=pool.splice(Math.floor(R()*pool.length),1)[0];if(k!=='mayor')g.push(k)}return{k:'fest-'+F.k,n:F.n,house:'mayor',guests:g,h:[10,20],fest:F,t:'The whole town comes out.'}}
+    while(g.length<6&&pool.length){const k=pool.splice(Math.floor(R()*pool.length),1)[0];if(k!=='mayor')g.push(k)}return SHOPS.p_townhall?{k:'fest-'+F.k,n:F.n,at:'p_townhall',hosts:['mayor'],guests:g.filter(q=>q!=='mayor'),h:[10,20],fest:F,t:'The whole town comes out to the Town Hall.'}:{k:'fest-'+F.k,n:F.n,house:'mayor',guests:g,h:[10,20],fest:F,t:'The whole town comes out.'}}
   const d=dowOf(lifeDay());return EVENTS.find(e=>e.dow===d&&h>=e.h[0]&&h<e.h[1])||null}
-const evGuest=(k,E)=>!!E&&HOUSES[E.house]&&SHOPS['h_'+E.house]&&(E.guests.includes(k)||HOUSES[E.house].res.includes(k));
+const evGuest=(k,E)=>!!E&&!!SHOPS[evAt(E)]&&(E.guests.includes(k)||evHosts(E).includes(k));
 // ---- off-duty residents pop into shops as customers now and then (2-hour slots, same on both phones)
 const LIFE_SHOPS=['snack','salon','toys','furn','build','glam','wear','arcade'];
 function shopVisitOf(k,h){h=h??townHour();const slot=Math.floor(h/2),r=Math.floor(jrRand('cust|'+(roomCode||'solo')+'|'+lifeDay()+'|'+slot+'|'+k)()*100);if(r>=14||h<9||h>=21)return null;
@@ -31753,7 +31760,7 @@ function jobAct(a){const K=kmode.K,k=K.kind,R=RESIDENTS[k],say=t=>kbShow(kFill(t
   return false}
 const dayName=d=>['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dowOf(d)];
 function lifeNewsHtml(){const C=cheerOf(),L=cheerLv(C.p),F=festOn(),b=bdaySoon(14).slice(0,4),ev=[0,1,2,3,4,5,6].map(i=>{const d=dayPlus(i),e=EVENTS.find(x=>x.dow===dowOf(d));return e&&[e,i,d]}).filter(Boolean).slice(0,3);
-  return`<p>The Mayor clears his throat.</p><ul class="lifelist">${F?`<li><b>${esc(F.n)}</b> all week at the Town Hall!</li>`:''}${ev.map(([e,i,d])=>`<li><b>${esc(e.n)}</b> ${i?i===1?'tomorrow':dayName(d):'today'}, ${hourName(e.h[0])} at ${esc(SHOPS['h_'+e.house]?SHOPS['h_'+e.house].n:'')}</li>`).join('')}
+  return`<p>The Mayor clears his throat.</p><ul class="lifelist">${F?`<li><b>${esc(F.n)}</b> all week at the Town Hall!</li>`:''}${ev.map(([e,i,d])=>`<li><b>${esc(e.n)}</b> ${i?i===1?'tomorrow':dayName(d):'today'}, ${hourName(e.h[0])} at ${esc(SHOPS[evAt(e)]?SHOPS[evAt(e)].n:'')}</li>`).join('')}
     ${b.map(([k,i])=>`<li><b>${esc(RESIDENTS[k].n)}’s birthday</b> ${i?i===1?'tomorrow':`in ${i} days`:'today!'}</li>`).join('')}<li><b>The town</b> is “${esc(CHEER[L][1])}”</li></ul>`}
 // ---- the garden (three planters; either of you can water once a day; rain waters it for you)
 const GARDEN_N=3;
@@ -31799,7 +31806,7 @@ function houseDecoLayout(id,base,P){const D=(state&&state.hdeco&&state.hdeco[id]
   D.forEach(d=>{const def=CATMAP[d.k];if(!def)return;if(def.wall){const c=cells.find(([x,z])=>z<1&&!taken.some(t=>Math.abs(t[0]-x)<1&&t[1]<1.2));if(c){out.push({k:d.k,wl:[c[0],0,'n'],y:1.6});taken.push([c[0],.3])}return}
     const c=cells.find(([x,z])=>Math.hypot(x-ar[0],z-ar[1])>1.6&&!taken.some(t=>Math.hypot(t[0]-x,t[1]-z)<1.15));if(c){out.push({k:d.k,g:c,r:0});taken.push(c)}});return out}
 // ---- the event a house is hosting, arriving at it
-function eventArrive(){const E=eventNow();if(!E||!away||!away.def.house||away.def.hid!==E.house)return;const key=E.k+'|'+lifeDay();const S=state.evseen||(state.evseen=[]);if(S.includes(key))return;
+function eventArrive(){const E=eventNow();if(!E||!away||away.key!==evAt(E))return;const key=E.k+'|'+lifeDay();const S=state.evseen||(state.evseen=[]);if(S.includes(key))return;
   S.push(key);if(S.length>40)S.splice(0,S.length-40);state.hearts+=5;E.guests.forEach(g=>{if(KBIB[g])kfAdd(g,1)});td('event');jrEvent('event',{s:E.n});
   let extra='';if(E.fest){const set=Object.values(CATMAP).filter(d=>d.set===E.fest.set&&!d.gacha);if(set.length){const d=pick1(set);state.fown[d.k]=(state.fown[d.k]|0)+1;extra=` and a keepsake from the festival: <b>${esc(d.n)}</b>`}}
   saveSoon();updHUD();setTimeout(()=>showReward(E.n+'!','stat-happy',`<p>${esc(E.t)}</p><p>Everyone’s glad you came. +5 hearts${extra}.</p>`),1600)}
@@ -31812,7 +31819,7 @@ function townLifeTick(){if(!state||sandbox)return;const day=lifeDay(),noon=Date.
     const P=parcelsForMe();if(P.length&&rewardQ.length===0&&!openTab&&$('#game').hidden)openParcel(P[0]);visitorTick()}catch(e){console.warn('town life',e)}}
 // ---- the Neighbours page: people, garden, calendar, parcel
 let lifeTab='people',lifeGiftFor=null,lifeGiftHand=false;
-function lifeWhere(k){const R=RESIDENTS[k],E=eventNow();if(evGuest(k,E))return`at ${E.n} (${SHOPS['h_'+E.house].n})`;const w=resWhere(k);
+function lifeWhere(k){const R=RESIDENTS[k],E=eventNow();if(evGuest(k,E))return`at ${E.n} (${SHOPS[evAt(E)].n})`;const w=resWhere(k);
   if(w==='shop')return'working at '+(SHOPS[R.shop]?SHOPS[R.shop].n:'the shop');if(w==='place'){const P=placeOf(k);return'working at the '+SHOPS['p_'+P.id].n}if(w==='market')return'at the Sunday market';if(w==='visit')return'popped into '+SHOPS[shopVisitOf(k)].n;if(w==='out')return R.away||'out';return'at home'}
 function lifeFace(k){const t=thumbs['fig_'+k];if(!t){queueThumbs(['fig_'+k]);clearTimeout(lifeFace.t);lifeFace.t=setTimeout(()=>{if(openTab==='town'&&!lifeGiftFor)renderSheet()},1800)}return t?`<img src="${t}" alt="">`:`<b>${esc(RESIDENTS[k].n[0])}</b>`}
 function renderTown(body){const day=lifeDay(),W=WEATHER[weatherOf(day)],F=festOn();
@@ -31820,7 +31827,7 @@ function renderTown(body){const day=lifeDay(),W=WEATHER[weatherOf(day)],F=festOn
   let html=`${pgHead('town',{right:`<span class="lifewx">${LIFE_IC[W.ic].replace('width="30" height="30"','width="22" height="22"')} ${esc(W.n)}</span>`,sub:F?`The ${esc(F.n)} is on at the Town Hall!`:'Everyone in town, what they love, and what’s on.'})}<div class="lifetabs">${tabs}</div>`;
   if(lifeTab==='people'){const W2=lifeWish(),bd=bdayToday(),E=eventNow();
     if(lifeGiftFor)html+=lifeGiftHtml(lifeGiftFor,!lifeGiftHand);
-    if(E)html+=`<div class="tdc lifeev" style="--cc:#FFD21F"><span class="tdi">${lifeFace(E.guests[0])}</span><div class="tdt"><b>${esc(E.n)} is on now</b><small>${esc(E.t)} At ${esc(SHOPS['h_'+E.house].n)}.</small></div><div class="tdr"><button class="gel pink tdgo" data-lgo="h_${E.house}">Go</button></div></div>`;
+    if(E)html+=`<div class="tdc lifeev" style="--cc:#FFD21F"><span class="tdi">${lifeFace(E.guests[0])}</span><div class="tdt"><b>${esc(E.n)} is on now</b><small>${esc(E.t)} At ${esc(SHOPS[evAt(E)].n)}.</small></div><div class="tdr"><button class="gel pink tdgo" data-lgo="h_${E.house}">Go</button></div></div>`;
     if(W2)html+=`<p class="hint lifewish">${esc(RESIDENTS[W2.k].n)} would love ${esc(tagName(W2.tag))} for their house today.</p>`;
     const groups=[['Shops','',Object.keys(RESIDENTS).filter(k=>resHere(k)&&RESIDENTS[k].shop)],...HOOD_KEYS.map(h=>[HODS_N(h),h,Object.keys(RESIDENTS).filter(k=>resHere(k)&&!RESIDENTS[k].shop&&HOUSES[houseOf(k)]&&HOUSES[houseOf(k)].hood===h)])];
     groups.forEach(([n,h,ks])=>{if(!ks.length)return;html+=`<div class="row-label">${esc(n)}</div><div class="tdlist">`+ks.map(k=>{const R=RESIDENTS[k],f=kfOf(k),lv=kfLevel(f.p),dk=(state.disc||{})[k]||[],given=(state.gifts||{})[k]===day,
@@ -31836,7 +31843,7 @@ function renderTown(body){const day=lifeDay(),W=WEATHER[weatherOf(day)],F=festOn
         <div class="tdr">${ready?`<button class="gel pink tdgo" data-harv="${i}">Pick</button>`:`<button class="gel lilac tdgo" data-water="${i}"${wet?' disabled':''}>Water</button>`}</div></div>`}).join('')+'</div>'}
   else if(lifeTab==='calendar'){const ev=[0,1,2,3,4,5,6].map(i=>{const d=dayPlus(i);return[i,d,EVENTS.filter(x=>x.dow===dowOf(d)),bdaySoon(7).filter(b=>b[1]===i)]}),F2=FESTS.map(f=>f);
     html+=`<div class="row-label">Weather</div><div class="lifewxrow">${[0,1,2].map(i=>{const w=WEATHER[weatherOf(dayPlus(i))];return`<div><b>${i?i===1?'Tomorrow':dayName(dayPlus(i)):'Today'}</b><span>${LIFE_IC[w.ic]}</span><small>${esc(w.n)}</small></div>`}).join('')}</div>
-      <div class="row-label">This week</div><div class="tdlist">${ev.map(([i,d,es,bs])=>es.map(e=>`<div class="tdc" style="--cc:#FFD21F"><span class="tdi">${lifeFace(e.guests[0])}</span><div class="tdt"><b>${esc(e.n)}</b><small>${i?i===1?'Tomorrow':dayName(d):'Today'}, ${hourName(e.h[0])} to ${hourName(e.h[1])} · ${esc(SHOPS['h_'+e.house]?SHOPS['h_'+e.house].n:'')}</small><small>${esc(e.t)}</small></div></div>`).join('')+
+      <div class="row-label">This week</div><div class="tdlist">${ev.map(([i,d,es,bs])=>es.map(e=>`<div class="tdc" style="--cc:#FFD21F"><span class="tdi">${lifeFace(e.guests[0])}</span><div class="tdt"><b>${esc(e.n)}</b><small>${i?i===1?'Tomorrow':dayName(d):'Today'}, ${hourName(e.h[0])} to ${hourName(e.h[1])} · ${esc(SHOPS[evAt(e)]?SHOPS[evAt(e)].n:'')}</small><small>${esc(e.t)}</small></div></div>`).join('')+
         bs.map(([k])=>`<div class="tdc" style="--cc:#FF6FB5"><span class="tdi">${lifeFace(k)}</span><div class="tdt"><b>${esc(RESIDENTS[k].n)}’s birthday</b><small>${i?i===1?'Tomorrow':dayName(d):'Today!'} A gift counts extra.</small></div></div>`).join('')).join('')}</div>
       <div class="row-label">Festivals</div><div class="tdlist">${F2.map(f=>`<div class="tdc" style="--cc:#9B4DF2"><span class="tdi">${LIFE_IC.fest}</span><div class="tdt"><b>${esc(f.n)}</b><small>${f.from.replace('-','/')} to ${f.to.replace('-','/')} at the Town Hall · a ${esc(SETMAP[f.set]?SETMAP[f.set].n:'')} keepsake</small></div></div>`).join('')}</div>`}
   else if(lifeTab==='parcel'){const me=myId||'me',sent=(state.parcels||[]).filter(p=>p.by===me||p.by===myId).slice(0,5),goods=ITEMS.filter(i=>i.p>0&&(i.k==='food'||i.k==='groom'));
@@ -31904,10 +31911,10 @@ function twPlan(k){const R=RESIDENTS[k],h=townHour(),w=resWhere(k),hm=houseOf(k)
   if(w==='market'){const st=twStallOf(k);if(st)return{mode:'stall',pos:st.pos,ry:st.ry};return{mode:'rounds',area:'town'}}
   if(w==='out')return{mode:'rounds',area:hm?HOUSES[hm].hood:'town',near:RES_NEAR[k]?twNearOf(RES_NEAR[k]):null};
   const at_=x=>x==='shop'?R.shop:x==='place'?(placeOf(k)?'p_'+placeOf(k).id:null):x==='home'?home:null;
-  if(w!=='event'&&soon==='event'){const E=eventNow(h+.2);if(E)return{mode:'go',to:'h_'+E.house,from:at_(w)||home}}
+  if(w!=='event'&&soon==='event'){const E=eventNow(h+.2);if(E)return{mode:'go',to:evAt(E),from:at_(w)||home}}
   if(w!==soon&&at_(w)&&at_(soon))return{mode:'go',from:at_(w),to:at_(soon)};
   if(w==='home'&&home){const r=jrRand('stroll|'+lifeDay()+'|'+Math.floor(h)+'|'+k)();if(r<.22)return{mode:'stroll',near:home}}
-  if(w==='event'){const E=eventNow();if(E)return{mode:'mingle',at:'h_'+E.house}}
+  if(w==='event'){const E=eventNow();if(E)return{mode:'mingle',at:evAt(E)}}
   return null}
 // a market vendor's stall (its decoration on the map): where to stand and which way to face (out of the stall)
 function twStallOf(k){const want=MKT_STALL[k];if(!want||!tm||!tmM())return null;const q=tmM().d.find(q=>q[0]===want);if(!q)return null;const [w,d]=TM_DECOR[want].sz||[1,1],r=q[3]|0,
@@ -31922,10 +31929,24 @@ function twRandomRoad(area,near,R){const m=tmM(),[ox,oz,w,d]=area?TW_AREA(area):
 function twResSync(){const want=new Map();for(const k of Object.keys(RESIDENTS)){if(!resHere(k)||!KBIB[k])continue;const P=twPlan(k);if(P)want.set(k,P);if(want.size>=16)break}
   for(const [k,r] of tw.res)if(!want.has(k)||want.get(k).mode!==r.plan.mode){twResDrop(r);tw.res.delete(k)}
   for(const [k,P] of want){if(tw.res.has(k))continue;const r={k,plan:P,x:0,z:0,ry:0,path:null,wait:Math.random()*2,full:null,dot:null,t:Math.random()*10,sc:P.mode==='go'?0:1,out:0};
-    let start=null;if(P.mode==='go'){const d=twDoor(P.from);start=d?[d.x,d.z]:null}else if(P.mode==='mingle'){const d=twDoor(P.at);if(d){const a=Math.random()*Math.PI;start=[d.x+Math.cos(a)*.7,d.z+Math.sin(a)*.7]}}
+    let start=null;if(P.mode==='go'){const d=twDoor(P.from);if(d){start=[d.in[0]+(d.x-d.in[0])*.4,d.in[1]+(d.z-d.in[1])*.4];r.path=[[d.x,d.z]];tmDoorOpen(P.from,1800)}}else if(P.mode==='mingle'){const d=twDoor(P.at);if(d){const a=Math.random()*Math.PI;start=[d.x+Math.cos(a)*.7,d.z+Math.sin(a)*.7]}}
     else if(P.mode==='stroll'){const d=twDoor(P.near);start=d?twRandomRoad(null,d):null}else if(P.mode==='stall')start=P.pos;else if(P.near)start=twSpotNear(P.near);if(!start)start=twRandomRoad(P.area||'town');
     r.x=start[0];r.z=start[1];r.dot=twPin(k);tw.res.set(k,r)}}
-function twResDrop(r){if(r.dot)r.dot.remove();if(r.full)tm.world.remove(r.full.g);r.dot=r.full=null}
+const TW_SPOTK={bench:{sit:.22,n:1},parkbench:{sit:.22,n:2},pergolabench:{sit:.22,n:2},picnictable:{sit:.2,n:2},fountain:{ring:1.3,n:4},pond:{ring:1.25,n:3},lilypond:{ring:1.25,n:3},
+  well:{ring:.75,n:2},noticeboard:{front:.6,n:1},statue:{ring:.9,n:2},clocktower:{ring:.8,n:1},carousel:{ring:1.4,n:3},mkt:{front:.72,n:1}};
+// spots on the map where a resident can stop for a while: sit on a bench, look at the fountain, read the noticeboard, browse a stall
+function twSpots(){const m=tmM();if(!m)return[];const key=m.d.length+'|'+(m.d[0]||[]).join();if(tw.spots&&tw.spotKey===key)return tw.spots;const out=[];
+  m.d.forEach((q,n)=>{const kind=q[0].startsWith('mkt_')&&q[0]!=='mkt_arch'?'mkt':q[0],S=TW_SPOTK[kind];if(!S)return;const [w,d]=(TM_DECOR[q[0]]&&TM_DECOR[q[0]].sz)||[1,1],r=q[3]|0,
+    cx=q[1]-TM_W/2+w/2,cz=q[2]-TM_D/2+d/2,fx=[0,1,0,-1][r],fz=[1,0,-1,0][r],sx=fz,sz=-fx;
+    if(S.sit)for(let i=0;i<S.n;i++){const o=S.n>1?(i-.5)*(w>1?.7:.32):0;out.push({id:n+':'+i,kind,sit:S.sit,x:cx+sx*o+fx*.02,z:cz+sz*o+fz*.02,ry:Math.atan2(fx,fz),ax:cx+sx*o+fx*.55,az:cz+sz*o+fz*.55})}
+    else if(S.ring)for(let i=0;i<S.n;i++){const a=(i/S.n)*Math.PI*2+n,x=cx+Math.cos(a)*S.ring,z=cz+Math.sin(a)*S.ring;out.push({id:n+':'+i,kind,x,z,ry:Math.atan2(cx-x,cz-z),ax:x,az:z})}
+    else{const x=cx+fx*S.front,z=cz+fz*S.front;out.push({id:n+':0',kind,x,z,ry:Math.atan2(-fx,-fz),ax:x,az:z,mkt:kind==='mkt'})}});
+  tw.spots=out;tw.spotKey=key;tw.spotUse=tw.spotUse||{};return out}
+function twSpotPick(r){const L=twSpots(),use=tw.spotUse,mk=typeof marketOn==='function'&&marketOn(),c=L.filter(p=>!use[p.id]&&(!p.mkt||mk)&&Math.hypot(p.x-r.x,p.z-r.z)<(p.mkt?14:9));if(!c.length)return null;
+  // the market pulls people in on Sundays; otherwise benches and the fountain are favourites
+  const w=c.map(p=>p.mkt?3:p.sit?2:p.kind==='fountain'?1.6:1),tot=w.reduce((a,b)=>a+b,0);let x=Math.random()*tot,i=0;while(i<c.length-1&&(x-=w[i])>0)i++;return c[i]}
+function twSpotFree(r){if(r.spot&&tw.spotUse&&tw.spotUse[r.spot.id]===r.k)delete tw.spotUse[r.spot.id];r.spot=null;r.atSpot=0}
+function twResDrop(r){twSpotFree(r);if(r.dot)r.dot.remove();if(r.full)tm.world.remove(r.full.g);r.dot=r.full=null}
 // zoomed out (or not one of the closest few) a resident is a portrait pin: their face in their colour, always readable
 function twPin(k){const b=document.createElement('button'),R=RESIDENTS[k];b.className='tmr';b.style.setProperty('--c',(RES[k]||['','#fff'])[1]);b.innerHTML=lifeFace(k);b.setAttribute('aria-label',R.n);b.title=R.n;
   b.onclick=e=>{e.stopPropagation();twTalk(k)};$('#tmLab').appendChild(b);return b}
@@ -31934,15 +31955,16 @@ function twFull(r){if(r.full)return r.full;try{const K=KEEPERS[r.k]();kPolish(K,
 function twResTick(dt,t){const cam=tm.tgt,close=tmFit()*tm.zoom<16,near=[...tw.res.values()].sort((a,b)=>Math.hypot(a.x-cam.x,a.z-cam.z)-Math.hypot(b.x-cam.x,b.z-cam.z));
   near.forEach((r,i)=>{const full=close&&i<TW_FULL&&Math.hypot(r.x-cam.x,r.z-cam.z)<12;r.t+=dt;const talking=tw.card&&tw.card.k===r.k;let mv=false;
     if(r.chat){}else if(!talking){if(r.path&&r.path.length){const [tx,tz]=r.path[0],dx=tx-r.x,dz=tz-r.z,d=Math.hypot(dx,dz),st=TW_RSPEED*dt;if(d<=st){r.x=tx;r.z=tz;r.path.shift()}else{r.x+=dx/d*st;r.z+=dz/d*st;r.ry=Math.atan2(dx,dz)}mv=true}
-      else{r.wait-=dt;if(r.wait<0){const P=r.plan;let to=null;if(P.mode==='go'){const d=twDoor(P.to);if(d&&Math.hypot(d.x-r.x,d.z-r.z)<.3){r.out=1}else if(d)to=[d.x,d.z]}
-        else if(P.mode==='mingle'){r.wait=3+Math.random()*4}else if(P.mode==='stroll'){const d=twDoor(P.near);to=twRandomRoad(null,d||{x:r.x,z:r.z})}else if(P.mode==='stall'){r.wait=4+Math.random()*4;r.ry=P.ry}else if(P.near)to=twSpotNear(P.near);else to=twRandomRoad(P.area);
+      else{r.wait-=dt;if(r.wait<0){const P=r.plan;let to=null;if(P.mode==='go'){const d=twDoor(P.to);if(d&&Math.hypot(d.x-r.x,d.z-r.z)<.3){r.out=1;r.inPt=d.in;tmDoorOpen(P.to,1800)}else if(d)to=[d.x,d.z]}
+        else if(P.mode==='mingle'){r.wait=3+Math.random()*4}else if(P.mode==='stroll'){const d=twDoor(P.near);to=twRandomRoad(null,d||{x:r.x,z:r.z})}else if(P.mode==='stall'){r.wait=4+Math.random()*4;r.ry=P.ry}else if(r.atSpot){twSpotFree(r)}else if(r.spot){r.atSpot=1;if(r.spot.sit){r.x=r.spot.x;r.z=r.spot.z}r.ry=r.spot.ry;r.wait=r.spot.sit?14+Math.random()*22:r.spot.mkt?6+Math.random()*8:4+Math.random()*6}
+        else if((P.mode==='rounds'||P.mode==='stroll')&&Math.random()<.38&&(r.spot=twSpotPick(r))){tw.spotUse[r.spot.id]=r.k;to=[r.spot.ax,r.spot.az]}else if(P.near)to=twSpotNear(P.near);else to=twRandomRoad(P.area);
         if(to){r.path=twPath(r.x,r.z,to[0],to[1])||[to];r.wait=1+Math.random()*3}}}}
     else{const p=tw.pet;if(p)r.ry=Math.atan2(p.x-r.x,p.z-r.z)}
-    if(r.out){r.sc=Math.max(0,r.sc-dt*2.5);if(r.sc<=0)r.gone=1}else if(r.sc<1)r.sc=Math.min(1,r.sc+dt*2.5);
+    if(r.out){if(r.inPt){const dx=r.inPt[0]-r.x,dz=r.inPt[1]-r.z,dd=Math.hypot(dx,dz);if(dd>.02){const st=Math.min(dd,TW_RSPEED*.8*dt);r.x+=dx/dd*st;r.z+=dz/dd*st;r.ry=Math.atan2(dx,dz);mv=true}}r.sc=Math.max(0,r.sc-dt*1.4);if(r.sc<=0)r.gone=1}else if(r.sc<1)r.sc=Math.min(1,r.sc+dt*1.8);
     if(r.gone){r.dot.hidden=true;if(r.full)r.full.g.visible=false;return}
     {const pin=r.dot,cam=tm.cam;if(!pin.isConnected)$('#tmLab').appendChild(pin);if(pin.classList.contains('chat')!==!!r.chat)pin.classList.toggle('chat',!!r.chat);if(full)pin.hidden=true;else{const v=new THREE.Vector3(r.x,.62-tmCurveY(r.x,r.z)+(mv?Math.abs(Math.sin(r.t*9))*.05:0),r.z).project(cam),[W_,H_]=tmSize();pin.hidden=v.z>1;pin.style.transform=`translate(${(v.x*.5+.5)*W_}px,${(-v.y*.5+.5)*H_}px) translate(-50%,-100%) scale(${clamp(1.15-tm.zoom*.5,.62,1)*Math.max(.05,ease(r.sc))})`;
       if(!pin.querySelector('img')&&thumbs['fig_'+r.k])pin.innerHTML=lifeFace(r.k)}}
-    if(full){const F=twFull(r);if(F){F.g.visible=true;F.g.scale.setScalar(Math.max(.001,ease(r.sc)));F.g.position.set(r.x,mv?Math.abs(Math.sin(r.t*9))*.03:0,r.z);F.g.rotation.y=r.ry;try{F.K.upd(dt,t,'idle',0,(talking&&(!cv||cv.k!==r.k||cv.shown<(cv.full||'').length))||!!(r.chat&&Math.sin(r.t*1.4+(r.chat.first?0:Math.PI))>.1))}catch(_){}}}else if(r.full)r.full.g.visible=false})}
+    if(full){const F=twFull(r);if(F){F.g.visible=true;F.g.scale.setScalar(Math.max(.001,ease(r.sc)));F.g.position.set(r.x,r.atSpot&&r.spot&&r.spot.sit?r.spot.sit-.04:mv?Math.abs(Math.sin(r.t*9))*.03:0,r.z);F.g.rotation.y=r.ry;try{F.K.upd(dt,t,'idle',0,(talking&&(!cv||cv.k!==r.k||cv.shown<(cv.full||'').length))||!!(r.chat&&Math.sin(r.t*1.4+(r.chat.first?0:Math.PI))>.1))}catch(_){}}}else if(r.full)r.full.g.visible=false})}
 // ---- tapping outdoors: a resident (chat card), a building (walk to its door and go in), the ground (walk there)
 function twPick(cx,cy){const r=$('#tmc').getBoundingClientRect(),v=new THREE.Vector3();let best=null,bd=1e9;
   tw.res.forEach(q=>{if(q.gone||q.sc<.3)return;for(const h of [.25,.6]){v.set(q.x,h-tmCurveY(q.x,q.z),q.z).project(tm.cam);if(v.z>1)continue;const x=r.left+(v.x*.5+.5)*r.width,y=r.top+(-v.y*.5+.5)*r.height,d=Math.hypot(x-cx,y-cy);if(d<bd){bd=d;best=q}}});
@@ -31954,8 +31976,10 @@ function twTap(cx,cy){{const q=twPick(cx,cy);if(q){twTalk(q.k);return}}tmCell(cx
 // the ray against the curved ground: a few steps of 'hit the plane at the height the bend puts the ground here'
 function tmGroundHit(){const p=new THREE.Vector3();let y=0;for(let i=0;i<5;i++){if(!tm.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),y),p))return null;y=tmCurveY(p.x,p.z)}return p}
 function twWalk(x,z,cb){const P=tw.pet;if(!P)return;const path=twPath(P.x,P.z,x,z);if(!path){toast('Can’t get there from here.');return}P.path=path;P.cb=cb;tw.follow=true}
-function twGoIn(k){const S=SHOPS[k];if(k!=='home'&&S&&S.house){const v=houseVisit(S.hid);if(!v.ok){tmSelect(k);return}}if(S&&S.place&&!placeVisit(S.pid).ok){tmSelect(k);return}const d=twDoor(k);if(!d){tmSelect(k);return}
+function twGoInOld(k){const S=SHOPS[k];if(k!=='home'&&S&&S.house){const v=houseVisit(S.hid);if(!v.ok){tmSelect(k);return}}if(S&&S.place&&!placeVisit(S.pid).ok){tmSelect(k);return}const d=twDoor(k);if(!d){tmSelect(k);return}
   if((away?away.key:'home')===k){closeMap();return}twWalk(d.x,d.z,()=>{closeMap();travelTo(k)})}
+function twGoIn(k){const S=SHOPS[k];if(k!=='home'&&S&&S.house){const v=houseVisit(S.hid);if(!v.ok){tmSelect(k);return}}if(S&&S.place&&!placeVisit(S.pid).ok){tmSelect(k);return}const d=twDoor(k);if(!d){tmSelect(k);return}
+  if((away?away.key:'home')===k){closeMap();return}twWalk(d.x,d.z,()=>{tmDoorOpen(k,1400);setTimeout(()=>{closeMap();travelTo(k)},380)})}
 function twTalk(k){cvStart(k)}
 function twTalkOld(k){const R=RESIDENTS[k],B=KBIB[k],r=tw.res.get(k);if(!R||!B)return;tw.card={k};const p=tw.pet;if(p&&r&&Math.hypot(p.x-r.x,p.z-r.z)>1){const a=Math.atan2(p.x-r.x,p.z-r.z);twWalk(r.x+Math.sin(a)*.7,r.z+Math.cos(a)*.7,null)}
   const f=kfOf(k),day=tdDay(),first=f.d!==day;if(first){f.d=day;kfAdd(k,2)}const hi=twChatLine(k)||kFill(pick1(B.hi.d||B.hi.m));tw.cardGift=false;twCard(k,hi)}
@@ -31971,7 +31995,7 @@ function twCard(k,line){const c=$('#tmCard'),R=RESIDENTS[k],hm=houseOf(k),home=h
   const vh=$('#twHome');if(vh)vh.onclick=()=>{c.hidden=true;tw.card=null;twGoIn('h_'+hm)}}
 // ---- step outside / come back in
 function tmBuildOne(k){if(tm.bld[k]||!tmPlaces().includes(k))return;try{tm.bld[k]=k==='home'?tmHome():tmShop(k);tmPad(tm.bld[k],k);tm.world.add(tm.bld[k]);tmPlace(k)}catch(e){console.warn('town '+k,e);delete tm.bld[k]}}
-function twStart(){if(!tm)return;const k=away?away.key:'home';tmBuildOne(k);twGrid();const d=twDoor(k)||{x:0,z:0,ry:0};tw.on=twPetAttach(d);tw.follow=true;tw.res.forEach(twResDrop);tw.res.clear();
+function twStart(){if(!tm)return;const k=away?away.key:'home';tmDoorOpen(k,1700);tmBuildOne(k);twGrid();const d=twDoor(k)||{x:0,z:0,ry:0};tw.on=twPetAttach(d);tw.follow=true;tw.res.forEach(twResDrop);tw.res.clear();
   if(tw.on){tm.zoom=Math.max(.02,9/tmFit());tm.zoomTo=null;tm.pitch=.6;tm.yaw=(d.ry||0)+.45;tm.tgtTo.set(d.x,0,d.z);tm.tgt.copy(tm.tgtTo);twResSync();tw.sync=0;findsShow()}}
 function twEnd(){if(!tw.on&&!tw.save)return;tw.on=false;findsHide();twPetDetach();tw.res.forEach(twResDrop);tw.res.clear();tw.card=null}
 function twTick(dt,t){if(!tw.on||!tw.pet)return;const P=tw.pet;let mv=false;tw.sync+=dt;if(tw.sync>4){tw.sync=0;twResSync()}
@@ -52245,7 +52269,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=75;
+const APP_V=76;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

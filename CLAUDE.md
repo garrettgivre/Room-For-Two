@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v75** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v75'` in `sw.js`; bump both for anything
+**Current build: v76** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v76'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 75 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -665,3 +665,18 @@ friendship (max 2 per chat); the first chat of the day +2. Residents without TAL
 - **Night**: `TM_GLOW` lists light-giving decorations (radius, height); `tmGlowBuild` lays a warm radial pool on the ground under each
   and in front of every building's door, all in one transparent mesh (`tm.glow`, opacity by night in `tmTOD`); the 8 point lights now
   come from the nearest of those sources, not just `lamp`.
+
+## The places host events; life on the streets (v76)
+- **Events at places**: an event has either `house` (a HOUSES id, as before) or `at` (any SHOPS key) with `hosts`. Use `evAt(E)` for
+  where it is and `evHosts(E)` for who hosts; never `'h_'+E.house` again. Story hour (Wed 16-18) is at the library; new Town meeting
+  (Mon 17-19, Town Hall) and Stargazing (Tue 20-22, weather station); festivals are at the Town Hall (`eventCalc`). `placeVisit` opens
+  a place to everyone during its event, and `shopCrew` puts the hosts and guests inside (up to six guests). Hosts at a place are
+  'event' in `resWhere` (only a house's own residents stay 'home').
+- **Spots** (`TW_SPOTK`, `twSpots`, `twSpotPick`, `twSpotFree`): benches, park benches, the pergola and picnic tables (sit: the model
+  is lowered onto the seat facing out), the fountain, ponds, the well, the statue, the clock tower, the carousel (stand round, facing
+  in), the noticeboard and, on market Sundays, the stalls (browse, facing the counter). Residents on rounds or strolls go to one ~38% of
+  the time (weighted: stalls on Sundays, benches, the fountain), stay a while (sit 14-36 s), one resident per spot (`tw.spotUse`).
+- **Doors open** (`tmDoorHinge`, `tmDoorOpen(k,ms)`): every map door's hinge has a `userData.anim` that swings it open while
+  `tm.dopen[k]` is in the future (a 0.002 rad wobble keeps it out of the static merge). Residents leaving step out of the doorway and
+  arriving ones walk into it (`r.inPt`) while it's open; the pet's door opens when it steps out (`twStart`) and before it goes in
+  (`twGoIn`).
