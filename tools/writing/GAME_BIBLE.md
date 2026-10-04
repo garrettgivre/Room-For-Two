@@ -218,13 +218,14 @@ a candle in a window. Someone picked them up, said something kind, and they stay
 - The map's arrangement is shared and editable by the two of you (Arrange mode), so "next door" is a neighbourhood fact, not
   a fixed coordinate. Neighbourhood membership (`HOUSES`) is canon; exact plots are not.
 
-## The shape of the town (v74)
-A round town: the fountain plaza (pastel tiles) in the middle, a cobble ring road round it with the eight shops facing in, four
-avenues out (west to the park, south past your house, east toward the bay, and brick **Market Street** north to the Town Hall), and
-**the Crescent**, a round flagstone lane that circles the whole town through all four neighbourhoods (Playhouse Hill north-east, Bubble
-Bay south-east by the boardwalk on the bay side, Lantern Meadow south-west, Sugarloaf Lane north-west). The library sits on the west
-avenue and the post office on the east avenue, just inside the Crescent; the weather station is up a gravel path on the hill behind
-the Town Hall; dirt trails wind through the woods round the edge. Your house is on the south avenue, between the plaza and the Crescent.
+## The shape of the town (v75)
+The fountain plaza is a round tiled square with a brick ring round the fountain, benches facing it and lamps; a round cobble ring road
+circles it with the eight shops facing in. Four straight avenues run out (west to the park, south past your house, east toward the
+bay) and brick **Market Street** runs north between the Sunday stalls to the Town Hall. **The Loop** is a flagstone lane round the whole
+town with rounded corners; the neighbourhoods sit outside it, their doors facing it (Sugarloaf Lane north-west, Playhouse Hill north-east,
+Bubble Bay south-east, Lantern Meadow south-west with the lamp shed). The library and the post office are just inside the Loop on the
+west and east avenues; the park runs along the west edge with a gravel walk and two round loops; the boardwalk runs along the bay side.
+At night every lamp and doorway pools warm light on the paths.
 
 ## The town's civic places (v73: now real buildings you can walk into)
 - **The Town Hall** (`p_townhall`, at the top of Market Street, north of the plaza; Mayor Marsh 9:00-15:00, open 8-18): a cream two-storey

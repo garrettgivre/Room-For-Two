@@ -10,8 +10,8 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v74** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v74'` in `sw.js`; bump both for anything
-user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 74 (older clients refresh
+**Current build: v75** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v75'` in `sw.js`; bump both for anything
+user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 75 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
 **Who and how**
@@ -646,3 +646,22 @@ friendship (max 2 per chat); the first chat of the day +2. Residents without TAL
   is kept on that device in `localStorage.r42wmapOld`). `worldDesignV2` is the old designer, unused.
 - **Districts** are by angle round the plaza now (`plDistrictOf`: within r 11.6 = town; NE hill, SE bay, SW meadow, NW sugar); the title
   uses it. `WORLD_PARTS`/`WORLD_SIZE` (`WPS`) only place the district labels, tints and residents' round areas.
+
+## Grid paths, circles, a grid town, night light (v75; Garrett: "less blobby, grid based with dynamic corners, square paths too, circles too")
+- The blurred distance-field renderer of v74 is gone. **Grid paths** (`pathBuild`, `pathPoly`, `pathFillet`, `pathPolysMesh`): every path
+  cell is a square polygon; an outside corner (neither side neighbour is a path) is rounded by its type's radius `PATH_RAD` (board and
+  tiles nearly square, dirt and gravel round), an inside corner (three of four cells round a grid point) gets a small curved fill, a side
+  touching another path (or a circle) has no curb, so kinds meet flush. `[x,z,type,'s']` keeps a cell square (Arrange brush "Square
+  corners" toggles it). Curbs are the same polygons pushed out .07 on exposed sides, drawn below all surfaces.
+- **Circles** are their own shapes: the layout's `c` list `[cx,cz,r,w,type(,a0,a1)]` (w = ring width, 0 = a filled round plaza; a0/a1 =
+  an arc in degrees, 0 east 90 south), drawn as smooth ring/disc meshes (`pathRingMesh`); their cells (`pathCircleCells`) count as paths
+  of that type for walking, for grid neighbours and for Arrange taps (`tmCircleAt`). Arrange's Circle and Round plaza brushes add one
+  (max 24); tapping it with the same type lifts it.
+- **Layout v6** (`worldDesign6`, from `.claude/paths/design6.js`; v5's `worldDesign5` kept, unused): round tiled plaza (a circle) with a
+  brick ring round the fountain and benches facing it, a round cobble ring road, straight avenues, brick Market Street, and the Loop: a
+  square flagstone lane (x/z 11..36) with quarter-circle arc corners; 24 slots outside it, three each side of every avenue, for the 23
+  houses and the lamp shed, facing in; the library and post office inside it; the park walk and two gravel circles on the west edge;
+  the boardwalk on the east; street lamps along the Loop and avenues. Saved layouts older than v6.3 are replaced once.
+- **Night**: `TM_GLOW` lists light-giving decorations (radius, height); `tmGlowBuild` lays a warm radial pool on the ground under each
+  and in front of every building's door, all in one transparent mesh (`tm.glow`, opacity by night in `tmTOD`); the 8 point lights now
+  come from the nearest of those sources, not just `lamp`.

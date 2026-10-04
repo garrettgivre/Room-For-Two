@@ -25315,10 +25315,85 @@ function worldDesign5(E){
     const ang=Math.atan2(z+.5-C,x+.5-C)*180/Math.PI,coast=dist>17&&ang>-25&&ang<65,k=coast?pick(['palmtree','palmtree','tree']):dist>19.5?pick(['pine','pine','tree','cypress','birches']):pick(['tree','flowers','maple','appletree','topiary','berrybush','flowers']);
     if(E.dsz(k)){dtaken.add(c);d.push([k,x,z])}}
   return{b,r:[...R].map(([c,t])=>{const [x,z]=c.split(',').map(Number);return[x,z,t]}),d,doors}}
-// the world's layout: v5 (see worldDesign5). The old v2-v4 designer below is kept as worldDesignV2 for reference.
+// The town, layout v6: grid streets with tidy corners, true circles where round makes sense. A round fountain plaza and a round ring
+// road in the middle (circles), the shops round it, four straight avenues, brick Market Street up to the Town Hall, and the Loop: a
+// square flagstone lane through every neighbourhood with quarter-circle corners; houses outside it facing in, short paths to their
+// doors; the park and the boardwalk along the west and east edges. Pure function: E = {has(k), foot(k,r), doorLocal(k), dsz(k), rnd(seed)}.
+// Returns {b, r:[[x,z,type(,'s')]], c:[[cx,cz,r,w,type(,a0,a1)]], d:[[kind,x,z(,rot)]]}.
+function worldDesign6(E){
+  const N=48,C=24,b={},R=new Map(),taken=new Set(),dtaken=new Set(),circ=[],cc=new Map(),PRI={cobble:8,brick:7,tile:6,flag:5,board:4,gravel:3,dirt:2,step:1},d=[];
+  const inI=(x,z)=>Math.hypot(x+.5-C,z+.5-C)<=22.6,K=(x,z)=>x+','+z;
+  const lay=(x,z,t,sq)=>{if(x<0||z<0||x>=N||z>=N||!inI(x,z)||taken.has(K(x,z)))return;const o=R.get(K(x,z));if(!o||PRI[t]>PRI[o.t])R.set(K(x,z),{t,sq})};
+  const rect=(x0,z0,x1,z1,t,sq)=>{for(let x=Math.min(x0,x1);x<=Math.max(x0,x1);x++)for(let z=Math.min(z0,z1);z<=Math.max(z0,z1);z++)lay(x,z,t,sq)};
+  // a circle (or an arc a0..a1, degrees, 0 east 90 south); its cells count as paths for connecting, placing and walking
+  const circle=(cx,cz,r,w,t,a0,a1)=>{circ.push(a0==null?[cx,cz,r,w,t]:[cx,cz,r,w,t,a0,a1]);for(let z=Math.floor(cz-r-w-1);z<=cz+r+w+1;z++)for(let x=Math.floor(cx-r-w-1);x<=cx+r+w+1;x++){const dd=Math.hypot(x+.5-cx,z+.5-cz);
+    let a=(Math.atan2(z+.5-cz,x+.5-cx)*180/Math.PI+360)%360,inA=a0==null||(a0<=a1?a>=a0-1&&a<=a1+1:a>=a0-1||a<=a1+1);if(inA&&(w>0?Math.abs(dd-r)<=w/2+.2:dd<=r+.2)){const o=cc.get(K(x,z));if(!o||PRI[t]>PRI[o])cc.set(K(x,z),t)}}};
+  const pathAt=(x,z)=>{const o=R.get(K(x,z));return o?o.t:cc.get(K(x,z))};
+  const ORD=['W','S','E','N'],doors={};
+  const place=(k,cx,cz,face)=>{if(!E.has(k))return;const r=(ORD.indexOf(face)-ORD.indexOf(k==='home'?'N':'W')+4)%4,[w,dd]=E.foot(k,r),x=Math.round(cx-w/2),z=Math.round(cz-dd/2);b[k]=[x,z,r];
+    for(let i=0;i<w;i++)for(let j=0;j<dd;j++){taken.add(K(x+i,z+j));R.delete(K(x+i,z+j))}
+    const [lx,lz]=E.doorLocal(k),th=r*Math.PI/2;doors[k]=[Math.floor(x+w/2+lx*Math.cos(th)+lz*Math.sin(th)),Math.floor(z+dd/2-lx*Math.sin(th)+lz*Math.cos(th))]};
+  // a straight-ish path from a door to the nearest path at least as good (breadth first; prefers going straight)
+  const connect=(k,t,sq)=>{const D_=doors[k];if(!D_)return;const [sx,sz]=D_,q=[[sx,sz]],from=new Map([[K(sx,sz),null]]);let hit=null;
+    while(q.length){const [x,z]=q.shift(),o=pathAt(x,z);if(o&&!(x===sx&&z===sz)&&PRI[o]>=PRI[t]){hit=[x,z];break}if(from.size>700)break;
+      for(const [a,c] of [[1,0],[-1,0],[0,1],[0,-1]]){const X=x+a,Z=z+c,kk=K(X,Z);if(from.has(kk)||!inI(X,Z)||taken.has(kk))continue;from.set(kk,[x,z]);q.push([X,Z])}}
+    lay(sx,sz,t,sq);if(!hit)return;let c=from.get(K(...hit));while(c){if(!pathAt(c[0],c[1]))lay(c[0],c[1],t,sq);c=from.get(K(...c))}};
+  const put=(k,x,z,rot,onRoad,far)=>{const sz=E.dsz(k);if(!sz)return false;const [w,dd]=sz;for(let r=0;r<=(far||3);r++)for(let a=-r;a<=r;a++)for(const [dx,dz] of [[a,-r],[a,r],[-r,a],[r,a]]){if(r&&Math.max(Math.abs(dx),Math.abs(dz))!==r)continue;const X=Math.round(x)+dx,Z=Math.round(z)+dz;
+      let ok=true;for(let i=0;i<w&&ok;i++)for(let j=0;j<dd&&ok;j++){const kk=K(X+i,Z+j);if(!inI(X+i,Z+j)||taken.has(kk)||dtaken.has(kk)||(!onRoad&&(R.has(kk)||cc.has(kk)))||Object.values(doors).some(([p,q])=>p===X+i&&q===Z+j))ok=false}
+      if(ok){for(let i=0;i<w;i++)for(let j=0;j<dd;j++)dtaken.add(K(X+i,Z+j));d.push(rot?[k,X,Z,rot]:[k,X,Z]);return true}}return false};
+
+  // ---- the heart: the round plaza and the round ring road (circles), tiled spokes out to the avenues
+  circle(24,24,4.95,0,'tile');circle(24,24,5.6,1.4,'cobble');circle(24,24,2.35,.7,'brick');   // plaza, ring road, a brick ring round the fountain
+  rect(23,7,24,18,'brick');                                                 // Market Street, from the ring to the Town Hall
+  rect(23,30,24,47,'cobble');rect(0,23,18,24,'cobble');rect(30,23,47,24,'cobble'); // south, west, east avenues
+  // ---- the Loop: square, flagstone, quarter-circle corners (radius 4)
+  const L0=11,L1=36,RC=4;rect(L0+RC,L0,L1-RC,L0,'flag');rect(L0+RC,L1,L1-RC,L1,'flag');rect(L0,L0+RC,L0,L1-RC,'flag');rect(L1,L0+RC,L1,L1-RC,'flag');
+  circle(L0+RC+.5,L0+RC+.5,RC,1,'flag',180,270);circle(L1-RC+.5,L0+RC+.5,RC,1,'flag',270,360);circle(L1-RC+.5,L1-RC+.5,RC,1,'flag',0,90);circle(L0+RC+.5,L1-RC+.5,RC,1,'flag',90,180);
+  // ---- shops round the ring road
+  [['snack',20,16.5,'S'],['arcade',28,16.5,'S'],['wear',31.5,20,'W'],['salon',31.5,28,'W'],['glam',28,31.5,'N'],['toys',20,31.5,'N'],['furn',16.5,28,'E'],['build',16.5,20,'E']].forEach(q=>place(...q));
+  // ---- civic places and home
+  place('p_townhall',24,5.6,'S');place('p_weather',20.4,3.6,'E');place('p_library',13.5,20.5,'S');place('p_postoffice',34.5,20.5,'S');place('home',21,34.5,'E');
+  // ---- houses outside the Loop, facing it (24 slots: three each side of every avenue)
+  const side=(ks,f,fix,from)=>ks.forEach((k,i)=>{const v=from+i*3+1;if(f==='S')place(k,v,fix,'S');else if(f==='N')place(k,v,fix,'N');else if(f==='E')place(k,fix,v,'E');else place(k,fix,v,'W')});
+  side(['h_bunbun','h_pip','h_tutti'],'S',9,13.5);side(['h_patch','h_cushy','h_dusty'],'E',9,12.5);                  // Sugarloaf (north-west)
+  side(['h_gamenight','h_clockwork','h_post'],'S',9,26.5);side(['h_cobble','h_bolt','h_pixel'],'W',39,12.5);         // Playhouse (north-east)
+  side(['h_beacon','h_fizz','h_loofah'],'W',39,25.5);side(['h_studio','h_flat','h_stitch'],'N',39,26.5);             // Bubble Bay (south-east)
+  side(['h_mayor','h_dewey','p_lampshed'],'E',9,25.5);side(['h_lamp','h_garden','h_echo'],'N',39,13.5);              // Lantern Meadow (south-west)
+  // doors to paths: shops by brick, places and home by flagstone, houses by gravel or stepping stones (square stones look tidy)
+  ['snack','arcade','wear','salon','glam','toys','furn','build'].forEach(k=>connect(k,'brick'));
+  ['p_townhall','p_library','p_postoffice','p_lampshed','home'].forEach(k=>connect(k,'flag'));connect('p_weather','gravel');
+  Object.keys(b).filter(k=>k.startsWith('h_')).forEach((k,i)=>connect(k,i%2?'step':'gravel'));
+  // ---- the edges: the park (west), the boardwalk (east, on the bay side), woodland trails
+  rect(4,13,4,34,'gravel');circle(5.5,18,1.9,1,'gravel');circle(5.5,30,1.9,1,'gravel');
+  rect(43,16,43,32,'board',1);rect(40,16,42,16,'board',1);rect(40,32,42,32,'board',1);
+  rect(17,40,17,44,'dirt');rect(13,42,16,42,'dirt');rect(30,40,30,44,'dirt');rect(31,42,34,42,'dirt');rect(13,5,13,8,'dirt');rect(34,5,34,8,'dirt');rect(14,5,16,5,'dirt');rect(31,5,33,5,'dirt');
+  // ---- decorations
+  // the plaza: the fountain in the middle, a bench on each side turned to face it, lamps on the diagonals, flower tubs between
+  put('fountain',23,23,0,true,0);put('bench',23,20,0,true,0);put('bench',24,27,2,true,0);put('bench',20,24,1,true,0);put('bench',27,23,3,true,0);
+  [[21,21],[26,21],[21,26],[26,26]].forEach(([x,z])=>put('lamp',x,z,0,true,0));[[24,20],[23,27],[20,23],[27,24]].forEach(([x,z])=>put('flowers',x,z,0,true,0));
+  ['mkt_jam','mkt_flower','mkt_lemon','mkt_knit'].forEach((k,i)=>put(k,22,10+i*2,1,false,1));['mkt_curio','mkt_paper','mkt_pebble','mkt_toy'].forEach((k,i)=>put(k,25,10+i*2,3,false,1));put('mkt_arch',23,17,0,true,0);
+  put('clocktower',30,30);put('noticeboard',21,18);put('signpost',25,30);put('drinkfount',22,29);put('busstop',25,33);put('phonebox',26,37);put('mailboxes',19,35);put('bikerack',30,17);put('binpair',18,18);
+  // street lamps: inside each corner of the Loop, along the avenues, at the Loop's crossings
+  [[14,14],[33,14],[14,33],[33,33]].forEach(([x,z])=>put('lamp',x,z,0,false,1));[[22,8],[25,8]].forEach(([x,z])=>put('lamppair',x,z,0,false,1));
+  [[22,32],[25,38],[22,44],[32,22],[38,25],[44,22],[15,25],[9,22],[3,25]].forEach(([x,z])=>put('lamp',x,z,0,false,1));[[10,10],[37,10],[10,37],[37,37]].forEach(([x,z])=>put('lamp',x,z,0,false,1));
+  // the park
+  put('parkgate',3,24.6,0,false,1);put('pond',5,17);put('pergolabench',2,20.5);put('flowerbed',6,13.5);put('pottingshed',7,21.5);put('crumbwall',2.4,15.4);
+  put('bigslide',5,29);put('swingset',6.6,33);put('seesaw',2,27.5);put('climbdome',7,26.5);put('hopscotch',2,31.5);put('sandbox',2,33.6);put('picnictable',7,35.5);
+  // neighbourhood touches and landmarks
+  put('well',15,14);put('cart',19,12.4);put('sunflowers',16,7);put('carousel',31,13.4);put('balloons',28,12.4);put('kite',36,7);put('hotairballoon',41,11);
+  put('greenhouse',13,40);put('lilypond',20,40.6);put('gazebo',14,33);put('lavender',10,38);put('waterfall',41,34);put('beacon',44,13);put('parkbench',33,39);put('stringlights',28,40);
+  put('windmill',6,8);put('observatory',38,5.6);put('watertower',9,5);put('gatearch',23,42,0,true,0);put('lot',14.5,15);put('lot',31,15);put('lot',31.6,32);put('lot',14.6,32);
+  put('cherrytree',29,10);put('cherrytree',17,13);put('oaktree',12,26);put('willow',36,26);put('willow',10,31);
+  // woods: generic trees on the free outskirts, denser toward the edge, varied species, palms on the bay side
+  const RR=E.rnd(6161),pick=a=>a[Math.floor(RR()*a.length)];
+  for(let z=0;z<N;z++)for(let x=0;x<N;x++){const dist=Math.hypot(x+.5-C,z+.5-C),c=K(x,z);if(dist>22.6||taken.has(c)||R.has(c)||cc.has(c)||dtaken.has(c))continue;const p=dist>19.5?.5:dist>17?.16:dist>9?.03:0;if(RR()>=p)continue;
+    const ang=Math.atan2(z+.5-C,x+.5-C)*180/Math.PI,coast=dist>17&&ang>-25&&ang<65,k=coast?pick(['palmtree','palmtree','tree']):dist>19.5?pick(['pine','pine','tree','cypress','birches']):pick(['tree','flowers','maple','appletree','topiary','berrybush','flowers']);
+    if(E.dsz(k)){dtaken.add(c);d.push([k,x,z])}}
+  return{b,r:[...R].map(([c,o])=>{const [x,z]=c.split(',').map(Number);return o.sq?[x,z,o.t,'s']:[x,z,o.t]}),c:circ,d,doors}}
+// the world's layout: v6 (see worldDesign6; v5's round design is kept as worldDesign5). The old v2-v4 designer below is kept as worldDesignV2 for reference.
 function worldDesign(){const E={has:k=>k==='home'||!!SHOPS[k],foot:(k,r)=>tmFoot(k,r),dsz:k=>TM_DECOR[k]?(TM_DECOR[k].sz||[1,1]):null,rnd,
     doorLocal:k=>{if(k==='home')return[0,-1.105];const P_=SHOPS[k].plan,PS=TM_PS,[di,dj,ds]=P_.door;return ds==='w'?[-P_.W*PS/2-.55,(dj-P_.D/2+.5)*PS]:[(di-P_.W/2+.5)*PS,-P_.D*PS/2-.55]}};
-  const L=worldDesign5(E);return{b:L.b,r:L.r,d:L.d,v:5,pl:[...Object.keys(PLACES),'market','park']}}
+  const L=worldDesign6(E);return{b:L.b,r:L.r,c:L.c,d:L.d,v:6.3,pl:[...Object.keys(PLACES),'market','park']}}
 function worldDesignV2(){const b={},r=new Set(),d=[],road=(x0,z0,x1,z1)=>{for(let x=Math.min(x0,x1);x<=Math.max(x0,x1);x++)for(let z=Math.min(z0,z1);z<=Math.max(z0,z1);z++)r.add(x+','+z)};
   road(20,20,27,27);road(19,19,28,19);road(19,28,28,28);road(19,19,19,28);road(28,19,28,28);           // plaza and the ring round it
   road(23,11,24,18);road(23,29,24,36);road(8,23,18,24);road(29,23,40,24);road(8,11,40,11);road(8,36,40,36); // four streets, two lanes
@@ -25402,7 +25477,7 @@ function tmDefault(mk){if(mk==='world')return worldDesign();if(isHood(mk))return
   const d=[['fountain',8,10],['tree',0,1],['tree',2,16],['pine',0,17],['tree',6,6],['pine',11,6],['flowers',6,9],['flowers',11,14],['flowers',6,13],['lamp',7,5],['lamp',10,5],['lamp',7,15],['lamp',10,15],
     ['bench',11,9],['bench',6,12],['pond',15,16],['tree',17,19],['hedge',5,16],['hedge',12,16],['pine',17,1],['tree',15,1],['flowers',1,2]];
   return{b,r:[...r].map(s=>s.split(',').map(Number)),d}}
-function tmNorm(m,mk){if(mk==='world'&&(!m||typeof m!=='object'||!m.b||!(m.v>=5))){try{if(m&&m.b)localStorage.setItem('r42wmapOld',JSON.stringify(m))}catch(_){}return worldDesign()}if(mk==='world'&&m.v===2)worldV3(m);if(mk==='world')worldV4(m);const D=tmDefault(mk);if(!m||typeof m!=='object'||!m.b)return D;m.r=Array.isArray(m.r)?m.r:D.r;m.d=Array.isArray(m.d)?m.d.filter(q=>TM_DECOR[q[0]]):D.d;
+function tmNorm(m,mk){if(mk==='world'&&(!m||typeof m!=='object'||!m.b||!(m.v>=6.3))){try{if(m&&m.b)localStorage.setItem('r42wmapOld',JSON.stringify(m))}catch(_){}return worldDesign()}if(mk==='world'&&m.v===2)worldV3(m);if(mk==='world')worldV4(m);const D=tmDefault(mk);if(!m||typeof m!=='object'||!m.b)return D;m.r=Array.isArray(m.r)?m.r:D.r;m.d=Array.isArray(m.d)?m.d.filter(q=>TM_DECOR[q[0]]):D.d;
   for(const k in m.b)if(!tmPlacesOf(mk).includes(k))delete m.b[k];
   for(const k of tmPlacesOf(mk))if(!Array.isArray(m.b[k])){const df=D.b[k]||[0,0,0],[w,d]=tmFoot(k,df[2]);m.d=m.d.filter(q=>!(q[0]==='lot'&&q[1]<df[0]+w&&q[1]+2>df[0]&&q[2]<df[1]+d&&q[2]+2>df[1]));m.b[k]=df;if(tmFits(m,df[0],df[1],w,d,k)){const sp=tmFree(m,k,df[2]);if(sp)m.b[k]=sp}}return m}
 // the current map's layout, normalised (the town's is state.tmap, each neighbourhood's state.nmaps[key])
@@ -26672,39 +26747,47 @@ function pathTex(t){const key='ptex_'+t;tm.ptex=tm.ptex||{};if(tm.ptex[t])return
   tex.wrapS=tex.wrapT=1000;return tm.ptex[t]=tex}
 function pathMat(t,edge){tm.pmat=tm.pmat||{};const k=t+(edge?'e':'');if(tm.pmat[k])return tm.pmat[k];const T=PATH_T[t];
   const m=edge?M(parseInt(T.e.slice(1),16),{roughness:.85}):M(0xffffff,{roughness:t==='tile'?.45:.8,map:pathTex(t)});return tm.pmat[k]=m}
-// the distance field of one path type: <0 inside. Cells are discs (r .52), neighbours (8 ways) are joined by bands (half width .5, .44 on diagonals).
-// Links between two types are drawn in the less important one, so a lane reaches under the main road it meets.
-const PATH_RES=5;   // samples per cell
-function pathField(m,t){const W=TM_W,D=TM_D,S=PATH_RES,NX=W*S+1,NZ=D*S+1,F=new Float32Array(NX*NZ).fill(9),T=new Map(m.r.map(q=>[q[0]+','+q[1],pathT(q)]));
-  const put=(ax,az,bx,bz,hw)=>{const x0=Math.max(0,Math.floor((Math.min(ax,bx)-hw-.2)*S)),x1=Math.min(NX-1,Math.ceil((Math.max(ax,bx)+hw+.2)*S)),z0=Math.max(0,Math.floor((Math.min(az,bz)-hw-.2)*S)),z1=Math.min(NZ-1,Math.ceil((Math.max(az,bz)+hw+.2)*S));
-    const dx=bx-ax,dz=bz-az,L2=dx*dx+dz*dz||1e-6;for(let j=z0;j<=z1;j++)for(let i=x0;i<=x1;i++){const px=i/S,pz=j/S;let u=((px-ax)*dx+(pz-az)*dz)/L2;u=u<0?0:u>1?1:u;const d=Math.hypot(px-ax-dx*u,pz-az-dz*u)-hw,n=j*NX+i;if(d<F[n])F[n]=d}};
-  let any=false;
-  for(const [key,tt] of T){const [x,z]=key.split(',').map(Number),cx=x+.5,cz=z+.5;
-    if(tt===t){any=true;put(cx,cz,cx,cz,.52)}
-    for(const [a,b] of [[1,0],[0,1],[1,1],[1,-1]]){const o=T.get((x+a)+','+(z+b));if(!o)continue;const low=PATH_PRI[o]<PATH_PRI[tt]?o:tt;if(low!==t)continue;
-      if(a&&b){// a diagonal only joins when it isn't already joined round the corner (keeps filled areas from bulging)
-        if(T.has((x+a)+','+z)&&T.has(x+','+(z+b)))continue}any=true;put(cx,cz,cx+a,cz+b,a&&b?.44:.5)}}
-  if(!any)return null;
-  // smooth it (two box blurs over ~.6 of a cell): staircases along diagonals and circles become curves, straight edges stay put
-  for(let n=0;n<F.length;n++)if(F[n]>1)F[n]=1;const B=new Float32Array(F.length),rad=3;
-  for(let pass=0;pass<2;pass++){for(let j=0;j<NZ;j++){let acc=0,cnt=0;for(let i=-rad;i<NX+rad;i++){const ia=i+rad,ib=i-rad-1;if(ia<NX){acc+=F[j*NX+ia];cnt++}if(ib>=0){acc-=F[j*NX+ib];cnt--}if(i>=0&&i<NX)B[j*NX+i]=acc/cnt}}
-    for(let i=0;i<NX;i++){let acc=0,cnt=0;for(let j=-rad;j<NZ+rad;j++){const ja=j+rad,jb=j-rad-1;if(ja<NZ){acc+=B[ja*NX+i];cnt++}if(jb>=0){acc-=B[jb*NX+i];cnt--}if(j>=0&&j<NZ)F[j*NX+i]=acc/cnt}}}
-  return{F,NX,NZ,S}}
-// marching squares: triangles of the region F<th, at height y, UVs in world units/2
-function pathMesh(fd,th,y){const {F,NX,NZ,S}=fd,P=[],U=[],I=[],N=[];let vn=0;const ox=-TM_W/2,oz=-TM_D/2;
-  const vtx=(x,z)=>{P.push(x+ox,y,z+oz);N.push(0,1,0);U.push((x+ox)/2,(z+oz)/2);return vn++};
-  for(let j=0;j<NZ-1;j++)for(let i=0;i<NX-1;i++){const c=[[i,j],[i+1,j],[i+1,j+1],[i,j+1]],v=c.map(([a,b])=>F[b*NX+a]-th);if(v[0]>0&&v[1]>0&&v[2]>0&&v[3]>0)continue;
-    const poly=[];for(let k=0;k<4;k++){const a=c[k],b=c[(k+1)%4],va=v[k],vb=v[(k+1)%4];if(va<=0)poly.push([a[0]/S,a[1]/S]);if((va<=0)!==(vb<=0)){const u=va/(va-vb);poly.push([(a[0]+(b[0]-a[0])*u)/S,(a[1]+(b[1]-a[1])*u)/S])}}
-    if(poly.length<3)continue;const ids=poly.map(([x,z])=>vtx(x,z));for(let k=1;k<ids.length-1;k++)I.push(ids[0],ids[k+1],ids[k])}
-  if(!I.length)return null;return new THREE.BufferGeometry(P,N,U,I)}
 // stepping stones: flat round stones on each cell and along each join, a little jittered
 function pathStones(par,m){const T=new Map(m.r.map(q=>[q[0]+','+q[1],pathT(q)])),mat=pathMat('step'),R=rnd(4401),geo=gcache('pstone',()=>{const g=new THREE.CylinderGeometry(.2,.23,.05,9);return g});const spots=[];
-  for(const [key,tt] of T){if(tt!=='step')continue;const [x,z]=key.split(',').map(Number);spots.push([x+.5,z+.5]);for(const [a,b] of [[1,0],[0,1],[1,1],[1,-1]]){const o=T.get((x+a)+','+(z+b));if(!o)continue;if(a&&b&&T.has((x+a)+','+z)&&T.has(x+','+(z+b)))continue;spots.push([x+.5+a/2,z+.5+b/2])}}
+  for(const [key,tt] of T){if(tt!=='step')continue;const [x,z]=key.split(',').map(Number);spots.push([x+.5,z+.5]);for(const [a,b] of [[1,0],[0,1]]){const o=T.get((x+a)+','+(z+b));if(!o)continue;spots.push([x+.5+a/2,z+.5+b/2])}}
   spots.forEach(([x,z])=>{const s=.75+R()*.45,o=add(par,geo,mat,x-TM_W/2+(R()-.5)*.12,.03,z-TM_D/2+(R()-.5)*.12);o.scale.set(s,1,s*(.8+R()*.3));o.rotation.y=R()*3;o.outline=.004;o.receiveShadow=true})}
-function tmPaths(){if(tm.paths){tm.world.remove(tm.paths)}const g=G(),m=tmM();
-  PATH_KEYS.forEach((t,n)=>{if(t==='step')return;const fd=pathField(m,t);if(!fd)return;const y=.014+(PATH_KEYS.length-n)*.0025;
-    const e=pathMesh(fd,.07,y-.006);if(e){const o=add(g,e,pathMat(t,true),0,0,0);o.outline=0;o.castShadow=false;o.receiveShadow=true}
-    const s=pathMesh(fd,0,y);if(s){const o=add(g,s,pathMat(t),0,0,0);o.outline=0;o.castShadow=false;o.receiveShadow=true}});
+// rendering v2 (v75): grid paths with dynamic corners, plus true circles.
+// Grid: each path cell is a square; an outside corner (neither side neighbour is a path) is rounded by its type's radius (PATH_RAD), an
+// inside corner (three of the four cells round a grid point are paths) gets a small curved fill, a side touching another path has no curb,
+// so different kinds meet flush. A cell can be kept square: [x,z,type,'s']. Circles: the layout's c list, [cx,cz,r,w,type] (w = ring width,
+// 0 = a filled round plaza), drawn as smooth rings/discs over the grid; their cells count as paths of that type for walking.
+const PATH_RAD={cobble:.32,brick:.22,tile:.18,flag:.3,board:0,gravel:.45,dirt:.5,step:0};
+const pathSq=q=>q&&q[3]==='s';
+function pathPoly(x,z,E_,Rc,e){const pts=[],seg=a=>Math.max(2,Math.ceil(a*14)),x0=x-(E_.w?e:0),x1=x+1+(E_.e?e:0),z0=z-(E_.n?e:0),z1=z+1+(E_.s?e:0);
+  const corner=(R,cx,cz,a0,px,pz)=>{if(R>0){const n=seg(R);for(let i=0;i<=n;i++){const a=a0+i/n*Math.PI/2;pts.push([cx+Math.cos(a)*(R+e),cz+Math.sin(a)*(R+e)])}}else pts.push([px,pz])};
+  corner(Rc.nw,x+Rc.nw,z+Rc.nw,Math.PI,x0,z0);corner(Rc.ne,x+1-Rc.ne,z+Rc.ne,Math.PI*1.5,x1,z0);corner(Rc.se,x+1-Rc.se,z+1-Rc.se,0,x1,z1);corner(Rc.sw,x+Rc.sw,z+1-Rc.sw,Math.PI*.5,x0,z1);return pts}
+// an inside corner's fill at grid point (gx,gz), into the empty cell toward (sx,sz): between the corner and a quarter circle of radius R
+// centred at (gx+sx*R, gz+sz*R). The curb version reaches .07 further in (a smaller circle).
+function pathFillet(gx,gz,sx,sz,R,curb){const r=curb?R-.07:R,cx=gx+sx*R,cz=gz+sz*R,n=Math.max(3,Math.ceil(R*16)),pts=[[gx,gz],[gx+sx*R,gz]];if(curb)pts.push([gx+sx*R,gz+sz*.07]);
+  for(let i=0;i<=n;i++){const t=i/n;pts.push([cx-sx*Math.sin(t*Math.PI/2)*r,cz-sz*Math.cos(t*Math.PI/2)*r])}if(curb)pts.push([gx+sx*.07,gz+sz*R]);pts.push([gx,gz+sz*R]);
+  // keep the winding the same as the cells' (clockwise on screen)
+  return sx*sz<0?pts.reverse():pts}
+const pathInArc=(a,a0,a1)=>{if(a0==null)return true;a=((a%360)+360)%360;const A0=((a0%360)+360)%360,A1=((a1%360)+360)%360;return A0<=A1?a>=A0-1&&a<=A1+1:a>=A0-1||a<=A1+1};
+function pathCircleCells(m){const out=[];(m.c||[]).forEach(([cx,cz,r,w,t,a0,a1])=>{for(let z=Math.floor(cz-r-w-1);z<=cz+r+w+1;z++)for(let x=Math.floor(cx-r-w-1);x<=cx+r+w+1;x++){const d=Math.hypot(x+.5-cx,z+.5-cz);if((w>0?Math.abs(d-r)<=w/2+.2:d<=r+.2)&&pathInArc(Math.atan2(z+.5-cz,x+.5-cx)*180/Math.PI,a0,a1))out.push([x,z,PATH_T[t]?t:'cobble'])}});return out}
+function pathBuild(m){const T=new Map();m.r.forEach(q=>T.set(q[0]+','+q[1],{t:pathT(q),sq:pathSq(q)}));const CC=new Set(pathCircleCells(m).map(q=>q[0]+','+q[1])),has=(x,z)=>T.has(x+','+z)||CC.has(x+','+z),get=(x,z)=>T.get(x+','+z),out={};PATH_KEYS.forEach(t=>out[t]={s:[],e:[]});
+  for(const [key,c] of T){if(c.t==='step')continue;const [x,z]=key.split(',').map(Number),E_={n:!has(x,z-1),s:!has(x,z+1),w:!has(x-1,z),e:!has(x+1,z)},R=c.sq?0:PATH_RAD[c.t];
+    const Rc={nw:E_.n&&E_.w?R:0,ne:E_.n&&E_.e?R:0,se:E_.s&&E_.e?R:0,sw:E_.s&&E_.w?R:0};out[c.t].s.push(pathPoly(x,z,E_,Rc,0));out[c.t].e.push(pathPoly(x,z,E_,Rc,.07))}
+  for(let gz=1;gz<TM_D;gz++)for(let gx=1;gx<TM_W;gx++){const q=[[gx-1,gz-1],[gx,gz-1],[gx-1,gz],[gx,gz]],f=q.map(([a,b])=>has(a,b));if(f.filter(Boolean).length!==3)continue;
+    const k=f.indexOf(false),[ex,ez]=q[k],c=get(...q[3-k]);if(!c||c.t==='step'||c.sq)continue;const R=PATH_RAD[c.t]*.75;if(R<=.05)continue;
+    const sx=ex>=gx?1:-1,sz=ez>=gz?1:-1;out[c.t].s.push(pathFillet(gx,gz,sx,sz,R,0));out[c.t].e.push(pathFillet(gx,gz,sx,sz,R,1))}
+  return out}
+function pathPolysMesh(polys,y){const P=[],N=[],U=[],I=[];let vn=0;const ox=-TM_W/2,oz=-TM_D/2;
+  polys.forEach(pl=>{const base=vn;pl.forEach(([x,z])=>{P.push(x+ox,y,z+oz);N.push(0,1,0);U.push((x+ox)/2,(z+oz)/2);vn++});for(let k=1;k<pl.length-1;k++)I.push(base,base+k+1,base+k)});
+  return I.length?new THREE.BufferGeometry(P,N,U,I):null}
+// a ring (or a disc when r0 = 0) between radii r0 and r1, in rings of quads so the world-curve can bend it
+function pathRingMesh(cx,cz,r0,r1,y,a0,a1){const sw=a0==null?360:((a1-a0)%360+360)%360||360,A0=a0==null?0:a0,P=[],N=[],U=[],I=[],segs=Math.max(8,Math.ceil(r1*18*sw/360)),rings=Math.max(1,Math.ceil((r1-r0)/.6)),ox=-TM_W/2,oz=-TM_D/2;
+  for(let j=0;j<=rings;j++){const rr=r0+(r1-r0)*j/rings;for(let s=0;s<=segs;s++){const a=(A0+s/segs*sw)*Math.PI/180,x=cx+Math.cos(a)*rr+ox,z=cz+Math.sin(a)*rr+oz;P.push(x,y,z);N.push(0,1,0);U.push(x/2,z/2)}}
+  for(let j=0;j<rings;j++)for(let s=0;s<segs;s++){const a=j*(segs+1)+s,b=a+1,c=a+segs+1,d=c+1;I.push(a,b,c,b,d,c)}return new THREE.BufferGeometry(P,N,U,I)}
+function tmPaths(){if(tm.paths){tm.world.remove(tm.paths)}const g=G(),m=tmM(),out=pathBuild(m),yOf=t=>.014+(PATH_KEYS.length-PATH_KEYS.indexOf(t))*.0025;
+  const mk=(geo,mat)=>{if(!geo)return;const o=add(g,geo,mat,0,0,0);o.outline=0;o.castShadow=false;o.receiveShadow=true};
+  PATH_KEYS.forEach(t=>{if(t==='step')return;mk(pathPolysMesh(out[t].e,.011),pathMat(t,true));mk(pathPolysMesh(out[t].s,yOf(t)),pathMat(t))});
+  (m.c||[]).forEach(([cx,cz,r,w,t,a0,a1])=>{t=PATH_T[t]&&t!=='step'?t:'cobble';const r0=w>0?Math.max(0,r-w/2):0,r1=w>0?r+w/2:r;
+    mk(pathRingMesh(cx,cz,Math.max(0,r0-(r0>0?.07:0)),r1+.07,.0105,a0,a1),pathMat(t,true));mk(pathRingMesh(cx,cz,r0,r1,yOf(t)+.0012,a0,a1),pathMat(t))});
   pathStones(g,m);bakeStatic(g);tm.paths=g;tm.world.add(g)}
 function tmDecor(){if(tm.decor)tm.world.remove(tm.decor);const g=G(),merge=!tm.arr,gm=G();if(merge)g.add(gm);tmM().d.forEach((q,n)=>{const D_=TM_DECOR[q[0]];const o=D_.b(),[w,d]=D_.sz||[1,1];o.position.set(q[1]-TM_W/2+w/2,0,q[2]-TM_D/2+d/2);if(q[3])o.rotation.y=q[3]*Math.PI/2;o.userData.td=n;let an=false;o.traverse(c=>{if(c.userData.anim)an=true});(merge&&!an?gm:g).add(o)});if(merge)bakeStatic(gm);
   // a festival dresses up the plaza (not saved, not tappable)
@@ -30733,8 +30816,8 @@ const decoLocked=k=>(DECOR_LV[k]|0)>cheerLv(cheerOf().p);
 function tmTools(){const T=$('#tmTools');if(!tm.arr){T.hidden=true;return}const t=tm.tool,sel=tm.sel;
   T.innerHTML=`<div class="tmtr">${[['move','Move'],['road','Paths'],['decor','Decorate']].map(([k,n])=>`<button class="gel ${t===k?'sun':'silver'}" data-t="${k}">${n}</button>`).join('')}<button class="gel pink" id="tmDone">Done</button></div>`+
     (t==='move'&&sel?`<div class="tmtr">${sel.startsWith('b:')?'<button class="gel lilac" id="tmRot">Turn</button>':''}${sel.startsWith('d:')?'<button class="gel silver" id="tmDel">Remove</button>':''}<button class="gel silver" id="tmDrop">Put down</button></div>`:'')+
-    (t==='road'?`<div class="tmtr tmcats">${[['line','Paint'],['ring','Circle'],['disc','Round plaza']].map(([k,n])=>`<button class="chip sm${(tm.pbrush||'line')===k?' on':''}" data-pb="${k}">${n}</button>`).join('')}</div><div class="tmtr tmpal">${PATH_KEYS.map(k=>`<button class="gel ${(tm.ptype||'cobble')===k?'sun':'silver'} ptyp" data-pt="${k}"><i style="background:${PATH_T[k].c};border-color:${PATH_T[k].e}"></i>${PATH_T[k].n}</button>`).join('')}</div>`:'')+(t==='move'&&!sel?`<div class="tmtr"><button class="gel silver" id="tmReset">${tm.resetAsk?'Tap again to reset':'Reset layout'}</button></div>`:'')+(t==='decor'?`<div class="tmtr tmcats">${TM_CATS.map(([c,n])=>`<button class="chip sm${(tm.decoCat||'classic')===c?' on':''}" data-dc="${c}">${n}</button>`).join('')}</div><div class="tmtr tmpal">${Object.entries(TM_DECOR).filter(([k,d])=>k!=='lot'&&(d.cat||'classic')===(tm.decoCat||'classic')&&!(k.startsWith('stream')&&k!=='stream'&&false)).map(([k,d])=>{const lk=decoLocked(k);return`<button class="gel ${tm.deco===k&&!lk?'sun':'silver'}${lk?' lock':''}" data-d="${k}">${d.n}${lk?`<small>Town level ${DECOR_LV[k]}</small>`:''}</button>`}).join('')}</div>`:'')+
-    `<p class="tmhint">${t==='move'?(sel?'Tap an empty spot to move it there.':'Tap a building or decoration to pick it up.'):t==='road'?(tm.pbrush==='ring'||tm.pbrush==='disc'?(tm.pc?'Now tap where the edge goes.':'Tap the middle of the circle.'):'Tap or drag to lay paths; diagonal steps curve. Tap a path to lift it.'):'Tap the grass to place. Tap a decoration to remove it.'}</p>`;
+    (t==='road'?`<div class="tmtr tmcats">${[['line','Paint'],['square','Square corners'],['ring','Circle'],['disc','Round plaza']].map(([k,n])=>`<button class="chip sm${(tm.pbrush||'line')===k?' on':''}" data-pb="${k}">${n}</button>`).join('')}</div><div class="tmtr tmpal">${PATH_KEYS.map(k=>`<button class="gel ${(tm.ptype||'cobble')===k?'sun':'silver'} ptyp" data-pt="${k}"><i style="background:${PATH_T[k].c};border-color:${PATH_T[k].e}"></i>${PATH_T[k].n}</button>`).join('')}</div>`:'')+(t==='move'&&!sel?`<div class="tmtr"><button class="gel silver" id="tmReset">${tm.resetAsk?'Tap again to reset':'Reset layout'}</button></div>`:'')+(t==='decor'?`<div class="tmtr tmcats">${TM_CATS.map(([c,n])=>`<button class="chip sm${(tm.decoCat||'classic')===c?' on':''}" data-dc="${c}">${n}</button>`).join('')}</div><div class="tmtr tmpal">${Object.entries(TM_DECOR).filter(([k,d])=>k!=='lot'&&(d.cat||'classic')===(tm.decoCat||'classic')&&!(k.startsWith('stream')&&k!=='stream'&&false)).map(([k,d])=>{const lk=decoLocked(k);return`<button class="gel ${tm.deco===k&&!lk?'sun':'silver'}${lk?' lock':''}" data-d="${k}">${d.n}${lk?`<small>Town level ${DECOR_LV[k]}</small>`:''}</button>`}).join('')}</div>`:'')+
+    `<p class="tmhint">${t==='move'?(sel?'Tap an empty spot to move it there.':'Tap a building or decoration to pick it up.'):t==='road'?(tm.pbrush==='ring'||tm.pbrush==='disc'?(tm.pc?'Now tap where the edge goes.':'Tap the middle of the circle.'):tm.pbrush==='square'?'Tap a path to keep its corners square (tap again to round them).':'Tap or drag to lay paths; corners round themselves where a path turns or ends. Tap a path to lift it.'):'Tap the grass to place. Tap a decoration to remove it.'}</p>`;
   T.hidden=false;T.querySelectorAll('[data-dc]').forEach(b=>b.onclick=()=>{tm.decoCat=b.dataset.dc;tmTools()});T.querySelectorAll('[data-pt]').forEach(b=>b.onclick=()=>{tm.ptype=b.dataset.pt;tmTools()});T.querySelectorAll('[data-pb]').forEach(b=>b.onclick=()=>{tm.pbrush=b.dataset.pb;tm.pc=null;tmTools()});T.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{tm.tool=b.dataset.t;tmPick(null);tmTools()});T.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{const k=b.dataset.d;if(decoLocked(k)){toast(`${TM_DECOR[k].n} unlocks at town level ${DECOR_LV[k]}. The town grows as your bond grows.`,true);return}tm.deco=k;tmTools()});
   $('#tmDone').onclick=()=>tmArrange(false);const rs=$('#tmReset');if(rs)rs.onclick=()=>{if(!tm.resetAsk){tm.resetAsk=1;tmTools();setTimeout(()=>{tm.resetAsk=0;tm.arr&&tmTools()},3000);return}tm.resetAsk=0;tmSetM(tmMk(),tmDefault(tmMk()));tmSave();tmSync(false);toast('Back to the original town.');tmTools()};const r=$('#tmRot'),dl=$('#tmDel'),dp=$('#tmDrop');if(r)r.onclick=tmRotate;if(dl)dl.onclick=()=>{const n=+tm.sel.slice(2);tmM().d.splice(n,1);tmPick(null);tmSave();tmDecor()};if(dp)dp.onclick=()=>tmPick(null)}
 function tmArrange(on){const was=!!tm.arr;tm.arr=on;if(on)tmUnmerge();if(was!==!!on&&tm.decor){tmDecor();tm.mergeDirty=true}tm.grid.visible=on;$('#tmCard').hidden=true;tm.focus=null;tm.tgtTo.set(on?Math.sin(tm.yaw)*3:0,0,on?Math.cos(tm.yaw)*3:0);if(on&&tm.pitch<1.05)tm.pitch=1.1;tmPick(null);$('#tmArr').hidden=on;$('#town3').classList.toggle('arr',on);tmTools()}
@@ -30753,13 +30836,16 @@ function tmTap(cx,cy){{const w=$('#tmWheel');if(w&&!w.hidden){tmWheelOpen(false)
     if(id)tmPick(id);return}
   if(tm.tool==='decor'){if(id&&id.startsWith('d:')){m.d.splice(+id.slice(2),1);tmSave();tmDecor();return}if(!hit)return;if(decoLocked(tm.deco)){toast('Pick a decoration first.');return}const [w,d]=TM_DECOR[tm.deco].sz||[1,1],x=gx-Math.floor((w-1)/2),z=gz-Math.floor((d-1)/2),why=tmFits(m,x,z,w,d,null,true);
     if(why){toast(why==='edge'?'That’s off the edge of the island.':'Something is already there.');return}if(m.d.length>=80){toast('The island is full of decorations!');return}m.d.push([tm.deco,x,z]);tmSave();tmDecor();return}
-  if(tm.tool==='road'&&hit){if(tm.pbrush==='ring'||tm.pbrush==='disc'){if(!tm.pc){tm.pc=[gx,gz];tmTools()}else{tmRoadShape(tm.pc[0],tm.pc[1],gx,gz);tm.pc=null;tmTools()}return}tmRoad(gx,gz,null)}}
+  if(tm.tool==='road'&&hit){if(tm.pbrush==='ring'||tm.pbrush==='disc'){if(!tm.pc){tm.pc=[gx,gz];tmTools()}else{tmRoadShape(tm.pc[0],tm.pc[1],gx,gz);tm.pc=null;tmTools()}return}{const ci=tmCircleAt(gx,gz),m=tmM();if(ci>-1&&m.c[ci][4]===(tm.ptype||'cobble')&&!m.r.some(q=>q[0]===gx&&q[1]===gz)){m.c.splice(ci,1);tmPaths();saveSoon();return}}if(tm.pbrush==='square'){const m=tmM(),q=m.r.find(q=>q[0]===gx&&q[1]===gz);if(q){if(q[3]==='s')q.length=3;else{q[2]=q[2]||'cobble';q[3]='s'}tmPaths();saveSoon()}return}tmRoad(gx,gz,null)}}
 function tmRoad(gx,gz,val,quiet){const m=tmM(),pt=tm.ptype||'cobble';if(gx<0||gz<0||gx>=TM_W||gz>=TM_D)return val;if(tmMk()==='world'&&!inIsland(gx,gz))return val;const i=m.r.findIndex(q=>q[0]===gx&&q[1]===gz),has=i>-1,same=has&&pathT(m.r[i])===pt;
   // a tap on the same kind of path lifts it; on another kind it changes it; dragging paints (val true) or lifts (false)
   let want=val==null?!same:val;if(want&&same)return want;if(!want&&!has)return want;
   if(want){const t=tmTaken(m).get(gx+','+gz);if(t&&t.startsWith('b:'))return want;if(has)m.r[i]=[gx,gz,pt];else m.r.push([gx,gz,pt])}else m.r.splice(i,1);if(!quiet){clearTimeout(tmRoad.t);tmRoad.t=setTimeout(()=>{tmPaths();saveSoon()},140)}return want}
 // round brushes: a ring (tap the middle, then the edge) or a round plaza (filled)
-function tmRoadShape(cx,cz,ex,ez){const r=Math.hypot(ex-cx,ez-cz);if(r<.8)return;const fill=tm.pbrush==='disc';for(let z=Math.floor(cz-r-1);z<=cz+r+1;z++)for(let x=Math.floor(cx-r-1);x<=cx+r+1;x++){const d=Math.hypot(x-cx,z-cz);if(fill?d<=r+.35:Math.abs(d-r)<=.55)tmRoad(x,z,true,1)}tmPaths();saveSoon()}
+function tmRoadShape(cx,cz,ex,ez){const r=Math.hypot(ex-cx,ez-cz);if(r<.8)return;const m=tmM();m.c=m.c||[];if(m.c.length>=24){toast('That’s a lot of circles! Lift one first.');return}
+  m.c.push([cx+.5,cz+.5,Math.round(r*2)/2,tm.pbrush==='disc'?0:1,tm.ptype||'cobble']);tmPaths();saveSoon()}
+// a tap on a circle with the paint brush and the same kind lifts it
+function tmCircleAt(gx,gz){const m=tmM(),x=gx+.5,z=gz+.5;return(m.c||[]).findIndex(([cx,cz,r,w,t,a0,a1])=>{const d=Math.hypot(x-cx,z-cz);return(w>0?Math.abs(d-r)<=w/2+.3:d<=r+.3)&&pathInArc(Math.atan2(z-cz,x-cx)*180/Math.PI,a0,a1)})}
 // ---------- open, close, input, frame ----------
 tmPlacesOf('town').filter(k=>!tmGate(k)).forEach(k=>{try{tmImg(k)}catch(_){}});
 {const warm=()=>{try{if(!tm)tmInit();if(tm)setTimeout(()=>{try{tmNormCur();tmFresh()}catch(e){}},250)}catch(e){}};setTimeout(()=>window.requestIdleCallback?requestIdleCallback(warm,{timeout:1500}):warm(),1600)}
@@ -30839,6 +30925,15 @@ function tmSkyDraw(){const cv=$('#tmSky');if(!cv||!tm||!tm.cam)return;const [W,H
 const TM_TOD=[[0,0x9FB4FF,.7,.22,0x7C8CFF,2.5,1],[5,0x9FB4FF,.7,.22,0x7C8CFF,2.5,1],[6.2,0xFFB08A,1.9,.42,0xFFC6D9,2.3,.45],[7.6,0xFFF1DE,2.9,.5,0xFFFFFF,1.8,0],[17.4,0xFFF1DE,2.9,.5,0xFFFFFF,1.8,0],
   [18.8,0xFFB45A,2.4,.46,0xFFD9B0,2.1,.2],[19.9,0xD39BFF,1.4,.34,0xB9A2FF,2.3,.7],[21,0x9FB4FF,.7,.22,0x7C8CFF,2.5,1],[24,0x9FB4FF,.7,.22,0x7C8CFF,2.5,1]];
 let tmTodT=0;
+const TM_GLOW={lamp:[1.7,.95],lamppair:[2,.9],stringlights:[1.7,.8],mkt_arch:[1.7,.9],clocktower:[1.3,1.2],beacon:[2.2,1.4],phonebox:[1,.7],busstop:[1.2,.7],gazebo:[1.5,.8],
+  carousel:[1.8,.9],gatearch:[1.3,.9],parkgate:[1.1,.6],greenhouse:[1.3,.6],fountain:[1.6,.5],mkt_jam:[.8,.4],mkt_flower:[.8,.4],mkt_lemon:[.8,.4],mkt_knit:[.8,.4],mkt_curio:[.8,.4],mkt_paper:[.8,.4],mkt_pebble:[.8,.4],mkt_toy:[.8,.4]};
+function tmGlowSrc(){const out=[],m=tmM();m.d.forEach(q=>{const G_=TM_GLOW[q[0]];if(!G_)return;const [w,d]=(TM_DECOR[q[0]]&&TM_DECOR[q[0]].sz)||[1,1];out.push({x:q[1]+w/2-TM_W/2,z:q[2]+d/2-TM_D/2,r:G_[0],y:G_[1],k:q[0]})});
+  for(const k in tm.bld){const D_=typeof twDoor==='function'?(tw.doors={},twDoor(k)):null;if(D_)out.push({x:D_.x,z:D_.z,r:1.25,y:.6,k:'door'})}return out}
+function tmGlowBuild(){const src=tmGlowSrc(),key=src.length+'|'+src.map(s=>Math.round(s.x*10)+','+Math.round(s.z*10)).join(';');if(tm.glow&&tm.glowKey===key)return;if(tm.glow)tm.world.remove(tm.glow);tm.glowKey=key;
+  const P=[],N=[],U=[],I=[];let n=0;src.forEach(s=>{const r=s.r;[[-1,-1],[1,-1],[1,1],[-1,1]].forEach(([a,b])=>{P.push(s.x+a*r,.05,s.z+b*r);N.push(0,1,0);U.push((a+1)/2,(b+1)/2)});I.push(n,n+2,n+1,n,n+3,n+2);n+=4});
+  if(!tm.glowTex)tm.glowTex=ctex(128,128,(x,w,h)=>{const q=x.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);q.addColorStop(0,'rgba(255,255,255,1)');q.addColorStop(.35,'rgba(255,255,255,.55)');q.addColorStop(1,'rgba(255,255,255,0)');x.clearRect(0,0,w,h);x.fillStyle=q;x.fillRect(0,0,w,h)},null,1);
+  const mat=new THREE.MeshBasicMaterial({map:tm.glowTex,transparent:true,opacity:0,depthWrite:false});mat.color.r=2.4;mat.color.g=1.6;mat.color.b=.75;
+  const o=new THREE.Mesh(new THREE.BufferGeometry(P,N,U,I),mat);o.outline=0;o.castShadow=false;o.receiveShadow=false;o.renderOrder=5;tm.glow=o;tm.glowM=mat;tm.glowSrc=src;tm.world.add(o)}
 function tmTOD(){const now=performance.now();if(now-tmTodT<1000&&skyHourOverride==null)return;tmTodT=now;
   const h=skyHourOverride??centralHour();let i=0;while(i<TM_TOD.length-2&&h>=TM_TOD[i+1][0])i++;const A=TM_TOD[i],B=TM_TOD[i+1],m=A[0]===B[0]?0:ease((h-A[0])/(B[0]-A[0])),lr=(a,b)=>a+(b-a)*m,
     rgb=c=>[(c>>16&255)/255,(c>>8&255)/255,(c&255)/255],cl=(a,b)=>{const x=rgb(a),y=rgb(b);return x.map((v,k)=>v+(y[k]-v)*m)},night=lr(A[6],B[6]);
@@ -30847,7 +30942,8 @@ function tmTOD(){const now=performance.now();if(now-tmTodT<1000&&skyHourOverride
   const a=(Math.min(20,Math.max(6,h))-6)/14*Math.PI,sp=[Math.cos(a)*13-2,3+Math.sin(a)*10,1.5],mp=[-8,12,5];dl.position.set(...sp.map((v,k)=>v+(mp[k]-v)*night));tm.dl=dl;tm.dlBase=[dl.position.x,dl.position.y,dl.position.z];
   const k=lr(A[3],B[3]),t=cl(A[4],B[4]);tm.todK=t.map(v=>v*k);const L=tm.sc.userData.lighting;L.exposure=1.08-.2*night;L.emisBoost=lr(A[5],B[5]);
   tmGlassMs.forEach(g=>g.emissiveIntensity=.06+.75*night);tm.signs.forEach(q=>q.ms.forEach(m=>{m.basic=night>.4;m.emissiveIntensity=night>.4?0:.02}));
-  L.points=night>.05?tmM().d.filter(q=>q[0]==='lamp').map(q=>[q[1]+.5-TM_W/2,q[2]+.5-TM_D/2]).sort((a,b)=>Math.hypot(a[0]-tm.tgt.x,a[1]-tm.tgt.z)-Math.hypot(b[0]-tm.tgt.x,b[1]-tm.tgt.z)).slice(0,8).map(([x,z])=>({pos:[x,.95,z],color:[1.5*night,1.15*night,.65*night],range:2.8})):[];
+  if(night>.05){try{tmGlowBuild()}catch(e){console.warn('glow',e)}}if(tm.glow){tm.glow.visible=night>.05;tm.glowM.opacity=Math.min(1,night)*.42}
+  L.points=night>.05&&tm.glowSrc?tm.glowSrc.filter(s=>s.k!=='door'&&s.r>=1.2).sort((a,b)=>Math.hypot(a.x-tm.tgt.x,a.z-tm.tgt.z)-Math.hypot(b.x-tm.tgt.x,b.z-tm.tgt.z)).slice(0,8).map(s=>({pos:[s.x,s.y+.15,s.z],color:[1.5*night,1.15*night,.65*night],range:s.r*1.7})):[];
   $('#town3').style.setProperty('--tmn',night.toFixed(3));tm.night=night}
 function tmDraw(dt){const[W_,H_]=tmSize(),R=tm.R;if(tm.mergeDirty&&!tm.arr&&!tm.pending)tmMergeWorld();tmTOD();{const d=$('#tmDock'),bk=$('#tmBack'),sh=!!tm.focus&&!tm.arr&&!$('#tmCard').hidden;if(bk.hidden===sh)bk.hidden=!sh;if(d&&d._f!==tm.focus){d._f=tm.focus;d.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.k===tm.focus))}}
   if(R.__w!==W_||R.__h!==H_){R.setPixelRatio(Math.min(1.5,devicePixelRatio||1));R.setSize(W_,H_,false);R.__w=W_;R.__h=H_;tm.cam.aspect=W_/H_;tm.cam.updateProjectionMatrix()}
@@ -30876,7 +30972,7 @@ function tmTick(ts){if(!tm||!tm.open)return;requestAnimationFrame(tmTick);let dt
   tmFrame(dt)}
 {const cv=$('#tmc');let down=null,paint=null,pinch=0;
   let twist=null;cv.addEventListener('pointerdown',e=>{if(!tm)return;try{cv.setPointerCapture(e.pointerId)}catch(_){}tm.ptr.set(e.pointerId,[e.clientX,e.clientY]);if(tm.ptr.size===2){const [a,b]=[...tm.ptr.values()];pinch=Math.hypot(a[0]-b[0],a[1]-b[1]);twist=Math.atan2(b[1]-a[1],b[0]-a[0]);down=null;return}
-    down={x:e.clientX,y:e.clientY,mv:0};paint=null;if(tm.arr&&tm.tool==='road'&&tm.pbrush!=='ring'&&tm.pbrush!=='disc'){tmCell(e.clientX,e.clientY);const p=new THREE.Vector3();if(tm.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),p)){paint=tmRoad(Math.floor(p.x+TM_W/2),Math.floor(p.z+TM_D/2),null);down.painted=1}}});
+    down={x:e.clientX,y:e.clientY,mv:0};paint=null;if(tm.arr&&tm.tool==='road'&&(tm.pbrush||'line')==='line'){tmCell(e.clientX,e.clientY);const p=new THREE.Vector3();if(tm.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),p)){paint=tmRoad(Math.floor(p.x+TM_W/2),Math.floor(p.z+TM_D/2),null);down.painted=1}}});
   cv.addEventListener('pointermove',e=>{if(!tm||!tm.ptr.has(e.pointerId))return;const pr=tm.ptr.get(e.pointerId);tm.ptr.set(e.pointerId,[e.clientX,e.clientY]);
     if(tm.ptr.size===2){const [a,b]=[...tm.ptr.values()],dd=Math.hypot(a[0]-b[0],a[1]-b[1]),an=Math.atan2(b[1]-a[1],b[0]-a[0]),mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;if(tm.mid)tmPanPx(mx-tm.mid[0],my-tm.mid[1]);tm.mid=[mx,my];tm.zoomTo=null;if(pinch)tm.zoom=clamp(tm.zoom*pinch/dd,.02,1.4);pinch=dd;if(twist!=null){let da=an-twist;if(da>Math.PI)da-=2*Math.PI;if(da<-Math.PI)da+=2*Math.PI;tm.yaw-=da}twist=an;return}if(!down)return;const dx=e.clientX-pr[0],dy=e.clientY-pr[1];down.mv+=Math.abs(dx)+Math.abs(dy);
     if(paint!=null){tmCell(e.clientX,e.clientY);const p=new THREE.Vector3();if(tm.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),p))tmRoad(Math.floor(p.x+TM_W/2),Math.floor(p.z+TM_D/2),paint);return}
@@ -31769,10 +31865,10 @@ function lifeGiftHtml(k,mail){const L=lifeGiftables();return`<div class="lifegif
 const tw={on:false,pet:null,res:new Map(),grid:null,gkey:'',doors:{},follow:true,t:0,card:null,pend:null};
 const TW_PET_H=.5,TW_RES_SCALE=.3,TW_FULL=5,TW_SPEED=2.4,TW_RSPEED=1.15;
 // the walkable grid: buildings and big decorations block; streets are cheaper to walk on
-function twGrid(){const m=tmM();if(!m)return null;const key=JSON.stringify(m.b)+'|'+m.d.length+'|'+m.r.length+'|'+m.r.map(q=>q[2]||'').join('');if(tw.grid&&tw.gkey===key)return tw.grid;
+function twGrid(){const m=tmM();if(!m)return null;const key=JSON.stringify(m.b)+'|'+m.d.length+'|'+m.r.length+'|'+m.r.map(q=>(q[2]||'')+(q[3]||'')).join('')+'|'+JSON.stringify(m.c||[]);if(tw.grid&&tw.gkey===key)return tw.grid;
   const W=TM_W,D=TM_D,block=new Uint8Array(W*D),road=new Uint8Array(W*D);tmTakenB(m).forEach(c=>{const [x,z]=c.split(',').map(Number);if(x>=0&&z>=0&&x<W&&z<D)block[z*W+x]=1});
   m.d.forEach(q=>{const D_=TM_DECOR[q[0]];if(!D_||q[0]==='flowers'||q[0]==='lot')return;const [w,d]=D_.sz||[1,1];for(let i=0;i<w;i++)for(let j=0;j<d;j++){const x=q[1]+i,z=q[2]+j;if(x<W&&z<D)block[z*W+x]=1}});
-  const cost=new Float32Array(W*D).fill(PATH_GRASS);m.r.forEach(q=>{const [x,z]=q;if(x>=0&&z>=0&&x<W&&z<D){road[z*W+x]=1;block[z*W+x]=0;cost[z*W+x]=PATH_T[pathT(q)].cost}});
+  const cost=new Float32Array(W*D).fill(PATH_GRASS);[...pathCircleCells(m),...m.r].forEach(q=>{const [x,z]=q;if(x>=0&&z>=0&&x<W&&z<D){road[z*W+x]=1;block[z*W+x]=0;cost[z*W+x]=Math.min(cost[z*W+x],PATH_T[pathT(q)].cost)}});
   const own=new Map();for(const k in m.b){const [x,z,r]=m.b[k],[w,d]=tmFoot(k,r);for(let i=0;i<w;i++)for(let j=0;j<d;j++)own.set((z+j)*W+x+i,k)}
   tw.grid={W,D,block,road,own,cost};tw.gkey=key;tw.doors={};return tw.grid}
 const twCell=(x,z)=>[Math.floor(x+TM_W/2),Math.floor(z+TM_D/2)],twPos=(i,j)=>[i-TM_W/2+.5,j-TM_D/2+.5];
@@ -52024,7 +52120,7 @@ let syncBase=null,syncBaseRev=0;
 function snapBase(s,keep){const b={};for(const k in s)b[k]=JSON.stringify(s[k]);syncBase=b;syncBaseRev=+s.rev||0;if(keep!==false)try{localStorage.setItem('r42base:'+roomCode,JSON.stringify(s))}catch(_){}}
 const SYNC_SKIP={rev:1,kr:1,visits:1,jrT:1,cv:1,minV:1};
 // the oldest app version allowed to edit the shared room (older ones refresh themselves when they see this in the doc)
-const SYNC_MIN_V=74;
+const SYNC_MIN_V=75;
 const localChanged=()=>!!syncBase&&Object.keys(state).some(k=>!SYNC_SKIP[k]&&JSON.stringify(state[k])!==syncBase[k]);
 const mNum=(l,r,b)=>(+b||0)+((+l||0)-(+b||0))+((+r||0)-(+b||0));
 const mCounts=(l,r,b)=>{b=b||{};l=l||{};r=r||{};const o={};new Set([...Object.keys(l),...Object.keys(r),...Object.keys(b)]).forEach(k=>{const v=mNum(l[k],r[k],b[k]);if(v>0)o[k]=Math.min(99,v)});return o};
@@ -52149,7 +52245,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=74;
+const APP_V=75;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
