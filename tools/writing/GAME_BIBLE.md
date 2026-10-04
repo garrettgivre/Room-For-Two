@@ -218,6 +218,43 @@ a candle in a window. Someone picked them up, said something kind, and they stay
 - The map's arrangement is shared and editable by the two of you (Arrange mode), so "next door" is a neighbourhood fact, not
   a fixed coordinate. Neighbourhood membership (`HOUSES`) is canon; exact plots are not.
 
+## The town's civic places (v73: now real buildings you can walk into)
+- **The Town Hall** (`p_townhall`, at the top of Market Street, north of the plaza; Mayor Marsh 9:00-15:00, open 8-18): a cream two-storey
+  hall with a teal roof, a clock tower with a bell and a flag, a four-column portico and the speech balcony above it. Fold's sign
+  "TOWN HALL" (every letter leaning left) is on the portico; Sketch and Stitch's tape measure was left on the bottom step. Inside: the
+  entrance hall (guest book lectern, the First Brick in its velvet box under a glass dome, the town seal rug), the Mayor's office in his
+  Ribbon Hall style (cheer chart, hat stand, rosette banner), an assembly hall with council benches and a little town bell, a waiting room
+  with a pet bed for visiting pets, a locked records room; upstairs the council chamber (long table) opening onto the balcony room.
+  You can sign the guest book (it keeps everyone's signatures) and see the First Brick.
+- **The Library** (`p_library`, on the west street; Dewey 10:00-16:00, open 9-18): a cream hall with a sky-blue roof, a frieze of book
+  spines, a portico whose clock is always at ten o'clock (the quiet), a cupola with a paper-moth weather vane, a round story room with a
+  carousel-striped roof for the children's corner, a book drop and a little free library out front. Inside: rolling-ladder bookstacks,
+  Dewey's desk (date stamp, the basket of lost bookmarks, Fold's crane from an overdue notice on a little arm), the reading nook with the
+  big reading cushion Lumi sleeps on, the story hour rug with Boing's castle pop-up book, and the bindery (the "back room" Dewey leaves
+  open for Echo; staff only). You can borrow a book (one a day).
+- **The Plaza Post Office** (`p_postoffice`, on the east street; Parcel 12:00-16:00 after the round, Fold 14:00-17:00, open 8-18): Parcel's
+  dream come true. Mint walls, a cherry scalloped roof, a bell turret with a winged-letter weather vane, a portico clock, a round-top post
+  box, an outdoor bank of cubbies (the first lime and blue). Inside: the wall of house cubbies (ours first, lime and blue; Fold lettered
+  them all and ours took longest, "the corners wanted to be right"), the counter with scales and the jar of Fold's paper hearts, a
+  writing desk, Fold's lettering corner (Fold is lettering a sign for the bakery: "the B needs one more day"), and the locked sorting room
+  with Parcel's pinned town map. Check your cubby there (the Inbox).
+- **The Weather Station** (`p_weather`, on the hill north of the Town Hall; Nimbus 6:00-9:00, open 6-20): white-blue clapboard, an
+  observatory dome, a mast with spinning cups and a cloud-tailed vane, a yellow weather balloon tied to the roof deck, a rain gauge.
+  Inside: the forecast chalkboard (raindrops count how many umbrellas you'll need), the seven-umbrella tree, the weather book on a lectern
+  (visitors can read their own page), a drying cupboard (staff only). Borrow an umbrella; read your page.
+- **The Lamplighter's Shed** (`p_lampshed`, in Lantern Meadow behind Echo's; Lumi 17:00-19:00 before the round, open 16-23): a teal shed with
+  a plum roof and a glowing lantern cupola, lanterns on hooks, a ladder, a test lamp post by the door, night jasmine (Posy's) by the door.
+  Inside: the wick workbench (the spare bulb for the lamp by the Snack Shack sits there; Lumi keeps meaning to take it over), the
+  lamp-post tester, the lantern hook rail, a nap cot for before the night round, an oil store (staff only). Help trim the wicks.
+- **The Sunday market** on Market Street (Sundays 9:00-13:00): eight stalls under a candy-striped "Market" arch, each with its vendor
+  behind the counter: Pip (jam), Posy (flowers and seeds), Scone and Crumb (lemonade), Prickles (curios; a pink pennant and a
+  brass-cornered travel trunk), Fold (paper crafts, a pinwheel), Cobble (river pebbles; his best holed pebble on a pink cushion, a
+  traffic cone and a flask), Bobbin (knits), Tock (wind-up toys, a chalk tally board). Chat with a vendor to buy from their stall.
+- **The park** at the west end: a rose-twined arch with a hanging "Park" sign and open picket gates, the big slide (Scone's plaster is
+  still stuck to its side) and the small slide with the snail, the old stone wall with Crumb's holed stone, Posy's raised flower bed and
+  potting shed (pink door with a daisy, a rain barrel), a climbing dome, a hopscotch path, a wisteria bench; Posy works there in the
+  mornings and the twins play there 9:00-14:00.
+
 ## Places in the lore that aren't buildings on the map (yet)
 - **The Town Hall**: the Mayor's office (9:00-15:00), the guest book, the cheer chart, a balcony, an awning, steps Sketch and
   Stitch once measured, a sign Fold painted (the letters lean left), and the first brick in its velvet box.
@@ -1652,6 +1689,11 @@ lit first.
 - Nimbus (they): the seven umbrellas are for forgetful people (Prickles, the Mayor, Bolt, Fold, both twins, a spare for you); eleven of Posy's forget-me-not pots on their sill; trades fog notes with Beacon via Parcel; a page for each of you in the weather book; Crumb counted 61 boots at last year's Puddle Parade. Bestie: has been up Beacon's lighthouse and seen the sea from high; writes "certain" for the first time; a heart-shaped puddle by your gate. Nickname: "sunny spell".
 - Posy (she): a marigold seedling for every new resident; Scone's worm is "Mayor Wiggles"; rosemary on Bunbun's step; the night stock by the fountain lamp (the pet's favourite) was planted by Lumi; worries the sea trip will make Prickles miss travelling. Bestie: the 301st sunflower seed is yours (first row, nearest the path); Prickles secretly waters her at night; the two-bloom rose is named after the pet; twelve pressed flowers at one year. Nickname: "sprout".
 - Prickles (he): the boat cat was Biscuit (ate the hardtack, slept in his helmet, bit him twice); a lizard on Cobble's wall reminds him of Captain; the sandstorm chapter is 40 pages; Stitch has seven of his flower jars; Cobble has said "good hat"; an empty pin hole for a 13th flag on the map, the sea; the sea trip is set for the morning after the first warm spring day. Bestie: a pink pennant for the pet; his last chapter ends "and there she was, with the can". A small pink flag for you on the map at one year. Nickname: "trailmate".
+
+- **2026-10-04, the civic places (v73):** the Town Hall, the Library, the Plaza Post Office, the Weather Station, the Lamplighter's Shed, the
+  Sunday market and the park became real (see "The town's civic places"). New furniture sets named for them: Town Square (`ctownhall`),
+  Lending Library (`clibrary`), First Class (`cpostoffice`, Parcel's Bestie nickname for you), Fair Weather (`cweather`), Wick & Ladder
+  (`clampshed`), Market Morning (`cmarket`). Story hour, the bake sale and the festivals still happen at the hosts' houses.
 
 ## Open questions (undecided; ask Garrett before writing as fact)
 1. **Is there a sea?** Bubble Bay, the pier, the beach, the harbour, boats, gulls and Beacon's lighthouse are all over the lore, and Prickles dreams of the sea; the v60 map is countryside with

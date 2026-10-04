@@ -20439,6 +20439,225 @@ SET_DEF({
     const cu=M(0xffffff,{map:s1Stripe(0xFFF1DA,0x2F8C93,10,true),roughness:.8});bx(W.g,W.w+.04,.32,.03,cu,0,W.y0+W.h-.18,.06);cy(W.g,.02,.02,W.w+.3,Br,0,W.y0+W.h-.02,.07,8).rotation.z=Math.PI/2;
     return W}}
 });
+// ---- place set: market
+SET_DEF({
+ set:{k:'cmarket',n:'Market Morning',c:'#FF6FAE'},
+ tiles:{
+  f:['Market square bricks',(x,w,h)=>{x.fillStyle='#F1E0C6';x.fillRect(0,0,w,h);const R=rnd(9101),B=w/8,g=4;
+    // basket-weave: 4x4 blocks, each two bricks, turning every other block
+    for(let j=0;j<8;j++)for(let i=0;i<8;i++){const ox=i*B,oy=j*B,hz=(i+j)%2===0;for(let k=0;k<2;k++){const px=hz?ox+g/2:ox+k*B/2+g/2,py=hz?oy+k*B/2+g/2:oy+g/2,pw=hz?B-g:B/2-g,ph=hz?B/2-g:B-g;
+      const L=64+R()*9,H=8+R()*12,S=38+R()*14;rr(x,px,py,pw,ph,6);x.fillStyle=`hsl(${H},${S}%,${L}%)`;x.fill();
+      x.save();rr(x,px,py,pw,ph,9);x.clip();x.fillStyle='rgba(255,240,220,.28)';x.fillRect(px,py,pw,4);x.fillRect(px,py,3,ph);x.fillStyle='rgba(90,30,20,.16)';x.fillRect(px,py+ph-4,pw,4);x.fillRect(px+pw-3,py,3,ph);
+      for(let q=0;q<10;q++){x.fillStyle=R()<.5?'rgba(255,230,210,.2)':'rgba(120,50,30,.14)';x.beginPath();x.arc(px+R()*pw,py+R()*ph,1+R()*3,0,7);x.fill()}x.restore()}}
+    mottle(x,w,h,9102,5,.18);grain(x,6,9103)}],
+  w:['Awning stripe paper',(x,w,h)=>{const top=150,rail=Math.round(h*.64);
+    // cream paper with pink pinstripes, little market things scattered
+    x.fillStyle='#FFF6E8';x.fillRect(0,0,w,h);x.fillStyle='rgba(255,111,174,.22)';for(let i=0;i<w;i+=32)x.fillRect(i+15,top,2,rail-top);mottle(x,w,rail,9111,4,.12);
+    const jar=(x)=>{x.fillStyle='#E8384F';x.strokeStyle=INK;x.lineWidth=2;rr(x,-9,-8,18,20,5);x.fill();x.stroke();x.fillStyle='#FFFFFF';rr(x,-11,-14,22,7,3);x.fill();x.stroke();x.fillStyle='rgba(255,111,174,.9)';x.fillRect(-9,-13,4,5);x.fillRect(-1,-13,4,5);x.fillStyle='#FFF4E0';rr(x,-6,-1,12,7,2);x.fill()};
+    const lemon=(x)=>{x.fillStyle='#FFD21F';x.strokeStyle=INK;x.lineWidth=2;x.beginPath();x.ellipse(0,0,13,9,0,0,7);x.fill();x.stroke();x.fillStyle='#5DB548';x.beginPath();x.ellipse(5,-10,6,3,-.5,0,7);x.fill();x.stroke();x.fillStyle='rgba(255,255,255,.6)';x.beginPath();x.ellipse(-4,-3,4,2,-.3,0,7);x.fill()};
+    const posy=(x)=>{x.strokeStyle=INK;x.lineWidth=2;for(let k=0;k<5;k++){const a=k/5*Math.PI*2-Math.PI/2;x.fillStyle='#FF8FC0';x.beginPath();x.ellipse(Math.cos(a)*7,Math.sin(a)*7,6,4.5,a,0,7);x.fill();x.stroke()}x.fillStyle='#FFD21F';x.beginPath();x.arc(0,0,4.5,0,7);x.fill();x.stroke()};
+    const cup=(x)=>{x.fillStyle='#3EC8F2';x.strokeStyle=INK;x.lineWidth=2;x.beginPath();x.moveTo(-9,-9);x.lineTo(9,-9);x.lineTo(6,11);x.lineTo(-6,11);x.closePath();x.fill();x.stroke();x.fillStyle='#FFFFFF';x.fillRect(-7,-4,14,4);x.strokeStyle='#FF3D9A';x.beginPath();x.moveTo(3,-9);x.lineTo(7,-17);x.stroke()};
+    lattice(x,w,rail-top-30,4,3,16,(x,k)=>[jar,lemon,posy,cup][k%4](x),{seed:9112,jit:.25,area:[top+30,rail-20]});
+    // the awning band along the top: stripes and scallops
+    for(let i=0;i<8;i++){x.fillStyle=i%2?'#FFFFFF':'#FF6FAE';x.fillRect(i*w/8,0,w/8,top)}x.fillStyle='rgba(59,18,115,.12)';x.fillRect(0,top-14,w,4);
+    for(let i=0;i<8;i++){const cx=i*w/8+w/16;x.fillStyle=i%2?'#FFFFFF':'#FF6FAE';x.beginPath();x.arc(cx,top,w/16,0,Math.PI);x.fill();x.strokeStyle=INK;x.lineWidth=3;x.beginPath();x.arc(cx,top,w/16,0,Math.PI);x.stroke()}
+    x.fillStyle='rgba(255,255,255,.35)';x.fillRect(0,8,w,6);
+    // lime rail, then crate-slat panelling below
+    x.fillStyle='#A6E22E';x.fillRect(0,rail,w,22);x.fillStyle=INK;x.fillRect(0,rail-3,w,3);x.fillRect(0,rail+22,w,3);x.fillStyle='rgba(255,255,255,.45)';x.fillRect(0,rail+3,w,4);
+    const y0=rail+25,n=4,ph=(h-y0)/n;for(let j=0;j<n;j++){const py=y0+j*ph;x.fillStyle=j%2?'#E6B884':'#DDAA74';x.fillRect(0,py,w,ph);x.fillStyle='rgba(255,240,215,.35)';x.fillRect(0,py+3,w,4);x.fillStyle='rgba(80,40,20,.35)';x.fillRect(0,py+ph-5,w,5);
+      x.strokeStyle='rgba(120,70,30,.25)';x.lineWidth=1.2;for(let k=0;k<5;k++){x.beginPath();x.moveTo(0,py+10+k*(ph-16)/5);for(let i=0;i<=w;i+=32)x.lineTo(i,py+10+k*(ph-16)/5+Math.sin(i/40+k+j)*2);x.stroke()}}
+    for(let i=0;i<w;i+=128){x.fillStyle='#8A5E3C';[[i+64,y0+ph/2],[i+64,y0+ph*2.5]].forEach(([px,py])=>{x.beginPath();x.arc(px,py,4,0,7);x.fill()})}
+    grain(x,5,9113)}]},
+ cat:[
+  {k:'mdawning',n:'Striped market awning',fn:'wall',p:7,dc:0,wall:1,y:1.95},
+  {k:'mdjam',n:'Jam pantry shelf',fn:'storage',p:10,dc:12},
+  {k:'mdbuckets',n:'Flower bucket stand',fn:'plant',p:8,dc:5},
+  {k:'mdlemon',n:'Lemonade stand',fn:'fun',p:12,dc:3},
+  {k:'mdpouf',n:'Cable-knit pouf',fn:'seat',p:5,dc:9,perch:{y:.42,z:0,fe:.5}},
+  {k:'mdstool',n:'Folding market stool',fn:'seat',p:4,dc:1,perch:{y:.47,z:0,w:.34,fe:.24}},
+  {k:'mdtable',n:'Umbrella table',fn:'surface',p:11,dc:0},
+  {k:'mdcrates',n:'Crate shelf of curios',fn:'storage',p:9,dc:10},
+  {k:'mdlantern',n:'Paper lantern lamp',fn:'light',p:7,dc:7},
+  {k:'mdrug',n:'River pebble rug',fn:'rug',p:5,dc:9,flat:1},
+  {k:'mdcart',n:'Market cart pet bed',fn:'pet',p:6,dc:3,flat:1,sleep:1}],
+ build:(()=>{
+  const hx=v=>'#'+(v>>>0).toString(16).padStart(6,'0').slice(-6),INKH=0x3B1273;
+  // low-poly helpers (makePiece turns plain boxes and spheres into heavy ones)
+  const LB=(g,w,h,d,r,m,x,y,z)=>ol(add(g,gcache('cmarket_lb'+[w,h,d,r],()=>{const o=globalThis.__geoLod;globalThis.__geoLod=3/8;try{return new THREE.RoundedBoxGeometry(w,h,d,r)}finally{globalThis.__geoLod=o}}),m,x||0,y||0,z||0),Math.min(.03,.006+Math.min(w,h,d)*.22));
+  const LS=(g,r,m,x,y,z,sx,sy,sz,n)=>{n=n||12;const s=add(g,gcache('cmarket_ls'+n+'|'+GEO_LOD,()=>{const P=[];for(let i=0;i<=6;i++){const a=-Math.PI/2+i/6*Math.PI;P.push([Math.max(.0001,Math.cos(a)),Math.sin(a)])}return latheGeo(P,n)}),m,x||0,y||0,z||0);s.scale.set(r*(sx??1),r*(sy??1),r*(sz??1));s.outline=Math.min(.02,.004+r*.18);return s};
+  const CY=(g,a,b,h,m,x,y,z,n)=>ol(add(g,gcache('cmarket_cy'+[a,b,h,n||12],()=>new THREE.CylinderGeometry(a,b,h,n||12)),m,x||0,y||0,z||0),Math.min(.025,.004+Math.min(Math.max(a,b),h)*.18));
+  const LN=(g,a,b,r,m)=>ol(nsLine(g,a,b,r,m),Math.min(.012,.003+r*.25));
+  const FL=(g,pts,d,m,x,y,z)=>ol(add(g,gcache('cmarket_fl'+pts.map(q=>q.map(v=>v.toFixed(3))).join(';')+'|'+d,()=>flatGeo(pts,d)),m,x||0,y||0,z||0),.006);
+  const TX=(k,w,h,fn)=>tcache('cmarket_'+k,()=>ctex(w,h,fn));
+  const Wd=()=>M(0xC98A5A,{roughness:.7}),WdL=()=>M(0xE6B884,{roughness:.65}),WdD=()=>M(0x9A6238,{roughness:.75}),Wh=()=>M(0xFFFFFF,{roughness:.45}),Ink=()=>M(INKH,{roughness:.4}),Zn=()=>M(0xB9C6D6,{metalness:.35,roughness:.35});
+  const stripeTex=(c,n,b)=>TX('st'+c+'_'+n+'_'+(b||0xFFFFFF),64,64,(x,w,h)=>{for(let i=0;i<n;i++){x.fillStyle=hx(i%2?(b||0xFFFFFF):c);x.fillRect(i*w/n,0,w/n+.5,h)}});
+  const gingTex=c=>TX('gg'+c,32,32,(x,w,h)=>{x.fillStyle='#FFFFFF';x.fillRect(0,0,w,h);x.globalAlpha=.5;x.fillStyle=hx(c);for(let i=0;i<4;i++){x.fillRect(i*8,0,4,h);x.fillRect(0,i*8,w,4)}x.globalAlpha=1;x.fillStyle=hx(c);for(let j=0;j<4;j++)for(let i=0;i<4;i++)x.fillRect(i*8,j*8,4,4)});
+  const scallops=(g,len,n,mA,mB,x,y,z,ry)=>{const v=piv(g,x,y,z);v.rotation.y=ry||0;const r=len/n/2;LB(v,len,.07,.02,.01,mA,0,0,0);const hc=[];for(let i=0;i<=6;i++){const a=Math.PI+i/6*Math.PI;hc.push([Math.cos(a)*r,Math.sin(a)*r*.9])}
+    for(let i=0;i<n;i++)FL(v,hc,.016,i%2?mB:mA,-len/2+r+i*2*r,-.034,-.008);return v};
+  const jar=(g,x,y,z,col,s)=>{s=s||1;const gm=M(0xffffff,{map:gingTex(0xFF3D9A),roughness:.6});CY(g,.05*s,.052*s,.11*s,M(col,{roughness:.15}),x,y+.055*s,z,10);CY(g,.0535*s,.0535*s,.04*s,M(0xFFF4E0,{roughness:.55}),x,y+.055*s,z,10);CY(g,.058*s,.058*s,.024*s,gm,x,y+.122*s,z,10)};
+  const chalk=(k,draw)=>M(0xffffff,{map:TX('ch'+k,64,48,(x,w,h)=>{x.fillStyle='#2F4B40';x.fillRect(0,0,w,h);x.fillStyle='rgba(255,255,255,.06)';for(let i=0;i<6;i++){x.beginPath();x.ellipse(8+i*11,10+(i*17)%30,9,5,.4,0,7);x.fill()}x.lineCap='round';x.lineJoin='round';x.strokeStyle='rgba(255,255,255,.9)';x.lineWidth=1.5;draw(x,w,h)}),roughness:.85});
+  const heartP=(x,cx,cy,r,f)=>{x.beginPath();x.moveTo(cx,cy+r*.9);x.bezierCurveTo(cx-r*1.5,cy-r*.15,cx-r*.75,cy-r*1.2,cx,cy-r*.4);x.bezierCurveTo(cx+r*.75,cy-r*1.2,cx+r*1.5,cy-r*.15,cx,cy+r*.9);x.closePath();x.fillStyle=f;x.fill()};
+  const bunch=(g,x,y,z,cols,s)=>{const st=M(0x3F9440,{roughness:.6});for(let i=0;i<7;i++){const a=i/7*Math.PI*2+.4,r=i?.06*s:0,fx=x+Math.cos(a)*r,fz=z+Math.sin(a)*r,fy=y+(i?0:.05*s)+((i*5)%3)*.02*s;LN(g,[x,y-.12*s,z],[fx,fy,fz],.006,st);LS(g,.045*s,M(cols[i%cols.length],{roughness:.45}),fx,fy,fz,1,.8,1,8)}
+    LS(g,.05*s,M(0x5DB548,{roughness:.6}),x+.05*s,y-.03*s,z+.03*s,1,.5,1,8)};
+  return{
+  // a striped canvas awning with a scalloped edge on iron brackets, and a little chalk menu hanging under it
+  mdawning(c){const g=G(),A=M(0xffffff,{map:stripeTex(c,10),roughness:.55}),Cm=M(c,{roughness:.5}),W=Wh(),Ir=Ink(),w=1.4;
+    LB(g,w+.06,.1,.08,.02,WdD(),0,.25,.04);
+    const ang=.62,len=.52,cp=piv(g,0,.28,.05);cp.rotation.x=ang;LB(cp,w,.03,len,.012,A,0,0,len/2);
+    const fy=.28-Math.sin(ang)*len,fz=.05+Math.cos(ang)*len;scallops(g,w,10,Cm,W,0,fy-.02,fz+.01,0);
+    [-1,1].forEach(s=>{LN(g,[s*w*.42,-.12,.02],[s*w*.42,fy,fz-.02],.012,Ir);LN(g,[s*w*.42,-.12,.02],[s*w*.42,-.12,.12],.012,Ir);LS(g,.022,Ir,s*w*.42,fy,fz-.02,1,1,1,8)});
+    // the chalk menu
+    const bd=piv(g,0,-.33,.06);[-.14,.14].forEach(x=>LN(g,[x*1.3,fy-.05,fz-.12],[x,-.22,.06],.004,Zn()));LB(bd,.44,.28,.03,.012,Wd(),0,0,0);
+    const f=add(bd,gcache('cmarket_chp',()=>new THREE.PlaneGeometry(.38,.22)),chalk('menu',(x,w,h)=>{heartP(x,10,14,6,'#FF8FC0');x.beginPath();x.moveTo(20,12);x.lineTo(50,12);x.moveTo(20,20);x.lineTo(42,20);x.stroke();x.fillStyle='#FFD21F';x.beginPath();x.ellipse(12,32,6,4,0,0,7);x.fill();x.beginPath();x.moveTo(20,32);x.lineTo(54,32);x.moveTo(20,40);x.lineTo(46,40);x.stroke()}),0,0,.017);f.outline=0;
+    // a string of little flags along the top board
+    const cols=[0xFF3D9A,0xFFD21F,0x3EC8F2,0xA6E22E,0x9B4DF2,0xFF8A1C];for(let i=0;i<9;i++){const x=-w/2+.1+i*(w-.2)/8;FL(g,[[-.04,0],[.04,0],[0,-.08]],.008,M(cols[i%6],{roughness:.5}),x,.21,.085).outline=.003}
+    return g},
+  // an open pantry shelf in painted wood, three shelves of jam, a gingham scalloped crown
+  mdjam(c){const g=G(),P=M(c,{roughness:.5}),In=M(0xFFF6E8,{roughness:.6}),W=1.0,H=1.5,D=.36;
+    [-1,1].forEach(s=>LB(g,.06,H,D,.02,P,s*(W/2-.03),H/2,0));LB(g,W,.04,D,.015,P,0,.06,0);LB(g,W-.08,H-.1,.02,.01,In,0,H/2,-D/2+.02);
+    const sy=[.08,.5,.92];sy.forEach(y=>LB(g,W-.1,.035,D-.04,.012,WdL(),0,y,.01));LB(g,W+.06,.06,D+.06,.02,P,0,H-.03,0);LB(g,W-.1,.06,.04,.015,P,0,.03,D/2-.02);
+    const gm=M(0xffffff,{map:gingTex(0xFF3D9A),roughness:.6});scallops(g,W+.04,8,gm,M(0xFFFFFF,{roughness:.5}),0,H-.08,D/2+.035,0);
+    const cols=[0xE8304A,0xFF8A1C,0x9B4DF2,0xFFB13B,0xC0306A,0xE8304A,0x7A2A8A,0xFF8A1C];
+    [.1,.52,.94].forEach((y,j)=>{const n=j===2?3:4;for(let i=0;i<n;i++){const x=-W/2+.16+i*(W-.32)/(n-1);jar(g,x,y+.02,.03+(i%2)*.04,cols[(i+j*3)%8],j===0?1.25:1)}});
+    // a basket of lemons on the top shelf, a little price tag
+    CY(g,.11,.09,.07,M(0xD9A15E,{roughness:.8}),.3,.995,.03,12);[[.27,0],[.33,.02],[.3,.05]].forEach(([x,z])=>LS(g,.04,M(0xFFD21F,{roughness:.35}),x,1.05,z,1.2,1,1,10));
+    LN(g,[-.3,.92,.17],[-.3,.85,.19],.003,Ink());LB(g,.09,.06,.008,.004,M(0xFFF4E0,{roughness:.6}),-.3,.82,.19);
+    return g},
+  // a three-step wooden stand of zinc buckets, flowers in every one
+  mdbuckets(c){const g=G(),P=M(c,{roughness:.5}),Z=Zn();
+    [[.36,.15,.12],[.2,.36,-.05],[.0,.58,-.22]].forEach(([dz,h,z],i)=>{LB(g,.9,.04,.2,.012,WdL(),0,h,z+.04);[-1,1].forEach(s=>LB(g,.04,h,.04,.01,P,s*.42,h/2,z+.04))});
+    [-1,1].forEach(s=>{LN(g,[s*.45,0,.2],[s*.45,.62,-.22],.022,P);LN(g,[s*.45,.62,-.22],[s*.45,0,-.3],.022,P);LN(g,[s*.45,.3,-.05],[s*.45,.3,.1],.012,P)});LB(g,.9,.05,.04,.012,P,0,.66,-.22);
+    const cs=[[0xFF6FAE,0xFF3D9A,0xFFFFFF],[0xFFD21F,0xFF8A1C],[0x9B4DF2,0xC9A0FF,0xFFFFFF],[0x3EC8F2,0xFFFFFF],[0xFF3D9A,0xFFD21F]];
+    [[-.22,.17,.16],[.22,.17,.16],[-.2,.38,-.01],[.2,.38,-.01],[0,.6,-.18]].forEach(([x,y,z],i)=>{CY(g,.09,.072,.17,Z,x,y+.085,z,12);add(g,gcache('cmarket_rim',()=>new THREE.TorusGeometry(.09,.008,6,16)),Z,x,y+.17,z).rotation.x=Math.PI/2;bunch(g,x,y+.3,z,cs[i],1)});
+    // a watering can at the foot
+    {const w=piv(g,.36,0,.28);w.rotation.y=-.6;const Cn=M(0x3EC8F2,{roughness:.4});CY(w,.07,.075,.14,Cn,0,.07,0,12);LN(w,[.06,.06,0],[.17,.16,0],.012,Cn);add(w,gcache('cmarket_hdl',()=>new THREE.TorusGeometry(.055,.01,6,12,Math.PI)),Cn,0,.14,0)}
+    return g},
+  // a little lemonade booth: striped front, scalloped canopy, a big lemon sign, jug and cups
+  mdlemon(c){const g=G(),P=M(c,{roughness:.5}),A=M(0xffffff,{map:stripeTex(c,10),roughness:.55}),W=Wh(),Ye=M(0xFFD21F,{roughness:.35});
+    LB(g,1.0,.7,.4,.02,M(0xffffff,{map:stripeTex(c,12),roughness:.55}),0,.37,0);LB(g,1.06,.05,.46,.015,WdL(),0,.745,0);LB(g,1.0,.05,.4,.012,WdD(),0,.025,0);
+    // painted lemon on the front
+    const fr=add(g,gcache('cmarket_lfp',()=>new THREE.PlaneGeometry(.42,.24)),M(0xffffff,{map:TX('lfront',96,56,(x,w,h)=>{x.fillStyle='#FFFFFF';rr(x,0,0,w,h,14);x.fill();x.fillStyle='#FFD21F';x.strokeStyle='#3B1273';x.lineWidth=3;x.beginPath();x.ellipse(w/2,h/2,30,19,0,0,7);x.fill();x.stroke();
+      x.strokeStyle='#FFFFFF';x.lineWidth=2.5;for(let k=0;k<8;k++){const a=k/8*Math.PI*2;x.beginPath();x.moveTo(w/2,h/2);x.lineTo(w/2+Math.cos(a)*23,h/2+Math.sin(a)*14);x.stroke()}x.fillStyle='#FFF7C2';x.beginPath();x.arc(w/2,h/2,4,0,7);x.fill()}),roughness:.5}),0,.4,.202);fr.outline=0;
+    [-1,1].forEach(s=>{CY(g,.025,.025,.8,W,s*.46,1.15,-.12,8)});LB(g,1.12,.04,.5,.015,A,0,1.56,-.05);scallops(g,1.12,10,P,W,0,1.52,.205,0);
+    // the sign on top
+    const sg=piv(g,0,1.6,-.05);[-1,1].forEach(s=>CY(sg,.012,.012,.12,W,s*.16,.06,0,6));const L=LS(sg,.22,Ye,0,.24,0,1.2,.6,.16,16);LS(sg,.035,Ye,.27,.24,0,1,1,.6,8);LS(sg,.035,Ye,-.27,.24,0,1,1,.6,8);const lf=LS(sg,.06,M(0x5DB548,{roughness:.55}),.1,.37,0,1.6,.6,.3,8);lf.rotation.z=.5;
+    const st=TX('lsign',96,40,(x,w,h)=>{x.fillStyle='#FFD21F';x.fillRect(0,0,w,h);x.font='19px "R42 Bubble",sans-serif';x.textAlign='center';x.textBaseline='middle';x.lineJoin='round';x.lineWidth=4;x.strokeStyle='#3B1273';x.strokeText('Lemonade',w/2,h/2+1);x.fillStyle='#FFFFFF';x.fillText('Lemonade',w/2,h/2+1)});
+    [1,-1].forEach(q=>{const p=add(sg,gcache('cmarket_lsp',()=>new THREE.PlaneGeometry(.4,.16)),M(0xffffff,{map:st,roughness:.5}),0,.24,q*.037);p.outline=0;if(q<0)p.rotation.y=Math.PI});
+    // jug, cups, a bowl of lemons
+    CY(g,.08,.075,.22,M(0xFFF09A,{roughness:.12,emissive:0xFFE066,emissiveIntensity:.08}),-.15,.88,.05,14);add(g,gcache('cmarket_jh',()=>new THREE.TorusGeometry(.06,.014,6,12,Math.PI)),W,-.06,.9,.05).rotation.z=-Math.PI/2;
+    [[.0,.08],[.04,.12],[-.03,.05]].forEach(([dy,dx])=>{const s=CY(g,.03,.03,.008,Ye,-.15+dx*.2,.84+dy,.13,10);s.rotation.x=Math.PI/2});
+    const cp=[M(0xFF79B8,{roughness:.4}),M(0x3EC8F2,{roughness:.4})];[[.1,.8,.08],[.18,.8,.08],[.14,.86,.08]].forEach(([x,y,z],i)=>CY(g,.035,.027,.08,cp[i%2],x,y,z,10));
+    CY(g,.1,.07,.06,W,.35,.8,0,14);[[.32,-.02],[.38,.02],[.35,.04]].forEach(([x,z])=>LS(g,.042,Ye,x,.85,z,1.2,1,1,10));
+    return g},
+  // a chunky cable-knit pouf with a button on top
+  mdpouf(c){const g=G(),kt=TX('knit'+c,64,64,(x,w,h)=>{x.fillStyle=hx(c);x.fillRect(0,0,w,h);x.strokeStyle='rgba(255,255,255,.35)';x.lineWidth=2.4;for(let i=0;i<4;i++){const cx=i*16+8;for(let y=-8;y<h+8;y+=12){x.beginPath();x.moveTo(cx-5,y);x.bezierCurveTo(cx+5,y+4,cx+5,y+8,cx-5,y+12);x.stroke();x.beginPath();x.moveTo(cx+5,y);x.bezierCurveTo(cx-5,y+4,cx-5,y+8,cx+5,y+12);x.stroke()}}
+      x.fillStyle='rgba(40,10,40,.18)';for(let i=0;i<4;i++)x.fillRect(i*16,0,2,h)});
+    const m=M(0xffffff,{map:kt,roughness:.85});m.map.wrapS=m.map.wrapT=THREE.RepeatWrapping;m.map.repeat.set(3,1);
+    lathe(g,[[.001,0],[.26,0],[.32,.05],[.35,.16],[.35,.27],[.31,.38],[.22,.43],[.001,.44]],m,0,0,0,20);
+    LS(g,.05,M(shade(c,.25),{roughness:.7}),0,.44,0,1,.45,1,10);
+    return g},
+  // a folding wooden stool with a striped canvas seat
+  mdstool(c){const g=G(),Wo=Wd(),s=M(0xffffff,{map:stripeTex(c,6),roughness:.6});
+    [-1,1].forEach(sd=>[-1,1].forEach(q=>{const l=LN(g,[sd*.16,0,q*.15],[sd*.16,.46,-q*.15],.018,Wo)}));[-1,1].forEach(sd=>LS(g,.025,Ink(),sd*.17,.23,0,1,1,.6,8));
+    [-1,1].forEach(q=>LN(g,[-.17,.46,q*.15],[.17,.46,q*.15],.016,Wo));
+    // the sling sags a little in the middle
+    const P=[],N=[],U=[],I=[],n=8;for(let i=0;i<=n;i++){const u=i/n,z=-.15+u*.3,y=.46-Math.sin(u*Math.PI)*.035;[-1,1].forEach(sd=>{P.push(sd*.16,y,z);N.push(0,1,0);U.push(sd<0?0:1,u)})}for(let i=0;i<n;i++){const a=i*2;I.push(a,a+2,a+1,a+1,a+2,a+3)}
+    const sl=add(g,new THREE.BufferGeometry(P,N,U,I),M(0xffffff,{map:stripeTex(c,6),roughness:.6,side:THREE.DoubleSide}),0,0,0);sl.outline=.004;
+    return g},
+  // a round bistro table under a striped market umbrella
+  mdtable(c){const g=G(),P=M(c,{roughness:.45}),W=Wh();
+    CY(g,.26,.3,.04,Ink(),0,.02,0,16);CY(g,.04,.04,.7,Ink(),0,.37,0,10);CY(g,.42,.42,.04,WdL(),0,.72,0,24);add(g,gcache('cmarket_tr',()=>new THREE.TorusGeometry(.42,.018,6,28)),P,0,.72,0).rotation.x=Math.PI/2;
+    // umbrella: pole, eight striped panels, scallops round the rim
+    CY(g,.018,.018,1.2,W,0,1.25,0,8);const um=piv(g,0,1.72,0);const sa=M(0xffffff,{map:stripeTex(c,16),roughness:.55});
+    const cg=gcache('cmarket_umb',()=>{const P2=[],N2=[],U2=[],I2=[],n=16,R=.62,Hh=.24;for(let i=0;i<n;i++){const a0=i/n*Math.PI*2,a1=(i+1)/n*Math.PI*2,p0=[Math.sin(a0)*R,0,Math.cos(a0)*R],p1=[Math.sin(a1)*R,0,Math.cos(a1)*R],t=[0,Hh,0];
+      const u=[p1[0]-p0[0],p1[1]-p0[1],p1[2]-p0[2]],v=[t[0]-p0[0],t[1]-p0[1],t[2]-p0[2]];let nn=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];const l=Math.hypot(...nn);nn=nn.map(q=>q/l);const k=P2.length/3;[p0,p1,t].forEach(q=>{P2.push(...q);N2.push(...nn)});U2.push(i/n,0,(i+1)/n,0,(i+.5)/n,1);I2.push(k,k+1,k+2)}
+      return new THREE.BufferGeometry(P2,N2,U2,I2)});
+    const cn=add(um,cg,sa,0,0,0);cn.outline=.006;LS(um,.035,P,0,.26,0,1,1,1,10);
+    for(let i=0;i<16;i++){const a=(i+.5)/16*Math.PI*2,q=piv(um,Math.sin(a)*.6,-.005,Math.cos(a)*.6);q.rotation.y=a;FL(q,(()=>{const h=[];for(let k=0;k<=6;k++){const b=Math.PI+k/6*Math.PI;h.push([Math.cos(b)*.115,Math.sin(b)*.07])}return h})(),.01,i%2?W:P,0,0,-.005).outline=.003}
+    // on the table: a basket of bread and a little jug of flowers
+    CY(g,.11,.09,.06,M(0xD9A15E,{roughness:.8}),-.18,.77,.08,12);[[-.2,.06,.3],[-.15,.1,-.4]].forEach(([x,z,r])=>{const b=LS(g,.05,M(0xE6A85E,{roughness:.6}),x,.81,z,1.6,.8,1,10);b.rotation.y=r});
+    CY(g,.045,.04,.1,M(0x3EC8F2,{roughness:.3}),.16,.79,-.1,10);[[0,0,0xFF6FAE],[.025,.01,0xFFFFFF],[-.02,.02,0xFFD21F]].forEach(([dx,dz,cc])=>{LN(g,[.16,.83,-.1],[.16+dx,.92,-.1+dz],.004,M(0x3F9440));LS(g,.024,M(cc,{roughness:.45}),.16+dx,.93,-.1+dz,1,.8,1,8)});
+    return g},
+  // four fruit crates stacked into shelves, full of things from far away
+  mdcrates(c){const g=G(),Wo=M(0xD9A46A,{roughness:.7}),Wl=M(0xC48A52,{roughness:.7}),Pb=M(c,{roughness:.5});
+    const crate=(x,y,z,w,h,d)=>{LB(g,w,.03,d,.01,Wo,x,y+.015,z);LB(g,w,.03,d,.01,Wo,x,y+h-.015,z);[-1,1].forEach(s=>LB(g,.03,h,d,.01,Wo,x+s*(w/2-.015),y+h/2,z));
+      [.25,.75].forEach(f=>LB(g,w-.06,h*.3,.02,.008,Wl,x,y+h*f,z-d/2+.01));LB(g,w,.04,.02,.008,Wl,x,y+.03,z+d/2-.01);[-1,1].forEach(s=>LB(g,.035,h*.22,d*.7,.008,Pb,x+s*(w/2-.004),y+h*.55,z))};
+    crate(-.26,0,0,.5,.4,.36);crate(.26,0,0,.5,.4,.36);crate(-.26,.4,0,.5,.4,.36);crate(.2,.4,.0,.42,.34,.36);
+    // curios: a globe, rolled maps, a compass, a flag in a jar, a jar of striped pebbles, travel journals
+    {const x=-.36,y=.43;CY(g,.04,.05,.02,M(0x9A6238,{roughness:.6}),x,y+.01,.02,10);LN(g,[x,y+.02,.02],[x,y+.07,.02],.006,M(0xE2B54E,{metalness:.5,roughness:.3}));
+      LS(g,.08,M(0xffffff,{map:TX('globe',48,24,(c2,w,h)=>{c2.fillStyle='#6CC6EE';c2.fillRect(0,0,w,h);c2.fillStyle='#A6E22E';[[8,8,6,4],[22,14,8,5],[38,7,5,4],[30,18,4,3]].forEach(([a,b,r1,r2])=>{c2.beginPath();c2.ellipse(a,b,r1,r2,.3,0,7);c2.fill()})}),roughness:.4}),x,y+.15,.02,1,1,1,14).rotation.z=.4}
+    [[-.12,.47],[-.16,.48]].forEach(([x,y],i)=>{const r=CY(g,.03,.03,.3,M(i?0xF3E2BC:0xE9D2A6,{roughness:.8}),x,y,.04,10);r.rotation.z=Math.PI/2-.1+i*.2;r.rotation.y=.3});
+    {CY(g,.05,.05,.12,M(0xBFE8FF,{roughness:.1}),.14,.47,.04,12);LN(g,[.14,.45,.04],[.14,.64,.04],.004,Ink());FL(g,[[0,0],[.09,-.025],[0,-.05]],.006,M(0xFF3D9A,{roughness:.5}),.14,.64,.035).outline=.002}
+    {const pm=[0xB9AFCB,0x8E86A3,0xD9C3A5];for(let i=0;i<5;i++)LS(g,.03,M(pm[i%3],{roughness:.8}),.3+(i%3-1)*.04,.46+Math.floor(i/3)*.03,.05+(i%2)*.03,1.2,.65,1,10)}
+    [[0x8A3A2E,.04],[0x2E6A5A,.075],[0xB5793E,.11]].forEach(([cc,y],i)=>LB(g,.24,.035,.18,.008,M(cc,{roughness:.7}),-.26+i*.01,y,.03));
+    {const x=.26,y=.05;CY(g,.07,.07,.02,M(0xE2B54E,{metalness:.5,roughness:.3}),x,y,.06,16);const d=add(g,gcache('cmarket_cmp',()=>new THREE.CircleGeometry(.06,16)),M(0xffffff,{map:TX('comp',32,32,(x2,w,h)=>{x2.fillStyle='#FFF4E0';x2.fillRect(0,0,w,h);x2.fillStyle='#E8304A';x2.beginPath();x2.moveTo(16,4);x2.lineTo(19,16);x2.lineTo(13,16);x2.closePath();x2.fill();x2.fillStyle='#3B1273';x2.beginPath();x2.moveTo(16,28);x2.lineTo(19,16);x2.lineTo(13,16);x2.closePath();x2.fill()}),roughness:.5}),x,y+.011,.06);d.rotation.x=-Math.PI/2;d.outline=0}
+    {const x=.3,y=.06;LS(g,.07,M(0x7FD6A0,{roughness:.1}),x-.1,y+.06,.02,1.6,.8,.8,12);LB(g,.07,.06,.06,.01,M(0xFF8A1C,{roughness:.5}),x+.07,y+.03,.0)}
+    return g},
+  // a floor lamp with a folded paper lantern hanging from a crook
+  mdlantern(c){const g=G(),Wo=WdD(),Gl=M(c,{roughness:.6,emissive:c,emissiveIntensity:.55});
+    [[1,0],[-1,0],[0,1],[0,-1]].forEach(([a,b])=>LN(g,[0,.02,0],[a*.22,.02,b*.22],.02,Wo));CY(g,.05,.06,.05,Wo,0,.03,0,10);LN(g,[0,0,0],[0,1.62,0],.022,Wo);
+    // the crook: a short arm with a hook
+    LN(g,[0,1.58,0],[.24,1.66,0],.016,Wo);add(g,gcache('cmarket_hk',()=>new THREE.TorusGeometry(.03,.006,6,10,Math.PI)),Ink(),.25,1.62,0).rotation.z=Math.PI;
+    // pleated lantern: a lathe that zig-zags in and out
+    const pr=[[.02,0]];for(let i=0;i<=10;i++){const y=.03+i*.036,r=.16*Math.sin(Math.PI*(.12+.76*i/10))+(i%2?-.012:.012);pr.push([r,y])}pr.push([.03,.42]);
+    const lp=piv(g,.27,1.14,0);ol(lathe(lp,pr,Gl,0,0,0,16),.012);CY(lp,.05,.05,.03,M(0x3B1273,{roughness:.4}),0,.43,0,10);CY(lp,.04,.04,.03,M(0x3B1273,{roughness:.4}),0,-.005,0,10);LN(g,[.27,1.58,0],[.27,1.6,0],.004,Ink());LN(lp,[0,.44,0],[0,.46,0],.004,Ink());
+    // a tassel
+    LN(lp,[0,-.02,0],[0,-.1,0],.006,M(0xFF3D9A,{roughness:.6}));LS(lp,.02,M(0xFF3D9A,{roughness:.6}),0,-.11,0,1,1.4,1,8);
+    g.userData.anim=t=>{lp.rotation.z=Math.sin(t*.9)*.03};
+    return g},
+  // an oval felt rug scattered with smooth river pebbles, a few with white rings
+  mdrug(c){const g=G(),Fe=M(c,{roughness:.9});
+    const base=CY(g,.9,.9,.02,Fe,0,.01,0,28);base.scale.set(1,1,.7);const rim=add(g,gcache('cmarket_rr',()=>new THREE.TorusGeometry(.9,.018,6,32)),M(shade(c,.2),{roughness:.9}),0,.02,0);rim.rotation.x=Math.PI/2;rim.scale.set(1,.7,1);
+    const ring=TX('ringst',32,32,(x,w,h)=>{x.fillStyle='#B9AFCB';x.fillRect(0,0,w,h);x.fillStyle='#FFFFFF';x.fillRect(0,h*.42,w,h*.16)});
+    const pm=[M(0xC9BFD9,{roughness:.8}),M(0x8E86A3,{roughness:.8}),M(0xD9C3A5,{roughness:.8}),M(0xffffff,{map:ring,roughness:.75}),M(0xE9DFF5,{roughness:.8})];const R=rnd(9150);
+    for(let i=0;i<20;i++){const a=i/20*Math.PI*2*1.9+R()*.4,rr_=.22+(i%3)*.2+R()*.06,x=Math.cos(a)*rr_*.98,z=Math.sin(a)*rr_*.64,s=.09+R()*.05;const p=LS(g,s,pm[i%5],x,.022,z,1.3,.28,1,12);p.rotation.y=R()*3}
+    LS(g,.12,pm[3],0,.025,0,1.3,.3,1,14);
+    return g},
+  // a little wooden market cart on two wheels, lined with a gingham cushion; a wind-up key on the back
+  mdcart(c){const g=G(),P=M(c,{roughness:.5}),gm=M(0xffffff,{map:gingTex(0xFF3D9A),roughness:.7});
+    LB(g,.86,.05,.6,.015,P,0,.16,0);[-1,1].forEach(s=>{LB(g,.86,.18,.04,.015,P,0,.27,s*.28);LB(g,.04,.18,.6,.015,P,s*.41,.27,0)});
+    {[-1,1].forEach(s=>{const wh=CY(g,.15,.15,.04,WdD(),s*.22,.15,.0,14);wh.rotation.z=Math.PI/2;wh.position.x=s*.45;LS(g,.03,M(0xFFD21F,{roughness:.35}),s*.48,.15,0,1,1,1,8)})}
+    LB(g,.1,.12,.5,.02,WdD(),-.37,.06,0);
+    // handles out the front
+    [-1,1].forEach(s=>LN(g,[s*.2,.3,.3],[s*.2,.36,.52],.018,WdL()));LN(g,[-.2,.36,.52],[.2,.36,.52],.018,WdL());
+    // the cushion
+    LB(g,.76,.12,.5,.06,gm,0,.24,0);LS(g,.12,M(0xFFF4E0,{roughness:.7}),-.22,.32,-.12,1.3,.6,1,12);
+    // a wind-up key on the back
+    const key=piv(g,0,.3,-.31);{const km=M(0xE2B54E,{metalness:.5,roughness:.3});LN(key,[0,0,0],[0,0,-.08],.012,km);[-1,1].forEach(s=>add(key,gcache('cmarket_kl',()=>new THREE.TorusGeometry(.045,.013,6,14)),km,s*.05,0,-.1))}
+    g.userData.anim=t=>{key.rotation.z=t*.6};
+    return g}}})(),
+ use:{
+  mdawning:{kind:'wall',anim:'u_gaze',d:3.6,emo:['⭐','💗'],w:.4},
+  mdjam:{kind:'stand',front:1,anim:'u_rummage',d:4,dist:.08,emo:['😋','💗'],w:.6},
+  mdbuckets:{kind:'stand',anim:'u_sniff',d:3.5,dist:.1,emo:['💗'],w:.5},
+  mdlemon:{kind:'stand',front:1,anim:'u_sip',d:5,dist:.08,emo:['😋','🎉'],w:.9},
+  mdtable:{kind:'stand',anim:'u_nibble',d:4,dist:.05,emo:['😋','💗'],w:.6},
+  mdcrates:{kind:'stand',front:1,anim:'u_rummage',d:4.5,dist:.08,emo:['❓','⭐'],w:.6},
+  mdlantern:{kind:'stand',anim:'u_gaze',d:3.5,dist:.15,emo:['💗'],w:.3},
+  mdrug:{kind:'rug',anim:'u_wiggle',d:3.8,emo:['🎉','💗'],w:.5},
+  mdcart:NAP},
+ dw:{n:'Market stall',wn:'Shopfront window',
+  door(){const Ch=mt(0xC98A5A,.6),Pk=mt(0xFF6FAE,.45),Wh=mt(0xFFFFFF,.45),
+      D=dBase({top:'rect',F:Ch,fw:.15,L:mt(0xFFE3EE,.5),S:mt(0x9A6238,.6),signY:3.05});
+    grooves(D.hinge,D.w,1.0,6,mt(0xF6C9DA,.5));
+    // a little chalk board panel and a glass top
+    rb(D.hinge,.72,.6,.02,.02,DGL(),D.w/2,1.55,.045);bx(D.hinge,.8,.06,.04,Ch,D.w/2,1.22,.06);bx(D.hinge,.8,.06,.04,Ch,D.w/2,1.88,.06);
+    rb(D.hinge,.5,.32,.03,.02,mt(0x2F4B40,.85),D.w/2,.62,.06);bx(D.hinge,.54,.04,.04,Ch,D.w/2,.8,.07);
+    heart3(D.hinge,.12,Pk,D.w/2,.62,.08);
+    // a striped awning with scallops over the door, and bunting
+    awning(D.g,D.w+.6,D.h+.42,.2,0xFF6FAE,0xFFFFFF,8);
+    bunting(D.g,-D.w/2-.25,D.w/2+.25,D.h+.12,.12,8,[0xFF3D9A,0xFFD21F,0x3EC8F2,0xA6E22E,0x9B4DF2],.24);
+    knob(D,null,1.0);return D},
+  win(){const Ch=mt(0xC98A5A,.6),Wh=mt(0xFFFFFF,.45),
+      W=wBase({top:'rect',w:1.2,h:1.0,F:Ch,fw:.1,mull:'cross',MM:Wh,S:mt(0x9A6238,.6)});
+    awning(W.g,W.w+.4,W.y0+W.h+.36,.18,0xFF6FAE,0xFFFFFF,8);
+    // a flower box under the sill (light spheres, the shared planter is heavy)
+    {const lsg=gcache('cmarket_wls',()=>{const P=[];for(let i=0;i<=5;i++){const a=-Math.PI/2+i/5*Math.PI;P.push([Math.max(.0001,Math.cos(a)),Math.sin(a)])}return latheGeo(P,10)}),cols=[0xFF6FAE,0xFFD21F,0xFFFFFF,0x9B4DF2],y=W.y0-W.fw-.16;
+      rb(W.g,W.w+.14,.2,.22,.04,mt(0xA6E22E,.5),0,y,.17);const Lf=mt(0x5BB36A,.6);
+      for(let i=0;i<7;i++){const x=-W.w/2+.03+i*W.w/6;add(W.g,lsg,Lf,x,y+.12,.17).scale.set(.08,.06,.08);const b=add(W.g,lsg,mt(cols[i%4],.5),x+.02,y+.2+(i%2)*.05,.22);b.scale.setScalar(.055);b.outline=.012;
+        const c=add(W.g,lsg,mt(0xFFD21F,.4),x+.02,y+.2+(i%2)*.05,.27);c.scale.setScalar(.022);c.outline=0}}
+    return W}}
+});
 /* </place-sets> */
 Object.entries(THEME_DW).forEach(([k,T])=>{const wk='win_'+k,c={k:wk,n:T.wn,set:'build',fn:'window',p:4,dc:0,wall:1,y:1.85,winOf:k};CAT.push(c);CATMAP[wk]=c;BUILD[wk]=()=>buildWindowModel(k);WIN_KEYS.push(wk)});
 SETS.push({k:'build',img:'tab-room',n:'Build',e:'',c:'#FFD21F'});SETMAP.build=SETS[SETS.length-1];FUNCS.push(['window','Windows','🪟']);
@@ -29870,7 +30089,7 @@ Object.assign(TM_DECOR,{
       // a row of scallops (half discs) hanging under a band; len along local x, at (x,y,z) rotated ry
       const scal=(p,len,n,mA,mB,x,y,z,ry,r)=>{const v=piv(p,x,y,z);v.rotation.y=ry||0;r=r||len/n/2;B(v,len,.05,.014,mA,0,0,0,.0015);const hc=[];for(let i=0;i<=6;i++){const a=Math.PI+i/6*Math.PI;hc.push([Math.cos(a)*r,Math.sin(a)*r*.9])}
         for(let i=0;i<n;i++)F(v,hc,.012,i%2?mB:mA,-len/2+r+i*2*r,-.024,-.006);return v};
-      const stripeM=(a,b,n,vert)=>{const k='st|'+[a,b,n,vert];return mc[k]||(mc[k]=M(0xffffff,{map:s1Stripe(a,b,n,vert),roughness:.55}))};
+      const hx=v=>'#'+v.toString(16).padStart(6,'0'),stripeM=(a,b,n,vert)=>Tx('st'+[a,b,n,vert].join('_'),64,64,(x,w,h)=>{for(let i=0;i<n;i++){x.fillStyle=hx(i%2?b:a);if(vert)x.fillRect(i*w/n,0,w/n+.5,h);else x.fillRect(0,i*h/n,w,h/n+.5)}},{roughness:.55});
       // a 4-sided tent roof with striped faces (flat normals)
       const tent=(p,r,h,m,y)=>ol(add(p,Gt('tent'+[r,h],(tri)=>{const c=[[-r,0,r],[r,0,r],[r,0,-r],[-r,0,-r]],top=[0,h,0];for(let i=0;i<4;i++){const a=c[i],b=c[(i+1)%4];tri(a,b,top,[0,0],[1,0],[.5,1])}}),m,0,y,0),.004);
       // the stall frame: counter, posts and a roof (slope | gable | tent | flat), valance scallops at the front
@@ -29908,7 +30127,7 @@ Object.assign(TM_DECOR,{
       // strawberries in a crate, a basket of apricots
       K.crate(g,-.36,0,.02,.25,.2,.16,.09);const sb=K.Mt(0xE8304A,{roughness:.3});for(let i=0;i<6;i++){const x=-.36+((i%3)-1)*.055,z=.02+(i<3?-.03:.03);S(g,.026,sb,x,.1,z,1,1.1,1,8);Co(g,.018,.014,K.leaf,x,.13,z,5)}
       C(g,.07,.055,.08,K.Mt(0xD9A15E,{roughness:.8}),.36,.04,-.02,12);K.T(g,.07,.008,K.wdD,.36,.08,-.02,Math.PI/2);K.T(g,.06,.006,K.wdD,.36,.1,-.02,0,0,0,Math.PI);
-      [[.33,-.04],[.39,0],[.36,.03],[.35,-.02]].forEach(([x,z],i)=>S(g,.022,K.Mt(0xFFB13B,{roughness:.4}),x,.1+(i===3?.025:0),z,8));
+      [[.33,-.04],[.39,0],[.36,.03],[.35,-.02]].forEach(([x,z],i)=>S(g,.022,K.Mt(0xFFB13B,{roughness:.4}),x,.1+(i===3?.025:0),z,1,1,1,8));
       K.easel(g,.33,.45,-.35,K.chalk('jam',(x,w,h)=>{K.heart(x,14,16,7,'#FF8FC0');K.txt(x,'3',28,17,16,'#FFFFFF');x.beginPath();x.moveTo(38,10);x.lineTo(56,10);x.moveTo(38,18);x.lineTo(52,18);x.stroke();
         x.strokeStyle='#FFD21F';x.beginPath();x.moveTo(8,34);x.bezierCurveTo(20,28,40,40,56,32);x.stroke()}));
       return g}},
@@ -29929,6 +30148,7 @@ Object.assign(TM_DECOR,{
       // a small posy in a jar and twine, a watering can
       C(g,.03,.028,.07,K.Mt(0xBFE8FF,{roughness:.15}),.15,.335,.28,10);[[0,0,0xFF6FAE],[.02,.01,0xFFFFFF],[-.015,.015,0xFFD21F]].forEach(([dx,dz,c])=>{K.Ln(g,[.15,.36,.28],[.15+dx,.42,.28+dz],.003,K.leafD,0);S(g,.018,K.Mt(c,{roughness:.45}),.15+dx,.425,.28+dz,1,.8,1,7)});
       C(g,.03,.03,.04,K.Mt(0xD9A15E,{roughness:.8}),.32,.32,.24,10);
+      [[.0,.27,.25,0xFF6FAE,0xFFF4E0],[.28,.32,-.35,0xFFD21F,0xBFE8FF]].forEach(([x,z,ry,fc,wc])=>{const b=piv(g,x,.33,z);b.rotation.set(0,ry,Math.PI/2-.12);Co(b,.045,.16,K.Mt(wc,{roughness:.7}),0,-.04,0,8);for(let k=0;k<5;k++){const a=k/5*Math.PI*2;S(b,.024,K.Mt(k%2?fc:0xFFFFFF,{roughness:.45}),Math.cos(a)*.025,.05,Math.sin(a)*.025,1,.8,1,7)}S(b,.026,K.Mt(fc,{roughness:.45}),0,.06,0,1,.8,1,7)});
       {const w=piv(g,.36,0,-.05);C(w,.05,.055,.1,K.Mt(0x3EC8F2,{roughness:.4}),0,.05,0,12);const sp=K.Ln(w,[.04,.04,0],[.12,.11,0],.008,K.Mt(0x3EC8F2,{roughness:.4}));C(w,.016,.01,.012,K.zinc,.125,.115,0,8).rotation.z=-.8;K.T(w,.04,.007,K.Mt(0x3EC8F2,{roughness:.4}),0,.11,0,0,0,0,Math.PI)}
       K.easel(g,.36,.15,-.6,K.chalk('flower',(x,w,h)=>{for(let k=0;k<5;k++){const a=k/5*Math.PI*2;x.beginPath();x.arc(14+Math.cos(a)*5,18+Math.sin(a)*5,3.5,0,7);x.stroke()}x.beginPath();x.moveTo(14,24);x.lineTo(14,38);x.stroke();K.txt(x,'2',36,20,16,'#FFFFFF');K.heart(x,50,20,6,'#FF8FC0')}),.9);
       return g}},
@@ -29976,7 +30196,7 @@ Object.assign(TM_DECOR,{
   mkt_curio:{n:'Curio stall',cat:'street',b(){const K=TM_DECOR.mkt_jam.kit(),g=G(),{B,R,S,C,Co}=K;
       const front=K.Tx('cufront',96,32,(x,w,h)=>{x.fillStyle='#E9D2A6';x.fillRect(0,0,w,h);x.strokeStyle='rgba(120,80,40,.35)';x.lineWidth=1;for(let i=0;i<8;i++){x.beginPath();x.moveTo(0,i*4+2);x.lineTo(w,i*4+2+Math.sin(i)*1.5);x.stroke()}
         x.strokeStyle='#8A5A2E';x.lineWidth=2;x.setLineDash([3,3]);x.beginPath();x.moveTo(8,24);x.bezierCurveTo(28,4,50,30,70,10);x.stroke();x.setLineDash([]);x.strokeStyle='#E8304A';x.lineWidth=2.4;x.beginPath();x.moveTo(74,6);x.lineTo(82,14);x.moveTo(82,6);x.lineTo(74,14);x.stroke()});
-      const St=K.stall(g,{roof:'slope',a:0xD7B98A,b:0xFF8A1C,n:8,va:0xB5793E,vb:0xFFF4E0,body:K.wd,front,post:K.Mt(0x9A6238,{roughness:.7}),slope:.16,h:.95});
+      const St=K.stall(g,{roof:'slope',a:0xE3CC9E,b:0x2E8A6E,n:8,va:0x2E8A6E,vb:0xFFF4E0,body:K.wd,front,post:K.Mt(0x9A6238,{roughness:.7}),slope:.16,h:.95});
       // the canvas is rolled up along the front, tied with rope
       {const r=C(g,.035,.035,.98,K.Mt(0xD7B98A,{roughness:.8}),0,St.fy+.02,St.fz+.03,10);r.rotation.z=Math.PI/2;[-.3,.3].forEach(x=>K.T(g,.038,.006,K.Mt(0xC9A26A,{roughness:.9}),x,St.fy+.02,St.fz+.03,0,Math.PI/2,0))}
       // a pennant on a tall pole at the back corner (it flutters)
@@ -30011,7 +30231,7 @@ Object.assign(TM_DECOR,{
       const cs=[0xFF6FAE,0x3EC8F2,0xFFD21F,0xA6E22E,0xFFFFFF,0x9B4DF2];const hang=[];
       [-.36,-.18,0,.18,.36].forEach((x,i)=>{const h=piv(g,x,St.fy-.03,St.fz-.02),L=.12+(i%2)*.08;K.Ln(h,[0,0,0],[0,-L,0],.0018,K.ink,0);crane(h,0,-L-.01,0,.13,cs[i],i*.9);hang.push(h)});
       // big crane on the roof
-      crane(g,0,St.by+.07,St.bz+.12,.36,0xFF6FAE,.3).outline=0;
+      crane(g,0,St.by+.12,St.bz+.2,.62,0xFF6FAE,.5).outline=0;
       // stacks of folded paper and little cranes on the counter
       [[0xFF6FAE,-.3],[0x3EC8F2,-.3],[0xFFD21F,-.3],[0xA6E22E,-.3]].forEach(([c,x],i)=>B(g,.13,.012,.13,K.Mt(c,{roughness:.8}),x+(i%2)*.006,.3+.006+i*.012,.25,.001));
       crane(g,-.08,.32,.26,.12,0xFFFFFF,.4);crane(g,.06,.32,.24,.12,0xFF8A1C,-.5);crane(g,.18,.32,.29,.1,0x9B4DF2,.9);
@@ -30047,7 +30267,7 @@ Object.assign(TM_DECOR,{
   mkt_toy:{n:'Wind-up toy stall',cat:'street',b(){const K=TM_DECOR.mkt_jam.kit(),g=G(),{B,R,S,C,Co}=K;
       const front=K.Tx('tyfront',96,32,(x,w,h)=>{for(let i=0;i<12;i++){x.fillStyle=i%2?'#FFFFFF':'#3EC8F2';x.fillRect(i*8,0,8,h)}x.fillStyle='#FF8A1C';rr(x,w/2-18,6,36,h-12,8);x.fill();x.strokeStyle='#3B1273';x.lineWidth=1.4;x.stroke();
         x.strokeStyle='#FFFFFF';x.lineWidth=2;x.beginPath();x.arc(w/2-7,h/2,4,0,7);x.arc(w/2+7,h/2,4,0,7);x.stroke();x.fillStyle='#FFFFFF';x.fillRect(w/2-3,h/2-1.2,6,2.4)});
-      const St=K.stall(g,{roof:'slope',a:0xFF8A1C,b:0xFFFFFF,n:10,va:0x3EC8F2,vb:0xFFFFFF,body:K.Mt(0xFFD7B0,{roughness:.6}),front,post:K.Mt(0x3EC8F2,{roughness:.45}),slope:.22,h:.94});
+      const St=K.stall(g,{roof:'slope',a:0xFF4F6A,b:0xFFFFFF,n:10,va:0x3EC8F2,vb:0xFFFFFF,body:K.Mt(0xFFD7B0,{roughness:.6}),front,post:K.Mt(0x3EC8F2,{roughness:.45}),slope:.22,h:.94});
       // a big wind-up key on the roof (turns)
       const key=piv(g,0,St.by+.1,St.bz+.12);{const km=K.gold;K.C(key,.016,.016,.14,km,0,-.03,0,8);[-1,1].forEach(s=>{K.T(key,.045,.014,km,s*.05,.07,0,0,0,0)});C(key,.025,.025,.03,km,0,.06,0,10)}
       // tiers of wind-up toys
@@ -30072,7 +30292,7 @@ Object.assign(TM_DECOR,{
       [-1,1].forEach(s=>{R(g,.18,.12,.18,.03,K.stone,s*X,.06,0,.003);C(g,.045,.05,1.25,stp,s*X,.745,0,12);C(g,.06,.06,.04,K.Mt(0xFFD21F,{roughness:.35}),s*X,1.38,0,12);S(g,.055,K.Mt(0xFFD21F,{roughness:.35}),s*X,1.44,0);
         R(g,.16,.1,.14,.02,K.wd,s*(X-.16),.05,.1,.002);[[-.04,0xFF6FAE],[.0,0xFFFFFF],[.04,0xFFD21F]].forEach(([dx,c],i)=>S(g,.035,K.Mt(c,{roughness:.45}),s*(X-.16)+dx,.12,.1+(i-1)*.02,1,.8,1,8));S(g,.05,K.leaf,s*(X-.16),.11,.1,1.3,.5,1,8)});
       // the arch: a shallow curved beam between the posts
-      {const a=piv(g,0,1.2,0);a.scale.set(1,.32,1);K.T(a,X,.045,K.Mt(0x3EC8F2,{roughness:.4}),0,0,0,0,0,0,Math.PI,28)}
+      {const am=K.Mt(0x3EC8F2,{roughness:.4}),N=14,ap=i=>{const u=i/N*Math.PI;return[Math.cos(u)*X,1.2+Math.sin(u)*.3,0]};for(let i=0;i<N;i++){K.Ln(g,ap(i),ap(i+1),.05,am,.004);if(i)S(g,.05,am,...ap(i),1,1,1,10).outline=0}for(let i=1;i<N;i+=2){const p=ap(i);S(g,.022,K.Mt([0xFFD21F,0xFF3D9A,0xA6E22E][i%3],{roughness:.35}),p[0],p[1],.05,1,1,.6,8)}}
       // the painted sign board in the middle, both faces
       {const sg=piv(g,0,1.36,0);R(sg,.86,.26,.05,.05,K.Mt(0xFFF4E0,{roughness:.5}),0,0,0,.004);const tx=K.Tx('archsign',128,40,(x,w,h)=>{x.fillStyle='#FFF4E0';x.fillRect(0,0,w,h);x.strokeStyle='#FF3D9A';x.lineWidth=2;rr(x,3,3,w-6,h-6,10);x.stroke();
           K.txt(x,'Market',w/2,h/2+1,25,'#FF3D9A',['#3B1273',5]);K.heart(x,13,h/2,5,'#FFD21F');K.heart(x,w-13,h/2,5,'#FFD21F')});
@@ -30107,7 +30327,7 @@ Object.assign(TM_DECOR,{
   bigslide:{n:'Big slide and small slide',cat:'fun',sz:[2,2],b(){const K=TM_DECOR.mkt_jam.kit(),g=G(),{B,R,S,C,Co}=K;
       const pk=K.Mt(0xFF6FB5,{roughness:.4}),cy=K.Mt(0x3EC8F2,{roughness:.35}),sn=K.Mt(0xFFD21F,{roughness:.4}),lm=K.Mt(0xA6E22E,{roughness:.4}),slM=K.Mt(0xFFD21F,{roughness:.25,side:THREE.DoubleSide}),slS=K.Mt(0xA6E22E,{roughness:.25,side:THREE.DoubleSide});
       // soft rubber ground under both
-      {const m=K.Mt(0x7FD0C9,{roughness:.9});m.detail=3;const d=add(g,gcache('mkt_pgnd'+GEO_LOD,()=>new THREE.CylinderGeometry(.92,.92,.02,Math.max(12,Math.round(28*GEO_LOD)))),m,0,.01,0);d.scale.set(1,1,1);d.outline=.002}
+      {const m=K.Mt(0xA8DCCF,{roughness:.9});m.detail=3;const d=add(g,gcache('mkt_pgnd'+GEO_LOD,()=>new THREE.CylinderGeometry(.92,.92,.02,Math.max(12,Math.round(28*GEO_LOD)))),m,0,.01,0);d.scale.set(1,1,1);d.outline=.002}
       // a channel (bed + two sides) along a path of [x,y,z], sideways along x
       const chute=(key,pts,w,wall)=>K.Gt(key,(tri,quad)=>{for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1],L=[[a[0]-w,a[1],a[2]],[b[0]-w,b[1],b[2]]],Rr=[[a[0]+w,a[1],a[2]],[b[0]+w,b[1],b[2]]];
         quad(L[0],L[1],Rr[1],Rr[0]);quad([L[0][0],L[0][1]+wall,L[0][2]],[L[1][0],L[1][1]+wall,L[1][2]],L[1],L[0]);quad(Rr[0],Rr[1],[Rr[1][0],Rr[1][1]+wall,Rr[1][2]],[Rr[0][0],Rr[0][1]+wall,Rr[0][2]])}});
@@ -30144,10 +30364,9 @@ Object.assign(TM_DECOR,{
       course(.15,.2,[.24,.3,.22,.2,.12,.24,.26],-.86,[.13,.37]);
       course(.35,.11,[.3,.26,.28,.3,.24,.32],-.86);
       // the holed stone, at a little one's eye level
-      {const hs=K.Mt(0xEFE8F7,{roughness:.7});K.T(g,.065,.045,hs,.25,.25,0,0,0,0,undefined,18).scale.set(1,1,1.7)}
-      // moss, a damp patch, ferns at the foot
-      [[-.6,.47],[-.1,.47],[.55,.47]].forEach(([x,y],i)=>S(g,.06,i%2?K.leaf:K.Mt(0x7CC05A,{roughness:.8}),x,y,0,1.4,.35,1.2,8));
-      {const d=add(g,gcache('mkt_damp',()=>new THREE.CircleGeometry(.09,12)),K.Mt(0x8F86A6,{roughness:.4}),.42,.1,.112);d.scale.set(1.3,.8,1);d.outline=0}
+      {const hs=K.Mt(0xE4DCEE,{roughness:.75});hs.detail=2;K.T(g,.066,.048,hs,.25,.25,0,0,0,0,undefined,18).scale.set(1,.95,1.9)}
+      // moss on the top, ferns at the foot
+      [[-.6,.46],[-.12,.46],[.58,.46],[.12,.4]].forEach(([x,y],i)=>{const mm=[K.Mt(0x7CC05A,{roughness:.85}),K.leaf];for(let k=0;k<3;k++)S(g,.032-k*.005,mm[(i+k)%2],x+(k-1)*.035,y+(k===1?.012:0),(k-1)*.02+(i===3?.1:0),1,.6,1,7)});
       [[-.8,.18],[.82,.17],[.0,.19]].forEach(([x,z],i)=>{for(let k=0;k<4;k++){const f=S(g,.05,K.leafD,x+(k-1.5)*.03,.04,z,.35,1,.5,7);f.rotation.z=(k-1.5)*.5}});
       // Crumb's little tin cup on top, for keeping the wall damp
       {C(g,.022,.02,.04,K.Mt(0x9FD3F5,{metalness:.3,roughness:.3}),.33,.43,.03,10);K.T(g,.013,.004,K.zinc,.355,.43,.03,0,0,0,undefined,8)}
@@ -30214,8 +30433,8 @@ Object.assign(TM_DECOR,{
       [-1,1].forEach(b=>R(g,1.76,.05,.05,.012,wm,0,1.04,b*.32,.002));for(let i=0;i<7;i++)R(g,.04,.035,.82,.01,wm,-.75+i*.25,1.09,0,.0015);
       // wisteria hanging in bunches along the beams
       const wc=[K.Mt(0xB58CFF,{roughness:.5}),K.Mt(0x9B4DF2,{roughness:.5}),K.Mt(0xD9C2FF,{roughness:.5})];
-      for(let i=0;i<9;i++){const x=-.72+i*.18,z=(i%2?-.32:.32)+(i%3-1)*.05,L=.12+(i*7%3)*.05;const c=K.Co(g,.05,L,wc[i%3],x,1.02-L/2,z,7);c.rotation.x=Math.PI;S(g,.05,wc[(i+1)%3],x,1.03,z,1,.6,1,7)}
-      for(let i=0;i<6;i++)S(g,.07,i%2?K.leaf:K.leafD,-.65+i*.26,1.13,(i%2?.15:-.12),1.3,.45,1,8);
+      for(let i=0;i<10;i++){const x=-.76+i*.17,z=(i%2?-.3:.3)+(i%3-1)*.06,n=3+(i*7%3);for(let k=0;k<n;k++){const r=.036*(1-k/(n+1.5)),y=1.0-k*.05;for(let q=0;q<(k<n-1?2:1);q++)S(g,r,wc[(i+k+q)%3],x+(q?.022:-.012)*(1-k/n)+Math.sin(k*2.1+i)*.006,y-q*.02,z+(q?-.01:.012)*(1-k/n),1,1.15,1,7)}}
+      for(let i=0;i<9;i++){const x=-.74+i*.185,z=[-.22,.05,.26,-.05,.18,-.25,.0,.24,-.14][i];for(let k=0;k<3;k++)S(g,.055-k*.008,(i+k)%2?K.leaf:K.leafD,x+(k-1)*.05,1.12+(k===1?.03:0),z+(k-1)*.04*(i%2?1:-1),1,.65,1,8)}
       // a bench underneath, with a cushion
       {const z=-.05;R(g,1.1,.05,.26,.015,K.wd,0,.25,z,.002);R(g,1.1,.18,.04,.015,K.wd,0,.4,z-.12,.002);[-1,1].forEach(s=>{R(g,.05,.25,.24,.01,K.ink,s*.48,.125,z,.0015);R(g,.05,.04,.26,.01,K.ink,s*.5,.36,z,.0015)});
         R(g,.22,.06,.18,.03,K.Mt(0xFFB3DA,{roughness:.8}),.3,.3,z+.01,.002);[0,1,2,3,4].forEach(k=>{const a=k/5*Math.PI*2;S(g,.008,K.wh,.3+Math.cos(a)*.015,.333,z+.01+Math.sin(a)*.015,1,.5,1,5)})}
@@ -30223,6 +30442,9 @@ Object.assign(TM_DECOR,{
       [-1,1].forEach(s=>{C(g,.07,.055,.1,K.Mt(0xE07A4A,{roughness:.7}),s*.62,.05,.32,10);S(g,.06,K.leaf,s*.62,.12,.32,1,.7,1,8);S(g,.022,K.Mt(0xFF6FB5),s*.62+.03,.15,.34,1,1,1,6)});
       return g}},
 });
+// ---- places: wiring
+// the market set's piece sold at each stall, and where the park's pieces go (world layout v4; each searches a little way out for room)
+TM_PARK=[['parkgate',6,20,0],['bigslide',3,16],['crumbwall',4,14],['flowerbed',8,13],['pottingshed',3,19],['climbdome',9,17],['hopscotch',10,19],['pergolabench',7,20]];
 /* </places> */
 addPlaces();
 const TM_IMG={};
@@ -31594,14 +31816,14 @@ const MKT_GOODS={jam:[['inv','cookie'],['inv','applepb'],['fown','@jam']],posy:[
   crumb:[['inv','soda'],['inv','watermelon'],['fown','@lemon']],cactus:[['inv','trailmix'],['inv','snorp'],['fown','@curio']],crane:[['fown','@paper'],['inv','tea']],
   pebble:[['inv','pebblecat'],['fown','@pebble']],spool:[['fown','@knit'],['inv','tickle']],windup:[['inv','spinner'],['inv','clicko'],['fown','@toy']]};
 // '@x' = the market set's piece for stall x (filled in from MKT_FURN once the set exists)
-const MKT_FURN={};
+const MKT_FURN={jam:'mdjam',flower:'mdbuckets',lemon:'mdlemon',knit:'mdpouf',curio:'mdcrates',paper:'mdlantern',pebble:'mdrug',toy:'mdcart'};
 function mktList(k){const R_=jrRand('mkt|'+lifeDay()+'|'+k),out=[];(MKT_GOODS[k]||[]).forEach(([t,id])=>{
     if(t==='seed'){const ks=Object.keys(SEEDS),s_=id==='*'?ks[Math.floor(R_()*ks.length)]:id;if(SEEDS[s_]&&!out.some(q=>q.t==='seed'&&q.id===s_))out.push({t,id:s_,n:SEEDS[s_].n+' seeds',p:2});return}
     if(t==='fown'){const fk=id[0]==='@'?MKT_FURN[id.slice(1)]:id,d=fk&&CATMAP[fk];if(d)out.push({t,id:fk,n:d.n,p:Math.max(2,(d.p|0))});return}
     const it=ITEMS.find(i=>i.id===id);if(it)out.push({t,id,n:it.n,p:Math.max(1,(it.p|0))})});return out}
 function cvMarket(){if(!cv)return;const k=cv.k,L=mktList(k),R=RESIDENTS[k];
   const intro=pick1(['Fresh this morning! Have a look.','Everything’s made with care. Mostly by me.','Sunday prices! Same as other prices, but on a Sunday.']);
-  cvSay(CV_FILL(intro),[...L.slice(0,3).map(g=>[`${g.n} · ${g.p} hearts`,()=>{
+  cvSay(CV_FILL(intro),[...L.slice(0,3).map(g=>[`${g.n} · ${g.p} heart${g.p===1?'':'s'}`,()=>{
       if((state.hearts|0)<g.p){cvSay(CV_FILL(pick1(['Ah, you’re a bit short. Come back next Sunday?','Not enough hearts today. That’s all right, look all you like.'])),[['Okay!',()=>cvSay(CV_FILL('Anything else?'),cvMenu())]]);return}
       state.hearts-=g.p;if(g.t==='inv')state.inv[g.id]=(state.inv[g.id]|0)+1;else if(g.t==='fown')state.fown[g.id]=(state.fown[g.id]|0)+1;else{const S=state.seeds||(state.seeds={});S[g.id]=(S[g.id]|0)+1}
       if(!actDone('mkt:'+k)){actMark('mkt:'+k);kfAdd(k,1)}td('buy');jrAdd(`We bought ${g.n.toLowerCase()} from ${R.n} at the Sunday market.`,myId||'me','buy',0,g.n);saveSoon();updHUD();
@@ -51646,7 +51868,7 @@ let syncBase=null,syncBaseRev=0;
 function snapBase(s,keep){const b={};for(const k in s)b[k]=JSON.stringify(s[k]);syncBase=b;syncBaseRev=+s.rev||0;if(keep!==false)try{localStorage.setItem('r42base:'+roomCode,JSON.stringify(s))}catch(_){}}
 const SYNC_SKIP={rev:1,kr:1,visits:1,jrT:1,cv:1,minV:1};
 // the oldest app version allowed to edit the shared room (older ones refresh themselves when they see this in the doc)
-const SYNC_MIN_V=72;
+const SYNC_MIN_V=73;
 const localChanged=()=>!!syncBase&&Object.keys(state).some(k=>!SYNC_SKIP[k]&&JSON.stringify(state[k])!==syncBase[k]);
 const mNum=(l,r,b)=>(+b||0)+((+l||0)-(+b||0))+((+r||0)-(+b||0));
 const mCounts=(l,r,b)=>{b=b||{};l=l||{};r=r||{};const o={};new Set([...Object.keys(l),...Object.keys(r),...Object.keys(b)]).forEach(k=>{const v=mNum(l[k],r[k],b[k]);if(v>0)o[k]=Math.min(99,v)});return o};
@@ -51771,7 +51993,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=72;
+const APP_V=73;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

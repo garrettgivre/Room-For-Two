@@ -10,8 +10,8 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v72** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v72'` in `sw.js`; bump both for anything
-user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 72 (older clients refresh
+**Current build: v73** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v73'` in `sw.js`; bump both for anything
+user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 73 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
 **Who and how**
@@ -601,3 +601,25 @@ friendship (max 2 per chat); the first chat of the day +2. Residents without TAL
   `SYNC_MIN_V` 72 so older apps don't strip them). Content is appended to the `/* <talk> */` block after the line
   `// ---- talk3: ...` (sources `.claude/talk3/<key>.js`, brief `tools/dev/town/TALK3_BRIEF.md`). The facts they invented are in
   the bible's Canon log.
+
+## Civic places, the Sunday market and the park (v73)
+- **Places** (block after `addHouses`): `PLACES[id]` {n, staff:{resident:[from,to]}, open, at:[gx,gz,rot] (rot = door direction), road}
+  and `PLACE_DEF[id]` (same shape as `HOUSE_DEF`) become `SHOPS['p_'+id]` with `place:1` (`placeShop`, `addPlaces()` right after the
+  `/* <places> */` block). Townhall, library, postoffice, weather, lampshed. Staff on duty: `resWhere` returns 'place' (`placeOf(k)`),
+  `shopCrew` puts them on the floor, `placeVisit` checks opening hours, `tmPlaceCard` is their map card. Lists of shops skip places
+  (`tmShops`, trips, `trShop`). Close-up actions `PLACE_ACTS` -> `placeAct` (guest book `state.gbook` (shared, merged by who+time), the
+  First Brick, borrow a book `LIB_BOOKS`, your cubby = Inbox, umbrella, weather book, wicks). Each place has its own furniture set
+  (`c<id>`, between `/* <place-sets> */` right after the set refines: it must come before the line that turns THEME_DW doors into `win_`
+  catalogue windows). Sources `.claude/places/<id>.js` + `<id>_set.js` (gitignored), put in by `.claude/places/integrate.py`; brief
+  `tools/dev/town/PLACE_BRIEF.md`; preview `tools/dev/town/pview.js <id>` (map shots from the door side, inside with the staff).
+- **World layout v4** (`worldV4`, from `tmNorm` and `worldDesign`): places each place once (`m.pl` remembers which; only generic greenery
+  `TM_SOFT` makes way; roads from `PLACES[id].road`), then the market stalls and the park (`TM_PARK`). Decorations may carry a 4th entry,
+  quarter turns (`tmDecor` rotates them; footprints are square so nothing else changes).
+- **Sunday market** (`MARKET` Sundays 9-13, `marketOn`, debug `dbgMarket`): vendors `MARKET.vendors` are 'market' in `resWhere`, stand
+  behind their stall (`MKT_STALL` decor key, `twStallOf`, plan mode 'stall'); chatting adds "What are you selling?" (`cvMarket`,
+  `mktList`: `MKT_GOODS` per vendor, `MKT_FURN` = the Market Morning piece per stall). Stalls `mkt_*`, the arch `mkt_arch` and the park
+  pieces (parkgate, bigslide, crumbwall, flowerbed, pottingshed, climbdome, hopscotch, pergolabench) are `TM_DECOR` entries from
+  `.claude/places/market.js` (brief `tools/dev/town/MARKET_BRIEF.md`).
+- **Park rounds**: `RES_NEAR` (Posy and the twins) keeps their rounds near the park (`twNearOf`, `twSpotNear`).
+- Perf note: the map draws ~2,080 meshes far out (was ~1,780). On this laptop's software GL every version (v71 too) now shows
+  intermittent multi-second frame stalls in headless tests; compare versions with `R42_INDEX` before blaming a change.
