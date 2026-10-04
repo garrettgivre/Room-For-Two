@@ -10,8 +10,8 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v71** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v71'` in `sw.js`; bump both for anything
-user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 71 (older clients refresh
+**Current build: v72** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v72'` in `sw.js`; bump both for anything
+user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 72 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
 **Who and how**
@@ -584,3 +584,20 @@ friendship (max 2 per chat); the first chat of the day +2. Residents without TAL
   merged), and landmarks/playground/street furniture go into free spots near targets (only generic greenery makes way; nothing
   placed by the players moves). `SYNC_MIN_V` 71: older apps don't know the new decoration keys.
 - Perf (software GL, warm): far view ~20 ms/frame, street ~19 ms (no worse than v70).
+
+## Overnight refinement (v72)
+- **Older furniture sets refined** (all 37 pre-resident sets): overrides between `/* <set-refines> */` markers (after the resident
+  sets; sources `.claude/sets_v2/<set>.js`, brief `tools/dev/town/REFINE_BRIEF.md`). Each re-registers BUILD (and sometimes CAT)
+  entries for its set; all 814 catalog pieces build (total ~7.7M triangles, down from 8.55M).
+- **Wardrobe**: 100 wearables themed on the resident sets, 3-4 per set, between `/* <wear-more> */` (just before `dressPet`;
+  sources `.claude/wear/{sugar,bay,hill,meadow}.js`, brief `tools/dev/town/WEAR_BRIEF.md`, preview `tools/dev/town/wview.js`).
+- **Exteriors**: every shop and house refined (roofs with tiles/shingles, gutters, shutters, curtains, awnings, porches, gardens,
+  chimney smoke, night glow via `tmGlassMs`), overrides of `TM_BODY` between `/* <exteriors-v2> */` (after the house models;
+  sources `.claude/ext/{shops,houses_a,houses_b}.js`, brief `tools/dev/town/EXT_BRIEF.md`, preview `tools/dev/town/xview.js`).
+  ~10% more meshes drawn on the map; the Game Night house keeps Boing's spring-head topper.
+- **Friendship-level conversations** (all 32 residents): `TALK[k].lv` {hi, topics, bye} per level 0-4 (`KF_N`), `mile` (met, week,
+  month, season, year, talk10/50/100; said once, recorded in `kf.ms`), `nick` (what they call you at Bestie, `{me}`). Engine:
+  `cvLv`, `cvLvPick`, `cvMile`; `kf` now also stores `m` (first met), `c` (chats), `dp`, `ms` (merge: m min, c max, ms union;
+  `SYNC_MIN_V` 72 so older apps don't strip them). Content is appended to the `/* <talk> */` block after the line
+  `// ---- talk3: ...` (sources `.claude/talk3/<key>.js`, brief `tools/dev/town/TALK3_BRIEF.md`). The facts they invented are in
+  the bible's Canon log.
