@@ -6,7 +6,7 @@
 - **Dream:** a cart big enough to seat the whole town, and a day when the twins both sit still for a family photo.
 - **With the two of you:** gives you the first sprinkle shake of the day for free. Asks if you've eaten, then asks again. Wants {n} to try the flavour she hasn't named yet.
 - **Relationships:**
-  - **Scone and Crumb:** her nephews. She raised them in the little house behind the cart and never stops saying so. "Don't touch the cart" is her most repeated sentence.
+  - **Scone and Crumb:** her niece and nephew. She raised them at the Sundae Cottage, where the cart lives, and never stops saying so. "Don't touch the cart" is her most repeated sentence.
   - **Bunbun:** swaps cones for cookies every Friday. They argue about who makes the better crumb.
   - **Fizz:** brings her bubble-gum scoops for tasting. She says they are "interesting" and means it kindly.
 
@@ -27,8 +27,8 @@ lines:
 - letters: "the cherries came in early this week, so the cart smells like summer." / "the twins have invented a game with the sprinkle jars. i am not allowed to ask." / "i saved you a corner of the freezer. no, don't peek, it's a surprise."
 
 rel:
-- scone: "Scone is the boss of the pair, and she'll tell you so. Crumb is the one who actually listens."
+- scone: "Scone is the boss of the pair, and he'll tell you so. Crumb is the one who actually listens."
 - baker: "Bunbun trades me burnt cookie edges for the first scoop. I put them in the vanilla. Wonderful."
 - stylist: "Fizz's bubble-gum flavour sticks to the cart. I love him. It's still on the cart."
 
-home: A little cottage behind the ice-cream cart on the plaza, shaped like an upside-down sundae cup with a waffle-patterned roof and a pink-and-white striped awning. Outside: a cherry tree in a bucket, a mailbox shaped like a sprinkle jar, and two tiny muffin-sized chairs by the door. Inside: a big freezer humming in the corner, three beds crammed side by side (one with a lot of crumbs), a table with a jar of sprinkles that never empties, and a wall of the twins' crayon drawings with the best ones framed.
+home: The Sundae Cottage on Sugarloaf Lane, where the ice-cream cart lives (it is wheeled up to the plaza at noon), shaped like an upside-down sundae cup with a waffle-patterned roof and a pink-and-white striped awning. Outside: a cherry tree in a bucket, a mailbox shaped like a sprinkle jar, and two tiny muffin-sized chairs by the door. Inside: a big freezer humming in the corner, three beds crammed side by side (one with a lot of crumbs), a table with a jar of sprinkles that never empties, and a wall of the twins' crayon drawings with the best ones framed.

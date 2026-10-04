@@ -54,4 +54,4 @@ story:
 4. One day I want to sew a whole coat. Stitch says start with a button. I did. It's very good.
 
 ## home
-Outside: a narrow cottage like a stack of cotton reels, mint shutters, a thimble for a chimney cap, a clothesline of ribbons across the front and a pink door with a button-shaped knob. Inside: one cosy room with a hammock slung between two big bobbins, a wall of tiny labelled drawers, a pincushion armchair and a basket of loose thread ends. Lives next to Stitch (shares a garden fence hung with ribbons), with Bolt's workshop on the other side.
+Outside: a narrow cottage like a stack of cotton reels, mint shutters, a thimble for a chimney cap, a clothesline of ribbons across the front and a pink door with a button-shaped knob. Inside: one cosy room with a hammock slung between two big bobbins, a wall of tiny labelled drawers, a pincushion armchair and a basket of loose thread ends. This is Bobbin's half of Number Two, Bubble Bay, the flat they share with Gloss.

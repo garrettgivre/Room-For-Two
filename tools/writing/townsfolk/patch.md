@@ -29,7 +29,7 @@ lines:
 
 rel:
 - baker: "Bunbun gives me the burnt cookies. I eat them. Then I tell her to sit down."
-- cushion: "Cushy is my favourite colleague. He sleeps by the book and I mean that kindly."
+- cushion: "Cushy is my favourite colleague. Cushy sleeps by the book and I mean that kindly."
 - builder: "Bolt hammers his thumb every Tuesday. I keep a plaster with his name on."
 - joy: "Joy comes in after every high score, holding her wrist like a trophy."
 

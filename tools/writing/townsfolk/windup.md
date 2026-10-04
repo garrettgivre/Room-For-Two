@@ -43,4 +43,4 @@ lines:
   - "I keep a ledger of every toy that left the shop. Someone is playing with each one."
   - "My key is brass, from an old music box. I turn it myself. I like that it is mine."
 
-home: A small tall cottage shaped like a grandfather clock, painted teal with a red band and a round dial window over the door whose hands are always one minute from tea time. A brass key weathervane turns on the roof. Inside it is very tidy: labelled jars, a ticking wall of clocks that all agree, one armchair, a stack of ledgers. It would live next to Bolt (shared toolbox fence) and near the Toy Box, so it can hear Boing through the wall and pretend not to.
+home: The Clockwork Cottage on Playhouse Hill, shared with Sketch, its partner: a small tall cottage shaped like a grandfather clock, painted teal with a red band and a round dial window over the door whose hands are always one minute from tea time. A brass key weathervane turns on the roof. Inside it is very tidy: labelled jars, a ticking wall of clocks that all agree, one armchair, a stack of ledgers. Bolt is over the toolbox fence; the Toy Box is 312 steps away.

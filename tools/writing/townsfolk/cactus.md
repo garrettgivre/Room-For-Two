@@ -9,7 +9,7 @@
   - **Posy:** his partner. He says she is "the only plant I ever followed anywhere". She waters him on time; he pretends it is a nuisance.
   - **Bunbun:** brings him the burnt cookies on purpose, because he said once that he likes them. He has never told her it was a joke.
   - **Stitch:** mended the scarf twice and will not take payment. Prickles leaves a jar of dried flowers on the step.
-  - **Cushy:** the only one who stays awake for the whole sandstorm story, which means Prickles thinks she is a genius.
+  - **Cushy:** the only one who stays awake for the whole sandstorm story, which means Prickles thinks Cushy is a genius.
 
 idles: sway, look, lean, stretch, bow
 talks: nod, lean, sway
@@ -27,6 +27,6 @@ rel:
 - posy: "She says I snore. Cacti don't snore. It's the pot settling."
 - baker: "Bunbun's cookies are burnt on purpose. I pretend I can't tell. Don't you dare tell her."
 - tailor: "Stitch fixed my scarf without a word and left it on the step. That's a friend."
-- cushion: "Cushy has heard the sandstorm one eleven times. She still gasps at the good part."
+- cushion: "Cushy has heard the sandstorm one eleven times. Cushy still gasps at the good part."
 
-home: A low adobe cottage the colour of warm sand, round windows with blue shutters to match his pot, and a flat roof with a little rain barrel and a rope-and-hook hammock. Over the door hangs a carved sign of a compass. Inside everything is the colour of a desert sunset: a faded map of the Great Dry pinned over the fireplace with a dozen little flags, jars of shells and pressed flowers on every shelf, a sunhat collection on a row of hooks, and a very old armchair with a dent exactly his shape. Posy's pots crowd the windowsills, and through the back window you can see her garden.
+home: The Potted Lodge in Lantern Meadow, shared with Posy. His half is a trail den, low adobe walls the colour of warm sand, round windows with blue shutters to match his pot, and a flat roof with a little rain barrel and a rope-and-hook hammock. Over the door hangs a carved sign of a compass. Inside everything is the colour of a desert sunset: a faded map of the Great Dry pinned over the fireplace with a dozen little flags, jars of shells and pressed flowers on every shelf, a sunhat collection on a row of hooks, and a very old armchair with a dent exactly his shape. Posy's pots crowd the windowsills, and through the back window you can see her garden.

@@ -55,7 +55,7 @@
 - baker: "Bunbun brings me a bun with a bookmark in it. I've started to read the crumbs."
 - toymaker: "Boing borrows the pop-up books and returns them slightly more popped up."
 - cushion: "Cushy lends me one cushion for the reading corner and then sits on it. We call that sharing."
-- pencil: "I've got a lovely long shelf for Pencil's drawings, and a drawer for the ones it won't show me."
+- pencil: "I've got a lovely long shelf for Sketch's drawings, and a drawer for the ones it won't show me."
 
 ### home
 A narrow stone cottage with a round door like the cover of an old atlas and a brass bell that rings once, softly. The window boxes grow lavender and one confused tomato. Inside it is all shelves, up the stairs and along the landing: a ladder on a rail, a green reading lamp, a worn velvet armchair with a Dewey-shaped dent, a tray of tea things, a stamp pad, and a basket of lost bookmarks to claim. Warm, dusty, and very quiet.

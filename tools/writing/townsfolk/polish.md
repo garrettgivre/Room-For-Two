@@ -13,7 +13,7 @@
 **With the two of you.** She treats you as regulars from the first visit and pencils in your pet before you ask. She suggests a day for your next Restyle and is always right about it.
 
 **Relationships.**
-- Pom: "Pom is fast, so I leave him gaps." Keeps his hour-by-hour list and hides his comb when he is late.
+- Pom: "Pom is fast, so I leave Pom gaps." Keeps Pom's hour-by-hour list and hides the comb when Pom is late.
 - Blush: Never rushes her. Books her colour sessions with a spare half hour after and calls it "dreaming time".
 - Stitch: Swaps appointment book for pattern book. Gets her clipboard strap mended for free.
 - Bunbun: Orders the studio's afternoon cakes; the two of them agree on everything.
@@ -34,4 +34,4 @@ lines:
   3. "I keep the beehive tall so people can find me over the crowd. It works on Pom, too."
   4. "My favourite jingle is the one for first-timers. I made it up, and now Pom hums it in the shower."
 
-home: A narrow, tall little house shaped like a lacquered cap on a short pink stoop, glossy black roof swirled in gold, a pink bow on one gable. Inside it is all labelled drawers, a wall calendar with sticky tabs in six colours, a daybed with a quilted cover and a mirror by the door with a shelf of every polish shade in a rainbow row. She would live next to Stitch (fabric for her clipboard cover) with Bunbun a few doors down.
+home: A narrow, tall little house shaped like a lacquered cap on a short pink stoop, glossy black roof swirled in gold, a pink bow on one gable. Inside it is all labelled drawers, a wall calendar with sticky tabs in six colours, a daybed with a quilted cover and a mirror by the door with a shelf of every polish shade in a rainbow row. This is her half of Number Two, Bubble Bay, the flat she shares with Bobbin; Pom and Blush are close by.

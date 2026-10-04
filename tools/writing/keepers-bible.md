@@ -21,7 +21,7 @@ A small candy-bright town of eight shops around a fountain plaza. Everyone knows
 | | Bunbun | Fizz | Boing | Cushy | Bolt | Pom | Blush | Stitch | Joy |
 |---|---|---|---|---|---|---|---|---|---|
 | **Bunbun** | | shy admirer | feeds him bounce buns | best friend | packs his lunch | | | swaps recipes for patterns | pretends not to see her steal cookies |
-| **Fizz** | 3 o'clock cream bun | | exhausting, adorable | | calls his paint "brave" | proud big brother | "glow" rival, secretly best friend | commissions robes | still not over Bubble Pop |
+| **Fizz** | 3 o'clock cream bun | | exhausting, adorable | | calls his paint "brave" | proud mentor (like a big brother) | "glow" rival, secretly best friend | commissions robes | still not over Bubble Pop |
 | **Boing** | bounce buns! | wants toys that bubble like his hair | | the bouncy cushion incident | supplier, "Boss" | | | sews his plushies | best buddy, co-host of Game Night |
 | **Cushy** | best friend, Sunday tea | | said no to the bouncy cushion (gently) | | furniture partner ("he does the loud part") | | slept through getting their tassels painted | fabric swaps | undefeated staring-contest champ |
 | **Bolt** | owes her lunches, fixes her oven | pretends "brave" didn't sting | "the kid" | furniture partner | | | argues about colour names | | |
@@ -180,7 +180,7 @@ Their dialog (`KBIB`, `ASSIST_LINES`, `RES_T`) comes from the lines in their ful
 **Quirks.** Checks her hand mirror and tuts at nothing. Her glitter shimmers when she is pleased. Pats the beehive to make sure it is still standing. Knows everyone's schedule in town, including yours.
 **With the two of you.** She treats you as regulars from the first visit and pencils in your pet before you ask. She suggests a day for your next Restyle and is always right about it.
 **Relationships.**
-- Pom: "Pom is fast, so I leave him gaps." Keeps his hour-by-hour list and hides his comb when he is late.
+- Pom: "Pom is fast, so I leave Pom gaps." Keeps Pom's hour-by-hour list and hides the comb when Pom is late.
 - Blush: Never rushes her. Books her colour sessions with a spare half hour after and calls it "dreaming time".
 - Stitch: Swaps appointment book for pattern book. Gets her clipboard strap mended for free.
 - Bunbun: Orders the studio's afternoon cakes; the two of them agree on everything.
@@ -258,7 +258,7 @@ for part of the day (`RESIDENTS[k].out` hours, US Central, `away` says where). F
   - **Parcel:** flatmate. Fold labels everything in the flat with lovely lettering; Parcel stamps over it.
   - **Stitch:** swaps scraps. Fold gives paper, Stitch gives thread, nobody keeps score.
   - **Bolt:** hires Fold for every shop sign and then asks for it "a bit bigger".
-  - **Pencil:** shares sketches and strong opinions about straight lines.
+  - **Sketch:** shares sketches and strong opinions about straight lines.
 
 ## Posy · Gardener
 - **Look:** a terracotta flower pot with a cream, pink and yellow painted band round the rim, a round face on the pot and rosy cheeks. Soil on top with a big pink five-petal flower (yellow centre) on a long stem like a hairdo, plus two leaves that wave like arms. Little vine-green arms with yellow gardening gloves, a blue apron with a pocket (a heart patch and a trowel poking out), and yellow rain boots.
@@ -270,7 +270,7 @@ for part of the day (`RESIDENTS[k].out` hours, US Central, `away` says where). F
 - **Relationships:**
   - **Prickles:** her partner. Retired cactus adventurer. She waters him on a schedule he claims is too much. He tells her stories and she laughs in the right places, every time.
   - **Bunbun:** buys her herbs for the bakery and pays in cookies, so the beds by the Snack Shack get extra attention.
-  - **Cushy:** naps on the park bench she keeps tidy. Posy pretends not to notice the pillow and then moves the shade so it stays cool.
+  - **Cushy:** naps on the park bench Posy keeps tidy. Posy pretends not to notice the pillow and then moves the shade so Cushy stays cool.
   - **Bolt:** built her a raised bed. She planted it so full that he can no longer find the corner he started from.
 
 ## Prickles · Retired adventurer
@@ -284,7 +284,7 @@ for part of the day (`RESIDENTS[k].out` hours, US Central, `away` says where). F
   - **Posy:** his partner. He says she is "the only plant I ever followed anywhere". She waters him on time; he pretends it is a nuisance.
   - **Bunbun:** brings him the burnt cookies on purpose, because he said once that he likes them. He has never told her it was a joke.
   - **Stitch:** mended the scarf twice and will not take payment. Prickles leaves a jar of dried flowers on the step.
-  - **Cushy:** the only one who stays awake for the whole sandstorm story, which means Prickles thinks she is a genius.
+  - **Cushy:** the only one who stays awake for the whole sandstorm story, which means Prickles thinks Cushy is a genius.
 
 ## Dewey · Librarian
 **Look:** a living hardback book standing upright in fuzzy pink slippers. Plum cover with gold corner protectors and gold title lines, hinged at the spine so the front cover hangs a little open like a cardigan. Cream page block with fine page lines shows down the open side. The face sits on the cover's cream title label: brown eyes behind round gold reading glasses, soft cream brows, pink cheeks. A gold glasses chain loops under the chin. A pink ribbon bookmark hangs from the bottom edge like a tail. Cream noodle arms come out between the covers; one holds a tiny book.
@@ -316,7 +316,7 @@ for part of the day (`RESIDENTS[k].out` hours, US Central, `away` says where). F
 **Loves.** Visitors, fog horns heard from far off, hot cocoa in a tin mug, lost things that wash up. **Can't stand.** Empty harbours, being called a streetlamp, boats that leave without waving.
 **Quirks.** Every so often the top light sweeps round fast, then Beacon lifts the spyglass, squints at an imaginary boat way out, lowers it, and waves with the other hand.
 **With the two of you.** Counts you in when you arrive, as if you were a ship. Keeps a shelf of things it has adopted: a single mitten, a button, a very patient crab shell.
-**Relationships.** Spool (the tailor's assistant) knitted the scarf. Lumi flashes a lamp back at the point on clear nights. Bunbun sends the burnt cookies down the pier.
+**Relationships.** Bobbin (Stitch's assistant) knitted the scarf. Lumi flashes a lamp back at the point on clear nights. Bunbun sends the burnt cookies down the pier.
 
 ## Tutti · Ice-cream vendor
 - **Look:** a chubby golden waffle cone (embossed diamond grid) that tapers to a rounded tip on two little cream feet. Two big scoops sit on top like a hairdo, strawberry pink and mint, with ruffled skirts over the rim, rainbow sprinkles and a cherry with a green stem in the valley between them. Round eyes and a warm smile on the upper cone, pink cheeks, a pink-and-white striped vendor apron with a pocket, cream mitten hands, a mini cone in the right one.
@@ -326,7 +326,7 @@ for part of the day (`RESIDENTS[k].out` hours, US Central, `away` says where). F
 - **Dream:** a cart big enough to seat the whole town, and a day when the twins both sit still for a family photo.
 - **With the two of you:** gives you the first sprinkle shake of the day for free. Asks if you've eaten, then asks again. Wants {n} to try the flavour she hasn't named yet.
 - **Relationships:**
-  - **Scone and Crumb:** her nephews. She raised them in the little house behind the cart and never stops saying so. "Don't touch the cart" is her most repeated sentence.
+  - **Scone and Crumb:** her niece and nephew. She raised them at the Sundae Cottage, where the cart lives, and never stops saying so. "Don't touch the cart" is her most repeated sentence.
   - **Bunbun:** swaps cones for cookies every Friday. They argue about who makes the better crumb.
   - **Fizz:** brings her bubble-gum scoops for tasting. She says they are "interesting" and means it kindly.
 
@@ -363,7 +363,7 @@ for part of the day (`RESIDENTS[k].out` hours, US Central, `away` says where). F
 - **Quirks:** every so often the record spins up fast, the horn bobs to a beat only Echo hears, notes puff out in a burst, and it finishes with a small bow. Remembers each person's favourite tune and hums it back when they walk past. Offstage it hides behind the horn.
 - **With the two of you:** hums one tune for you and a different one for Beau, and has never mixed them up. Plays a little louder when you stop to listen.
 - **baker:** "Bunbun leaves a roll on my lid at four. The record skips once, and I let it."
-- **lantern:** "Lantern lights the plaza as I finish. Our timing is a song in itself."
+- **lantern:** "Lumi lights the plaza as I finish. Our timing is a song in itself."
 - **toymaker:** "Boing bounces on the beat. Always the beat. I've stopped trying to fool him."
 
 ## Dr. Patch · Town doctor

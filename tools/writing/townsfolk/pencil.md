@@ -40,4 +40,4 @@ talks: nod, lean, sway
 - story 4: "Last week a room came out exactly like my drawing. I sat down for a while."
 
 ## home
-A narrow blue-gray row house beside Hammer & Hue, with a pencil-point roof and one round window like a lens. Inside: a drafting table by the window, graph paper pinned in a perfect grid, a jar of sharpened pencils sorted by length, one very small armchair. Lives next to Bolt on one side and Stitch (shared tape measures) on the other.
+The Clockwork Cottage on Playhouse Hill, which it shares with Tock, its partner (see windup.md). Sketch's room has a pencil-point ceiling and one round window like a lens. Inside: a drafting table by the window, graph paper pinned in a perfect grid, a jar of sharpened pencils sorted by length, one very small armchair. Bolt is just over the toolbox fence.

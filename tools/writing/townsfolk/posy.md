@@ -8,7 +8,7 @@
 - **Relationships:**
   - **Prickles:** her partner. Retired cactus adventurer. She waters him on a schedule he claims is too much. He tells her stories and she laughs in the right places, every time.
   - **Bunbun:** buys her herbs for the bakery and pays in cookies, so the beds by the Snack Shack get extra attention.
-  - **Cushy:** naps on the park bench she keeps tidy. Posy pretends not to notice the pillow and then moves the shade so it stays cool.
+  - **Cushy:** naps on the park bench Posy keeps tidy. Posy pretends not to notice the pillow and then moves the shade so Cushy stays cool.
   - **Bolt:** built her a raised bed. She planted it so full that he can no longer find the corner he started from.
 
 idles: sway, squash, look, tiptoe, wiggle
@@ -31,4 +31,4 @@ letters:
 - "i left a seedling by your door. it's very small, so please say hello to it every day."
 - "prickles told the whole garden the story about the desert again. the geraniums leaned in."
 
-home: A pot-shaped cottage at the edge of the park, with a rounded terracotta roof and a painted band under the eaves in cream, pink and yellow, like her own. Outside: flower beds all round, a bright mailbox shaped like a watering can, a bench between two sunflowers, and a prickly pear by the gate that is Prickles' favourite chair. Inside: one cosy room with a window full of seedling trays labelled in careful handwriting, a potting bench with her tiny trowel, shelves of pots with something growing in each, a sleeping nook lined with moss-green quilts, and a small sunny corner where Prickles sits and tells stories. She'd live next to Prickles, across the lane from the park gate.
+home: The Potted Lodge in Lantern Meadow, which she shares with Prickles. Her half is a pot-shaped sunroom cottage, with a rounded terracotta roof and a painted band under the eaves in cream, pink and yellow, like her own. Outside: flower beds all round, a bright mailbox shaped like a watering can, a bench between two sunflowers, and a prickly pear by the gate that is Prickles' favourite chair. Inside: one cosy room with a window full of seedling trays labelled in careful handwriting, a potting bench with her tiny trowel, shelves of pots with something growing in each, a sleeping nook lined with moss-green quilts, and a small sunny corner where Prickles sits and tells stories. Prickles' trail den is the other half of the house.

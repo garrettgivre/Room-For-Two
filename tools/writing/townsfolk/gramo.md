@@ -5,7 +5,7 @@
 - **Quirks:** every so often the record spins up fast, the horn bobs to a beat only Echo hears, notes puff out in a burst, and it finishes with a small bow. Remembers each person's favourite tune and hums it back when they walk past. Offstage it hides behind the horn.
 - **With the two of you:** hums one tune for you and a different one for Beau, and has never mixed them up. Plays a little louder when you stop to listen.
 - **baker:** "Bunbun leaves a roll on my lid at four. The record skips once, and I let it."
-- **lantern:** "Lantern lights the plaza as I finish. Our timing is a song in itself."
+- **lantern:** "Lumi lights the plaza as I finish. Our timing is a song in itself."
 - **toymaker:** "Boing bounces on the beat. Always the beat. I've stopped trying to fool him."
 
 idles: sway, bow, look, rock, twirl
@@ -42,4 +42,4 @@ lines:
   - "i found a tune that sounds like your pet's footsteps. i'll play it Thursday."
   - "my record skipped, but nobody minded. i think that makes it ours."
 
-home: A small cottage shaped like a music box with a round tiled roof. A brass horn pokes out of the chimney and hums when the wind blows. The door is cherry-red with a gold knocker, and the porch has a little stool and a bucket of old records. Inside: shelves of worn records sorted by feeling, a tiny stage with a velvet curtain that Echo only uses when alone, a sleeping nook lined with cushions, and a kettle that whistles a note in tune. It lives on the street running up to the plaza so the walk to work is short.
+home: A small cottage shaped like a music box with a round tiled roof. A brass horn pokes out of the chimney and hums when the wind blows. The door is cherry-red with a gold knocker, and the porch has a little stool and a bucket of old records. Inside: shelves of worn records sorted by feeling, a tiny stage with a velvet curtain that Echo only uses when alone, a sleeping nook lined with cushions, and a kettle that whistles a note in tune. This is Echo's Music Box in Lantern Meadow; Echo walks up to the plaza to play at three.

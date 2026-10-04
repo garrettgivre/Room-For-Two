@@ -9,7 +9,7 @@
   - **Parcel:** flatmate. Fold labels everything in the flat with lovely lettering; Parcel stamps over it.
   - **Stitch:** swaps scraps. Fold gives paper, Stitch gives thread, nobody keeps score.
   - **Bolt:** hires Fold for every shop sign and then asks for it "a bit bigger".
-  - **Pencil:** shares sketches and strong opinions about straight lines.
+  - **Sketch:** shares sketches and strong opinions about straight lines.
 
 idles: sway, look, bow, tiptoe, stretch
 talks: nod, sway, lean
@@ -31,6 +31,6 @@ rel:
 - parcel: "Parcel stamps my labels. I call it collaboration. Parcel calls it stamping."
 - stitch: "Stitch gives me thread, and I fold it into things. It is a good trade."
 - bolt: "Bolt asks for bigger signs. I give him medium and call it large."
-- pencil: "Pencil draws straight lines. I admire it, from a polite distance."
+- pencil: "Sketch draws straight lines. I admire it, from a polite distance."
 
 home: A narrow paper-pale house with a folded zigzag roof like a fan and a round window shaped like a paper circle, shared with Parcel next door-in-the-same-hall. Outside: a rain barrel with a lid held down by a stone, a hand-lettered gate sign and a line of tiny paper flags across the porch. Inside: one big work table under the window, jars of paint with the brush heads facing up, a wall of pinned crane tests (the first one is crooked and framed), and a basket labelled, in beautiful letters, "for later".

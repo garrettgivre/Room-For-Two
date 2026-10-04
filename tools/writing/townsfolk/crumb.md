@@ -37,4 +37,4 @@ rel:
 - boing: "Boing thought my pebble might bounce. It didn't. He said it was still a great pebble."
 - mayor: "The Mayor's moustache wiggles when he says hello. I tried to be polite. I wasn't."
 
-home: Crumb and Scone share Aunt Tutti's vanilla house above the ice-cream stand, with its upside-down waffle-cone roof. Crumb's side is the window nook: a cushion, a lamp, and a long shelf of pebbles in egg cartons, each labelled in tiny writing. Outside, a little rock garden by the step, arranged in a spiral, and a snail-shaped doormat.
+home: Crumb and Scone share Aunt Tutti's vanilla house, the Sundae Cottage on Sugarloaf Lane, with its upside-down waffle-cone roof. Crumb's side is the window nook: a cushion, a lamp, and a long shelf of pebbles in egg cartons, each labelled in tiny writing. Outside, a little rock garden by the step, arranged in a spiral, and a snail-shaped doormat.

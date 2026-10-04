@@ -10,7 +10,7 @@
 
 **With the two of you.** Counts you in when you arrive, as if you were a ship. Keeps a shelf of things it has adopted: a single mitten, a button, a very patient crab shell.
 
-**Relationships.** Spool (the tailor's assistant) knitted the scarf. Lumi flashes a lamp back at the point on clear nights. Bunbun sends the burnt cookies down the pier.
+**Relationships.** Bobbin (Stitch's assistant) knitted the scarf. Lumi flashes a lamp back at the point on clear nights. Bunbun sends the burnt cookies down the pier.
 
 idles: look, sway, lean, stretch, rock
 talks: nod, sway, lean
@@ -40,7 +40,7 @@ talks: nod, sway, lean
 - letters: "there's a boat out past the point tonight. i waved. it waved. good evening."
 
 ## rel
-- spool: "Spool knitted me this scarf. It's the warmest thing on the whole bay."
+- spool: "Bobbin knitted me this scarf. It's the warmest thing on the whole bay."
 - lantern: "Lumi lights the street and I light the sea. We nod at each other across the dark."
 - baker: "Bunbun sends the burnt cookies down to the pier. I dunk them. Perfect."
 

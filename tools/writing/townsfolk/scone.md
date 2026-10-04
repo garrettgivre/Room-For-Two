@@ -37,4 +37,4 @@ rel:
 - boing: "Boing wound up a robot and let it race me. It won. I'm not mad. I'm training."
 - mayor: "Mayor Marsh has a moustache like a little broom. It moved! Don't tell him I laughed."
 
-home: Scone and Crumb live with Aunt Tutti above her ice-cream stand, in a skinny house the colour of vanilla with a roof shaped like an upside-down waffle cone. Outside: a scooter on its side in the front garden, a chalk race track across the path, and a bucket of sticks. Inside: bunk beds (Scone on top, naturally), a wall of finish-line ribbons, one wobbly shelf of Crumb's pebbles that he is not allowed to touch, and a muddy pair of sneakers always by the door.
+home: Scone and Crumb live with Aunt Tutti at the Sundae Cottage on Sugarloaf Lane, where the ice-cream cart lives, a skinny house the colour of vanilla with a roof shaped like an upside-down waffle cone. Outside: a scooter on its side in the front garden, a chalk race track across the path, and a bucket of sticks. Inside: bunk beds (Scone on top, naturally), a wall of finish-line ribbons, one wobbly shelf of Crumb's pebbles that he is not allowed to touch, and a muddy pair of sneakers always by the door.

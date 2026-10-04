@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v69** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v69'` in `sw.js`; bump both for anything
+**Current build: v70** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v70'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 67 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -25,6 +25,11 @@ themselves instead of saving; bump it when you add or reshape shared state that 
   batches suggest a cloud session (Claude Code on the web) so the work runs off his machine. He's on the $100 plan and usage
   is fine; speed and the laptop are the constraint now (17 agents in parallel once hit the usage limit on the old plan). Sonnet agents modelled all the townsfolk and houses from the briefs in
   `tools/dev/town/` and Claude reviewed every screenshot, sending fixes back.
+
+**Lore: read `tools/writing/GAME_BIBLE.md` before any character, dialogue, holiday or story work.** It is canon (residents,
+pronouns, households, relationships, the calendar and holidays, who does what on each holiday, established facts, open questions).
+Add every new fact you invent to its Canon log; when sources disagree the bible wins, and index.html data wins over the bible for
+anything the game uses. `tools/writing/holidays.md` is the holiday design doc.
 
 **Working method**
 - index.html is ~1.8 MB in one file: never rewrite it wholesale. Find things with grep, edit with small Python scripts that
@@ -537,3 +542,23 @@ node, 1 = extra friendship]]}`. Placeholders {n} {a} {b} {me}. They don't feel l
 (often), after 4 chats with you that day, or ~12% at random (seeded per 15 min); they still take a gift. Kind choices give +1
 friendship (max 2 per chat); the first chat of the day +2. Residents without TALK fall back to KBIB lines (`cvT`). The old
 `twCard` card is still used for "Everyone in town". Visitors no longer knock at home while the map is open.
+
+## Game bible, holidays, real weather (v70)
+- **`tools/writing/GAME_BIBLE.md`** is the canon reference (see the note in Start here). Pronoun rule: a character's own sheet wins,
+  else they/them. Open questions live in its last chapters (Boing/Blush/Joy pronouns, whether there's a sea).
+- **Holidays** (`HOLIDAYS`, design in `tools/writing/holidays.md`): 16 one-day holidays, some on real-world dates (Fresh Jar Day
+  Jan 1, Two-Heart Day Feb 14, Topsy Day Apr 1, Bubblework Night Jul 4, Swap-Face Night Oct 31, Long Table 4th Thu Nov...),
+  some the town's own (Puddle Parade, Lost & Found Day, First Brick Day = the town's birthday...), plus **Room Day** = the
+  anniversary of the room (`state.born`, set once from the oldest journal/feed entry, merged as the minimum). `holOn(day)`,
+  `holNext(n)`, `holTick` (from `lifeTick`, once per holiday per year via `state.evseen`): the host's Inbox letter, +10 hearts,
+  a Journal line, a reward card. The Places noticeboard shows today's holiday, the next two and the weather; festival bunting
+  also goes up on holidays.
+- **Real weather** (`wxNow`, `wxFetch`): Open-Meteo forecast for the phone's location (asked once with a card, `wxAsk`; stored
+  only in localStorage `r42loc`, rounded to ~1 km), else Kansas City; refreshed every 30 min (`r42wx`). `weatherOf(day)` uses it
+  for today and the next two days (kinds sun/cloud/rain/storm/snow/fog/wind; hot >=85°F, cold <=35°F), so map rain, the
+  Neighbours forecast and the garden follow the real sky.
+- **Dialogue reacts** (`cvOpener`): openers pick from `TALK[k].hol[holiday]` on holidays, `fest` in festival weeks, `wx[kind]`
+  (or `hot`/`cold`), `tod` (m/d/e/n, US Central), else `out`; `cvFitWx` skips lines that mention a different weather. All 32
+  residents have wx/tod/hol/fest lines (`.claude/talk2/<key>.js`, brief `tools/dev/town/TALK2_BRIEF.md`).
+- Gotcha: writing regexes through a bash heredoc into Python turned `\b` into a backspace character; write code with the
+  Write tool and check index.html has no control characters.

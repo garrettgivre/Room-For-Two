@@ -14,7 +14,7 @@ idles: bow, sway, lean, rock, look
 talks: nod, lean, sway
 
 lines:
-- hi: "Ahem! Welcome, dear resident, to the Town Hall." / "Ah! Guests! I shall prepare a few remarks." / "Come in, come in. Mind the guest book, it is fresh." / "A visit! Splendid. I believe this calls for a ribbon."
+- hi: "Ahem! Welcome, dear resident!" / "Ah! Guests! I shall prepare a few remarks." / "Come in, come in. Mind the guest book, it is fresh." / "A visit! Splendid. I believe this calls for a ribbon."
 - mood: "I rehearsed the whole speech this morning. Nobody was here, so I clapped for myself." / "Warm today. I am keeping to the shade, and to the speeches." / "Quiet day. Quiet days are for planning loud ones."
 - tips: "Write birthdays down the moment you hear them. I use a very large book." / "If you must make a speech, make three points and a joke. The joke can be bad." / "On hot days, stand near the fountain. I do, and I am still only a little bit sticky."
 - pet: "{n}! Honoured guest! Please accept this small gold sticker." / "{a} and {b}, you both have the look of future councillors." / "I declare {n} the finest pet in town. Do not tell the others, it is unofficial."
