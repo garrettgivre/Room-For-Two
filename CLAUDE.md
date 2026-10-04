@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v78** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v78'` in `sw.js`; bump both for anything
+**Current build: v79** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v79'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 75 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -36,6 +36,11 @@ anything the game uses. `tools/writing/holidays.md` is the holiday design doc.
   assert each target string occurs exactly once and write via a temp file + `os.replace` (on Garrett's PC: `~/anaconda3/python.exe`;
   scratch scripts go in `.claude/`, which is gitignored), or the Edit tool.
 - After every edit: `node tools/dev/town/syn.js` (syntax-checks every script block).
+- **Before every release, run the regression sweeps** (v79, after a crash slipped out in v76/v77): `node tools/dev/town/run.js
+  tools/dev/town/sweep.js` (every event x hours: where everyone is, crews, cards; the map at every zoom and a pinch; inside every
+  building with a keeper close-up; every menu page; conversations; `PART=12345` runs parts, the whole thing takes ~15 min, run parts 1-2
+  and 4-5 together and 3 on its own) and `tools/dev/town/sweep2.js` (care, Decorate, Arrange paths/circles, every arcade game, gacha,
+  wardrobe, studio). Both must end with `errors 0`. Test every data shape a change touches (v76's bug only hit events held at houses).
 - Test headless in solo mode with `tools/dev/town/run.js` (see its README; Playwright goes in `.claude/pw`). It injects a
   `__T` eval hook at serve time, so nothing test-only ever lands in index.html (still check `grep -c __T index.html` is 0).
   Never point tests at the real Firebase room. Software GL is slow (building the town takes ~10 s there; phones are much faster).
@@ -694,3 +699,9 @@ friendship (max 2 per chat); the first chat of the day +2. Residents without TAL
   - the map's own adaptive resolution (`tmAdapt`, `tm.pr` .85..1.5 from a frame-time average; it was a fixed 1.5x);
   - outlines skipped when zoomed far out (`renderer.outlines=false`, a new renderer flag);
   - less garbage per frame in `twResTick` (resident sort every .3 s, one reused vector for the pins).
+
+## Fixes (v78-v79)
+- v78: `evAt` called itself (a global search-and-replace turned `'h_'+E.house` inside its own definition into `evAt(E)`), so any event at
+  a house (Sunday tea...) threw "Maximum call stack size exceeded" every frame and the map stopped responding (no zoom).
+- v79: Arrange refused new decorations once a layout had 80 (the world has 300+), now 900 on the world map; "edge of the island" text.
+  Regression sweeps added (see Working method).
