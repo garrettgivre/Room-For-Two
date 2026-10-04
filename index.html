@@ -31672,7 +31672,7 @@ function weatherOf(day){{const W=typeof wxNow==='function'&&wxNow(),i=W&&W.dates
 const dayPlus=n=>{const d=new Date(lifeDay()+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
 const dowOf=day=>new Date(day+'T12:00:00Z').getUTCDay();
 // ---- weekly events at someone's house (US Central): guests leave home (and work) for them; turning up is rewarded once per event
-const evAt=E=>E?(E.at||evAt(E)):null,evHosts=E=>E&&E.house&&HOUSES[E.house]?HOUSES[E.house].res:((E&&E.hosts)||[]);
+const evAt=E=>E?(E.at||'h_'+E.house):null,evHosts=E=>E&&E.house&&HOUSES[E.house]?HOUSES[E.house].res:((E&&E.hosts)||[]);
 const EVENTS=[{k:'tea',n:'Sunday tea',dow:0,h:[15,18],house:'bunbun',guests:['baker','cushion','mayor','posy','cactus'],t:'Tea, cake and a nap on the sofa.'},
   {k:'story',n:'Story hour',dow:3,h:[16,18],at:'p_library',hosts:['book'],guests:['scone','crumb','cloud','posy','lantern'],t:'Dewey reads aloud in the children’s corner; everyone gets a cushion.'},
   {k:'meeting',n:'Town meeting',dow:1,h:[17,19],at:'p_townhall',hosts:['mayor'],guests:['parcel','crane','pebble','patch','cone','builder','pencil'],t:'The Mayor reads the town news from the balcony; tea after.'},
@@ -52289,7 +52289,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=77;
+const APP_V=78;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
