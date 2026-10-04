@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v76** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v76'` in `sw.js`; bump both for anything
+**Current build: v77** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v77'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 75 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -676,7 +676,21 @@ friendship (max 2 per chat); the first chat of the day +2. Residents without TAL
   is lowered onto the seat facing out), the fountain, ponds, the well, the statue, the clock tower, the carousel (stand round, facing
   in), the noticeboard and, on market Sundays, the stalls (browse, facing the counter). Residents on rounds or strolls go to one ~38% of
   the time (weighted: stalls on Sundays, benches, the fountain), stay a while (sit 14-36 s), one resident per spot (`tw.spotUse`).
-- **Doors open** (`tmDoorHinge`, `tmDoorOpen(k,ms)`): every map door's hinge has a `userData.anim` that swings it open while
-  `tm.dopen[k]` is in the future (a 0.002 rad wobble keeps it out of the static merge). Residents leaving step out of the doorway and
+- **Doors open** (`tmDoorHinge`, `tmDoorOpen(k,ms)`): since v77 each map door gets a hidden lit-doorway panel that grows open from the
+  hinge side while `tm.dopen[k]` is in the future (the door itself merges; hidden panels cost nothing). Residents leaving step out of the doorway and
   arriving ones walk into it (`r.inPt`) while it's open; the pet's door opens when it steps out (`twStart`) and before it goes in
   (`twGoIn`).
+
+## Map: edge scrolling and a performance pass (v77)
+- **Edge scrolling** (Garrett: "keep the middle the same, touch and hold the sides to scroll"): a touch that starts in the outer 12% (left/
+  right) or 9% (top/bottom) of the map and is held for 240 ms without moving scrolls the map that way (`tmEdgeTick`, from `tmTick`,
+  speeding up over 1.4 s; diagonals in the corners), with a soft glow on that edge (`#tmEdge`, `tmEdgeShow`). A quick tap still taps,
+  dragging still orbits, and lifting after a scroll isn't a tap. Not in Arrange.
+- **Performance** (drawn meshes far/mid/street: v76 2082/1904/707 -> v77 ~1079/946/607):
+  - animated details (`tmMergeWorld` collects meshes under moving nodes into frozen merged batches per area, `tm.farChunks`;
+    `tmFarLod` shows the real moving pieces only in areas within ~13 units of the camera target, none when `tm.far`);
+  - coarser static merge (16-cell areas, rounder material buckets);
+  - doors no longer keep a separate hinge (see v76 note);
+  - the map's own adaptive resolution (`tmAdapt`, `tm.pr` .85..1.5 from a frame-time average; it was a fixed 1.5x);
+  - outlines skipped when zoomed far out (`renderer.outlines=false`, a new renderer flag);
+  - less garbage per frame in `twResTick` (resident sort every .3 s, one reused vector for the pins).
