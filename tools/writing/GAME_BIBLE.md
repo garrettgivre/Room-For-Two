@@ -218,6 +218,14 @@ a candle in a window. Someone picked them up, said something kind, and they stay
 - The map's arrangement is shared and editable by the two of you (Arrange mode), so "next door" is a neighbourhood fact, not
   a fixed coordinate. Neighbourhood membership (`HOUSES`) is canon; exact plots are not.
 
+## The shape of the town (v74)
+A round town: the fountain plaza (pastel tiles) in the middle, a cobble ring road round it with the eight shops facing in, four
+avenues out (west to the park, south past your house, east toward the bay, and brick **Market Street** north to the Town Hall), and
+**the Crescent**, a round flagstone lane that circles the whole town through all four neighbourhoods (Playhouse Hill north-east, Bubble
+Bay south-east by the boardwalk on the bay side, Lantern Meadow south-west, Sugarloaf Lane north-west). The library sits on the west
+avenue and the post office on the east avenue, just inside the Crescent; the weather station is up a gravel path on the hill behind
+the Town Hall; dirt trails wind through the woods round the edge. Your house is on the south avenue, between the plaza and the Crescent.
+
 ## The town's civic places (v73: now real buildings you can walk into)
 - **The Town Hall** (`p_townhall`, at the top of Market Street, north of the plaza; Mayor Marsh 9:00-15:00, open 8-18): a cream two-storey
   hall with a teal roof, a clock tower with a bell and a flag, a four-column portico and the speech balcony above it. Fold's sign

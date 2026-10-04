@@ -10,8 +10,8 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v73** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v73'` in `sw.js`; bump both for anything
-user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 73 (older clients refresh
+**Current build: v74** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v74'` in `sw.js`; bump both for anything
+user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 74 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
 **Who and how**
@@ -623,3 +623,26 @@ friendship (max 2 per chat); the first chat of the day +2. Residents without TAL
 - **Park rounds**: `RES_NEAR` (Posy and the twins) keeps their rounds near the park (`twNearOf`, `twSpotNear`).
 - Perf note: the map draws ~2,080 meshes far out (was ~1,780). On this laptop's software GL every version (v71 too) now shows
   intermittent multi-second frame stalls in headless tests; compare versions with `R42_INDEX` before blaming a change.
+
+## Paths and the round town (v74)
+- **Path types** (`PATH_T`, in hierarchy order with a walking cost each: cobble road .30, brick street .33, plaza tiles .36, flagstone
+  lane .45, boardwalk .50, gravel path .58, dirt trail .70, stepping stones .85; grass `PATH_GRASS` 1.6). A layout path cell is
+  `[x,z,type]` (`pathT(q)`; old `[x,z]` = cobble). `twGrid` keeps a `cost` per cell; `twPath` is 8-way A* (no corner cutting) on those
+  costs, and its smoothing never shortcuts over worse ground, so residents and the pet keep to the best paths (tested ~99% on paths,
+  main roads for long trips). `twRandomRoad` picks wander targets weighted toward the main roads.
+- **Smooth rendering** (`tmPaths`): per type, a distance field on a fine grid (`PATH_RES` 5 per cell; a disc on each cell, bands to all
+  8 neighbours, joins between two types drawn in the less important one, then two box blurs) traced with marching squares
+  (`pathField`, `pathMesh`): round corners, diagonal runs read as curves, filled areas become round plazas; a curb band in the type's
+  edge colour under each; tiling textures `pathTex` (256 px = 2 units, `wrapS=1000`); stepping stones are separate stone meshes
+  (`pathStones`). About 15 meshes for the whole town (the old renderer was a box per cell).
+- **Arrange > Paths**: pick a type (chips), and a brush: Paint (tap/drag), Circle (tap the middle, then the edge) or Round plaza
+  (filled) (`tmRoadShape`). A tap on the same type lifts it, on another type changes it; redraws are debounced (`tmRoad.t`).
+- **Layout v5** (`worldDesign5`, a pure function also runnable in node from `.claude/paths/design5.js`): a round tiled plaza, a cobble
+  ring road, the shops round it with brick paths to their doors, four avenues (west to the park, south past home, east to the bay
+  road), brick Market Street with the stalls up to the Town Hall, the weather station up a gravel path behind it, and the **Crescent**,
+  a round flagstone lane (r 13.2) through all four neighbourhoods, houses outside it facing in (Playhouse NE, Bubble Bay SE by the
+  boardwalk, Lantern Meadow SW with the lamp shed, Sugarloaf NW), the library and post office inside it on the west and east avenues,
+  the park west with two round gravel loops, dirt trails in the woods. Older saved world layouts (v<5) are replaced once (the old one
+  is kept on that device in `localStorage.r42wmapOld`). `worldDesignV2` is the old designer, unused.
+- **Districts** are by angle round the plaza now (`plDistrictOf`: within r 11.6 = town; NE hill, SE bay, SW meadow, NW sugar); the title
+  uses it. `WORLD_PARTS`/`WORLD_SIZE` (`WPS`) only place the district labels, tints and residents' round areas.
