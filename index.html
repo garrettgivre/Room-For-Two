@@ -765,6 +765,8 @@ body.photo header.top,body.photo #dock,body.photo #emotes,body.photo .kbub,body.
 .tgrow{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}.tgrow .gel{font-size:13px;padding:7px 8px}
 .wnl{text-align:left;margin:4px 0 0;padding-left:18px;max-height:46vh;overflow:auto}.wnl li{margin:6px 0;font-size:14px;line-height:1.35}
 .muintro{display:flex;gap:10px;align-items:flex-start;margin:0 0 10px}.muintro .tmface img,.muintro .tmface b{width:46px;height:46px;border-radius:50%;border:2.5px solid var(--ink);background:#fff;object-fit:contain}.muintro p{margin:0;background:#fff;border:2.5px solid var(--ink);border-radius:14px;padding:8px 10px;font-size:14px}#muGive{display:block;margin:0 auto 12px}
+.pj{border:3px solid var(--ink);border-radius:18px;background:#fff;padding:12px;box-shadow:0 3px 0 var(--ink)}.pjh{display:flex;gap:10px;align-items:center}.pjh .tmface img,.pjh .tmface b{width:44px;height:44px;border-radius:50%;border:2px solid var(--ink);background:#fff;object-fit:contain}.pjh small{color:#6B4E95}.pjh h3{margin:0;font-family:var(--disp);font-weight:400;font-size:19px}
+.pjbar{height:16px;border-radius:9px;background:#EFE6FA;border:2.5px solid var(--ink);overflow:hidden;margin:8px 0 4px}.pjbar i{display:block;height:100%;background:linear-gradient(90deg,#FFD21F,#FF8A1C)}.pjn{font-size:13px;margin:2px 0 8px}.pjs{margin-right:6px}.pjg{display:flex;gap:6px;flex-wrap:wrap}.pjg .gel{font-size:13px;padding:6px 12px}
 .tms{pointer-events:auto;border:0;background:none;padding:0;cursor:pointer;transform-origin:50% 100%}.tms img{display:block;width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 0 #fff) drop-shadow(0 2px 2px rgba(59,18,115,.35))}.tms::after{content:'';display:block;width:8px;height:8px;margin:-3px auto 0;background:#fff;border:2px solid var(--ink);border-top:0;border-left:0;transform:rotate(45deg);border-radius:0 0 3px 0}
 .tmd{pointer-events:auto;border:0;background:none;padding:0;cursor:pointer}.tmd span{display:block;font-family:var(--disp);font-size:15px;color:var(--ink);padding:4px 12px;background:rgba(255,253,246,.94);border:2.5px solid var(--ink);border-radius:14px;box-shadow:0 3px 0 var(--ink);white-space:nowrap}
 .tmlist{display:flex;flex-direction:column;gap:6px;max-height:46vh;overflow:auto;margin-top:6px}.tmrow{display:flex;align-items:center;gap:8px}.tmface{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:50%;background:#F6EEFF;border:2.5px solid var(--ink);overflow:hidden}.tmface img{width:38px;height:38px;object-fit:contain}.tmface b{font-family:var(--disp)}.tmface .lsv{width:30px;height:30px}
@@ -34980,7 +34982,7 @@ function tmCircleAt(gx,gz){const m=tmM(),x=gx+.5,z=gz+.5;return(m.c||[]).findInd
 // ---------- open, close, input, frame ----------
 tmPlacesOf('town').filter(k=>!tmGate(k)).forEach(k=>{try{tmImg(k)}catch(_){}});
 {const warm=()=>{try{if(!tm)tmInit();if(tm)setTimeout(()=>{try{tmNormCur();tmFresh()}catch(e){}},250)}catch(e){}};setTimeout(()=>window.requestIdleCallback?requestIdleCallback(warm,{timeout:1500}):warm(),1600)}
-function tmOpen(){const T=tmInit();if(!T)return false;document.body.classList.add('mapopen');tmUse('world');tmTabs();tmNormCur();{const gifts=tmGifts();if(gifts.length){tmDecor();T.snapOk=0;setTimeout(()=>toast('New in town: '+jrList(gifts.map(k=>TM_DECOR[k].n.toLowerCase()))+'!',true),700)}}const el=$('#town3');el.hidden=false;el.classList.add('on');T.open=true;tmArrange(false);tmWhere();twStart();T.snapOk=0;$('#tmArr').hidden=false;tmWheelOpen(false);setTimeout(()=>{try{if(!sandbox)wxAsk()}catch(_){}},1800);try{fishDock()}catch(e){console.warn('dock',e)}try{musPlace()}catch(e){console.warn('museum',e)}try{tmSeasonDecor();if(tm.seasonP&&tm.seasonP!==seasonNow())tm.mergeDirty=true;setTimeout(()=>{try{if(!sandbox)seasonHello()}catch(_){}},2600)}catch(e){console.warn('season',e)}{const rn=$('#tmRain');if(rn)rn.hidden=!['rain','storm'].includes(weatherOf(lifeDay()))}
+function tmOpen(){const T=tmInit();if(!T)return false;document.body.classList.add('mapopen');tmUse('world');tmTabs();tmNormCur();{const gifts=tmGifts();if(gifts.length){tmDecor();T.snapOk=0;setTimeout(()=>toast('New in town: '+jrList(gifts.map(k=>TM_DECOR[k].n.toLowerCase()))+'!',true),700)}}const el=$('#town3');el.hidden=false;el.classList.add('on');T.open=true;tmArrange(false);tmWhere();twStart();T.snapOk=0;$('#tmArr').hidden=false;tmWheelOpen(false);setTimeout(()=>{try{if(!sandbox)wxAsk()}catch(_){}},1800);try{fishDock()}catch(e){console.warn('dock',e)}try{musPlace()}catch(e){console.warn('museum',e)}try{projPlace()}catch(e){console.warn('project',e)}try{tmSeasonDecor();if(tm.seasonP&&tm.seasonP!==seasonNow())tm.mergeDirty=true;setTimeout(()=>{try{if(!sandbox)seasonHello()}catch(_){}},2600)}catch(e){console.warn('season',e)}{const rn=$('#tmRain');if(rn)rn.hidden=!['rain','storm'].includes(weatherOf(lifeDay()))}
   $('#tmPop').classList.add('gen');if(!T.snapOk){tmSync(false,8);tmDraw(0);tmSnapNow()}T.snapOk=0;tmLast=performance.now();tmTick(tmLast);tmGenie(true);return true}
 function tmQuad(W,H,q){const[x0,y0,x1,y1,x2,y2,x3,y3]=q,dx1=x1-x2,dx2=x3-x2,dx3=x0-x1+x2-x3,dy1=y1-y2,dy2=y3-y2,dy3=y0-y1+y2-y3,D=dx1*dy2-dx2*dy1,g=(dx3*dy2-dx2*dy3)/D,h=(dx1*dy3-dx3*dy1)/D,a=x1-x0+g*x1,b=x3-x0+h*x3,c=x0,d=y1-y0+g*y1,e=y3-y0+h*y3,f=y0;
   return`matrix3d(${a/W},${d/W},0,${g/W},${b/H},${e/H},0,${h/H},0,0,1,0,${c},${f},0,1)`}
@@ -35966,7 +35968,7 @@ function lifeWhere(k){const R=RESIDENTS[k],E=eventNow();if(evGuest(k,E))return`a
   if(w==='shop')return'working at '+(SHOPS[R.shop]?SHOPS[R.shop].n:'the shop');if(w==='place'){const P=placeOf(k);return'working at the '+SHOPS['p_'+P.id].n}if(w==='market')return'at the Sunday market';if(w==='visit')return'popped into '+SHOPS[shopVisitOf(k)].n;if(w==='out')return R.away||'out';return'at home'}
 function lifeFace(k){const t=thumbs['fig_'+k];if(!t){queueThumbs(['fig_'+k]);clearTimeout(lifeFace.t);lifeFace.t=setTimeout(()=>{if(openTab==='town'&&!lifeGiftFor)renderSheet()},1800)}return t?`<img src="${t}" alt="">`:`<b>${esc(RESIDENTS[k].n[0])}</b>`}
 function renderTown(body){const day=lifeDay(),W=WEATHER[weatherOf(day)],F=festOn();
-  const tabs=[['people','People'],['garden','Garden'],['calendar','Calendar'],['parcel','Parcels']].map(([k,n])=>`<button class="${lifeTab===k?'on':''}" data-lt="${k}">${n}</button>`).join('');
+  const tabs=[['people','People'],['project','Project'],['garden','Garden'],['calendar','Calendar'],['parcel','Parcels']].map(([k,n])=>`<button class="${lifeTab===k?'on':''}" data-lt="${k}">${n}</button>`).join('');
   let html=`${pgHead('town',{right:`<span class="lifewx">${LIFE_IC[W.ic].replace('width="30" height="30"','width="22" height="22"')} ${esc(W.n)}</span>`,sub:F?`The ${esc(F.n)} is on at the Town Hall!`:'Everyone in town, what they love, and what’s on.'})}<div class="lifetabs">${tabs}</div>`;
   if(lifeTab==='people'){const W2=lifeWish(),bd=bdayToday(),E=eventNow();
     if(lifeGiftFor)html+=lifeGiftHtml(lifeGiftFor,!lifeGiftHand);
@@ -35989,12 +35991,13 @@ function renderTown(body){const day=lifeDay(),W=WEATHER[weatherOf(day)],F=festOn
       <div class="row-label">This week</div><div class="tdlist">${ev.map(([i,d,es,bs])=>es.map(e=>`<div class="tdc" style="--cc:#FFD21F"><span class="tdi">${lifeFace(e.guests[0])}</span><div class="tdt"><b>${esc(e.n)}</b><small>${i?i===1?'Tomorrow':dayName(d):'Today'}, ${hourName(e.h[0])} to ${hourName(e.h[1])} · ${esc(SHOPS[evAt(e)]?SHOPS[evAt(e)].n:'')}</small><small>${esc(e.t)}</small></div></div>`).join('')+
         bs.map(([k])=>`<div class="tdc" style="--cc:#FF6FB5"><span class="tdi">${lifeFace(k)}</span><div class="tdt"><b>${esc(RESIDENTS[k].n)}’s birthday</b><small>${i?i===1?'Tomorrow':dayName(d):'Today!'} A gift counts extra.</small></div></div>`).join('')).join('')}</div>
       <div class="row-label">Festivals</div><div class="tdlist">${F2.map(f=>`<div class="tdc" style="--cc:#9B4DF2"><span class="tdi">${LIFE_IC.fest}</span><div class="tdt"><b>${esc(f.n)}</b><small>${f.from.replace('-','/')} to ${f.to.replace('-','/')} at the Town Hall · a ${esc(SETMAP[f.set]?SETMAP[f.set].n:'')} keepsake</small></div></div>`).join('')}</div>`}
+  else if(lifeTab==='project'){html+=projHtml()}
   else if(lifeTab==='parcel'){const me=myId||'me',sent=(state.parcels||[]).filter(p=>p.by===me||p.by===myId).slice(0,5),goods=ITEMS.filter(i=>i.p>0&&(i.k==='food'||i.k==='groom'));
     html+=`<p class="hint">Parcel will deliver a wrapped treat to your person. It costs the item’s price plus 10 buttons for wrapping, and they unwrap it on their phone.</p>
       <label class="lifenote">Note <input id="pcNote" maxlength="120" placeholder="Thinking of you"></label><div class="lifegoods">${goods.map(i=>`<button class="gel silver" data-pc="${i.id}">${esc(i.n)} <small>${itemPrice(i)+BTN}${IB}</small></button>`).join('')}</div>
       ${sent.length?`<div class="row-label">Sent</div><ul class="lifelist">${sent.map(p=>`<li>${esc((ITEMS.find(i=>i.id===p.item)||{}).n||'')} · ${p.open&&p.open.length?'unwrapped':'on its way'} · ${ago(p.t)}</li>`).join('')}</ul>`:''}`}
   body.innerHTML=html;
-  body.querySelectorAll('[data-lt]').forEach(b=>b.onclick=()=>{lifeTab=b.dataset.lt;lifeGiftFor=null;renderSheet()});
+  body.querySelectorAll('[data-pj]').forEach(b=>b.onclick=()=>projGive(+b.dataset.pj));body.querySelectorAll('[data-lt]').forEach(b=>b.onclick=()=>{lifeTab=b.dataset.lt;lifeGiftFor=null;renderSheet()});
   body.querySelectorAll('[data-lgo]').forEach(b=>b.onclick=()=>{setTab(null);travelTo(b.dataset.lgo)});
   body.querySelectorAll('[data-lgift]').forEach(b=>b.onclick=()=>{lifeGiftFor=b.dataset.lgift;renderSheet();setTimeout(()=>{const g=$('#lifeGift');if(g)g.scrollIntoView({behavior:'smooth',block:'center'})},60)});
   body.querySelectorAll('[data-gsrc]').forEach(b=>b.onclick=()=>{const [t,id]=b.dataset.gsrc.split('|'),k=lifeGiftFor,hand=lifeGiftHand,r=giveGift(k,{t,id},hand?'hand':'mail');lifeGiftFor=null;lifeGiftHand=false;
@@ -63179,7 +63182,8 @@ function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS
 /* </swapface> */
 /* <whatsnew> */
 // ---- a one-time card per device listing what's new since the last version this phone saw (localStorage r42wn)
-const WHATSNEW=[[99,'The Little Museum: donate one of each fish, bug and find, and Dewey writes a card for it. Tap the museum on the map.'],
+const WHATSNEW=[[100,'Town projects: the Mayor proposes something for the town (a Ferris wheel first) and the two of you chip in buttons. When it’s paid for, it goes up on the map. Neighbours, Project.'],
+  [99,'The Little Museum: donate one of each fish, bug and find, and Dewey writes a card for it. Tap the museum on the map.'],
   [98,'Bug catching: butterflies, bees, beetles and fireflies around flowers, trees, water and lamps. Tap one, then tap when the ring turns green. Posy loves them.'],
   [89,'The town changes with the seasons: autumn leaves now, then snow, blossom and fireflies. Seasonal decorations pop up around town.'],
   [89,'Sound! A little music box, the pet’s squeaks, neighbours babbling, birds, rain and footsteps. Volume is in Our room.'],
@@ -63250,6 +63254,43 @@ function musPlace(){const m=tmM();if(!m||m.mu||tmMk()!=='world')return;m.mu=1;if
     const near=[[i-1,j],[i+2,j],[i,j-1],[i,j+2],[i+1,j+2],[i+2,j+1]].some(([x,z])=>G_.road[z*G_.W+x]);if(!near)continue;const [x,z]=twPos(i,j),d=Math.hypot(x,z);if(d>4&&d<bd){bd=d;best=[i,j]}}
   if(best){m.d.push(['museum',best[0],best[1]]);saveSoon();try{tmDecor();tw.gkey=''}catch(_){}}}
 /* </museum> */
+/* <projects> */
+// ---- town projects (v100): something the two of you build for the town together. The Mayor proposes one at a time (PROJECTS, in order);
+// you both chip in buttons (each person's share shown); when it's funded the landmark is placed in town and the next project is proposed.
+// state.proj {i: current index, got:{pid:buttons}, done:[keys]}; merge: same i → per-person max; different i → the larger i wins.
+const PROJECTS=[['ferriswheel','A Ferris wheel',3000,'The Mayor wants the town to have a view of itself. From the top you can see every roof.'],
+  ['trainstation','A little train halt',2500,'A platform and a track, so visitors can arrive in style. Parcel has already asked about mail by rail.'],
+  ['treehouse','A treehouse in the park',2000,'Scone and Crumb have been drawing plans for months. Some of them have slides.'],
+  ['observatory','An observatory',3500,'Nimbus says the stars are wasted on the roof deck. A proper telescope, for proper nights.'],
+  ['schoolhouse','A school house',4000,'Dewey would like somewhere to read aloud that isn’t the library. Bolt has offered to build the bell tower.'],
+  ['stage','An outdoor stage',2500,'Echo has been playing on the plaza for years. It deserves a stage, and a curtain.'],
+  ['bouncycastle','A bouncy castle',1500,'Joy and Boing put this one in the suggestion box eleven times.'],
+  ['communitygarden','A community garden',2500,'Posy wants beds for everyone, and a water butt, and a wheelbarrow nobody may borrow without asking.']];
+const PROJ_STEP=[50,200,500];
+function projCur(){const P=state.proj||(state.proj={i:0,got:{},done:[]});while(PROJECTS[P.i]&&P.done.includes(PROJECTS[P.i][0]))P.i++;return PROJECTS[P.i]?P:null}
+function projSum(P){return Object.values(P.got||{}).reduce((a,v)=>a+(v|0),0)}
+function projGive(n){const P=projCur();if(!P)return;const Q=PROJECTS[P.i],left=Q[2]-projSum(P);n=Math.min(n,left);if(n<=0)return;if(!payCur(n,'b')){toast('Not enough buttons for that.',true);return}const me=pid();P.got[me]=(P.got[me]|0)+n;kfAdd('mayor',n>=200?1:0);
+  if(projSum(P)>=Q[2])projFinish(P,Q);saveSoon();updHUD();renderSheet()}
+const projLc=n=>n.replace(/^A /,'a ').replace(/^An /,'an ');
+function projFinish(P,Q){P.done.push(Q[0]);const shares=Object.entries(P.got).map(([k,v])=>`${who(k)} ${v}`).join(', ');P.i++;P.got={};state.proj.pend=(state.proj.pend||[]).concat([Q[0]]);
+  resPost('mayor',`Ahem! It is done: ${projLc(Q[1])}, paid for by the two of you (${shares}). I have prepared a speech in three parts, and a ribbon. Do come and see it in town.`);
+  jrAdd(`We finished a town project: ${projLc(Q[1])}. The Mayor cut a ribbon. ${headNames()[0]} cheered for both of us.`,'','project',0,Q[1]);try{firstOf('project',`Our first town project: ${projLc(Q[1])}.`)}catch(_){}earnG(2);
+  showReward('Project finished!','emo-party',`<p><b>${esc(Q[1])}</b> is going up in town.</p><p class="rwsub">+2 glimmers · see it on the map</p>`)}
+// place finished projects on the map the next time it opens (a free spot by a road, away from the middle)
+function projPlace(){const P=state.proj;if(!P||!(P.pend||[]).length||tmMk()!=='world')return;const m=tmM(),G_=twGrid();if(!m||!G_)return;const left=[];
+  P.pend.forEach(k=>{const D=TM_DECOR[k];if(!D||m.d.some(q=>q[0]===k))return;const [w,d]=D.sz||[1,1];let best=null,bd=-1;
+    for(let j=2;j<G_.D-d-1;j++)for(let i=2;i<G_.W-w-1;i++){let ok=true;for(let a=0;a<w&&ok;a++)for(let b=0;b<d&&ok;b++){const c=(j+b)*G_.W+i+a;if(G_.block[c]||G_.road[c])ok=false}if(!ok)continue;
+      let near=false;for(let a=-1;a<=w&&!near;a++)for(let b=-1;b<=d&&!near;b++)if(G_.road[(j+b)*G_.W+i+a])near=true;if(!near)continue;const [x,z]=twPos(i,j),r=Math.hypot(x,z);if(r>ISLAND_R-3)continue;const sc=-Math.abs(r-11);if(sc>bd){bd=sc;best=[i,j]}}
+    if(best){m.d.push([k,best[0],best[1]]);for(let a=0;a<w;a++)for(let b=0;b<d;b++)G_.block[(best[1]+b)*G_.W+best[0]+a]=1}else left.push(k)});
+  P.pend=left;saveSoon();try{tmDecor();tw.gkey=''}catch(_){}}
+function projHtml(){const P=projCur();if(!P)return`<p class="hint">Every project is built. The Mayor is thinking of more. Loudly.</p>`;const Q=PROJECTS[P.i],sum=projSum(P),pc=Math.min(100,sum/Q[2]*100);
+  const shares=Object.entries(P.got||{}).filter(([,v])=>v>0).map(([k,v])=>`<span class="pjs"><b>${esc(who(k))}</b> ${v}${IB}</span>`).join('');
+  return`<div class="pj"><div class="pjh"><span class="tmface">${lifeFace('mayor')}</span><div><small>The Mayor’s town project</small><h3>${esc(Q[1])}</h3></div></div><p>${esc(Q[3])}</p>
+    <div class="pjbar"><i style="width:${pc.toFixed(1)}%"></i></div><p class="pjn">${sum} of ${Q[2]}${IB} raised${shares?' · ':''}${shares}</p>
+    <div class="pjg">${PROJ_STEP.map(n=>`<button class="gel ${n>=500?'pink':'sun'}" data-pj="${n}"${(state.btn|0)<Math.min(n,Q[2]-sum)?' disabled':''}>Give ${Math.min(n,Q[2]-sum)}${IB}</button>`).join('')}</div>
+    <p class="hint">When it’s paid for, it goes up in town. Then the Mayor has another idea.</p></div>${(state.proj.done||[]).length?`<div class="row-label">Built so far</div><p>${state.proj.done.map(k=>esc((PROJECTS.find(q=>q[0]===k)||[k,k])[1])).join(' · ')}</p>`:''}`}
+/* </projects> */
+
 
 
 
@@ -65587,6 +65628,7 @@ const MERGE={btn:mCur,glim:mCur,tix:mCur,hearts:(l,r,b)=>Math.max(0,mNum(l,r,b))
   rmem:(l,r)=>{const o=JSON.parse(JSON.stringify(r||{}));for(const k in l||{}){const L=l[k],O=o[k]||(o[k]={});for(const q in L){const a=L[q],b=O[q];if(!b||a.t>b.t)O[q]=a;else if(a.t===b.t){if(Array.isArray(a.said))O[q].said=[...new Set([...(b.said||[]),...a.said])];else O[q].said=a.said||b.said}}}return o},
   tg:(l,r)=>!l?r:!r?l:l.id===r.id?Object.assign({},r,{join:[...new Set([...(l.join||[]),...(r.join||[])])]}):(l.t>r.t?l:r),
   museum:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{})if(!o[k]||(l[k].t||0)<(o[k].t||0))o[k]=l[k];return o},
+  proj:(l,r)=>{if(!l)return r;if(!r)return l;const done=[...new Set([...(l.done||[]),...(r.done||[])])],pend=[...new Set([...(l.pend||[]),...(r.pend||[])])];if((l.i|0)!==(r.i|0)){const w=(l.i|0)>(r.i|0)?l:r;return Object.assign({},w,{done,pend})}const got=Object.assign({},r.got||{});for(const k in l.got||{})got[k]=Math.max(got[k]|0,l.got[k]|0);return{i:l.i|0,got,done,pend}},
   keeps:(l,r)=>{const m=new Map();[...(l||[]),...(r||[])].forEach(e=>{if(e&&e.id&&!m.has(e.id))m.set(e.id,e)});return[...m.values()].sort((a,b)=>b.t-a.t).slice(0,200)},
   tfound:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{})if(!o[k]||(l[k].t||0)<(o[k].t||0))o[k]=l[k];return o},
   cbook:(l,r)=>Object.assign({},r||{},l||{}),
@@ -65682,7 +65724,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=99;
+const APP_V=100;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

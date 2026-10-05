@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v99** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v99'` in `sw.js`; bump both for anything
+**Current build: v100** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v100'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -972,3 +972,11 @@ decoration on a free 2x2 next to a road near the middle; tapping it walks there 
 Finds (shore + trail), donated ones shown, unknown ones "?"). "Donate N new finds" (`musDonate`) moves one of each undonated species
 from the Bag into `state.museum` {id:{by,t}} (merge keeps the earliest). A finished wing: +3 glimmers and a keepsake ribbon
 (`state.cbook['mu_'+wing]`). Prize-counter things aren't exhibits.
+
+## Town projects (v100)
+`/* <projects> */` (source `.claude/items/proj.js`): the shared long-term goal. `PROJECTS` [decoration key, name, cost in buttons,
+the Mayor's pitch], built in order. Neighbours page tab "Project" (`projHtml`): progress bar, each person's share, Give 50/200/500
+(`projGive`, `payCur`). Funded → `projFinish` (Mayor's Inbox letter naming both shares, Journal, scrapbook, +2 glimmers, reward card) and
+the key goes to `state.proj.pend`; `projPlace()` on the next map open puts it on a free spot by a road ~11 units from the middle (skips
+if the layout already has that key, so two phones can't place it twice). State `state.proj` {i, got:{pid:buttons}, done, pend}; merge:
+same i → per-person max, else the larger i; done and pend unioned.
