@@ -27681,7 +27681,7 @@ function buildShop(key){const S=SHOPS[key],root=G(),objs=new Map(),items=new Map
   // staff-only rooms: everything in them is greyed out and can't be tapped
   objs.forEach((o,id)=>{if(items.get(id).locked){greyObj(o);o.userData.locked=1}});
   // a shop can have more than one keeper (S.keepers); tapping one with a service (svc) opens it
-  const KQ=crewPlace(shopCrew(key).map(q=>P&&q.g?Object.assign({},q,{x:planGX(P,q.g[0]),z:planGZ(P,q.g[1])}):q),P,objs,items),KS=KQ.map((q,i)=>{const K=KEEPERS[q.k]();K.g.userData.keeper=i+1;kPolish(K,q.k);bakeKeeper(K,q.k);K.g.position.set(q.x,q.home?0:.5,q.z);K.g.scale.setScalar(1.22);if(!q.home)kPodium(P?lvG[0]:root,q.x,q.z,S.color);K.g.userData.keeper=i+1;{const L=G();K.g.children.slice().forEach(c=>L.add(c));K.g.add(L);K.layer=L}
+  const KQ=crewPlace(shopCrew(key).map(q=>P&&q.g?Object.assign({},q,{x:planGX(P,q.g[0]),z:planGZ(P,q.g[1])}):q),P,objs,items),KS=KQ.map((q,i)=>{const K=KEEPERS[q.k]();K.g.userData.keeper=i+1;kPolish(K,q.k);bakeKeeper(K,q.k);K.g.position.set(q.x,q.home?0:.5,q.z);K.g.scale.setScalar(1.22);try{swapMask(K.g,q.k)}catch(_){}if(!q.home)kPodium(P?lvG[0]:root,q.x,q.z,S.color);K.g.userData.keeper=i+1;{const L=G();K.g.children.slice().forEach(c=>L.add(c));K.g.add(L);K.layer=L}
     Object.assign(K,{act:'idle',k:0,d:1,svc:q.svc||S.svc,lines:q.lines||S.lines,n:q.n||'',kind:q.k,customer:!!q.customer,guest:!!q.guest});(P?lvG[0]:root).add(K.g);(P?lvExtra[0]:extra).push(new THREE.Box3(new THREE.Vector3(q.x-.6,0,q.z-.6),new THREE.Vector3(q.x+.6,2,q.z+.6)));return K});
   clearKeepers(KQ,KS,objs,items);
   const A={key,def:S,root,objs,items,extra,keeper:KS[0],keepers:KS,tf:S.tf(),tw:S.tw(),arch:AR.blocks,archFaces:AR.faces,archTiles:AR.tiles};
@@ -36045,10 +36045,10 @@ function twSpotPick(r){const L=twSpots(),use=tw.spotUse,mk=typeof marketOn==='fu
 function twSpotFree(r){if(r.spot&&tw.spotUse&&tw.spotUse[r.spot.id]===r.k)delete tw.spotUse[r.spot.id];r.spot=null;r.atSpot=0}
 function twResDrop(r){twSpotFree(r);if(r.dot)r.dot.remove();if(r.full)tm.world.remove(r.full.g);r.dot=r.full=null}
 // zoomed out (or not one of the closest few) a resident is a portrait pin: their face in their colour, always readable
-function twPin(k){const b=document.createElement('button'),R=RESIDENTS[k];b.className='tmr';b.style.setProperty('--c',(RES[k]||['','#fff'])[1]);b.innerHTML=lifeFace(k)+'<i class="dots">···</i>';b.setAttribute('aria-label',R.n);b.title=R.n;
+function twPin(k){const b=document.createElement('button'),R=RESIDENTS[k];b.className='tmr';b.style.setProperty('--c',(RES[k]||['','#fff'])[1]);b.innerHTML=lifeFace(swapOn()&&SWAP_AS[k]||k)+'<i class="dots">···</i>';b.setAttribute('aria-label',R.n);b.title=R.n;
   b.onclick=e=>{e.stopPropagation();twTalk(k)};$('#tmLab').appendChild(b);return b}
 function twDot(k){const c=parseInt(((RES[k]||[])[1]||'#FFFFFF').slice(1),16),g=G(),b=ol(sp(g,.13,M(c,{roughness:.5}),0,.16,0,1,1.15,1),.012);sp(g,.03,M(0x3B1273),-.045,.2,.11).outline=0;sp(g,.03,M(0x3B1273),.045,.2,.11).outline=0;g.userData.twk=k;return g}
-function twFull(r){if(r.full)return r.full;try{const K=KEEPERS[r.k]();kPolish(K,r.k);bakeKeeper(K,r.k);const L=G();L.add(K.g);K.g.scale.setScalar(TW_RES_SCALE);L.userData.twk=r.k;K.g.traverse(o=>o.userData.twk=r.k);tm.world.add(L);r.full={K,g:L}}catch(e){console.warn('tw full',e)}return r.full}
+function twFull(r){if(r.full)return r.full;try{const K=KEEPERS[r.k]();kPolish(K,r.k);bakeKeeper(K,r.k);const L=G();L.add(K.g);K.g.scale.setScalar(TW_RES_SCALE);L.userData.twk=r.k;K.g.traverse(o=>o.userData.twk=r.k);tm.world.add(L);r.full={K,g:L};try{swapMask(K.g,r.k)}catch(_){}}catch(e){console.warn('tw full',e)}return r.full}
 const _twV=new THREE.Vector3();
 function twResTick(dt,t){const cam=tm.tgt,close=tmFit()*tm.zoom<16;tw.sortT=(tw.sortT||0)-dt;if(tw.sortT<=0||!tw.near||tw.near.length!==tw.res.size){tw.sortT=.3;tw.near=[...tw.res.values()].sort((a,b)=>Math.hypot(a.x-cam.x,a.z-cam.z)-Math.hypot(b.x-cam.x,b.z-cam.z))}const near=tw.near;
   near.forEach((r,i)=>{const full=close&&i<TW_FULL&&Math.hypot(r.x-cam.x,r.z-cam.z)<12;r.t+=dt;const talking=tw.card&&tw.card.k===r.k;let mv=false;
@@ -36061,7 +36061,7 @@ function twResTick(dt,t){const cam=tm.tgt,close=tmFit()*tm.zoom<16;tw.sortT=(tw.
     if(r.out){if(r.inPt){const dx=r.inPt[0]-r.x,dz=r.inPt[1]-r.z,dd=Math.hypot(dx,dz);if(dd>.02){const st=Math.min(dd,TW_RSPEED*.8*dt);r.x+=dx/dd*st;r.z+=dz/dd*st;r.ry=Math.atan2(dx,dz);mv=true}}r.sc=Math.max(0,r.sc-dt*1.4);if(r.sc<=0)r.gone=1}else if(r.sc<1)r.sc=Math.min(1,r.sc+dt*1.8);
     if(r.gone){r.dot.hidden=true;if(r.full)r.full.g.visible=false;return}
     {const pin=r.dot,cam=tm.cam;if(!pin.isConnected)$('#tmLab').appendChild(pin);if(pin.classList.contains('chat')!==!!r.chat)pin.classList.toggle('chat',!!r.chat);if(full)pin.hidden=true;else{const v=_twV.set(r.x,.62-tmCurveY(r.x,r.z)+(mv?Math.abs(Math.sin(r.t*9))*.05:0),r.z).project(cam),[W_,H_]=tmSize();pin.hidden=v.z>1;pin.style.transform=`translate(${(v.x*.5+.5)*W_}px,${(-v.y*.5+.5)*H_}px) translate(-50%,-100%) scale(${clamp(1.15-tm.zoom*.5,.62,1)*Math.max(.05,ease(r.sc))})`;
-      if(!pin.querySelector('img')&&thumbs['fig_'+r.k])pin.innerHTML=lifeFace(r.k)+'<i class="dots">···</i>'}}
+      {const fk=swapOn()&&SWAP_AS[r.k]||r.k;if(!pin.querySelector('img')&&thumbs['fig_'+fk])pin.innerHTML=lifeFace(fk)+'<i class="dots">···</i>'}}}
     if(full){const F=twFull(r);if(F){F.g.visible=true;F.g.scale.setScalar(Math.max(.001,ease(r.sc)));F.g.position.set(r.x,r.atSpot&&r.spot&&r.spot.sit?r.spot.sit-.04:mv?Math.abs(Math.sin(r.t*9))*.03:0,r.z);F.g.rotation.y=r.ry;try{F.K.upd(dt,t,'idle',0,(talking&&(!cv||cv.k!==r.k||cv.shown<(cv.full||'').length))||rcTalking(r))}catch(_){}}}else if(r.full)r.full.g.visible=false})}
 // ---- tapping outdoors: a resident (chat card), a building (walk to its door and go in), the ground (walk there)
 function twPick(cx,cy){const r=$('#tmc').getBoundingClientRect(),v=new THREE.Vector3();let best=null,bd=1e9;
@@ -63105,6 +63105,27 @@ setInterval(()=>{try{tgTick()}catch(e){console.warn('together',e)}},2000);
 function tgHtml(){if(!partnerId())return'';const on=tgOnline(),o=who(partnerId());
   return`<div class="row-label">Together right now</div>${on?`<p class="hint">${esc(o)} is here too. Start something and they’ll get an invitation.</p><div class="tgrow">${Object.entries(TG_K).map(([k,Q])=>`<button class="gel lilac" data-tg="${k}">${esc(Q[0])}</button>`).join('')}</div>`:`<p class="hint">When ${esc(o)} opens the app too, you can do things together here.</p>`}`}
 /* </together> */
+/* <swapface> */
+// ---- Swap-Face Night (v95, Oct 31): every resident carries a paper mask on a stick of the resident they've come as (GAME_BIBLE
+// "Swap-Face Night costumes"; `mask:` overrides), on the map and indoors; their map pins show the costume face too. dbgSwap forces it.
+let dbgSwap=false;
+const SWAP_AS={baker:'stylist',stylist:'baker',toymaker:'windup',windup:'toymaker',builder:'pencil',pencil:'builder',parcel:'crane',crane:'parcel',posy:'baker',cactus:'baker',lantern:'cloud',cloud:'lantern',
+  hair:'pebble',cushion:'pebble',mayor:'pebble',pebble:'builder',dust:'cushion',patch:'cushion',joy:'pixel',pixel:'baker',book:'pixel',gramo:'crane',makeup:'cloud',polish:'spool',spool:'beacon',beacon:'mayor',
+  tailor:'hair',jam:'baker',sponge:'stylist',cone:'baker',scone:'mayor',crumb:'cone'};
+function swapOn(){if(dbgSwap)return true;try{const H=holOn();return!!(H&&H.k==='swapface')}catch(_){return false}}
+const swapTex={};
+function swapMaskTex(t){if(swapTex[t])return swapTex[t];const col=(RES[t]||['','#FFB3DA'])[1];const T=swapTex[t]=ctex(256,256,(x,w,h)=>{x.fillStyle='#FFF8EC';x.fillRect(0,0,w,h);x.fillStyle=col;x.globalAlpha=.35;x.beginPath();x.arc(w/2,h/2,w*.44,0,7);x.fill();x.globalAlpha=1;
+    const im=swapTex['_i'+t];if(im&&im.complete&&im.naturalWidth)x.drawImage(im,w*.1,h*.08,w*.8,h*.8);else{x.fillStyle='#3B1273';x.beginPath();x.arc(w*.38,h*.45,12,0,7);x.arc(w*.62,h*.45,12,0,7);x.fill();x.lineWidth=8;x.strokeStyle='#3B1273';x.beginPath();x.arc(w/2,h*.55,40,.3,Math.PI-.3);x.stroke()}
+    x.strokeStyle='#E9DCC0';x.lineWidth=10;x.strokeRect(5,5,w-10,h-10)});
+  const load=src=>{const im=new Image();im.onload=()=>{swapTex['_i'+t]=im;const c=T.image,x=c.getContext('2d'),w=c.width,h=c.height;x.setTransform(1,0,0,1,0,0);x.fillStyle='#FFF8EC';x.fillRect(0,0,w,h);x.fillStyle=col;x.globalAlpha=.35;x.beginPath();x.arc(w/2,h/2,w*.44,0,7);x.fill();x.globalAlpha=1;{const iw=im.naturalWidth,ih=im.naturalHeight,k=Math.min(w*.86/iw,h*.86/ih),dw=iw*k,dh=ih*k;x.drawImage(im,(w-dw)/2,(h-dh)/2,dw,dh)}x.strokeStyle='#E9DCC0';x.lineWidth=10;x.strokeRect(5,5,w-10,h-10);try{renderer.disposeTexture(T);if(tm&&tm.R)tm.R.disposeTexture(T)}catch(_){}};im.src=src};
+  if(thumbs['fig_'+t])load(thumbs['fig_'+t]);else{queueThumbs(['fig_'+t]);let n=0;const w_=setInterval(()=>{if(thumbs['fig_'+t]){clearInterval(w_);load(thumbs['fig_'+t])}else if(++n>40)clearInterval(w_)},500)}return T}
+// a mask on a stick, held up in front of the face; sized from the model
+function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS[k];if(!t)return;let b;try{g.updateMatrixWorld(true);b=new THREE.Box3().setFromObject(g)}catch(_){return}const s=new THREE.Vector3();b.getSize(s);
+  const sc=g.scale.x||1,h=s.y/sc,d=s.z/sc,m=G(),sz=Math.min(.8,Math.max(.3,h*.42));const card=add(m,new THREE.PlaneGeometry(sz,sz),M(0xffffff,{map:swapMaskTex(t),roughness:.8}),0,0,0);card.outline=0;
+  const back=add(m,new THREE.PlaneGeometry(sz*1.04,sz*1.04),M(0xE9DCC0,{roughness:.8}),0,0,-.004);back.rotation.y=Math.PI;back.outline=0;cy(m,.012,.012,sz*.9,M(0xB07A4A,{roughness:.6}),sz*.42,-sz*.6,-.01,6).outline=0;
+  const gp=new THREE.Vector3();g.getWorldPosition(gp);m.position.set(((b.min.x+b.max.x)/2-gp.x)/sc,(b.min.y+s.y*.7-gp.y)/sc,(b.max.z-gp.z)/sc+.3);g.add(m);g.userData.swapM=m}
+/* </swapface> */
+
 
 
 
@@ -65232,7 +65253,7 @@ else if(openTab==='scrap')renderScrap(body);else if(openTab==='bag')renderBag(bo
     <p class="hint">Traits: ${esc(JSON.stringify(state.pet.tr||{}))}</p>
     </div></details>
     <details class="dbg-sec" data-sec="Neighbours"${dbgOpen==="Neighbours"?" open":""}><summary>Neighbours and houses</summary><div class="dbg-in">
-    <div class="dbg-grid"><button class="gel lilac" id="dbgInv">Get invited everywhere</button><button class="gel ${dbgAllHome?'sun':'lilac'}" id="dbgHome">Everyone home: ${dbgAllHome?'on':'off'}</button><button class="gel lilac" id="dbgSea">Season: ${SEASON_N[seasonNow()]}${dbgSeason?' (forced)':''}</button><button class="gel lilac" id="dbgEv">Event: ${dbgEvent||'auto'}</button><button class="gel lilac" id="dbgFest">Festival: ${dbgFest||'auto'}</button><button class="gel lilac" id="dbgVis">Visitor now</button><button class="gel lilac" id="dbgSeed">+4 seeds</button></div>
+    <div class="dbg-grid"><button class="gel lilac" id="dbgInv">Get invited everywhere</button><button class="gel ${dbgAllHome?'sun':'lilac'}" id="dbgHome">Everyone home: ${dbgAllHome?'on':'off'}</button><button class="gel lilac" id="dbgSwap">Swap-Face Night: ${dbgSwap?'on':'off'}</button><button class="gel lilac" id="dbgSea">Season: ${SEASON_N[seasonNow()]}${dbgSeason?' (forced)':''}</button><button class="gel lilac" id="dbgEv">Event: ${dbgEvent||'auto'}</button><button class="gel lilac" id="dbgFest">Festival: ${dbgFest||'auto'}</button><button class="gel lilac" id="dbgVis">Visitor now</button><button class="gel lilac" id="dbgSeed">+4 seeds</button></div>
     <p class="hint">${Object.keys(RESIDENTS).filter(resHere).map(k=>`${esc(RESIDENTS[k].n)}: ${resWhere(k)}`).join(' · ')}</p>
     </div></details>
     <p class="hint">Sandbox lets you try every piece, floor, wall and door. Nothing you do in it is saved or synced, and leaving puts the room back.</p>
@@ -65264,7 +65285,7 @@ $('#dbgEv').onclick=()=>{const ks=[null,...EVENTS.map(e=>e.k)];dbgEvent=ks[(ks.i
 $('#dbgFest').onclick=()=>{const ks=[null,...FESTS.map(e=>e.k)];dbgFest=ks[(ks.indexOf(dbgFest)+1)%ks.length];renderSheet()};
 $('#dbgVis').onclick=()=>{if(away){toast('Go home first.',true);return}setTab(null);const f=Object.keys(RESIDENTS).filter(k=>resHere(k)&&KBIB[k]);if(visitor){scene.remove(visitor.K.g);visitor=null}spawnVisitor(pick1(f))};
 $('#dbgSeed').onclick=()=>{const S=state.seeds||(state.seeds={});Object.keys(SEEDS).slice(0,4).forEach(k=>S[k]=(S[k]|0)+1);saveSoon();toast('+4 seeds',true)};
-{const b=$('#dbgSea');if(b)b.onclick=()=>{const L=[null,'spring','summer','autumn','winter'];dbgSeason=L[(L.indexOf(dbgSeason)+1)%L.length];if(tm){tm.mergeDirty=true;tm.seaDecorS=null}renderSheet()}}$('#dbgHome').onclick=()=>{dbgAllHome=!dbgAllHome;toast(dbgAllHome?'Everyone is at home (shops keep their usual keeper).':'Back to the usual hours.',true);renderSheet()};
+{const b=$('#dbgSwap');if(b)b.onclick=()=>{dbgSwap=!dbgSwap;renderSheet()}}{const b=$('#dbgSea');if(b)b.onclick=()=>{const L=[null,'spring','summer','autumn','winter'];dbgSeason=L[(L.indexOf(dbgSeason)+1)%L.length];if(tm){tm.mergeDirty=true;tm.seaDecorS=null}renderSheet()}}$('#dbgHome').onclick=()=>{dbgAllHome=!dbgAllHome;toast(dbgAllHome?'Everyone is at home (shops keep their usual keeper).':'Back to the usual hours.',true);renderSheet()};
     $('#dbgTr').onclick=()=>{const ks=Object.keys(TRAITS),k=ks[Math.random()*ks.length|0];trAdd(k,5);toast('+5 '+TRAITS[k].n);renderSheet()};
     $('#dbgSand').onclick=()=>{setSandbox(!sandbox);if(openTab==='debug')renderSheet()};
     $('#dbgAll').onclick=()=>{select(null);const st=SETS[dbgSetI%SETS.length];dbgSetI++;state.items=[];let fx=-3,fz=-3.1,wi=0;
@@ -65534,7 +65555,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=94;
+const APP_V=95;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

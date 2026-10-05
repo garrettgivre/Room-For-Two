@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v94** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v94'` in `sw.js`; bump both for anything
+**Current build: v95** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v95'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -944,3 +944,10 @@ scrapbook.
   phones celebrate (`tgCelebrate`: pet animation, +1 glimmer once a day each, a Journal line, a scrapbook first).
 - **Designs as pet patterns**: `petPatternTex` draws pattern `dz_<id>` as tiles of the design (head keeps its face clear); Blush's
   studio lists your designs after the built-in patterns; `petLook` accepts `dz_` patterns whose design exists.
+
+## Swap-Face Night masks (v95)
+`/* <swapface> */` (source `.claude/items/swap.js`): on Swap-Face Night (`holOn()` k 'swapface', Oct 31; debug "Swap-Face Night" toggle
+`dbgSwap`) every resident holds a paper mask on a stick showing who they've come as (`SWAP_AS`, from the bible's costume table, using the
+`mask:` entries where the bible has them). `swapMask(g,k)` is called after a keeper is built in `buildShop` and after a walking resident's
+full model is built (`twFull`); map pins show the costume's face. The mask texture (`swapMaskTex`) is a 2x `ctex` canvas: when the
+portrait thumbnail arrives later it's redrawn with the transform reset (`setTransform`), then re-uploaded on both renderers.
