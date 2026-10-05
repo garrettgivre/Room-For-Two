@@ -2398,6 +2398,56 @@ function fishModel(F){const g=G(),m=M(F.c,{roughness:.35}),m2=M(F.c2,{roughness:
   eye(P[0]*.6,.07+P[1]*.25,P[2]*.7,Math.max(.01,P[1]*.22));eye(P[0]*.6,.07+P[1]*.25,-P[2]*.7,Math.max(.01,P[1]*.22));return g}
 Object.assign(TREASURE_BUILD,Object.fromEntries(FISH.map(f=>[f[0],()=>fishModel(FISHMAP[f[0]])])));
 /* </fish-data> */
+/* <bug-data> */
+// ---- bug catching (v98): little bugs flit near flowers, trees, water, lamps (at night) and over the grass on the town map, by month, hour
+// and weather. Tap one: the pet tiptoes over, then a ring closes in on it: tap when the ring is on the bug. Bugs are treasures in the
+// 'bugs' collection (the bug book in the Bag); Posy buys them and loves the rare ones. [id,name,where,months,hours,weather,rarity,price,shape,c,c2,hint]
+const BUGS=[
+ ['b_white','Cabbage white','flower','3-10','6-18','',10,1,'fly',0xFFFFFF,0xC9D6E6,'Flowers, spring to autumn, by day.'],
+ ['b_yellow','Lemon butterfly','flower','4-9','6-18','',8,2,'fly',0xFFE27A,0xFF8A1C,'Flowers on warm days.'],
+ ['b_blue','Little blue','flower','5-9','8-17','sun',5,3,'fly',0x8FD8FF,0x4A7FF2,'Flowers on sunny days in summer.'],
+ ['b_monarch','Monarch','flower','7-10','8-17','',3,5,'fly',0xFF8A1C,0x3B1273,'Flowers in late summer and autumn.'],
+ ['b_peacock','Peacock butterfly','flower','3-9','8-17','',2,7,'fly',0xE8384F,0x4A7FF2,'Flowers, by day. Rare.'],
+ ['b_bee','Honeybee','flower','3-10','7-18','',9,1,'bee',0xFFC21F,0x3B1273,'Flowers by day.'],
+ ['b_bumble','Bumblebee','flower','4-9','7-18','',6,2,'bee',0xFFD21F,0x2B2240,'Flowers in spring and summer. Fuzzy.'],
+ ['b_lady','Ladybird','tree flower','3-10','6-19','',8,1,'beetle',0xE8384F,0x2B2240,'On leaves and flowers.'],
+ ['b_jewel','Jewel beetle','tree','6-8','9-17','',2,8,'beetle',0x3EC8F2,0xA6E22E,'Trees in high summer. Shiny.'],
+ ['b_stag','Stag beetle','tree','6-8','17-8','',2,9,'stag',0x6B4A2E,0x3B2A1E,'Trees on summer evenings.'],
+ ['b_cicada','Cicada','tree','7-8','8-17','',5,3,'cicada',0x7FA86A,0xC9E6A6,'Trees in July and August. Loud.'],
+ ['b_drag','Dragonfly','water','5-10','8-17','',6,2,'drag',0x3EC8F2,0x4A7FF2,'Over ponds and streams.'],
+ ['b_damsel','Pink damselfly','water','6-9','8-17','',3,4,'drag',0xFF7FB8,0xC6A6FF,'Over water in summer.'],
+ ['b_firefly','Firefly','water flower','6-8','20-4','',6,3,'firefly',0x3B4A2E,0xFFF06A,'Water and flowers on summer nights.'],
+ ['b_moth','Moon moth','lamp','5-10','20-5','',4,4,'fly',0xC9F2D6,0x9FE3B8,'Round the lamps at night.'],
+ ['b_moth2','Fluffy moth','lamp','1-12','19-5','',7,1,'fly',0xD9C9B0,0xB89E7A,'Round the lamps at night, all year.'],
+ ['b_cricket','Cricket','ground','8-11','17-5','',7,1,'hopper',0x4A3A2A,0x8A6A4A,'In the grass on autumn evenings.'],
+ ['b_grass','Grasshopper','ground','6-10','7-18','',8,1,'hopper',0x8FCF5A,0x5FA83A,'In the grass, summer and autumn.'],
+ ['b_snail','Garden snail','ground flower','1-12','0-24','rain',6,2,'snail',0xC9A27A,0xE8D2B0,'Out and about in the rain.'],
+ ['b_cater','Caterpillar','tree flower','4-7','0-24','',6,1,'cater',0xA6E22E,0xFFD21F,'On leaves in spring.'],
+ ['b_ant','Ant','ground','3-11','6-19','',9,1,'ant',0x3B2A1E,0x6B4A2E,'On the ground, most of the year.'],
+ ['b_pill','Pill bug','ground tree','1-12','0-24','',6,1,'pill',0x8A8299,0xB9B0C6,'Under leaves and logs, any time.'],
+ ['b_spider','Garden spider','tree','8-11','0-24','fog',3,3,'spider',0xFFD21F,0x3B1273,'In the trees on foggy autumn days.'],
+ ['b_mantis','Praying mantis','flower tree','8-10','8-17','',2,8,'mantis',0x7FD68A,0x5FA83A,'Very still, in late summer flowers.']];
+const BUGMAP={};BUGS.forEach(r=>{const [id,n,w,mo,h,wx,ra,p,s,c,c2,hint]=r,[h0,h1]=h.split('-').map(Number);BUGMAP[id]={id,n,w:w.split(' '),mo:fishMo(mo),h:[h0,h1],wx,r:ra,p,s,c,c2,hint}});
+TREASURES.push(...BUGS.map(r=>{const B=BUGMAP[r[0]];return{id:B.id,k:'treasure',col:'bugs',p:B.p,r:0,bug:1,hint:B.hint,n:B.n,d:B.hint}}));ITEMS.push(...TREASURES.filter(t=>t.bug));
+function bugModel(B){const g=G(),m=M(B.c,{roughness:.4}),m2=M(B.c2,{roughness:.45}),ink=M(0x3B1273),O=.004,ol_=o=>{ol(o,O);return o};
+  const eyes=(x,y,z,r)=>{[-1,1].forEach(s=>{sp(g,r,ink,x+s*r*1.3,y,z).outline=0})};
+  const wing=(s,w,h,mat,y,tilt,back)=>{const p=G();p.position.set(0,y,back||0);const q=sp(p,1,mat,s*w*.6,0,0,w*.6,.012,h*.5);ol_(q);p.rotation.z=s*tilt;g.add(p);return p};
+  if(B.s==='fly'){ol_(cy(g,.012,.012,.12,ink,0,.06,0,6)).rotation.x=Math.PI/2;g.userData.wings=[wing(-1,.11,.11,m,.06,.3),wing(1,.11,.11,m,.06,.3)];sp(g,.025,m2,-.07,.065,.02).outline=0;sp(g,.025,m2,.07,.065,.02).outline=0;return g}
+  if(B.s==='bee'){ol_(sp(g,.05,m,0,.06,0,.85,.8,1.2));for(let i=0;i<3;i++)to(g,.043,.008,m2,0,.06,-.03+i*.03,0,0,0).outline=0;eyes(0,.08,.055,.01);g.userData.wings=[wing(-1,.06,.05,M(0xFFFFFF,{roughness:.2}),.1,.5),wing(1,.06,.05,M(0xFFFFFF,{roughness:.2}),.1,.5)];return g}
+  if(B.s==='beetle'||B.s==='stag'||B.s==='pill'){ol_(sp(g,.055,m,0,.035,0,1,.65,1.25));if(B.s!=='pill'){sp(g,.012,m2,-.025,.065,0).outline=0;sp(g,.012,m2,.025,.065,-.02).outline=0;sp(g,.01,m2,0,.07,.025).outline=0}ol_(sp(g,.025,m2,0,.03,.065));
+    if(B.s==='stag')[-1,1].forEach(s=>{const j=co(g,.008,.06,m2,s*.02,.04,.1,4);j.rotation.x=Math.PI/2;j.rotation.z=s*.4});for(let i=0;i<3;i++)[-1,1].forEach(s=>{const l=cy(g,.004,.004,.05,ink,s*.05,.015,-.03+i*.03,4);l.rotation.z=s*1.2;l.outline=0});return g}
+  if(B.s==='cicada'){ol_(sp(g,.035,m,0,.04,0,1,.8,1.6));eyes(0,.055,.05,.012);g.userData.wings=[wing(-1,.05,.12,M(0xE6F6FF,{roughness:.1}),.06,.15,-.01),wing(1,.05,.12,M(0xE6F6FF,{roughness:.1}),.06,.15,-.01)];return g}
+  if(B.s==='drag'){ol_(cy(g,.01,.006,.2,m,0,.06,-.04,6)).rotation.x=Math.PI/2;ol_(sp(g,.02,m2,0,.06,.07));g.userData.wings=[wing(-1,.12,.035,M(0xE6F6FF,{roughness:.1}),.065,.1,.02),wing(1,.12,.035,M(0xE6F6FF,{roughness:.1}),.065,.1,.02)];return g}
+  if(B.s==='firefly'){ol_(sp(g,.03,m,0,.06,0,.9,.8,1.3));sp(g,.03,M(B.c2,{emissive:B.c2,roughness:.3}),0,.055,-.035).outline=0;g.userData.glow=1;g.userData.wings=[wing(-1,.04,.04,M(0xFFFFFF,{roughness:.2}),.08,.4),wing(1,.04,.04,M(0xFFFFFF,{roughness:.2}),.08,.4)];return g}
+  if(B.s==='hopper'){ol_(sp(g,.03,m,0,.04,0,.8,.8,1.8));ol_(sp(g,.025,m,0,.05,.06));[-1,1].forEach(s=>{const l=cy(g,.006,.006,.08,m2,s*.03,.04,-.03,4);l.rotation.x=.9;l.outline=0});eyes(0,.06,.075,.008);return g}
+  if(B.s==='snail'){const L=[[0,0],[.045,.01],[.05,.04],[.035,.07],[.015,.085],[0,.09]];const sh=lathe(g,L,m,0,.02,-.01,10);sh.rotation.x=-.3;ol_(sh);ol_(sp(g,.02,m2,0,.015,.04,.8,.6,2.4));return g}
+  if(B.s==='cater'){for(let i=0;i<6;i++)ol_(sp(g,.02,i%2?m2:m,0,.022,-.05+i*.02));eyes(0,.035,.07,.006);return g}
+  if(B.s==='ant'){[0,.03,.06].forEach((z,i)=>ol_(sp(g,i===1?.012:.016,m,0,.02,z-.03)));return g}
+  if(B.s==='spider'){ol_(sp(g,.03,m,0,.04,0,1,.8,1.2));ol_(sp(g,.018,m2,0,.04,.04));for(let i=0;i<4;i++)[-1,1].forEach(s=>{const l=cy(g,.003,.003,.07,ink,s*.04,.04,-.02+i*.014,4);l.rotation.z=s*1;l.outline=0});return g}
+  if(B.s==='mantis'){ol_(cy(g,.012,.01,.12,m,0,.06,0,6)).rotation.x=1.2;ol_(sp(g,.02,m,0,.11,.05,1,1,.8));eyes(0,.12,.065,.007);[-1,1].forEach(s=>{const a=cy(g,.005,.005,.05,m2,s*.015,.08,.06,4);a.rotation.x=-.6;a.outline=0});return g}
+  return g}
+Object.assign(TREASURE_BUILD,Object.fromEntries(BUGS.map(r=>[r[0],()=>{const g=bugModel(BUGMAP[r[0]]);g.scale.setScalar(1.6);return g}])));
+/* </bug-data> */
 const ITEMMAP={};ITEMS.forEach(i=>ITEMMAP[i.id]=i);
 const KIND_ICON={food:'stat-full',groom:'stat-clean',toy:'emo-ball',treasure:'emo-star'};
 function itemTag(it){return it.k==='food'?MEALS[it.size][0]:it.k==='groom'?GROOM_LV[it.lv][0]:TOY_LV[it.lv][0]}
@@ -36068,7 +36118,7 @@ function twResTick(dt,t){const cam=tm.tgt,close=tmFit()*tm.zoom<16;tw.sortT=(tw.
 function twPick(cx,cy){const r=$('#tmc').getBoundingClientRect(),v=new THREE.Vector3();let best=null,bd=1e9;
   tw.res.forEach(q=>{if(q.gone||q.sc<.3)return;for(const h of [.25,.6]){v.set(q.x,h-tmCurveY(q.x,q.z),q.z).project(tm.cam);if(v.z>1)continue;const x=r.left+(v.x*.5+.5)*r.width,y=r.top+(-v.y*.5+.5)*r.height,d=Math.hypot(x-cx,y-cy);if(d<bd){bd=d;best=q}}});
   const lim=Math.max(34,Math.min(70,900/Math.max(1,tmFit()*tm.zoom)));return bd<lim?best:null}
-function twTap(cx,cy){{const q=twPick(cx,cy);if(q){twTalk(q.k);return}}tmCell(cx,cy);const objs=[...tw.res.values()].map(r=>r.full&&r.full.g.visible?r.full.g:null).filter(Boolean),hr=tm.ray.intersectObjects(objs,true);
+function twTap(cx,cy){{const bg=bugPick(cx,cy);if(bg){bugGo(bg);return}}{const q=twPick(cx,cy);if(q){twTalk(q.k);return}}tmCell(cx,cy);const objs=[...tw.res.values()].map(r=>r.full&&r.full.g.visible?r.full.g:null).filter(Boolean),hr=tm.ray.intersectObjects(objs,true);
   for(const h of hr){let o=h.object;while(o&&o.userData.twk==null)o=o.parent;if(o){twTalk(o.userData.twk);return}}
   const hits=tm.ray.intersectObjects(Object.values(tm.bld),true);for(const h of hits){let o=h.object;while(o&&o!==tm.world&&!o.userData.tb)o=o.parent;if(o&&o.userData.tb){tmSelect(o.userData.tb);return}}
   {const hd=tm.decor?tm.ray.intersectObjects([tm.decor],true):[];for(const h of hd){let o=h.object;while(o&&o!==tm.world&&o.userData.td==null)o=o.parent;const q=o&&o.userData.td!=null&&tmM().d[o.userData.td];if(q&&FISH_SPOT[q[0]]){const [w,d_]=TM_DECOR[q[0]].sz||[1,1],[cx,cz]=twPos(q[1],q[2]),kind=FISH_SPOT[q[0]],tx=cx+(w-1)/2,tz=cz+(d_-1)/2,P=tw.pet,a=Math.atan2(P.x-tx,P.z-tz),r_=Math.max(w,d_)*.5+.45;twWalk(tx+Math.sin(a)*r_,tz+Math.cos(a)*r_,()=>{P.ry=Math.atan2(tx-P.x,tz-P.z);fishStart(kind)});return}if(q&&q[0]==='well'){const [w,d_]=TM_DECOR.well.sz||[1,1],[cx,cz]=twPos(q[1],q[2]);twWalk(cx+(w-1)/2,cz+(d_-1)/2+.9,()=>dlyWell());return}if(q)break}}
@@ -36097,7 +36147,7 @@ function twCard(k,line){const c=$('#tmCard'),R=RESIDENTS[k],hm=houseOf(k),home=h
 function tmBuildOne(k){if(tm.bld[k]||!tmPlaces().includes(k))return;try{tm.bld[k]=k==='home'?tmHome():tmShop(k);tmPad(tm.bld[k],k);tm.world.add(tm.bld[k]);tmPlace(k)}catch(e){console.warn('town '+k,e);delete tm.bld[k]}}
 function twStart(){if(!tm)return;const k=away?away.key:'home';tmDoorOpen(k,1700);tmBuildOne(k);twGrid();const d=twDoor(k)||{x:0,z:0,ry:0};tw.on=twPetAttach(d);tw.follow=true;tw.res.forEach(twResDrop);tw.res.clear();
   if(tw.on){tm.zoom=Math.max(.02,9/tmFit());tm.zoomTo=null;tm.pitch=.6;tm.yaw=(d.ry||0)+.45;tm.tgtTo.set(d.x,0,d.z);tm.tgt.copy(tm.tgtTo);twResSync();tw.sync=0;findsShow()}}
-function twEnd(){if(!tw.on&&!tw.save)return;tw.on=false;findsHide();twPetDetach();tw.res.forEach(twResDrop);tw.res.clear();tw.card=null;tw.cvPend=null;if(rc){rc=null;$('#tmCard').classList.remove('cvbox','rcbox')}rcHidePrompt();{const b=$('#rcBub');if(b)b.hidden=true}}
+function twEnd(){if(!tw.on&&!tw.save)return;tw.on=false;findsHide();twPetDetach();tw.res.forEach(twResDrop);tw.res.clear();tw.card=null;tw.cvPend=null;try{bugsHide()}catch(_){}if(rc){rc=null;$('#tmCard').classList.remove('cvbox','rcbox')}rcHidePrompt();{const b=$('#rcBub');if(b)b.hidden=true}}
 // the pet behind a building: a small face marker over where it is
 function twPetMark(){let el=$('#twPetMark');const P=tw.pet,on=tw.on&&P&&tw.petHid&&!cv&&!rc;if(!on){if(el&&!el.hidden)el.hidden=true;return}
   if(!el){el=document.createElement('div');el.id='twPetMark';el.className='twpm';el.innerHTML=`<img src="${ico('tab-pet')}" alt="">`;$('#tmLab').appendChild(el)}if(!el.isConnected)$('#tmLab').appendChild(el);
@@ -36108,7 +36158,7 @@ function twTick(dt,t){if(!tw.on||!tw.pet)return;const P=tw.pet;let mv=false;twPe
     if(nb&&Math.random()<.6)P.ry=Math.atan2(nb.x-P.x,nb.z-P.z);else if(Math.random()<.5)P.hop=.5;else P.ry+=(Math.random()-.5)*2.2}}
   if(P.hop>0)P.hop=Math.max(0,P.hop-dt);
   const g=pet.group;g.position.set(P.x,P.hop>0?Math.sin(Math.PI*(1-P.hop/.5))*.14:0,P.z);g.rotation.y=approach(g.rotation.y,P.ry,Math.min(1,dt*10));twPetPose(dt,t,mv);
-  if(tw.follow&&!tm.arr){tm.tgtTo.set(P.x,0,P.z)}cvPendTick();cvTick(dt);rcTick(dt);twChats(dt);twResTick(dt,t);findsTick(dt,t);
+  if(tw.follow&&!tm.arr){tm.tgtTo.set(P.x,0,P.z)}cvPendTick();cvTick(dt);rcTick(dt);try{bugsTick(dt,t)}catch(e){}twChats(dt);twResTick(dt,t);findsTick(dt,t);
   const el=$('#tmTitle');if(el){const mk=plDistrictOf(P.x,P.z),n=mk==='town'?'Town square':HOODS[mk].n;if(el.textContent!==n)el.textContent=n}}
 // ---- daily finds: a few things lying about the streets each day (the same spots on both phones), picked up by walking over them
 const FIND_N=7,SHORE_N=3;
@@ -61001,7 +61051,7 @@ function renderBag(body){const T=bagTab;let h=pgHead('bag',{right:`<span class="
     if(!L.length)grid=`<p class="hint">Nothing here yet. ${T==='toy'?'Toys come from the Toy Box.':T==='groom'?'The Bubble Salon has care things.':'The Snack Shack has treats.'}</p>`}
   else if(T==='treasure'){Object.entries(COLS).forEach(([c,C])=>{const L=TREASURES.filter(t=>t.col===c),F=state.tfound||{},got=L.filter(t=>F[t.id]).length;
       h+=`<div class="bagcol"><div class="bagch"><b>${esc(C.n)}</b><small>${got} of ${L.length}${(state.cbook||{})[c]?' · complete!':''}</small></div><p class="hint">${esc(C.d)}</p><div class="baggrid">${L.map(t=>{const n=state.inv[t.id]|0;if(!F[t.id])return`<span class="bagc unk"><span class="bth">?</span><b>${t.hint?esc(t.hint):'Not found yet'}</b></span>`;qs.push('toy:'+t.id);return card(t.id,t.n,n||0,thumb(t.id)).replace('class="bagc"',n?'class="bagc"':'class="bagc none"')}).join('')}</div></div>`});
-    h+=`<p class="hint">Fish bite at the ponds, the streams and the dock: tap the water on the map. Treasures wash up on the boardwalk at Bubble Bay. Beacon buys them, neighbours love some of them, and any of them can go on display in your room.</p>`}
+    h+=`<p class="hint">Fish bite at the ponds, the streams and the dock: tap the water on the map. Bugs flit around flowers, trees, water and lamps: tap one. Treasures wash up on the boardwalk at Bubble Bay. Beacon buys them, neighbours love some of them, and any of them can go on display in your room.</p>`}
   else if(T==='keep'){const K=state.keeps||[];grid=K.length?`<div class="bagkeeps">${K.map(e=>`<div class="bagk"><b>${esc(e.n)}</b><small>${e.from&&RESIDENTS[e.from]?'From '+esc(RESIDENTS[e.from].n)+' · ':''}${esc(dayLabel(e.t))}</small>${e.d?`<p>${esc(e.d)}</p>`:''}</div>`).join('')}</div>`:'<p class="hint">Letters, ribbons and little mementos end up here, and stay forever.</p>'}
   else if(T==='furn'){const L=Object.entries(state.fown||{}).filter(([k,n])=>n>0&&CATMAP[k]);L.forEach(([k,n])=>{qs.push(k);grid+=card('f:'+k,CATMAP[k].n,n,`<img data-tt="${k}" src="${thumbs[k]||'assets/icons/tab-decorate.webp'}" alt="">`)});
     grid=(grid||'<p class="hint">Nothing in storage. Everything you own is out in your room.</p>')+`<button class="gel lilac bagbtn" id="bagDeco">Open Decorate</button>`}
@@ -63128,7 +63178,8 @@ function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS
 /* </swapface> */
 /* <whatsnew> */
 // ---- a one-time card per device listing what's new since the last version this phone saw (localStorage r42wn)
-const WHATSNEW=[[89,'The town changes with the seasons: autumn leaves now, then snow, blossom and fireflies. Seasonal decorations pop up around town.'],
+const WHATSNEW=[[98,'Bug catching: butterflies, bees, beetles and fireflies around flowers, trees, water and lamps. Tap one, then tap when the ring turns green. Posy loves them.'],
+  [89,'The town changes with the seasons: autumn leaves now, then snow, blossom and fireflies. Seasonal decorations pop up around town.'],
   [89,'Sound! A little music box, the pet’s squeaks, neighbours babbling, birds, rain and footsteps. Volume is in Our room.'],
   [90,'Eleven new furniture sets at Cozy Nest, from Malt Shop to Captain’s Cabin, and lots of new town decorations to place.'],
   [90,'Designs: draw your own pattern in Decorate, then use it as a floor, a wallpaper, a framed picture, or on the pet at Blush’s.'],
@@ -63139,6 +63190,40 @@ const WHATSNEW=[[89,'The town changes with the seasons: autumn leaves now, then 
 function whatsNew(){let seen=0;try{seen=+localStorage.getItem('r42wn')||0}catch(_){}try{localStorage.setItem('r42wn',String(APP_V))}catch(_){}if(!seen||seen>=APP_V)return;const L=WHATSNEW.filter(q=>q[0]>seen);if(!L.length)return;
   showReward('What’s new','emo-star',`<ul class="wnl">${L.map(q=>`<li>${esc(q[1])}</li>`).join('')}</ul>`,{ok:'Let’s see!'})}
 /* </whatsnew> */
+/* <bugs> */
+Object.assign(COLS,{bugs:{n:'Bugs',d:'Little things that fly and crawl around town. What you find depends on the season, the time and the weather.',ic:'b_monarch'}});
+LIKES.posy&&LIKES.posy.love.push('t:bugs');LIKES.crumb&&LIKES.crumb.like.push('i:b_snail','i:b_pill');LIKES.cactus&&LIKES.cactus.like.push('i:b_mantis');
+// where bugs live on the map (decoration kinds) and what's about now
+const BUG_HOME={flower:/flower|tulip|sunflower|lavender|hydrangea|wildflower|blossom|garden|bed|mkt_flower|beestand|fireflymeadow/,tree:/tree|oak|willow|maple|birch|cypress|pine|cherry|palm|bamboo|treehouse|tireswing|hammock/,water:/pond|stream|waterfall|lily|duckpond|splash|bridge/,lamp:/lamp|string|lantern/};
+function bugAvail(w){const W=typeof wxNow==='function'?wxNow():null,mo=+lifeDay().slice(5,7),h=townHour(),inH=([a,b])=>a<b?h>=a&&h<b:h>=a||h<b;if(W&&['rain','storm'].includes(W.kind)&&w!=='ground'&&w!=='tree')return Object.values(BUGMAP).filter(B=>B.wx==='rain'&&B.w.includes(w));
+  return Object.values(BUGMAP).filter(B=>B.w.includes(w)&&B.mo.has(mo)&&inH(B.h)&&(!B.wx||(W&&W.kind===B.wx)))}
+const BG={list:[],t:0};
+function bugsTick(dt,t){if(!tw.on||!tw.pet||tm.arr)return;const P=tw.pet;BG.t-=dt;
+  if(BG.t<=0){BG.t=6;BG.list=BG.list.filter(b=>{if(Math.hypot(b.x-P.x,b.z-P.z)>11){tm.world.remove(b.g);return false}return true});
+    if(BG.list.length<4){const m=tmM(),near=m.d.filter(q=>Math.hypot(q[1]-TM_W/2+.5-P.x,q[2]-TM_D/2+.5-P.z)<9),pool=[];
+      near.forEach(q=>{for(const [w,re] of Object.entries(BUG_HOME))if(re.test(q[0]))pool.push([w,q])});if(Math.random()<.4)pool.push(['ground',null]);
+      if(pool.length){const [w,q]=pick1(pool),L=bugAvail(w);if(L.length){const tot=L.reduce((a,B)=>a+B.r,0);let x=Math.random()*tot,B=L[0];for(const b of L){x-=b.r;if(x<=0){B=b;break}}
+        let bx,bz;if(q){bx=q[1]-TM_W/2+.5+(Math.random()-.5)*1.2;bz=q[2]-TM_D/2+.5+(Math.random()-.5)*1.2}else{const a=Math.random()*6.28;bx=P.x+Math.cos(a)*(2+Math.random()*3);bz=P.z+Math.sin(a)*(2+Math.random()*3)}
+        const g=G(),bm=bugModel(B);bm.scale.setScalar(2.1);g.add(bm);g.userData.wings=bm.userData.wings;const halo=cy(g,.17,.17,.01,M(0xFFF6D0,{roughness:.9,emissive:0x8A7A40}),0,.006,0,16);halo.outline=0;g.userData.halo=halo;g.traverse(o=>{if(o.isMesh)o.castShadow=false});tm.world.add(g);BG.list.push({B,g,x:bx,z:bz,hx:bx,hz:bz,ph:Math.random()*6,fly:['fly','bee','drag','firefly','cicada'].includes(B.s)})}}}}
+  BG.list.forEach(b=>{b.ph+=dt;const fl=b.fly;if(fl){b.x=b.hx+Math.sin(b.ph*.9)*.5+Math.sin(b.ph*2.1)*.15;b.z=b.hz+Math.cos(b.ph*.7)*.5}else if(Math.random()<dt*.3){b.hx+=(Math.random()-.5)*.3;b.hz+=(Math.random()-.5)*.3;b.x=b.hx;b.z=b.hz}
+    const y=fl?.45+Math.sin(b.ph*3)*.12:.02;b.g.position.set(b.x,y-tmCurveY(b.x,b.z),b.z);if(b.g.userData.halo){b.g.userData.halo.position.y=-y+.006;b.g.userData.halo.scale.setScalar(.85+Math.sin(b.ph*2.4)*.15)}b.g.rotation.y=fl?b.ph*.9+Math.PI/2:b.g.rotation.y;(b.g.userData.wings||[]).forEach((w,i)=>{w.rotation.z=(i?1:-1)*(.3+Math.abs(Math.sin(b.ph*(b.B.s==='bee'?40:14)))*.9)})})}
+function bugPick(cx,cy){const r=$('#tmc').getBoundingClientRect(),v=new THREE.Vector3();let best=null,bd=46;BG.list.forEach(b=>{v.set(b.x,b.g.position.y+.05,b.z).project(tm.cam);if(v.z>1)return;const x=r.left+(v.x*.5+.5)*r.width,y=r.top+(-v.y*.5+.5)*r.height,d=Math.hypot(x-cx,y-cy);if(d<bd){bd=d;best=b}});return best}
+function bugGo(b){const P=tw.pet,a=Math.atan2(P.x-b.x,P.z-b.z);twWalk(b.x+Math.sin(a)*.7,b.z+Math.cos(a)*.7,()=>{P.ry=Math.atan2(b.x-P.x,b.z-P.z);if(BG.list.includes(b))bugCatch(b)})}
+// the catch: a ring closes on the bug; tap when it's in the green
+function bugCatch(b){let el=$('#bugv');if(!el){el=document.createElement('div');el.id='bugv';el.className='fishv';el.innerHTML='<canvas id="bugc"></canvas><p id="bugh"></p>';document.body.appendChild(el)}el.hidden=false;
+  const S={t:0,b,done:false,sp:b.B.r<=3?1.5:1.1};$('#bugh').textContent=`Shh. ${b.B.n}. Tap when the ring turns green.`;let last=performance.now();
+  const tick=now=>{if(S.done)return;const dt=Math.min(.1,(now-last)/1000);last=now;S.t+=dt*S.sp;const cv=$('#bugc'),W=cv.clientWidth|0,H=cv.clientHeight|0;if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}
+    const x=cv.getContext('2d'),cx=W/2,cy=H*.46,R0=Math.min(W,H)*.36,k=(S.t%2.2)/2.2,R=R0*(1-k)+12,ok=R<R0*.3&&R>R0*.12;x.clearRect(0,0,W,H);
+    x.fillStyle='rgba(255,255,255,.9)';x.beginPath();x.arc(cx,cy,R0*.2,0,7);x.fill();x.strokeStyle='#A6E22E';x.lineWidth=R0*.1;x.globalAlpha=.4;x.beginPath();x.arc(cx,cy,R0*.21,0,7);x.stroke();x.globalAlpha=1;
+    x.strokeStyle=ok?'#A6E22E':'#FF3D9A';x.lineWidth=8;x.beginPath();x.arc(cx,cy,R,0,7);x.stroke();x.font=`${Math.round(R0*.18)}px "R42 Bubble",sans-serif`;x.textAlign='center';x.lineWidth=6;x.strokeStyle='#3B1273';x.strokeText(b.B.n,cx,cy+R0*1.2);x.fillStyle='#FFFFFF';x.fillText(b.B.n,cx,cy+R0*1.2);
+    S.ok=ok;if(S.t>6.6){S.done=true;el.hidden=true;bugFlee(b,'It got bored and flew off.');return}requestAnimationFrame(tick)};
+  el.onpointerdown=e=>{if(S.done)return;S.done=true;el.hidden=true;if(S.ok)bugGot(b);else bugFlee(b,'Too early! It got away.')};requestAnimationFrame(tick)}
+function bugFlee(b,msg){tm.world.remove(b.g);BG.list=BG.list.filter(q=>q!==b);toast(msg,true);try{SFX.sad()}catch(_){}}
+function bugGot(b){tm.world.remove(b.g);BG.list=BG.list.filter(q=>q!==b);const B=b.B,r=treasureGet(B.id,true);try{SFX.chime()}catch(_){}try{firstOf('bug',`Our first bug: ${B.n.toLowerCase()}.`)}catch(_){}td('bug');saveSoon();
+  const tot=BUGS.length,got=BUGS.filter(q=>(state.tfound||{})[q[0]]).length;
+  dlySay('posy',`${r&&r.first?'New! ':''}${B.n}. ${B.r<=3?'Oh! I’ve only seen one of those twice.':pick1(['Hm hm. Lovely. Hold it gently.','Look at its little legs going.','A good one for the garden.','Hello, you.'])}`,[[`Keep it (${got}/${tot} in the bug book)`,()=>{}],[`Give to Posy · ${(B.p||1)*BTN} buttons`,()=>{if(state.inv[B.id]>0){state.inv[B.id]--;state.btn=(state.btn|0)+(B.p||1)*BTN;kfAdd('posy',0);saveSoon();updHUD();try{SFX.coin()}catch(_){}}}],['Let it go',()=>{if(state.inv[B.id]>0){state.inv[B.id]--;saveSoon()}toast('Off it goes.',true)}]])}
+function bugsHide(){BG.list.forEach(b=>tm.world.remove(b.g));BG.list=[];const e=$('#bugv');if(e)e.hidden=true}
+/* </bugs> */
 
 
 
@@ -65569,7 +65654,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=97;
+const APP_V=98;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

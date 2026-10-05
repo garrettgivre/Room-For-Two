@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v97** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v97'` in `sw.js`; bump both for anything
+**Current build: v98** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v98'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -956,3 +956,12 @@ portrait thumbnail arrives later it's redrawn with the transform reset (`setTran
 - v97 perf fix: seasonal decorations are now `bakeStatic`-merged like the arranged ones (static pieces in their own group, animated
   ones kept apart); before, 15 seasonal pieces added ~770 draw calls to the far map view (2,095 → 1,492; v88 was 1,363). Measure
   map cost with draw counts at far/mid/street (see `.claude/items/perf.js`) after adding anything to the map.
+
+## Bug catching (v98)
+Data and models in `/* <bug-data> */` (right after fish-data, before `ITEMMAP`): `BUGS` rows [id, name, where (flower/tree/water/lamp/
+ground), months, hours, weather, rarity, price, shape, colours, hint] → `BUGMAP`, treasures in collection `bugs` (`bug:1`), `bugModel(B)`
+by shape. Play in `/* <bugs> */`: `bugsTick` (from `twTick`) keeps up to 4 bugs near the pet, spawned beside decorations that suit them
+(`BUG_HOME` regexes on decoration keys; 'ground' anywhere), rarity-weighted from `bugAvail(w)` (month, hour, weather; rain brings only
+rain bugs out of flowers and water); fliers flutter in loops, crawlers wander; each has a pale halo so it reads on grass. A tap goes to
+`bugPick` (screen-space) before residents; the pet walks up (`bugGo`) and `bugCatch` opens a ring that closes on the bug: tap while it's
+green. Catches go in the Bag (bug book with hints), and Posy's card offers keep / give to Posy (buttons) / let go.
