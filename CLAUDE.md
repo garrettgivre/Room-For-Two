@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v84** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v84'` in `sw.js`; bump both for anything
+**Current build: v85** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v85'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -813,3 +813,17 @@ Garrett didn't love hearts as money (hearts mean love: the pet's affection, frie
 - Pet page order: name and bond, needs rings and the four care buttons, Today with <pet>, looks after itself, heads, About (personality,
   traits, spirit, an "Open the Bag" button, big moments), Style. The wish line reads "<pet> wants …" with who won the vote above it.
 - Today's swap button sits on the card's bottom corner; the map's Arrange button is a smaller "Edit town".
+
+## Makeover rooms are floors of the house; more town talk (v85)
+- **Rooms you made for a resident are real floors of their house**: `buildShop` uses `housePlan(S)` for houses (the house plan plus one
+  level per made room: a single room 'm' over the house footprint, its floor/wall = the most used tile in the design, `tileMode`;
+  level has `mk:{k,i,by}` and `lbl`) and appends `houseMkItems(S,P)` (the design's items scaled to the footprint; wall pieces go on the
+  back wall, or the left wall for `w:3`). Floor buttons show the room names (`updFloorChip`), arriving says who made it (`setLevel`
+  toast), the resident moves up and stands in their room while you're there (`mkHostLevel`, most open spot), and `#mkhouse` now only
+  shows "Rearrange this room" (opens the old sandbox view via `mkStart(k,true,i,houseKey)`). `S.plan` itself is unchanged (the map uses it).
+- **Round two of resident talk** (sources `.claude/rchat2/<group>.js`, brief `tools/dev/town/RCHAT2_BRIEF.md`, put in by
+  `.claude/rchat/integrate.py` into the res-chat block): 2 scenes for every pair that had none (all 496 pairs now have written scenes,
+  1,107 in all), and per resident `TALK[k].sys` (treasure, well, parcel, basket, joke, mystery, arcade, money) and `TALK[k].ev` (tea, story,
+  meeting, stars, music, games, market = bake sale, sunmkt) lines. `cvSysLine(T)` (engine.js, called first in `cvOpener`, ~38%) picks one
+  that fits: today's event until it ends, treasures found in the last two days, a wish at the well, the first five days of the month
+  (the Mayor's parcel), else the general ones. index.html is ~7.1 MB now (it was 6.7).
