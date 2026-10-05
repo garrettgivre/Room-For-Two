@@ -1961,6 +1961,17 @@ lit first.
 ### The prize counter (v86, now in the game)
 - Jelly Arcade's prize counter sells, for tickets: rubber duck 20, strawberry pencil 11, tiny erasers 5, tiny feather duster 6, whistle 20, tiny glass jar 25, tiny whisk 30, crystal rock / little pillow / heart stamp / magnifying glass / pink umbrella 40 each, tiny stethoscope 50, box of crayons and flask 60, graph paper pad 80, sewing kit 120, tiny pinball 150, pack of folding paper 180, big button 200, giant rubber duck and gold comb 300, giant squeaky mallet 400, plus arcade furniture, toys, sweets, and a glimmer for 400. (Writers' earlier "gold comb 500" and "rubber ducks 20" settle on these numbers.)
 
+### Residents remember (v94)
+- Residents bring up, once, what you did with them: gifts (loved, liked, not their thing), taking their side or someone else's in an argument, visiting their house, the room you designed for them, and town news (a good fish you caught, Prickles' score for your joke, being seen taking photos).
+- Prickles scores jokes out of ten in public now; the score gets around town (Dewey found it written in pencil in a library margin). A gift Prickles doesn't like goes on the shelf facing the wall beside Boing's wind-up cactus. The good chair at the Potted Lodge is only for you. The sandstorm chapter is 41 pages.
+- Bunbun kept a loaf with the pet's nose print in it. Pip once knocked three times on her wall (they have no three-tap signal); she tapped back anyway. Dr. Patch keeps a visitors' book for the clinic. Crumb labelled the room you made her "Made for me. By them."
+- Dewey keeps a stamped "Sided With Dewey" card for you and a catalogue card on the door of the room you made. Nimbus keeps a spare umbrella in the stand for you. Lumi mentions you in the winter letter to the old lamplighter. Posy keeps Prickles' score for your joke written on a seed packet.
+- Fizz's room echoes "Ciao" well (tested nineteen times). Loofah keeps a towel by its stove for you and tells everyone it's damp. Pom keeps liked gifts in tool-belt pocket nine. Gloss files liked gifts under a mint "nice surprises" tab. Bobbin keeps all their buttons in the room you made. Beacon puts the kettle on twice when you visit and calls good gifts "window-worthy".
+- Boing names a gift he doesn't like "Gerald" and can't fit in a bath. Joy calls a loved gift her "power-up". Tock's ledger has a "kept" column and a fish page. Pixel rates gifts out of ten (starting at 4) and has given one 10. Parcel moved your pin on the sorting-room map closer to theirs. Fold left a paper frog on the Paper Post step for your return. Cobble keeps your gifts on the top shelf with the good stones.
+### Moments together and designs (v94)
+- When both of you are in the app you can share a moment (a group hug, a dance party, cake for three, a high five through the pet); both phones celebrate.
+- Blush will paint any of your own designs onto the pet as a pattern.
+
 ## Open questions (undecided; ask Garrett before writing as fact)
 1. **Is there a sea?** Bubble Bay, the pier, the beach, the harbour, boats, gulls and Beacon's lighthouse are all over the lore, and Prickles dreams of the sea; the v60 map is countryside with
    ponds. Options: the bay is just off the map's edge; or add a shore to the south-east.

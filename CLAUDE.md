@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v93** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v93'` in `sw.js`; bump both for anything
+**Current build: v94** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v94'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -929,3 +929,18 @@ scrapbook.
   inside `.dlybox`); `.dlybox .cvch button{animation:none}`.
 - v93: `tools/dev/town/sweep3.js` (interaction sweep, see Start here). It caught a race: closing an item card and opening another
   within 250 ms hid the new one on slow frames (`closeProduct`'s timer now lives in `#shopcard._ct` and openers clear it).
+
+## Residents remember; moments together; designs on the pet (v94)
+- **Memories** (`/* <memories> */` after fishing; engine `.claude/items/mem.js`, lines `.claude/mem/<group>.js` by agents from
+  `tools/dev/town/MEM_BRIEF.md`, put in by `.claude/items/mem.py`): `memRec(k,kind,v)` stores `state.rmem[k][kind]` {t,v,said}; town
+  news goes in `state.rmem._town` (fish, joke, photo; `said` = list of residents who've mentioned it). Recorded by wrappers: `giveGift`
+  (gift_love/like/meh, {g}), `travelTo` a house (visit), `mkFinish` (room), `fishCatch` (fish, {f}, rarer ones), `phShoot` (photo), and
+  inline in `dlyJoke` (joke {s} out of ten) and `rcJoin` (sided / against, {o}). `memPick(k)` (first thing tried after milestones in
+  `cvBegin`, 55%) picks the newest unsaid one under 7 days (town news under 4) and fills it from `TALK[k].mem[kind]`. Merge `rmem`:
+  newest per kind, said lists unioned.
+- **Together** (`/* <together> */`): when your person's `visits` stamp is under 2.5 min old, the pet page shows "Together right now"
+  (`tgHtml`): a group hug, a dance party, cake for three, a high five. `tgStart` writes `state.tg` {id,by,k,t,join}; the other phone's
+  `tgTick` (every 2 s) shows an invitation card for a minute; joining adds to `join` (merge unions joins on the same id), and both
+  phones celebrate (`tgCelebrate`: pet animation, +1 glimmer once a day each, a Journal line, a scrapbook first).
+- **Designs as pet patterns**: `petPatternTex` draws pattern `dz_<id>` as tiles of the design (head keeps its face clear); Blush's
+  studio lists your designs after the built-in patterns; `petLook` accepts `dz_` patterns whose design exists.

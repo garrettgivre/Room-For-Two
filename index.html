@@ -762,6 +762,7 @@ body.photo header.top,body.photo #dock,body.photo #emotes,body.photo .kbub,body.
 .phalbum{position:fixed;inset:0;z-index:62;background:#FFF8FD;overflow:auto;padding:calc(14px + env(safe-area-inset-top)) 14px 24px}.phalbum[hidden]{display:none}.pahd{display:flex;align-items:center;gap:10px;margin-bottom:12px;min-height:44px}.pahd b{font-family:var(--disp);font-weight:400;font-size:22px}.pahd small{color:#6B4E95}.pahd .phx{position:static;margin-left:auto}
 .pagrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}.pagrid button{padding:0;border:2.5px solid var(--ink);border-radius:8px;overflow:hidden;background:#fff;box-shadow:0 2px 0 var(--ink);cursor:pointer}.pagrid img{width:100%;display:block;aspect-ratio:4/5;object-fit:cover}.paone{width:100%;max-width:520px;display:block;margin:0 auto 14px;border-radius:8px;box-shadow:0 4px 0 rgba(59,18,115,.3)}
 .fishv{position:fixed;inset:0;z-index:58;background:rgba(30,22,48,.35);touch-action:none}.fishv[hidden]{display:none}.fishv canvas{position:absolute;inset:0;width:100%;height:100%}.fishv p{position:absolute;left:0;right:0;bottom:calc(90px + env(safe-area-inset-bottom));text-align:center;font-family:var(--disp);font-size:18px;color:#fff;text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink)}
+.tgrow{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}.tgrow .gel{font-size:13px;padding:7px 8px}
 .tms{pointer-events:auto;border:0;background:none;padding:0;cursor:pointer;transform-origin:50% 100%}.tms img{display:block;width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 0 #fff) drop-shadow(0 2px 2px rgba(59,18,115,.35))}.tms::after{content:'';display:block;width:8px;height:8px;margin:-3px auto 0;background:#fff;border:2px solid var(--ink);border-top:0;border-left:0;transform:rotate(45deg);border-radius:0 0 3px 0}
 .tmd{pointer-events:auto;border:0;background:none;padding:0;cursor:pointer}.tmd span{display:block;font-family:var(--disp);font-size:15px;color:var(--ink);padding:4px 12px;background:rgba(255,253,246,.94);border:2.5px solid var(--ink);border-radius:14px;box-shadow:0 3px 0 var(--ink);white-space:nowrap}
 .tmlist{display:flex;flex-direction:column;gap:6px;max-height:46vh;overflow:auto;margin-top:6px}.tmrow{display:flex;align-items:center;gap:8px}.tmface{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:50%;background:#F6EEFF;border:2.5px solid var(--ink);overflow:hidden}.tmface img{width:38px;height:38px;object-fit:contain}.tmface b{font-family:var(--disp)}.tmface .lsv{width:30px;height:30px}
@@ -5585,7 +5586,7 @@ let lookDraft=null;
 function petLook(saved){const C=PET_PALS[(state.pet.color|0)%PET_PALS.length],o=(!saved&&lookDraft)||state.pet.look||{};
   const d={body:C.body,headL:C.L,headR:C.R,pat:'spots',pc:C.spl.slice(0,4),hand:{s:'mitten',c:C.hand},foot:{s:'auto',cL:C.fL,cR:C.fR},ant:{s:'bobble',cL:C.tL,cR:C.tR},acc:{}};
   const L=Object.assign({},d,o);['hand','foot','ant'].forEach(k=>L[k]=Object.assign({},d[k],o[k]||{}));L.acc=Object.assign({},o.acc||{});
-  if(!PET_PATTERNS[L.pat])L.pat='spots';if(!HAND_STYLES[L.hand.s])L.hand.s='mitten';if(L.foot.s!=='auto'&&!FOOT_STYLES[L.foot.s])L.foot.s='auto';if(!ANT_STYLES[L.ant.s])L.ant.s='bobble';
+  if(!PET_PATTERNS[L.pat]&&!(String(L.pat).startsWith('dz_')&&typeof designById==='function'&&state.designs&&designById(L.pat.slice(3))))L.pat='spots';if(!HAND_STYLES[L.hand.s])L.hand.s='mitten';if(L.foot.s!=='auto'&&!FOOT_STYLES[L.foot.s])L.foot.s='auto';if(!ANT_STYLES[L.ant.s])L.ant.s='bobble';
   Object.keys(L.acc).forEach(k=>{const A=ACCS[L.acc[k]];if(!A||A.slot!==k.replace(/[LR]$/,''))delete L.acc[k]});return L}
 // what changes the rig's shape (anything else is only colour)
 const lookShape=L=>[L.hand.s,L.foot.s,L.ant.s,Object.entries(L.acc).sort().join(';')].join('|');
@@ -5609,6 +5610,7 @@ function petPatternTex(base,pat,pc,part,seed,asp){asp=Math.round((asp||1)*20)/20
     if(head){x.fillStyle=hexS(base);x.beginPath();x.ellipse(.25*W,.54*H,.2*W,.34*H,0,0,7);x.fill()}}
   else if(pat==='hearts'||pat==='stars'){const n=head?5:22;for(let i=0;i<n;i++){const [u,v]=spread(i,n,.16,.86),r=(head?9:10)+R()*9;x.fillStyle=col(i);put(u,v,r,r=>{x.rotate((R()-.5)*.7);(pat==='hearts'?heartPath:starPath)(x,0,0,r);x.fill()})}}
   else if(pat==='sprinkles'){const n=head?24:90;x.lineCap='round';for(let i=0;i<n;i++){const [u,v]=spread(i,n,.1,.9);x.strokeStyle=col(i);x.lineWidth=4;put(u,v,6,r=>{x.rotate(R()*3);x.beginPath();x.moveTo(-r,0);x.lineTo(r,0);x.stroke()})}}
+  else if(String(pat).startsWith('dz_')){const D=typeof designById==='function'&&designById(pat.slice(3));if(D){const t=mkCanvas(64,64);designPaint(D,t.getContext('2d'),64,64);x.imageSmoothingEnabled=false;const n=head?6:10,sz=W/n;for(let j=0;j<H/sz;j++)for(let i=0;i<n;i++){const u=(i+.5)/n,v=(j+.5)*sz/H;if(face(u,v))continue;x.drawImage(t,i*sz,j*sz,sz,sz)}}}
   else if(pat==='checks'){const nu=12,nv=6;for(let j=0;j<nv;j++)for(let i=0;i<nu;i++){if((i+j)%2)continue;const u0=i/nu,v0=j/nv;if(face(u0+.5/nu,v0+.5/nv))continue;x.fillStyle=col(j);x.fillRect(u0*W,v0*H,W/nu+1,H/nv+1)}}
   const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return patCacheP[key]=t}
 // Put something flat on a squashed sphere: returns a pivot at the surface point, turned to face out along the normal.
@@ -26625,7 +26627,7 @@ function renderStudio(body){const S=studio;if(!S||!away){setTab(null);return}con
     <div class="row-label">Signature looks</div><div class="swatches">${PET_PALS.map((c,i)=>`<button class="sw" data-pal="${i}" style="background:linear-gradient(135deg,${hexS(c.L)} 0 50%,${hexS(c.R)} 50%)" title="${c.n}" aria-label="${c.n}" aria-pressed="${d.body===c.body&&d.headL===c.L&&d.headR===c.R}"></button>`).join('')}</div>
     <div class="row-label">Paint</div><div class="chips">${parts.map(([k,n])=>`<button class="chip" data-part="${k}" aria-pressed="${S.part===k}">${n}</button>`).join('')}</div>
     <div class="swatches">${S.part==='pc'?PAT_MIXES.map((m,i)=>`<button class="sw" data-mix="${i}" style="background:conic-gradient(${m.map((c,j)=>hexS(c)+' '+j*25+'% '+(j+1)*25+'%').join(',')})" aria-pressed="${d.pc.join()===m.join()}" aria-label="Pattern colours"></button>`).join(''):DYES.map(c=>sw(c,d[S.part]===c)).join('')}</div>
-    <div class="row-label">Pattern</div><div class="sgrid">${Object.keys(PET_PATTERNS).map(k=>`<button class="scard" data-pat="${k}" aria-pressed="${d.pat===k}"><img class="pat" src="${patThumb(k,d.body,d.pc)}" alt=""><b>${PET_PATTERNS[k]}</b><small>${k===b.pat?'Current':PAT_P*BTN+IB}</small></button>`).join('')}</div>`}
+    <div class="row-label">Pattern</div><div class="sgrid">${[...Object.keys(PET_PATTERNS),...(state.designs||[]).map(D=>'dz_'+D.id)].map(k=>`<button class="scard" data-pat="${k}" aria-pressed="${d.pat===k}"><img class="pat" src="${patThumb(k,d.body,d.pc)}" alt=""><b>${esc(PET_PATTERNS[k]||((designById(k.slice(3))||{}).n||'My design'))}</b><small>${k===b.pat?'Current':PAT_P*BTN+IB}</small></button>`).join('')}</div>`}
   h+=`<div class="studiobar"><button class="chip" id="stX">Never mind</button><button class="gel pink" id="stBook"${pr>(state.btn|0)?' disabled':''}>${pr?`Book it <span class="cost">${pr}${IB}</span>`:'Looks good!'}</button></div>`;
   body.innerHTML=h;
   const upd=()=>{previewLook(d);renderSheet()};
@@ -36176,7 +36178,7 @@ function cvBegin(k){const R=RESIDENTS[k],B=KBIB[k];if(!R||!B)return;const r=tw.r
   cv={k,r,seen:new Set(),kind:0,cam:cv&&cv.cam||tw.rcCam||{zoom:tm.zoom,pitch:tm.pitch,yaw:tm.yaw,follow:tw.follow},t:0};tw.rcCam=null;tw.follow=false;
   const f=kfOf(k),day=tdDay();if(f.d!==day){f.d=day;kfAdd(k,2)}
   if(cvBusy(k,r)){cv.busy=1;cvSay(CV_FILL(cvPick(T.busy)||'Can’t stop, sorry!'),[['Okay, see you later!',()=>cvEnd()],['Here, a little gift',()=>cvGift()]]);return}
-  cvCount(k);{const f=kfOf(k);if(!f.m)f.m=Date.now();f.c=(f.c|0)+1;saveSoon()}const o=cvMile(k,T)||cvLvPick(k,T,'hi')||cvOpener(T)||kFill(pick1(B.hi.d||B.hi.m));cvNode(o,true)}
+  cvCount(k);{const f=kfOf(k);if(!f.m)f.m=Date.now();f.c=(f.c|0)+1;saveSoon()}const o=cvMile(k,T)||memPick(k)||cvLvPick(k,T,'hi')||cvOpener(T)||kFill(pick1(B.hi.d||B.hi.m));cvNode(o,true)}
 // friendship-aware lines (TALK[k].lv {hi,topics,bye}[0..4] and mile{met,week,month,season,year,talk10,talk50,talk100})
 function cvLv(k){return kfLevel(kfOf(k).p)}
 function cvLvPick(k,T,part,chance){const L=T&&T.lv&&T.lv[part];if(!L)return null;const lv=cvLv(k),pool=L[lv]&&L[lv].length?L[lv]:null;if(!pool||Math.random()>(chance??(part==='hi'?.5:1)))return null;return cvPick(pool)}
@@ -60940,7 +60942,7 @@ function rcJoin(){const W=rcW(),sc=rc.sc,J=sc.j;let by,t,ch;
   if(J){by=J.by;t=rcFill(J.t,by===rc.a?rc.b:rc.a);ch=J.r.map(([say,side,rep])=>[rcFill(say,side||rc.a),side,(rep||[]).map(([k,x])=>[k,rcFill(x,k===rc.a?rc.b:rc.a)])])}
   else{const fa=rFeel(rc.a,rc.b,W);by=fa<=rFeel(rc.b,rc.a,W)?rc.a:rc.b;const o=by===rc.a?rc.b:rc.a,V=rcKit(by),O=rcKit(o);if(!V||!O){rcAfter();return}t=rcFill(rcPk(V.join[RC_LV(rFeel(by,o,W))]),o);
     const r_=(k,arr,x)=>[k,rcFill(rcPk(arr),x)];ch=[[`You’ve got a point, ${RESIDENTS[by].n}`,by,[r_(by,V.won,o),r_(o,O.lost,by)]],[`I’m with ${RESIDENTS[o].n}`,o,[r_(o,O.won,by),r_(by,V.lost,o)]],['Let’s talk about something else',0,[r_(by,V.peace,o),r_(o,O.peace,by)]]]}
-  rcBox(by,t,ch.map(([say,side,rep])=>[say,()=>{rc.lines=rep.filter(q=>q[1]);rc.i=0;if(side){const day=lifeDay(),C=state.acts||(state.acts={}),key='rcj:'+rc.sc.key;if(!C[key]||C[key].d!==day){C[key]={d:day};kfAdd(side,1);saveSoon()}}rcLine()}]))}
+  rcBox(by,t,ch.map(([say,side,rep])=>[say,()=>{rc.lines=rep.filter(q=>q[1]);rc.i=0;if(side){try{const o=side===rc.a?rc.b:rc.a;memRec(side,'sided',{o});memRec(o,'against',{o:side})}catch(_){}const day=lifeDay(),C=state.acts||(state.acts={}),key='rcj:'+rc.sc.key;if(!C[key]||C[key].d!==day){C[key]={d:day};kfAdd(side,1);saveSoon()}}rcLine()}]))}
 // at the end: maybe one of them notices you listening; then talk to either of them or leave
 function rcAfter(){if(!rc)return;const W=rcW();if(!rc.join&&!rc.caught&&Math.random()<.55){rc.caught=1;const k=Math.random()<.5?rc.a:rc.b,V=rcKit(k),mean=['cranky','snooty','smug'].includes(RTYPE[k])&&kfLevel(kfOf(k).p)<3,cold=mean||rWxMood(k,W)<0&&Math.random()<.5;
     const t=V&&V.caught&&rcPk(cold?V.caught.cold:V.caught.warm);if(t){rc.lines=[[k,rcFill(t,k===rc.a?rc.b:rc.a)]];rc.i=0;rcLine();return}}
@@ -61090,7 +61092,7 @@ function dlyJoke(onMap){const say=(t,ch)=>onMap&&typeof cv!=='undefined'&&cv?cvS
   if(dDone('joke')){say(pick1(['One joke a day. I’m old, not made of patience.','I’ve had my joke for today. It was enough.','Come back tomorrow. Bring a better one.']),[['Fair enough',()=>{if(onMap&&cv)cvSay('Hmph.',cvMenu())}]]);return}
   const set=JOKES.slice().sort(()=>Math.random()-.5).slice(0,3);
   say(pick1(['A joke? Go on, then. Make it quick.','Fine. One joke. If it’s about cactuses, I’m leaving.','Hmph. Let’s hear it.']),set.map(([q,ps])=>[q,()=>{
-    const P=ps.slice().sort(()=>Math.random()-.5);say(q,P.map(([a,sc])=>[a,()=>{dMark('joke');kfAdd('cactus',1);let s=sc+(rWxMood('cactus',typeof wxNow==='function'?wxNow():null)<0?-1:0);s=Math.max(0,Math.min(3,s));
+    const P=ps.slice().sort(()=>Math.random()-.5);say(q,P.map(([a,sc])=>[a,()=>{dMark('joke');kfAdd('cactus',1);let s=sc+(rWxMood('cactus',typeof wxNow==='function'?wxNow():null)<0?-1:0);s=Math.max(0,Math.min(3,s));try{memRec('_town','joke',{s:[1,3,6,8][s]+(Math.random()<.5?0:1)})}catch(_){}
       let gift='';if(s===3){const left=TREASURES.filter(t=>t.col==='trail'&&!(state.tfound||{})[t.id]);if(left.length){const r=treasureGet(pick1(left).id,true);gift=` (${r.it.n} for your bag.)`}else{state.btn=(state.btn|0)+50;gift=' (50 buttons.)'}}else if(s===2){state.btn=(state.btn|0)+20;gift=' (20 buttons.)'}
       saveSoon();updHUD();say(pick1(JOKE_RE[s])+gift,[['Thanks, Prickles',()=>{if(onMap&&cv)cvSay(pick1(['Don’t thank me. Go away happy.','Hmph. Mind the cactus on your way out. That’s me.']),cvMenu())}]])}]))}]))}
 // Blush's mystery colour: a free surprise look once a day; keep it or change back
@@ -61480,6 +61482,1631 @@ function fishDock(){const m=tmM();if(!m||m.dk||tmMk()!=='world')return;m.dk=1;if
   const cand=B.map(q=>[q[0]+1,q[1]]).filter(([i,j])=>[0,1].every(b=>{const c=(j+b)*G_.W+i;return i<G_.W&&j+b<G_.D&&!G_.block[c]&&!G_.road[c]}));if(!cand.length)return;cand.sort((a,b)=>Math.abs(a[1]-24)-Math.abs(b[1]-24));
   m.d.push(['dock',cand[0][0],cand[0][1]]);saveSoon();try{tmDecor();tw.gkey=''}catch(_){}}
 /* </fishing> */
+/* <memories> */
+// ---- residents remember (v94): moments with a resident (state.rmem[k][kind] {t,v,said}) and town news everyone hears about
+// (state.rmem._town[kind] {t,v,said:[residents]}); each is brought up once, in their voice (TALK[k].mem[kind]), a while later.
+const MEM_TOWN=['fish','joke','photo'],MEM_DAYS=7;
+function memRec(k,kind,v){if(!state||sandbox||!k)return;const M=state.rmem||(state.rmem={}),R=M[k]||(M[k]={});R[kind]={t:Date.now(),v:v||{},said:k==='_town'?[]:0};saveSoon()}
+function memPick(k){const T=TALK[k];if(!T||!T.mem||!state.rmem)return null;const M=state.rmem,now=Date.now(),out=[];
+  Object.entries(M[k]||{}).forEach(([kind,e])=>{if(!e.said&&now-e.t<MEM_DAYS*864e5&&now-e.t>5*6e4&&T.mem[kind]&&T.mem[kind].length)out.push([kind,e,0])});
+  Object.entries(M._town||{}).forEach(([kind,e])=>{if(MEM_TOWN.includes(kind)&&!(e.said||[]).includes(k)&&now-e.t<4*864e5&&T.mem[kind]&&T.mem[kind].length)out.push([kind,e,1])});
+  if(!out.length||Math.random()>.55)return null;const [kind,e,town]=out.sort((a,b)=>b[1].t-a[1].t)[0];if(town)(e.said||(e.said=[])).push(k);else e.said=1;saveSoon();
+  const v=e.v||{};return cvPick(T.mem[kind]).replace(/\{g\}/g,String(v.g||'it').toLowerCase()).replace(/\{f\}/g,String(v.f||'a fish').toLowerCase()).replace(/\{s\}/g,String(v.s??5)).replace(/\{o\}/g,RESIDENTS[v.o]?RESIDENTS[v.o].n:'them')}
+// recording
+{const _g=giveGift;giveGift=function(k,src){const r=_g.apply(this,arguments);try{if(r&&RESIDENTS[k]){const it=src.t==='inv'?ITEMMAP[src.id]:CATMAP[src.id];memRec(k,'gift_'+(r.grade||'like'),{g:it?it.n:'it'})}}catch(_){}return r}}
+{const _t=travelTo;travelTo=function(dest){const r=_t.apply(this,arguments);try{const S=SHOPS[dest];if(S&&S.house)(S.res||[]).forEach(k=>memRec(k,'visit'))}catch(_){}return r}}
+{const _m=mkFinish;mkFinish=function(){const k=sandbox&&sandbox.mk&&sandbox.mk.k,r=_m.apply(this,arguments);try{if(k)memRec(k,'room')}catch(_){}return r}}
+{const _c=fishCatch;fishCatch=function(){const F=FI&&FI.F,r=_c.apply(this,arguments);try{if(F&&F.s!=='boot'&&F.r<=6)memRec('_town','fish',{f:F.n})}catch(_){}return r}}
+{const _p=phShoot;phShoot=function(){const r=_p.apply(this,arguments);try{const e=state.rmem&&state.rmem._town&&state.rmem._town.photo;if(!e||Date.now()-e.t>864e5)memRec('_town','photo')}catch(_){}return r}}
+// ---- what each resident says (sources .claude/mem/<group>.js)
+// ---- mem: Bubble Bay. Residents remembering what you did with them.
+Object.assign(TALK.stylist,{mem:{
+  gift_love:[
+    "The {g}, darling! I gave it its own entrance. Carried it across the parlour and announced it to the room.",
+    "I'm still thinking about the {g}. I took it into the bath with me. Well. Near the bath. Divine.",
+    "Loofah says I've shown the {g} to every client this week. Loofah exaggerates. It was every client and the post.",
+    "Do you know what the {g} did? It made a Tuesday feel like a premiere. Thank you, darling, again and forever."
+  ],
+  gift_like:[
+    "The {g} is on my shelf, darling. It catches the steam rather nicely.",
+    "Thank you again for the {g}. Very thoughtful. A small bow from me.",
+    "I used the {g} this morning. Not tragic at all. Quite lovely, in fact."
+  ],
+  gift_meh:[
+    "The {g}! Yes. I've put it somewhere safe. Somewhere very, very safe, darling.",
+    "Darling, the {g} was a bold choice. I admire bold. I'm still deciding what to do with it.",
+    "Loofah found a use for the {g}. I didn't ask what. The kindness is in the gesture, darling."
+  ],
+  sided:[
+    "You took my side against {o}, darling. I've told the whole salon. Twice, with gestures.",
+    "Remember my little scene with {o}? You chose me. I may write it into my memoirs.",
+    "{o} still hasn't recovered from the way you backed me up. Neither have I. Divine of you.",
+    "I narrated the moment you agreed with me to Loofah. Loofah said 'mm'. From Loofah, that's applause."
+  ],
+  against:[
+    "You sided with {o}. Tragic, darling. I wept a single bubble. Then I had a cream bun and felt better.",
+    "I've forgiven you for agreeing with {o}. I wanted you to know I was very gracious about it.",
+    "{o}, of all people! Never mind, darling. Even the Floating Fizzini dropped a teacup once."
+  ],
+  visit:[
+    "You came to the Bubble Dome! I narrated your arrival for days afterwards. Loofah could hear it next door.",
+    "The parlour felt so full with you two in it. Come again, darling, and knock loudly. I'll be mid-sentence.",
+    "After you left I lay on the clam-shell bed and sighed like a leading man. A very happy sigh."
+  ],
+  room:[
+    "I take my evening bath in the room you made, darling. I come through the door slowly, for effect.",
+    "The room you made me has the best echo for 'Ciao'. I've tested it nineteen times.",
+    "Pom sat in your room and said 'iconic'. I said 'I know'. We were both right.",
+    "I made an entrance into your room this morning with nobody watching. It still felt like opening night."
+  ],
+  fish:[
+    "Your {f}, darling! Beacon told the whole pier. I heard it from a gull, I think.",
+    "The {f}! I'd have narrated the whole thing. 'And the line goes taut...' Next time, invite me.",
+    "I heard about the {f}. I don't fish, darling, the water gets in my hair. But I'm thrilled for you."
+  ],
+  joke:[
+    "Prickles gave your joke a {s}, darling. Mine got a one. I'm so proud of you I could pop.",
+    "A {s} out of ten from Prickles! The whole bay is talking about it. I've been talking the most.",
+    "Tell me the joke that got a {s}. Slowly, darling. I want to deliver it in the bath."
+  ],
+  photo:[
+    "Someone saw you taking photos by the fountain, darling. Were any of me? Say yes. I'll forgive you either way.",
+    "Taking pictures round town? Come to the salon, darling. I'll do my good side. Both sides.",
+    "Loofah said you photographed a bench. A bench! Next time, catch the bubbles off my hair. They don't last."
+  ]
+}});
+
+Object.assign(TALK.sponge,{mem:{
+  gift_love:[
+    "Mm... the {g}. I keep it by the bath. I look at it while the water warms up.",
+    "I fell asleep holding the {g} yesterday. Mm. Best nap this week.",
+    "The {g}... still warm, like a towel off the line. Thank you. Mm.",
+    "I told Fizz about the {g}. Slowly. It took the whole afternoon. He didn't mind."
+  ],
+  gift_like:[
+    "Mm, the {g} is nice. It sits on the stove shelf now. Keeps the kettle company.",
+    "Thank you for the {g}. I hummed at it. A little tune, a nice one.",
+    "The {g}... yes. Mm. Very kind. No rush to say more than that."
+  ],
+  gift_meh:[
+    "Mm... the {g}. I hung it on the line to sun-dry. Didn't help. Still nice of you.",
+    "The {g} is under a towel now. Keeping warm. Mm. It seemed shy.",
+    "I don't quite know what the {g} is for. No rush. I'll find out one day."
+  ],
+  sided:[
+    "Mm... you were on my side, with {o}. That was warm of you. Like a towel before hello.",
+    "{o} and I don't really argue. But you backed me up anyway. Mm. Nice.",
+    "I hummed the whole way home after you sided with me. The sunny-day tune."
+  ],
+  against:[
+    "Mm. You took {o}'s side. That's alright. No rush to agree with me.",
+    "{o} was probably right. Mm. I only argue very slowly anyway.",
+    "I wasn't upset about {o}. I had a nap about it. All better now. Mm."
+  ],
+  visit:[
+    "Mm... you came to the hut. I put the kettle on before you knocked. I heard you on the boards.",
+    "After you visited I sat on the bench for two a long while. It was still warm. Mm.",
+    "Come again. The towel by the stove is yours. I've told everyone else it's damp."
+  ],
+  room:[
+    "The room you made me... I nap there at four. Sometimes at three. Mm.",
+    "I fell into the bath in your room on Tuesday. On purpose. Mm. It was lovely.",
+    "Fizz came to see your room and went quiet. Fizz, quiet. I wrote down the time."
+  ],
+  fish:[
+    "Mm, the {f}. Beacon told me on its step. I was nearly asleep, but I heard.",
+    "I went in the sea once. Too cold. You're braver than me, going after the {f}.",
+    "The {f}... I hope it had a warm bath after. Mm. Maybe fish don't like those."
+  ],
+  joke:[
+    "Prickles gave your joke a {s}. Mm. I fell asleep before mine ended.",
+    "Mm... a {s}. That's a nice number. I'd say it slowly so it lasts.",
+    "Everyone's telling your joke at the salon. Fizz tells it loudest. Mm. Still a {s}."
+  ],
+  photo:[
+    "Mm, someone saw you taking photos. Take one of the steam sometime. It's very good at being steam.",
+    "Bobbin says you were photographing the boardwalk. I was napping on Beacon's step. Am I in one? Mm.",
+    "Photos are nice. They stay still. Like me after four."
+  ]
+}});
+
+Object.assign(TALK.tailor,{mem:{
+  gift_love:[
+    "The {g}, sweet. I've made it a little cover so the dust can't get at it. Measured twice.",
+    "I keep the {g} by the treadle. When a hem goes wrong I look at it and the hem goes right.",
+    "Bobbin says I talk about the {g} too much. I've only mentioned it eleven times. Twelve.",
+    "I've been over the {g} like a seam, sweet. Not a loose thread anywhere. Perfect."
+  ],
+  gift_like:[
+    "The {g} is lovely, sweet. It's in the patchwork armchair, keeping it warm for me.",
+    "Thank you for the {g}. Just a smidge of something nice in an ordinary day.",
+    "I put the {g} next to the pincushion. They get on, I think."
+  ],
+  gift_meh:[
+    "The {g}. It's in the someday drawer, sweet. Things in there find their day eventually.",
+    "I'm not sure the {g} and I match yet. We'll grow into each other. Most things do.",
+    "Thank you for the {g}. I'll find it a use. I always do, given a smidge of time."
+  ],
+  sided:[
+    "You stood with me against {o}, sweet. I felt wound up tight again. In the good way.",
+    "I wasn't going to say anything to {o}. Then you did. Thank you. I'd have unravelled a bit.",
+    "Bobbin heard you backed me up with {o} and spun for a full minute. I didn't stop them."
+  ],
+  against:[
+    "You agreed with {o}. That's alright, sweet. I measured it twice and {o} might be right.",
+    "I lost a stitch over the {o} business. Just one. I found it later, in me.",
+    "No hard feelings about {o}, sweet. A seam can pull both ways and still hold."
+  ],
+  visit:[
+    "You came to the Basket! I'd swept up all the threads. Well, most. You found one on {n}.",
+    "When you visited I nearly measured you both. I stopped myself. Mostly.",
+    "The patchwork armchair still remembers you sitting in it. There's a little dip."
+  ],
+  room:[
+    "I sew in the room you made me every morning. The light falls exactly where the needle is.",
+    "Your room has stripes that line up at the seams. Do you know how rare that is, sweet?",
+    "Fold came to see your room and left a paper star on the sill. Then blamed the wind.",
+    "I found three lost needles in your room yesterday. That means I've really moved in."
+  ],
+  fish:[
+    "Your {f}! Beacon said you held the line very steady. Steady hands, sweet. You'd sew well.",
+    "I heard about the {f}. Did the line hold? I always worry about the line. It's thread, in a way.",
+    "The {f}, sweet! Bobbin ran the news over before I'd finished my tea."
+  ],
+  joke:[
+    "Prickles gave your joke a {s}, sweet. Mine got a four. I'm pleased for you. Just a smidge envious.",
+    "A {s}! Prickles mentioned it while I was mending his scarf. He didn't smile. He nearly did.",
+    "Bobbin's been telling your joke all day. They keep getting the end wrong. It's still a {s}, I think."
+  ],
+  photo:[
+    "Someone saw you taking photos by the shop window, sweet. Did you get the mint wool? It photographs well.",
+    "Photos round town? Take one of {n}'s antennae from the side. I need the measurement.",
+    "Gloss said you were taking pictures. She asked if you'd booked the light. I said nobody books light."
+  ]
+}});
+
+Object.assign(TALK.hair,{mem:{
+  gift_love:[
+    "Hiii! Okay, the {g}?? Obsessed. Duchess wanted it for herself. I said no. She's sulking.",
+    "The {g} is on the mood board wall now. Front and centre. Iconic placement, I know.",
+    "I showed the {g} to Blush at six in the morning. She didn't speak. That's a yes, from Blush before nine.",
+    "Okay but hear me out: the {g} is the best thing anyone's given me this year. Gerald came out for it. Gerald!"
+  ],
+  gift_like:[
+    "The {g}! Cute. Very cute. It lives in pocket number nine of the tool belt.",
+    "Thanks for the {g}! Brenda liked it. Brenda has taste, so.",
+    "I used the {g} yesterday and it was super nice. Not scream-into-a-towel nice, but nice!"
+  ],
+  gift_meh:[
+    "The {g}! Okay. So. It's on the shelf. Duchess is still deciding how she feels.",
+    "Okay so the {g} isn't super my vibe, but you thought of me, and that's iconic on its own.",
+    "I tried to make the {g} pop. It didn't want to. Some things just want to be themselves, you know?"
+  ],
+  sided:[
+    "You took my side with {o}! Okay, I'm still buzzing. Like, twelve curls stood up.",
+    "Hiii, ally! That thing with {o}? You backed me up and I didn't even have to talk fast.",
+    "I told Blush you sided with me against {o}. She painted a little stripe of 'loyal gold' on my elbow."
+  ],
+  against:[
+    "Okay so you sided with {o} and I'm fine! Totally fine! Duchess is not fine, but she's dramatic.",
+    "{o} was kind of right, huh. Ugh. Okay. I'll take it. Byeee, I'm going to sulk for four minutes.",
+    "I worry I was too much, in that thing with {o}. You picking {o}... yeah. Fair. Still love you two."
+  ],
+  visit:[
+    "You came over!! Blush says I talked for forty minutes straight. I say thirty-nine.",
+    "When you visited, Gerald came out. Gerald never comes out for guests. That's huge.",
+    "Okay, hear me out: next time you visit, I do {a} and {b} at the vanity. Full glam. Living-room lighting."
+  ],
+  room:[
+    "The room you made me? I sleep in it now. Like, actually sleep. Blush is shook.",
+    "I put the mood board in your room and now it's a room and a mood board. Both! Finally!",
+    "I sit in your room before appointments and my hands stop shaking. Don't tell anyone. Okay, tell Fizz."
+  ],
+  fish:[
+    "Your {f}! Iconic. Did its hair survive? Fish don't have hair. Okay. Still iconic.",
+    "Okay, the {f}? Obsessed. Beacon described it to me and I want the colours for a curl.",
+    "Heard about the {f}! I'd have screamed and dropped the rod. You're so calm. Teach me."
+  ],
+  joke:[
+    "Prickles gave your joke a {s}?? Mine got a two and I framed it. You're on another level.",
+    "Okay, tell me the {s} joke. I need it. My comb jokes aren't working.",
+    "A {s} out of ten! Byeee, I'm telling everyone. Blush already knows. She always knows first, quietly."
+  ],
+  photo:[
+    "Hiii, someone saw you doing photos! Okay but hear me out: cloudy light, three-quarter angle, {n} looking left.",
+    "Did you get Duchess in any of your photos? She asked me to ask. She's vain. I love her.",
+    "Taking pictures round town is so iconic. I want a whole wall of them. Next to the mood board wall."
+  ]
+}});
+
+Object.assign(TALK.makeup,{mem:{
+  gift_love:[
+    "The {g}, love. I put it by the window. At five it goes the colour of warm honey on a spoon.",
+    "I painted the {g} into my colour journal yesterday. I gave it a name. I'll tell you when I'm sure.",
+    "Pom says I smile at the {g} when I think nobody's looking. Pom is always looking.",
+    "I keep the {g} where I see it first thing. I don't speak before nine, but I look at it."
+  ],
+  gift_like:[
+    "Thank you for the {g}, love. A pleasant shade of thoughtful.",
+    "The {g} sits well on my shelf. Nothing clashes. That's rarer than you'd think.",
+    "I like the {g}. Quietly. That's how I like most things."
+  ],
+  gift_meh:[
+    "The {g}. Hm. It's a colour I haven't found a name for yet. I'm in no hurry to.",
+    "I've put the {g} in the hall, love. It argues with the rose walls, but softly.",
+    "Thank you for the {g}. Pom loves it. I've asked Pom to keep it on their side."
+  ],
+  sided:[
+    "You agreed with me about {o}, love. Of course you did. You have an eye.",
+    "I wrote down the day you took my side against {o}. The colour was 'quiet victory'.",
+    "{o} hasn't brought it up since. That's fine. You said everything that needed saying."
+  ],
+  against:[
+    "You took {o}'s side, love. I've named the feeling. Something like cold tea left on a sill.",
+    "{o}. Really. Well. Everyone's allowed one wrong colour.",
+    "I'm not cross about {o}. I'm only painting in greys this week. For no reason."
+  ],
+  visit:[
+    "You came to our place. It was before nine, so I wasn't talking yet. You didn't mind. I noticed.",
+    "After you visited, the living room was the colour of 'company'. A warm one. It faded by Thursday.",
+    "Come again, love. Come in the evening. The rose walls are better at six."
+  ],
+  room:[
+    "The room you made me has the best light in Bubble Bay. I've painted in it every evening since.",
+    "I name a colour in your room every morning. Today it was 'quiet before Pom'.",
+    "Stitch sat in your room for an hour without a word. From Stitch, that's the highest praise."
+  ],
+  fish:[
+    "Your {f}, love. What colour was the underside? Beacon said silver. Beacon says everything is silver.",
+    "I'd like to paint your {f}. Bring it by, if it's the sort that sits still.",
+    "I heard about the {f}. The water at dawn is 'pearl left in milk'. I hope that's when you caught it."
+  ],
+  joke:[
+    "Prickles gave your joke a {s}. Mine got a one, about mauve. I'd like to hear yours. Slowly.",
+    "A {s}, love. Pom's been jealous all morning. Jealousy is a colour on Pom. Bright lime.",
+    "Everyone's repeating your {s} joke. Most of them tell it wrong. I can tell from the pauses."
+  ],
+  photo:[
+    "Someone saw you taking photos, love. Go at golden hour. The plaza turns apricot, then rose.",
+    "Photos are quick and I'm slow. But I'd like to see yours. I may borrow a colour or two.",
+    "Gloss said you photographed the fountain. Did you catch the shine on the water? I never can."
+  ]
+}});
+
+Object.assign(TALK.polish,{mem:{
+  gift_love:[
+    "The {g}! Perfect. It has its own tab in my book now. Gold. Confirmed twice.",
+    "I keep the {g} on the front desk, square to the edge. I check it's straight every hour. It always is.",
+    "Bobbin took the {g} by accident this morning, like the keys. I had it back by nine. Lovely.",
+    "Doo-doo-dee, the {g} for me. Sorry. I made it a jingle. It's that lovely."
+  ],
+  gift_like:[
+    "Thank you for the {g}. Lovely. It's filed under 'nice surprises', mint tab.",
+    "The {g} is on my shelf next to the polishes. Number thirty-six likes the company.",
+    "The {g} came at a perfect time. Not early, not late. Lovely."
+  ],
+  gift_meh:[
+    "The {g}. Noted, with thanks. I've found it a very tidy drawer.",
+    "The {g} is perfect for someone, I'm sure. I'm keeping it safe until I work out who.",
+    "The {g} doesn't quite go with my tabs. The thought does, though. In ink."
+  ],
+  sided:[
+    "You took my side with {o}. Noted. In ink, gold tab. Thank you.",
+    "I appreciated your support with {o}. There's a small star beside your names now. Five points.",
+    "{o} has been very punctual since you backed me up. Funny how that works."
+  ],
+  against:[
+    "You sided with {o}. Noted. In pencil. Pencil rubs out, if you were wondering.",
+    "{o}, was it. Lovely. I'll just check my mirror. Everything's still in order. Fine.",
+    "I've filed the {o} matter under 'reasonable people differ'. It's a very thin file."
+  ],
+  visit:[
+    "You came to Number Two! I'd pencilled you in for four and you arrived at four. Perfect.",
+    "After you visited I wrote 'lovely' in the book against the date. Bobbin wrote it too, in thread.",
+    "Our dinner table seats two. When you came, it seated four. I've no idea how. I'm delighted."
+  ],
+  room:[
+    "The room you made me is booked every morning from seven, by me. I'm never late for it.",
+    "Your room has a place for everything. I checked. Twice. Everything is in its place.",
+    "Bobbin came into your room and didn't drop a single thing. I've marked the day."
+  ],
+  fish:[
+    "Your {f}. Beacon logged the time for me. Four minutes past. I've written it in.",
+    "I heard about the {f}. Lovely. Did you book the spot, or just turn up? Just turned up. Brave.",
+    "The {f}! Bobbin ran over with the news and swapped our keys on the way. Worth it."
+  ],
+  joke:[
+    "A {s} from Prickles. Confirmed twice: I asked him. He didn't like being asked.",
+    "I've written your {s} in the book. Under 'achievements', gold tab.",
+    "Prickles gave your joke a {s}. Mine got a three, for punctuality. We all have our strengths."
+  ],
+  photo:[
+    "Someone saw you taking photos at quarter past two. Lovely light at that hour. I checked.",
+    "If you'd like to photograph the studio, book it. Tuesdays are best. The desk is tidiest on Tuesdays.",
+    "Taking photos round town? Lovely. Do get one of Pom. Pom's never in a photo on time."
+  ]
+}});
+
+Object.assign(TALK.spool,{mem:{
+  gift_love:[
+    "The {g}!! I carried it home and then I carried it round the flat and then Gloss said sit down!",
+    "The {g} lives in my drawer wall, top row, and also I open the drawer just to look, like ten times a day!",
+    "I tied a bit of thread to the {g} so I'd never lose it! And also so it knows it's mine!",
+    "The {g} is the best! Stitch called it very happy thread, and that's what I say about birthday streamers!"
+  ],
+  gift_like:[
+    "The {g}! Thank you! It's in a drawer and the drawer has a label and the label says 'nice!'",
+    "I showed the {g} to Pip and Pip said nice and I said I know, and also thank you again!",
+    "The {g} is good! I use it on Tuesdays! Well, I've used it once, but it was a Tuesday!"
+  ],
+  gift_meh:[
+    "The {g}! It's in the drawer for things I'll understand later! It's a big drawer!",
+    "Thank you for the {g}! I don't know what it does yet, and also I'm too nervous to ask it!",
+    "The {g} is nice! Gloss took it! By accident! Like the keys! She can keep it, I think!"
+  ],
+  sided:[
+    "You took my side with {o}! I spun on one flange for ages! Gloss timed it! Two minutes!",
+    "Thank you for backing me up with {o}! I'm not used to winning things, and also it felt great!",
+    "When you sided with me I tied a knot in my thread! A happy knot! Not a tangle!"
+  ],
+  against:[
+    "You took {o}'s side! That's okay! I was a bit wrong, probably, and also a bit tangled!",
+    "{o} won! Fair! I unspooled a bit after but I wound back up! Mostly!",
+    "I'm not cross about {o}! I can't stay cross, it makes my thread go funny!"
+  ],
+  visit:[
+    "You came to Number Two!! I showed you every drawer! Did I show you every drawer? I'll show you again!",
+    "I tied a knot on the thimble thread when you visited! It's the biggest knot! Well, second biggest!",
+    "After you came over I couldn't sleep, I was so happy, and also the hammock swung too much!"
+  ],
+  room:[
+    "I spin in the room you made me every morning! Right in the middle! There's room to spin!",
+    "Your room has no tangles in it! Not one! I checked under everything, and also behind!",
+    "I keep my buttons in your room now! All of them! Forty-four! Gloss counted twice!"
+  ],
+  fish:[
+    "Your {f}!! Beacon told me and I ran to tell Stitch and then I ran back to ask what it was!",
+    "The {f}! Did it have buttons? Fish don't have buttons. I'd give it one!",
+    "I heard about the {f}! I fell off the pier once and Beacon fished ME out! You're much better at it!"
+  ],
+  joke:[
+    "Prickles gave your joke a {s}! Mine always get ones! You're a {s} person! Wow!",
+    "Tell me the {s} joke! I'll tell it to Pip! And also to Gloss! And also to the teapot!",
+    "A {s}!! I heard it from Fold, who heard it from Parcel, who heard Prickles say 'hmph'!"
+  ],
+  photo:[
+    "Someone saw you taking photos! Take one of me spinning! It'll be blurry! That's the point!",
+    "Were you taking pictures on the boardwalk? I was at plank 112 with the crab! Did you get the crab?",
+    "Photos! Can I have one for my wall of drawers? I'll make a drawer! A photo drawer!"
+  ]
+}});
+
+Object.assign(TALK.beacon,{mem:{
+  gift_love:[
+    "The {g}, friend. It's on the shelf with the adopted things. The mitten moved over for it.",
+    "I look at the {g} every evening before I light up. Steadies the hands. Well. The arms.",
+    "Showed the {g} to the crab shell. Crab shell's been very quiet since. Impressed, I'd say.",
+    "The {g} is the best thing to come up this pier in a long while. And I've had a kite."
+  ],
+  gift_like:[
+    "Thank you for the {g}, friend. It sits nicely by the tin mug.",
+    "The {g}'s a good one. Not shelf-worthy, but window-worthy. That's high, in my house.",
+    "I kept the {g} by me on the last foggy night. Good company while the horn went."
+  ],
+  gift_meh:[
+    "The {g}, friend. Well. The sea brings in odder things. I've given it a corner.",
+    "Put the {g} by the door. Not sure what it's for yet. The tide'll tell me, maybe.",
+    "Kind of you, the {g}. The crab shell's keeping an eye on it for me."
+  ],
+  sided:[
+    "You stood by me with {o}, friend. Like a good mooring. I won't forget it.",
+    "Red sky at night, a friend on my side. That's not the saying. It ought to be. Thanks, about {o}.",
+    "After you backed me up with {o}, I swept the light slower past your place. Did you notice?"
+  ],
+  against:[
+    "You took {o}'s side. That's fair weather, friend. A light can be wrong about a log.",
+    "{o} had the right of it, I expect. I've been wrong before. Waved at a whole log once.",
+    "No hard feelings about {o}, friend. Storms pass. Mostly right over my head."
+  ],
+  visit:[
+    "You came all the way down the pier. I counted you in: one, two, and {n}. All present.",
+    "When you visited I put the kettle on twice. Once for you, once because I was happy.",
+    "I keep thinking about your visit. Come again soon. Bye now. Well. Not quite yet."
+  ],
+  room:[
+    "The room you made me has a place for every adopted thing. The striped sock has never looked so settled.",
+    "I sit in your room on foggy evenings. Kettle on, horn going, nobody lost.",
+    "Bobbin came to see your room and spun so long I had to hold their thimble steady."
+  ],
+  fish:[
+    "Your {f}, friend. I've told the whole pier, and the gulls, who didn't care.",
+    "That {f} came up to you. Fish know a steady hand. The sea knows it too.",
+    "I've cut a notch on the rail for your {f}. Next to the ones for our chats.",
+    "The {f}! I've bought plenty of catches in my time. That one I'd have framed."
+  ],
+  joke:[
+    "Prickles gave your joke a {s}, friend. I got a six once, for a sailor's joke. Old travellers, him and me.",
+    "A {s}. He told me himself. He looked out to sea while he said it, which means he liked it.",
+    "I passed your {s} joke on to the crab shell. Silent, as ever. Still a fine joke."
+  ],
+  photo:[
+    "Someone saw you taking photos, friend. Try the end of the pier at dusk. The light turns round for you.",
+    "Were you photographing boats? Careful. Half of them are logs. I'd know.",
+    "If you take one of the lighthouse, take it at night. That's when I'm at my best."
+  ]
+}});
+// ---- memories (v94): Playhouse Hill. How each resident brings up something you did with them, once, a day or a few days later.
+Object.assign(TALK.toymaker,{mem:{
+  gift_love:["The {g}! Okay okay okay, I still have it. I took it apart twice to see how happy it was. Very. Put it back together. Still very.",
+    "BOING. Sorry. That's what I do when I think about the {g}. Joy says I've done it nine times today.",
+    "The {g} is on the Shelf Of Big Feelings. Top shelf now. Tock labelled it. The label just says YES.",
+    "Remember the {g}? Of course you do, you gave it! I show it to every customer. Some of them buy a yo-yo to get away. Worth it."],
+  gift_like:["The {g} is great! It's on my workbench. I keep almost using it in a prototype and then going, no, that's a present.",
+    "Okay so the {g}. Good pick. Sir Boingsworth sits next to it now. They get on.",
+    "Thanks again for the {g}! I bounced it. Was it a bouncing thing? It is now. Mostly."],
+  gift_meh:["The {g}! I, um. I'm going to find the fun in it. There's fun in everything. Still looking. Give me a week.",
+    "So the {g}. Tock counted it into a box. A labelled box. That's where things go while I think about them.",
+    "I named the {g}! Gerald. Gerald doesn't do much yet. We're working on it, Gerald and me."],
+  sided:["You were on my side! With {o}! I made a little trophy about it. It's a spring. Everything I make is a spring.",
+    "Okay okay, about {o}. Thanks for backing me up. I don't win arguments much. I talk too fast and forget what I said.",
+    "You picked me over {o}! I told Joy. Joy said GG. I think that means I won? I'm keeping it.",
+    "When you took my side the other day my spring went all tight. In a good way. Like a hug, but for coils."],
+  against:["You sided with {o}. That's fair! Probably. I've been thinking about it in the bath. I don't fit in the bath. Long think.",
+    "Oh, {o} won that one, huh. Okay. Okay okay. I'll make a toy about losing. Joy has one. She keeps it by her bed.",
+    "I went quiet for a whole minute after you picked {o}. Tock timed it. Tock said that was a lot of minute for me.",
+    "No hard feelings about {o}! Some hard feelings. Small bouncy ones. Gone by Friday."],
+  visit:["You came over! Did you see the marble run? Did it work? It only works when guests come. I think it shows off.",
+    "Joy says you're the best guests we've had. I said you're the only ones who didn't bonk the doorway. That's me. I bonk it.",
+    "Come back to the Game Night House soon! I left the claw machine on a little bit easy for {n}. Don't tell Joy.",
+    "After you left I bounced on the sofa for an hour. Happy bouncing. The sofa's fine. Mostly fine."],
+  room:["The room you made me! I sleep in there now. I bonk the ceiling zero times. Zero! It's the best number.",
+    "I tested the room you made with seven prototypes. They all liked it. Rollo the runner went round it twice.",
+    "I go in your room when I'm too much. I sit. I'm quiet for almost five minutes. Tock comes to check I'm okay.",
+    "Joy keeps sneaking into the room you made me. I said that's MY room. She said it's a co-op room. She's right, ugh."],
+  fish:["You caught a {f}! A real one! Was it wiggly? I want to make a toy fish that's exactly that wiggly.",
+    "Okay okay okay, I heard about the {f}. Did {a} and {b} both want to hold it? I bet they did.",
+    "A {f}! I tried fishing once. I bounced the rod into the pond. The pond kept it. Fair trade.",
+    "Joy says you caught a {f}. I'm making a wind-up one for the Toy Box. It'll swim in circles. Circles I can do."],
+  joke:["Prickles gave your joke a {s}! He gave my joke a frown and a door. A {s} is huge.",
+    "Everybody's saying {s} out of ten. From PRICKLES. Tell me the joke! Right now! You know I can't do later.",
+    "A {s}! I've been trying for two years. He says my jokes go boing and then nothing. That's the joke, though!",
+    "Prickles rated you a {s}. Do you know what he rated me? He didn't. He just looked at my spring for a while."],
+  photo:["Somebody saw you taking photos! Did you get the Toy Box? Get the sign. Fold did the O. Look at that O.",
+    "You're taking pictures around town? Get one of me mid-boing. Nobody's ever caught it. I'm a blur in all of them.",
+    "Joy said you had a camera out. I did nine poses in case you were nearby. You weren't. Good practice, though!"]
+}});
+Object.assign(TALK.joy,{mem:{
+  gift_love:["Player one! The {g}! It's in my sock drawer with the trophies. Highest honour I've got. Don't tell the trophies.",
+    "I still can't get over the {g}. I showed Pixel. Pixel said ten. Pixel never says ten.",
+    "The {g} is my power-up now. I tap it before every run. Two records this week. I'm not saying it's the {g}. It's the {g}.",
+    "GG on the {g}. Best gift play I've seen all year. I've told the whole arcade. Twice."],
+  gift_like:["Thanks for the {g}! It lives behind the prize counter now. People keep trying to win it. Not for sale.",
+    "The {g}, nice pick! Solid bonus item. Boing tried to borrow it. I said get your own player two.",
+    "I've been using the {g}! Good stuff. Plus one to the co-op team."],
+  gift_meh:["Hey, the {g}! Cool. Super cool. It's on my shelf, next to the trophy for losing. Good company.",
+    "So the {g}. Not my genre, player one. I played it anyway. That's what good sports do.",
+    "I gave the {g} to Boing to look after. He named it. It's doing great over there. Better than with me."],
+  sided:["You backed me against {o}! Co-op team, unlocked. I owe you a round of anything.",
+    "Thanks for having my back with {o}. I'm a good loser. A win with a teammate, though? Bonus level.",
+    "Me and you versus {o}. Easy win. I put you on the score board. Doubles division.",
+    "You took my side! Boing made a little banner about it. He spelled your name with springs."],
+  against:["You went with {o}. Respect! Fair play is fair play. Rematch some time, though. I'm practising.",
+    "Okay, {o} took that round with you on their team. GG. I mean it. Like ninety percent GG.",
+    "Lag mood for about an hour after you picked {o}. Did a lap of the plaza. Respawned. We're good."],
+  visit:["You came to the Game Night House! Player one and player two in the building. Best co-op night we've had.",
+    "Boing still talks about your visit. He tidied for it. Boing! Tidied! I wrote the date on the fridge.",
+    "Come round again soon. One game, then hot milk. That's the house rule.",
+    "After you left I found {n}'s little footprints on the rug. I didn't clean them. They're a high score."],
+  room:["The room you made me? My cool-down room. I go in after a big loss and come out ready. Works every time.",
+    "My trophies live in the room you made now. Out of the sock drawer, finally. In a row. Very humbly.",
+    "Boing and Pixel and me played four rounds in your room last night. Nobody shouted. Well, Boing. Once."],
+  fish:["You caught a {f}! New personal best? Every catch is a personal best when it's your first one.",
+    "A {f}! Pixel logged it. You're on the fishing board now. It's a new board. You're the only one on it.",
+    "Heard about the {f}! Fishing's just a really slow game with a big boss at the end. You beat the boss."],
+  joke:["{s} out of ten from Prickles? That's a high score! He gave my arcade jingle a two. It's not even a joke.",
+    "Prickles rated your joke a {s}. Pixel added it to the leaderboard. Whole new category, just for you.",
+    "A {s} from Prickles! Let's go! I tried once and he said 'too loud' before I got to the end."],
+  photo:["Heard you've been taking photos around town. Get the arcade at night. The marquee looks like a bonus level.",
+    "Somebody saw you with a camera! If you catch me jogging, I want the one where both sneakers are off the ground.",
+    "Photos! Pixel says it's in the background of every picture of the plaza. It's right. Check yours."]
+}});
+Object.assign(TALK.windup,{mem:{
+  gift_love:["The {g}. I have entered it in the ledger under 'kept'. It is the first thing in that column I did not make.",
+    "Tick. I think about the {g} at four, with the tea. Sketch says I smile at the teapot. I am smiling at the {g}.",
+    "The {g} has its own shelf and its own label. It is the only shelf in the house with one thing on it. That is the honour."],
+  gift_like:["Thank you again for the {g}. It sits on the third shelf, labelled. I check on it at seven, with the clocks.",
+    "The {g} was a good choice. Sketch measured it. It fits the shelf with two millimetres to spare. We were both pleased.",
+    "Tick. The {g}. Yes. I use it on Tuesdays. Tuesday needed something."],
+  gift_meh:["The {g} is in a box with a label. The label says 'from friends'. That is the important part of it, I think.",
+    "I was not sure where the {g} should go. I moved it four times. Sketch says it may live in the hall for now.",
+    "Thank you for the {g}. I have not yet found its bin. Some things take more counting than others."],
+  sided:["You agreed with me about {o}. I put a small tick in the margin of the ledger. For me, that is a very large tick.",
+    "Thank you for siding with me against {o}. I did not raise my voice. I did not need to. You were there.",
+    "Tick. About {o}. I was right, I think. I do not say so often. It was nice to have it counted twice."],
+  against:["You sided with {o}. I counted the reasons over three teas. Some of theirs were better. Two of them.",
+    "Tick. {o} won the point. Sketch made me cocoa about it. The cocoa helped. The point still stings a little.",
+    "I was rushed in that argument with {o}. I do badly when rushed. Next time I will count first, then disagree."],
+  visit:["You came to the Clockwork Cottage. All twelve clocks struck while you were there. It was the hour. I like to think they meant it.",
+    "Sketch and I set out a second chair and then a third, for {n}. We have left them out. In case.",
+    "Thank you for visiting. You put the cups back on their hooks. Sketch noticed. I noticed first.",
+    "After you went home I wrote 'guests, two, and {n}' in the house book. It is a short entry. It is a good one."],
+  room:["The room you made me. I wind down there in the afternoons. I droop more slowly in it. Sketch says that is a compliment.",
+    "Every shelf in your room is labelled now. Forty-four labels. Sketch helped with the last six. We were very happy.",
+    "Sketch and I spend our evenings in the room you made. Chess, one move per tea. The game is in its third week."],
+  fish:["A {f}. I heard. I would like to know its length to the millimetre. Roughly is also acceptable. Barely.",
+    "Tick. You caught a {f}. I have started a small page in the ledger for fish. You are the only line. Line one.",
+    "The {f}. Did you put it back, or keep it? Either way, I hope it was counted. Things like to be counted."],
+  joke:["Prickles gave your joke a {s}. I have checked his past scores with Pixel. We agree it is significant.",
+    "A {s} out of ten. I have written it down. Prickles has never scored me. I have never told him a joke. That is fair.",
+    "Tick. {s}. Sketch would like to know if the joke was measured. I said jokes are told. Sketch is not convinced."],
+  photo:["I hear you have been taking photographs. If you photograph the Toy Box shelves, please do so after the count. Not during.",
+    "Someone saw you with a camera near the hill. Our clocks are at their best at seven. All twelve, together.",
+    "Photographs. Good. I keep a ledger for toys. You may keep one for the town. Please label them."]
+}});
+Object.assign(TALK.pencil,{mem:{
+  gift_love:["The {g}. I measured it the day you gave it to me. Then again. Perfect both times. That never happens.",
+    "Sorry, I keep bringing up the {g}. It's on my drafting table. I've drawn it eleven times. All eleven worked.",
+    "I pushed my glasses up when I unwrapped the {g}. Tock saw. Tock knows what that means. So now you do too."],
+  gift_like:["Thank you for the {g}. It sits square on the shelf. Double-checked. I like things that sit square.",
+    "The {g} was very kind. Sorry, I meant to say so sooner. I made a note to say it. Then I measured the note.",
+    "I use the {g} most mornings. Tock labelled it. The label is two millimetres crooked. I'm letting it go. Nearly."],
+  gift_meh:["The {g}. Sorry. I'm still working out where it goes. I've drawn three plans for it. None of them closed.",
+    "Thank you for the {g}. It's in the drawer labelled 'not yet'. That's a hopeful drawer, I promise.",
+    "I tried the {g} on every surface in the house. It wobbles on all of them. It might be me. Sorry."],
+  sided:["You agreed with me about {o}. Sorry, I just wanted to say thank you. I double-checked, and I was right. That was nice.",
+    "Thank you for backing me with {o}. I usually say sorry, then I'm right, and nobody's around for the right part.",
+    "After you sided with me I added a mark to my 'good call' tally. It was only for Bolt. You're on it now. Forty-two."],
+  against:["You agreed with {o}. That's fine. Sorry. I went home and measured it all again. I got the same answer, though.",
+    "Sorry about the thing with {o}. I think I said it badly. I usually do. The numbers were good, I think.",
+    "Tock made tea after you picked {o}. Two sugars, one more than usual. I noticed. It helped."],
+  visit:["Thank you for coming over. You both stood exactly on the doormat. Sorry, I notice that kind of thing.",
+    "You saw the thinking door! Nobody asks about the thinking door. I'm glad it has a handle now.",
+    "Tock and I keep talking about your visit. We're planning a guest room. Sorry, very early. Graph paper stage."],
+  room:["The room you made me. The desk is level. I checked every morning for a week. Still level. I sleep better.",
+    "I draw in the room you made now. The light comes in square. I didn't know light could do that.",
+    "There's a {n}-sized gap in the room you made me. I left it on purpose, for visits. I hope that's all right."],
+  fish:["You caught a {f}? How long was it? Sorry. People always round fish up. Where does the extra go?",
+    "A {f}. I drew it from Tock's description. Sorry if the fins are wrong. Tock described them very exactly.",
+    "I heard about the {f}. Fish are hard to measure. They don't hold still. Sorry, that's my only thought about fish."],
+  joke:["Prickles gave you a {s}. Sorry, that's very good. I worked out the average. You're well above it.",
+    "{s} out of ten. I asked Pixel for the whole table. You're on it now. Sorry. I made a table.",
+    "A {s} from Prickles. I'd never dare tell him one. What if he scored it to the decimal? Where would the point go?"],
+  photo:["Somebody saw you taking photos. Sorry, could I see one of the Hammer & Hue sign? The underline is mine.",
+    "Photos around town. Good. If you take one of the Town Hall steps, there are sixteen. You can count them in it.",
+    "I heard you've got a camera. Hold it level. Sorry. Everyone tilts it a little. Two degrees, usually."]
+}});
+Object.assign(TALK.builder,{mem:{
+  gift_love:["Chief! The {g}! It's on the workbench where I can see it. Solid gift. Load-bearing, emotionally.",
+    "Still thinking about that {g}. You hit it right on the head, chief. I'd know. I hit things on the head all day.",
+    "The {g}! I showed Cobble. Cobble said 'mm' twice. That's a rave review from Cobble.",
+    "I keep the {g} in the drawer with the thank-you notes. That drawer's for the good stuff, chief."],
+  gift_like:["Thanks again for the {g}, chief. Good, sturdy pick. It's holding up great.",
+    "The {g}'s in the shop now. Customers ask about it. I say 'gift', real proud, like I built it.",
+    "That {g}? Handy. I've only lost it in my hat once. Twice. Found it both times."],
+  gift_meh:["The {g}, ha! Not really my toolbox, chief. But it's on the shelf, and it's level. I checked.",
+    "So the {g}. Still figuring out what it's for. Sketch drew me a plan. I'm on step one.",
+    "Got the {g} somewhere safe. My hat, I think. Most things end up in my hat."],
+  sided:["Thanks for backing me with {o}, chief. Solid support. You're a good beam.",
+    "You took my side on that one with {o}! Let's nail it down: I owe you a shelf. Any shelf.",
+    "Me and you on the same team against {o}. Felt like a level that sits right on the first try.",
+    "Told Sketch you sided with me. Sketch said 'good call'. That's my line! I let it have it."],
+  against:["You went with {o}. Fair enough, chief. I've been told I'm all loud and no listening. Working on the listening.",
+    "{o} got you on their side, huh. Okay. I took it out on a fence post. Good fence now. No harm done.",
+    "Ha, you picked {o}! Fair. I talked to Cobble about it for an hour. He said 'mm' and I felt better."],
+  visit:["Thanks for stopping by the Toolbox, chief! Sorry about the sawdust. And the other sawdust. It's a sawdust house.",
+    "You came over! I kept the fire going an extra hour after. Felt like the house wanted to stay warm.",
+    "The floor sounded happy when you walked on it. I tapped it after you left to check. Still happy.",
+    "Next time you come round there'll be a step by the door for {n}. Already measured. Well, Sketch did."],
+  room:["Chief, the room you made me? Not a speck of beige. I walk in every morning just to not see beige.",
+    "Plans go on the table in your room now. Rolled out flat every night. Sketch comes over and we argue about inches.",
+    "That room you made? Somebody'll still be living in it a hundred years from now. I'll see to it."],
+  fish:["Heard you caught a {f}! Nice reel work, chief. Next you'll want a bigger dock. I'll build the dock.",
+    "A {f}, chief! I went fishing once. Caught my own hat. There were three sandwiches in it.",
+    "You landed a {f}? Good call! Gotta bolt, but I wanted to say. Good call."],
+  joke:["Prickles gave you a {s}? Chief! I got a 'no' and a closed door. A {s} is a whole building.",
+    "A {s} out of ten from Prickles. You should frame that. I'll build the frame. Let me build the frame.",
+    "Everybody's talking about your {s}. Cobble told me. Took him one word. Took me an hour to tell Sketch."],
+  photo:["Heard you've been snapping photos around town! Get Hammer & Hue. Nine years, same door. She's a beauty.",
+    "Taking pictures, chief? If you catch me with a sore thumb, that's not a hammer thing. Unless it's Tuesday.",
+    "Photos! Good. Get the shelf over Bunbun's oven if she lets you in. Best thing I ever built."]
+}});
+Object.assign(TALK.pixel,{mem:{
+  gift_love:["The {g}. Ten out of ten. I don't give tens. I gave one. Noted.",
+    "I still have the {g}. Couch for one. Screen. {g}. Complete set.",
+    "Re: the {g}. I was very happy about it. You couldn't tell. My screen did a heart. It was logged.",
+    "I keep the {g} in the corner of my eye while I play. My scores went up four percent. Correlation."],
+  gift_like:["The {g}. Seven out of ten. Good number. Kept.",
+    "I've used the {g} nine times. That's a high count for me. Noted.",
+    "Thank you for the {g}. It's next to the ticket jar. They get on. Neither of them talks."],
+  gift_meh:["The {g}. Four out of ten. Still a gift. Gifts start at four. My rule.",
+    "The {g} is in my house. I don't know which corner. The corner doesn't know either.",
+    "Thank you for the {g}. I'm still processing it. Some things load slowly."],
+  sided:["You sided with me against {o}. I don't argue much. When I do, it's good to have a second. Two is a good number.",
+    "Re: {o}. Thank you. Logged. Category: friends who showed up.",
+    "My screen went ^ ^ when you agreed with me about {o}. Three seconds. That's long for me."],
+  against:["You sided with {o}. Noted. I'm fine. My voxels drifted a little. They're back.",
+    "{o} won that one. With you. I've recalculated. I'm still on your good list. You're still on mine.",
+    "Re: {o}. I disagreed with you for one hour. Then I stopped. That's how long it takes."],
+  visit:["You came over. Two guests, one pet, a couch for one. Somebody sat on the floor. Good visit anyway.",
+    "You visited Pixel's Stack. Thirty-two steps from the door to the couch. I counted yours. Correct.",
+    "Re: the visit. Joy asked how it went. I said good. She cheered. I didn't stop her.",
+    "After you left I didn't reset the room for an hour. That's unusual. Noted."],
+  room:["The room you made. Couch. Screen. Done. Six films in it so far. No second row, so I sit in the middle.",
+    "Your room has a scoreboard now. You're on it. Above AAA. Don't tell AAA.",
+    "I use the room you made every day after the arcade. Fridays it's Game Night overflow. Boing fits. Barely."],
+  fish:["You caught a {f}. I've started a leaderboard. You're first. Also last. One entry.",
+    "Re: the {f}. Size in centimetres, if you know it. I don't need it. I want it.",
+    "A {f}. Fishing is a quiet game. I approve of quiet games. Seven out of ten, as a hobby."],
+  joke:["Prickles: {s} out of ten. He gave me a seven, for a number. You're on the table now.",
+    "Your joke got a {s}. Logged. The table has a ten column. Nobody's in it. Yet.",
+    "{s} out of ten. From Prickles that's a different scale. Multiply by one and a half. Noted."],
+  photo:["I heard you're taking photos. I'm in the background of most plaza pictures. Left side. Small cube.",
+    "You've got a camera now. Don't ask me to pose. I'll stand still. Standing still is what I do.",
+    "Someone saw you taking photos. If you get the arcade's top scores, the AAA is me. Don't say."]
+}});
+Object.assign(TALK.parcel,{mem:{
+  gift_love:["The {g}! It rides in my satchel now, ten past nine till noon, every day! Best travelling companion I've had!",
+    "Still beaming about the {g}! I told every door on the round! Fifty-three doors! Fifty-four with Beacon's top!",
+    "The {g} sits by the sorting shelf so I see it on my way out! I knock on it twice! Hello, and it's me!"],
+  gift_like:["Thanks again for the {g}! Very handy on drizzly mornings! Well, all mornings, really!",
+    "The {g}'s on the kitchen shelf! Fold labelled it. Then I stamped it. Then Fold sighed. It's a good shelf!",
+    "That {g} was a lovely surprise! I don't get many parcels myself. I carry them, you see!"],
+  gift_meh:["The {g}! Very kind! I've put it on the windowsill while I work out what it's for! It's got a lovely view!",
+    "Got the {g} safe at home! Fold says it's very interesting. Fold says that about the weather too!",
+    "The {g}! I've been carrying it about trying to work out where it lives. It's done the whole round twice!"],
+  sided:["You backed me up with {o}! Signed, sealed, delivered! I'm saving your house for last. Well, I already do. Laster!",
+    "Thanks for siding with me against {o}! I whistled the whole round after. Even over the squeaky bridge!",
+    "Me and you versus {o}! I told Fold. Fold folded me a little medal. It says 'correct' in very small letters!"],
+  against:["You went with {o}! Fair's fair! I was a bit soggy about it. Like Bubble Bay on a Tuesday. Dried out now!",
+    "Oh, you sided with {o}! That's all right! I'll get there next time. I always get there. Ten past nine-ish!",
+    "So {o} won that one! I took the long way home to think it over. Very long way. Saw a nice cloud!"],
+  visit:["You came to the Paper Post! I don't get visitors, I'm usually the visitor! It felt so funny! Good funny!",
+    "Fold kept the kettle warm after you left! Said it seemed like the thing to do. The kettle agreed!",
+    "Thanks for coming by! I moved your pin on the sorting-room map a little closer to ours. Just a hair!"],
+  room:["The room you made me? I sort the mail in it every morning! The pigeonholes are just the right height! No more stretching!",
+    "On rainy days my satchel dries in your room! Fold says it smells like a library now. A damp one!",
+    "Your room's my favourite stop of the whole day! And it's in my own house! Shortest round I've ever done!"],
+  fish:["You caught a {f}! Beacon told me at the end of the pier! I'd post you a card, but you're right here! Congratulations!",
+    "A {f}! The pier's buzzing with it! Well, Beacon is! Beacon's the pier, mostly!",
+    "Heard about the {f}! Did you weigh it? Fold says never ask the weight of a fish. Fold won't tell me why!"],
+  joke:["Prickles gave your joke a {s}! That's going round faster than the morning mail! And that's fast!",
+    "A {s}! From Prickles! I've carried his post for years and never got more than a grunt!",
+    "Everybody on the round is talking about your {s}! Even the Mayor! He wants to put it in a speech!"],
+  photo:["Somebody saw you taking photos! Send me one! I'll deliver it to you! Very short round!",
+    "Photos around town! Get the post box on the plaza! New coat of paint! Well, new-ish! Fold did it!",
+    "If you get me in a photo, sorry about the boots! They squeak even in pictures, somehow!"]
+}});
+Object.assign(TALK.crane,{mem:{
+  gift_love:["The {g}. I keep it by the window. The light finds its corners in the morning. I watch it do that.",
+    "I folded a small crane to sit beside the {g}. It seemed lonely. Now it is not.",
+    "Thank you again for the {g}. I think of it while I paint. The curls come out better. I cannot explain it."],
+  gift_like:["The {g} is on my work table. It is a good shape. I like things with a good shape.",
+    "I use the {g} most days. Parcel asks about it. I say it was a gift. Parcel says that is very nice. It is.",
+    "Thank you for the {g}. I painted a tiny heart on the next sign. You will have to find which one."],
+  gift_meh:["The {g}. Thank you. It is in the basket labelled 'for later'. Later is a kind place.",
+    "I am still learning the {g}. It has fewer corners than I am used to. I will try.",
+    "The {g} is with Parcel for now. Parcel likes it very much. I think the wind took it there."],
+  sided:["You agreed with me about {o}. I did not expect it. I folded you a small thank-you. The wind will bring it.",
+    "Thank you. For the thing with {o}. I do not speak up often. It was good to not be the only corner.",
+    "I painted a very small heart after you sided with me. On the bakery sign. Low, on the left."],
+  against:["You sided with {o}. That is all right. I have refolded my thoughts. They lie flatter now. A little.",
+    "I think {o} made the better point. I folded it over a few times at home. It still felt creased.",
+    "You agreed with {o}. I was quiet afterwards. I am usually quiet. This was a different quiet."],
+  visit:["You came to the Paper Post. I put a paper frog on the step afterwards. In case you came back. It is still there.",
+    "Thank you for visiting. You did not touch the crane tests on the wall. Most people do. I noticed.",
+    "After you left, Parcel said the house felt full. I said it felt folded correctly. We meant the same thing."],
+  room:["The room you made me catches the light at four. I unfold one wing there on dry evenings.",
+    "I keep the paper gifts in your room now. Every one has a place. There are forty-two. There will be more.",
+    "I go to the quiet room you made when Parcel is loud. Parcel knows. Parcel knocks twice and leaves tea."],
+  fish:["You caught a {f}. From the water. I am glad it was you and not me. Please dry your hands before you wave.",
+    "A {f}. I folded one from silver paper. It does not swim. It does not get wet. I prefer it.",
+    "I heard about the {f}. I would like to paint it on a sign. From a safe distance from the pond."],
+  joke:["Prickles gave your joke a {s}. I would paint it on a sign for you, if you wanted. Small, in the corner.",
+    "{s} out of ten. I have never told Prickles a joke. I painted his compass once. He did not score it. He kept it.",
+    "I heard about the {s}. Parcel told me eleven times. Parcel tells good news many times."],
+  photo:["Someone saw you taking photographs. If you photograph a sign, please hold the camera straight. Or kindly crooked.",
+    "Photographs. The fountain sign leans up on purpose. If it looks wrong in the picture, that is correct.",
+    "I heard you have a camera. I am not good in photographs. My best side is a corner. It is hard to find."]
+}});
+Object.assign(TALK.pebble,{mem:{
+  gift_love:["The {g}. Still got it. On the shelf with the good stones. Top shelf.",
+    "Mm. The {g}. I sit with it in the mornings. Before the roads. Good start.",
+    "Thought about the {g} again. Yawned halfway through. That's a compliment. Mm.",
+    "The {g}. Bolt asked where I got it. I said friends. He talked for an hour. Didn't mind."],
+  gift_like:["The {g}. Fair. Using it. Mm.",
+    "Got the {g} by the stove. Good spot. Warm.",
+    "Thanks again for the {g}. Solid. Lasts, I think. I like a thing that lasts."],
+  gift_meh:["The {g}. Mm. Put it by the wobbly stone. They can be not quite right together.",
+    "Thanks for the {g}. Not sure what it's for. Fair. Not sure what I'm for, some days. Roads, mostly.",
+    "The {g}. Still deciding about it. I decide slow. Could be a year."],
+  sided:["You sided with me. About {o}. Mm. Thanks.",
+    "{o} talked a lot. You listened to me. I noticed. Mm.",
+    "That thing with {o}. You were on my side. I fixed a stone outside your door the same day. Not related.",
+    "Thanks for backing me. With {o}. I don't argue much. Takes too long to get started."],
+  against:["You sided with {o}. Fair. I'll think on it. Slowly.",
+    "{o}, then. Mm. I sat on my wall about it. Wall didn't mind. Neither did I, after a while.",
+    "That thing with {o}. You went their way. Mm. Still a good stone, you."],
+  visit:["You came over. Sat in the boulder chair. Nobody sits in the boulder chair. Mm. Good.",
+    "You found the wobbly stone on my path. Didn't fix it. Good. That one's meant to wobble.",
+    "After you left I sat by the stove. Quiet's different after company. Better.",
+    "{n} sat on my mallet bag again. At my place this time. Still {n}'s bag. Both places."],
+  room:["Your room. The calm one. I sit in it after the roads. Say nothing. It says nothing back. Mm.",
+    "Bolt came over. Saw the room you made. Didn't talk for a whole minute. First time.",
+    "That room's lasting. I check on it. It doesn't need checking. I check anyway."],
+  fish:["A {f}. Mm. Used to watch them go by. At the bottom of the river. That was the news.",
+    "You caught a {f}. Good. Nothing ever caught me. I was very still.",
+    "Heard about the {f}. Fair. Patient work. I respect patient work."],
+  joke:["Prickles. {s}. Mm. I got a six once. Still think about it.",
+    "{s} out of ten. From Prickles. Mm. Good.",
+    "Heard about the {s}. Bolt told me. Took him an hour. The joke was about a minute of it."],
+  photo:["Saw you with a camera. Get the roads. Nobody photographs roads. That's how I know they're working.",
+    "Photos. Mm. Get the third stone from the lamp post. Fixed it Tuesday.",
+    "You took a photo near me. I didn't move. Easy. I'm good at not moving."]
+}});
+// Residents remember what you did: Lantern Meadow (mayor, book, lantern, cloud, posy, cactus, gramo)
+Object.assign(TALK.mayor,{mem:{
+  gift_love:[
+    "Ahem! Dear resident, the {g} you gave me now sits on my desk at the Hall. I have declared it a municipal treasure. Unanimously.",
+    "I must report that the {g} has been enjoyed in full. I made a short speech before, and a shorter one after. Both well received.",
+    "That {g}! I showed it to the pigeons. They were not allowed to touch it. Probation, you understand.",
+    "I have entered the {g} in the birthday book, beside your names, with a small drawing. The drawing flatters it, but only slightly."
+  ],
+  gift_like:[
+    "Ahem. The {g} was very thoughtful, dear resident. It has been given a place on the hat stand, between Tuesday and Wednesday.",
+    "I wished to thank you once more for the {g}. A fine choice. I shall mention it in part two of something.",
+    "The {g} arrived and was received with full honours. Well. With honours. I was alone at the time."
+  ],
+  gift_meh:[
+    "Ah, the {g}. Yes. It is in a drawer of great importance. Next to the spoon festival. A gift is a gift, and I am grateful.",
+    "Ahem. The {g} was received. I have read the regulations and they say a mayor must say thank you. Thank you!",
+    "The {g}. Hm. I have not yet found the right occasion for it. I am sure there is a ceremony out there that needs one.",
+    "The {g}! Most kind. I shall keep it for... ahem. For a rainy day. A very rainy one, I expect."
+  ],
+  sided:[
+    "Ahem. I have not forgotten how you stood with me against {o}. I would give you a rosette, but Bolt is still engraving the last one.",
+    "Dear resident, your support in the matter of {o} has been noted in the minutes. In ink. With a flourish.",
+    "{o} and I have made our peace, of course. But between us, I knew the founders would see sense. And you did!",
+    "Thank you for taking my side with {o}. I said nothing at the time. Well, I said a great deal, but nothing about you."
+  ],
+  against:[
+    "Ahem. In the matter of {o}, the founders sided against the Mayor. The Mayor accepts the result. Graciously. Mostly.",
+    "You took {o}'s side the other day. I have thought it over, in three parts, and part three says you may have had a point.",
+    "Oh. Well. {o}. Yes. Quite. I am not cross. Slightly toasted at the edges, perhaps. It passes by teatime.",
+    "Dear resident, I hold no grudge about {o}. I have checked my desk and there is no grudge drawer. I have a spoon drawer."
+  ],
+  visit:[
+    "Ahem! It was a great honour to receive you at Marsh Manor. I cut a fresh ribbon on the gate for it. You may not have noticed.",
+    "You came to the Manor! I waved from the balcony before you arrived, and again after you left, in case you looked back.",
+    "Thank you for your visit, dear resident. The guest book at home now has your names in it twice. The page is very proud.",
+    "I tidied the hat stand for your visit. All seven hats, in order. Saturday's had fallen over, but you were kind enough not to say."
+  ],
+  room:[
+    "The room you made me! I go in, I close the door, and for a whole quarter of an hour nobody calls me Mayor. Not even me.",
+    "Ahem. I have used your room every evening this week. I shall not say what for. Very well, a nap. A mayoral nap.",
+    "I would like to declare the room you designed open. I have done so already, three times. The ribbon is getting short.",
+    "Visitors ask who designed my room. I tell them the founders did, and then I tell them about the goose, while they are there."
+  ],
+  fish:[
+    "Ahem! News has reached the Hall of your {f}. I have added it to the town notices, under Achievements, Aquatic.",
+    "Your {f}, I am told! Splendid. I once gave a speech by the pond and the fish all swam away. Not for that reason, I am sure.",
+    "The founders have landed their {f}! I am considering a ribbon for the pond. Or the fish. One of the two will hold still for it."
+  ],
+  joke:[
+    "Prickles gave your joke {s} out of ten, I hear. He has never rated one of my speeches. I take that as being moved to silence.",
+    "Ahem. A {s} from Prickles! I shall put it in the newsletter. He will not read it, which is how I know he respects me.",
+    "I have heard about your joke and the {s}. Might I borrow it for part three of the Summer Fair speech? The goose needs a friend."
+  ],
+  photo:[
+    "I hear you were taking photographs around town! If you need a mayor in the corner of one, I am available most afternoons.",
+    "Someone saw you with a camera by the fountain. Did you get the plaque? Please do not splash the plaque, even in pictures.",
+    "Ahem. Should a photograph of the Hall be needed for the record, I can stand on the steps. All sixteen of them. In order."
+  ]
+}});
+
+Object.assign(TALK.book,{mem:{
+  gift_love:[
+    "The {g}. Shh, I'm still a bit pleased about it. I read three chapters beside it last night. One of them twice.",
+    "I've given the {g} a card in the catalogue. Under G, for gift. Then a second card under the right letter, to be safe.",
+    "Oh, the {g}. I kept it by the reading lamp. Lumi fell asleep next to it at three and I didn't wake them. It was that kind of afternoon.",
+    "I wanted to say the {g} was right. The right thing for the right person. That happens to me less than you'd think."
+  ],
+  gift_like:[
+    "The {g} has a place on the second shelf. The second shelf is very respectable. Ask anyone. Well, ask Tock.",
+    "Thank you again for the {g}. I'd have liked a note in the margin with it, but the {g} is nice on its own.",
+    "I've been using the {g}. Carefully. You can tell I like a thing when it has no thumbprints on it."
+  ],
+  gift_meh:[
+    "The {g}. Mm. I've filed it. Under Miscellaneous. Miscellaneous is a perfectly good section. It's large for a reason.",
+    "Oh, yes, the {g}. Thank you. I'm sure someone in the library will want it. I'll keep it until they're found.",
+    "The {g} is in the back room. With the seventeen overdue books. It's in good company, if a bit quiet.",
+    "Shh. About the {g}. It was kind. It just wasn't anything a book would sit beside."
+  ],
+  sided:[
+    "You took my side with {o}. I wrote it in the blank book. A small sentence, but it has a full stop, which is something.",
+    "Shh. About {o}. I was right, and you said so, and now I'm saying so quietly. That's all. I'll go back to whispering.",
+    "I've stamped a little card for you. It says Sided With Dewey, and the date. Nobody else has one. Don't lose it.",
+    "{o} still hasn't said I was right. You did, though. One footnote is enough for me."
+  ],
+  against:[
+    "You sided with {o}. I've made a note of it. Page sixty. Forgiven. Remembered. In that order.",
+    "Mm. {o}. You agreed with them. I'm sure you had a reason. I'd like to read it some time, if it was written down.",
+    "Shh, it's fine. About {o}. I've moved on to the next chapter. The last one is still bookmarked, though.",
+    "I suppose {o} had a point. Somewhere. In a margin I didn't read. I'll look again when the library's quiet."
+  ],
+  visit:[
+    "You came to the Reading Room. The bell rang one and a half times for you. It does that for everyone, but still.",
+    "Thank you for coming by the house. The tea went cold while we talked. That's the best thing tea can do.",
+    "I've been rereading the bit of the afternoon when you visited. In my head. It holds up very well.",
+    "After you left I rode the ladder all the way to the end of the rail. I only do that when I've had a good day."
+  ],
+  room:[
+    "The room you made me is where I go when it rains. I'm there most afternoons. I'll let you guess the weather.",
+    "Shh. I read in your room until the lamp goes low. Then I read a bit more. Don't tell Lumi, they'd only worry.",
+    "I put a card on the door of the room you designed. It says who made it. In case I'm ever put in a drawer again and forget.",
+    "I have finished four books in your room this week. Five, if you count the one I read the end of first."
+  ],
+  fish:[
+    "I heard about your {f}. I looked it up. There are two pages on it in the atlas. One of them has a drawing that's wrong.",
+    "Your {f}? Oh. Was it damp? Of course it was damp. Wash your hands before you come to the library, please.",
+    "Someone told me about your {f}. I've added it to {n}'s library card. In pencil, under Notable Afternoons."
+  ],
+  joke:[
+    "Prickles gave your joke {s} out of ten. He wrote the score in a margin of one of my books. In pencil. I'm letting it go.",
+    "I heard about the joke. And the {s}. I won't ask you to repeat it. I prefer to read my jokes, where they keep quiet.",
+    "Shh. A {s}, from Prickles. He gave a book I lent him a one. Then he borrowed it again."
+  ],
+  photo:[
+    "Someone saw you taking photos around town. If you take one of the library, wait till ten. That's when the light's quiet.",
+    "I hear you've been taking pictures. Bring them in some time. We have albums. Nobody's ever brought one back late.",
+    "Photos, I'm told. All over town. Please no flash in the reading room. The paper moth gets ideas."
+  ]
+}});
+
+Object.assign(TALK.lantern,{mem:{
+  gift_love:[
+    "Mm... the {g}. I keep it by the window so it's the first thing the evening sees. It looks very happy there.",
+    "I took the {g} on my rounds last night. Just for company. I think the lamps liked it too... they lit faster.",
+    "The {g} is on the porch swing. Nimbus asked whose it was and I said mine, and smiled for a long time.",
+    "I fell asleep holding the {g} at noon. Woke up still holding it. That's a good sign, with me."
+  ],
+  gift_like:[
+    "Thank you again for the {g}. It's on the sill... next to the blue bottle. They get along.",
+    "The {g} is nice. I looked at it in the lilac minute, and it was nicer then. Most things are.",
+    "Mm, I've been using the {g}. Slowly. It doesn't mind slowly. Neither do I."
+  ],
+  gift_meh:[
+    "Oh... the {g}. Thank you. I put it somewhere safe. I can't remember where. That's very safe.",
+    "The {g} is in the shed, with the spare wicks. It's warm in there. It'll be comfortable.",
+    "Mm. The {g}. Nimbus said they'd look after it. Nimbus is better at things that aren't lamps.",
+    "Thank you for the {g}... I'll find a use for it. Maybe at night. Things make more sense at night."
+  ],
+  sided:[
+    "Mm... thank you for siding with me, about {o}. I didn't say much. I don't, usually. You said it for me.",
+    "I lit your gate lamp a little brighter after you stood up for me with {o}. You might not have noticed. That's fine.",
+    "You took my side with {o}. I wrote it in my winter letter. The old lamplighter will like that part.",
+    "{o} and I are fine now... but I remember you were on my side. I remember small lights like that."
+  ],
+  against:[
+    "You sided with {o}... mm. That's alright. I was tired. I'm usually tired. I'm probably wrong when I'm tired.",
+    "About {o}... I thought about it on my rounds. Forty-two lamps. By the last one I thought maybe you were right.",
+    "I'm not upset about {o}. Only a bit flickery. It goes away by dusk.",
+    "You agreed with {o}. Mm. Your lamp still got lit first. I just lit it a little slower."
+  ],
+  visit:[
+    "You came over... mm. I was half asleep. I hope I said hello. I meant to say it twice.",
+    "Thank you for visiting the cottage. Nimbus made three mugs. Then four. I think that was for you.",
+    "After you visited I left the porch light on all night. In case you came back. Or anyone did.",
+    "It was nice, having you on the indoor swing. It creaked in a new way. I've been listening for it since."
+  ],
+  room:[
+    "The room you made me... I sleep through noon in it now. All the way through. I didn't know that was possible.",
+    "I sit in your room in the lilac minute and watch the window. Then I go and light the town. It's a good order.",
+    "Nimbus says your room is the dimmest in the house. They mean it nicely. I took it nicely.",
+    "Mm. I fell asleep in the room you designed and dreamed it was a lamp. A big warm one. It was you two holding it."
+  ],
+  fish:[
+    "Your {f}? Mm... I've seen them under the bridge at night, when the lamp shines on the water. They look up at it.",
+    "Someone told me about your {f}. I hope it was nice to it. Fish don't get much light, down there.",
+    "Your {f}... Beacon flashed something across the bay last night. I think it was about your fish. Two flashes. Very impressed."
+  ],
+  joke:[
+    "Prickles gave your joke {s} out of ten... I was told it at dusk. I laughed at the next lamp. A bit late. Sorry.",
+    "I heard about the {s}. Prickles was humming afterwards. He doesn't hum after bad ones. Or maybe he does. Mm.",
+    "A joke for Prickles, and a {s}... You're braver than me. I only ever tell him when the light's going."
+  ],
+  photo:[
+    "Someone saw you taking photos... Mm. Try the plaza at dusk. When the fountain lamp catches. It's last, but it's worth it.",
+    "I hear you've been taking pictures. If you get one of a lamp being lit, can I see? I've never seen myself do it.",
+    "Photos, all over town. Take one of your gate lamp some night. It's {n}'s lamp. It'd like that."
+  ]
+}});
+
+Object.assign(TALK.cloud,{mem:{
+  gift_love:[
+    "The {g}! I keep it right by the barometer. It points to Wonderful whenever I look at the {g}. Mostly.",
+    "Forecast for the {g}: loved, with a high chance of being loved tomorrow too. Sorry. I've been wanting to say that.",
+    "I took the {g} up the hill for sunrise. Six forty-one. It came out gold. The {g} did, I mean. The sun as well.",
+    "I wrote the {g} in the weather book. It's the first entry that isn't weather. It's sort of weather. Good weather."
+  ],
+  gift_like:[
+    "Thank you again for the {g}. I've kept it dry. Mostly dry. Very slightly damp, which for me is a compliment.",
+    "The {g} is on the sill beside Posy's forget-me-nots. Chance of it staying there: high.",
+    "I like the {g}. It's a nice thing to look at on a grey morning, and I have a lot of those."
+  ],
+  gift_meh:[
+    "Oh, the {g}. Yes. Thank you. It's in the umbrella stand for now. It's good company for the umbrellas.",
+    "The {g}... I'm sure it'll find its weather. Some things only make sense on a particular kind of day.",
+    "Sorry, I don't quite know what to do with the {g}. Lumi's keeping it. Lumi knows what to do with most things.",
+    "The {g} was very kind of you. I dripped on it a bit, by accident. I hope that's alright. It looked alright."
+  ],
+  sided:[
+    "You took my side with {o}. I went pink. Then I made a small rainbow. I didn't mean to. I didn't apologise for that one.",
+    "Thank you for standing with me about {o}. My forecast that day said lonely. I was wrong. I'm glad.",
+    "I wrote it in the weather book: you, on my side, against {o}. Clear skies, briefly.",
+    "I don't often win an argument with {o}. Chance of it happening again: low. Chance I'll remember this one: certain. Almost."
+  ],
+  against:[
+    "You sided with {o}. That's alright. I drizzled a bit on the way home. Not on purpose. It just came out.",
+    "About {o}... I think you might have been right. I went up the hill and had a think. The sky agreed with you.",
+    "Sorry, I've been a little overcast since the thing with {o}. It'll clear. It always clears. I check every morning.",
+    "I'm not cross about {o}. Clouds go grey for a bit, then we drift on."
+  ],
+  visit:[
+    "You came to the cottage! I mopped the puddle by the hearth before you arrived. It came back. It always comes back.",
+    "Thank you for visiting. Forecast after you left: warm indoors, bright spells, three mugs in the sink.",
+    "I've been wondering if you'll visit again. I checked the barometer. It said probably. I'm choosing to believe it.",
+    "When you visited I forgot to offer you an umbrella on the way out. Did you get wet? Sorry. I keep one for you."
+  ],
+  room:[
+    "The room you made me is mostly sunny. Even when it's raining. I sit in there and feel like a bright spell.",
+    "I've been using your room every morning after the hill. I write the forecast there now. It's come out nicer since.",
+    "I haven't opened a single umbrella in the room you made. Not one. I've checked. I keep checking.",
+    "Lumi says I hum in the room you designed. I didn't know I hummed. Forecast: humming, likely."
+  ],
+  fish:[
+    "Your {f}! Was it raining when you caught it? Fish come up when it rains. I like to think I help. I probably don't.",
+    "I heard about your {f}. Beacon put it in the fog report. That's very official. That's the most official thing there is.",
+    "Your {f}. Well done. I hovered over the pond the other day and all the fish thought it was night. Sorry, fish."
+  ],
+  joke:[
+    "Prickles gave your joke a {s}? He's never given me a score. He just looks at the sky and says Hmph. I think that's a zero.",
+    "I heard about the {s}. Chance of Prickles smiling while he said it: low. Chance he smiled after: moderate to good.",
+    "A {s} out of ten from Prickles! I'd have given it more. I'd have given it a rainbow. I can't always do those, sorry."
+  ],
+  photo:[
+    "I hear you're taking photos! Morning light is best. Six forty-one on the hill. I'll stay out of the shot. I'll try.",
+    "Someone saw you taking pictures. If I'm in one, sorry about the drizzle. It looks like smudges. It's me.",
+    "Photos all over town, Parcel says. Want a forecast for them? Bright, with good chances of nice ones."
+  ]
+}});
+
+Object.assign(TALK.posy,{mem:{
+  gift_love:[
+    "Oh, the {g}! I put it right in the sunroom. The seedlings lean towards it. Don't they? Yes, they do. Hm hm hm.",
+    "I've been meaning to say, the {g} is lovely, sweetie. I showed it to the sweet peas. They're jealous, which is good for them.",
+    "The {g} is my favourite thing this week. Prickles says that about the strawberries every year, so you're in good company.",
+    "I keep the {g} where I can see it from the potting bench. I look up between pots. Then I forget what I was potting."
+  ],
+  gift_like:[
+    "Thank you again for the {g}. It's by the kettle. The kettle's always on, so it's always warm. Mind the steam.",
+    "The {g} is nice! I told the marigolds about it. They didn't say much. Marigolds keep their thoughts to themselves.",
+    "I've been using the {g}, hm. It's handy. Handy's the best thing a thing can be, in a garden."
+  ],
+  gift_meh:[
+    "Oh, the {g}. Thank you, sweetie. I've put it in the shed. It's dry in there and the spiders are very polite.",
+    "The {g}... I'm sure I'll find a use. I found a use for a teapot with no bottom once. Now it grows mint.",
+    "I gave the {g} to Prickles. He said Hmph and put it on his shelf. That's a good home, from him.",
+    "Hm. The {g}. It doesn't really grow, does it. I've been watering it a little just in case."
+  ],
+  sided:[
+    "Thank you for taking my side about {o}. I didn't want to fuss. You fussed for me. That was nice.",
+    "I told the tulips you stood up for me with {o}. They nodded. Well, the wind did. Same thing.",
+    "About {o}... I'm glad you agreed with me. I'd have gone pink and talked about marigolds otherwise.",
+    "You sided with me against {o}, so you're getting the first ripe strawberry. The second one. Prickles gets the first."
+  ],
+  against:[
+    "You sided with {o}. That's alright, sweetie. I pulled a few weeds afterwards. It helps. Hm hm hm.",
+    "About {o}... I've been thinking. You might have had a point. Don't tell {o} I said so. Look at the marigolds.",
+    "I'm not cross. I was, for an afternoon. Then the rain came and it washed it off. Good rain.",
+    "You took {o}'s side. Prickles took mine, very loudly, at supper. So it all evened out."
+  ],
+  visit:[
+    "Thank you for coming round to the Lodge! Prickles stayed awake the whole time. That's a compliment, from him.",
+    "You visited! I gave {n} a sniff of the jasmine on the way out. {a} sniffed and {b} sneezed. Every time.",
+    "It was lovely having you at the Lodge. The kettle's been on since. It's always on, but it felt more on.",
+    "After you visited, Prickles said, nice youngsters. Then he said hmph, so I'd know he meant it."
+  ],
+  room:[
+    "The room you made me is full now, sweetie. Seedlings on every sill. They come up when I tell them, in there.",
+    "I arrange flowers in your room every morning. Prickles comes and sits and pretends he isn't watching.",
+    "Your room's the warmest in the Lodge. The tomatoes have moved in. I didn't ask them to. Tomatoes do what they like.",
+    "I go into the room you designed when I need a quiet minute. I hum, and the plants hum back. Not really. A bit."
+  ],
+  fish:[
+    "Your {f}! Prickles told me three times. Then he told me about a fish he caught at sea. That took longer.",
+    "I heard about your {f}, sweetie. If you've any pond water left over, the ferns would love it.",
+    "Your {f}! Good for you. Mind the reeds by the pond, though. They're young. Hm, they're always young."
+  ],
+  joke:[
+    "Prickles gave your joke {s} out of ten. He told me at supper and laughed like a kettle. Then he said it wasn't that good.",
+    "I heard about the {s}! He's never scored one of mine. He just pats my pot. I'll take a pat.",
+    "A {s}, from Prickles. He wrote it on a seed packet so he'd remember. I'm keeping the packet."
+  ],
+  photo:[
+    "I hear you've been taking photos around town! Take one of the plaza beds. The marigolds are showing off this week.",
+    "Someone saw you with a camera. If you're near the park, mind the tulips. Even for a good picture. Especially then.",
+    "Photos! Oh, take one of Prickles asleep on the bench. He'll say he was resting his eyes. Now we'll have proof."
+  ]
+}});
+
+Object.assign(TALK.cactus,{mem:{
+  gift_love:[
+    "Hmph. The {g}. Took it on my walk yesterday. Gate to the bench and back. Showed it to Cobble. He said Good. High praise.",
+    "That {g}, kid. Kept it by my chair. Posy keeps asking where I got it. I tell her a youngster with taste. Rare, these days.",
+    "The {g}. Hmph. Had a thing like it once, in the Great Dry. Lost it to a sandstorm. Got another now. Don't lose it for me.",
+    "Still got the {g}. Using it. Don't make a fuss about it. ...Fine. It's the best thing on my shelf. There. Fuss done."
+  ],
+  gift_like:[
+    "The {g}. It'll do. That's a compliment, youngster. Ask Posy what I say about her soup.",
+    "Hmph. The {g} was decent. It's on the mantel, under the map. Good company for a map.",
+    "Thanks for the {g}. Used it this morning. Didn't break it. That means I like it."
+  ],
+  gift_meh:[
+    "The {g}. Hmph. Gave it to Posy. She'll make something of it. She makes something of everything. Even me.",
+    "I've got the {g} on the shelf next to the wind-up cactus. Facing the wall. Both of them. Don't take it personal.",
+    "That {g}, kid. Hmph. What am I meant to do with it? ...I'm asking. Tell me and I'll do it.",
+    "The {g}. Well. I crossed the Great Dry with one canteen. I can find a spot for the {g}. Somewhere. Eventually."
+  ],
+  sided:[
+    "Hmph. You took my side with {o}. Good. Right side. Only side. Sit, sit, I'll tell you the sandstorm as a reward.",
+    "About {o}. You backed me. Haven't forgotten. I don't forget much. Except north. That was the map's fault.",
+    "{o} won't admit it, but you and me were right. Expedition rules. We stick together. Even with a pot for feet.",
+    "Thanks for backing me with {o}, youngster. Posy says I was rude. Posy's usually right. Not this time. Nearly."
+  ],
+  against:[
+    "Hmph. You took {o}'s side. Noted. I've seen sandstorms with better judgement. ...I'll get over it. Give me a week.",
+    "{o}, kid? Really? Hmph. Fine. Posy agreed with you too. I'm outnumbered in my own house.",
+    "About {o}. Sore? Me? Prickly by trade, kid. Means nothing. ...Means a bit.",
+    "You sided with {o}. Hmph. Captain the lizard never did that to me. Ate half the map, but never that."
+  ],
+  visit:[
+    "You came round. Sat in the good chair. Nobody sits in the good chair. ...You can. Hmph. Only you.",
+    "Good visit, kid. Stayed awake the whole time. Well. Most of it. I was resting my eyes for the boring part. There wasn't one.",
+    "Posy says I talked too long when you visited. I say the camel bit needed the time. Small, sandy camel.",
+    "Hmph. You two came over. Kept the place untidy for an hour. Come back and do it again."
+  ],
+  room:[
+    "That room you made. I sit in it at four when the sun comes in. Best hour of the day. Don't tell the sun I said.",
+    "Your room, kid. Rested my eyes in it for two hours yesterday. Posy says three. Posy counts wrong when I'm asleep.",
+    "Wrote another chapter in the room you made me. Sandstorm's at forty-one pages. It needed the space.",
+    "Hmph. The room's good. Smells a bit like the sea when the window's open. Did you do that on purpose? ...Good."
+  ],
+  fish:[
+    "Heard about your {f}. Hmph. Good. At sea I caught one twice the size. The cat ate it. Biscuit. Bit me twice.",
+    "Your {f}, kid! Proper catch. Hold the rod low next time and you'll get a bigger one. That's free advice. Rare.",
+    "Told Beacon about your {f}. It already knew. Hmph. Everyone knows everything in this town except me.",
+    "That {f} of yours. Did it fight? The good ones fight. I had one pull my boat a mile once. Small boat. Small mile."
+  ],
+  joke:[
+    "Your joke. {s} out of ten. I stand by it. Don't ask me to explain the score, I'll only take a point off.",
+    "{s}. That's what I gave it, and that's what it got. The ending wandered off. Like a camel. Not that there was a camel.",
+    "Been thinking about your joke. Still a {s}. I laughed once at supper, but Posy said something, so that doesn't count.",
+    "That joke, kid. {s} out of ten. The whale would've given it the same. Whales are fair. Tell me another tomorrow."
+  ],
+  photo:[
+    "Saw you taking photos around town. Hmph. Get my good side. It's the one with the flower on the hat.",
+    "Photos, kid? Had a camera at sea once. Took one picture. A wave. Blurry. Still the best picture I've got.",
+    "Someone said you were taking pictures. Take one of Posy in the garden. Don't tell her I asked. Give it to me."
+  ]
+}});
+
+Object.assign(TALK.gramo,{mem:{
+  gift_love:[
+    "The {g}... I put it on the little stage at home. It gets the spotlight now. I play to it after the curtain's down.",
+    "Mm, the {g}. I wrote it into a song. Four bars, very gentle. You'll hear it at three, if you're near the fountain.",
+    "I still have the {g} beside the record console... Every time I look at it my horn goes pink. Not only at golden hour now.",
+    "The {g}... I filed it on the shelf called The Founders Walking Past. It belongs there. It hums when I dust it. Nearly."
+  ],
+  gift_like:[
+    "Thank you for the {g}... It sits on the velvet sofa and listens. A very good audience. It never asks for an encore too soon.",
+    "The {g} is lovely... I gave it a little tune of its own. Short. Two notes and a pause.",
+    "Mm, I've been enjoying the {g}. Quietly. That's how I enjoy most things when nobody's listening."
+  ],
+  gift_meh:[
+    "Oh... the {g}. Thank you. I'm still finding where it goes. On the shelf called Rainy Thursday, maybe.",
+    "The {g}... mm. It doesn't quite have a note in it. Not yet. Some things take a while to tune.",
+    "I put the {g} by the kettle. The kettle whistles an A at it every morning. I think they're getting along.",
+    "The {g} is very... it's very kind. I'll sing it something soft. Maybe it'll grow on me. Songs do."
+  ],
+  sided:[
+    "You took my side with {o}... I played you a little thank-you at three. Did you hear it? It was the bit in the middle.",
+    "Mm... about {o}. Thank you. Agreeing with me is a kind of harmony. I don't get it often.",
+    "I added a bar to your song after you stood with me against {o}. It goes up at the end now. Like a smile.",
+    "{o} and I are in different keys, that's all... but you were in mine that day. I remember."
+  ],
+  against:[
+    "You sided with {o}... mm. I played the slow one at three that day. Sixty-two beats a minute. You understand.",
+    "About {o}. It's alright... a song needs a low note somewhere. That was mine. I've moved on to the chorus.",
+    "About {o}... I've been a little out of tune since, that's all. I'll be back in key by Thursday.",
+    "You agreed with {o}... I hid behind my horn for a bit afterwards. Only a bit. You can come round now."
+  ],
+  visit:[
+    "You came to the Music Box... I almost opened the curtain for you. Almost. Next time, maybe. My knees were shaking.",
+    "After your visit the kettle whistled its A for a long time. I think it was saying goodbye. Or come back soon.",
+    "You sat on the velvet sofa... It's made for listening. You listened very well. I played better than I do for the plaza.",
+    "Thank you for visiting... the wind played the chimney horn while you were there. It doesn't do that for everyone."
+  ],
+  room:[
+    "The room you made me... I go in there and play where nobody hears. Well. The walls hear. They're very kind about it.",
+    "Your room has the best sound in the house... I don't know how you knew. Did you know? Mm. You knew.",
+    "I've written three songs in the room you designed. One's about the room. It's a bit shy, like me.",
+    "I keep the door of your room shut when I practise... then open it after, so the last note can find its way out."
+  ],
+  fish:[
+    "Your {f}... I wonder what it sounded like, coming out of the water. A little splash in a major key, I'd guess.",
+    "Mm, your {f}. Under the bridge the echo would have told the whole river. Fish are very quiet. Echoes aren't.",
+    "I heard about the {f}... I played a little splashy tune at three. Nobody knew why. Now you do."
+  ],
+  joke:[
+    "Prickles gave your joke {s} out of ten... He rated my music once. Without numbers. Just a long sigh. In B flat.",
+    "I heard about the {s}... Timing's everything with a joke. It's the same with a song. Prickles knows timing. He hides it.",
+    "A {s} from Prickles... I'd like to set your joke to music. Two bars for the setup. A long pause. Then the C."
+  ],
+  photo:[
+    "Someone saw you taking photos... I like the sound a camera makes. A tiny click. Like the first note of something.",
+    "Photos around town... If you come to the plaza at three, I'll try not to hide behind my horn. No promises.",
+    "Mm, I hear you've been taking pictures. A picture's a song with no sound, isn't it... You have to hum it yourself."
+  ]
+}});
+// ---- mem sugar: residents remember what you did (Sugarloaf Lane)
+Object.assign(TALK.baker,{mem:{
+  gift_love:[
+    "Sweetie, the {g}! I've used it every morning since. The first loaf of the day gets to sit right beside it.",
+    "Hon, I keep telling customers about that {g} you gave me. Pip says I've told the same story three times today.",
+    "I got flour all over the {g} already, hon. That's how you know I love a thing. It goes floury.",
+    "Oh, the {g}. My ears went pink when I unwrapped it, and Pip saw, and now the whole lane knows. Thank you, sweetie."
+  ],
+  gift_like:[
+    "The {g} is lovely, hon. I found it a nice spot by the bread hutch.",
+    "Thank you again for the {g}, sweetie. Did you eat before you went shopping for it? Tell me you ate.",
+    "I've been enjoying the {g}. You two always come in together and leave something nice behind. I wrote that down once."
+  ],
+  gift_meh:[
+    "The {g}! Well. I've put it somewhere safe, hon, where no flour can get at it.",
+    "Sweetie, about the {g}. I'm sure it's wonderful. I just haven't worked out which end is the front.",
+    "I gave the {g} a good long look, hon, and then a good high shelf. It's the thought that warms me."
+  ],
+  sided:[
+    "Thank you for backing me up with {o}, hon. I baked you a little something for it. Don't tell {o}.",
+    "Sweetie, you stood right by me with {o}. I was so flustered after, I put salt in the icing. Worth it.",
+    "I keep thinking about you taking my side against {o}. You've a warm heart, hon. Like a roll straight off the tray."
+  ],
+  against:[
+    "So you sided with {o}, hon. Well. I suppose they had a point. A very small one. About the size of a crumb.",
+    "I'm not cross, sweetie. I'm just kneading this dough a bit harder than usual. You agreed with {o}. That's fine.",
+    "You took {o}'s side the other day. I forgave you by teatime, hon. There's still a bun for you. A slightly smaller bun."
+  ],
+  visit:[
+    "It was so nice having you two at the Warm Loaf. I left the kettle on an extra hour after, in case you came back.",
+    "Hon, you didn't eat a single thing at my place! Next visit there'll be a plate waiting by the door.",
+    "{n} sniffed every loaf in my hutch when you came by. I kept the one with {a}'s nose print in it. Couldn't sell it."
+  ],
+  room:[
+    "I sit in the room you made me every afternoon, sweetie. Dr. Patch timed me yesterday. Four whole minutes!",
+    "Sweetie, the room you made me smells like Sunday now. I take my tea in there and nobody asks me for anything.",
+    "Cushy fell asleep in the room you made me, hon. I put a blanket over them and tiptoed round with the tray."
+  ],
+  fish:[
+    "Pip says you caught a {f}! Do you want it baked, hon? I'm only asking. Some people just like to look at them.",
+    "Sweetie, I heard about your {f} from three customers before lunch. You must be starving after sitting still that long.",
+    "Hon, your {f} is all over the lane. Beacon came in just to tell me. Did you at least have a sandwich on the dock?"
+  ],
+  joke:[
+    "Prickles gave your joke a {s}, sweetie! He's given me nothing but a grunt, and I feed him.",
+    "Hon, I heard about the {s} out of ten. I've drawn a star in my notebook on your page. Five points, I counted.",
+    "Prickles told me your joke at the counter. He didn't laugh, hon, but he bought a second cookie. That's a {s} if ever I saw one."
+  ],
+  photo:[
+    "Somebody saw you taking pictures round the lane, hon. If you want the bakery, come at six, when the first tray's out.",
+    "Sweetie, were you photographing my window? I'd have dusted the flour off my nose if I'd known!",
+    "Pip says you took a photo of the bakery sign. He's been standing near it all morning in case you come back."
+  ]
+}});
+
+Object.assign(TALK.jam,{mem:{
+  gift_love:[
+    "Sorry, sorry, I'm still so happy about the {g}! I used it this morning. Gently. Um, thank you!",
+    "The {g}! I showed Bunbun. She said 'well, look at that', which is nearly 'that's the one'. Nearly.",
+    "Um, I keep the {g} where I can see it from the stove. Batch 14 is jealous. Sorry, Batch 14."
+  ],
+  gift_like:[
+    "Thank you for the {g}! Sorry, I said that already. I'll say it once more and stop. Thank you.",
+    "The {g} is really nice, um. Bunbun says a good gift is one you use, so I'm using it. A lot.",
+    "I put the {g} on my shelf next to the practice jars. It's the only thing up there that isn't sticky. Yet."
+  ],
+  gift_meh:[
+    "Um, the {g}. Sorry, I don't know what it's for yet. I'll ask Bunbun. She'll know. She always knows.",
+    "I'm still trying to find a use for the {g}. Sorry! I'll keep trying. I tried the cold-plate test eleven times once.",
+    "Thank you for the {g}. I put it somewhere I won't drip on it. Sorry, that's the nicest spot I've got."
+  ],
+  sided:[
+    "You stuck up for me with {o}! Nobody does that. Well, Bunbun does. Sorry, I'm leaking a bit. It's the happy kind.",
+    "Um, thank you for taking my side with {o}. I practised what I'd say afterwards and still didn't think of anything that good.",
+    "I told Bobbin you backed me up with {o}. Bobbin said 'good'. Sorry, that's all, I just wanted you to know."
+  ],
+  against:[
+    "Oh. Um. You agreed with {o}. That's alright. Sorry. I mean, sorry I was wrong. Was I wrong? Sorry.",
+    "I thought about the thing with {o} all night. I told Batch 14. Batch 14 didn't take a side, which was kind of it.",
+    "Sorry if I was grumpy when you sided with {o}. I wasn't grumpy really. I was a bit runny. Like Batch 12."
+  ],
+  visit:[
+    "Sorry the Jam Jar was so sticky when you came over! I wiped everything after. Twice. Um, come again?",
+    "You visited! After you left I tapped on Bunbun's wall three times. We don't have a three-tap. She tapped back anyway.",
+    "{n} licked the lid of a jar on my shelf when you came round. Sorry, that's fine! It was Batch 22. It needed it."
+  ],
+  room:[
+    "I use the room you made me every morning, um. Bunbun came to see it and stood in the doorway for ages. Sorry, I'm a bit proud.",
+    "The room you made me is the only place I don't drop things. Two weeks and not one tray! Sorry, that's a record.",
+    "I practise my hum in the room you made. Sorry if you hear it from outside. It still goes down at the end."
+  ],
+  fish:[
+    "You caught a {f}? Sorry, I only just heard. Um, does fish go with jam? Bunbun says no. Very firmly.",
+    "Everyone's talking about your {f}! I'd never catch anything. I'd say sorry to the fish and let it go.",
+    "Beacon told the whole queue about your {f}. Sorry, I got so excited I put two labels on one jar."
+  ],
+  joke:[
+    "You got a {s} from Prickles?! He gives me a 1 every time. 'For trying.' Sorry, I'm not jealous. A bit jealous.",
+    "Um, what was the joke? Prickles gave it a {s}. Can you teach me? Sorry, I'll tell it wrong. I always tell them wrong.",
+    "Bunbun heard about your {s} and laughed so hard she burned her tongue on a cookie. Sorry, that's normal. She does that."
+  ],
+  photo:[
+    "Sorry, was that you taking photos by the Snack Shack? I was in the window. Um, with jam on my face. Can you take another?",
+    "Someone said you were taking pictures round town! If you want one of my jars, the labels are crooked. Sorry. They always are.",
+    "Um, could you take one of me and Bunbun sometime? Sorry, forget I asked. Only if you're going past."
+  ]
+}});
+
+Object.assign(TALK.cushion,{mem:{
+  gift_love:[
+    "Mm... the {g}. I've slept beside it every night since. It makes the nest... very good.",
+    "The {g} you gave me... mm. Dusty tried to straighten it and I said leave it, it's perfect crooked.",
+    "I napped on the {g}... I mean near it... mm, maybe on it. It held up very well."
+  ],
+  gift_like:[
+    "Mm, the {g}. It's nice... I put it where the light lands at four.",
+    "Thank you for the {g}... mm. I'll think about it properly after a little rest.",
+    "The {g} is sitting in my big nest... mm. It looks like it's always been there. That's a good sign."
+  ],
+  gift_meh:[
+    "Mm... the {g}. I tried to nap on it. It didn't want me to. That's alright... not everything is for napping.",
+    "The {g}... I'm still getting to know it, mm. Some things take a few naps to understand.",
+    "Dusty put the {g} on a shelf for me. A high one... mm. I think Dusty was being kind to both of us."
+  ],
+  sided:[
+    "Mm... you stood with me, with {o}. I wasn't going to argue very hard. You did the awake part. Thank you.",
+    "I remember you taking my side with {o}... mm. I only keep the nice things. That one stayed.",
+    "You were so kind about the thing with {o}... I'm making you a cushion for it. Slowly. Mm. Very slowly."
+  ],
+  against:[
+    "Mm... you agreed with {o}. That's alright. They were probably more awake than me at the time.",
+    "I've already forgotten you sided with {o}... mm. I only keep the nice things. See? Gone.",
+    "You were on {o}'s side... mm. Maybe I was half asleep when I said it. I usually am."
+  ],
+  visit:[
+    "Mm... you came to my nest. I was awake for most of it, I think. Thank you for staying anyway.",
+    "{n} curled up in my cocoon swing when you visited... mm. Both heads. It was a very good nap to watch.",
+    "Having you two over... mm. Everyone found a seat that was half a bed. That's how I know a visit went well."
+  ],
+  room:[
+    "The room you made me... mm. I've slept in it eleven times. Twelve, if you count right now. Almost.",
+    "Dusty keeps tidying the room you made, and I keep untidying it... mm. We're both very happy in there.",
+    "Bunbun fell asleep in the room you made. The first time ever, I think... mm. I stayed very quiet and kept watch."
+  ],
+  fish:[
+    "Mm... you caught a {f}. I'd have dozed off on the dock... the fish would have caught me.",
+    "A {f}... mm. Did it wriggle? I don't like wriggling. I like lying very still. Well done though.",
+    "Your {f}... mm. Fishing sounds nice. Sitting and waiting. I'm already good at the waiting part."
+  ],
+  joke:[
+    "Mm... a {s} from Prickles. He gave me a 7 once, and I was asleep. Maybe try telling it asleep.",
+    "I heard your joke at the Nest... mm. I laughed the next morning. It came back to me in a dream.",
+    "Prickles gave you a {s}... mm. He doesn't give those out. I'll keep it with the nice things."
+  ],
+  photo:[
+    "Mm... somebody saw you taking pictures. If you need a still subject, I'm very good at staying still.",
+    "Dusty said you were taking photos near the Nest... mm. Was I in one? Was I asleep? I was probably asleep.",
+    "Pictures, mm. Take one of the park bench at noon. That's where I'll be. Eyes shut. Still listening."
+  ]
+}});
+
+Object.assign(TALK.dust,{mem:{
+  gift_love:[
+    "Oh, the {g}... I gave it its own place. With a label. The label says 'from you'. Sorry, that's silly.",
+    "I dust the {g} first every morning, before anything else... oh, sorry. I mean it's my favourite. Thank you.",
+    "The {g} sits right where the sunbeam lands at four... I check on it. Sorry. I check on it a lot."
+  ],
+  gift_like:[
+    "The {g} is very nice... I found it a shelf. It fits. Things fitting is my favourite feeling. Oh, sorry.",
+    "Thank you for the {g}. I wiped it twice. Not because it was dusty. Sorry. Just because.",
+    "Oh, the {g}... it's next to my fluff jar now. They seem to get along. Sorry, that's a strange thing to say."
+  ],
+  gift_meh:[
+    "Oh... the {g}. I'm sorry, I couldn't find where it goes yet. It's in the cupboard until it tells me.",
+    "The {g} is... lovely. Sorry. I don't have a label for it yet. That's never happened before.",
+    "I put the {g} by the door, sorry... so I'll see it and remember to think of a place for it. I'm still thinking."
+  ],
+  sided:[
+    "Oh... you took my side with {o}. Sorry, I didn't think anyone would. I made a tally mark for it inside the stockroom door.",
+    "Thank you about {o}... I'm not good at saying things out loud. Sorry. You said them for me, which was nicer.",
+    "You stuck up for me with {o}... I sneezed after. A happy sneeze. Sorry to the fluff, it went everywhere."
+  ],
+  against:[
+    "Oh, you agreed with {o}... that's alright. Sorry. They probably had the tidier argument.",
+    "I swept the whole showroom after you sided with {o}... sorry. Sweeping helps. It's all very clean now.",
+    "Sorry I went quiet when you sided with {o}. I'm always quiet. Just... quieter. It's fine. It's mostly fine."
+  ],
+  visit:[
+    "Oh... you came to my Tidy Nook. Sorry it was so tidy. I didn't know what to do with my duster while you were there.",
+    "{a} and {b} both looked in my feather mirror for ages when you visited... sorry. I think the mirror liked it. I did.",
+    "After you visited I didn't straighten the chair you sat in. For a whole day. Sorry. That's very big for me."
+  ],
+  room:[
+    "The room you made me... I sat down in it. On the sofa. Sorry, I had to tell someone.",
+    "The room you made stays nice all by itself... oh, sorry, I'm a bit teary. Fluff in my eye.",
+    "Cushy napped in the room you made me and I didn't straighten a single cushion... well, one. Sorry. Just the one."
+  ],
+  fish:[
+    "Oh... you caught a {f}? Sorry. Fish are very wet. I'd be all clumped. Well done, though. Quietly.",
+    "I heard about your {f}... sorry, I don't know much about fish. Do they need dusting? Probably not.",
+    "Beacon came in to tell Cushy about your {f}, but Cushy was asleep, so it told me. Sorry. Congratulations."
+  ],
+  joke:[
+    "Prickles gave you a {s}... oh. I whispered a joke to him once and he said 'speak up'. Sorry. I didn't.",
+    "I heard your joke from Prickles... sorry, I laughed into my duster. A big puff. He looked at me.",
+    "A {s}! Oh, sorry, I wrote it down. Inside the stockroom door. I made a joke column. It only has yours."
+  ],
+  photo:[
+    "Oh... someone saw you with a camera. Sorry. Please don't take the showroom in a sunbeam. Everything shows.",
+    "Were you taking photos near the Nest? Sorry, I hid behind the sofa display. Out of habit.",
+    "If you take a picture of the Nest, could you tell me first? Sorry. I'd like to straighten the cushions. All forty-two."
+  ]
+}});
+
+Object.assign(TALK.cone,{mem:{
+  gift_love:[
+    "The {g}, sweet pea! I use it every single day, hm? Scone's not allowed to touch it. Crumb is, she's careful.",
+    "My loves, the {g}! I showed the whole Sunday queue. They came for scoops and got a speech!",
+    "I keep the {g} by the freezer, hm? Where I sit at night. It's the first thing I see when it's quiet."
+  ],
+  gift_like:[
+    "Thank you for the {g}, sweet pea! It's lovely. Did you eat before you went out shopping? Hm?",
+    "The {g} is sitting pretty in the cottage, my loves. The twins have only moved it twice. That's a good sign!",
+    "Oh, the {g}! Very nice, sweet pea. Wait, was that a crash? It was a pigeon. Hello! Yes, very nice."
+  ],
+  gift_meh:[
+    "The {g}! Hm. I've found it a very safe place, sweet pea. Safe from Scone. Mostly safe from me.",
+    "Oh, sweet pea, the {g}. It's very... you. Something will come to me for it, hm? Something always does.",
+    "Scone asked if the {g} was for racing. I said no. He said 'then what's it for?' and I didn't have an answer, my love."
+  ],
+  sided:[
+    "You took my side with {o}, sweet pea! A free scoop for that, hm? Two. Don't tell anyone or they'll all want sides.",
+    "My loves, thank you about {o}. I was doing three things at once and you did the fourth. You stuck up for me!",
+    "I heard you backed me up against {o}! Crumb told me. Very quietly. I made her say it twice so I could enjoy it."
+  ],
+  against:[
+    "So you sided with {o}, hm? That's alright, sweet pea. Your sprinkles might be a tiny bit fewer this week. Tiny.",
+    "You agreed with {o}! Well! I'm not upset, my love. I'm scooping very hard, that's all. It's a firm vanilla today.",
+    "Sweet pea, I forgave you for siding with {o} the same afternoon, hm? I'm an aunt. Aunts forgive fast."
+  ],
+  visit:[
+    "You came to the Sundae Cottage! Sorry about the noise, my loves. That was the quiet bit.",
+    "Scone showed you every ribbon when you visited, didn't he? Hm? He's still talking about it. Crumb is too, on the inside.",
+    "{n} sat by the pebble shelf the whole visit, sweet pea. Crumb said it was the politest guest we've ever had."
+  ],
+  room:[
+    "The room you made, sweet pea! The twins played in it for an hour and nothing broke. An hour! I wrote down the date.",
+    "I sit in the room you made after the twins go to bed, hm? It's nearly as quiet as the freezer. Nearly.",
+    "My loves, the room you made is the twins' favourite and mine. We argue about whose turn it is. Very sweet arguing."
+  ],
+  fish:[
+    "You caught a {f}, sweet pea? Scone wants to know if it was fast. Crumb wants to know if it had stripes.",
+    "My loves! Your {f}! I'd make a fish flavour for you, but Bunbun would never let me hear the end of it, hm?",
+    "Sweet pea, I heard about your {f} at the cart. The whole queue clapped. For you, not the mint!"
+  ],
+  joke:[
+    "A {s} from Prickles! Sweet pea! Scone told him seven jokes at once and got a zero for every one.",
+    "Hm? Your joke got a {s}? Tell it to me slowly and I'll tell it at the cart. I'll tell it wrong, but the queue won't know!",
+    "Prickles came for a scoop and said your joke was '{s}, no more'. Then he said it again. My love, he liked it!"
+  ],
+  photo:[
+    "Somebody saw you taking photos, sweet pea! Could you take one of me and the twins? They'll move. They always move.",
+    "If you were snapping pictures by the cart, my loves, come back at three, hm? The queue looks best at three.",
+    "Hm? Pictures! The twins want to be in one. Scone wants to be running in it. Crumb wants to be behind it."
+  ]
+}});
+
+Object.assign(TALK.scone,{mem:{
+  gift_love:[
+    "The {g}! I use it EVERY day! Twice on Tuesday! It's the best thing I own except my ribbons!",
+    "I showed the {g} to Crumb, then Aunt Tutti, then a pigeon! The pigeon was jealous. I could tell!",
+    "Guess what I did with the {g}! No, guess! Too slow! I took it to the playground and everyone wanted a go!"
+  ],
+  gift_like:[
+    "The {g} is cool! Really cool! It's going next to my ribbon wall. Only next to it. The wall is for winning.",
+    "Thanks for the {g}! I'd say more but I'm racing Crumb to the corner. Three, two, one, GO!",
+    "The {g}! It's good! Is it fast? Doesn't matter! It's good anyway!"
+  ],
+  gift_meh:[
+    "The {g}... um, it's GREAT. Crumb says I have to say thank you properly. THANK YOU PROPERLY!",
+    "I tried racing with the {g}. It doesn't race. That's okay! Crumb put a pebble on it. Now it's a pebble stand.",
+    "Is the {g} for grown-ups? It feels like a grown-up thing. I'll keep it for when I'm Pip-grown-up."
+  ],
+  sided:[
+    "You were on MY side against {o}! That means we won! Team Scone! I'm making you a ribbon!",
+    "Did you see {o}'s face when you agreed with me?! I'm counting that as a race. I won by a mile!",
+    "Thanks for sticking up for me with {o}! Crumb said I was being loud. I WAS loud. But I was right!"
+  ],
+  against:[
+    "You picked {o}?! Fine. FINE. That's okay. Dr. Patch says practise losing nicely. I'm practising. Nicely.",
+    "You were on {o}'s side. I'm going to run round the fountain about it. Then I'll be okay. Probably.",
+    "I lost the argument with {o} because of you! That's okay. The Lost-To-Animals Club has a new bit now. Lost-To-Friends."
+  ],
+  visit:[
+    "You came to our house! Did you see the ribbons? Did you see the pink one? That one's from beating Pip! Maybe!",
+    "When you came over I raced {n} to the bunk bed! Both heads! I won by four seconds! Town record!",
+    "When are you coming back? I'll have a new ribbon by then. Or a scab. Either way, something to show you!"
+  ],
+  room:[
+    "The room you made is the FASTEST room in town! I timed it! Door to bed, two seconds! Crumb says three!",
+    "I sleep in the room you made every night! Crumb does too. I'm loud in it so she doesn't have to be.",
+    "Aunt Tutti says the room you made is the only room I don't fall over in! I fell over in it once. Only once!"
+  ],
+  fish:[
+    "You caught a {f}?! How fast was it? Faster than me? NOTHING is faster than me. Except pigeons. Twice.",
+    "A {f}! Can I hold the next one? I'll be careful! Crumb, tell them I'll be careful! She nodded! That's a yes!",
+    "I heard about your {f}! I want to fish! Aunt Tutti says you have to sit still! I'm going to try for one whole minute!"
+  ],
+  joke:[
+    "A {s} from Old Pokey?! I told him seven jokes in a row and got ZERO seven times! What's your secret?!",
+    "Your joke got a {s}! I'm telling it at the playground! I forgot the end already! I'll make up a new end!",
+    "Prickles gave you a {s}! That's like a ribbon but for funny! I'm making you one out of a cone wrapper!"
+  ],
+  photo:[
+    "Were you taking photos?! Take one of me running! I'll go past really fast! Ready? GO! Did you get it?!",
+    "Somebody saw you with a camera! Was it to time me? It should be to time me! Four seconds to the fountain!",
+    "If you take a photo of me I'll do my starting pose! It's very fast. You'll probably only get my cap."
+  ]
+}});
+
+Object.assign(TALK.crumb,{mem:{
+  gift_love:[
+    "Um. The {g}. I put it right next to my pebble shelf. It's allowed there. Not many things are.",
+    "I drew round the {g}. Um. I do that with my best things. It's on the wall by my bunk.",
+    "Um... I use the {g} every day. Quietly. Scone doesn't know where I keep it. That's on purpose."
+  ],
+  gift_like:[
+    "Um. Thank you for the {g}. I like it. I like it a lot, actually. Um. That's all.",
+    "The {g} is nice. I put a pebble on it to keep it company. Is that okay?",
+    "Um. Aunt Tutti says to say thank you for the {g} out loud. Thank you. Out loud."
+  ],
+  gift_meh:[
+    "Um. The {g}. I don't know where it goes. Can it go in the window nook? I'll ask it.",
+    "I wrote a label for the {g}. It says 'From you. Thinking.' Um. Like Posy's seed.",
+    "Um. Scone liked the {g}. Can I share it with him? I think he'd like it more than me."
+  ],
+  sided:[
+    "Um. You took my side. With {o}. I didn't say much. You said it. Thank you.",
+    "I put a pebble in my pocket for you. Um. Because of {o}. A brave one. It has a stripe.",
+    "Um... nobody takes my side except Scone. And now you. That's two. Um. Two's a lot."
+  ],
+  against:[
+    "Um. You agreed with {o}. That's okay. They said it louder.",
+    "Um. I thought about {o} all day. I held a pebble up to the light. It helped. I'm okay.",
+    "You picked {o}'s side. Um. Can we still look at pebbles? I think we can."
+  ],
+  visit:[
+    "Um. You saw my pebble shelf. Did you see the one labelled 'Scone's. Don't tell'? Don't tell.",
+    "{a} and {b} were very careful with my pebbles. Um. I noticed. Not everybody's careful.",
+    "Um. When you visited, Scone was the loud part. I was the quiet part. Did you see me? By the window?"
+  ],
+  room:[
+    "Um. The room you made. I sit in it after the playground. It's quiet. It's mine. Is that okay to say?",
+    "I labelled everything in the room you made. Um. One label says 'Made for me. By them.'",
+    "Um. The snail came into the room you made. Just once. It went back out. I think it liked it."
+  ],
+  fish:[
+    "Um. You caught a {f}? Did it have stripes? I like stripes. On pebbles. Maybe on fish too.",
+    "Scone told me about your {f}. Three times. Um. I listened all three. It was good every time.",
+    "Um. Can fish get poorly? I asked Dr. Patch about pebbles once. I hope your {f} is happy."
+  ],
+  joke:[
+    "Um. Prickles gave your joke a {s}. He gave me a 5. Um. I'm a bit proud of you.",
+    "Scone told me your joke. He got the end wrong. Um. Can you tell me the real end? Quietly?",
+    "Um. A {s}. That's more than all Scone's seven jokes. Those were zero. Don't tell him I said."
+  ],
+  photo:[
+    "Um. Someone saw you taking pictures. Could you take one of a pebble? I'll pick a good one.",
+    "Um. If you take a photo by the slide, could you not use the flash? The snail lives there.",
+    "Were you taking pictures? Um. I'm usually behind Scone in pictures. I like it there."
+  ]
+}});
+
+Object.assign(TALK.patch,{mem:{
+  gift_love:[
+    "That's alright, I'll say it plainly. The {g} made my week. I've prescribed myself an hour with it each afternoon.",
+    "I use the {g} between patients. My heartbeat goes a little quicker when I see it. I checked. Still going.",
+    "The {g} lives in the waiting room now, so everyone gets a bit of it. Bunbun sat beside it for a whole minute."
+  ],
+  gift_like:[
+    "Thank you for the {g}. That's alright, I'll keep saying it. It sits by the tea trolley and makes the room kinder.",
+    "The {g} is very nice. I've put it where nervous patients can see it. It does a little good every day.",
+    "I've been enjoying the {g}. Slowly, the way I like to enjoy things."
+  ],
+  gift_meh:[
+    "That's alright. The {g} isn't quite my sort of thing, but I can tell you meant it. That part I'll keep.",
+    "I've put the {g} in the back room, next to the hammock. It can have a rest there. Everything should.",
+    "The {g}. Hm. I'm not sure what it treats. I'll observe it for a week and let you know."
+  ],
+  sided:[
+    "You took my side with {o}. That's alright, you needn't look so worried about it. It helped. Thank you.",
+    "My heart did a little skip when you backed me up with {o}. I listened to it afterwards. A good skip.",
+    "I stayed calm with {o} because you were standing next to me. Thank you for that."
+  ],
+  against:[
+    "You agreed with {o}. That's alright. I've been wrong before. I'm still deciding whether this makes twice.",
+    "That's alright. You sided with {o}, and I had a cup of tea about it. Water with a hug in it. I'm quite recovered.",
+    "I won't pretend it didn't sting a little when you sided with {o}. A small sting. I happen to be the thing for those."
+  ],
+  visit:[
+    "Thank you for coming to the clinic as visitors and not patients. That's my favourite kind. I put the kettle on twice.",
+    "{n} sat on the high bed when you visited. Two heartbeats having a chat, as usual. I listened, briefly.",
+    "After you left I wrote you both in the visitors' book. I didn't have a visitors' book. I've started one."
+  ],
+  room:[
+    "I nap in the room you made exactly as prescribed. By me. I'm a very good patient when the room is this nice.",
+    "Bunbun sat in the room you made for nine minutes. A record. I wrote it on her card and she cried a little.",
+    "I take my tea in the room you made and listen to my heartbeat. Still going. Slower in there."
+  ],
+  fish:[
+    "I heard about your {f}. Well done. Did you wear a hat on the dock? Have some water, then tell me everything.",
+    "Your {f} sounds splendid. Beacon told me with its whole lamp lit. Do wash your hands before you go to Bunbun's.",
+    "A {f}. That's alright, you can boast. A small proud moment does the heart good. I'd put that on a card."
+  ],
+  joke:[
+    "Prickles gave you a {s}. He refuses my check-ups, so I can't confirm it, but I suspect his heart rate went up.",
+    "I heard your joke from Bunbun. I laughed, which is good for you. I've since prescribed it to Bolt.",
+    "A {s} from Prickles. I've left him leaflets for years and he burns them. You made him smile. Well done."
+  ],
+  photo:[
+    "Someone saw you taking photos. That's alright. Remember to blink between them. Eyes like a rest too.",
+    "If you take a picture of the clinic, get the heart over the door. Leave out the hammock in the back. That's private.",
+    "Photos are good for you. They make people stop and look at things. I'd prescribe a few more."
+  ]
+}});
+/* </memories> */
+/* <together> */
+// ---- moments together (v94): when you're both in the app, one of you starts a moment (a group hug, a dance party, a cake to share,
+// a high five through the pet); the other phone gets an invitation and has a minute to join. Joined = the pet celebrates on both
+// phones and each of you gets a glimmer (once a day each). state.tg {id,by,k,t,join:[pid]} is shared; merged by newest t, joins union.
+const TG_K={hug:['A group hug','Both heads squeeze in.','nuzzle','💗'],dance:['A dance party','Music on, everybody up.','dance','🎵'],cake:['Cake for three','One slice each, and one for each head.','clap','🎉'],high:['A high five','Through the pet. It counts.','spinjump','🎉']};
+const TG_WIN=60e3,TG_LIVE=150e3;let tgSeen=new Set(),tgCel=new Set();
+function tgOnline(){const o=partnerId();return!!(o&&state.visits&&Date.now()-(state.visits[o]||0)<TG_LIVE)}
+function tgStart(k){if(!tgOnline()){toast(`${who(partnerId())||'Your person'} isn’t here right now.`,true);return}state.tg={id:uid(),by:pid(),k,t:Date.now(),join:[pid()]};tgSeen.add(state.tg.id);saveSoon();try{flush&&flush()}catch(_){}
+  setTab(null);toast(`Asked ${who(partnerId())} to join: ${TG_K[k][0].toLowerCase()}. Waiting a minute…`,true)}
+function tgTick(){if(!state||!ready||sandbox)return;const T=state.tg;if(!T||!TG_K[T.k])return;const me=pid(),live=Date.now()-T.t<TG_WIN,joined=(T.join||[]).length>=2;
+  if(joined&&!tgCel.has(T.id)&&(T.join||[]).includes(me)){tgCel.add(T.id);tgCelebrate(T);return}
+  if(T.by!==me&&live&&!(T.join||[]).includes(me)&&!tgSeen.has(T.id)&&!away&&!(tm&&tm.open)){tgSeen.add(T.id);const Q=TG_K[T.k];
+    showReward(`${who(T.by)} wants ${Q[0].toLowerCase()}!`,'emo-party',`<p>${esc(Q[1])}</p><p class="rwsub">Join in the next minute.</p>`,{ok:'Join!',fn:()=>{const S=state.tg;if(!S||S.id!==T.id||Date.now()-S.t>TG_WIN){toast('Too late this time. Start one yourself!',true);return}S.join=[...new Set([...(S.join||[]),me])];saveSoon();try{flush&&flush()}catch(_){}tgCel.add(S.id);tgCelebrate(S)}})}}
+function tgCelebrate(T){const Q=TG_K[T.k],me=pid();if(!away&&pet.rig){pet.mode='idle';pet.path=null;pet.target=null;pet.timer=6;petAct(Q[2]);[0,1].forEach(i=>setTimeout(()=>emote(Q[3],{head:i}),300+i*250));setTimeout(()=>{petAct('clap')},2600)}
+  try{SFX.chime()}catch(_){}const day=lifeDay(),A=state.acts||(state.acts={}),key='tg:'+me;let msg='';if(A[key]!==day){A[key]=day;earnG(1);msg=' +1 glimmer'}
+  if(T.by===me)jrAdd(`${headNames()[0]} and ${headNames()[1]} got ${Q[0].toLowerCase()} from both of you at once.${T.k==='cake'?' The cake was gone in a second.':''}`,'','together',0,'');
+  try{firstOf('tgm',`Our first moment together, live: ${Q[0].toLowerCase()}.`)}catch(_){}saveSoon();updHUD();toast(`${Q[0]}, together!${msg}`,true)}
+setInterval(()=>{try{tgTick()}catch(e){console.warn('together',e)}},2000);
+function tgHtml(){if(!partnerId())return'';const on=tgOnline(),o=who(partnerId());
+  return`<div class="row-label">Together right now</div>${on?`<p class="hint">${esc(o)} is here too. Start something and they’ll get an invitation.</p><div class="tgrow">${Object.entries(TG_K).map(([k,Q])=>`<button class="gel lilac" data-tg="${k}">${esc(Q[0])}</button>`).join('')}</div>`:`<p class="hint">When ${esc(o)} opens the app too, you can do things together here.</p>`}`}
+/* </together> */
+
+
 
 $('#phBtn').onclick=()=>phOpen();{const tb=$('#tmX');if(tb){const b=document.createElement('button');b.className='phbtn tmph';b.id='tmPhBtn';b.setAttribute('aria-label','Take a photo');b.innerHTML=$('#phBtn').innerHTML;b.onclick=()=>phOpen();tb.parentNode.insertBefore(b,tb)}}
 
@@ -63557,14 +65184,14 @@ function renderSheet(){const body=$('#sheetBody');
     <div class="bondbar"><b>${esc(B.n)}</b><span><i style="width:${Math.round(B.cur/B.need*100)}%"></i></span></div><p class="xp bondxp">${B.left} more care ${B.left===1?'moment':'moments'} until your bond grows${B.lv%2?' and a new room set':''}.</p>${petMoodHtml()}`+
     (`    <div class="stats rings">${NEEDS.map(([k,n,c,ic])=>`<div class="sr" style="--c:${c}"><span>${ringSvg(Math.min(100,s[k])/100,56,8)}<img src="assets/icons/${ic}.webp" alt=""></span>${n}<small>${tier(k,s[k])}</small></div>`).join('')}</div>
     <div class="actions">${Object.entries(ACTS).map(([k,a])=>`<button class="gel ${a.cls}" data-act="${k}"><img class="bi" src="assets/icons/act-${k}.webp" alt="">${a.label}</button>`).join('')}</div>${todayHtml()}${selfCareRow()}
-<div class="row-label">A head for each of you</div>${headRow()}${partnerId()?`<button class="gel lilac surpb" id="goSurp">Leave a surprise for ${esc(who(partnerId()))}</button>`:''}
+${tgHtml()}<div class="row-label">A head for each of you</div>${headRow()}${partnerId()?`<button class="gel lilac surpb" id="goSurp">Leave a surprise for ${esc(who(partnerId()))}</button>`:''}
     <div class="row-label">About ${esc(p.name)}</div>${P?`<p class="pers"><b>${P.n}</b> ${P.d}</p>`:''}${petLifeHtml()}${traitRow()}<div class="spirit"><span>Spirit</span><b>${tier('spirit',sp)}</b><div class="bar"><i style="width:${sp|0}%;--c:#A6E22E"></i></div></div><button class="gel sun surpb" id="goBag">Open the Bag · ${bag} ${bag===1?'thing':'things'}</button>${bigMomentsHtml()}`)+
     (st?`<div class="row-label">Style</div><div class="actions"><button class="gel" id="goWard">Wardrobe</button><button class="gel" id="goGlam">Glow Up Studio</button></div>`:'');
     body.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>doAct(b.dataset.act));
     bindToday(body);body.querySelectorAll('[data-sn]').forEach(b=>b.onclick=()=>openDecoNeed(b.dataset.sn));
     body.querySelectorAll('[data-hn]').forEach(inp=>inp.onchange=()=>{const n=headNames().slice(),v=inp.value.trim().slice(0,10);if(!v)return;n[+inp.dataset.hn]=v;state.pet.heads=n;logEvent(`named the ${inp.dataset.hn==='1'?'right':'left'} head ${v}`);saveSoon()})
     {const a=$('#goWard'),b=$('#goGlam');if(a)a.onclick=()=>setTab('wardrobe');if(b)b.onclick=()=>{setTab(null);travelTo('glam')}}
-    {const gs=$('#goSurp');if(gs)gs.onclick=()=>{petView='surp';renderSheet()}}{const gb=$('#goBag');if(gb)gb.onclick=()=>setTab('bag')}{const gp=$('#goPatch');if(gp)gp.onclick=()=>{setTab(null);const h='h_'+houseOf('patch');if(SHOPS[h])travelTo(h);else showMap()}}
+    {const gs=$('#goSurp');if(gs)gs.onclick=()=>{petView='surp';renderSheet()}}{const gb=$('#goBag');if(gb)gb.onclick=()=>setTab('bag')}body.querySelectorAll('[data-tg]').forEach(b=>b.onclick=()=>tgStart(b.dataset.tg));{const gp=$('#goPatch');if(gp)gp.onclick=()=>{setTab(null);const h='h_'+houseOf('patch');if(SHOPS[h])travelTo(h);else showMap()}}
     {const hs=$('#hSwap');if(hs)hs.onclick=()=>{state.pet.hsw=!state.pet.hsw;logEvent('swapped heads');saveSoon();renderSheet()}}
     const ni=$('#pname');ni.onchange=()=>{const v=ni.value.trim().slice(0,16);if(v&&v!==state.pet.name){logEvent(`renamed the pet to ${v}`);state.pet.name=v;saveSoon();updHUD()}}}
   else if(openTab==='journal')renderJournal(body);
@@ -63810,6 +65437,8 @@ const MERGE={btn:mCur,glim:mCur,tix:mCur,hearts:(l,r,b)=>Math.max(0,mNum(l,r,b))
   dzDel:(l,r)=>[...new Set([...(l||[]),...(r||[])])].slice(-200),
   designs:(l,r)=>{const m=new Map();[...(r||[]),...(l||[])].forEach(d=>{if(d&&d.id&&!m.has(d.id))m.set(d.id,d)});return[...m.values()].sort((a,b)=>b.t-a.t).slice(0,DZ_MAX)},
   fbest:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{})o[k]=Math.max(o[k]|0,l[k]|0);return o},
+  rmem:(l,r)=>{const o=JSON.parse(JSON.stringify(r||{}));for(const k in l||{}){const L=l[k],O=o[k]||(o[k]={});for(const q in L){const a=L[q],b=O[q];if(!b||a.t>b.t)O[q]=a;else if(a.t===b.t){if(Array.isArray(a.said))O[q].said=[...new Set([...(b.said||[]),...a.said])];else O[q].said=a.said||b.said}}}return o},
+  tg:(l,r)=>!l?r:!r?l:l.id===r.id?Object.assign({},r,{join:[...new Set([...(l.join||[]),...(r.join||[])])]}):(l.t>r.t?l:r),
   keeps:(l,r)=>{const m=new Map();[...(l||[]),...(r||[])].forEach(e=>{if(e&&e.id&&!m.has(e.id))m.set(e.id,e)});return[...m.values()].sort((a,b)=>b.t-a.t).slice(0,200)},
   tfound:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{})if(!o[k]||(l[k].t||0)<(o[k].t||0))o[k]=l[k];return o},
   cbook:(l,r)=>Object.assign({},r||{},l||{}),
@@ -63843,7 +65472,7 @@ function adoptRemote(){buildHist.length=0;updUndoBtns();state=normalize(JSON.par
 function tryRemote(){if(sandbox||!remote||writing||dragging)return;if((remote.rev||0)<=Math.max(state.rev||0,syncBaseRev))return;if(!syncBase){if(!dirty)adoptRemote();return}
   // take the other side's changes in (keeping any unsaved ones of ours); if part of their write was stale, write ours back
   try{const R=normalize(JSON.parse(JSON.stringify(remote)));afterMerge(mergeInto(state,R));snapBase(R);if(localChanged())saveSoon()}catch(e){console.warn('merge',e)}}
-function normalize(s){const oldPal=!!s&&!(s.pv>=2),curMig=!!s&&s.btn==null;try{if(s&&Array.isArray(s.designs))designRegister(s.designs.filter(d=>!(s.dzDel||[]).includes(d&&d.id)))}catch(e){console.warn('designs',e)}const d=defaultState();s=Object.assign({},d,s||{});{const ob=v=>v&&typeof v==='object'&&!Array.isArray(v);['gifts','disc','acts','seeds','hdeco','tfound','cbook','firsts','pmem','fbest'].forEach(k=>{if(!ob(s[k]))s[k]={}});['garden','parcels','evseen','keeps','designs','dzDel'].forEach(k=>{if(!Array.isArray(s[k]))s[k]=[]})}s.items=Array.isArray(s.items)?s.items.map(i=>i&&typeof i.k==='string'&&i.k.startsWith('win_')?Object.assign(i,{k:winKeyFix(i.k)}):i).filter(i=>i&&CATMAP[i.k]&&typeof i.id==='string').slice(0,80):[];
+function normalize(s){const oldPal=!!s&&!(s.pv>=2),curMig=!!s&&s.btn==null;try{if(s&&Array.isArray(s.designs))designRegister(s.designs.filter(d=>!(s.dzDel||[]).includes(d&&d.id)))}catch(e){console.warn('designs',e)}const d=defaultState();s=Object.assign({},d,s||{});{const ob=v=>v&&typeof v==='object'&&!Array.isArray(v);['gifts','disc','acts','seeds','hdeco','tfound','cbook','firsts','pmem','fbest','rmem'].forEach(k=>{if(!ob(s[k]))s[k]={}});['garden','parcels','evseen','keeps','designs','dzDel'].forEach(k=>{if(!Array.isArray(s[k]))s[k]=[]})}s.items=Array.isArray(s.items)?s.items.map(i=>i&&typeof i.k==='string'&&i.k.startsWith('win_')?Object.assign(i,{k:winKeyFix(i.k)}):i).filter(i=>i&&CATMAP[i.k]&&typeof i.id==='string').slice(0,80):[];
   s.inv=s.inv&&typeof s.inv==='object'?Object.fromEntries(Object.entries(s.inv).filter(([k,v])=>ITEMMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):Object.assign({},d.inv);
   s.toys=Array.isArray(s.toys)?s.toys.filter(k=>ITEMMAP[k]&&ITEMMAP[k].k==='toy'):d.toys.slice();s.daily=s.daily&&typeof s.daily==='object'?s.daily:{};
   s.pet=Object.assign({},d.pet,s.pet||{});if(s.pet.look&&typeof s.pet.look!=='object')delete s.pet.look;if(s.pet.heads&&!(Array.isArray(s.pet.heads)&&s.pet.heads.length===2))delete s.pet.heads;else if(s.pet.heads)s.pet.heads=s.pet.heads.map(x=>String(x||'').slice(0,10));s.tokens=s.tokens==null?3:Math.max(0,Math.min(999,+s.tokens|0));s.capsdex=Array.isArray(s.capsdex)?s.capsdex.filter(k=>typeof k==='string').slice(0,64):[];s.ceil=s.ceil==null?1:clamp(+s.ceil||0,0,1);s.wish=s.wish&&typeof s.wish==='object'&&(!s.wish.k||WISH_T[s.wish.k])?s.wish:{};s.wear=[...new Set(Array.isArray(s.wear)?s.wear.filter(id=>wearDef(id)):[])];s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
@@ -63905,7 +65534,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=93;
+const APP_V=94;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
