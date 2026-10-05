@@ -946,6 +946,30 @@ body.styling .storechip{opacity:0}
 .floorchip{margin:8px 0 0 4px;display:flex;gap:4px;padding:4px;background:var(--ink);border-radius:14px 12px 15px 11px;box-shadow:0 4px 0 #22084A,0 4px 0 3px #fff,0 0 0 3px #fff}.floorchip[hidden]{display:none}
 .floorchip button{height:30px;padding:0 11px;border:0;border-radius:10px 9px 11px 8px;background:none;color:#fff;font-family:var(--disp);font-size:12.5px;letter-spacing:.02em}
 .floorchip button[aria-pressed="true"]{background:var(--sun);color:var(--ink)}body.styling .floorchip{opacity:0}
+
+/* ---- speech, Animal Crossing style (v86): a soft wobbly cloud in a light tint of the speaker's colour, a name tab that sits on
+   its top edge, rounded text, a bouncing ▼ when there's more, and choices in their own little bubble above */
+.cvbox,.dlybox{background:none!important;border:0!important;box-shadow:none!important;overflow:visible!important;isolation:isolate;padding:22px 4px 8px!important}
+.cvbox::before,.dlybox::before{content:'';position:absolute;z-index:-1;left:0;right:0;top:12px;bottom:0;background:color-mix(in srgb,var(--cc,#9B4DF2) 20%,#F2F9FF);border-radius:42% 58% 46% 54%/64% 52% 60% 48%;box-shadow:inset 0 0 0 3px color-mix(in srgb,var(--cc,#9B4DF2) 38%,#fff),0 6px 0 rgba(59,18,115,.28),0 10px 22px rgba(59,18,115,.18);filter:url(#acwob)}
+.cvbox .cvname,.dlybox .cvname{position:relative;z-index:1;margin:-16px 0 2px 22px;gap:6px}
+.cvbox .cvname b,.dlybox .cvname b{background:color-mix(in srgb,var(--cc,#9B4DF2) 62%,#fff);color:var(--ink);text-shadow:none;border:0;border-radius:999px/70%;padding:4px 22px 5px;font-size:15px;transform:rotate(-2deg);box-shadow:0 3px 0 rgba(59,18,115,.22)}
+.cvbox .cvname .tmface,.dlybox .cvname .tmface{width:34px;height:34px;border-width:2px;background:#fff}
+.cvbox .cvname .tmface img,.dlybox .cvname .tmface img{width:30px;height:30px}
+.cvbox .cvline,.dlybox .cvline{font-family:var(--disp);font-size:16.5px;line-height:1.42;letter-spacing:.01em;padding:2px 34px 6px 28px;margin:4px 0 4px;min-height:54px;color:#2B1856}
+.cvbox .cvh{margin-left:auto;margin-right:16px}
+.cvmore{position:absolute;right:30px;bottom:12px;width:0;height:0;border:9px solid transparent;border-top:12px solid color-mix(in srgb,var(--cc,#9B4DF2) 75%,#3B1273);border-bottom:0;animation:acbob .75s ease-in-out infinite;pointer-events:none}
+.cvmore[hidden]{display:none}@keyframes acbob{50%{transform:translateY(5px)}}
+.cvbox .cvch:not([hidden]),.dlybox .cvch{position:absolute;right:8px;bottom:calc(100% - 4px);min-width:44%;max-width:84%;background:#FFFDF8;border-radius:22px 20px 24px 18px;padding:7px 8px;gap:1px!important;box-shadow:inset 0 0 0 3px color-mix(in srgb,var(--cc,#9B4DF2) 38%,#fff),0 5px 0 rgba(59,18,115,.26)}
+.cvbox .cvch button,.dlybox .cvch button{position:relative;background:none!important;border:0!important;box-shadow:none!important;border-radius:12px!important;padding:7px 10px 7px 24px!important;font-family:var(--disp);font-size:14.5px!important;text-align:left;color:#2B1856}
+.cvbox .cvch button:before,.dlybox .cvch button:before{content:''!important;position:absolute;left:8px;top:50%;margin-top:-6px;border:6px solid transparent;border-left:9px solid var(--cc,#9B4DF2);border-right:0;opacity:.35;transition:opacity .15s}
+.cvbox .cvch button:hover,.cvbox .cvch button:active,.dlybox .cvch button:hover,.dlybox .cvch button:active{background:color-mix(in srgb,var(--cc,#9B4DF2) 16%,#fff)!important}
+.cvbox .cvch button:hover:before,.cvbox .cvch button:active:before,.dlybox .cvch button:hover:before,.dlybox .cvch button:active:before{opacity:1}
+.cvbox .tmc-x,.dlybox .tmc-x{top:14px!important;right:6px!important;transform:scale(.85)}
+.dlybox{bottom:calc(118px + env(safe-area-inset-bottom))}body.mapopen .dlybox{bottom:calc(18px + env(safe-area-inset-bottom))}
+/* the shopkeepers' bubbles: the same cloud, smaller */
+.kbub{background:color-mix(in srgb,var(--kc,#FF8A1C) 18%,#F2F9FF)!important;border:0!important;border-radius:40% 60% 44% 56%/62% 50% 58% 46%!important;box-shadow:inset 0 0 0 3px color-mix(in srgb,var(--kc,#FF8A1C) 38%,#fff),0 5px 0 rgba(59,18,115,.26)!important;padding:13px 18px 12px!important;color:#2B1856}
+.kbub .tl{background:color-mix(in srgb,var(--kc,#FF8A1C) 18%,#F2F9FF)!important;border-color:color-mix(in srgb,var(--kc,#FF8A1C) 38%,#fff)!important}
+.kbub .kn{background:color-mix(in srgb,var(--kc,#FF8A1C) 62%,#fff)!important;border:0!important;color:var(--ink)!important;text-shadow:none!important;border-radius:999px/70%!important;padding:2px 14px 3px!important;transform:rotate(-2deg);box-shadow:0 2px 0 rgba(59,18,115,.2)}
 </style>
 </head>
 <body>
@@ -966,7 +990,7 @@ body.styling .storechip{opacity:0}
 
 <div class="mkbar" id="mkbar" hidden></div>
 <div class="sandbar" id="sandbar" hidden title="Everything unlocked. Nothing saves."><b>Sandbox</b><button class="gel lilac" id="sandX">Exit</button></div>
-<div class="kbub" id="kbub" hidden></div><div class="kbadges" id="kbadges"></div><div class="kpanel" id="kpanel" hidden role="dialog" aria-label="Shopkeeper"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="acwob" x="-5%" y="-10%" width="110%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="1" seed="7"/><feDisplacementMap in="SourceGraphic" scale="6"/></filter></svg><div class="kbub" id="kbub" hidden></div><div class="kbadges" id="kbadges"></div><div class="kpanel" id="kpanel" hidden role="dialog" aria-label="Shopkeeper"></div>
 <div class="shopcard" id="shopcard" hidden></div>
 <div class="map" id="map" hidden><div class="map-card" role="dialog" aria-label="Town map">
   <button class="map-x" id="mapX" aria-label="Close map">×</button><h2 id="mapTitle">Where to?</h2><button class="gel pink map-home" id="mapHome" hidden><img src="assets/icons/tab-room.webp" alt="" width="30" height="30">Go home</button>
@@ -2220,7 +2244,30 @@ const TREASURES=[
   {id:'t_pearl',k:'treasure',col:'shore',p:12,r:.5,n:'Pearl',d:'Small, perfectly round and very quietly glowing.'},
   {id:'t_cflower',k:'treasure',col:'trail',p:3,r:1,n:'Pressed cactus flower',d:'Pink, flat and very old. Prickles carried it across the Great Dry in his hat.'},
   {id:'t_sandjar',k:'treasure',col:'trail',p:3,r:1,n:'Jar of desert sand',d:'Seven stripes of sand from seven dunes. “Don’t shake it,” says Prickles.'},
-  {id:'t_compass',k:'treasure',col:'trail',p:6,r:1,n:'Prickles’ old compass',d:'It points mostly north. Prickles says that was the whole trouble.'}];
+  {id:'t_compass',k:'treasure',col:'trail',p:6,r:1,n:'Prickles’ old compass',d:'It points mostly north. Prickles says that was the whole trouble.'},
+  {id:'t_duck',k:'treasure',col:'prize',p:1,r:0,tix:20,n:'Rubber duck',d:'Squeaks once, politely. Bunbun has a whole shelf of them.'},
+  {id:'t_bigduck',k:'treasure',col:'prize',p:6,r:0,tix:300,n:'Giant rubber duck',d:'A rubber duck the size of a footstool. It squeaks like a foghorn.'},
+  {id:'t_crystal',k:'treasure',col:'prize',p:2,r:0,tix:40,n:'Crystal rock',d:'A lump of purple crystal. Crumb would label it “Glows, sort of.”'},
+  {id:'t_pillow',k:'treasure',col:'prize',p:2,r:0,tix:40,n:'Little pillow',d:'Small enough to hold, soft enough that Cushy approves.'},
+  {id:'t_stamp',k:'treasure',col:'prize',p:2,r:0,tix:40,n:'Heart stamp',d:'Stamps a little brown heart. Parcel has the same one.'},
+  {id:'t_magnify',k:'treasure',col:'prize',p:2,r:0,tix:40,n:'Magnifying glass',d:'For looking very closely at pebbles, shells and ants.'},
+  {id:'t_whisk',k:'treasure',col:'prize',p:1,r:0,tix:30,n:'Tiny whisk',d:'A whisk for very small batches. Bunbun wants one for Pip.'},
+  {id:'t_pencil',k:'treasure',col:'prize',p:1,r:0,tix:11,n:'Strawberry pencil',d:'Smells faintly of strawberries. Pip won one with exactly eleven tickets.'},
+  {id:'t_erasers',k:'treasure',col:'prize',p:1,r:0,tix:5,n:'Tiny erasers',d:'Three erasers shaped like sweets. The twins brought home forty.'},
+  {id:'t_duster',k:'treasure',col:'prize',p:1,r:0,tix:6,n:'Tiny feather duster',d:'For dusting very small things. Dusty owns two.'},
+  {id:'t_jar',k:'treasure',col:'prize',p:1,r:0,tix:25,n:'Tiny glass jar',d:'Just big enough for one sea-glass pebble.'},
+  {id:'t_stetho',k:'treasure',col:'prize',p:2,r:0,tix:50,n:'Tiny stethoscope',d:'Listens to small hearts. Dr. Patch hung theirs on the growth chart.'},
+  {id:'t_whistle',k:'treasure',col:'prize',p:1,r:0,tix:20,n:'Whistle',d:'Very loud. Tutti said no. You may still have it.'},
+  {id:'t_crayons',k:'treasure',col:'prize',p:2,r:0,tix:60,n:'Box of crayons',d:'Eight colours. Blush would give each one a longer name.'},
+  {id:'t_umbrella',k:'treasure',col:'prize',p:2,r:0,tix:40,n:'Pink umbrella',d:'A small pink umbrella. Nimbus has been saving up for one.'},
+  {id:'t_flask',k:'treasure',col:'prize',p:2,r:0,tix:60,n:'Flask',d:'Keeps tea warm through a whole morning of road mending.'},
+  {id:'t_gridpad',k:'treasure',col:'prize',p:2,r:0,tix:80,n:'Graph paper pad',d:'Every square exactly the same. Sketch is saving for it.'},
+  {id:'t_sewkit',k:'treasure',col:'prize',p:3,r:0,tix:120,n:'Sewing kit',d:'Needles, pins and a thimble in a tin. Stitch approves.'},
+  {id:'t_minipin',k:'treasure',col:'prize',p:4,r:0,tix:150,n:'Tiny pinball',d:'A pinball table that fits in your hand. Boing’s sleeps on his pillow.'},
+  {id:'t_paper',k:'treasure',col:'prize',p:4,r:0,tix:180,n:'Pack of folding paper',d:'Thirty sheets in thirty colours. Fold says it makes thirty cranes.'},
+  {id:'t_bigbutton',k:'treasure',col:'prize',p:4,r:0,tix:200,n:'Big button',d:'A button the size of a saucer. Bobbin would like a word with whoever owns the coat.'},
+  {id:'t_comb',k:'treasure',col:'prize',p:6,r:0,tix:300,n:'Gold comb',d:'A sparkly gold comb. Pom has asked about it three times.'},
+  {id:'t_mallet',k:'treasure',col:'prize',p:8,r:0,tix:400,n:'Giant squeaky mallet',d:'Bonks with a squeak. Joy put it on the counter just for Bolt.'}];
 ITEMS.push(...TREASURES);
 // the little models (prop scale, like the toys); each is also a decoration you can put in your room
 const TREASURE_BUILD=(()=>{const O=.006,f=(g)=>{g.traverse(o=>{if(o.isMesh&&o.outline==null)ol(o,O)});return g};
@@ -2242,7 +2289,30 @@ const TREASURE_BUILD=(()=>{const O=.006,f=(g)=>{g.traverse(o=>{if(o.isMesh&&o.ou
   t_pearl:()=>{const g=G();sp(g,.08,M(0xE8DCF2,{roughness:.5}),0,.02,0,1,.35,1);sp(g,.04,M(0xFFFFFF,{roughness:.12,metalness:.25}),0,.06,0);return f(g)},
   t_cflower:()=>{const g=G();bx(g,.2,.008,.24,M(0xFFF3D6,{roughness:.9}),0,.006,0);const p=M(0xFF7FB8,{roughness:.7});for(let i=0;i<6;i++){const a=i/6*Math.PI*2;sp(g,.03,p,Math.cos(a)*.035,.014,Math.sin(a)*.035,1.3,.2,.7).outline=0}sp(g,.018,M(0xFFD21F,{roughness:.6}),0,.016,0,1,.3,1).outline=0;return f(g)},
   t_sandjar:()=>{const g=G(),c=[0xF2C46A,0xE8955A,0xF4E1B0,0xD97A4A,0xF2D27A];c.forEach((v,i)=>{cy(g,.05,.05,.03,M(v,{roughness:.9}),0,.02+i*.03,0,12).outline=0});cy(g,.056,.056,.17,M(0xDFF4FF,{roughness:.1}),0,.085,0,12);cy(g,.04,.04,.03,M(0xB07A4A,{roughness:.8}),0,.185,0,10);return f(g)},
-  t_compass:()=>{const g=G();cy(g,.08,.08,.03,M(0xD9A93A,{roughness:.3,metalness:.6}),0,.016,0,18);cy(g,.066,.066,.032,M(0xFFF6E0,{roughness:.6}),0,.018,0,18).outline=0;const n=bx(g,.012,.006,.1,M(0xE8384F,{roughness:.4}),0,.036,.01);n.rotation.y=.4;n.outline=0;sp(g,.012,M(0x3B1273),0,.04,0).outline=0;return f(g)}}})();
+  t_compass:()=>{const g=G();cy(g,.08,.08,.03,M(0xD9A93A,{roughness:.3,metalness:.6}),0,.016,0,18);cy(g,.066,.066,.032,M(0xFFF6E0,{roughness:.6}),0,.018,0,18).outline=0;const n=bx(g,.012,.006,.1,M(0xE8384F,{roughness:.4}),0,.036,.01);n.rotation.y=.4;n.outline=0;sp(g,.012,M(0x3B1273),0,.04,0).outline=0;return f(g)},
+  t_duck:()=>{const g=G(),y=M(0xFFD21F,{roughness:.35});sp(g,.07,y,0,.06,0,1.25,.9,1);sp(g,.045,y,.05,.13,0);sp(g,.022,M(0xFF8A1C,{roughness:.4}),.095,.125,0,1.4,.5,1);sp(g,.009,M(0x3B1273),.07,.145,.03).outline=0;sp(g,.009,M(0x3B1273),.07,.145,-.03).outline=0;return f(g)},
+  t_bigduck:()=>{const g=TREASURE_BUILD.t_duck();g.scale.setScalar(2.1);return g},
+  t_crystal:()=>{const g=G(),m=M(0xB47CFF,{roughness:.15,metalness:.1});[[0,0,.14,0],[.05,.02,.09,.5],[-.05,.01,.1,-.45],[0,-.04,.08,.2]].forEach(([x,z,h,t])=>{const c=cy(g,0,.035,h,m,x,h/2,z,6);c.rotation.z=t});return f(g)},
+  t_pillow:()=>{const g=G(),m=M(0xFFB3DA,{roughness:.8});bx(g,.2,.07,.16,m,0,.04,0);[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>sp(g,.014,M(0xFF3D9A),a*.1,.04,b*.08).outline=0);return f(g)},
+  t_stamp:()=>{const g=G();cy(g,.025,.03,.1,M(0xB07A4A,{roughness:.7}),0,.11,0,10);bx(g,.1,.03,.07,M(0x8A5A3A,{roughness:.7}),0,.04,0);const h=add(g,gcache('theartp',()=>heartGeo()),M(0xE8384F,{roughness:.6}),0,.022,0);h.scale.set(.004,.004,.006);h.rotation.set(-Math.PI/2,0,Math.PI);h.outline=0;return f(g)},
+  t_magnify:()=>{const g=G(),gold=M(0xD9A93A,{roughness:.3,metalness:.6});const r=cy(g,.06,.06,.015,gold,0,.08,0,16);r.rotation.x=Math.PI/2;const l=cy(g,.05,.05,.017,M(0xCFF0FF,{roughness:.05}),0,.08,0,16);l.rotation.x=Math.PI/2;l.outline=0;const h=cy(g,.012,.014,.1,M(0x8A5A3A,{roughness:.6}),0,.0,0,8);h.position.set(0,.01,0);return f(g)},
+  t_whisk:()=>{const g=G(),st=M(0xD8D2E6,{roughness:.25,metalness:.5});cy(g,.012,.014,.09,M(0xFF8FC0,{roughness:.5}),0,.045,0,8);for(let i=0;i<4;i++){const w=cy(g,.004,.004,.1,st,Math.cos(i*.8)*.02,.13,Math.sin(i*.8)*.02,4);w.rotation.z=(i-1.5)*.18;w.outline=0}sp(g,.035,st,0,.17,0,.9,1.1,.9).outline=0;return f(g)},
+  t_pencil:()=>{const g=G(),p=cy(g,.012,.012,.16,M(0xE8384F,{roughness:.5}),0,.02,0,6);p.rotation.z=Math.PI/2;const t=cy(g,0,.012,.03,M(0xF4D9B0,{roughness:.6}),.095,.02,0,6);t.rotation.z=-Math.PI/2;const lf=M(0x5FB548,{roughness:.6});[-1,1].forEach(s_=>{const q=sp(g,.016,lf,-.085,.03,s_*.01,1.4,.5,.7);q.rotation.z=s_*.5});return f(g)},
+  t_erasers:()=>{const g=G();[[0xFFB3DA,-.05],[0xBDEBFF,0],[0xFFF3A0,.05]].forEach(([c,x],i)=>bx(g,.045,.025,.03,M(c,{roughness:.8}),x,.014,(i-1)*.012));return f(g)},
+  t_duster:()=>{const g=G();const h=cy(g,.01,.012,.12,M(0xB07A4A,{roughness:.6}),0,.06,0,8);h.rotation.z=.4;const pk=M(0xFFB3DA,{roughness:.9});[[0,0],[.02,.02],[-.02,.015],[.01,-.02],[-.015,-.015]].forEach(([x,z])=>sp(g,.03,pk,-.05+x,.14,z));return f(g)},
+  t_jar:()=>{const g=G();cy(g,.04,.04,.07,M(0xDFF4FF,{roughness:.08}),0,.035,0,12);cy(g,.028,.028,.02,M(0xB07A4A,{roughness:.8}),0,.08,0,10);sp(g,.018,M(0x7FD68A,{roughness:.2}),0,.02,0).outline=0;return f(g)},
+  t_stetho:()=>{const g=G(),t=M(0x3EC8F2,{roughness:.4}),s_=M(0xD8D2E6,{roughness:.2,metalness:.6});[[-.03,.6],[.03,-.6]].forEach(([x,r])=>{const c=cy(g,.006,.006,.09,t,x,.08,0,6);c.rotation.z=r});cy(g,.006,.006,.1,t,0,.03,0,6).rotation.x=Math.PI/2;const d=cy(g,.025,.025,.012,s_,0,.012,.06,14);return f(g)},
+  t_whistle:()=>{const g=G(),m=M(0xFF3D9A,{roughness:.3});bx(g,.07,.035,.035,m,0,.02,0);cy(g,.02,.02,.04,m,.03,.03,0,10).rotation.x=Math.PI/2;const r=cy(g,.018,.018,.006,M(0xD9A93A,{metalness:.6,roughness:.3}),-.04,.03,0,12);r.rotation.z=Math.PI/2;return f(g)},
+  t_crayons:()=>{const g=G();bx(g,.13,.06,.05,M(0xFFD21F,{roughness:.6}),0,.03,0);[0xE8384F,0x3EC8F2,0xA6E22E,0x9B4DF2,0xFF8A1C].forEach((c,i)=>{cy(g,.009,.009,.06,M(c,{roughness:.6}),-.045+i*.0225,.08,0,6).outline=0;cy(g,0,.009,.015,M(c,{roughness:.6}),-.045+i*.0225,.117,0,6).outline=0});return f(g)},
+  t_umbrella:()=>{const g=G(),m=M(0xFF7FB8,{roughness:.5});const c=cy(g,.0,.035,.2,m,0,.12,0,8);const h=cy(g,.006,.006,.08,M(0x8A5A3A,{roughness:.6}),0,-.0,0,6);h.position.y=.0;sp(g,.012,M(0x8A5A3A),0,.01,.015).outline=0;g.rotation.z=.25;return f(g)},
+  t_flask:()=>{const g=G();cy(g,.035,.035,.13,M(0xB8C2CC,{roughness:.25,metalness:.6}),0,.065,0,12);cy(g,.025,.03,.025,M(0x3B1273,{roughness:.5}),0,.14,0,12);bx(g,.05,.04,.002,M(0xA6E22E,{roughness:.7}),0,.07,.036).outline=0;return f(g)},
+  t_gridpad:()=>{const g=G();bx(g,.16,.012,.2,M(0xFFFFFF,{roughness:.8}),0,.008,0);const l=M(0x8FD8FF,{roughness:.8});for(let i=0;i<5;i++){bx(g,.15,.002,.003,l,0,.015,-.08+i*.04).outline=0;bx(g,.003,.002,.19,l,-.06+i*.03,.015,0).outline=0}bx(g,.16,.012,.025,M(0x9B4DF2,{roughness:.6}),0,.016,-.088);return f(g)},
+  t_sewkit:()=>{const g=G();cy(g,.09,.09,.05,M(0xFFB3DA,{roughness:.4,metalness:.2}),0,.025,0,16);cy(g,.092,.092,.015,M(0xFF7FB8,{roughness:.4}),0,.055,0,16);[[0xA6E22E,-.03],[0x3EC8F2,.03]].forEach(([c,x])=>cy(g,.016,.016,.03,M(c,{roughness:.6}),x,.08,0,10));return f(g)},
+  t_minipin:()=>{const g=G();const t=bx(g,.12,.03,.2,M(0x9B4DF2,{roughness:.4}),0,.04,0);t.rotation.x=-.15;bx(g,.1,.005,.17,M(0x3B1273,{roughness:.6}),0,.058,0).rotation.x=-.15;sp(g,.012,M(0xD8D2E6,{metalness:.7,roughness:.2}),.02,.07,.02);bx(g,.12,.06,.02,M(0xFF3D9A,{roughness:.4}),0,.08,-.1);return f(g)},
+  t_paper:()=>{const g=G();[0xFF7FB8,0xFFD21F,0x3EC8F2,0xA6E22E,0xC6A6FF].forEach((c,i)=>{const p=bx(g,.14,.004,.14,M(c,{roughness:.9}),0,.004+i*.005,0);p.rotation.y=i*.12;if(i)p.outline=0});return f(g)},
+  t_bigbutton:()=>{const g=G();cy(g,.12,.12,.03,M(0xFFD21F,{roughness:.35}),0,.016,0,24);const d=M(0x3B1273);[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>cy(g,.014,.014,.032,d,a*.032,.018,b*.032,10).outline=0);return f(g)},
+  t_comb:()=>{const g=G(),m=M(0xFFC21F,{roughness:.2,metalness:.7});bx(g,.18,.012,.035,m,0,.008,-.03);for(let i=0;i<9;i++)bx(g,.008,.008,.05,m,-.08+i*.02,.006,.012).outline=0;sp(g,.012,M(0xFF7FB8,{roughness:.3}),0,.02,-.03).outline=0;return f(g)},
+  t_mallet:()=>{const g=G();const h=cy(g,.05,.05,.15,M(0xFF3D9A,{roughness:.4}),0,.12,0,14);h.rotation.z=Math.PI/2;[-1,1].forEach(s_=>{const c=cy(g,.052,.052,.012,M(0xFFD21F,{roughness:.4}),s_*.07,.12,0,14);c.rotation.z=Math.PI/2});cy(g,.012,.014,.16,M(0xB07A4A,{roughness:.6}),0,.04,0,8);return f(g)},}})();
 
 const ITEMMAP={};ITEMS.forEach(i=>ITEMMAP[i.id]=i);
 const KIND_ICON={food:'stat-full',groom:'stat-clean',toy:'emo-ball',treasure:'emo-star'};
@@ -32255,12 +32325,12 @@ function cvHeart(){try{if(cv&&cv.r&&cv.r.full){const v=new THREE.Vector3();cv.r.
 // the dialog box (the map card restyled): name tag, typed line, choices
 function cvSay(text,choices,end){if(!cv)return;const c=$('#tmCard'),k=cv.k,R=RESIDENTS[k],col=(RES[k]||['','#FF3D9A'])[1];cv.t=0;cv.full=text;cv.shown=0;cv.choices=choices;
   c.classList.add('cvbox');c.style.setProperty('--cc',col);
-  c.innerHTML=`<button class="tmc-x" id="tmcX" aria-label="Close">×</button><div class="cvname"><span class="tmface">${lifeFace(k)}</span><b>${esc(R.n)}</b>${cvHearts(k)}</div><p class="cvline" id="cvLine"></p><div class="cvch" id="cvCh" hidden>${choices.map((q,i)=>`<button data-cv="${i}">${esc(q[0])}</button>`).join('')}</div>`;
+  c.innerHTML=`<button class="tmc-x" id="tmcX" aria-label="Close">×</button><div class="cvname"><span class="tmface">${lifeFace(k)}</span><b>${esc(R.n)}</b>${cvHearts(k)}</div><p class="cvline" id="cvLine"></p><i class="cvmore" id="cvMore"></i><div class="cvch" id="cvCh" hidden>${choices.map((q,i)=>`<button data-cv="${i}">${esc(q[0])}</button>`).join('')}</div>`;
   c.hidden=false;$('#tmcX').onclick=()=>cvEnd();c.onclick=e=>{if(e.target.closest('button'))return;if(cv&&cv.shown<cv.full.length){cv.shown=cv.full.length;cvType(0)}};
   c.querySelectorAll('[data-cv]').forEach(b=>b.onclick=e=>{e.stopPropagation();const q=cv&&cv.choices[+b.dataset.cv];if(q)q[1]()});cvType(0)}
 function cvHearts(k){const l=kfLevel(kfOf(k).p);return`<span class="cvh">${[0,1,2,3,4].map(i=>`<i class="${i<l?'on':''}"></i>`).join('')}</span>`}
 function cvType(dt){if(!cv||!cv.full)return;const el=$('#cvLine');if(!el)return;cv.shown=Math.min(cv.full.length,cv.shown+dt*42);const n=Math.floor(cv.shown);
-  el.innerHTML=`<span>${esc(cv.full.slice(0,n))}</span><span class="off">${esc(cv.full.slice(n))}</span>`;const ch=$('#cvCh');if(ch&&ch.hidden&&n>=cv.full.length)ch.hidden=false}
+  el.innerHTML=`<span>${esc(cv.full.slice(0,n))}</span><span class="off">${esc(cv.full.slice(n))}</span>`;const ch=$('#cvCh');if(ch&&ch.hidden&&n>=cv.full.length){ch.hidden=false;const m=$('#cvMore');if(m)m.hidden=true}}
 function cvGift(){if(!cv)return;const k=cv.k;tw.cardGift=true;const c=$('#tmCard');c.classList.remove('cvbox');
   c.innerHTML=`<button class="tmc-x" id="tmcX" aria-label="Close">×</button>${lifeGiftHtml(k,false)}`;c.hidden=false;$('#tmcX').onclick=()=>cvEnd();
   const gx=$('#lifeGiftX');if(gx)gx.onclick=()=>{tw.cardGift=false;cvSay(CV_FILL('Oh, that’s all right!'),cvMenu())};
@@ -56945,12 +57015,12 @@ function rcTalking(r){const c=r.chat;if(!c)return false;if(rc&&(rc.a===r.k||rc.b
   if(!c.sc)return Math.sin(r.t*1.4+(c.first?0:Math.PI))>.1;const o=tw.res.get(c.w),lead=c.first?c:o&&o.chat;if(!lead||!lead.sc)return false;const q=lead.sc.l[lead.i|0];return!!(q&&q[0]===r.k)}
 function rcFace(k){return`<span class="tmface">${lifeFace(k)}</span><b>${esc(RESIDENTS[k].n)}</b>`}
 function rcBox(k,text,choices){const c=$('#tmCard'),col=(RES[k]||['','#FF3D9A'])[1];c.classList.add('cvbox','rcbox');c.style.setProperty('--cc',col);
-  c.innerHTML=`<button class="tmc-x" id="tmcX" aria-label="Close">×</button><div class="cvname">${rcFace(k)}<span class="rcwith">with ${esc(RESIDENTS[k===rc.a?rc.b:rc.a].n)}</span></div><p class="cvline" id="cvLine"></p><div class="cvch" id="cvCh" hidden>${choices.map((q,i)=>`<button data-cv="${i}">${esc(q[0])}</button>`).join('')}</div>`;
+  c.innerHTML=`<button class="tmc-x" id="tmcX" aria-label="Close">×</button><div class="cvname">${rcFace(k)}<span class="rcwith">with ${esc(RESIDENTS[k===rc.a?rc.b:rc.a].n)}</span></div><p class="cvline" id="cvLine"></p><i class="cvmore" id="cvMore"></i><div class="cvch" id="cvCh" hidden>${choices.map((q,i)=>`<button data-cv="${i}">${esc(q[0])}</button>`).join('')}</div>`;
   c.hidden=false;rc.full=text;rc.shown=0;rc.choices=choices;$('#tmcX').onclick=()=>rcEnd();
   c.onclick=e=>{if(e.target.closest('button'))return;if(!rc)return;if(rc.shown<rc.full.length){rc.shown=rc.full.length;rcType(0);return}if(rc.choices.length===1&&rc.choices[0][2])rc.choices[0][1]()};
   c.querySelectorAll('[data-cv]').forEach(b=>b.onclick=e=>{e.stopPropagation();const q=rc&&rc.choices[+b.dataset.cv];if(q)q[1]()});rcType(0)}
 function rcType(dt){if(!rc||!rc.full)return;const el=$('#cvLine');if(!el)return;rc.shown=Math.min(rc.full.length,rc.shown+dt*42);const n=Math.floor(rc.shown);
-  el.innerHTML=`<span>${esc(rc.full.slice(0,n))}</span><span class="off">${esc(rc.full.slice(n))}</span>`;const ch=$('#cvCh');if(ch&&ch.hidden&&n>=rc.full.length)ch.hidden=false}
+  el.innerHTML=`<span>${esc(rc.full.slice(0,n))}</span><span class="off">${esc(rc.full.slice(n))}</span>`;const ch=$('#cvCh');if(n>=rc.full.length){const one=rc.choices.length===1&&rc.choices[0][2];if(!one){if(ch&&ch.hidden)ch.hidden=false;const m=$('#cvMore');if(m)m.hidden=true}}}
 // play the scene one line at a time (tap or the arrow to go on)
 function rcLine(){if(!rc)return;const L=rc.lines||rc.sc.l;if(rc.i>=L.length){rcAfter();return}const [k,t]=L[rc.i];rc.i++;rcBox(k,t,[[rc.i<L.length?'▸':'…',()=>rcLine(),1]])}
 function rcJoin(){const W=rcW(),sc=rc.sc,J=sc.j;let by,t,ch;
@@ -56996,7 +57066,8 @@ function cvSysLine(T){if(!T||(!T.sys&&!T.ev)||Math.random()>.38)return null;cons
 // letters and mementos, kept forever), furniture in storage (state.fown), clothes (state.wear) and seeds (state.seeds).
 let bagTab='food';
 const BAG_TABS=[['food','Food','stat-full'],['groom','Care','stat-clean'],['toy','Toys','emo-ball'],['treasure','Treasures','emo-star'],['keep','Keepsakes','journal.svg'],['furn','Furniture','tab-decorate'],['wear','Clothes','wear.svg'],['seed','Seeds','stat-full']];
-const COLS={shore:{n:'The shore',d:'Shells, sea glass and whatever else the tide brings to the boardwalk.',ic:'t_scallop'},trail:{n:'Prickles’ trail things',d:'Odds and ends from the Great Dry, handed over grudgingly for a good joke.',ic:'t_compass'}};
+const COLS={shore:{n:'The shore',d:'Shells, sea glass and whatever else the tide brings to the boardwalk.',ic:'t_scallop'},trail:{n:'Prickles’ trail things',d:'Odds and ends from the Great Dry, handed over grudgingly for a good joke.',ic:'t_compass'},prize:{n:'The prize counter',d:'Little treasures from Jelly Arcade’s prize counter, bought with tickets.',ic:'t_duck'}};
+[['hair','love','t_comb'],['builder','love','t_mallet'],['cloud','love','t_umbrella'],['pencil','love','t_gridpad'],['crane','love','t_paper'],['spool','love','t_bigbutton'],['tailor','love','t_sewkit'],['patch','love','t_stetho'],['dust','love','t_duster'],['parcel','love','t_stamp'],['crumb','like','t_magnify'],['pebble','like','t_flask'],['makeup','like','t_crayons'],['baker','like','t_duck'],['jam','like','t_whisk'],['toymaker','like','t_minipin'],['cushion','like','t_pillow']].forEach(([k,w,id])=>{if(LIKES[k])LIKES[k][w].push('i:'+id)});
 LIKES.beacon.love.push('t:shore');LIKES.crumb&&LIKES.crumb.love.push('i:t_pebble');LIKES.crane&&LIKES.crane.like.push('i:t_drift');LIKES.spool&&LIKES.spool.like.push('i:t_glassb');LIKES.cactus&&LIKES.cactus.love.push('t:trail');
 function keepAdd(o){const K=state.keeps||(state.keeps=[]);const e=Object.assign({id:uid(),t:Date.now(),by:myId||'me'},o);K.unshift(e);if(K.length>200)K.length=200;saveSoon();return e}
 // a treasure found: into the bag, remembered (who found it first), and a finished collection pays glimmers and a keepsake ribbon
@@ -57050,14 +57121,15 @@ function prizeList(){const out=[];const own=k=>(state.fown[k]|0)+state.items.fil
   CAT.filter(c=>['games','rjoy','rpixel','carnival'].includes(c.set)&&!c.gacha&&c.fn!=='window').forEach(c=>out.push({t:'furn',id:c.k,n:c.n,p:Math.max(40,c.p*30),own:own(c.k)}));
   ITEMS.filter(i=>i.k==='toy'&&i.p>0).forEach(i=>out.push({t:'toy',id:i.id,n:i.n,p:Math.max(30,i.p*25),own:state.toys.includes(i.id)?1:0}));
   ITEMS.filter(i=>i.k==='food'&&i.p>0&&i.cat==='sweets').forEach(i=>out.push({t:'food',id:i.id,n:i.n,p:Math.max(15,i.p*15),own:0}));
+  TREASURES.filter(t=>t.col==='prize').forEach(t=>out.push({t:'prize',id:t.id,n:t.n,p:t.tix,own:state.inv[t.id]|0}));
   out.push({t:'glim',id:'glim',n:'A glimmer',p:400,own:0});return out.sort((a,b)=>a.p-b.p)}
 function renderPrizes(body){let h=`<div class="kc-h"><h2>Prize counter</h2><span class="stage">${state.tix|0}${IT}</span></div><p class="hint" style="margin-top:0">Every game pays tickets. Swap them here, or take ${CAP_TIX} to the capsule machine.</p><div class="baggrid">`;const qs=[];
   prizeList().forEach((P,i)=>{const img=P.t==='furn'?(qs.push(P.id),`<img data-tt="${P.id}" src="${thumbs[P.id]||'assets/icons/tab-decorate.webp'}" alt="">`):P.t==='glim'?IG.replace('class="cur"','class="bigcur"'):(qs.push('toy:'+P.id),`<img data-tt="toy:${P.id}" src="${thumbs['toy:'+P.id]||ico('emo-ball')}" alt="">`);
     const dis=(P.t==='toy'&&P.own)||(state.tix|0)<P.p;h+=`<button class="bagc${dis?' none':''}" data-pz="${i}"><span class="bth">${img}</span><b>${esc(P.n)}</b><i>${P.t==='toy'&&P.own?'Yours':P.p+IT}</i></button>`});
   body.innerHTML=h+'</div>';if(qs.length)queueThumbs(qs);const L=prizeList();
   body.querySelectorAll('[data-pz]').forEach(b=>b.onclick=()=>{const P=L[+b.dataset.pz];if(!P||(P.t==='toy'&&P.own))return;if(!payCur(P.p,'t')){toast(`That one is ${P.p} tickets. Keep playing!`,true);return}
-    if(P.t==='furn')state.fown[P.id]=(state.fown[P.id]|0)+1;else if(P.t==='toy')state.toys.push(P.id);else if(P.t==='food')state.inv[P.id]=(state.inv[P.id]|0)+1;else earnG(1);
-    saveSoon();updHUD();toast(`${P.n}! ${P.t==='furn'?'It’s in storage.':P.t==='glim'?'Spend it on something special.':'It’s in your bag.'}`,true);if(away&&away.key==='arcade')keeperReact('cheer',1.2);renderSheet()})}
+    if(P.t==='furn')state.fown[P.id]=(state.fown[P.id]|0)+1;else if(P.t==='toy')state.toys.push(P.id);else if(P.t==='food')state.inv[P.id]=(state.inv[P.id]|0)+1;else if(P.t==='prize')treasureGet(P.id,true);else earnG(1);
+    saveSoon();updHUD();toast(`${P.n}! ${P.t==='furn'?'It’s in storage.':P.t==='glim'?'Spend it on something special.':P.t==='prize'?'It’s in your Bag, with the treasures.':'It’s in your bag.'}`,true);if(away&&away.key==='arcade')keeperReact('cheer',1.2);renderSheet()})}
 /* </prizes> */
 /* <dailies> */
 // ---- little things to do around town (v83). Optional, never on a list, no streaks: the day-old basket at the Snack Shack, the
@@ -57065,7 +57137,7 @@ function renderPrizes(body){let h=`<div class="kc-h"><h2>Prize counter</h2><span
 const dKey=k=>k+':'+(myId||'me'),dDone=k=>actDone(dKey(k)),dMark=k=>actMark(dKey(k));
 // a little dialogue card that works anywhere (room, shop, map)
 function dlySay(k,text,choices){let el=$('#dlyBox');if(!el){el=document.createElement('div');el.id='dlyBox';el.className='dlybox';document.body.appendChild(el)}const R=RESIDENTS[k];
-  el.style.setProperty('--cc',(RES[k]||['','#FF3D9A'])[1]);el.innerHTML=`<button class="tmc-x" aria-label="Close">×</button>${R?`<div class="cvname"><span class="tmface">${lifeFace(k)}</span><b>${esc(R.n)}</b></div>`:''}<p class="cvline">${esc(text)}</p><div class="cvch">${(choices||[['Okay!',()=>{}]]).map((q,i)=>`<button data-dc="${i}">${esc(q[0])}</button>`).join('')}</div>`;
+  el.style.setProperty('--cc',(RES[k]||['','#FF3D9A'])[1]);el.innerHTML=`<button class="tmc-x" aria-label="Close">×</button>${R?`<div class="cvname"><span class="tmface">${lifeFace(k)}</span><b>${esc(R.n)}</b></div>`:''}<p class="cvline">${esc(text)}</p>${choices?`<div class="cvch">${choices.map((q,i)=>`<button data-dc="${i}">${esc(q[0])}</button>`).join('')}</div>`:'<i class="cvmore"></i>'}`;el.onclick=e=>{if(!choices&&!e.target.closest('button')){el.hidden=true;if(dlySay.onX)dlySay.onX();dlySay.onX=null}};
   el.hidden=false;el.querySelector('.tmc-x').onclick=()=>{el.hidden=true;if(dlySay.onX)dlySay.onX();dlySay.onX=null};el.querySelectorAll('[data-dc]').forEach(b=>b.onclick=()=>{const q=choices&&choices[+b.dataset.dc];el.hidden=true;dlySay.onX=null;if(q)q[1]()})}
 // the day-old basket: yesterday's bakes, free, one each a day
 function dlyBasket(){const k=RESIDENTS.baker&&resWhere('baker',townHour())==='shop'?'baker':'jam';if(dDone('basket')){dlySay(k,k==='baker'?'That’s yours for today, sweetie. The basket fills up again tomorrow.':'Um, that was today’s one. It fills up again tomorrow. I counted.');return}
@@ -59528,7 +59600,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=85;
+const APP_V=86;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

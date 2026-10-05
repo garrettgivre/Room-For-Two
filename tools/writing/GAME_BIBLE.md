@@ -1958,6 +1958,9 @@ lit first.
 - Fold: a small B for "Bakery" under the new Snack Shack sign (a surprise), a PIER sign whose R leans toward the sea, folds Bunbun's napkins (swans this month); Tutti's cart sign has lost a T ("Tuti").
 - Cobble checks level with rain ("puddle means wrong"); the wobbly stone on his path is the one he moved from the fountain; he sits in the back row at meetings. Nimbus rains gently on Cobble after he mends something.
 
+### The prize counter (v86, now in the game)
+- Jelly Arcade's prize counter sells, for tickets: rubber duck 20, strawberry pencil 11, tiny erasers 5, tiny feather duster 6, whistle 20, tiny glass jar 25, tiny whisk 30, crystal rock / little pillow / heart stamp / magnifying glass / pink umbrella 40 each, tiny stethoscope 50, box of crayons and flask 60, graph paper pad 80, sewing kit 120, tiny pinball 150, pack of folding paper 180, big button 200, giant rubber duck and gold comb 300, giant squeaky mallet 400, plus arcade furniture, toys, sweets, and a glimmer for 400. (Writers' earlier "gold comb 500" and "rubber ducks 20" settle on these numbers.)
+
 ## Open questions (undecided; ask Garrett before writing as fact)
 1. **Is there a sea?** Bubble Bay, the pier, the beach, the harbour, boats, gulls and Beacon's lighthouse are all over the lore, and Prickles dreams of the sea; the v60 map is countryside with
    ponds. Options: the bay is just off the map's edge; or add a shore to the south-east.

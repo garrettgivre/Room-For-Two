@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v85** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v85'` in `sw.js`; bump both for anything
+**Current build: v86** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v86'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -827,3 +827,14 @@ Garrett didn't love hearts as money (hearts mean love: the pet's affection, frie
   meeting, stars, music, games, market = bake sale, sunmkt) lines. `cvSysLine(T)` (engine.js, called first in `cvOpener`, ~38%) picks one
   that fits: today's event until it ends, treasures found in the last two days, a wish at the well, the first five days of the month
   (the Mayor's parcel), else the general ones. index.html is ~7.1 MB now (it was 6.7).
+
+## Prize counter items; speech like Animal Crossing (v86)
+- The prize-counter things residents mention are real: 23 `TREASURES` with `col:'prize'`, `r:0` (never wash up), `tix` = ticket price
+  (rubber duck 20 ... giant squeaky mallet 400), models in `TREASURE_BUILD`, a Bag collection "The prize counter", displayable like any
+  treasure, sold in `prizeList` (bought via `treasureGet`). Residents who wanted them love them (`LIKES`: Pom the gold comb, Bolt the
+  mallet, Nimbus the pink umbrella, Sketch the graph pad, Fold the paper, Bobbin the big button, Stitch the sewing kit...).
+- Dialogue boxes look like Animal Crossing's (CSS block "speech, Animal Crossing style" before `</style>`): `.cvbox` (map conversations
+  and listening in) and `.dlybox` are a soft cloud (`::before` with an irregular border-radius and the SVG filter `#acwob`,
+  feTurbulence + feDisplacementMap, defined next to `#kbub`) in a light tint of the speaker's colour (`--cc`), the name tab sits on the
+  top edge, text in R42 Bubble, a bouncing `.cvmore` ▼ while typing / for "tap to go on", and choices in their own bubble above the
+  box. Shopkeepers' `.kbub` uses the same tint and blob shape. A `dlySay` with no choices shows ▼ and closes on a tap.
