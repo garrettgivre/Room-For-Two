@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v98** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v98'` in `sw.js`; bump both for anything
+**Current build: v99** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v99'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -965,3 +965,10 @@ by shape. Play in `/* <bugs> */`: `bugsTick` (from `twTick`) keeps up to 4 bugs 
 rain bugs out of flowers and water); fliers flutter in loops, crawlers wander; each has a pale halo so it reads on grass. A tap goes to
 `bugPick` (screen-space) before residents; the pet walks up (`bugGo`) and `bugCatch` opens a ring that closes on the bug: tap while it's
 green. Catches go in the Bag (bug book with hints), and Posy's card offers keep / give to Posy (buttons) / let go.
+
+## The Little Museum (v99)
+`/* <museum> */` (source `.claude/items/museum.js`): `musPlace()` (on map open, once per layout via `tmM().mu`) puts a `museum`
+decoration on a free 2x2 next to a road near the middle; tapping it walks there and opens `musOpen()` (Dewey's page: wings Fish, Bugs,
+Finds (shore + trail), donated ones shown, unknown ones "?"). "Donate N new finds" (`musDonate`) moves one of each undonated species
+from the Bag into `state.museum` {id:{by,t}} (merge keeps the earliest). A finished wing: +3 glimmers and a keepsake ribbon
+(`state.cbook['mu_'+wing]`). Prize-counter things aren't exhibits.
