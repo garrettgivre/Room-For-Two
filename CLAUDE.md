@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v90** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v90'` in `sw.js`; bump both for anything
+**Current build: v91** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v91'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -904,3 +904,12 @@ the wrapper, so add hooks the same way rather than editing those functions.
   `designs`, one free in storage, "Another framed picture" adds more). `designRegister` runs at the start of `normalize` (so saved tiles
   and items stay valid) and after merges. Designs are immutable: Edit saves a new one and `designReplace` swaps tiles/items over.
   Editor `renderDzEdit`: pen, fill, eraser, mirror, undo, clear; tap the selected colour again for a colour picker.
+
+## Photo mode (v91)
+`/* <photo> */` (source `.claude/items/photo.js`, wired by `photo.py`): a camera button under the money jar (`#phBtn`) and next to the
+map's close button (`#tmPhBtn`). `phOpen` hides the HUD (`body.photo`), shows a 4:5 viewfinder, filters (`PH_FILTERS`, CSS filters
+previewed live on the canvas), a polaroid frame toggle, "Say cheese" (`phPose`), the shutter (`phShoot`: renders and copies the WebGL
+canvas in the same task because the main renderer doesn't preserve its buffer; on the map it layers `#tmSky`, `#tmc` and `#tmSeaFx`),
+then crops to 4:5, adds the polaroid caption (place + date) and saves a JPEG to IndexedDB `r42photos` on this phone only (the shared
+Firestore doc can't hold images). Album `phAlbum`/`phView`: share via the Web Share API (file), save, delete. First photo goes in the
+scrapbook.
