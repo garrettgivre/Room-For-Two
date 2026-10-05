@@ -763,6 +763,7 @@ body.photo header.top,body.photo #dock,body.photo #emotes,body.photo .kbub,body.
 .pagrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}.pagrid button{padding:0;border:2.5px solid var(--ink);border-radius:8px;overflow:hidden;background:#fff;box-shadow:0 2px 0 var(--ink);cursor:pointer}.pagrid img{width:100%;display:block;aspect-ratio:4/5;object-fit:cover}.paone{width:100%;max-width:520px;display:block;margin:0 auto 14px;border-radius:8px;box-shadow:0 4px 0 rgba(59,18,115,.3)}
 .fishv{position:fixed;inset:0;z-index:58;background:rgba(30,22,48,.35);touch-action:none}.fishv[hidden]{display:none}.fishv canvas{position:absolute;inset:0;width:100%;height:100%}.fishv p{position:absolute;left:0;right:0;bottom:calc(90px + env(safe-area-inset-bottom));text-align:center;font-family:var(--disp);font-size:18px;color:#fff;text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink)}
 .tgrow{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}.tgrow .gel{font-size:13px;padding:7px 8px}
+.wnl{text-align:left;margin:4px 0 0;padding-left:18px;max-height:46vh;overflow:auto}.wnl li{margin:6px 0;font-size:14px;line-height:1.35}
 .tms{pointer-events:auto;border:0;background:none;padding:0;cursor:pointer;transform-origin:50% 100%}.tms img{display:block;width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 0 #fff) drop-shadow(0 2px 2px rgba(59,18,115,.35))}.tms::after{content:'';display:block;width:8px;height:8px;margin:-3px auto 0;background:#fff;border:2px solid var(--ink);border-top:0;border-left:0;transform:rotate(45deg);border-radius:0 0 3px 0}
 .tmd{pointer-events:auto;border:0;background:none;padding:0;cursor:pointer}.tmd span{display:block;font-family:var(--disp);font-size:15px;color:var(--ink);padding:4px 12px;background:rgba(255,253,246,.94);border:2.5px solid var(--ink);border-radius:14px;box-shadow:0 3px 0 var(--ink);white-space:nowrap}
 .tmlist{display:flex;flex-direction:column;gap:6px;max-height:46vh;overflow:auto;margin-top:6px}.tmrow{display:flex;align-items:center;gap:8px}.tmface{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:50%;background:#F6EEFF;border:2.5px solid var(--ink);overflow:hidden}.tmface img{width:38px;height:38px;object-fit:contain}.tmface b{font-family:var(--disp)}.tmface .lsv{width:30px;height:30px}
@@ -63125,6 +63126,19 @@ function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS
   const back=add(m,new THREE.PlaneGeometry(sz*1.04,sz*1.04),M(0xE9DCC0,{roughness:.8}),0,0,-.004);back.rotation.y=Math.PI;back.outline=0;cy(m,.012,.012,sz*.9,M(0xB07A4A,{roughness:.6}),sz*.42,-sz*.6,-.01,6).outline=0;
   const gp=new THREE.Vector3();g.getWorldPosition(gp);m.position.set(((b.min.x+b.max.x)/2-gp.x)/sc,(b.min.y+s.y*.7-gp.y)/sc,(b.max.z-gp.z)/sc+.3);g.add(m);g.userData.swapM=m}
 /* </swapface> */
+/* <whatsnew> */
+// ---- a one-time card per device listing what's new since the last version this phone saw (localStorage r42wn)
+const WHATSNEW=[[89,'The town changes with the seasons: autumn leaves now, then snow, blossom and fireflies. Seasonal decorations pop up around town.'],
+  [89,'Sound! A little music box, the pet’s squeaks, neighbours babbling, birds, rain and footsteps. Volume is in Our room.'],
+  [90,'Eleven new furniture sets at Cozy Nest, from Malt Shop to Captain’s Cabin, and lots of new town decorations to place.'],
+  [90,'Designs: draw your own pattern in Decorate, then use it as a floor, a wallpaper, a framed picture, or on the pet at Blush’s.'],
+  [91,'Photo mode: tap the camera, strike a pose, add a frame. Photos stay in an album on your phone.'],
+  [92,'Fishing: tap a pond, a stream or the dock on the map. Thirty catches by season, time and weather.'],
+  [94,'Neighbours remember what you did with them. And when you’re both in the app, start a group hug or a dance party together.'],
+  [95,'On October 31, Swap-Face Night: everyone in town holds up a mask of someone else.']];
+function whatsNew(){let seen=0;try{seen=+localStorage.getItem('r42wn')||0}catch(_){}try{localStorage.setItem('r42wn',String(APP_V))}catch(_){}if(!seen||seen>=APP_V)return;const L=WHATSNEW.filter(q=>q[0]>seen);if(!L.length)return;
+  showReward('What’s new','emo-star',`<ul class="wnl">${L.map(q=>`<li>${esc(q[1])}</li>`).join('')}</ul>`,{ok:'Let’s see!'})}
+/* </whatsnew> */
 
 
 
@@ -65551,11 +65565,11 @@ function finishLoad(){if(loadedOnce)return;loadedOnce=true;preloadTown().then(fi
 function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);ready=true;bootDone=true;$('#loader').classList.add('gone');updHUD();
   // keepers' moving parts are worked out once per kind; do it for the townsfolk in quiet moments so the map never hitches on them
   {const ks=Object.keys(RESIDENTS).filter(k=>KEEPERS[k]&&!BAKE_MOVING[k]);const step=()=>{const k=ks.shift();if(!k)return;try{const K=KEEPERS[k]();kPolish(K,k);bakeKeeper(K,k)}catch(_){}(window.requestIdleCallback?requestIdleCallback(step,{timeout:3000}):setTimeout(step,400))};setTimeout(step,6000)}
-  let seen=false;try{seen=localStorage.getItem('r42coach')==='1'}catch(_){}if(!seen)showCoach();else{arrStart(ARR_SINCE);setTimeout(tdNudge,2600)}}
+  let seen=false;try{seen=localStorage.getItem('r42coach')==='1'}catch(_){}if(!seen){showCoach();try{localStorage.setItem('r42wn',String(APP_V))}catch(_){}}else{arrStart(ARR_SINCE);setTimeout(tdNudge,2600);setTimeout(()=>{try{whatsNew()}catch(_){}},1200)}}
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=95;
+const APP_V=96;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
