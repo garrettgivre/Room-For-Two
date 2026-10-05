@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v89** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v89'` in `sw.js`; bump both for anything
+**Current build: v90** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v90'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -886,3 +886,21 @@ the wrapper, so add hooks the same way rather than editing those functions.
   cider stand; winter snowman, lit evergreen, snowy bench, sled with presents, little ice rink; spring blossom cart, painted eggs,
   flowering arch, birdhouse post; summer shaved-ice cart, splash fountain, paddling pool, garden umbrella. Beach (cat water): umbrella,
   sandcastle, lifeguard tower, rowboat, deckchairs, dock, bucket and spade, crab pots. Walk-through ones are in `TW_WALK`.
+
+## Eleven theme sets, more town decorations, your own designs (v90)
+- **Theme sets** (block `/* <theme-sets> */` right after `/* </place-sets> */`; sources `.claude/sets2/t*.js`, brief
+  `tools/dev/town/THEME_BRIEF.md`, put in by `.claude/sets2/integrate.py [keys]`, which also adds seasonal Cozy Nest dates to `SEASONS`):
+  Malt Shop `tdiner`, Neon Byte `tcyber`, Atomic Lounge `tretro`, Starlet Suite `tdeco`, Harvest Hearth `tharvest` (autumn, Sep 15-Nov
+  30), Captain's Cabin `tpirate`, Storybook Castle `tcastle`, Desert Bloom `tboho`, Knit & Cocoa `twinter` (Dec-Feb), Puddle Days
+  `train`, Blossom Hour `thanami` (Mar 20-Apr 30). 131 pieces, each set with floor, wallpaper, door and window. Agents' gotchas: `M()`
+  needs numeric colours (a '#hex' string renders black), `cushionGeo` takes half sizes.
+- **More town decorations** in the world-decor2 block: fun fair (Ferris wheel, bouncy castle, mini golf, duck pond, tire swing,
+  treehouse, hammock, campfire, outdoor stage, picnic blanket), nature (cactus garden, bamboo, hedge maze, vegetable patch, flower
+  tunnel, glowing mushrooms, firefly meadow, beehive), street and landmarks (vending machine, food truck, news stand, café tables,
+  hydrant, flag pole, fancy lamp, cat statue, train halt, school house, museum, community garden). 149 decorations in all.
+- **Your designs** (`/* <designs> */` after the sound block; source `.claude/items/designs.js`, wired by `designs.py`): Decorate's 5th tab
+  "Designs". 32x32 pixel pictures, 16-colour palette (`state.designs`, max 24, merged by id; deletions in `state.dzDel`). Each one
+  registers tile sets `f:d_<id>` / `w:d_<id>` (heading "Your designs", `dz:1`, never sold) and a framed wall picture CAT `dz_<id>` (set
+  `designs`, one free in storage, "Another framed picture" adds more). `designRegister` runs at the start of `normalize` (so saved tiles
+  and items stay valid) and after merges. Designs are immutable: Edit saves a new one and `designReplace` swaps tiles/items over.
+  Editor `renderDzEdit`: pen, fill, eraser, mirror, undo, clear; tap the selected colour again for a colour picker.
