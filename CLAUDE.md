@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v87** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v87'` in `sw.js`; bump both for anything
+**Current build: v88** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v88'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -843,3 +843,21 @@ Garrett didn't love hearts as money (hearts mean love: the pet's affection, frie
   `.cvch` (`acShapes(root)` after each render, on reveal, and on resize). `acVars` sets `--bf/--bs/--tf` from the speaker's colour:
   a pastel of their own hue, or Animal Crossing's soft blue for pale/grey speakers (mixing strong colours toward blue went muddy).
   Name in a pill (no face), outlined bobbing triangle `.cvmore` (SVG data URI).
+
+## The pet's own life: habits, moods, a scrapbook (v88)
+Block `/* <pet-life> */` after the dailies (source `.claude/items/petlife.js`). It hooks in by wrapping existing functions
+(`autoFill`, `needPick`, `jobAct`, `twStart`, `travelTo`, `giveGift`, `kfAdd`, `setLook`, `treasureGet`, `bondUp`, `cvBegin`, `rcOpen`,
+`mkFinish`, `dlyMayorTick`, `dlyWellTick`, `togetherCheck`, `dlyTick`): reassigning a function declaration keeps every caller pointed at
+the wrapper, so add hooks the same way rather than editing those functions.
+- **Habits** `state.pmem.hab[bucket][need]` counts what it chose for itself (`autoFill`) per time of day (`PL_BUCKETS`, `townHour`);
+  a habit = ≥4 and ≥50% of that bucket (`plHabit`), written to the Journal when it forms, and `needPick` seeks that need a bit sooner
+  then. **Its spot** = the most-liked placed piece (`state.pet.likes`, ≥6 and 1.4× the next; `plSpot`, remembered in `pmem.spot`).
+- **Greetings by absence** `plGreetAfter(gap)` from `arrStart` (6 h+: a jump; a day+: hearts and a nuzzle; 3 days+: a hesitant ❓ then a
+  big hello and a dance); `plGapLine` opens the welcome card ("It's been 4 days. Mochi kept your spot warm...").
+- **Moods** `petMood()` (priority cold > Room Day "Birthday giddy" > "Missing <person>" (their `visits` stamp older than 3 days) >
+  "Rainy-day cozy" (real rain)): a box under the bond bar (`petMoodHtml`), the welcome card, and what it does (`plMoodTick` every 6 s at
+  home: yawns and dozes in rain, twirls on Room Day, sneezes with a cold, looks at the door and the missing person's head wonders).
+  **A little cold** (`plColdTick`, seeded per day, ~3%, at most every 21 days; `state.pmood` {k:'cold',d,cured,over}) passes the next
+  day, or Dr. Patch's check-up cures it (wrapped `jobAct`). No stats change.
+- **Scrapbook** = the Journal's third tab (`openTab` 'scrap', `renderScrap`, `state.firsts` {key:{t,by,d}}, earliest wins in the merge;
+  `firstOf(key,text)`; `plBackfill` adds the older ones once: the room's birth, bond 5/10, first treasure, first makeover, first friend).
