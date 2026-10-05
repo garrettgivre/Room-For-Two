@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v80** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v80'` in `sw.js`; bump both for anything
+**Current build: v81** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v81'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 75 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -751,3 +751,11 @@ Garrett's phone test asked for these.
   (`rcTapChatting`). Then Talk to either one or leave. Camera framing in `rcTick`.
 - New facts the writers invented are in the bible's Canon log ("Neighbours talking (v80)").
 
+
+## Walking round things, a camera that stays put (v81)
+- `twGrid`: decorations block their cells even when they stand on a path (benches, lamps, the fountain used to be walkable because
+  path cells cleared every block); `TW_WALK` (flowers, lots, hopscotch, stepping stones, arches, gates) never block and `TW_BRIDGE`
+  (arch and foot bridges) force their cells open over streams. Path shortcuts keep a body's width (.22) from solid cells. Residents
+  with no route wait instead of walking straight through things.
+- The map camera no longer tilts up to clear roofs (`tm.lift` is gone; Garrett: "the camera gets pushed away by buildings"). When a
+  building hides the pet for over .35 s, a small pet-face marker shows where it is (`tw.petHid`, `twPetMark`, `.twpm`).

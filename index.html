@@ -732,6 +732,7 @@ body.kmode .mkhouse,body.mapopen .mkhouse,body.sheet-open .mkhouse,body.gaming .
 .tm-wbtn{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);transform:translateX(-50%);z-index:4;font-family:var(--disp);font-size:16px;color:var(--ink);padding:10px 22px;border:3px solid var(--ink);border-radius:22px;background:var(--sun);box-shadow:0 4px 0 var(--ink);cursor:pointer}.tm-wbtn[hidden]{display:none}
 .tm-dock{display:none!important}
 .rcp{position:absolute;left:0;top:0;pointer-events:auto;background:rgba(255,253,246,.96);border:2.5px solid var(--ink);border-radius:16px;box-shadow:0 3px 0 var(--ink);padding:6px 8px 7px;text-align:center;white-space:nowrap}.rcp[hidden]{display:none}.rcp small{display:block;font-family:var(--disp);font-size:12.5px;color:var(--ink);margin:1px 0 5px}.rcp div{display:flex;gap:5px;align-items:center;justify-content:center}.rcp .gel{font-size:13px;padding:5px 10px;min-height:0}.rcp .rcx{border:0;background:none;font:700 18px/1 sans-serif;color:#7A5BA6;padding:2px 4px;cursor:pointer}.rcp::after{content:'';position:absolute;left:50%;top:-8px;width:12px;height:12px;margin-left:-6px;background:rgba(255,253,246,.96);border:2.5px solid var(--ink);border-bottom:0;border-right:0;transform:rotate(45deg);border-radius:4px 0 0 0}.rcf{display:inline-flex;align-items:center;justify-content:center;margin-bottom:1px}.rcf img,.rcf b{width:26px;height:26px;border-radius:50%;background:#fff;border:2px solid var(--ink);object-fit:contain;margin:0 -3px}.rcb{position:absolute;left:0;top:0;max-width:210px;pointer-events:none;background:#FFFDF8;border:2px solid var(--c,#3B1273);border-radius:12px;padding:4px 8px;font-size:12px;line-height:1.25;color:var(--ink);box-shadow:0 2px 4px rgba(59,18,115,.25);white-space:normal;text-align:center}.rcb[hidden]{display:none}.rcb::after{content:'';position:absolute;left:50%;bottom:-6px;width:9px;height:9px;margin-left:-4.5px;background:#FFFDF8;border:2px solid var(--c,#3B1273);border-top:0;border-left:0;transform:rotate(45deg)}.rcwith{margin-left:auto;font-size:11.5px;color:#6B4E95;padding-right:26px}.rcbox .cvch button:only-child{min-width:64px}
+.twpm{position:absolute;left:0;top:0;pointer-events:none;width:30px;height:30px;border-radius:50%;background:#FFFDF8;border:2.5px solid #A6E22E;box-shadow:0 0 0 2px rgba(255,255,255,.7),0 2px 4px rgba(59,18,115,.35);display:grid;place-items:center;animation:twpm 1.4s ease-in-out infinite}.twpm[hidden]{display:none}.twpm img{width:24px;height:24px;object-fit:contain}@keyframes twpm{50%{margin-top:-3px}}
 .tms{pointer-events:auto;border:0;background:none;padding:0;cursor:pointer;transform-origin:50% 100%}.tms img{display:block;width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 0 #fff) drop-shadow(0 2px 2px rgba(59,18,115,.35))}.tms::after{content:'';display:block;width:8px;height:8px;margin:-3px auto 0;background:#fff;border:2px solid var(--ink);border-top:0;border-left:0;transform:rotate(45deg);border-radius:0 0 3px 0}
 .tmd{pointer-events:auto;border:0;background:none;padding:0;cursor:pointer}.tmd span{display:block;font-family:var(--disp);font-size:15px;color:var(--ink);padding:4px 12px;background:rgba(255,253,246,.94);border:2.5px solid var(--ink);border-radius:14px;box-shadow:0 3px 0 var(--ink);white-space:nowrap}
 .tmlist{display:flex;flex-direction:column;gap:6px;max-height:46vh;overflow:auto;margin-top:6px}.tmrow{display:flex;align-items:center;gap:8px}.tmface{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:50%;background:#F6EEFF;border:2.5px solid var(--ink);overflow:hidden}.tmface img{width:38px;height:38px;object-fit:contain}.tmface b{font-family:var(--disp)}.tmface .lsv{width:30px;height:30px}
@@ -30972,12 +30973,11 @@ function tmDraw(dt){const[W_,H_]=tmSize(),R=tm.R;if(tm.mergeDirty&&!tm.arr&&!tm.
   R.outlines=!tm.far;tmFarLod();
   if(tm.pitchTo!=null){tm.pitch+=(tm.pitchTo-tm.pitch)*Math.min(1,dt*3);if(Math.abs(tm.pitchTo-tm.pitch)<.01)tm.pitchTo=null}if(tm.zoomTo!=null){tm.zoom+=(tm.zoomTo-tm.zoom)*Math.min(1,dt*4);if(Math.abs(tm.zoomTo-tm.zoom)<.002)tm.zoomTo=null}tm.tgtTo.x=clamp(tm.tgtTo.x,-TM_W/2,TM_W/2);tm.tgtTo.z=clamp(tm.tgtTo.z,-TM_D/2,TM_D/2);
   {const L=Math.hypot(tm.tgtTo.x,tm.tgtTo.z),mx=ISLAND_R-2;if(tmMk()==='world'&&L>mx){tm.tgtTo.x*=mx/L;tm.tgtTo.z*=mx/L}}
-  vlerp(tm.tgt,tm.tgtTo,1-Math.exp(-dt*(tw.on&&tw.follow?6:4)));const d=tm.focus?Math.min(9,tmFit()*.45):tmFit()*tm.zoom;if(tmMk()==='world'){const nr=clamp(d*.06,.05,4);if(tm.cam.fov!==50||Math.abs(tm.cam.near-nr)>nr*.25){tm.cam.fov=50;tm.cam.near=nr;tm.cam.far=600;tm.cam.updateProjectionMatrix()}}// keep the camera out of buildings: if it would sit inside one (low and close), tilt it up just enough to clear the roof
-  // keep the view of the pet clear: tilt up (just enough) until the line from the camera to the target passes over every roof
-  let pit=tm.pitch;if(tmMk()==='world'&&tw.grid&&!tm.focus){const G_=tw.grid,topAt=(x,z)=>{const [gi,gj]=twCell(x,z);if(gi<0||gj<0||gi>=G_.W||gj>=G_.D)return 0;const bk=G_.own.get(gj*G_.W+gi);return bk&&tm.bld[bk]?((tm.bld[bk].userData.top||{}).y||1.5)+.35:G_.block[gj*G_.W+gi]?1:0};
-    for(let it=0;it<16&&pit<1.35;it++){const hd=Math.cos(pit)*d,hc=Math.sin(pit)*d,n=Math.ceil(hd/.4);let ok=true;
-      for(let q=1;q<=n&&ok;q++){const f=q/n,x=tm.tgt.x+Math.sin(tm.yaw)*hd*f,z=tm.tgt.z+Math.cos(tm.yaw)*hd*f;if(f>.08&&topAt(x,z)>hc*f+.2)ok=false}if(ok)break;pit+=.06}}
-  {const lift=Math.max(0,pit-tm.pitch);tm.lift=(tm.lift||0)+(lift-(tm.lift||0))*Math.min(1,dt*(lift>(tm.lift||0)?5:2.5));pit=tm.pitch+tm.lift}
+  vlerp(tm.tgt,tm.tgtTo,1-Math.exp(-dt*(tw.on&&tw.follow?6:4)));const d=tm.focus?Math.min(9,tmFit()*.45):tmFit()*tm.zoom;if(tmMk()==='world'){const nr=clamp(d*.06,.05,4);if(tm.cam.fov!==50||Math.abs(tm.cam.near-nr)>nr*.25){tm.cam.fov=50;tm.cam.near=nr;tm.cam.far=600;tm.cam.updateProjectionMatrix()}}
+  // is a roof between the camera and the pet?
+  let pit=tm.pitch;if(tmMk()==='world'&&tw.grid&&!tm.focus){const G_=tw.grid,topAt=(x,z)=>{const [gi,gj]=twCell(x,z);if(gi<0||gj<0||gi>=G_.W||gj>=G_.D)return 0;const bk=G_.own.get(gj*G_.W+gi);return bk&&tm.bld[bk]?((tm.bld[bk].userData.top||{}).y||1.5)+.2:0};
+    // (v81) the camera no longer tilts away from roofs (it felt pushed around); a marker shows the pet when a building hides it
+    {const hd=Math.cos(pit)*d,hc=Math.sin(pit)*d,n=Math.ceil(hd/.4);let ok=true;for(let q=1;q<=n&&ok;q++){const f=q/n,x=tm.tgt.x+Math.sin(tm.yaw)*hd*f,z=tm.tgt.z+Math.cos(tm.yaw)*hd*f;if(f>.08&&topAt(x,z)>hc*f+.1)ok=false}const h=!ok&&tw.on&&tw.follow;tw.hidT=h?(tw.hidT||0)+dt:0;tw.petHid=tw.hidT>.35}}else tw.petHid=false;
   const cp=Math.cos(pit),c=tm.cam;tm.off=(tm.off??0)+((tm.focus?.75:0)-(tm.off??0))*Math.min(1,dt*4);const ox=tm.tgt.x+Math.sin(tm.yaw)*tm.off,oz=tm.tgt.z+Math.cos(tm.yaw)*tm.off;c.position.set(ox+Math.sin(tm.yaw)*cp*d,Math.sin(pit)*d,oz+Math.cos(tm.yaw)*cp*d);c.lookAt(new THREE.Vector3(ox,0,oz));
   if(tmMk()==='world'){const k=clamp(.8/(d*d),.0002,.016);R.curve=tm.curveP=[c.position.x,c.position.z,k,k*.12,-Math.sin(tm.yaw),-Math.cos(tm.yaw)];
     tm.far=d>26;if(tm.dl)tm.dl.castShadow=!tm.far;
@@ -31900,11 +31900,15 @@ function lifeGiftHtml(k,mail){const L=lifeGiftables();return`<div class="lifegif
    Map units: 1 cell = 1 unit; buildings ~1.5-2 units; characters ~.45 tall. */
 const tw={on:false,pet:null,res:new Map(),grid:null,gkey:'',doors:{},follow:true,t:0,card:null,pend:null};
 const TW_PET_H=.5,TW_RES_SCALE=.3,TW_FULL=5,TW_SPEED=2.4,TW_RSPEED=1.15;
-// the walkable grid: buildings and big decorations block; streets are cheaper to walk on
+const TW_WALK=new Set(['flowers','lot','hopscotch','stepstones','gatearch','mkt_arch','parkgate','archbridge','footbridge']),TW_BRIDGE=new Set(['archbridge','footbridge']);
+// the walkable grid: buildings and decorations block; streets are cheaper to walk on
 function twGrid(){const m=tmM();if(!m)return null;const key=JSON.stringify(m.b)+'|'+m.d.length+'|'+m.r.length+'|'+m.r.map(q=>(q[2]||'')+(q[3]||'')).join('')+'|'+JSON.stringify(m.c||[]);if(tw.grid&&tw.gkey===key)return tw.grid;
   const W=TM_W,D=TM_D,block=new Uint8Array(W*D),road=new Uint8Array(W*D);tmTakenB(m).forEach(c=>{const [x,z]=c.split(',').map(Number);if(x>=0&&z>=0&&x<W&&z<D)block[z*W+x]=1});
-  m.d.forEach(q=>{const D_=TM_DECOR[q[0]];if(!D_||q[0]==='flowers'||q[0]==='lot')return;const [w,d]=D_.sz||[1,1];for(let i=0;i<w;i++)for(let j=0;j<d;j++){const x=q[1]+i,z=q[2]+j;if(x<W&&z<D)block[z*W+x]=1}});
-  const cost=new Float32Array(W*D).fill(PATH_GRASS);[...pathCircleCells(m),...m.r].forEach(q=>{const [x,z]=q;if(x>=0&&z>=0&&x<W&&z<D){road[z*W+x]=1;block[z*W+x]=0;cost[z*W+x]=Math.min(cost[z*W+x],PATH_T[pathT(q)].cost)}});
+  // solid decorations block even where they stand on a path (benches, lamps, the fountain); flat ones, arches and bridges don't
+  const solid=new Uint8Array(W*D),walk=[];m.d.forEach(q=>{const D_=TM_DECOR[q[0]];if(!D_)return;const [w,d]=D_.sz||[1,1],cells=[];for(let i=0;i<w;i++)for(let j=0;j<d;j++){const x=q[1]+i,z=q[2]+j;if(x>=0&&z>=0&&x<W&&z<D)cells.push(z*W+x)}
+    if(TW_WALK.has(q[0])){if(TW_BRIDGE.has(q[0]))walk.push(...cells);return}cells.forEach(c=>{block[c]=1;solid[c]=1})});
+  const cost=new Float32Array(W*D).fill(PATH_GRASS);[...pathCircleCells(m),...m.r].forEach(q=>{const [x,z]=q;if(x>=0&&z>=0&&x<W&&z<D){const c=z*W+x;road[c]=1;if(!solid[c])block[c]=0;cost[c]=Math.min(cost[c],PATH_T[pathT(q)].cost)}});
+  walk.forEach(c=>{block[c]=0;solid[c]=0;cost[c]=Math.min(cost[c],.5)});
   const own=new Map();for(const k in m.b){const [x,z,r]=m.b[k],[w,d]=tmFoot(k,r);for(let i=0;i<w;i++)for(let j=0;j<d;j++)own.set((z+j)*W+x+i,k)}
   tw.grid={W,D,block,road,own,cost};tw.gkey=key;tw.doors={};return tw.grid}
 const twCell=(x,z)=>[Math.floor(x+TM_W/2),Math.floor(z+TM_D/2)],twPos=(i,j)=>[i-TM_W/2+.5,j-TM_D/2+.5];
@@ -31918,7 +31922,9 @@ function twPath(ax,az,bx,bz){const G=twGrid();if(!G)return null;let [si,sj]=twNe
   if(from[t]<0&&s!==t)return null;const cells=[];for(let n=t;n!==-1&&n!==s;n=from[n])cells.push(n);cells.reverse();const pts=cells.map(n=>twPos(n%W,n/W|0));pts.push([bx,bz]);
   // drop points that can be skipped in a straight line over free cells
   const cAt=(x,z)=>{const [ci,cj]=twCell(x,z);return ci<0||cj<0||ci>=W||cj>=G.D?9:G.block[cj*W+ci]?9:G.cost[cj*W+ci]};
-  const clear=(a,b)=>{const L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.ceil(L*3),lim=Math.max(cAt(a[0],a[1]),cAt(b[0],b[1]))+.001;for(let i=1;i<n;i++){const x=a[0]+(b[0]-a[0])*i/n,z=a[1]+(b[1]-a[1])*i/n,[ci,cj]=twCell(x,z);if(ci<0||cj<0||ci>=W||cj>=G.D||G.block[cj*W+ci]||G.cost[cj*W+ci]>lim)return false}return true};
+  const R_=.22,bAt=(x,z)=>{const [ci,cj]=twCell(x,z);return ci<0||cj<0||ci>=W||cj>=G.D||G.block[cj*W+ci]};
+  const clear=(a,b)=>{const L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.ceil(L*4),lim=Math.max(cAt(a[0],a[1]),cAt(b[0],b[1]))+.001,px=-(b[1]-a[1])/(L||1)*R_,pz=(b[0]-a[0])/(L||1)*R_;for(let i=1;i<n;i++){const x=a[0]+(b[0]-a[0])*i/n,z=a[1]+(b[1]-a[1])*i/n,[ci,cj]=twCell(x,z);if(ci<0||cj<0||ci>=W||cj>=G.D||G.block[cj*W+ci]||G.cost[cj*W+ci]>lim)return false;
+    if(i>1&&i<n-1&&(bAt(x+px,z+pz)||bAt(x-px,z-pz)))return false}return true};
   const out=[];let cur=[ax,az],i=0;while(i<pts.length){let j=pts.length-1;while(j>i&&!clear(cur,pts[j]))j--;out.push(pts[j]);cur=pts[j];i=j+1}return out}
 // a building's doorstep in world coords (just outside the front door)
 function twDoor(k){if(tw.doors[k])return tw.doors[k];const o=tm.bld[k];if(!o||!o.userData.fg)return null;const fg=o.userData.fg,p=new THREE.Vector3(),p2=new THREE.Vector3();
@@ -31988,7 +31994,7 @@ function twResTick(dt,t){const cam=tm.tgt,close=tmFit()*tm.zoom<16;tw.sortT=(tw.
       else{r.wait-=dt;if(r.wait<0){const P=r.plan;let to=null;if(P.mode==='go'){const d=twDoor(P.to);if(d&&Math.hypot(d.x-r.x,d.z-r.z)<.3){r.out=1;r.inPt=d.in;tmDoorOpen(P.to,1800)}else if(d)to=[d.x,d.z]}
         else if(P.mode==='mingle'){r.wait=3+Math.random()*4}else if(P.mode==='stroll'){const d=twDoor(P.near);to=twRandomRoad(null,d||{x:r.x,z:r.z})}else if(P.mode==='stall'){r.wait=4+Math.random()*4;r.ry=P.ry}else if(r.atSpot){twSpotFree(r)}else if(r.spot){r.atSpot=1;if(r.spot.sit){r.x=r.spot.x;r.z=r.spot.z}r.ry=r.spot.ry;r.wait=r.spot.sit?14+Math.random()*22:r.spot.mkt?6+Math.random()*8:4+Math.random()*6}
         else if((P.mode==='rounds'||P.mode==='stroll')&&Math.random()<.38&&(r.spot=twSpotPick(r))){tw.spotUse[r.spot.id]=r.k;to=[r.spot.ax,r.spot.az]}else if(P.near)to=twSpotNear(P.near);else to=twRandomRoad(P.area);
-        if(to){r.path=twPath(r.x,r.z,to[0],to[1])||[to];r.wait=1+Math.random()*3}}}}
+        if(to){r.path=twPath(r.x,r.z,to[0],to[1]);r.wait=r.path?1+Math.random()*3:2}}}}
     else{const p=tw.pet;if(p)r.ry=Math.atan2(p.x-r.x,p.z-r.z)}
     if(r.out){if(r.inPt){const dx=r.inPt[0]-r.x,dz=r.inPt[1]-r.z,dd=Math.hypot(dx,dz);if(dd>.02){const st=Math.min(dd,TW_RSPEED*.8*dt);r.x+=dx/dd*st;r.z+=dz/dd*st;r.ry=Math.atan2(dx,dz);mv=true}}r.sc=Math.max(0,r.sc-dt*1.4);if(r.sc<=0)r.gone=1}else if(r.sc<1)r.sc=Math.min(1,r.sc+dt*1.8);
     if(r.gone){r.dot.hidden=true;if(r.full)r.full.g.visible=false;return}
@@ -32028,7 +32034,11 @@ function tmBuildOne(k){if(tm.bld[k]||!tmPlaces().includes(k))return;try{tm.bld[k
 function twStart(){if(!tm)return;const k=away?away.key:'home';tmDoorOpen(k,1700);tmBuildOne(k);twGrid();const d=twDoor(k)||{x:0,z:0,ry:0};tw.on=twPetAttach(d);tw.follow=true;tw.res.forEach(twResDrop);tw.res.clear();
   if(tw.on){tm.zoom=Math.max(.02,9/tmFit());tm.zoomTo=null;tm.pitch=.6;tm.yaw=(d.ry||0)+.45;tm.tgtTo.set(d.x,0,d.z);tm.tgt.copy(tm.tgtTo);twResSync();tw.sync=0;findsShow()}}
 function twEnd(){if(!tw.on&&!tw.save)return;tw.on=false;findsHide();twPetDetach();tw.res.forEach(twResDrop);tw.res.clear();tw.card=null;tw.cvPend=null;if(rc){rc=null;$('#tmCard').classList.remove('cvbox','rcbox')}rcHidePrompt();{const b=$('#rcBub');if(b)b.hidden=true}}
-function twTick(dt,t){if(!tw.on||!tw.pet)return;const P=tw.pet;let mv=false;tw.sync+=dt;if(tw.sync>4){tw.sync=0;twResSync()}
+// the pet behind a building: a small face marker over where it is
+function twPetMark(){let el=$('#twPetMark');const P=tw.pet,on=tw.on&&P&&tw.petHid&&!cv&&!rc;if(!on){if(el&&!el.hidden)el.hidden=true;return}
+  if(!el){el=document.createElement('div');el.id='twPetMark';el.className='twpm';el.innerHTML=`<img src="${ico('tab-pet')}" alt="">`;$('#tmLab').appendChild(el)}if(!el.isConnected)$('#tmLab').appendChild(el);
+  const v=_twV.set(P.x,.75-tmCurveY(P.x,P.z),P.z).project(tm.cam),[W_,H_]=tmSize();el.hidden=v.z>1;el.style.transform=`translate(${(v.x*.5+.5)*W_}px,${(-v.y*.5+.5)*H_}px) translate(-50%,-100%)`}
+function twTick(dt,t){if(!tw.on||!tw.pet)return;const P=tw.pet;let mv=false;twPetMark();tw.sync+=dt;if(tw.sync>4){tw.sync=0;twResSync()}
   if(P.path&&P.path.length){const [tx,tz]=P.path[0],dx=tx-P.x,dz=tz-P.z,d=Math.hypot(dx,dz),st=TW_SPEED*dt;if(d<=st){P.x=tx;P.z=tz;P.path.shift();if(!P.path.length){P.path=null;const cb=P.cb;P.cb=null;cb&&cb()}}else{P.x+=dx/d*st;P.z+=dz/d*st;P.ry=Math.atan2(dx,dz)}mv=true}
   if(mv)P.still=0;else{P.still=(P.still||0)+dt;P.idle=(P.idle??3)-dt;if(P.still>3&&P.idle<=0&&!tw.card){P.idle=4+Math.random()*4;let nb=null,bd=3.5;tw.res.forEach(r=>{const d=Math.hypot(r.x-P.x,r.z-P.z);if(!r.gone&&d<bd){bd=d;nb=r}});
     if(nb&&Math.random()<.6)P.ry=Math.atan2(nb.x-P.x,nb.z-P.z);else if(Math.random()<.5)P.hop=.5;else P.ry+=(Math.random()-.5)*2.2}}
@@ -56127,7 +56137,7 @@ function showCoach(){const c=document.createElement('div');c.className='coach';c
 <li><span>👆</span>Drag empty space to spin the room. Pinch to zoom.</li><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>Tap <b>Pet</b> to see how your pet is doing and help it. At first it’s an egg: tap it to warm it.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span>Tap <b>Explore</b> (or the door) to visit town. Explore takes you home again too.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Menu</b> has everything else: Decorate, the Two-Do List, Mail and your Wardrobe.</li></ul><button class="gel pink" style="width:100%">Let's gooo!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=80;
+const APP_V=81;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
