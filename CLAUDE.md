@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v83** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v83'` in `sw.js`; bump both for anything
+**Current build: v84** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v84'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -805,3 +805,11 @@ Garrett didn't love hearts as money (hearts mean love: the pet's affection, frie
   close-up or "I've got a joke for you" on the map; weather he hates lowers the score; 3 = a trail treasure), Blush's mystery colour
   (`dlyMystery`, Blush or Gloss; previews, keep or change back), the Mayor's monthly parcel (`dlyMayorTick`, `state.mayorM`,
   `MAYOR_LET`). `dlySay(k,text,choices)` is a small dialogue card that works anywhere. All run from `lifeTick` → `dlyTick`.
+
+## Menu sweep (v84)
+- The Menu has six circles: Decorate, Wardrobe, Bag, Journal, Inbox, Neighbours, with "Our room" (settings, sharing) in the middle.
+  Footprints became the Journal's second tab ("You two", `jrTabs`/`jrTabsBind`; `openTab` 'steps' still exists, its MENU_ITEMS group is
+  '' so it's not a circle; the Journal circle carries its unread badge). "Room & sharing" is called "Our room" everywhere.
+- Pet page order: name and bond, needs rings and the four care buttons, Today with <pet>, looks after itself, heads, About (personality,
+  traits, spirit, an "Open the Bag" button, big moments), Style. The wish line reads "<pet> wants …" with who won the vote above it.
+- Today's swap button sits on the card's bottom corner; the map's Arrange button is a smaller "Edit town".
