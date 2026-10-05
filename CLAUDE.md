@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v91** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v91'` in `sw.js`; bump both for anything
+**Current build: v92** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v92'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -913,3 +913,17 @@ canvas in the same task because the main renderer doesn't preserve its buffer; o
 then crops to 4:5, adds the polaroid caption (place + date) and saves a JPEG to IndexedDB `r42photos` on this phone only (the shared
 Firestore doc can't hold images). Album `phAlbum`/`phView`: share via the Web Share API (file), save, delete. First photo goes in the
 scrapbook.
+
+## Fishing (v92)
+- Data and models (`/* <fish-data> */`, just before `ITEMMAP`, so `PROP_BUILD`, `ITEMMAP` and the treasure display set include them):
+  `FISH` rows [id, name, where (pond/river/sea), months, hours, weather, rarity, price, size cm, shape, colours, fish-book hint] →
+  `FISHMAP`, pushed into `TREASURES` (collections `fresh` / `sea`, `fish:1`, `hint`) and `ITEMS`; one generic model `fishModel(F)` by
+  shape (round, deep, slim, long, flat, puff, eel, frog, claw, shell, star, jelly, octo, squid, horse, ray, boot).
+- Play (`/* <fishing> */` after photo): tap a water decoration on the map (`FISH_SPOT`: ponds, streams, bridges, waterfall = fresh;
+  `dock`, `beacon` = sea); the pet walks over, `fishStart(w)` opens a top-down water view (`#fishv` 2D canvas): cast, wait, a shadow
+  sized by the fish swims up, 1-3 nibbles (tapping now scares it), a bite with "!" (tap within `FISH_WIN` .62 s). `fishAvail(w)` filters
+  by month, hour (wraps midnight) and real weather; `fishRoll` weights by rarity. A catch: `treasureGet` (fish book in the Bag, first
+  catch → scrapbook), biggest size per fish in `state.fbest`, Beacon's card (keep / sell / let go / cast again). `fishDock()` places a
+  dock beside the boardwalk once (`tmM().dk`).
+- Fixed in passing: the small dialogue card's choice buttons were invisible since v87 (their fade-in animation left them at opacity 0
+  inside `.dlybox`); `.dlybox .cvch button{animation:none}`.

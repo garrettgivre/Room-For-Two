@@ -761,6 +761,7 @@ body.photo header.top,body.photo #dock,body.photo #emotes,body.photo .kbub,body.
 .phflash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:61}.phflash.go{animation:phfl .45s ease-out}@keyframes phfl{0%{opacity:.95}100%{opacity:0}}
 .phalbum{position:fixed;inset:0;z-index:62;background:#FFF8FD;overflow:auto;padding:calc(14px + env(safe-area-inset-top)) 14px 24px}.phalbum[hidden]{display:none}.pahd{display:flex;align-items:center;gap:10px;margin-bottom:12px;min-height:44px}.pahd b{font-family:var(--disp);font-weight:400;font-size:22px}.pahd small{color:#6B4E95}.pahd .phx{position:static;margin-left:auto}
 .pagrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}.pagrid button{padding:0;border:2.5px solid var(--ink);border-radius:8px;overflow:hidden;background:#fff;box-shadow:0 2px 0 var(--ink);cursor:pointer}.pagrid img{width:100%;display:block;aspect-ratio:4/5;object-fit:cover}.paone{width:100%;max-width:520px;display:block;margin:0 auto 14px;border-radius:8px;box-shadow:0 4px 0 rgba(59,18,115,.3)}
+.fishv{position:fixed;inset:0;z-index:58;background:rgba(30,22,48,.35);touch-action:none}.fishv[hidden]{display:none}.fishv canvas{position:absolute;inset:0;width:100%;height:100%}.fishv p{position:absolute;left:0;right:0;bottom:calc(90px + env(safe-area-inset-bottom));text-align:center;font-family:var(--disp);font-size:18px;color:#fff;text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink)}
 .tms{pointer-events:auto;border:0;background:none;padding:0;cursor:pointer;transform-origin:50% 100%}.tms img{display:block;width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 0 #fff) drop-shadow(0 2px 2px rgba(59,18,115,.35))}.tms::after{content:'';display:block;width:8px;height:8px;margin:-3px auto 0;background:#fff;border:2px solid var(--ink);border-top:0;border-left:0;transform:rotate(45deg);border-radius:0 0 3px 0}
 .tmd{pointer-events:auto;border:0;background:none;padding:0;cursor:pointer}.tmd span{display:block;font-family:var(--disp);font-size:15px;color:var(--ink);padding:4px 12px;background:rgba(255,253,246,.94);border:2.5px solid var(--ink);border-radius:14px;box-shadow:0 3px 0 var(--ink);white-space:nowrap}
 .tmlist{display:flex;flex-direction:column;gap:6px;max-height:46vh;overflow:auto;margin-top:6px}.tmrow{display:flex;align-items:center;gap:8px}.tmface{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:50%;background:#F6EEFF;border:2.5px solid var(--ink);overflow:hidden}.tmface img{width:38px;height:38px;object-fit:contain}.tmface b{font-family:var(--disp)}.tmface .lsv{width:30px;height:30px}
@@ -985,7 +986,7 @@ body.styling .storechip{opacity:0}
 .cvbox .cvch button:hover:before,.cvbox .cvch button:active:before,.dlybox .cvch button:hover:before,.dlybox .cvch button:active:before,.cvbox .cvch button:first-child:before,.dlybox .cvch button:first-child:before{opacity:1}
 .cvbox .cvch:hover button:first-child:not(:hover):before,.dlybox .cvch:hover button:first-child:not(:hover):before{opacity:.25}
 .cvbox .tmc-x,.dlybox .tmc-x{top:18px!important;right:10px!important;transform:scale(.8)}
-.dlybox{bottom:calc(118px + env(safe-area-inset-bottom))}body.mapopen .dlybox{bottom:calc(18px + env(safe-area-inset-bottom))}
+.dlybox .cvch button{animation:none!important;opacity:1!important}.dlybox{bottom:calc(118px + env(safe-area-inset-bottom))}body.mapopen .dlybox{bottom:calc(18px + env(safe-area-inset-bottom))}
 /* shopkeepers' bubbles: same colours, a rounder box */
 .kbub{background:color-mix(in oklab,var(--kc,#FF8A1C) 18%,#FBFCFF)!important;border:3px solid color-mix(in oklab,var(--kc,#FF8A1C) 40%,#FFFFFF)!important;border-radius:26px!important;box-shadow:0 4px 0 rgba(59,18,115,.16)!important;padding:13px 18px 12px!important;color:#2E2A5C;font-family:var(--disp)}
 .kbub .tl{background:color-mix(in oklab,var(--kc,#FF8A1C) 18%,#FBFCFF)!important;border-color:color-mix(in oklab,var(--kc,#FF8A1C) 40%,#FFFFFF)!important}
@@ -2336,6 +2337,65 @@ const TREASURE_BUILD=(()=>{const O=.006,f=(g)=>{g.traverse(o=>{if(o.isMesh&&o.ou
   t_comb:()=>{const g=G(),m=M(0xFFC21F,{roughness:.2,metalness:.7});bx(g,.18,.012,.035,m,0,.008,-.03);for(let i=0;i<9;i++)bx(g,.008,.008,.05,m,-.08+i*.02,.006,.012).outline=0;sp(g,.012,M(0xFF7FB8,{roughness:.3}),0,.02,-.03).outline=0;return f(g)},
   t_mallet:()=>{const g=G();const h=cy(g,.05,.05,.15,M(0xFF3D9A,{roughness:.4}),0,.12,0,14);h.rotation.z=Math.PI/2;[-1,1].forEach(s_=>{const c=cy(g,.052,.052,.012,M(0xFFD21F,{roughness:.4}),s_*.07,.12,0,14);c.rotation.z=Math.PI/2});cy(g,.012,.014,.16,M(0xB07A4A,{roughness:.6}),0,.04,0,8);return f(g)},}})();
 
+/* <fish-data> */
+// ---- fish (v92): caught on the town map (ponds, streams, the dock). Treasures in collection 'fresh' or 'sea'. w = where (pond/river/sea,
+// several allowed), mo = months (1-12) it's about, h = hours [from,to) (may wrap past midnight), wx = only in that weather, r = how common,
+// p = Beacon's price (old units), sz = length cm, s = shape, c/c2 = colours, hint = what the fish book says before you've caught it
+const FISH=[
+ ['f_minnow','Minnow','pond river','1-12','0-24','',10,1,[3,6],'slim',0xB9C4CC,0xE8EEF2,'Anywhere fresh, any time.'],
+ ['f_guppy','Bubble guppy','pond','1-12','6-20','',9,1,[3,5],'round',0xFF9ECF,0x9FE3FF,'Ponds, in the daytime.'],
+ ['f_goldfish','Goldfish','pond','1-12','0-24','',6,2,[6,12],'round',0xFF8A1C,0xFFD21F,'A pond, any time. Very sure of itself.'],
+ ['f_carp','Crucian carp','pond river','1-12','0-24','',8,1,[18,30],'deep',0xC2A06A,0xE8D29E,'Fresh water, all year.'],
+ ['f_koi','Koi','pond','1-12','16-9','',2,8,[40,70],'deep',0xFFFFFF,0xFF3D9A,'A pond, evening to morning.'],
+ ['f_bluegill','Bluegill','river pond','3-10','8-17','',7,2,[12,20],'deep',0x6FA8C9,0xFFC46A,'Spring to autumn, by day.'],
+ ['f_perch','Jelly perch','river','4-11','0-24','',6,2,[15,28],'slim',0xA6E22E,0x3B8F4A,'Rivers, spring to autumn.'],
+ ['f_trout','Rainbow trout','river','3-6 9-11','6-19','',4,4,[25,45],'slim',0xC6A6FF,0xFF7FB8,'Rivers in spring and autumn.'],
+ ['f_catfish','Whisker catfish','pond river','5-10','16-9','',4,4,[40,80],'long',0x6B5B4A,0xC9B08A,'Warm months, after dark.'],
+ ['f_frog','Frog','pond','4-9','0-24','rain',5,2,[6,10],'frog',0x6CC152,0xFFE27A,'A pond in the rain.'],
+ ['f_crawdad','Crawdad','pond river','4-9','0-24','',6,2,[8,12],'claw',0xE8553A,0xFF9A6A,'Fresh water, spring and summer.'],
+ ['f_snail','Pond snail','pond','1-12','0-24','',6,1,[2,4],'shell',0xC9A27A,0x9FE3FF,'Slowly, in a pond.'],
+ ['f_puffer','Puffy pufferfish','sea','6-9','0-24','',4,5,[15,30],'puff',0xFFE27A,0xFFB3DA,'The sea, in summer.'],
+ ['f_sardine','Sardine','sea','1-12','0-24','',10,1,[10,18],'slim',0x9FB8D6,0xE6F0FF,'The sea, any time.'],
+ ['f_mackerel','Mackerel','sea','1-12','0-24','',7,2,[25,40],'slim',0x3EC8F2,0x2E5E8A,'The sea, all year.'],
+ ['f_clown','Clownfish','sea','4-10','6-20','',4,4,[8,12],'round',0xFF8A1C,0xFFFFFF,'The sea, by day, in warm months.'],
+ ['f_seabass','Sea bass','sea','1-12','0-24','',6,3,[40,70],'deep',0x8A9BB0,0xDDE6F0,'The sea, any time.'],
+ ['f_flounder','Flounder','sea','1-12','0-24','',5,3,[25,45],'flat',0xC9A27A,0xF2E2C2,'Lying flat on the sea floor.'],
+ ['f_squid','Squid','sea','12-8','0-24','',4,4,[25,40],'squid',0xFFC9E3,0xFF7FB8,'The sea, winter to summer.'],
+ ['f_octo','Little octopus','sea','3-11','18-6','',3,5,[20,40],'octo',0xFF7F9A,0xFFC9D6,'The sea at night.'],
+ ['f_jelly','Moon jelly','sea','7-9','0-24','',4,2,[10,20],'jelly',0xD9E8FF,0xFFB3E6,'The sea, late summer.'],
+ ['f_seahorse','Seahorse','sea','4-11','0-24','',3,6,[6,12],'horse',0xFFB21F,0xFF8A1C,'The sea, spring to autumn.'],
+ ['f_ray','Pastel ray','sea','8-11','4-21','',2,8,[60,100],'ray',0xC6A6FF,0x9FE3FF,'The sea in late summer and autumn, by day.'],
+ ['f_lantern','Lanternfish','sea','1-12','21-4','fog',2,10,[8,15],'slim',0x3B4A8A,0xFFE27A,'The sea, late at night in fog.'],
+ ['f_tuna','Bluefin tuna','sea','11-4','0-24','',1,14,[120,200],'deep',0x2E4E8A,0xC9D6EA,'Out at the dock, in winter. Big.'],
+ ['f_starfish','Starfish','sea','1-12','0-24','',5,2,[10,20],'star',0xFF8A3A,0xFFC46A,'Clinging to the dock, all year.'],
+ ['f_crab','Shore crab','sea','1-12','0-24','',6,2,[6,12],'claw',0xFF6F4A,0xFFB08A,'The dock, any time.'],
+ ['f_eel','Ribbon eel','river sea','5-10','17-5','rain',2,7,[50,90],'eel',0x3EC8F2,0xFFD21F,'Rainy nights.'],
+ ['f_sturgeon','Old sturgeon','river','9-3','0-24','',1,12,[100,180],'long',0x7A8A99,0xD6DEE6,'A river in autumn and winter. Ancient.'],
+ ['f_boot','Old rubber boot','pond river sea','1-12','0-24','',3,0,[25,30],'boot',0xFFD21F,0x3B1273,'Somebody lost it.']];
+const fishMo=s=>{const o=new Set();s.split(' ').forEach(r=>{const [a,b]=r.split('-').map(Number);let m=a;for(let i=0;i<12;i++){o.add(m);if(m===(b||a))break;m=m%12+1}});return o};
+const FISHMAP={};FISH.forEach(f=>{const [id,n,w,mo,h,wx,r,p,sz,s,c,c2,hint]=f,[h0,h1]=h.split('-').map(Number);FISHMAP[id]={id,n,w:w.split(' '),mo:fishMo(mo),h:[h0,h1],wx,r,p,sz,s,c,c2,hint}});
+TREASURES.push(...FISH.map(f=>{const F=FISHMAP[f[0]];return{id:F.id,k:'treasure',col:F.w.includes('sea')&&!F.w.includes('pond')&&!F.w.includes('river')?'sea':'fresh',p:F.p,r:0,fish:1,hint:F.hint,n:F.n,d:F.s==='boot'?'Not a fish. Beacon will still take it, out of kindness.':`${F.sz[0]} to ${F.sz[1]} cm. ${F.hint}`}}).filter(t=>t.id!=='f_boot'||true));
+ITEMS.push(...TREASURES.filter(t=>t.fish));
+// one generic little fish model, shaped by kind
+function fishModel(F){const g=G(),m=M(F.c,{roughness:.35}),m2=M(F.c2,{roughness:.4}),ink=M(0x3B1273),O=.006,ol_=o=>{ol(o,O);return o};
+  const eye=(x,y,z,r)=>{sp(g,r,M(0xFFFFFF,{roughness:.2}),x,y,z).outline=0;sp(g,r*.55,ink,x,y,z+r*.55).outline=0};
+  if(F.s==='boot'){ol_(cy(g,.05,.055,.14,m,0,.08,0,10));ol_(sp(g,.06,m,.04,.03,0,1.6,.6,1));ol_(cy(g,.052,.052,.012,m2,0,.15,0,10));return g}
+  if(F.s==='shell'){const L=[[0,0],[.06,.01],[.07,.05],[.05,.09],[.02,.12],[0,.13]];const s=lathe(g,L,m,0,0,0,10);s.rotation.z=1.2;s.position.set(-.04,.06,0);ol_(s);ol_(sp(g,.03,m2,.05,.025,0,1.4,.6,1));return g}
+  if(F.s==='star'){ol_(sp(g,.035,m,0,.025,0,1,.5,1));for(let i=0;i<5;i++){const a=i/5*Math.PI*2,c=cy(g,.012,.028,.1,m,Math.cos(a)*.055,.022,Math.sin(a)*.055,6);c.rotation.set(0,-a,Math.PI/2);ol_(c)}return g}
+  if(F.s==='claw'){ol_(sp(g,.06,m,0,.05,0,1.3,.6,1));[-1,1].forEach(s=>{ol_(sp(g,.03,m,s*.08,.06,.05,1,.7,1.3));for(let i=0;i<3;i++){const l=cy(g,.006,.006,.06,m,s*.07,.03,-.03+i*.03,5);l.rotation.z=s*1.1}});eye(-.02,.09,.04,.012);eye(.02,.09,.04,.012);return g}
+  if(F.s==='frog'){ol_(sp(g,.06,m,0,.05,0,1.2,.8,1.1));eye(-.03,.1,.03,.018);eye(.03,.1,.03,.018);ol_(sp(g,.035,m2,0,.035,.03,1.2,.5,.8));[-1,1].forEach(s=>ol_(sp(g,.025,m,s*.06,.02,.03,1.2,.5,1.4)));return g}
+  if(F.s==='jelly'){ol_(lathe(g,[[0,.04],[.07,.05],[.065,.08],[.04,.11],[0,.12]],m,0,0,0,12));for(let i=0;i<6;i++){const a=i/6*Math.PI*2;cy(g,.005,.005,.06,m2,Math.cos(a)*.04,.02,Math.sin(a)*.04,4).outline=0}return g}
+  if(F.s==='octo'||F.s==='squid'){const sq=F.s==='squid';ol_(sp(g,.05,m,0,.08,0,1,sq?1.6:1.1,1));for(let i=0;i<(sq?6:8);i++){const a=i/(sq?6:8)*Math.PI*2,t=cy(g,.012,.004,.08,m,Math.cos(a)*.035,.025,Math.sin(a)*.035,5);t.rotation.set(Math.sin(a)*.5,0,-Math.cos(a)*.5);ol_(t)}eye(-.02,.08,.045,.013);eye(.02,.08,.045,.013);return g}
+  if(F.s==='horse'){const b=cy(g,.025,.035,.12,m,0,.08,0,10);ol_(b);ol_(sp(g,.035,m,0,.15,.01,1,.9,1.3));ol_(cy(g,.01,.016,.05,m,0,.15,.05,8)).rotation.x=Math.PI/2;to(g,.03,.01,m,0,.025,-.01,0,Math.PI/2,0);eye(.02,.16,.02,.01);return g}
+  if(F.s==='ray'){const b=sp(g,.12,m,0,.03,0,1.4,.15,1);ol_(b);sp(g,.05,m2,0,.045,0,1,.15,1).outline=0;const t=cy(g,.004,.008,.14,m,0,.03,-.16,5);t.rotation.x=Math.PI/2;eye(-.04,.05,.07,.012);eye(.04,.05,.07,.012);return g}
+  // fish shapes: body ellipsoid along x, tail fan, top fin, stripe, eye
+  const P={round:[.06,.055,.035],deep:[.08,.065,.03],slim:[.09,.035,.028],long:[.13,.04,.035],flat:[.08,.025,.07],puff:[.065,.065,.065],eel:[.16,.022,.022]}[F.s]||[.08,.04,.03];
+  const b=sp(g,1,m,0,.07,0,P[0],P[1],P[2]);ol_(b);sp(g,1,m2,.005,.06,0,P[0]*.8,P[1]*.6,P[2]*1.02).outline=0;
+  if(F.s==='puff')for(let i=0;i<10;i++){const a=i/10*Math.PI*2;co(g,.008,.025,m2,Math.cos(a)*.06,.07+Math.sin(a)*.06,0,4).rotation.z=a-Math.PI/2}
+  if(F.s!=='eel'){const t=co(g,P[1]*.9,P[0]*.55,m2,-P[0]-P[0]*.2,.07,0,4);t.rotation.z=Math.PI/2;t.scale.z=.25;ol_(t);const fin=co(g,P[0]*.25,P[1]*.8,m2,0,.07+P[1]*.9,0,4);fin.scale.z=.2;fin.outline=0}
+  eye(P[0]*.6,.07+P[1]*.25,P[2]*.7,Math.max(.01,P[1]*.22));eye(P[0]*.6,.07+P[1]*.25,-P[2]*.7,Math.max(.01,P[1]*.22));return g}
+Object.assign(TREASURE_BUILD,Object.fromEntries(FISH.map(f=>[f[0],()=>fishModel(FISHMAP[f[0]])])));
+/* </fish-data> */
 const ITEMMAP={};ITEMS.forEach(i=>ITEMMAP[i.id]=i);
 const KIND_ICON={food:'stat-full',groom:'stat-clean',toy:'emo-ball',treasure:'emo-star'};
 function itemTag(it){return it.k==='food'?MEALS[it.size][0]:it.k==='groom'?GROOM_LV[it.lv][0]:TOY_LV[it.lv][0]}
@@ -34866,7 +34926,7 @@ function tmCircleAt(gx,gz){const m=tmM(),x=gx+.5,z=gz+.5;return(m.c||[]).findInd
 // ---------- open, close, input, frame ----------
 tmPlacesOf('town').filter(k=>!tmGate(k)).forEach(k=>{try{tmImg(k)}catch(_){}});
 {const warm=()=>{try{if(!tm)tmInit();if(tm)setTimeout(()=>{try{tmNormCur();tmFresh()}catch(e){}},250)}catch(e){}};setTimeout(()=>window.requestIdleCallback?requestIdleCallback(warm,{timeout:1500}):warm(),1600)}
-function tmOpen(){const T=tmInit();if(!T)return false;document.body.classList.add('mapopen');tmUse('world');tmTabs();tmNormCur();{const gifts=tmGifts();if(gifts.length){tmDecor();T.snapOk=0;setTimeout(()=>toast('New in town: '+jrList(gifts.map(k=>TM_DECOR[k].n.toLowerCase()))+'!',true),700)}}const el=$('#town3');el.hidden=false;el.classList.add('on');T.open=true;tmArrange(false);tmWhere();twStart();T.snapOk=0;$('#tmArr').hidden=false;tmWheelOpen(false);setTimeout(()=>{try{if(!sandbox)wxAsk()}catch(_){}},1800);try{tmSeasonDecor();if(tm.seasonP&&tm.seasonP!==seasonNow())tm.mergeDirty=true;setTimeout(()=>{try{if(!sandbox)seasonHello()}catch(_){}},2600)}catch(e){console.warn('season',e)}{const rn=$('#tmRain');if(rn)rn.hidden=!['rain','storm'].includes(weatherOf(lifeDay()))}
+function tmOpen(){const T=tmInit();if(!T)return false;document.body.classList.add('mapopen');tmUse('world');tmTabs();tmNormCur();{const gifts=tmGifts();if(gifts.length){tmDecor();T.snapOk=0;setTimeout(()=>toast('New in town: '+jrList(gifts.map(k=>TM_DECOR[k].n.toLowerCase()))+'!',true),700)}}const el=$('#town3');el.hidden=false;el.classList.add('on');T.open=true;tmArrange(false);tmWhere();twStart();T.snapOk=0;$('#tmArr').hidden=false;tmWheelOpen(false);setTimeout(()=>{try{if(!sandbox)wxAsk()}catch(_){}},1800);try{fishDock()}catch(e){console.warn('dock',e)}try{tmSeasonDecor();if(tm.seasonP&&tm.seasonP!==seasonNow())tm.mergeDirty=true;setTimeout(()=>{try{if(!sandbox)seasonHello()}catch(_){}},2600)}catch(e){console.warn('season',e)}{const rn=$('#tmRain');if(rn)rn.hidden=!['rain','storm'].includes(weatherOf(lifeDay()))}
   $('#tmPop').classList.add('gen');if(!T.snapOk){tmSync(false,8);tmDraw(0);tmSnapNow()}T.snapOk=0;tmLast=performance.now();tmTick(tmLast);tmGenie(true);return true}
 function tmQuad(W,H,q){const[x0,y0,x1,y1,x2,y2,x3,y3]=q,dx1=x1-x2,dx2=x3-x2,dx3=x0-x1+x2-x3,dy1=y1-y2,dy2=y3-y2,dy3=y0-y1+y2-y3,D=dx1*dy2-dx2*dy1,g=(dx3*dy2-dx2*dy3)/D,h=(dx1*dy3-dx3*dy1)/D,a=x1-x0+g*x1,b=x3-x0+h*x3,c=x0,d=y1-y0+g*y1,e=y3-y0+h*y3,f=y0;
   return`matrix3d(${a/W},${d/W},0,${g/W},${b/H},${e/H},0,${h/H},0,0,1,0,${c},${f},0,1)`}
@@ -36008,7 +36068,7 @@ function twPick(cx,cy){const r=$('#tmc').getBoundingClientRect(),v=new THREE.Vec
 function twTap(cx,cy){{const q=twPick(cx,cy);if(q){twTalk(q.k);return}}tmCell(cx,cy);const objs=[...tw.res.values()].map(r=>r.full&&r.full.g.visible?r.full.g:null).filter(Boolean),hr=tm.ray.intersectObjects(objs,true);
   for(const h of hr){let o=h.object;while(o&&o.userData.twk==null)o=o.parent;if(o){twTalk(o.userData.twk);return}}
   const hits=tm.ray.intersectObjects(Object.values(tm.bld),true);for(const h of hits){let o=h.object;while(o&&o!==tm.world&&!o.userData.tb)o=o.parent;if(o&&o.userData.tb){tmSelect(o.userData.tb);return}}
-  {const hd=tm.decor?tm.ray.intersectObjects([tm.decor],true):[];for(const h of hd){let o=h.object;while(o&&o!==tm.world&&o.userData.td==null)o=o.parent;const q=o&&o.userData.td!=null&&tmM().d[o.userData.td];if(q&&q[0]==='well'){const [w,d_]=TM_DECOR.well.sz||[1,1],[cx,cz]=twPos(q[1],q[2]);twWalk(cx+(w-1)/2,cz+(d_-1)/2+.9,()=>dlyWell());return}if(q)break}}
+  {const hd=tm.decor?tm.ray.intersectObjects([tm.decor],true):[];for(const h of hd){let o=h.object;while(o&&o!==tm.world&&o.userData.td==null)o=o.parent;const q=o&&o.userData.td!=null&&tmM().d[o.userData.td];if(q&&FISH_SPOT[q[0]]){const [w,d_]=TM_DECOR[q[0]].sz||[1,1],[cx,cz]=twPos(q[1],q[2]),kind=FISH_SPOT[q[0]],tx=cx+(w-1)/2,tz=cz+(d_-1)/2,P=tw.pet,a=Math.atan2(P.x-tx,P.z-tz),r_=Math.max(w,d_)*.5+.45;twWalk(tx+Math.sin(a)*r_,tz+Math.cos(a)*r_,()=>{P.ry=Math.atan2(tx-P.x,tz-P.z);fishStart(kind)});return}if(q&&q[0]==='well'){const [w,d_]=TM_DECOR.well.sz||[1,1],[cx,cz]=twPos(q[1],q[2]);twWalk(cx+(w-1)/2,cz+(d_-1)/2+.9,()=>dlyWell());return}if(q)break}}
   const p=tmGroundHit();if(p){if(cv)cvEnd();$('#tmCard').hidden=true;tw.card=null;twWalk(p.x,p.z,null)}}
 // the ray against the curved ground: a few steps of 'hit the plane at the height the bend puts the ground here'
 function tmGroundHit(){const p=new THREE.Vector3();let y=0;for(let i=0;i<5;i++){if(!tm.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),y),p))return null;y=tmCurveY(p.x,p.z)}return p}
@@ -60937,8 +60997,8 @@ function renderBag(body){const T=bagTab;let h=pgHead('bag',{right:`<span class="
   if(T==='food'||T==='groom'||T==='toy'){const L=ITEMS.filter(it=>it.k===T&&bagN(it)>0);L.forEach(it=>{qs.push('toy:'+it.id);grid+=card(it.id,it.n,bagN(it),thumb(it.id))});
     if(!L.length)grid=`<p class="hint">Nothing here yet. ${T==='toy'?'Toys come from the Toy Box.':T==='groom'?'The Bubble Salon has care things.':'The Snack Shack has treats.'}</p>`}
   else if(T==='treasure'){Object.entries(COLS).forEach(([c,C])=>{const L=TREASURES.filter(t=>t.col===c),F=state.tfound||{},got=L.filter(t=>F[t.id]).length;
-      h+=`<div class="bagcol"><div class="bagch"><b>${esc(C.n)}</b><small>${got} of ${L.length}${(state.cbook||{})[c]?' · complete!':''}</small></div><p class="hint">${esc(C.d)}</p><div class="baggrid">${L.map(t=>{const n=state.inv[t.id]|0;if(!F[t.id])return`<span class="bagc unk"><span class="bth">?</span><b>Not found yet</b></span>`;qs.push('toy:'+t.id);return card(t.id,t.n,n||0,thumb(t.id)).replace('class="bagc"',n?'class="bagc"':'class="bagc none"')}).join('')}</div></div>`});
-    h+=`<p class="hint">Treasures wash up on the boardwalk at Bubble Bay. Beacon buys them, neighbours love some of them, and any of them can go on display in your room.</p>`}
+      h+=`<div class="bagcol"><div class="bagch"><b>${esc(C.n)}</b><small>${got} of ${L.length}${(state.cbook||{})[c]?' · complete!':''}</small></div><p class="hint">${esc(C.d)}</p><div class="baggrid">${L.map(t=>{const n=state.inv[t.id]|0;if(!F[t.id])return`<span class="bagc unk"><span class="bth">?</span><b>${t.hint?esc(t.hint):'Not found yet'}</b></span>`;qs.push('toy:'+t.id);return card(t.id,t.n,n||0,thumb(t.id)).replace('class="bagc"',n?'class="bagc"':'class="bagc none"')}).join('')}</div></div>`});
+    h+=`<p class="hint">Fish bite at the ponds, the streams and the dock: tap the water on the map. Treasures wash up on the boardwalk at Bubble Bay. Beacon buys them, neighbours love some of them, and any of them can go on display in your room.</p>`}
   else if(T==='keep'){const K=state.keeps||[];grid=K.length?`<div class="bagkeeps">${K.map(e=>`<div class="bagk"><b>${esc(e.n)}</b><small>${e.from&&RESIDENTS[e.from]?'From '+esc(RESIDENTS[e.from].n)+' · ':''}${esc(dayLabel(e.t))}</small>${e.d?`<p>${esc(e.d)}</p>`:''}</div>`).join('')}</div>`:'<p class="hint">Letters, ribbons and little mementos end up here, and stay forever.</p>'}
   else if(T==='furn'){const L=Object.entries(state.fown||{}).filter(([k,n])=>n>0&&CATMAP[k]);L.forEach(([k,n])=>{qs.push(k);grid+=card('f:'+k,CATMAP[k].n,n,`<img data-tt="${k}" src="${thumbs[k]||'assets/icons/tab-decorate.webp'}" alt="">`)});
     grid=(grid||'<p class="hint">Nothing in storage. Everything you own is out in your room.</p>')+`<button class="gel lilac bagbtn" id="bagDeco">Open Decorate</button>`}
@@ -61370,6 +61430,57 @@ function phView(p,url){const a=$('#phAlbum');a.innerHTML=`<div class="pahd"><but
   $('#paSave').onclick=()=>phDownload(p);$('#paDel').onclick=async e=>{if(!e.target.dataset.sure){e.target.dataset.sure=1;e.target.textContent='Tap again to delete';return}await phDel(p.t);phAlbum()}}
 function phDownload(p){const u=URL.createObjectURL(p.blob),l=document.createElement('a');l.href=u;l.download='room-for-two-'+new Date(p.t).toISOString().slice(0,10)+'.jpg';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
 /* </photo> */
+/* <fishing> */
+// ---- fishing on the town map (v92): tap a pond, a stream, the waterfall or the dock; the pet walks over and casts. A top-down look at
+// the water: a shadow swims up, nibbles (don't tap yet), then bites (the bobber goes under and a "!" pops up): tap within FISH_WIN.
+const FISH_SPOT={pond:'pond',lilypond:'pond',duckpond:'pond',waterfall:'river',stream:'river',streamx:'river',streamne:'river',streamnw:'river',streamse:'river',streamsw:'river',archbridge:'river',footbridge:'river',dock:'sea',beacon:'sea'};
+const FISH_WIN=.62;
+Object.assign(COLS,{fresh:{n:'Ponds and rivers',d:'Fish from the town’s ponds and streams. What bites depends on the season, the time and the weather.',ic:'f_koi'},sea:{n:'The sea',d:'Fish from the dock by the boardwalk. Some only come out at night, or in fog.',ic:'f_mackerel'}});
+LIKES.beacon&&LIKES.beacon.love.push('t:sea');LIKES.cactus&&LIKES.cactus.like.push('i:f_boot');LIKES.cloud&&LIKES.cloud.love.push('i:f_frog');LIKES.sponge&&LIKES.sponge.like.push('t:fresh');
+function fishAvail(w){const W=typeof wxNow==='function'?wxNow():null,mo=+lifeDay().slice(5,7),h=townHour(),inH=([a,b])=>a<b?h>=a&&h<b:h>=a||h<b;
+  return Object.values(FISHMAP).filter(F=>F.w.includes(w)&&F.mo.has(mo)&&inH(F.h)&&(!F.wx||(W&&(W.kind===F.wx||(F.wx==='rain'&&W.kind==='storm')))))}
+function fishRoll(w){const L=fishAvail(w);const tot=L.reduce((a,F)=>a+F.r,0);let x=Math.random()*tot;for(const F of L){x-=F.r;if(x<=0)return F}return L[0]}
+let FI=null;// {w,F,ph:'wait'|'swim'|'nibble'|'bite'|'done',t,...}
+function fishStart(w){if(FI)return;let el=$('#fishv');if(!el){el=document.createElement('div');el.id='fishv';el.className='fishv';el.innerHTML='<canvas id="fishc"></canvas><p id="fishh"></p><button class="phx" id="fishX" aria-label="Stop fishing">×</button>';document.body.appendChild(el);
+    $('#fishX').onclick=e=>{e.stopPropagation();fishEnd()};el.addEventListener('pointerdown',e=>{if(e.target.id!=='fishX')fishTap()})}
+  el.hidden=false;FI={w,F:fishRoll(w),ph:'cast',t:0,bx:0,by:0,sx:0,sy:0,nib:0,nibN:1+Math.floor(Math.random()*3),last:performance.now(),rip:[]};$('#fishh').textContent='Casting…';try{SFX.pop()}catch(_){}requestAnimationFrame(fishTick)}
+function fishEnd(){FI=null;const el=$('#fishv');if(el)el.hidden=true}
+function fishTap(){const f=FI;if(!f)return;if(f.ph==='bite'){fishCatch();return}if(f.ph==='nibble'||f.ph==='swim'){f.ph='flee';f.t=0;$('#fishh').textContent='Too soon! It swam away.';try{SFX.sad()}catch(_){}}}
+function fishTick(now){const f=FI;if(!f)return;const dt=Math.min(.25,(now-f.last)/1000);f.last=now;f.t+=dt;const cv=$('#fishc'),W=cv.clientWidth|0,H=cv.clientHeight|0;if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}
+  const x=cv.getContext('2d'),cx=W/2,cy=H*.46,R=Math.min(W,H)*.42,sea=f.w==='sea';
+  // the water
+  const g=x.createRadialGradient(cx,cy,R*.1,cx,cy,R);g.addColorStop(0,sea?'#7FD3F2':'#8EE0C8');g.addColorStop(1,sea?'#3E8EC8':'#3FA88E');x.clearRect(0,0,W,H);x.save();x.beginPath();x.arc(cx,cy,R,0,7);x.fillStyle=g;x.fill();x.clip();
+  for(let i=0;i<14;i++){const a=i*2.4+f.t*.15,r=R*(.2+((i*.137+f.t*.03)%1)*.8);x.strokeStyle='rgba(255,255,255,.18)';x.lineWidth=2;x.beginPath();x.arc(cx+Math.cos(a)*r*.3,cy+Math.sin(a)*r*.3,r*.25,a,a+1.2);x.stroke()}
+  if(!sea)for(let i=0;i<5;i++){const a=i*1.3+.4,px=cx+Math.cos(a)*R*.72,py=cy+Math.sin(a)*R*.72;x.fillStyle='#6CC152';x.beginPath();x.ellipse(px,py,R*.11,R*.08,a,0,6.0);x.lineTo(px,py);x.fill()}
+  // phases
+  const S=f.F?Math.min(1.8,.55+f.F.sz[1]/60):1,bob=[cx,cy+R*.05];let dip=0;
+  if(f.ph==='cast'){if(f.t>.6){f.ph='wait';f.t=0;f.wt=1.5+Math.random()*3.5;$('#fishh').textContent='Wait for it…';f.rip.push({x:bob[0],y:bob[1],t:0})}}
+  else if(f.ph==='wait'){if(f.t>f.wt){if(!f.F){f.ph='flee';f.t=0;$('#fishh').textContent='Nothing’s biting here right now.';}else{f.ph='swim';f.t=0;const a=Math.random()*6.28;f.sx=cx+Math.cos(a)*R*.9;f.sy=cy+Math.sin(a)*R*.9}}}
+  else if(f.ph==='swim'){const k=Math.min(1,f.t/2.2);f.px=f.sx+(bob[0]-f.sx)*k*.86;f.py=f.sy+(bob[1]-f.sy)*k*.86;if(k>=1){f.ph='nibble';f.t=0;f.nib=0}}
+  else if(f.ph==='nibble'){const per=.9;dip=f.t%per<.12?4:0;if(f.t%per<.02&&f.t>.05){f.rip.push({x:bob[0],y:bob[1],t:0});try{sTone({f:900,d:.05,v:.08,type:'sine'})}catch(_){}}if(f.t>per*f.nibN+.2){f.ph='bite';f.t=0;f.rip.push({x:bob[0],y:bob[1],t:0},{x:bob[0],y:bob[1],t:-.15});try{sNoise({f:700,q:1,d:.25,v:.35,ft:'lowpass'})}catch(_){}}}
+  else if(f.ph==='bite'){dip=14;if(f.t>FISH_WIN){f.ph='flee';f.t=0;$('#fishh').textContent='It got away! Tap faster when it bites.'}}
+  else if(f.ph==='flee'){if(f.t>1.6){f.F=fishRoll(f.w);f.ph='cast';f.t=0;f.nibN=1+Math.floor(Math.random()*3);$('#fishh').textContent='Casting again…'}}
+  // the shadow
+  if(f.F&&(f.ph==='swim'||f.ph==='nibble'||f.ph==='bite'||(f.ph==='flee'&&f.t<1))){let px=f.px,py=f.py;if(f.ph==='flee'){px+=(px-bob[0])*f.t*3;py+=(py-bob[1])*f.t*3}const ang=Math.atan2(bob[1]-py,bob[0]-px);
+    x.save();x.translate(px,py);x.rotate(ang);x.fillStyle='rgba(20,40,60,.42)';x.beginPath();x.ellipse(0,0,R*.13*S,R*.055*S,0,0,7);x.fill();x.beginPath();x.moveTo(-R*.12*S,0);x.lineTo(-R*.2*S,-R*.05*S);x.lineTo(-R*.2*S,R*.05*S);x.fill();x.restore()}
+  // ripples and the bobber
+  f.rip=f.rip.filter(r=>(r.t+=dt)<1.2);f.rip.forEach(r=>{if(r.t<0)return;x.strokeStyle=`rgba(255,255,255,${.6*(1-r.t/1.2)})`;x.lineWidth=2.5;x.beginPath();x.ellipse(r.x,r.y,8+r.t*50,(8+r.t*50)*.55,0,0,7);x.stroke()});
+  if(f.ph!=='cast'||f.t>.45){const by=bob[1]+dip;x.fillStyle='#FFFFFF';x.beginPath();x.arc(bob[0],by-4,9,Math.PI,0);x.fill();x.fillStyle='#FF3D9A';x.beginPath();x.arc(bob[0],by-4,9,0,Math.PI);x.fill();x.strokeStyle='#3B1273';x.lineWidth=2.5;x.beginPath();x.arc(bob[0],by-4,9,0,7);x.stroke()}
+  x.restore();x.strokeStyle='rgba(59,18,115,.6)';x.lineWidth=5;x.beginPath();x.arc(cx,cy,R,0,7);x.stroke();
+  if(f.ph==='bite'){x.font=`${Math.round(R*.3)}px "R42 Bubble",sans-serif`;x.textAlign='center';x.lineWidth=8;x.strokeStyle='#3B1273';x.strokeText('!',bob[0],bob[1]-R*.2);x.fillStyle='#FFD21F';x.fillText('!',bob[0],bob[1]-R*.2)}
+  if(f.ph!=='done')requestAnimationFrame(fishTick)}
+function fishCatch(){const f=FI;if(!f||!f.F)return;f.ph='done';const F=f.F,cm=Math.round(F.sz[0]+Math.random()*(F.sz[1]-F.sz[0])),r=treasureGet(F.id,true),B=state.fbest||(state.fbest={});let rec=false;if(!B[F.id]||cm>B[F.id]){B[F.id]=cm;rec=!!r&&!r.first}
+  try{SFX.chime()}catch(_){}fishEnd();try{firstOf('fish',`Our first catch: ${F.n.toLowerCase()}, ${cm} cm.`)}catch(_){}td('fish');saveSoon();
+  const tot=TREASURES.filter(t=>t.fish).length,got=TREASURES.filter(t=>t.fish&&(state.tfound||{})[t.id]).length,line=fishLine(F);
+  dlySay('beacon',`${r&&r.first?'New! ':''}${F.n}${F.s==='boot'?'':`, ${cm} cm`}${rec?' (your biggest yet)':''}. ${line}`,[[`Keep it (${got}/${tot} in the fish book)`,()=>{}],[`Sell to Beacon · ${(F.p||1)*BTN} buttons`,()=>{if(state.inv[F.id]>0){state.inv[F.id]--;state.btn=(state.btn|0)+(F.p||1)*BTN;saveSoon();updHUD();try{SFX.coin()}catch(_){}}}],['Let it go',()=>{if(state.inv[F.id]>0){state.inv[F.id]--;saveSoon()}toast('Off it swims.',true)}],['Cast again',()=>fishStart(f.w)]])}
+const FISH_LINES=['Lovely. Hold it gently.','Well caught. My old net would have missed that.','Look at the shine on it.','That one was waiting for you.','A good one for the shelf, if you ask me.','Mm. Fine fish. Very fine.','The water was on your side today.'];
+function fishLine(F){return F.s==='boot'?'Somebody will be glad to see that. Or not.':F.r<=2?'Oh! I’ve only seen two of those in all my years.':pick1(FISH_LINES)}
+// a dock by the boardwalk for sea fishing, placed once if the town has none
+function fishDock(){const m=tmM();if(!m||m.dk||tmMk()!=='world')return;m.dk=1;if(m.d.some(q=>q[0]==='dock'))return;const B=m.r.filter(q=>pathT(q)==='board');if(!B.length)return;const G_=twGrid();
+  const cand=B.map(q=>[q[0]+1,q[1]]).filter(([i,j])=>[0,1].every(b=>{const c=(j+b)*G_.W+i;return i<G_.W&&j+b<G_.D&&!G_.block[c]&&!G_.road[c]}));if(!cand.length)return;cand.sort((a,b)=>Math.abs(a[1]-24)-Math.abs(b[1]-24));
+  m.d.push(['dock',cand[0][0],cand[0][1]]);saveSoon();try{tmDecor();tw.gkey=''}catch(_){}}
+/* </fishing> */
+
 $('#phBtn').onclick=()=>phOpen();{const tb=$('#tmX');if(tb){const b=document.createElement('button');b.className='phbtn tmph';b.id='tmPhBtn';b.setAttribute('aria-label','Take a photo');b.innerHTML=$('#phBtn').innerHTML;b.onclick=()=>phOpen();tb.parentNode.insertBefore(b,tb)}}
 
 
@@ -63698,6 +63809,7 @@ const MERGE={btn:mCur,glim:mCur,tix:mCur,hearts:(l,r,b)=>Math.max(0,mNum(l,r,b))
   pmood:(l,r)=>!l?r:!r?l:(l.d||'')>(r.d||'')?l:(r.d||'')>(l.d||'')?r:Object.assign({},r,l,{cured:l.cured||r.cured,over:l.over||r.over}),
   dzDel:(l,r)=>[...new Set([...(l||[]),...(r||[])])].slice(-200),
   designs:(l,r)=>{const m=new Map();[...(r||[]),...(l||[])].forEach(d=>{if(d&&d.id&&!m.has(d.id))m.set(d.id,d)});return[...m.values()].sort((a,b)=>b.t-a.t).slice(0,DZ_MAX)},
+  fbest:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{})o[k]=Math.max(o[k]|0,l[k]|0);return o},
   keeps:(l,r)=>{const m=new Map();[...(l||[]),...(r||[])].forEach(e=>{if(e&&e.id&&!m.has(e.id))m.set(e.id,e)});return[...m.values()].sort((a,b)=>b.t-a.t).slice(0,200)},
   tfound:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{})if(!o[k]||(l[k].t||0)<(o[k].t||0))o[k]=l[k];return o},
   cbook:(l,r)=>Object.assign({},r||{},l||{}),
@@ -63731,7 +63843,7 @@ function adoptRemote(){buildHist.length=0;updUndoBtns();state=normalize(JSON.par
 function tryRemote(){if(sandbox||!remote||writing||dragging)return;if((remote.rev||0)<=Math.max(state.rev||0,syncBaseRev))return;if(!syncBase){if(!dirty)adoptRemote();return}
   // take the other side's changes in (keeping any unsaved ones of ours); if part of their write was stale, write ours back
   try{const R=normalize(JSON.parse(JSON.stringify(remote)));afterMerge(mergeInto(state,R));snapBase(R);if(localChanged())saveSoon()}catch(e){console.warn('merge',e)}}
-function normalize(s){const oldPal=!!s&&!(s.pv>=2),curMig=!!s&&s.btn==null;try{if(s&&Array.isArray(s.designs))designRegister(s.designs.filter(d=>!(s.dzDel||[]).includes(d&&d.id)))}catch(e){console.warn('designs',e)}const d=defaultState();s=Object.assign({},d,s||{});{const ob=v=>v&&typeof v==='object'&&!Array.isArray(v);['gifts','disc','acts','seeds','hdeco','tfound','cbook','firsts','pmem'].forEach(k=>{if(!ob(s[k]))s[k]={}});['garden','parcels','evseen','keeps','designs','dzDel'].forEach(k=>{if(!Array.isArray(s[k]))s[k]=[]})}s.items=Array.isArray(s.items)?s.items.map(i=>i&&typeof i.k==='string'&&i.k.startsWith('win_')?Object.assign(i,{k:winKeyFix(i.k)}):i).filter(i=>i&&CATMAP[i.k]&&typeof i.id==='string').slice(0,80):[];
+function normalize(s){const oldPal=!!s&&!(s.pv>=2),curMig=!!s&&s.btn==null;try{if(s&&Array.isArray(s.designs))designRegister(s.designs.filter(d=>!(s.dzDel||[]).includes(d&&d.id)))}catch(e){console.warn('designs',e)}const d=defaultState();s=Object.assign({},d,s||{});{const ob=v=>v&&typeof v==='object'&&!Array.isArray(v);['gifts','disc','acts','seeds','hdeco','tfound','cbook','firsts','pmem','fbest'].forEach(k=>{if(!ob(s[k]))s[k]={}});['garden','parcels','evseen','keeps','designs','dzDel'].forEach(k=>{if(!Array.isArray(s[k]))s[k]=[]})}s.items=Array.isArray(s.items)?s.items.map(i=>i&&typeof i.k==='string'&&i.k.startsWith('win_')?Object.assign(i,{k:winKeyFix(i.k)}):i).filter(i=>i&&CATMAP[i.k]&&typeof i.id==='string').slice(0,80):[];
   s.inv=s.inv&&typeof s.inv==='object'?Object.fromEntries(Object.entries(s.inv).filter(([k,v])=>ITEMMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):Object.assign({},d.inv);
   s.toys=Array.isArray(s.toys)?s.toys.filter(k=>ITEMMAP[k]&&ITEMMAP[k].k==='toy'):d.toys.slice();s.daily=s.daily&&typeof s.daily==='object'?s.daily:{};
   s.pet=Object.assign({},d.pet,s.pet||{});if(s.pet.look&&typeof s.pet.look!=='object')delete s.pet.look;if(s.pet.heads&&!(Array.isArray(s.pet.heads)&&s.pet.heads.length===2))delete s.pet.heads;else if(s.pet.heads)s.pet.heads=s.pet.heads.map(x=>String(x||'').slice(0,10));s.tokens=s.tokens==null?3:Math.max(0,Math.min(999,+s.tokens|0));s.capsdex=Array.isArray(s.capsdex)?s.capsdex.filter(k=>typeof k==='string').slice(0,64):[];s.ceil=s.ceil==null?1:clamp(+s.ceil||0,0,1);s.wish=s.wish&&typeof s.wish==='object'&&(!s.wish.k||WISH_T[s.wish.k])?s.wish:{};s.wear=[...new Set(Array.isArray(s.wear)?s.wear.filter(id=>wearDef(id)):[])];s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
@@ -63793,7 +63905,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=91;
+const APP_V=92;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
