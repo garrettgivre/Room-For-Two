@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v81** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v81'` in `sw.js`; bump both for anything
+**Current build: v82** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v82'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 75 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -759,3 +759,19 @@ Garrett's phone test asked for these.
   with no route wait instead of walking straight through things.
 - The map camera no longer tilts up to clear roofs (`tm.lift` is gone; Garrett: "the camera gets pushed away by buildings"). When a
   building hides the pet for over .35 s, a small pet-face marker shows where it is (`tw.petHid`, `twPetMark`, `.twpm`).
+
+## Touching the pet, caught in the act, a calm arrival (v82)
+- **Touch** (`/* touching the pet */` functions before `petTap`): `pick` now returns `{pet,head}` (head index from `R.heads[i].p`).
+  Room pointer gestures on the pet: tap = `petTouch(head)` (your head: bob + happy bubble via `pet.myH`; your person's head: a curious
+  tilt `pet.boop.c` and the heads glance at each other; tummy: a jelly squash `pet.soft.sv`; 4 quick boops = ticklish jiggle/hiccup;
+  3 taps wake a sleeper), drag on the pet = rub (`petRub`, `rubPose`: leans into it, eyes half shut, a heart every ~170 px),
+  press 380 ms = pick up (`petPickUp`, mode `held`, `petHoldMove` follows the finger on the floor plane, `heldPose` dangles and kicks,
+  `petDrop` falls with gravity onto the nearest free nav cell). `petAffect` = the pat reward (td 'pat', throttled fun/affection).
+  `petGo`/`petAct` refuse while held. Styling and Decorate keep the old behaviour.
+- **Arrival** (`arrStart`, near `welcomeBack`): every visit (load, or back after 15+ min) opens the same way. After 1 h+ away the pet
+  is "caught in the act" (`arrScene`: napping, daydreaming, looking round, sniffing, twirling, dancing; mode `scene` replays the act,
+  facing away), notices you (`arrNotice`, ❗ from both heads), walks over and says hello (`petGreet`); after 3 h+ one welcome card
+  (`welcomeBack`, returns true when shown) that also carries the scene, "Today with <pet>" (first open item) and the daily gift
+  (`ARR.gift`). While `ARR.on`, routine toasts wait (`ARR.q`, max two shown after) and deliveries, visitors and the together check hold
+  off. The local-weather question now comes the first time you open the map (`tmOpen`), not 12 s after load. `ARR` is a `var` (toast
+  runs before its line). The first-time intro (`showCoach`) was rewritten (no egg, no Two-Do List).
