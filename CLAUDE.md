@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v96** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v96'` in `sw.js`; bump both for anything
+**Current build: v97** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v97'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -953,3 +953,6 @@ full model is built (`twFull`); map pins show the costume's face. The mask textu
 portrait thumbnail arrives later it's redrawn with the transform reset (`setTransform`), then re-uploaded on both renderers.
 - v96: a one-time "What's new" card per device (`/* <whatsnew> */`, `WHATSNEW` [[version, text]], localStorage `r42wn`), shown
   after the arrival sequence when this phone last saw an older version. **Add a line to `WHATSNEW` for each user-visible release.**
+- v97 perf fix: seasonal decorations are now `bakeStatic`-merged like the arranged ones (static pieces in their own group, animated
+  ones kept apart); before, 15 seasonal pieces added ~770 draw calls to the far map view (2,095 → 1,492; v88 was 1,363). Measure
+  map cost with draw counts at far/mid/street (see `.claude/items/perf.js`) after adding anything to the map.

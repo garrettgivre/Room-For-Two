@@ -61238,8 +61238,8 @@ function seasonSpots(){const S=seasonNow(),m=tmM(),G_=typeof twGrid==='function'
   keys.forEach(k=>{const [w,d]=TM_DECOR[k].sz||[1,1];let n=0;for(let t=0;t<220&&n<3;t++){const [i,j]=cand[Math.floor(R()*cand.length)];let ok=true;for(let a=0;a<w&&ok;a++)for(let b=0;b<d&&ok;b++){const c=(j+b)*W+i+a;if(i+a>=W||j+b>=G_.D||blk[c]||road[c]||taken.has(c))ok=false}
       if(!ok||out.some(q=>Math.abs(q[1]-i)+Math.abs(q[2]-j)<(q[0]===k?9:3)))continue;for(let a=0;a<w;a++)for(let b=0;b<d;b++)taken.add((j+b)*W+i+a);out.push([k,i,j]);n++}});return out}
 function tmSeasonDecor(){if(!tm||!tm.world||tmMk()!=='world')return;const S=seasonNow();if(tm.seaDecorS===S&&tm.seaG)return;if(tm.seaG){tm.world.remove(tm.seaG);tm.seaG=null}tm.seaDecorS=S;tm.seaCells=new Set();
-  const L=seasonSpots();if(!L.length)return;const g=G();L.forEach(([k,i,j])=>{try{const D=TM_DECOR[k],[w,d]=D.sz||[1,1],o=tmLod(()=>D.b())();const [x,z]=twPos(i,j);o.position.set(x+(w-1)/2,0,z+(d-1)/2);o.rotation.y=(((i*7+j*3)%4))*Math.PI/2;if(w!==d)o.rotation.y=0;g.add(o);for(let a=0;a<w;a++)for(let b=0;b<d;b++)tm.seaCells.add((j+b)*TM_W+i+a)}catch(e){console.warn('season decor',k,e)}});
-  tm.seaG=g;tm.world.add(g);tm.mergeDirty=true;if(tw)tw.gkey=''}
+  const L=seasonSpots();if(!L.length)return;const g=G(),gm=G();g.add(gm);L.forEach(([k,i,j])=>{try{const D=TM_DECOR[k],[w,d]=D.sz||[1,1],o=tmLod(()=>D.b())();const [x,z]=twPos(i,j);o.position.set(x+(w-1)/2,0,z+(d-1)/2);o.rotation.y=(((i*7+j*3)%4))*Math.PI/2;if(w!==d)o.rotation.y=0;let an=false;o.traverse(c=>{if(c.userData.anim)an=true});(an?g:gm).add(o);for(let a=0;a<w;a++)for(let b=0;b<d;b++)tm.seaCells.add((j+b)*TM_W+i+a)}catch(e){console.warn('season decor',k,e)}});
+  try{bakeStatic(gm)}catch(e){console.warn('season bake',e)}tm.seaG=g;tm.world.add(g);tm.mergeDirty=true;if(tw)tw.gkey=''}
 // particles over the map: a 2D canvas drawn each frame (cheap); denser at street level
 const SEAFX={p:[],S:'',t:0};
 function tmSeasonFx(dt){const cv=$('#tmSeaFx');if(!cv||!tm)return;const S=seasonNow(),W_=cv.clientWidth|0,H_=cv.clientHeight|0;if(!W_||!H_)return;if(cv.width!==W_||cv.height!==H_){cv.width=W_;cv.height=H_}
@@ -65569,7 +65569,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=96;
+const APP_V=97;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
