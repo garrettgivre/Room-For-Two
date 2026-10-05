@@ -10,8 +10,8 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v82** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v82'` in `sw.js`; bump both for anything
-user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 75 (older clients refresh
+**Current build: v83** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v83'` in `sw.js`; bump both for anything
+user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
 **Who and how**
@@ -775,3 +775,33 @@ Garrett's phone test asked for these.
   (`ARR.gift`). While `ARR.on`, routine toasts wait (`ARR.q`, max two shown after) and deliveries, visitors and the together check hold
   off. The local-weather question now comes the first time you open the map (`tmOpen`), not 12 s after load. `ARR` is a `var` (toast
   runs before its line). The first-time intro (`showCoach`) was rewritten (no egg, no Two-Do List).
+
+## Buttons, glimmers, tickets; the Bag; the prize counter; town dailies (v83)
+Garrett didn't love hearts as money (hearts mean love: the pet's affection, friendship). Now:
+- **Buttons** `state.btn` (everyday money; shops, salon, parcels, market). Catalog prices `.p` stay in the old units and are converted
+  at the money boundary: `BTN=10`, `itemPrice(it)`, `furnPrice` (×BTN), `tilePrice` (×BTN), doors `6*BTN`, wear `D.p*BTN`, `studioPrice`
+  (wraps `studioPrice0`). Logic that compares raw `.p` (gift pools, cheap/expensive thresholds) still uses old units on purpose.
+- **Glimmers** `state.glim` (special): earned from bond level-ups (2, 5 every fifth), the daily treat, holidays, big moments, 3-star
+  makeovers, a "you're both here" moment (`acts.tog`), finished collections (3). Spent on room size (`SIZE_PRICE` 10/20, offer `cur:'g'`)
+  and one **showpiece** per furniture set (`glimOf(k)`: the set's priciest piece, p≥6, costs round(p/4) glimmers; `furnCur(k)`).
+  Offers carry `cur` ('b'|'g'|'t'); `wal(c)`, `payCur(n,c)`, `curIc(c)`, icons `IB`/`IG`/`IT` (assets/icons/cur-btn|glim|tix.svg).
+- **Tickets** `state.tix` (arcade): every round pays `TIX_STARS` [5,15,30,50] (+10 new best, +25 per mastery level), no daily cap;
+  the capsule machine costs `CAP_TIX` 30; capsule tokens are folded in (all old token grants give 30 tickets).
+- Hearts (`state.hearts`) and `state.tokens` are legacy, frozen after migration. `normalize` migrates once (`curMig`: btn = hearts×10,
+  tix = tokens×30, glim = 5 + 5×bond level). `MERGE.btn/glim/tix = mCur` (takes the larger when the base has no value, so two phones
+  migrating don't double it). `SYNC_MIN_V` 83. HUD jar shows buttons and glimmers (`#hearts`, `#glims`).
+- **The Bag** (menu tile `bag`, `renderBag`, `bagTab`, `bagOpen`): tabs Food, Care, Toys, Treasures, Keepsakes, Furniture, Clothes, Seeds.
+  Treasures are `ITEMS` kind 'treasure' (`TREASURES`, collections `COLS` shore/trail, models `TREASURE_BUILD` in `PROP_BUILD`) in
+  `state.inv`; `treasureGet(id)` records the first finder (`state.tfound`), finishes collections (`state.cbook`, +3 glimmers, a ribbon).
+  Keepsakes `state.keeps` (letters, ribbons, bottle notes, wishes come true; `keepAdd`; merged by id). Item actions: use, give to a
+  neighbour (`giveGift(...,'mail')`, treasure tags `t:<col>`), leave for your person (`surpLeave`), sell to Beacon (treasures, p×BTN),
+  put in your room (set `treasure`: CAT `tr_<id>`, `gacha:1`, never sold; `treasureSet()` via `SET_DEF`).
+- **Prize counter** (`renderPrizes`, tab `prizes`; Joy/Pixel close-up action or the arcade's game list): arcade-ish furniture, toys,
+  sweets, and 1 glimmer for 400 tickets (`prizeList`).
+- **Dailies** (block `/* <dailies> */`; optional, never on a list; once a day per person via `dKey`/`dDone`/`dMark` in `state.acts`):
+  beachcombing (3 `shore` finds a day on boardwalk path cells, in `findSpots`, `shoreRoll`), the day-old basket (`dlyBasket`; Snack
+  Shack close-up or its map card), the wishing well (tap the `well` decoration on the map → `dlyWell`, 10 buttons; next day
+  `dlyWellTick` grants it via a resident's letter, or gives buttons back), Prickles' jokes (`dlyJoke`, `JOKES`, `JOKE_RE`; his
+  close-up or "I've got a joke for you" on the map; weather he hates lowers the score; 3 = a trail treasure), Blush's mystery colour
+  (`dlyMystery`, Blush or Gloss; previews, keep or change back), the Mayor's monthly parcel (`dlyMayorTick`, `state.mayorM`,
+  `MAYOR_LET`). `dlySay(k,text,choices)` is a small dialogue card that works anywhere. All run from `lifeTick` → `dlyTick`.

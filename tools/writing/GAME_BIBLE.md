@@ -1926,6 +1926,15 @@ lit first.
 - Fold's signs "know Tuesday is windy". Stitch's window star from Fold has a crinkle on its third point (Fold blames the wind).
 - Gloss has booked Blush every sunset this summer for dreaming time at the studio window (with a cushion and a pear).
 
+### Money and town dailies (v83)
+- The town's money is **buttons** (everyday), **glimmers** (rare and special; earned from big moments, spent on showpieces and room size) and **tickets** (the arcade's, for the prize counter and the capsule machine). Hearts mean love, never money.
+- Beacon buys treasures for its shelf of adopted things ("It’ll be happy on my shelf"). Treasures wash up on the Bubble Bay boardwalk every day.
+- Bunbun's day-old basket at the Snack Shack: one free bake a day each ("Nobody goes hungry on my lane"). Pip minds it when she's out.
+- The wishing well (Lantern Meadow side of town) takes ten buttons a wish; wishes sometimes come true the next day, delivered by a neighbour with "a funny feeling". When they don't, Beacon finds your buttons by the well, polished.
+- Prickles will hear one joke a day and rates it. Good ones earn something from his trail jar: a pressed cactus flower he carried across the Great Dry in his hat, a jar of seven sands from seven dunes ("Don’t shake it"), his old compass ("points mostly north; that was the whole trouble").
+- Blush tries a free mystery colour on the pet once a day ("Mystery colours are never a mistake. Well, rarely.").
+- The Mayor posts a parcel and a letter on the first of every month, in three parts where possible.
+
 ## Open questions (undecided; ask Garrett before writing as fact)
 1. **Is there a sea?** Bubble Bay, the pier, the beach, the harbour, boats, gulls and Beacon's lighthouse are all over the lore, and Prickles dreams of the sea; the v60 map is countryside with
    ponds. Options: the bay is just off the map's edge; or add a shore to the south-east.
