@@ -1972,6 +1972,28 @@ lit first.
 - When both of you are in the app you can share a moment (a group hug, a dance party, cake for three, a high five through the pet); both phones celebrate.
 - Blush will paint any of your own designs onto the pet as a pattern.
 
+### Newest things (v101): Playhouse Hill
+- The Ferris wheel has 16 cars, two each "for thirty-two of us" (Sketch); Parcel calls them "sixteen little doors". The bouncy castle's eleven suggestion-box entries: Joy 6, Boing 5.
+- The Little Museum: Fold lettered its sign small, Bolt built the shelves, Sketch measured the cases (all one size), Cobble laid the floor; each catalogue card is folded once (Fold taught Dewey); an empty case holds a card that says "yet"; Parcel carries donations people post; Cobble gave Dewey a stone.
+- Beacon names every fish before paying for it (Pixel's was "Fin"). Bolt built the dock by the boardwalk; Sketch checked it was level.
+- Bolt built Posy a scarecrow in a hard hat. Tock and Sketch have cider at four instead of tea in autumn. Pixel's one design is a single lime square; Joy cried at it.
+### Newest things (v101): Sugarloaf
+- Bunbun asked Dewey to put her mum's first rolling pin in the museum ("it's a find") and keeps a tin by the till for the Mayor's projects (mostly Pip's buttons); in autumn she sells apple cake and warm cider with a cinnamon stick. Pip's batch thirty-four is apple jam.
+- Dewey has turned down an empty jam jar (twice), Dusty's first-fluff jar and Dr. Patch's first lollipop stick for the museum. Dusty dusts the museum cases unasked; a moth lives in its feather duster.
+- Cushy left a cushion on the dock for whoever is fishing and lent Dewey one for the museum bench.
+- Tutti has pumpkin swirl on the cart in autumn and plans to park it at the bottom of the Ferris wheel; Dr. Patch will keep a lollipop there for anyone who goes green.
+- Crumb let a firefly out on the cottage stairs as a night light, presses red leaves in Dewey's heaviest book (Dewey doesn't know), and wants her "thinking seed" planted in the community garden. Scone lost a staring contest to Posy's scarecrow.
+### Newest things (v101): Bubble Bay
+- Dewey writes museum cards in brown ink ("old library", says Blush), catalogued Fizz's entrance "as a draught", and told Stitch needles are common. Loofah donated a boardwalk shell.
+- Stitch measured the plaza for the outdoor stage's curtain (twice, two numbers); Blush wants it in "the hush before". Pom plans everyone's antennae for the stage's opening night; Pom's pocket twelve is the bug pocket for now; a fish that got away from Pom was named Kevin.
+- Bobbin gave the project nine buttons, wants eleven rides on the Ferris wheel, and caught a boot off the dock (labelled "Boot", in thread). Bobbin's autumn knit stall is nearly all mittens.
+- Gloss booked a cider break at three for the season and keeps an orange autumn tab (Pom lost it in Duchess), a green tab for Posy's bugs, a gold one for museum donations; she visits the dock at five to five for five minutes.
+- Beacon sends moths on toward the fields, away from Stitch's shop, and offers its spyglass for the observatory's first clear night.
+### Newest things (v101): Lantern Meadow
+- Museum cards are filed by the day of donation, so they read as a diary of the two of you; Dewey keeps a towel on the museum desk for wet fish (Nimbus waits at the door because of the towel rule) and catalogued a damp boot twice, under B and D. The Mayor cut a tiny ribbon by the museum's coat hooks after Dewey asked him not to cut one.
+- Posy planted the tulips in a heart so it shows from the Ferris wheel. She names the bugs she buys (one beetle is Herbert). Her scarecrow wears one of Prickles' old sunhats and holds an upside-down book; the Mayor shook its hand by mistake. Prickles has filed twelve complaints against the bouncy castle and corrected the museum's trout card in pencil.
+- Echo moved its afternoon song to E because the cider cart squeaks in E; the new dock creaks in three-four time when the tide comes in. Lumi wants to light the Ferris wheel bulb by bulb. There are 16 pumpkins on the 16 Town Hall steps in autumn.
+
 ## Open questions (undecided; ask Garrett before writing as fact)
 1. **Is there a sea?** Bubble Bay, the pier, the beach, the harbour, boats, gulls and Beacon's lighthouse are all over the lore, and Prickles dreams of the sea; the v60 map is countryside with
    ponds. Options: the bay is just off the map's edge; or add a shore to the south-east.

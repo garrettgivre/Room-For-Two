@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v100** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v100'` in `sw.js`; bump both for anything
+**Current build: v101** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v101'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -980,3 +980,8 @@ the Mayor's pitch], built in order. Neighbours page tab "Project" (`projHtml`): 
 the key goes to `state.proj.pend`; `projPlace()` on the next map open puts it on a free spot by a road ~11 units from the middle (skips
 if the layout already has that key, so two phones can't place it twice). State `state.proj` {i, got:{pid:buttons}, done, pend}; merge:
 same i → per-person max, else the larger i; done and pend unioned.
+- v101: the garden has `gardenN()` planters (3, plus one every 3 bond levels, max 8) and two new `SEEDS`: potato (food) and pumpkin
+  vine (grows a Harvest Hearth pumpkin pouf `hv_pouf`). Residents' new-thing lines (`TALK[k].sys` bugs, museum, project, designs, season,
+  fishing; block `/* <sys2> */` after the memories block, sources `.claude/sys2/<group>.js`, brief `tools/dev/town/SYS2_BRIEF.md`),
+  weighted up in `cvSysLine` when they're relevant (a bug or fish found in the last 3 days, a recent museum donation, money in the
+  current project, having designs). The `season` lines are written for autumn; write spring/summer/winter ones before December.

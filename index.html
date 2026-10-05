@@ -35843,7 +35843,7 @@ function giveGift(k,src,how){const R=RESIDENTS[k];if(!R||!state)return false;con
   if(how==='mail')resPost(k,`Parcel just brought your present. ${line}`);saveSoon();return{line,grade,pts}}
 // ---- once-a-day actions (jobs)
 const actDone=key=>(state.acts||{})[key]===lifeDay(),actMark=key=>{(state.acts||(state.acts={}))[key]=lifeDay();saveSoon()};
-const SEEDS={berry:{n:'Quibbleberry bush',days:2,give:{t:'inv',id:'quibble',n:3},c:'#FF6FB5'},melon:{n:'Fizzmelon vine',days:3,give:{t:'inv',id:'fizzmelon',n:2},c:'#7FD86A'},
+const SEEDS={berry:{n:'Quibbleberry bush',days:2,give:{t:'inv',id:'quibble',n:3},c:'#FF6FB5'},potato:{n:'Potato patch',days:3,give:{t:'inv',id:'potato',n:3},c:'#C9A27A'},pumpkin:{n:'Pumpkin vine',days:4,give:{t:'fown',id:'hv_pouf',n:1},c:'#FF8A1C'},melon:{n:'Fizzmelon vine',days:3,give:{t:'inv',id:'fizzmelon',n:2},c:'#7FD86A'},
   root:{n:'Jibbleroot',days:2,give:{t:'inv',id:'jibble',n:2},c:'#C98A5A'},sunflower:{n:'Sunflower',days:3,give:{t:'fown',id:'sunflower',n:1},c:'#FFD21F'},dandelion:{n:'Dandelion',days:2,give:{t:'fown',id:'dandelion',n:1},c:'#FFF3A0'}};
 // things to do in the civic buildings (close-up actions while someone's on duty there)
 const PLACE_ACTS={townhall:[['pl:guestbook','Sign the guest book','Leave your names','#FFE9F2','chat'],['pl:brick','See the First Brick','In its velvet box','#FFE4D6','gacha']],
@@ -35908,8 +35908,8 @@ function lifeNewsHtml(){const C=cheerOf(),L=cheerLv(C.p),F=festOn(),b=bdaySoon(1
   return`<p>The Mayor clears his throat.</p><ul class="lifelist">${F?`<li><b>${esc(F.n)}</b> all week at the Town Hall!</li>`:''}${ev.map(([e,i,d])=>`<li><b>${esc(e.n)}</b> ${i?i===1?'tomorrow':dayName(d):'today'}, ${hourName(e.h[0])} at ${esc(SHOPS[evAt(e)]?SHOPS[evAt(e)].n:'')}</li>`).join('')}
     ${b.map(([k,i])=>`<li><b>${esc(RESIDENTS[k].n)}’s birthday</b> ${i?i===1?'tomorrow':`in ${i} days`:'today!'}</li>`).join('')}<li><b>The town</b> is “${esc(CHEER[L][1])}”</li></ul>`}
 // ---- the garden (three planters; either of you can water once a day; rain waters it for you)
-const GARDEN_N=3;
-function gardenPlots(){const G=state.garden||(state.garden=[]);while(G.length<GARDEN_N)G.push(null);return G}
+const GARDEN_N=3;const gardenN=()=>{let lv=0;try{lv=bondOf(state.pet.xp).lv}catch(_){}return Math.min(8,GARDEN_N+Math.floor(lv/3))};
+function gardenPlots(){const G=state.garden||(state.garden=[]);while(G.length<gardenN())G.push(null);return G}
 function plotGrowth(P){if(!P||!P.s)return 0;const S=SEEDS[P.s];if(!S)return 0;const days=new Set(P.w||[]);for(let i=0;i<14;i++){const d=new Date(P.d0+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+i);const ds=d.toISOString().slice(0,10);if(ds>lifeDay())break;if(weatherOf(ds)==='rain')days.add(ds)}
   return Math.min(S.days,[...days].filter(d=>d>=P.d0&&d<=lifeDay()).length)}
 function plantSeed(i,s){const G=gardenPlots();if(G[i]&&G[i].s||!(state.seeds&&state.seeds[s]>0))return;state.seeds[s]--;G[i]={s,d0:lifeDay(),w:[],u:Date.now()};td('plant');saveSoon()}
@@ -61027,6 +61027,11 @@ function cvSysLine(T){if(!T||(!T.sys&&!T.ev)||Math.random()>.38)return null;cons
   const W=(state.acts||{})[dKey('well')];if(W&&W.d&&(Date.now()-Date.parse(W.d+'T12:00:00Z'))<2.5*864e5)add(S.well,3);
   if(+day.slice(8,10)<=5)add(S.parcel,2);
   [['basket',1],['joke',1],['mystery',.8],['arcade',.8],['money',.8]].forEach(([k,w])=>add(S[k],w));
+  // the newest things: weighted up when they're relevant to what you've been doing
+  {const F=state.tfound||{},recentOf=t=>Object.entries(F).some(([id,f])=>t(id)&&Date.now()-(f.t||0)<3*864e5);
+   add(S.bugs,recentOf(id=>id.startsWith('b_'))?3:.8);add(S.fishing,recentOf(id=>id.startsWith('f_'))?3:.8);
+   add(S.museum,Object.values(state.museum||{}).some(m=>Date.now()-(m.t||0)<3*864e5)?3:.6);
+   add(S.project,state.proj&&Object.keys(state.proj.got||{}).length?2.5:1);add(S.designs,(state.designs||[]).length?1.5:.4);if(typeof seasonNow==='function'&&seasonNow()==='autumn')add(S.season,1.2)}
   if(!out.length)return null;const tot=out.reduce((a,q)=>a+q[1],0);let r=Math.random()*tot;for(const [a,w] of out){r-=w;if(r<=0)return cvPick(a)}return cvPick(out[0][0])}
 /* </res-chat> */
 /* </town-walk> */
@@ -63139,6 +63144,805 @@ Object.assign(TALK.patch,{mem:{
   ]
 }});
 /* </memories> */
+/* <sys2> */
+// ---- sys2: Bubble Bay. Openers about the newest things in town (bugs, museum, projects, designs, the season, fishing).
+Object.assign(TALK.stylist.sys,{
+  bugs:["A bee landed in my hair this morning, darling. It stayed for a whole consultation. I've never had a better listener.",
+    "Posy pays for bugs, I hear. If you catch the butterfly that keeps sitting on my bubbles, tell it I said ciao first.",
+    "Fireflies over the bay last night, darling. Tiny spotlights. I took a bow for each one.",
+    "Don't swing the net near my head, darling. Last time a beetle and a bubble went in together. Tragic for both."],
+  museum:["The Little Museum, darling! Dewey writes a card for everything. I asked for a card. Apparently I'm not a find.",
+    "I made an entrance through the museum door. Dewey catalogued it as a draught. Rude, darling. Accurate, but rude.",
+    "Take your fish to Dewey, darling. A goldfish behind glass is practically a star with its own dressing room.",
+    "Whisper in the museum, they say. I whispered. Dewey says my whisper carries to the bay."],
+  project:["A Ferris wheel, darling! I'll ride it at sunset and wave to the salon from the top. Somebody down there must wave back.",
+    "An outdoor stage is on the Mayor's list. For Echo, he says. Echo won't mind sharing one tiny matinee.",
+    "Every button you give the Mayor, he announces. I gave three and got a whole paragraph. Divine value, darling.",
+    "A bouncy castle? Boing bounced into my claw tub once. I'll be watching that castle from a safe distance."],
+  designs:["You made your own pattern, darling? Blush put it on {n} and the whole salon gasped. I led the gasp.",
+    "Your wallpaper design! I'd hang it behind a bathtub and simply never leave the tub.",
+    "A framed picture you drew yourselves, darling. My circus poster is jealous. I can see it sulking from here.",
+    "Design me a floor one day, darling. Something with bubbles. Mostly bubbles. A little drama round the edge."],
+  season:["Autumn, darling. The dry air pops my hair on the walk to work. I arrive with half a hairdo and all my dignity.",
+    "Cider season! I warm mine in the bath. Loofah says that's not how it works. Loofah is wrong, deliciously.",
+    "There's a scarecrow on the lane in a scarf rather like my robe. Flattered, darling. Its posture is tragic.",
+    "Leaves in the claw tub every morning now. Loofah fishes them out one at a time. No rush, apparently."],
+  fishing:["The new dock by the boardwalk, darling. I stood on the end of it in my robe. A gull thought I was a sail.",
+    "I tried fishing once, darling. I caught my own bubble. Beacon was very kind about it.",
+    "Bring a koi past the salon window sometime. Not in. Near. I want to see which of us shines more.",
+    "Fishing is so quiet, darling. I narrated the whole wait under my breath. The fish found it gripping."]
+});
+Object.assign(TALK.sponge.sys,{
+  bugs:["Mm. A dragonfly sat on the edge of my bath this morning. It stayed until the water cooled. Sensible.",
+    "Mm... Posy buys the bugs you catch. I'd only catch the slow ones. There aren't many slow ones.",
+    "Mm. Fireflies over the bath at night. Like a warm lamp that keeps moving. I hum for them.",
+    "Mm. A bee fell asleep in my turban at four. I let it stay. Nap time is nap time."],
+  museum:["Mm. The museum is cool inside. On warm days I stand by the fish for a while. Very restful.",
+    "Mm... Dewey wrote a card for a shell I brought in. It put my name on it. In small letters. Lovely.",
+    "Mm. One of everything, behind glass. No rush to fill it. The fish don't mind waiting.",
+    "Mm. Dewey says no napping on the museum bench. I didn't nap. I rested my eyes for a chapter."],
+  project:["Mm. A Ferris wheel goes round so slowly. I'd ride it twice and not get off in between.",
+    "Mm... the community garden. I'll ask Posy for a cucumber bed. For Blush's Friday face masks.",
+    "Mm. Every button helps, the Mayor says. I gave him some damp ones. He said damp counts.",
+    "Mm. A train halt. I'd sit on the platform and not go anywhere. Just to hear it come in."],
+  designs:["Mm. Your floor pattern looks warm. I'd take my flip-flops off for it.",
+    "Mm... Blush put your design on {n}. It looked like a soft towel with a story on it.",
+    "Mm. A picture you made yourselves. I'd hang it where the steam nearly reaches. Not quite.",
+    "Mm. Make one with little waves on it sometime. No rush. I'll be by the tub."],
+  season:["Mm. Autumn. The towels take longer to dry on the line now. I wait with them.",
+    "Mm... cider, warmed on the hot stone stove. Bring a cup over. No rush.",
+    "Mm. Leaves blow into the bath at home. I let them float. They look comfortable.",
+    "Mm. The evenings come early now. That's more time for a long bath before bed."],
+  fishing:["Mm. The new dock is warm in the afternoon. I sit on the end and let my flip-flops hang.",
+    "Mm... fishing is mostly waiting by water. I'm very good at that part.",
+    "Mm. Beacon buys the fish. It says something nice to each one first. I like that.",
+    "Mm. If you ever hook a little yellow boat, it's mine. Probably. I haven't got one yet."]
+});
+Object.assign(TALK.tailor.sys,{
+  bugs:["Bug catching, sweet? Butterflies are lovely. Just keep anything with fuzzy wings away from my wool.",
+    "If you catch a moth, please take it straight to Posy. Don't even show it to me. I'll know.",
+    "A ladybird sat on my tape measure all morning. I measured her twice and got two numbers.",
+    "Posy buys the bugs. I'd buy the butterflies' stripes if I could. They line up at every seam."],
+  museum:["The Little Museum, sweet. Dewey's cards are written so neatly. I'd hem every one.",
+    "I offered Dewey a needle for the museum. It said needles are common. Not in my shop, sweet. They vanish.",
+    "Is there a moth case at the museum? I'd like to know before I go in. So I can look the other way.",
+    "All those fish behind glass. Their scales line up better than my stripes. Just a smidge better."],
+  project:["The Mayor wants an outdoor stage with a curtain! I've measured the plaza for it already, sweet. Twice. Two numbers.",
+    "A Ferris wheel. All those little cabins. I keep thinking about seat cushions.",
+    "Put a few buttons in for the treehouse, sweet. The twins will want a rope ladder, and I'll want to check the knots.",
+    "Every project on the Mayor's list wants something sewn. I don't mind. Mostly."],
+  designs:["You drew your own pattern, sweet? Bring it in. I'd love to see it on a cushion.",
+    "Your wallpaper lines up at the seams. I noticed straight away. That's the whole trick.",
+    "Blush put your design on {n}. I measured it with my eyes. It sits on {a} and {b} just right.",
+    "A framed picture you made yourselves. I'd sew it a little gingham border, if you'd let me."],
+  season:["Autumn's my busy season, sweet. Everyone suddenly remembers they own a scarf with a hole in it.",
+    "The scarecrow on the lane has a loose button. I've walked past it three times. I'll mend it tonight.",
+    "Cider and a long hem on a cold evening. That's my favourite autumn thing.",
+    "Leaves blew into the shop and Bobbin sorted them by colour. Blush would have named every one."],
+  fishing:["Bobbin borrowed a spool of my strongest thread for fishing. It came back smelling of the dock.",
+    "The new dock by the boardwalk is very well built. Bolt measured once. I'd have measured twice.",
+    "Beacon buys fish, sweet. If you catch one with fins like lace, show me before you sell it.",
+    "I took a hem down to the dock once. I didn't catch anything, but the hem got finished."]
+});
+Object.assign(TALK.hair.sys,{
+  bugs:["Okay but hear me out: a ladybird in Duchess. Like a hair clip, but alive. Iconic.",
+    "A butterfly landed on Gerald and Gerald came out without any humidity at all! Obsessed!",
+    "Posy buys bugs?! I'm catching her one. Pocket twelve is the bug pocket now. Temporarily.",
+    "Fireflies look like tiny curl highlights. Hear me out: that, on {n}'s antennae."],
+  museum:["The Little Museum! Dewey looked at me like I still had the hair magazine. I returned it! Late, but I returned it!",
+    "Okay, the fish room at the museum? The colours! I'm doing a koi antenna this week. Obsessed.",
+    "Dewey writes a card for every donation! Can I donate Brenda? No. Brenda stays.",
+    "Hiii, did you donate a bug yet? Put a shiny beetle in there! So iconic."],
+  project:["A Ferris wheel! I'm riding it with my afro out. Wind at the top! Volume!",
+    "Okay, a bouncy castle?! Hear me out: bouncing is basically a blow-dry from the inside. I'm in.",
+    "I gave the Mayor all my buttons from pocket six! He said 'splendid' four times! I counted!",
+    "An outdoor stage! I'm doing everyone's antennae for opening night. Gloss doesn't know yet."],
+  designs:["You made your OWN pattern? And Blush put it on {n}? Obsessed! It's going on the mood board!",
+    "Okay, your wallpaper is giving full 'sunset festival'. {a} is going to love it.",
+    "Hear me out: your design, but on a hair bow. I'll ask Stitch. Stitch says yes to everything.",
+    "You drew a framed picture? Put it up where everyone sees it! Eye level! Iconic!"],
+  season:["Autumn! The leaves curl like Gerald! I'm naming the best one!",
+    "Okay, the scarecrow on the lane. That straw needs volume. I've offered. Twice.",
+    "Dry air means flat curls. Blush fluffs me back up before the first appointment.",
+    "Gloss booked us a cider break at three! On the calendar! In pink! Iconic!"],
+  fishing:["Fishing! I went once! I named the fish before it got away. Its name was Kevin.",
+    "Hear me out: the new dock, at sunset, one little lantern. Very 'midnight library'. {b} would love it.",
+    "Beacon buys fish! If you catch a koi, show me first! Colour reference!",
+    "Okay, I can't fish, I talk too much. The fish hear me coming. Byeee, fish."]
+});
+Object.assign(TALK.makeup.sys,{
+  bugs:["A monarch went past the studio window, love. The orange was 'marmalade held up to a lamp'.",
+    "Ladybirds are the only red I'd never change. Posy can have the rest of the bugs.",
+    "You've been catching bugs, love. The beetles are the best. Green into blue, with a secret in the middle.",
+    "A bee sat on my palette for an hour. It liked 'clover at noon'. Good taste."],
+  museum:["I go to the Little Museum for the fish, love. Their colours sit still for once.",
+    "Dewey writes its cards in brown ink. I told it the brown is 'old library'. It was pleased, I think.",
+    "Donate the shiny beetle, love. I'd like to sit in front of it with my journal.",
+    "The museum has good north light. I was surprised. Nobody asked me."],
+  project:["A Ferris wheel, love. From the top I could paint the moment before sunset. I've wanted that view for years.",
+    "Bolt says he's building the school house bell tower. I'll be choosing the colour. He doesn't know that yet.",
+    "The Mayor writes every button you give in pink. My ink pad. I'll allow it.",
+    "An outdoor stage needs a curtain the colour of 'the hush before'. I'll tell Stitch. Stitch will understand."],
+  designs:["Bring me your designs, love. I'll paint any of them onto {n}. Your pattern deserves a good canvas.",
+    "Your design on {n} has a colour I'd never have chosen. I like it more each day. I've written it down.",
+    "You drew a wallpaper. The blue in it is 'Sunday with the window open'. Did you know?",
+    "Your framed picture, love. Move it a hand lower. Then it's perfect."],
+  season:["Autumn, love. My journal's all oranges now. Yesterday was 'leaf on a wet step'.",
+    "The pumpkins on the lane are a dozen different oranges. Nobody else counts them. I do.",
+    "Cider is 'late afternoon in a jar'. I drink it slowly, so the colour lasts.",
+    "The scarecrow by the fields wears a scarf in 'mustard you regret'. I'd never. Someone did."],
+  fishing:["I sat on the new dock to paint the water, love. A fish jumped. I never finished the water.",
+    "Koi are my favourite, love. White, with a pink I'd call 'cheek in cold air'.",
+    "I only want to borrow a fish for an hour, for the colours. Beacon says that isn't how it works.",
+    "Fishing is too slow for Pom and just right for me. Pom comes anyway and talks to the water."]
+});
+Object.assign(TALK.polish.sys,{
+  bugs:["Bug catching. Lovely. I've made a tab for the bugs Posy buys. It's green. Butterfly green.",
+    "A bee came to the front desk without an appointment. I booked it in for two. It left at one. Noted.",
+    "Fireflies come out at dusk, right on time. I approve of fireflies.",
+    "Do bring your bugs in a jar with a lid. Confirmed? Confirmed. Twice."],
+  museum:["The Little Museum is beautifully labelled. Dewey let me check the cards. All in order. Lovely.",
+    "I've started a tab for what you've donated. Gold, of course. You're regulars there too now.",
+    "The museum's hours are on the door. I wrote them again underneath, in case.",
+    "One of each fish, bug and find. My favourite kind of collection. It knows when it's finished."],
+  project:["The Mayor's project fund. I keep the total in pencil, so it can go up. It keeps going up. Perfect.",
+    "A train halt! With a timetable! I'd like to be consulted on the timetable. I've told the Mayor twice.",
+    "A bouncy castle. Joy and Boing put it in the suggestion box eleven times. I counted. Eleven. Confirmed.",
+    "A Ferris wheel. Every cabin numbered, I hope. I'd like to know who's at the top at all times."],
+  designs:["Your own designs! Lovely. I've cut a new tab for them. Pink and mint, with a little pencil drawn on.",
+    "Blush put your pattern on {n}. I've updated {n}'s tab. The lime and blue have company now.",
+    "A wallpaper you drew. Very tidy at the edges. I noticed. I always notice edges.",
+    "If you'd like a design put on {n}, I can pencil you in with Blush. After lunch is best."],
+  season:["Autumn. I've switched the studio's seasonal tab to orange. Pom has already lost one in Duchess.",
+    "Leaves on the studio step every morning. I sweep at six fifty-five. They're back by seven. Noted.",
+    "A cider break at three, booked for the season. Pom was late to the first one.",
+    "The scarecrow on the lane is lovely. Very punctual. It's always exactly where it was."],
+  fishing:["The new dock. Lovely. I go at five to five, sit for five minutes and leave. Very restful.",
+    "Beacon buys fish. I keep a little list of what it's bought. Purely for interest.",
+    "Bobbin went fishing and came home with a boot. They labelled it in thread. 'Boot.' Thank you, Bobbin.",
+    "Fish don't keep appointments, I'm told. I find that very hard to accept."]
+});
+Object.assign(TALK.spool.sys,{
+  bugs:["I chased a butterfly all the way to the park and also I got lost and followed my thread home! Two hours!",
+    "Posy buys bugs! I caught a ladybird and it flew off my thimble before I got there! Next time!",
+    "Fireflies! They follow me at night! Or I follow them! I'm not sure who started it!",
+    "A bee landed on my thread and went round and round with me! It spun nearly as well as I do!"],
+  museum:["The Little Museum! I asked Dewey if buttons count as finds and it said no and also it said 'walk'!",
+    "I went in to see the fish and also the bugs and also I counted the cards! I lost count at the fish!",
+    "Donate a find! Dewey writes a card! I want to see a card with your names on it!",
+    "There's a shell in there from the boardwalk! It might've washed up next to my button! Same tide!"],
+  project:["A Ferris wheel! It goes round! Like me! I'm going to ride it eleven times!",
+    "And also a bouncy castle! Could I bounce and spin at once? I'll ask the Mayor!",
+    "I gave the Mayor nine buttons for the project! Money buttons! Not collection buttons! Mostly!",
+    "A train halt! Parcel wants mail by rail! I want errands by rail! Faster errands!"],
+  designs:["You made your own design! And also it's on {n}! It looks like a big new button!",
+    "Your wallpaper! I counted the squares! I got to a hundred and then the colours distracted me!",
+    "Could you design a button? A pixel one? I'd keep it in the good jar!",
+    "Blush put your pattern on {n} and also {n} turned round to look at it! Both heads!"],
+  season:["Autumn! Leaves everywhere! I come home with three stuck to my thread every evening!",
+    "The scarecrow on the lane needs a button eye! I'm lending it one! Not a good one! A medium one!",
+    "And also cider! Hot cider! I drank it too fast! I'll drink the next one slower! Maybe!",
+    "Mitten season! My knit stall is nearly all mittens now! And also one very small scarf!"],
+  fishing:["I went fishing off the new dock with my own thread! I caught a boot! I labelled it 'Boot' so nobody gets confused!",
+    "I sold Beacon a tiny fish and it asked if the scarf was keeping warm before I could ask! Backwards!",
+    "I sat still on the dock for nearly a whole minute! The fish didn't come! Was I too loud?",
+    "If you catch a crab, check if it's wearing a scarf! It might be the one from plank one-twelve!"]
+});
+Object.assign(TALK.beacon.sys,{
+  bugs:["Moths come to my light every night, friend. I send them on toward the fields. Stitch's shop is the other way.",
+    "Fireflies over the bay. Like a harbour full of little boats with their lamps lit. I count them and lose count.",
+    "Posy buys the bugs you catch? Fair trade. I buy the fish. Between us we keep you in buttons.",
+    "A dragonfly rode my balcony rail all afternoon. Steady little thing. Good sea legs."],
+  museum:["The Little Museum, friend. Dewey keeps one of each. My shelf keeps whatever nobody came back for. I think we'd get on.",
+    "Dewey filed my shell under S, years ago. Now it has a whole museum to file things in. Good for Dewey.",
+    "Donate a fish, friend, if it's a fine one. I'll buy the next one you catch. Fair winds to both.",
+    "Something odd on the tide line? Shelf or museum, that's the question. Bring it to me first. I'll know."],
+  project:["A Ferris wheel, friend. If they light it at night, I'll have someone new to flash goodnight to.",
+    "A train halt. More arrivals to count in. I'd walk up from the pier just to watch one come.",
+    "Nimbus wants the observatory. Good. I'll lend my spyglass for the first clear night.",
+    "Put a few buttons in the Mayor's box, friend. They rattle in there like rigging. He loves the sound."],
+  designs:["Your own pattern on the walls, friend? I'd know your house from the point now. Easy as a flag.",
+    "Blush painted your design on {n}. I saw {n} coming up the pier and knew it straight off. Fine colours to sail under.",
+    "Draw me a signal flag sometime, friend. One that only you two and {n} would know.",
+    "A picture you framed yourselves. I'd hang it where my light passes at night. That's where I'd want it."],
+  season:["Autumn, friend. The fog comes in earlier now. The light gets more work. I don't mind a bit.",
+    "Red leaves on the pier boards in the morning. Red sky at night, red leaves at dawn. A sailor's delight, I'd say.",
+    "Cider in the tin mug tonight instead of cocoa. Just the once. Don't tell the cocoa.",
+    "The gulls go quieter this time of year. I miss the racket. I wave at the logs instead."],
+  fishing:["Ahoy. The new dock by the boardwalk's a fine place to cast. Bring me what you catch. I pay fair.",
+    "Fishing's mostly waiting with your eyes on the water. I've been in that trade a long while.",
+    "If you hook a boot off the dock, don't throw it back. It's somebody's. I'll find its pair.",
+    "Fish bite best at the turn of the tide. My buoy days taught me that. Or I made it up. Try it anyway."]
+});
+// ---- hill, sys2: Playhouse Hill residents on the newest things in town (bugs, the Little Museum, town projects, designs, autumn, fishing).
+Object.assign(TALK.toymaker.sys,{
+  bugs:["A beetle rode on my spring all the way to the Toy Box! Okay okay, I didn't catch it, it caught me. Posy says that still counts.",
+    "Fireflies! They blink like my eye does! I tried blinking back at one for an hour. It won. It always wins.",
+    "I made a bug net with a spring in the handle! You swing it, it goes BOING, the butterfly laughs and flies off. Prototype six."],
+  museum:["The Little Museum! I went in very, very slowly. Dewey watched me the whole time. I didn't bounce once! Okay, once.",
+    "Did you donate something? Dewey writes it a card! I want a card. Can I donate Sir Boingsworth? Joy says no.",
+    "There's a beetle in the museum with a card in Dewey's tiny writing. I read it nose to the glass. Dewey made me wipe the glass."],
+  project:["A FERRIS WHEEL! Okay okay okay, it goes up and round and up again! I'm putting my buttons in. All of them. Most of them.",
+    "The bouncy castle's on the Mayor's list! We put it in the suggestion box eleven times! Joy did six, I did five. Tock counted!",
+    "From the top of the Ferris wheel you can see every roof! I'll bonk the top of the car. Worth it. I'll wear a cushion."],
+  designs:["You drew your own floor? Square by square? Okay okay, can I copy it onto a toy? A tiny one? I'll put your names on the box!",
+    "Blush put your design on {n}! On both heads! {n} is basically a toy I didn't make and I'm only a little bit jealous!",
+    "I tried a pixel design. Every square was a different colour. Joy says it's very me. It's over my bed now."],
+  season:["Leaves everywhere! I bounced into a big pile on the hill and came out wearing most of it! Joy calls it my autumn coat!",
+    "Scarecrows stand so still! How do they do it? I tried for ten seconds. I made it to four.",
+    "Okay okay, cider! Warm apples! Bunbun put a cinnamon stick in mine and I stirred so fast it went everywhere. On Tock, mostly."],
+  fishing:["I went fishing on the new dock! I built a rod with a spring in it so the fish come to you. They didn't come to me.",
+    "Beacon buys fish! I caught a tiny one and Beacon said it was a fine fish. Then I put it back because it looked worried. Felt great.",
+    "Fishing is mostly that word I don't say. The one with the W. I bounced on the boardwalk instead. A crab told me off."]
+});
+Object.assign(TALK.joy.sys,{
+  bugs:["Bug catching is a collection quest! I've got four butterflies logged. Posy pays buttons for them. Loot!",
+    "Fireflies after dark are the best bonus round. I chase them round the plaza after closing. Lumi says they're showing off for the lamps.",
+    "Bees are hard mode. Go slow, be nice, and Posy will buy them. She says hello to every single one before it goes in the garden."],
+  museum:["The Little Museum is a completion screen for the whole town! One of each! I want to see that board full!",
+    "I donated a butterfly. Dewey wrote it a card and didn't say a word to me. I'll take the card. GG.",
+    "Dewey doesn't want me loud in the museum, so I wave through the window and point. Lumi reads me the cards at ten."],
+  project:["A town project! Everybody chips in, everybody gets the Ferris wheel. That's co-op! That's my whole dream on one ride!",
+    "The bouncy castle's on the Mayor's list! We sent it in eleven times. Persistence is a skill, okay? It's basically grinding.",
+    "Put your buttons in the Mayor's project! Every button's a point for the whole team. Top score is a finished ride!"],
+  designs:["You made your own wallpaper? Pixel art? That's a custom skin for your whole room! Love it!",
+    "{n} with your design on? Blush painted it? That's a one-of-one look! Nobody else in town has that skin!",
+    "I made a joystick design for the arcade floor. Pixel gave it a six. Pixel gives a six to things it secretly likes. I checked."],
+  season:["Autumn mode is on! Leaves on the plaza, pumpkins on the steps. I jog my three laps through every crunchy pile.",
+    "Hot cider after a close round is a full heal. Bunbun says sip it. I speedran it. Burned my tongue. Respawn.",
+    "The scarecrow out by the fields holds a pose better than I do. I'm practising. Boing can't do one for more than four seconds."],
+  fishing:["The new dock by the boardwalk is the best fishing spot! You cast, you watch for the wiggle. Timing game! I love a timing game!",
+    "Beacon buys fish and says thank you to every one. Even the tiny ones. Especially the tiny ones. Total legend.",
+    "I caught a boot once! A whole boot! Beacon took it anyway and put it on the shelf. Rare drop, Beacon said."]
+});
+Object.assign(TALK.windup.sys,{
+  bugs:["I caught three beetles this week. Two matched. Tick. I let the odd one go first, so it would not feel left out.",
+    "Fireflies are hard to count. They switch off. I counted forty-one last night, or the same one forty-one times.",
+    "Posy buys bugs. She does not label them. I offered. She said bugs label themselves. I am still thinking about it."],
+  museum:["The Little Museum keeps one of each. One. Tick. It is the most restful room in town.",
+    "Dewey asked me to check its catalogue cards. Every one was in order. I said so. It said, naturally.",
+    "My ledger has a fish page. When one of your fish goes to the museum, I write kept beside it."],
+  project:["The Ferris wheel will turn two hundred and forty times a day, if it runs from ten until six. Sketch checked. We agree.",
+    "The Mayor's projects come in order. A Ferris wheel, then a train halt. I approve of a list that knows what comes next.",
+    "Thank you for funding the Mayor's project. I wrote down what each of you gave. Not to compare. To remember."],
+  designs:["You made a floor of your own, square by square. I counted the squares. All accounted for.",
+    "Blush painted your design on {n}. The pattern lines up across both heads. Tick. That took care.",
+    "Sketch drew a design of graph paper. On graph paper. I have filed it under designs and also under Sketch."],
+  season:["Autumn. Everything is putting itself away for the winter. Nobody is behind. I like that very much.",
+    "The leaves fall at an uneven rate. I have stopped counting them. Sketch says that is a first.",
+    "Cider at four instead of tea. Sketch said it was an autumn thing. The twelve clocks did not object."],
+  fishing:["I fished from the new dock for one hour. One fish. Beacon bought it. I wrote it on the fish page.",
+    "I do not go near the water often. My key squeaks. Sketch holds the rod and I count the ripples.",
+    "Beacon pays for fish from a tin mug and counts the buttons twice. I find that very reassuring."]
+});
+Object.assign(TALK.pencil.sys,{
+  bugs:["Sorry. I caught a butterfly. Its wings were the same on both sides. Exactly. I let it go after I checked.",
+    "Bug catching. Sorry. I drew a plan of where the beetles are. They moved. I'm on draft four.",
+    "Posy buys bugs. Sorry. I sold her a ladybird. Seven spots. Double-checked."],
+  museum:["The Little Museum. Sorry. The display cases are all one size. Dewey asked me to measure them. I was very happy.",
+    "Dewey writes a card for every donation. Sorry. The margins are even. I measured one. Just one. Okay, four.",
+    "Have you donated anything? Sorry. There's an empty case with a card that just says yet. I like that card."],
+  project:["The Ferris wheel. Sorry. I checked the plans. Sixteen cars. Two each, for thirty-two of us. Somebody planned that well.",
+    "The school house. Sorry. Bolt has offered to build the bell tower. I've offered to measure it. Twice.",
+    "You're funding the Mayor's projects. Sorry. I keep a graph of it. The line only goes up. My favourite kind of line."],
+  designs:["You made a pixel design. Sorry. A square for everything. That's how I feel about graph paper.",
+    "Sorry. Could I see your floor design? Does it match at the edges? It tiles? It tiles. Good.",
+    "Blush put your design on {n}. Sorry. It curves round both heads. I couldn't have drawn that. She can."],
+  season:["Autumn. Sorry. The scarecrow by the fields leans four degrees. I didn't fix it. It looked comfortable.",
+    "Sorry. Leaves keep landing on my plans. I've started drawing round them.",
+    "Cider. Sorry. Tock poured mine exactly to the line. It was a very good cider."],
+  fishing:["I measured my fish. Sorry. Twenty-one centimetres. Beacon measured it too. Twenty-one. We were both pleased.",
+    "The new dock. Sorry. It's level. I checked. Bolt says he built it. I checked that too. He did.",
+    "Fishing. Sorry. I don't like it when they get away. I've decided they've gone off to measure something."]
+});
+Object.assign(TALK.builder.sys,{
+  bugs:["Caught a beetle in my hat, chief! Didn't mean to. It was in there with a sandwich. They're friends now.",
+    "Fireflies on the hill when I camp! Nature's work lights, chief. Best crew I never had to hire.",
+    "Posy buys bugs! Sold her a bee. Got stung on the thumb. It wasn't Tuesday, so Dr. Patch says it doesn't count."],
+  museum:["The Little Museum, chief! I built the shelves. Level. Sketch checked them twice. I let Sketch.",
+    "Donate something to Dewey's museum, chief! It writes a card. A card! For a fish! I've never had a card.",
+    "Went to look round the museum and tapped a case with the mallet. Habit. Dewey made a face. Solid case, though!"],
+  project:["A Ferris wheel, chief! Let's nail it! I've got the bolts. Get it? I'm Bolt! I've got bolts!",
+    "The school house is on the list and I've called the bell tower. A bell tower, chief! Biggest thing I'll ever get to tap!",
+    "The Mayor's already borrowed my big scissors for the Ferris wheel ribbon. It's not built yet, chief! Keep those buttons coming!"],
+  designs:["You made your own wallpaper, chief? Not beige? Then it's perfect. Don't change a square.",
+    "Your floor design's got good straight lines, chief. I'd build a whole room round it. Sketch would measure it first.",
+    "Blush painted your design on {n}? Okay. Okay. She's got an eye for it. Don't tell her I said so."],
+  season:["Autumn, chief! Leaves in every gutter in town, so I'm up a ladder all week. Cushy's ladder. Borrowed it again.",
+    "Built Posy a scarecrow for her beds. Gave it a hard hat. Crows respect a hard hat, chief.",
+    "Hot cider by my fire after closing. Smells like apples and fresh paint. Best smell there is, chief."],
+  fishing:["Fished off the new dock, chief! Caught a fish and a hinge. Beacon bought both. The hinge got a shelf!",
+    "That new dock by the boardwalk's solid, chief. I tapped every plank. All of them sounded happy. Cast away!",
+    "Beacon buys fish, chief! I keep my rod in my hat for emergencies. Then I can't find my hat."]
+});
+Object.assign(TALK.pixel.sys,{
+  bugs:["Fireflies. They blink like my face. I blinked back. One stayed. Nine out of ten.",
+    "I caught a beetle. It was square, almost. I liked it. Posy bought it. I liked that less. Still a fair price.",
+    "Bugs move too fast to count. I count the ones in the jar. Four."],
+  museum:["The Little Museum. One of each. I went in once. Dewey watched my face. I kept it dim.",
+    "I donated a fish. Dewey wrote it a card. The card did not mention me. Correct. It is the fish's card.",
+    "The museum is a leaderboard with no scores. Every entry is first place. I find that hard. I am working on it."],
+  project:["A Ferris wheel. One full turn. I would ride it twice. Two is a good number.",
+    "The bouncy castle is seventh on the Mayor's list. Joy wants it first. Lists do not work that way. I told her. Gently.",
+    "You fund the projects with buttons. I counted what is left. I will not say. Saying it makes it bigger."],
+  designs:["You made a pixel design. Pixels. Eight out of ten. Nine if a corner is lime.",
+    "Your design on {n}. Blush did that. She calls my palette blocky. Your design is blocky. It looks good on {n}.",
+    "I made a design. It is one lime square. Joy cried. I did not expect that."],
+  season:["Autumn. Cooler. My top voxels are firm again. Good.",
+    "Leaves on the arcade steps. I sort them by colour. Joy kicks them. We are even.",
+    "Cider. Warm. I hold it with both blocks. Joy says I look cosy. I am cosy. You could not tell."],
+  fishing:["Fishing. A quiet game with long waits. I am good at it. I have had some practice.",
+    "I fished from the dock for two hours. Two fish. One per hour. Round numbers.",
+    "Beacon names every fish it buys before it pays. I did not ask. It told me anyway. Mine was Fin."]
+});
+Object.assign(TALK.parcel.sys,{
+  bugs:["A butterfly rode on my cap from Sugarloaf to the plaza! Twenty past nine to twenty-five to ten! Never paid the postage!",
+    "Bees in the Meadow at quarter to eleven! I walk past them very politely! They never sign for anything!",
+    "Posy buys bugs! I found a beetle in my satchel and nearly delivered it! Took it to Posy instead! Ten buttons!"],
+  museum:["The Little Museum's got a pin on my sorting-room map! A new door! Fifty-four! Fifty-five with the top of Beacon's lighthouse!",
+    "When people post their donations I carry them to Dewey! A beetle in a box with holes! Handle with care!",
+    "Have you donated anything to Dewey's museum yet? It writes a card and files it! Like post that never has to leave!"],
+  project:["A Ferris wheel first, then a train halt! I've already asked the Mayor about mail by rail! Twice! Before nine!",
+    "Every project the two of you fund goes on my map! The Ferris wheel's got sixteen little doors! I'll knock twice on each!",
+    "The Mayor's thank-you letter for the project is in three parts! Part one goes out this week! The rest when he's written it!"],
+  designs:["You made your own designs?! I'd love one as a stamp! A tiny one! Just for the two-door house!",
+    "{n}'s got your pattern on! Blush painted it? I'd know that design anywhere! I could deliver to it!",
+    "Fold says your wallpaper design has good corners! That's the nicest thing Fold can say about anything!"],
+  season:["Autumn on the round! Leaves on every step! I can't tell which door's which till I sweep! I sweep a lot!",
+    "Crunchy leaves cover up my squeaky boots! It's my quietest season! I keep forgetting to whistle!",
+    "A pumpkin on nearly every step! I deliver round them! One had a carved face that looked just like the Mayor!"],
+  fishing:["Fishing at the new dock! I post a letter to the fish first so they know I'm coming! None of them write back!",
+    "I carried a bucket of fish down the pier for Beacon! Squeaky boots, sloshy bucket! Very musical!",
+    "Went fishing after my round! Ten past twelve! Caught nothing but a dry afternoon! Best catch of the week!"]
+});
+Object.assign(TALK.crane.sys,{
+  bugs:["A butterfly landed on my wing. It thought I was a flower. I did not correct it.",
+    "Fireflies. Small lamps that fold themselves away. I would like to paint one on a sign.",
+    "I do not catch bugs. They catch me. A beetle has lived on my brush for two days."],
+  museum:["The Little Museum. I lettered the sign. Small letters. A museum should whisper.",
+    "Dewey writes a card for each thing. Its handwriting has very good corners. We are paper kin.",
+    "Each museum card is folded once. Dewey asked me how. I showed it the crease."],
+  project:["A Ferris wheel. A circle that stands up. I will paint its sign. The letters will go round.",
+    "I will paint the Mayor a sign for each project. He has asked for them in three parts. I have suggested one.",
+    "Thank you for the buttons. From the top of the wheel the town will see its own roofs. I have never seen mine."],
+  designs:["You make designs square by square. That is a kind of folding. I am glad.",
+    "Your design on {n}. Blush painted it. It wraps the heads well. No creases.",
+    "May I see your wallpaper design. Which corner did you start in. I always start in a corner."],
+  season:["Autumn. The leaves fold themselves. They do not need me. I watch anyway.",
+    "The scarecrow in the field has a paper heart pinned on it. It was the wind.",
+    "Cider steam is damp. I hold the cup at arm's length. It is still nice."],
+  fishing:["Fishing. I stay at the dry end of the dock. Parcel holds the rod. I hold the quiet.",
+    "I folded a paper fish and set it on the water. A real fish came to look. We were all very polite.",
+    "Beacon bought my paper fish. It is on the shelf. A little soggy. Happy."]
+});
+Object.assign(TALK.pebble.sys,{
+  bugs:["Beetle. On my wall. Mm. Stayed all morning. Good company.",
+    "Bees went in my yawn once. Two. Mm. Came out fine.",
+    "Fireflies. Mm. Lamps nobody has to light."],
+  museum:["Museum. Gave Dewey a stone. Mm. It wrote a card. Longer than anything I've said.",
+    "One of each. Mm. A river does that too. Slower.",
+    "Museum floor. Laid it. Mm. Don't run on it."],
+  project:["Ferris wheel. Goes round. Doesn't go anywhere. Mm. Fair.",
+    "Mayor's thrilled. Mm. Still no new stone. Six years.",
+    "Projects need paths. Mm. I'll do the paths."],
+  designs:["Your designs. Squares. Like cobbles. Mm. Good.",
+    "Make a grey one. Mm. I'd put it on my floor.",
+    "{n}'s got your pattern. Blush did that. Mm. Fine work."],
+  season:["Autumn. Leaves on the road. Mm. Hides the cracks. Kind of them.",
+    "Pumpkin on my wall. Not mine. Mm. Bunbun's. Different spot from the roll.",
+    "Cider. Warm. Mm. Drink it slow. Long as a yawn."],
+  fishing:["Fishing. Mm. I was a stone in a river. Fish went by. Now I go by them.",
+    "New dock. Stone footings. Mm. Good ones.",
+    "Caught one. Put it back. Mm. Looked like an old neighbour."]
+});
+// Newest things in town: Lantern Meadow (mayor, book, lantern, cloud, posy, cactus, gramo)
+Object.assign(TALK.mayor.sys,{
+  bugs:[
+    "Ahem! I see you've taken up bug catching, dear resident. Splendid. The pigeons are not on the list. They are on probation.",
+    "A beetle walked across my speech this morning. Right across part two. I let it finish. One must respect an audience.",
+    "I considered a ribbon for the first butterfly of the season. Fold says butterflies do not hold still for ceremonies. Fold is right, sadly.",
+    "Posy tells me she buys every bug you bring her. I asked if the town fund might buy one. She said the town fund may not. Quite."
+  ],
+  museum:[
+    "The Little Museum! Dewey asked me not to cut a ribbon. I cut a very small one by the coat hooks. Nobody saw. It counts.",
+    "Ahem. I offered the museum the uncut ribbon from my first ceremony. Dewey says a ribbon is not a find. I maintain I found it, in a drawer.",
+    "I read the museum cards on my way home. Dewey writes them so nicely. The goldfish card made me stand up straighter.",
+    "Dear resident, the museum is the finest thing in town with no speech attached. I am working on that. Gently. Dewey is watching."
+  ],
+  project:[
+    "The Ferris wheel! Every button you two put in, I write in the ledger, and then I stand on the balcony and imagine the view.",
+    "Ahem. When the wheel is done there will be a ribbon. A very long one. Bolt says the scissors will need their own cart. Wonderful!",
+    "After the wheel, a train halt! Parcel has asked about mail by rail. I have asked about speeches by rail. We are both waiting.",
+    "The projects are the founders' doing, and the town will remember. I shall see to it personally. In ink, with a flourish."
+  ],
+  designs:[
+    "I hear you've been drawing your own patterns. Might I suggest a goose? A tasteful goose. It would tie in with the speech.",
+    "Ahem! A framed picture of your own making, on your own wall. That's a gallery, dear resident. A small one. With a sofa.",
+    "Blush painted one of your designs onto {n}. I stood up when {n} walked past. One stands for art. Mostly for art."
+  ],
+  season:[
+    "Autumn in town! I have changed to my autumn hats. They are the same seven hats. I think of them as autumn hats. It helps.",
+    "Ahem. The leaves are turning, and I have asked them to come down in an orderly fashion. They have not replied.",
+    "I shook hands with Posy's scarecrow this morning, by mistake. It said nothing at all. I respected that.",
+    "A pumpkin on every step of the Town Hall. Sixteen steps, sixteen pumpkins. I counted them in my speech voice."
+  ],
+  fishing:[
+    "Fishing by the boardwalk! The new dock is very handsome. I plan to open it properly. Possibly with a fish holding the ribbon.",
+    "Beacon buys your fish, I hear. A fine trade. The town fund once bought a fish, for a ceremony. I shan't say more.",
+    "Ahem. Please don't fish in the fountain, dear resident. There are no fish in it. There is one of Crumb's pebbles, and it stays."
+  ]
+});
+Object.assign(TALK.book.sys,{
+  bugs:[
+    "Bugs. Hm. There's a moth that keeps getting out of chapter nine. If you catch it, bring it back to the page. Gently.",
+    "You've been catching bugs? Shh, sorry. Good, I mean. A ladybird has seven spots, usually. Not always. I checked. Twice.",
+    "Crickets sing outside the library at dusk. I don't shush them. I tried once. They don't read.",
+    "Please don't bring a live beetle into the reading room. Take it to the museum. The museum has a jar. The reading room has standards."
+  ],
+  museum:[
+    "The museum. Shh, it's quiet in there too. I write a card for every donation. The cards are the best part. Don't tell the fish.",
+    "Oh, you'll like this one. The museum cards are filed by the day you gave them. So the museum is also a diary of you two. Mostly fins.",
+    "Fish come in wet. I knew they would. I keep a towel on the desk now and I don't look at it. It's going quite well.",
+    "Someone left a damp boot at the museum. I filed it under B. Then again under D, for damp. It's in two drawers now. It doesn't seem to mind."
+  ],
+  project:[
+    "The Mayor wants a Ferris wheel. I'd like the school house. Somewhere to read aloud that isn't my library. My library likes it quiet.",
+    "Ferris wheel first. Fine. From the top you'll see every roof. Mine has a loose tile over the poetry. Don't tell Bolt. He'll lean it.",
+    "If the school house happens, Bolt is building a bell tower for it. A bell. Near books. I'm being very brave about it.",
+    "Every button you two give, the Mayor reads out at the meeting. Shh. All of them. Crumb and I count his ahems instead."
+  ],
+  designs:[
+    "I hear you've drawn your own wallpaper. Did you leave a margin? Always leave a margin. Things need room to think.",
+    "A framed picture you made yourself. Oh, you'll like this. Old books had pictures drawn in by whoever owned them. You're in good company.",
+    "Blush put a pattern of yours on {n}. Very nice. If it's stripes, they'd make a good bookmark. If it's dots, please don't nap on my atlas."
+  ],
+  season:[
+    "Autumn. Leaves on the library step. I don't sweep them. They crackle when someone comes in, so I know to look up.",
+    "Cider season. Please don't bring cider into the reading room. It's sticky, and then the pages are sticky, and they never forgive you.",
+    "Posy's scarecrow is holding a book. She gave it one. It's upside down. I haven't said anything. It looks so content.",
+    "Shorter days. More reading lamp, less window. Lumi comes past earlier now, and I read by the glow on the way out."
+  ],
+  fishing:[
+    "Fishing. Please dry your hands before the reading room. I've asked so often that Fold painted it over the door. Small letters.",
+    "The new dock. I walked to the end of it reading and stopped just in time. Beacon clapped. I prefer not to discuss it.",
+    "Oh, you'll like this one. A catfish tastes with its whole skin. I've never looked at the pond the same way since."
+  ]
+});
+Object.assign(TALK.lantern.sys,{
+  bugs:[
+    "Mm... the moths come to my lamps at night. I say hello to each one. They're very polite. They leave when the light goes.",
+    "Fireflies... I used to think they were lighting little lamps too. Tiny rounds. Mm. I still think that, a bit.",
+    "If you're catching bugs, leave the moths at the well lamp, please. It's lit last. It likes the company.",
+    "Posy says the beds sleep better with crickets in them. Mm. I believe her. Crickets are a good lullaby. I'd know."
+  ],
+  museum:[
+    "There's a firefly card in the museum now... Dewey says it doesn't glow in the case. Mm. I might leave a little lamp beside it.",
+    "I went to the Little Museum at noon. Very sleepy. I read every card anyway. Dewey writes them small, like whispers.",
+    "Mm. If you find something that glows, give it to the museum. The cases are a bit dark. I offered to help. Dewey said no flames near paper."
+  ],
+  project:[
+    "A Ferris wheel... mm. I'd like to light it. One bulb at a time, going round, until the top one's lit. Then I'd sit down.",
+    "The observatory's on the Mayor's list. Nimbus wants it so much they've stopped saying so. I can tell. They hum at the telescope pictures.",
+    "Every time you two give buttons, the Mayor says thank you from his balcony. To the lamp post, mostly. Close enough. Mm."
+  ],
+  designs:[
+    "You drew your own wallpaper... mm. Is there a light in it somewhere? I always look for the lamp in a picture.",
+    "Blush painted your pattern on {n}. I saw {n} in it at the lilac minute. It looked lovely in that light. Mm.",
+    "A picture you made, framed on your wall... I can see it from the street when your lamp's on. I slow down a little."
+  ],
+  season:[
+    "Mm... autumn. The lamps go on earlier, so I'm up earlier. I yawn at the carved pumpkins. They yawn back.",
+    "Cider with honey in it is almost hot milk. Almost. I had two, to be sure.",
+    "The leaves blow past the lamp posts and make little shadows. Like moths, but slower. A soft autumn wind is fine. Not the big kind.",
+    "A scarecrow on the lane lost its hat. I put it back on with my pole. It looked grateful. Mm, I think so."
+  ],
+  fishing:[
+    "The new dock... Beacon sweeps the light over it at night. I saw someone fishing out there in the dark. Was it you? Mm.",
+    "I tried fishing once. Fell asleep holding the rod. Nimbus says something tugged twice and gave up. Very patient fish.",
+    "Beacon buys your fish, I hear. It tells me about them across the bay. Long flash, short flash. I think that one was a mackerel."
+  ]
+});
+Object.assign(TALK.cloud.sys,{
+  bugs:[
+    "Forecast for bug catching: good, mostly. After a drizzle the snails come out. Sorry about the drizzle. You're welcome for the snails.",
+    "Foggy autumn mornings bring the garden spiders out. A drop on every thread of the web. I help with the drops. A bit. Probably.",
+    "Chance of you catching a dragonfly by the pond today: moderate. Chance of {n} trying with both heads at once: very high.",
+    "Posy says crickets like a damp lawn. I've been doing my best over the Potted Lodge. Very lightly. Prickles noticed."
+  ],
+  museum:[
+    "I took my weather book to the Little Museum. Dewey says it is not a fish. It is a bit of a find, though. I am still holding it out.",
+    "Every fish in the museum has its own card. Dewey asked me to wait by the door. It's the towel rule. I understand. I drip.",
+    "Forecast for the museum: dry indoors, always. Dewey checks every morning with a hand out. I'm told I'm the reason."
+  ],
+  project:[
+    "The observatory's on the list! A proper telescope for proper nights. The roof deck at the station is lovely, but the stars deserve more.",
+    "The Mayor says the Ferris wheel opening will be sunny. He hasn't asked me. He never asks me. Chance of sun: fair, as it happens.",
+    "Ferris wheel first. I'll stay over the meadow on opening day. Well away from the ribbon. I've learned that one.",
+    "Every button you two give goes in the Mayor's ledger. I put it in my weather book too, under outlook: brightening."
+  ],
+  designs:[
+    "You made your own wallpaper! Does it have raindrops? It doesn't have to. Clouds would be nice. Or sun. Sun's fine. Sun's lovely.",
+    "Blush painted your design on {n}. Forecast: {n} looking wonderful all day, spreading to the plaza by noon.",
+    "A picture you drew, framed on your wall. Keep it back from the window on wet days. Not that I'd rain on it. Not on purpose."
+  ],
+  season:[
+    "Autumn forecast: crisp mornings and misty evenings, leaves coming down from the north-west. I'm very fluffy this time of year.",
+    "Cider steams on the plaza in the cold, and the steam drifts up to say hello. It's nice to have company up there.",
+    "The scarecrows have stood out in my drizzle all week. I said sorry to each one. Not one of them minded. Very good listeners.",
+    "Fog in the mornings again. Beacon's thrilled. I'm thrilled. Lumi wears a scarf to light the lamps. Thrilled, mostly."
+  ],
+  fishing:[
+    "Fishing in the rain is the best fishing. The fish can't tell you're there. I've kept that out of the forecast. It's our secret now.",
+    "Fog over the new dock tonight, likely. Beacon says that's when the lanternfish come up. I'll keep it a gentle fog. For you.",
+    "Beacon buys your fish with buttons. I just trade it fog notes. I think I'm getting the better deal."
+  ]
+});
+Object.assign(TALK.posy.sys,{
+  bugs:[
+    "Hm hm hm. Did you bring bugs? I'll buy every one. Ladybirds for the roses, bees for the beans. Oh, I'm so pleased.",
+    "A bumblebee slept in my sunflower last night. I didn't move. Neither did Prickles. He says he was resting his eyes too.",
+    "Crickets on autumn evenings, sweetie. Bring me those. The lawn sings better with a few more.",
+    "Don't be scared of the garden spider. She's on our side, she keeps the aphids honest. Hm. Mind her web, though."
+  ],
+  museum:[
+    "I gave the Little Museum a ladybird. Dewey wrote her a card: seven spots, a little shy. That's her exactly.",
+    "Dewey asked me which bugs were rare. I said all of them are rare to somebody. It wrote that on a card. I went pink.",
+    "If you find a bug nobody's seen, take it to Dewey's museum. I'll come and look. I'll bring the watering can, just in case."
+  ],
+  project:[
+    "A community garden's on the Mayor's list. Last on the list. Hm. I don't mind. Bulbs wait all winter. I can wait a few projects.",
+    "Beds for everyone in the community garden. And a wheelbarrow nobody borrows without asking. Prickles has asked already. Hm. No.",
+    "The Ferris wheel first! From the top you'll see my beds. I've planted the tulips in a heart so it looks right from up there. Shh.",
+    "Thank you for your buttons for the projects, sweetie. The Mayor's so pleased he's gone pink. That's not easy on a marshmallow."
+  ],
+  designs:[
+    "You drew a floor with flowers on? Hm hm. Then I'll never tell you off for stepping on those ones.",
+    "Blush painted your pattern on {n}. {a} sniffed it and {b} sneezed. Same as with my flowers. That's a compliment.",
+    "Could you draw a wallpaper of seedlings? Then my seedling room could hold more seedlings than it has room for. Hm. That's the dream."
+  ],
+  season:[
+    "Autumn, sweetie. I leave the seed heads up for the birds. The scarecrow keeps an eye on them. He's very bad at scaring.",
+    "Pumpkins are in! I talked to them all summer while they ripened. They never answered. Pumpkins are very private.",
+    "Leaves on the beds. Prickles wants to rake them. I said leave them, the worms are having dinner. He went back to his chair.",
+    "Cider and a blanket on the porch with Prickles. He calls it a sunset picnic. It's four o'clock. The sun just comes early now."
+  ],
+  fishing:[
+    "Fishing? Hm. If you catch weed, bring it to me. Pond weed's lovely in compost. Fish go to Beacon, weed comes to Posy.",
+    "Prickles went down to the new dock with a rod. He came back with a story. No fish. A very long story.",
+    "Mind the reeds when you cast by the stream. Hm hm. The dragonflies sleep in them. Little green beds."
+  ]
+});
+Object.assign(TALK.cactus.sys,{
+  bugs:[
+    "Bug catching, kid? Hmph. In the Great Dry there was a beetle the size of my boot. Carried my canteen a mile. Wrong direction.",
+    "Posy buys every bug you bring her. Then she names them. I've met Herbert. Herbert is a beetle. Hmph. Decent fellow.",
+    "A cricket got in the house and sang all night. Posy said leave it. I left it. Hmph. Good voice. Better than some on the plaza.",
+    "Fireflies. Saw a whole river of them once, past where the maps stop. Lit up the boat. Biscuit tried to eat one."
+  ],
+  museum:[
+    "That museum. Hmph. I offered Dewey my old canteen. Says it isn't a find. I found it. Fifty years ago, in a dune. Still counts.",
+    "Went to the Little Museum. Very tidy. The fish cards are good. The trout one's wrong. I fixed it in pencil. Dewey'll find it.",
+    "Museum wants one of every fish, does it. Tell Dewey there's a whale out there that hums. Good luck fitting that on a card."
+  ],
+  project:[
+    "Bouncy castle's on the list. Hmph. Joy and Boing put it in the box eleven times. I put in a complaint twelve times. I'm winning.",
+    "A train halt, now that's useful. Somewhere to leave from. Not that I'm planning anything. Hmph. Don't look at me like that, kid.",
+    "Ferris wheel. Fine. Sit at the top and you can see the sea. That's all I'll say about it. Hmph.",
+    "You two keep putting buttons in the Mayor's tin. Good. Keeps him busy. A busy mayor gives shorter speeches. Slightly."
+  ],
+  designs:[
+    "Drawing your own floors now, kid? Draw a map on one. A proper map. North at the top. Nobody ever does that.",
+    "Blush put one of your patterns on {n}. Hmph. Bold. I like a bold pattern on an expedition member. Easier to find in a sandstorm.",
+    "Make me a framed picture and I'd hang it facing the room. Not the wall. The wall's for the other kind. Ask the wind-up cactus."
+  ],
+  season:[
+    "Autumn. Cold mornings. Hmph. Pot's chilly. Posy knitted it a cosy from Bobbin's pattern. Don't say anything.",
+    "Cider, hot, with cinnamon. Had it on a ship once in a gale. Spilled the lot. Drank what was left out of my helmet.",
+    "Posy's scarecrow is wearing one of my old sunhats. Hmph. Looks better in it than I did. Don't tell her I said so.",
+    "Leaves are coming down. The loud blue muffin keeps jumping in the pile I haven't raked. Hmph. Tell him to jump quieter."
+  ],
+  fishing:[
+    "Fishing at the dock, kid? Hold the rod low. Then wait. Longer than that. I waited three days once for a whale to stop humming.",
+    "Beacon buys your fish. Good. It pays fair. Tell it the old cactus sent you. It'll put the kettle on twice.",
+    "Caught a tuna once off a small leaky boat. Or it caught me. Round the bay twice. Biscuit sat on my helmet and supervised."
+  ]
+});
+Object.assign(TALK.gramo.sys,{
+  bugs:[
+    "The crickets tune up at dusk... a little sharp, every one. I play a quarter tone up so they don't feel alone.",
+    "Mm... a bee went into my horn at three. It came out humming the waltz. Slightly wrong. I loved it.",
+    "You've been catching bugs... a butterfly makes no sound at all. I've tried to write that. It's mostly rests."
+  ],
+  museum:[
+    "The Little Museum is very quiet... I played one note in the doorway to hear the room. Dewey looked at me. One was enough.",
+    "Dewey writes a card for each thing in the museum... I'd like to write each one a tune. A short one. The goldfish would be a trumpet.",
+    "A sound is a find too, I think... I know, the museum's for fish and bugs. I'm working on Dewey. Slowly. Pianissimo."
+  ],
+  project:[
+    "An outdoor stage is on the Mayor's list... with a curtain. I don't know where I'd look. Probably at the curtain.",
+    "The Ferris wheel first... I'd like a song that goes round. Up on the climb, down the other side. I've started the up part.",
+    "Your buttons for the projects... each one rings when it drops in the Mayor's tin. Mostly a D. I've been counting the Ds."
+  ],
+  designs:[
+    "You draw your own patterns... I hum while I look at them. Stripes are a march, dots are pizzicato. Yours sit somewhere between.",
+    "Blush painted a design of yours on {n}... it changed the tune I hum for {n}. Only the second head's part. It suits.",
+    "A framed picture you made... I'd like a record sleeve like that one day. When I've got the record."
+  ],
+  season:[
+    "Autumn... the leaves skitter over the plaza like a brush on a snare. I play slower so I can hear them.",
+    "Mm... the cider cart squeaks in E. I've moved the afternoon song into E. Nobody's noticed. The cart has.",
+    "Golden hour comes earlier now... my horn goes pink by five. I play the warm songs first, while it lasts.",
+    "A scarecrow on the lane stood through my whole set without moving... best audience all week. Don't tell the regulars."
+  ],
+  fishing:[
+    "The new dock creaks in three-four time when the tide comes in. I go and listen. You fish, I'll keep time.",
+    "Under the bridge by the park the echo carries a splash twice... once for the fish, once for me. If you fish there, I'll hear.",
+    "Beacon buys your fish... it counts out the buttons humming the foghorn's B flat. A little flat. Like the horn."
+  ]
+});
+// sys2: Sugarloaf residents on the newest town things (bugs, museum, projects, designs, season, fishing)
+Object.assign(TALK.baker.sys,{
+  bugs:["Catching bugs, sweetie? Mind the bees by my window box. They're after the honey buns.",
+    "I went to Posy for herbs and came back with a talk about beetles, hon. I paid in cookies. She paid me in beetle facts.",
+    "Fireflies over the lane at dusk, hon. I leave the bakery light off so they can show off.",
+    "Did you eat before you went out with that net, sweetie? Nobody catches a butterfly on an empty tummy."],
+  museum:["I asked Dewey if the museum would take my mum's first rolling pin, hon. It said fish, bugs and finds. I said it's a find.",
+    "I took Dewey a bun with a bookmark in it and walked round the museum while it ate. All those little labels, sweetie.",
+    "Dewey writes your names on the card for every fish you give, hon. I read a few. My ears went a bit pink."],
+  project:["The Mayor came in for his ten o'clock bun and talked Ferris wheel until eleven, hon. He forgot to eat the bun.",
+    "If you two ever fund that community garden, sweetie, I'll bake for the opening. A picnic, on the grass. Oh, I'd like that.",
+    "I've put a little tin by the till for the Mayor's projects, hon. Mostly Pip's buttons. And a few crumbs."],
+  designs:["Is that your own pattern on the floor, hon? It looks like a tea towel I'd keep for best.",
+    "Sweetie, could you draw me a wallpaper with wheat on? Mine's wheat already. I just like seeing it twice.",
+    "Blush painted your design on {n}? Oh, hon. Like a gingham picnic cloth. I'd set a jam tart on it."],
+  season:["Apple cake season, sweetie. The whole lane smells of cinnamon from six. Did you eat?",
+    "Leaves all over my step, hon. Pip sweeps them up and they blow straight back in. He says sorry to each one.",
+    "Cider in the big pot by the till, sweetie. Warm, with a cinnamon stick. Wrap your hands round it before you go out."],
+  fishing:["Off to the dock, sweetie? Take a roll. Fish don't bite any faster for a hungry person.",
+    "Beacon buys the fish, hon. I don't. It's a bakery. But I'll do you a fish-shaped bun if you catch a big one.",
+    "Sitting by the pond all morning, sweetie? I'd never manage. I'd be up checking the oven every two minutes."]
+});
+Object.assign(TALK.jam.sys,{
+  bugs:["Sorry, a bee got in the jam kitchen. I said sorry and opened the window. It took its time. Sorry.",
+    "Um, Posy buys bugs? Sorry. I caught a ladybird and then I couldn't sell it. It had little feet. Sorry.",
+    "Um, I watched fireflies from my window last night. Sorry. I was meant to be labelling. I didn't label anything."],
+  museum:["Sorry, Dewey's museum is so quiet. I said sorry to a beetle in a case. Um, it was very still.",
+    "Um, I asked Dewey if a jam jar could go in the museum. Sorry. Just an empty one. It said no. Twice. Sorry.",
+    "Sorry, your names are on so many museum cards! Um, I read them all. Sorry. It took my whole break."],
+  project:["Sorry, the Mayor says there'll be a Ferris wheel! Um, I'd go on it. Sorry. With my eyes shut. Is that allowed?",
+    "Um, sorry, you two are paying for the town projects? With buttons? That's so kind. Sorry. I've got eleven. Do you want them?",
+    "Sorry, if there's a school house, could there be a jam lesson? Um. Not by me. Sorry. By Bunbun. I'd sit at the back."],
+  designs:["Sorry, did you draw that pattern yourselves? Um, could you draw me a label? Sorry. Mine always go crooked.",
+    "Um, your wallpaper looks like strawberry seeds. Sorry. That's the nicest thing I know how to say.",
+    "Sorry, {n} has your pattern on now! Blush did it? Um, {a} keeps looking down at it. Sorry. It's lovely."],
+  season:["Sorry, it's apple jam season. Um, Batch thirty-four is apple. Sorry. It's a bit brown. Apples go brown.",
+    "Um, the leaves are the colour of burnt sugar. Sorry. I don't like burnt sugar. I like the leaves, though.",
+    "Sorry, Bunbun lets me stir the cider. Um, only stir. I stirred very carefully. Nothing went everywhere. Sorry."],
+  fishing:["Sorry, how long do you have to sit on the dock? Um, I'd need a jam sandwich. Sorry. Two.",
+    "Sorry, I went to look at the new dock. Um, a fish looked back at me. Sorry. I went home.",
+    "Um, Bobbin says the stream's good for fishing. Sorry. Bobbin knows lots of things. We had a whole lunch about it."]
+});
+Object.assign(TALK.cushion.sys,{
+  bugs:["Mm... a bumblebee slept on my tassel all afternoon... I didn't move... we both had a lovely time.",
+    "Mm... fireflies are little lamps that stay up late... Lumi would get on with them.",
+    "Mm... you're catching bugs... a ladybird landed on me once... I'm counting that as caught."],
+  museum:["Mm... there's a bench in the middle of Dewey's museum... I tested it... thoroughly.",
+    "Mm... I lent Dewey a cushion for the museum bench... it said no sitting near the cases... I sat near the cases.",
+    "Mm... the fish in the museum sleep with their eyes open... I'm awake with mine shut... we'd get on."],
+  project:["Mm... a Ferris wheel... you sit down and it does all the going round... my favourite kind of ride.",
+    "Mm... if you two fund the outdoor stage... cushions on the seats... Bolt will want benches... we'll talk.",
+    "Mm... Boing asked if I'd help with the bouncy castle... I said no again... gently."],
+  designs:["Mm... is that your own floor pattern?... it looks soft... I'd lie on it.",
+    "Mm... draw me a cushion cover... Stitch could sew it... I'd sleep on your drawing every night.",
+    "Mm... {n} in your pattern... Blush did a nice job... like a quilt with two heads."],
+  season:["Mm... a leaf pile is a bed nobody had to make... I approve.",
+    "Mm... it gets dark earlier now... more nap in every day...",
+    "Mm... warm cider and a blanket... Bunbun puts a cinnamon stick in... I fall asleep holding it."],
+  fishing:["Mm... I left a cushion on the new dock... for whoever's fishing... it's mine, but you can borrow it.",
+    "Mm... the pond by the park is good for fishing... the bench next to it is good for not fishing.",
+    "Mm... Beacon buys your fish... I'd like a fish too... a pillow one... Stitch could make it."]
+});
+Object.assign(TALK.dust.sys,{
+  bugs:["Oh, sorry, a moth was living in my feather duster. Sorry. I let it stay. It was very neat.",
+    "Oh... I found a beetle under the sofa display... sorry... it was shinier than me. I took it to Posy.",
+    "Oh, sorry, fireflies are like dust in a sunbeam. At night. And nobody minds them. Sorry. I'm a bit jealous."],
+  museum:["Oh, sorry, I dusted the museum cases. Dewey didn't ask. Sorry. It let me, though. That's nearly asking.",
+    "Oh... every case in the museum has a label... sorry... I could stand in there all day. Quietly.",
+    "Oh, sorry, I offered Dewey the first bit of fluff I ever made. In its jar. Sorry. It said that isn't a find."],
+  project:["Oh, sorry, a Ferris wheel. All those little seats to dust. Sorry. I'd like that, actually.",
+    "Oh... a school house... sorry... I'd tidy the chalk. In order of length. Sorry.",
+    "Oh, sorry, thank you for the buttons for the projects. I put in three. Sorry. They were my small ones."],
+  designs:["Oh, sorry, your floor design... does it show the dust? Sorry. I have to ask. About every floor.",
+    "Oh... the framed picture you drew... sorry... I straightened it. It was a tiny bit crooked. It's perfect now.",
+    "Oh, sorry, {n}'s wearing your pattern. Blush did it so neatly. Sorry. I checked the edges. They're straight."],
+  season:["Oh, sorry, leaves keep coming in under the Nest's door. I sweep them out. Sorry. I say sorry to them too.",
+    "Oh... the autumn sun comes in low... sorry... the showroom goes gold earlier. More dust shows. I don't mind. Much.",
+    "Oh, sorry, Posy's scarecrow has straw coming out of its sleeve. Sorry. I wanted to tuck it in."],
+  fishing:["Oh, sorry, fishing sounds lovely. Just sitting. Sorry. I'm practising doing nothing. Fishing might count.",
+    "Oh... the planks on the new dock are swept... sorry... it wasn't me. Somebody did it. I was pleased.",
+    "Oh, sorry, if you catch a fish, please don't shake the water on the showroom rugs. Sorry. Please."]
+});
+Object.assign(TALK.cone.sys,{
+  bugs:["The bees love my cart, hm? Sticky cones. I shoo them with a wafer. They come back for the strawberry.",
+    "Scone chased a butterfly round the fountain three times, sweet pea. It won. Lost-To-Animals Club, hm?",
+    "Crumb caught a firefly in a jar and let it out on our stairs, my loves. A night light, she said. I nearly cried."],
+  museum:["Took the twins to Dewey's museum, hm? Scone ran. Crumb read every label. Dewey looked at me. I looked at the ceiling.",
+    "Is there a case for ice cream in the museum, sweet pea? No? It would melt. Fair enough, hm?",
+    "Your names are all over the museum, my loves! I told the whole queue. Twice."],
+  project:["I'll park the cart at the bottom of the Ferris wheel, sweet pea. People get hungry going round, hm?",
+    "A bouncy castle! Don't tell Scone, my loves. Too late? He's told everyone, hm?",
+    "A school house, sweet pea. Somewhere for both twins to be at once, sitting down. Heaven, hm?"],
+  designs:["Did you draw that floor, sweet pea? Like a sprinkle shaker went off, hm? I love it.",
+    "Could you design me a new awning for the cart, my loves? Pink stripes. Mine's pink stripes. Just more, hm?",
+    "{n} in your own pattern! Stand still, sweet pea, I want to remember it. Oh. It moved. Like the twins, hm?"],
+  season:["Cold mornings now, hm? Nobody wants a scoop at noon. So it's warm waffles with a small one on top. A large small one.",
+    "Pumpkin swirl's on the cart, sweet pea. Scone calls it orange. Crumb says it tastes of leaves. Lovely, hm?",
+    "Leaves in my sprinkles, my loves! Red ones. Scone says they're crunchy sprinkles. Don't eat them, hm?"],
+  fishing:["Fishing at the dock, hm? Take Crumb. She can sit still. Take Scone and every fish will be at the lighthouse.",
+    "Beacon buys fish now, sweet pea? I sold a fish once. A fish-shaped wafer. Very popular, hm?",
+    "Bring your fishing stories to the cart, my loves. A scoop for every fish. A small one. A very large small one."]
+});
+Object.assign(TALK.scone.sys,{
+  bugs:["I caught a BUTTERFLY! No I didn't! It was faster! I'm going to TRAIN!",
+    "Posy buys BUGS! I caught a beetle! She gave me buttons! I'm RICH! For a beetle!",
+    "Fireflies are tiny racers with LIGHTS! I raced one up the lane! It went UP! That's cheating!"],
+  museum:["Shushy has a MUSEUM now! It said walk! I walked! FAST!",
+    "There's a fish in the museum as long as my arm! I measured! With my arm!",
+    "Your names are on the museum cards! I want MINE on one! I'll find something! Something FAST!"],
+  project:["A FERRIS WHEEL! How fast does it go? Slow? WHY?",
+    "Do the bouncy castle next! PLEASE! I'll be first on! I'll be first OFF too!",
+    "A TRAIN halt! I'm going to race the train! Aunt Tutti said no! I'm going to WATCH the train race!"],
+  designs:["Draw me a floor with lightning bolts! Dr. Patch says hearts are faster! I'm NOT SURE!",
+    "You drew a picture and FRAMED it? Draw me crossing the finish line! First! Obviously!",
+    "{n}'s got your pattern on! It looks FAST! Is it fast? Race me and see!"],
+  season:["LEAF PILES! I jump in! Crumb looks for bugs underneath! Then I jump in AGAIN!",
+    "Posy's scarecrow didn't move ALL DAY! I had a staring contest with it! It won! Does a scarecrow count as an animal?",
+    "Cider is apples going FAST! Aunt Tutti says it's just warm apples! SAME THING!"],
+  fishing:["Fishing is SITTING! I sat for twenty seconds! No fish came! The fish were SCARED!",
+    "Beacon buys fish! I'm going to catch the BIGGEST one! At the dock! FIRST!",
+    "Crumb caught a fish! A little one! She let it go! I said that's a WIN! She said shh!"]
+});
+Object.assign(TALK.crumb.sys,{
+  bugs:["Um. I found a beetle with stripes. Like a pebble. I let it go. Posy said that was right?",
+    "Um. I caught a firefly in a jar. Just to look. Then I opened the lid on the stairs. Was that okay?",
+    "Um. There was a woodlouse under one of my pebbles. I put the pebble back. Gently. Do bugs live under all of them?"],
+  museum:["Um. Dewey let me write a label for the museum. In tiny letters. It said they were proper.",
+    "Um. Could the museum have a pebble case? Do you think? One day. Maybe.",
+    "Um. I go to the museum when it's quiet. The beetles don't mind me. I don't mind them."],
+  project:["Um. A treehouse? Could it have a little window? For looking out. Not for being looked at.",
+    "Um. The Ferris wheel goes up high. Would you hold my hand? Scone says he will. He wriggles.",
+    "Um. A community garden. Could my thinking seed go there? It's still thinking."],
+  designs:["Um. You drew a pattern? Could you draw a pebble? With a ring all the way round?",
+    "Um. I like your wallpaper. It has little things on. I counted them. Was I meant to?",
+    "Um. {n} has your pattern on. {b} keeps looking at it. I think {b} likes it?"],
+  season:["Um. Conkers. They're shiny, like a pebble that grew on a tree. Can they go on my shelf?",
+    "Um. I keep red leaves flat in Dewey's heaviest book. Dewey doesn't know. Please don't tell?",
+    "Um. Aunt Tutti makes warm cider now. She lets me hold the cinnamon stick."],
+  fishing:["Um. Fishing is quiet. Can I sit next to you on the dock? I won't talk.",
+    "Um. The stream has pebbles at the bottom. Did you look? While you were fishing?",
+    "Um. Scone scared a fish. I said sorry to it. Like Pip does."]
+});
+Object.assign(TALK.patch.sys,{
+  bugs:["That's alright, a bee sting is small. Say ow out loud. It gets smaller. Then a cold cloth.",
+    "Bug catching is good for you. All that crouching and waiting. Stretch your back afterwards.",
+    "Posy brought me a ladybird with a bent wing. That's alright. I let it nap on a leaf. It flew home after lunch."],
+  museum:["The Little Museum is a calm room. Ten minutes with the fish and your heartbeat slows right down. I'd prescribe it.",
+    "I asked Dewey if the museum wanted the first lollipop stick I ever handed out. It said no. That's alright.",
+    "Dewey says your names are on half the cards in the museum. That's alright to feel proud of. Good for the posture."],
+  project:["A Ferris wheel. That's alright. I'll keep a lollipop at the bottom for anyone who goes green at the top.",
+    "If you fund the community garden, that's vegetables for the whole lane. Medicine you can eat.",
+    "The Mayor told me about the projects for forty minutes. I took his pulse at the end. Very excited. Healthy, though."],
+  designs:["Drawing your own pattern is a rest for the busy part of the head. I'd prescribe one a week.",
+    "If you design a picture for my waiting room, make it calm. A hill. A cup of tea. Nothing with teeth.",
+    "{n} is wearing your design. That's alright. Blush checked it wasn't itchy. I checked as well."],
+  season:["Cold mornings now. That's alright. A scarf, something warm to drink, and a nap after.",
+    "Warm cider is nearly water with a hug in it. Have it after your water, not instead.",
+    "Leaf piles are soft, but check them for sticks before Scone jumps in. I told him. He'd already jumped in."],
+  fishing:["Fishing is a good rest. Sitting still by water. With a hat and a drink, I'd prescribe it.",
+    "That's alright, hooks are small, but mind your fingers. I have a plaster for that. I am a plaster for that.",
+    "Don't sit on the cold dock planks too long. Take a cushion. I believe Cushy left one there."]
+});
+/* </sys2> */
 /* <together> */
 // ---- moments together (v94): when you're both in the app, one of you starts a moment (a group hug, a dance party, a cake to share,
 // a high five through the pet); the other phone gets an invitation and has a minute to join. Joined = the pet celebrates on both
@@ -63182,7 +63986,8 @@ function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS
 /* </swapface> */
 /* <whatsnew> */
 // ---- a one-time card per device listing what's new since the last version this phone saw (localStorage r42wn)
-const WHATSNEW=[[100,'Town projects: the Mayor proposes something for the town (a Ferris wheel first) and the two of you chip in buttons. When it’s paid for, it goes up on the map. Neighbours, Project.'],
+const WHATSNEW=[[101,'The garden grows with your bond: a new planter every three bond levels, up to eight. New seeds: potatoes, and a pumpkin vine that grows a pumpkin pouf.'],
+  [100,'Town projects: the Mayor proposes something for the town (a Ferris wheel first) and the two of you chip in buttons. When it’s paid for, it goes up on the map. Neighbours, Project.'],
   [99,'The Little Museum: donate one of each fish, bug and find, and Dewey writes a card for it. Tap the museum on the map.'],
   [98,'Bug catching: butterflies, bees, beetles and fireflies around flowers, trees, water and lamps. Tap one, then tap when the ring turns green. Posy loves them.'],
   [89,'The town changes with the seasons: autumn leaves now, then snow, blossom and fireflies. Seasonal decorations pop up around town.'],
@@ -65724,7 +66529,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=100;
+const APP_V=101;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
