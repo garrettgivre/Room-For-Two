@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v86** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v86'` in `sw.js`; bump both for anything
+**Current build: v87** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v87'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -838,3 +838,8 @@ Garrett didn't love hearts as money (hearts mean love: the pet's affection, frie
   feTurbulence + feDisplacementMap, defined next to `#kbub`) in a light tint of the speaker's colour (`--cc`), the name tab sits on the
   top edge, text in R42 Bubble, a bouncing `.cvmore` ▼ while typing / for "tap to go on", and choices in their own bubble above the
   box. Shopkeepers' `.kbub` uses the same tint and blob shape. A `dlySay` with no choices shows ▼ and closes on a tap.
+- v87 redid the bubbles: no more CSS oval + displacement filter. `acShape(el)` draws an SVG path into `.acsvg` sized to the element (a
+  rounded box, corner radius ≤30, with gentle bumps every ~52px along the edges) for `.cvbox`, `.dlybox` and their reply bubbles
+  `.cvch` (`acShapes(root)` after each render, on reveal, and on resize). `acVars` sets `--bf/--bs/--tf` from the speaker's colour:
+  a pastel of their own hue, or Animal Crossing's soft blue for pale/grey speakers (mixing strong colours toward blue went muddy).
+  Name in a pill (no face), outlined bobbing triangle `.cvmore` (SVG data URI).

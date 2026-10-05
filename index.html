@@ -947,29 +947,32 @@ body.styling .storechip{opacity:0}
 .floorchip button{height:30px;padding:0 11px;border:0;border-radius:10px 9px 11px 8px;background:none;color:#fff;font-family:var(--disp);font-size:12.5px;letter-spacing:.02em}
 .floorchip button[aria-pressed="true"]{background:var(--sun);color:var(--ink)}body.styling .floorchip{opacity:0}
 
-/* ---- speech, Animal Crossing style (v86): a soft wobbly cloud in a light tint of the speaker's colour, a name tab that sits on
-   its top edge, rounded text, a bouncing ▼ when there's more, and choices in their own little bubble above */
-.cvbox,.dlybox{background:none!important;border:0!important;box-shadow:none!important;overflow:visible!important;isolation:isolate;padding:22px 4px 8px!important}
-.cvbox::before,.dlybox::before{content:'';position:absolute;z-index:-1;left:0;right:0;top:12px;bottom:0;background:color-mix(in srgb,var(--cc,#9B4DF2) 20%,#F2F9FF);border-radius:42% 58% 46% 54%/64% 52% 60% 48%;box-shadow:inset 0 0 0 3px color-mix(in srgb,var(--cc,#9B4DF2) 38%,#fff),0 6px 0 rgba(59,18,115,.28),0 10px 22px rgba(59,18,115,.18);filter:url(#acwob)}
-.cvbox .cvname,.dlybox .cvname{position:relative;z-index:1;margin:-16px 0 2px 22px;gap:6px}
-.cvbox .cvname b,.dlybox .cvname b{background:color-mix(in srgb,var(--cc,#9B4DF2) 62%,#fff);color:var(--ink);text-shadow:none;border:0;border-radius:999px/70%;padding:4px 22px 5px;font-size:15px;transform:rotate(-2deg);box-shadow:0 3px 0 rgba(59,18,115,.22)}
-.cvbox .cvname .tmface,.dlybox .cvname .tmface{width:34px;height:34px;border-width:2px;background:#fff}
-.cvbox .cvname .tmface img,.dlybox .cvname .tmface img{width:30px;height:30px}
-.cvbox .cvline,.dlybox .cvline{font-family:var(--disp);font-size:16.5px;line-height:1.42;letter-spacing:.01em;padding:2px 34px 6px 28px;margin:4px 0 4px;min-height:54px;color:#2B1856}
-.cvbox .cvh{margin-left:auto;margin-right:16px}
-.cvmore{position:absolute;right:30px;bottom:12px;width:0;height:0;border:9px solid transparent;border-top:12px solid color-mix(in srgb,var(--cc,#9B4DF2) 75%,#3B1273);border-bottom:0;animation:acbob .75s ease-in-out infinite;pointer-events:none}
-.cvmore[hidden]{display:none}@keyframes acbob{50%{transform:translateY(5px)}}
-.cvbox .cvch:not([hidden]),.dlybox .cvch{position:absolute;right:8px;bottom:calc(100% - 4px);min-width:44%;max-width:84%;background:#FFFDF8;border-radius:22px 20px 24px 18px;padding:7px 8px;gap:1px!important;box-shadow:inset 0 0 0 3px color-mix(in srgb,var(--cc,#9B4DF2) 38%,#fff),0 5px 0 rgba(59,18,115,.26)}
-.cvbox .cvch button,.dlybox .cvch button{position:relative;background:none!important;border:0!important;box-shadow:none!important;border-radius:12px!important;padding:7px 10px 7px 24px!important;font-family:var(--disp);font-size:14.5px!important;text-align:left;color:#2B1856}
-.cvbox .cvch button:before,.dlybox .cvch button:before{content:''!important;position:absolute;left:8px;top:50%;margin-top:-6px;border:6px solid transparent;border-left:9px solid var(--cc,#9B4DF2);border-right:0;opacity:.35;transition:opacity .15s}
-.cvbox .cvch button:hover,.cvbox .cvch button:active,.dlybox .cvch button:hover,.dlybox .cvch button:active{background:color-mix(in srgb,var(--cc,#9B4DF2) 16%,#fff)!important}
-.cvbox .cvch button:hover:before,.cvbox .cvch button:active:before,.dlybox .cvch button:hover:before,.dlybox .cvch button:active:before{opacity:1}
-.cvbox .tmc-x,.dlybox .tmc-x{top:14px!important;right:6px!important;transform:scale(.85)}
+/* ---- speech, Animal Crossing style (v87): the bubble is drawn to fit (acShape: a rounded box with soft bumps along the edges) in a
+   pale tint of the speaker's colour over sky blue; the name sits in a pill on the top-left edge; an outlined triangle bobs when you can
+   tap on; replies come up in their own bubble above */
+.cvbox,.dlybox{--bf:color-mix(in oklab,var(--cc,#9B4DF2) 20%,#ECF4FF);--bs:color-mix(in oklab,var(--cc,#9B4DF2) 40%,#B4C8F2);--tf:color-mix(in oklab,var(--cc,#9B4DF2) 40%,#C6D3FA);background:none!important;border:0!important;box-shadow:none!important;overflow:visible!important;isolation:isolate;padding:24px 6px 10px!important}
+.acsvg{position:absolute;left:0;top:14px;width:100%;height:calc(100% - 14px);z-index:-1;overflow:visible;pointer-events:none;filter:drop-shadow(0 4px 0 rgba(59,18,115,.16)) drop-shadow(0 8px 14px rgba(40,30,90,.14))}
+.acsvg path{fill:var(--bf);stroke:var(--bs);stroke-width:3}
+.cvbox .cvname,.dlybox .cvname{position:relative;z-index:1;margin:-12px 0 0 26px;gap:0}
+.cvbox .cvname .tmface,.dlybox .cvname .tmface{display:none}
+.cvbox .cvname b,.dlybox .cvname b{background:var(--tf);color:#2E2A5C;text-shadow:none;border:2.5px solid #fff;border-radius:999px;padding:4px 26px 5px;font-size:16px;letter-spacing:.02em;transform:rotate(-1.5deg);box-shadow:0 2px 0 var(--bs)}
+.cvbox .cvline,.dlybox .cvline{font-family:var(--disp);font-size:17px;line-height:1.45;letter-spacing:.015em;padding:6px 40px 4px 30px;margin:2px 0 6px;min-height:60px;color:#2E2A5C}
+.cvbox .cvh{position:absolute;right:46px;top:20px;margin:0}
+.cvmore{position:absolute;right:26px;bottom:16px;width:20px;height:16px;pointer-events:none;animation:acbob .7s ease-in-out infinite;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 16'%3E%3Cpath d='M2 2h16L10 14z' fill='%23B8C8F7' stroke='%233D3A8C' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.cvmore[hidden]{display:none}@keyframes acbob{50%{transform:translateY(4px)}}
+.cvbox .cvch:not([hidden]),.dlybox .cvch{display:flex;flex-direction:column;align-items:stretch;position:absolute;right:10px;bottom:calc(100% - 2px);min-width:46%;max-width:84%;background:none;padding:10px 10px 10px;gap:2px!important;isolation:isolate}
+.cvch .acsvg{top:0;height:100%}
+.cvbox .cvch button,.dlybox .cvch button{position:relative;background:none!important;border:0!important;box-shadow:none!important;border-radius:12px!important;padding:7px 12px 7px 28px!important;font-family:var(--disp);font-size:15px!important;text-align:left;color:#2E2A5C}
+.cvbox .cvch button:before,.dlybox .cvch button:before{content:''!important;position:absolute;left:9px;top:50%;margin-top:-6px;border:6px solid transparent;border-left:10px solid #3D3A8C;border-right:0;opacity:.25;transition:opacity .12s}
+.cvbox .cvch button:hover,.cvbox .cvch button:active,.dlybox .cvch button:hover,.dlybox .cvch button:active{background:rgba(255,255,255,.55)!important}
+.cvbox .cvch button:hover:before,.cvbox .cvch button:active:before,.dlybox .cvch button:hover:before,.dlybox .cvch button:active:before,.cvbox .cvch button:first-child:before,.dlybox .cvch button:first-child:before{opacity:1}
+.cvbox .cvch:hover button:first-child:not(:hover):before,.dlybox .cvch:hover button:first-child:not(:hover):before{opacity:.25}
+.cvbox .tmc-x,.dlybox .tmc-x{top:18px!important;right:10px!important;transform:scale(.8)}
 .dlybox{bottom:calc(118px + env(safe-area-inset-bottom))}body.mapopen .dlybox{bottom:calc(18px + env(safe-area-inset-bottom))}
-/* the shopkeepers' bubbles: the same cloud, smaller */
-.kbub{background:color-mix(in srgb,var(--kc,#FF8A1C) 18%,#F2F9FF)!important;border:0!important;border-radius:40% 60% 44% 56%/62% 50% 58% 46%!important;box-shadow:inset 0 0 0 3px color-mix(in srgb,var(--kc,#FF8A1C) 38%,#fff),0 5px 0 rgba(59,18,115,.26)!important;padding:13px 18px 12px!important;color:#2B1856}
-.kbub .tl{background:color-mix(in srgb,var(--kc,#FF8A1C) 18%,#F2F9FF)!important;border-color:color-mix(in srgb,var(--kc,#FF8A1C) 38%,#fff)!important}
-.kbub .kn{background:color-mix(in srgb,var(--kc,#FF8A1C) 62%,#fff)!important;border:0!important;color:var(--ink)!important;text-shadow:none!important;border-radius:999px/70%!important;padding:2px 14px 3px!important;transform:rotate(-2deg);box-shadow:0 2px 0 rgba(59,18,115,.2)}
+/* shopkeepers' bubbles: same colours, a rounder box */
+.kbub{background:color-mix(in oklab,var(--kc,#FF8A1C) 18%,#FBFCFF)!important;border:3px solid color-mix(in oklab,var(--kc,#FF8A1C) 40%,#FFFFFF)!important;border-radius:26px!important;box-shadow:0 4px 0 rgba(59,18,115,.16)!important;padding:13px 18px 12px!important;color:#2E2A5C;font-family:var(--disp)}
+.kbub .tl{background:color-mix(in oklab,var(--kc,#FF8A1C) 18%,#FBFCFF)!important;border-color:color-mix(in oklab,var(--kc,#FF8A1C) 40%,#FFFFFF)!important}
+.kbub .kn{background:color-mix(in oklab,var(--kc,#FF8A1C) 40%,#FFFFFF)!important;border:2px solid #fff!important;color:#2E2A5C!important;text-shadow:none!important;border-radius:999px!important;padding:2px 16px 3px!important;transform:rotate(-1.5deg)}
 </style>
 </head>
 <body>
@@ -990,7 +993,7 @@ body.styling .storechip{opacity:0}
 
 <div class="mkbar" id="mkbar" hidden></div>
 <div class="sandbar" id="sandbar" hidden title="Everything unlocked. Nothing saves."><b>Sandbox</b><button class="gel lilac" id="sandX">Exit</button></div>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="acwob" x="-5%" y="-10%" width="110%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="1" seed="7"/><feDisplacementMap in="SourceGraphic" scale="6"/></filter></svg><div class="kbub" id="kbub" hidden></div><div class="kbadges" id="kbadges"></div><div class="kpanel" id="kpanel" hidden role="dialog" aria-label="Shopkeeper"></div>
+<div class="kbub" id="kbub" hidden></div><div class="kbadges" id="kbadges"></div><div class="kpanel" id="kpanel" hidden role="dialog" aria-label="Shopkeeper"></div>
 <div class="shopcard" id="shopcard" hidden></div>
 <div class="map" id="map" hidden><div class="map-card" role="dialog" aria-label="Town map">
   <button class="map-x" id="mapX" aria-label="Close map">×</button><h2 id="mapTitle">Where to?</h2><button class="gel pink map-home" id="mapHome" hidden><img src="assets/icons/tab-room.webp" alt="" width="30" height="30">Go home</button>
@@ -32327,10 +32330,10 @@ function cvSay(text,choices,end){if(!cv)return;const c=$('#tmCard'),k=cv.k,R=RES
   c.classList.add('cvbox');c.style.setProperty('--cc',col);
   c.innerHTML=`<button class="tmc-x" id="tmcX" aria-label="Close">×</button><div class="cvname"><span class="tmface">${lifeFace(k)}</span><b>${esc(R.n)}</b>${cvHearts(k)}</div><p class="cvline" id="cvLine"></p><i class="cvmore" id="cvMore"></i><div class="cvch" id="cvCh" hidden>${choices.map((q,i)=>`<button data-cv="${i}">${esc(q[0])}</button>`).join('')}</div>`;
   c.hidden=false;$('#tmcX').onclick=()=>cvEnd();c.onclick=e=>{if(e.target.closest('button'))return;if(cv&&cv.shown<cv.full.length){cv.shown=cv.full.length;cvType(0)}};
-  c.querySelectorAll('[data-cv]').forEach(b=>b.onclick=e=>{e.stopPropagation();const q=cv&&cv.choices[+b.dataset.cv];if(q)q[1]()});cvType(0)}
+  c.querySelectorAll('[data-cv]').forEach(b=>b.onclick=e=>{e.stopPropagation();const q=cv&&cv.choices[+b.dataset.cv];if(q)q[1]()});cvType(0);acShapes(c)}
 function cvHearts(k){const l=kfLevel(kfOf(k).p);return`<span class="cvh">${[0,1,2,3,4].map(i=>`<i class="${i<l?'on':''}"></i>`).join('')}</span>`}
 function cvType(dt){if(!cv||!cv.full)return;const el=$('#cvLine');if(!el)return;cv.shown=Math.min(cv.full.length,cv.shown+dt*42);const n=Math.floor(cv.shown);
-  el.innerHTML=`<span>${esc(cv.full.slice(0,n))}</span><span class="off">${esc(cv.full.slice(n))}</span>`;const ch=$('#cvCh');if(ch&&ch.hidden&&n>=cv.full.length){ch.hidden=false;const m=$('#cvMore');if(m)m.hidden=true}}
+  el.innerHTML=`<span>${esc(cv.full.slice(0,n))}</span><span class="off">${esc(cv.full.slice(n))}</span>`;const ch=$('#cvCh');if(ch&&ch.hidden&&n>=cv.full.length){ch.hidden=false;acShape(ch);const m=$('#cvMore');if(m)m.hidden=true}}
 function cvGift(){if(!cv)return;const k=cv.k;tw.cardGift=true;const c=$('#tmCard');c.classList.remove('cvbox');
   c.innerHTML=`<button class="tmc-x" id="tmcX" aria-label="Close">×</button>${lifeGiftHtml(k,false)}`;c.hidden=false;$('#tmcX').onclick=()=>cvEnd();
   const gx=$('#lifeGiftX');if(gx)gx.onclick=()=>{tw.cardGift=false;cvSay(CV_FILL('Oh, that’s all right!'),cvMenu())};
@@ -57013,14 +57016,26 @@ function rcOpen(n,join){rcHidePrompt();const sc=n.sc;rc={a:n.r.k,b:n.o.k,sc,i:0,
 // is r saying something right now (for the mouth)
 function rcTalking(r){const c=r.chat;if(!c)return false;if(rc&&(rc.a===r.k||rc.b===r.k)){const L=rc.lines||rc.sc.l,q=L[rc.i-1];return!!(q&&q[0]===r.k&&rc.full&&rc.shown<rc.full.length)}
   if(!c.sc)return Math.sin(r.t*1.4+(c.first?0:Math.PI))>.1;const o=tw.res.get(c.w),lead=c.first?c:o&&o.chat;if(!lead||!lead.sc)return false;const q=lead.sc.l[lead.i|0];return!!(q&&q[0]===r.k)}
+// bubble colours: a pastel of the speaker's own colour; pale or grey speakers get Animal Crossing's soft blue instead
+function acVars(el){const c=(getComputedStyle(el).getPropertyValue('--cc')||'').trim();if(!/^#[0-9a-f]{6}$/i.test(c)||el._acc===c)return;el._acc=c;const n=parseInt(c.slice(1),16),r=(n>>16&255)/255,g=(n>>8&255)/255,b=(n&255)/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),sat=mx===mn?0:(mx-mn)/(1-Math.abs(mx+mn-1)),pale=sat<.3||mn>.72;
+  const B=pale?['#ECF4FF','#B4C8F2','#C6D3FA']:['#FFFFFF','#FFFFFF','#FFFFFF'];el.style.setProperty('--bf',`color-mix(in oklab,${c} ${pale?20:17}%,${B[0]})`);el.style.setProperty('--bs',`color-mix(in oklab,${c} ${pale?40:48}%,${B[1]})`);el.style.setProperty('--tf',`color-mix(in oklab,${c} ${pale?40:38}%,${B[2]})`)}
+function acShape(el){if(!el||el.hidden)return;acVars(el.closest('.cvbox,.dlybox')||el);let sv=[...el.children].find(c=>c.classList&&c.classList.contains('acsvg'));if(!sv){sv=document.createElementNS('http://www.w3.org/2000/svg','svg');sv.setAttribute('class','acsvg');sv.innerHTML='<path/>';el.insertBefore(sv,el.firstChild)}
+  const r=sv.getBoundingClientRect(),w=Math.max(40,r.width),h=Math.max(30,r.height),R=Math.min(30,h*.42,w*.2),per=2*(w+h-4*R)+2*Math.PI*R,n=Math.max(40,Math.round(per/7)),pts=[];
+  const at=t=>{let d=t*per;const seg=[w-2*R,Math.PI*R/2,h-2*R,Math.PI*R/2,w-2*R,Math.PI*R/2,h-2*R,Math.PI*R/2];const cs=[[R,0,0,-1],[w-R,R,-Math.PI/2],[w,R,1,0],[w-R,h-R,0],[w-R,h,0,1],[R,h-R,Math.PI/2],[0,h-R,-1,0],[R,R,Math.PI]];
+    for(let i=0;i<8;i++){if(d<=seg[i]||i===7){const c=cs[i];if(i%2===0){const dir=[[1,0],[0,1],[-1,0],[0,-1]][i/2];return[c[0]+dir[0]*d,c[1]+dir[1]*d,c[2],c[3]]}const a=c[2]+d/R;return[c[0]+Math.cos(a)*R,c[1]+Math.sin(a)*R,Math.cos(a),Math.sin(a)]}d-=seg[i]}};
+  for(let i=0;i<n;i++){const t=i/n,[x,y,nx,ny]=at(t),s_=t*per,b=1.8*Math.sin(s_/per*Math.PI*2*Math.round(per/52))+.7*Math.sin(s_/19+1);pts.push([x+nx*b,y+ny*b])}
+  let d=`M${((pts[0][0]+pts[n-1][0])/2).toFixed(1)},${((pts[0][1]+pts[n-1][1])/2).toFixed(1)}`;for(let i=0;i<n;i++){const p=pts[i],q=pts[(i+1)%n];d+=`Q${p[0].toFixed(1)},${p[1].toFixed(1)} ${((p[0]+q[0])/2).toFixed(1)},${((p[1]+q[1])/2).toFixed(1)}`}
+  sv.setAttribute('viewBox',`0 0 ${w.toFixed(0)} ${h.toFixed(0)}`);sv.firstChild.setAttribute('d',d+'Z')}
+function acShapes(root){requestAnimationFrame(()=>{acShape(root);root.querySelectorAll('.cvch:not([hidden])').forEach(acShape)})}
+addEventListener('resize',()=>{const a=$('#tmCard'),b=$('#dlyBox');if(a&&a.classList.contains('cvbox'))acShapes(a);if(b)acShapes(b)});
 function rcFace(k){return`<span class="tmface">${lifeFace(k)}</span><b>${esc(RESIDENTS[k].n)}</b>`}
 function rcBox(k,text,choices){const c=$('#tmCard'),col=(RES[k]||['','#FF3D9A'])[1];c.classList.add('cvbox','rcbox');c.style.setProperty('--cc',col);
   c.innerHTML=`<button class="tmc-x" id="tmcX" aria-label="Close">×</button><div class="cvname">${rcFace(k)}<span class="rcwith">with ${esc(RESIDENTS[k===rc.a?rc.b:rc.a].n)}</span></div><p class="cvline" id="cvLine"></p><i class="cvmore" id="cvMore"></i><div class="cvch" id="cvCh" hidden>${choices.map((q,i)=>`<button data-cv="${i}">${esc(q[0])}</button>`).join('')}</div>`;
   c.hidden=false;rc.full=text;rc.shown=0;rc.choices=choices;$('#tmcX').onclick=()=>rcEnd();
   c.onclick=e=>{if(e.target.closest('button'))return;if(!rc)return;if(rc.shown<rc.full.length){rc.shown=rc.full.length;rcType(0);return}if(rc.choices.length===1&&rc.choices[0][2])rc.choices[0][1]()};
-  c.querySelectorAll('[data-cv]').forEach(b=>b.onclick=e=>{e.stopPropagation();const q=rc&&rc.choices[+b.dataset.cv];if(q)q[1]()});rcType(0)}
+  c.querySelectorAll('[data-cv]').forEach(b=>b.onclick=e=>{e.stopPropagation();const q=rc&&rc.choices[+b.dataset.cv];if(q)q[1]()});rcType(0);acShapes(c)}
 function rcType(dt){if(!rc||!rc.full)return;const el=$('#cvLine');if(!el)return;rc.shown=Math.min(rc.full.length,rc.shown+dt*42);const n=Math.floor(rc.shown);
-  el.innerHTML=`<span>${esc(rc.full.slice(0,n))}</span><span class="off">${esc(rc.full.slice(n))}</span>`;const ch=$('#cvCh');if(n>=rc.full.length){const one=rc.choices.length===1&&rc.choices[0][2];if(!one){if(ch&&ch.hidden)ch.hidden=false;const m=$('#cvMore');if(m)m.hidden=true}}}
+  el.innerHTML=`<span>${esc(rc.full.slice(0,n))}</span><span class="off">${esc(rc.full.slice(n))}</span>`;const ch=$('#cvCh');if(n>=rc.full.length){const one=rc.choices.length===1&&rc.choices[0][2];if(!one){if(ch&&ch.hidden){ch.hidden=false;acShape(ch)}const m=$('#cvMore');if(m)m.hidden=true}}}
 // play the scene one line at a time (tap or the arrow to go on)
 function rcLine(){if(!rc)return;const L=rc.lines||rc.sc.l;if(rc.i>=L.length){rcAfter();return}const [k,t]=L[rc.i];rc.i++;rcBox(k,t,[[rc.i<L.length?'▸':'…',()=>rcLine(),1]])}
 function rcJoin(){const W=rcW(),sc=rc.sc,J=sc.j;let by,t,ch;
@@ -57033,7 +57048,7 @@ function rcAfter(){if(!rc)return;const W=rcW();if(!rc.join&&!rc.caught&&Math.ran
     const t=V&&V.caught&&rcPk(cold?V.caught.cold:V.caught.warm);if(t){rc.lines=[[k,rcFill(t,k===rc.a?rc.b:rc.a)]];rc.i=0;rcLine();return}}
   const c=$('#tmCard'),A=RESIDENTS[rc.a],B=RESIDENTS[rc.b];c.classList.add('cvbox','rcbox');
   c.innerHTML=`<button class="tmc-x" id="tmcX" aria-label="Close">×</button><div class="cvname"><span class="rcf">${lifeFace(rc.a)}${lifeFace(rc.b)}</span><b>${esc(A.n)} and ${esc(B.n)}</b></div><div class="cvch"><button data-k="${rc.a}">Talk to ${esc(A.n)}</button><button data-k="${rc.b}">Talk to ${esc(B.n)}</button><button data-k="">Leave them to it</button></div>`;
-  c.hidden=false;$('#tmcX').onclick=()=>rcEnd();c.onclick=null;c.querySelectorAll('[data-k]').forEach(b=>b.onclick=e=>{e.stopPropagation();const k=b.dataset.k;rcEnd(!!k);if(k)cvStart(k)})}
+  c.hidden=false;acShapes(c);$('#tmcX').onclick=()=>rcEnd();c.onclick=null;c.querySelectorAll('[data-k]').forEach(b=>b.onclick=e=>{e.stopPropagation();const k=b.dataset.k;rcEnd(!!k);if(k)cvStart(k)})}
 function rcEnd(keep){if(!rc)return;const s=rc.cam,a=tw.res.get(rc.a),b=tw.res.get(rc.b);[a,b].forEach(q=>{if(q&&q.chat){q.chat=null;q.cool=40+Math.random()*30;q.wait=.6}});rc=null;
   const c=$('#tmCard');if(keep)tw.rcCam=s;if(!keep){c.hidden=true;c.classList.remove('cvbox','rcbox');tm.zoomTo=Math.max(s.zoom,.03);tm.pitchTo=s.pitch;tw.follow=true}else c.classList.remove('rcbox')}
 // camera: across the pair, low and close, like a conversation with you
@@ -57138,7 +57153,7 @@ const dKey=k=>k+':'+(myId||'me'),dDone=k=>actDone(dKey(k)),dMark=k=>actMark(dKey
 // a little dialogue card that works anywhere (room, shop, map)
 function dlySay(k,text,choices){let el=$('#dlyBox');if(!el){el=document.createElement('div');el.id='dlyBox';el.className='dlybox';document.body.appendChild(el)}const R=RESIDENTS[k];
   el.style.setProperty('--cc',(RES[k]||['','#FF3D9A'])[1]);el.innerHTML=`<button class="tmc-x" aria-label="Close">×</button>${R?`<div class="cvname"><span class="tmface">${lifeFace(k)}</span><b>${esc(R.n)}</b></div>`:''}<p class="cvline">${esc(text)}</p>${choices?`<div class="cvch">${choices.map((q,i)=>`<button data-dc="${i}">${esc(q[0])}</button>`).join('')}</div>`:'<i class="cvmore"></i>'}`;el.onclick=e=>{if(!choices&&!e.target.closest('button')){el.hidden=true;if(dlySay.onX)dlySay.onX();dlySay.onX=null}};
-  el.hidden=false;el.querySelector('.tmc-x').onclick=()=>{el.hidden=true;if(dlySay.onX)dlySay.onX();dlySay.onX=null};el.querySelectorAll('[data-dc]').forEach(b=>b.onclick=()=>{const q=choices&&choices[+b.dataset.dc];el.hidden=true;dlySay.onX=null;if(q)q[1]()})}
+  el.hidden=false;acShapes(el);el.querySelector('.tmc-x').onclick=()=>{el.hidden=true;if(dlySay.onX)dlySay.onX();dlySay.onX=null};el.querySelectorAll('[data-dc]').forEach(b=>b.onclick=()=>{const q=choices&&choices[+b.dataset.dc];el.hidden=true;dlySay.onX=null;if(q)q[1]()})}
 // the day-old basket: yesterday's bakes, free, one each a day
 function dlyBasket(){const k=RESIDENTS.baker&&resWhere('baker',townHour())==='shop'?'baker':'jam';if(dDone('basket')){dlySay(k,k==='baker'?'That’s yours for today, sweetie. The basket fills up again tomorrow.':'Um, that was today’s one. It fills up again tomorrow. I counted.');return}
   const L=ITEMS.filter(i=>i.k==='food'&&i.p>=1&&i.p<=2&&['grains','sweets','fruit'].includes(i.cat)),it=pick1(L);if(!it)return;dMark('basket');state.inv[it.id]=(state.inv[it.id]|0)+1;saveSoon();updHUD();
@@ -59600,7 +59615,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=86;
+const APP_V=87;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
