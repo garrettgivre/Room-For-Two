@@ -61031,7 +61031,7 @@ function cvSysLine(T){if(!T||(!T.sys&&!T.ev)||Math.random()>.38)return null;cons
   {const F=state.tfound||{},recentOf=t=>Object.entries(F).some(([id,f])=>t(id)&&Date.now()-(f.t||0)<3*864e5);
    add(S.bugs,recentOf(id=>id.startsWith('b_'))?3:.8);add(S.fishing,recentOf(id=>id.startsWith('f_'))?3:.8);
    add(S.museum,Object.values(state.museum||{}).some(m=>Date.now()-(m.t||0)<3*864e5)?3:.6);
-   add(S.project,state.proj&&Object.keys(state.proj.got||{}).length?2.5:1);add(S.designs,(state.designs||[]).length?1.5:.4);if(typeof seasonNow==='function'&&seasonNow()==='autumn')add(S.season,1.2)}
+   add(S.project,state.proj&&Object.keys(state.proj.got||{}).length?2.5:1);add(S.designs,(state.designs||[]).length?1.5:.4);if(typeof seasonNow==='function'){const sn=seasonNow();add(sn==='autumn'?S.season:S['season_'+sn],1.2)}}
   if(!out.length)return null;const tot=out.reduce((a,q)=>a+q[1],0);let r=Math.random()*tot;for(const [a,w] of out){r-=w;if(r<=0)return cvPick(a)}return cvPick(out[0][0])}
 /* </res-chat> */
 /* </town-walk> */
@@ -63943,6 +63943,482 @@ Object.assign(TALK.patch.sys,{
     "Don't sit on the cold dock planks too long. Take a cushion. I believe Cushy left one there."]
 });
 /* </sys2> */
+/* <season-talk> */
+// ---- season: Bubble Bay. Winter, spring and summer lines (autumn is in .claude/sys2/bay.js).
+Object.assign(TALK.stylist.sys,{
+  season_winter:["Winter, darling. The radiators dry my hair to a whisper. I sleep with a kettle on so I wake up with a full head.",
+    "I skated on the little rink, darling. Once round, very slowly, to applause. The applause was mine.",
+    "Snow on the salon roof! It looks like a bubble bath that's stopped moving. Unsettling, darling. Gorgeous, but unsettling.",
+    "Cocoa in the claw tub, darling. In a cup. In the tub. With me in it. Loofah says that's allowed."],
+  season_spring:["Spring, darling! The damp mornings are back. My hair arrives at the salon a full minute before I do.",
+    "Petals keep landing in my bubbles. I've stopped picking them out. I'm a flowering arch now, darling.",
+    "Cherry blossom over the bay! Pink on pink. I stood under it for an hour. Someone had to.",
+    "Spring cleaning at the salon, darling. Loofah washes every towel twice. I supervise from the bath, dramatically."],
+  season_summer:["Summer, darling! The air is thick as soup and my hair is enormous. I had to turn sideways at the salon door.",
+    "The splash fountain on the plaza! I stood in it fully robed. Divine. Stitch has opinions about the robe.",
+    "Long evenings, darling. I take the last bath of the day while it's still light out. Very continental.",
+    "Shaved ice on the pier, darling. Mine melted while I was describing it. Tragic, and sticky."]
+});
+Object.assign(TALK.sponge.sys,{
+  season_winter:["Mm. Winter. The tiles go cold in the morning. I walk on towels from the bed to the bath.",
+    "Mm... cocoa on the hot stone stove. The steam smells of it all day. Come and sit in it.",
+    "Mm. Snow on the hut roof. It slides off at about four. So do I. Into the bath.",
+    "Mm. I watched the skaters on the little rink for a while. Then I went home and had a warm bath. Balance."],
+  season_spring:["Mm. Spring. The towels dry on the line again. I can smell the blossom on them after.",
+    "Mm... the first warm morning bath of the year. I stayed in until lunch. No rush.",
+    "Mm. A petal floated into my tub. I let it stay. It looked comfortable on the water.",
+    "Mm. The birdhouses are busy now. There's a robin who sits on my washing line and watches me fold."],
+  season_summer:["Mm. Summer. The towels dry by noon. I fold them warm and hum the sunny tune.",
+    "Mm... someone put a paddling pool out on the lane. I sat in it for a bit. It was very warm. Good.",
+    "Mm. The sea's still too cold for me, even now. I sit at the edge and let it come to my flip-flops.",
+    "Mm. Fireflies over the hut at night. I leave the window open and the bath warm. They don't come in. That's fine."]
+});
+Object.assign(TALK.tailor.sys,{
+  season_winter:["Winter, sweet. Wool season. I'm a ball of yarn, so I'm very much in demand.",
+    "Everyone wants their mittens taken in or let out. Nobody's hands stay the same size all winter. I've measured.",
+    "The snowman on the plaza needs a scarf that fits. The one it has is a smidge long. I keep thinking about it.",
+    "Cocoa and a long hem by the fire. I made a stitch for every snowflake past the window. I lost count. Twice."],
+  season_spring:["Spring, sweet. Time to put the wool away with lavender bags. Two each. The moths wake up hungry.",
+    "Everyone wants something light and floral. I've cut so much gingham I dream in squares.",
+    "The flowering arch on the plaza is lovely. A few of the blooms aren't lined up. I won't say anything. Mostly.",
+    "Petals blow into the shop and stick to the fabric. Bobbin picks them off. Then keeps them. In a drawer."],
+  season_summer:["Summer, sweet. Too warm for wool. I sit in the shade of the shop and unwind a little. Just a smidge.",
+    "Moths come out at night in summer. I keep the shop window shut and a lavender bag in each pocket.",
+    "I'm sewing garden umbrellas this year. They're very forgiving. A circle doesn't have seams that need to match.",
+    "Beacon still wears Bobbin's scarf in this heat. I offered to make it a summer one. It said no, kindly."]
+});
+Object.assign(TALK.hair.sys,{
+  season_winter:["Winter! The dry air flattens everything! Duchess is holding on but Brenda has given up!",
+    "Okay but hear me out: tiny snowflakes. On antennae. For {n}. I'm obsessed and I haven't slept.",
+    "I made a snowman with an afro on the plaza! Then it snowed on it and the afro got bigger! Iconic!",
+    "Hot cocoa before the first appointment. Blush still isn't talking yet, so I talk for both of us. With marshmallows."],
+  season_spring:["Spring! Humid mornings are back and Gerald came out! First time in months! I nearly cried!",
+    "Okay, cherry blossom pink on {a}'s antennae. Hear me out. Sunset festival, but springier. Obsessed.",
+    "Petals keep landing in my afro and I'm keeping them. Duchess has a whole corsage now.",
+    "Spring cleaning the tool belt! Pocket nine had a comb I lost in the winter! Welcome back, comb!"],
+  season_summer:["Summer! The air is so humid my afro is twice the size! Every curl is out! Even the shy ones!",
+    "Shaved ice in every flavour! I matched one to each head! {b} was blueberry. Obviously. Midnight library!",
+    "Okay but hear me out: fireflies, but as an antenna tip. They glow! At night! For {n}! Byeee, sleep.",
+    "The splash fountain gave me the best blow-dry I've ever had. Accidentally. I'm not even mad."]
+});
+Object.assign(TALK.makeup.sys,{
+  season_winter:["Winter, love. My journal's full of whites now, and none of them match. Yesterday was 'snow at teatime'.",
+    "The lit evergreen on the plaza is 'gold through a frosty window'. I sat on a bench and watched it a long while.",
+    "The sunsets come so early in winter. I'm at the window by four with my paints. Pom brings me cocoa.",
+    "Cocoa is 'mouse at teatime' with a little cream on top. I drink it slowly so the colour lasts."],
+  season_spring:["Spring, love. So many greens at once. Posy lets me sit in the garden and try to mix the newest one.",
+    "Cherry blossom is 'cheek in warm air'. It's the same pink as autumn's koi, only kinder.",
+    "The tulips on the lane argue, red and orange, side by side. They've something to say. I let them.",
+    "Petals drift past the studio window all day. I've stopped trying to paint them. I just watch now."],
+  season_summer:["Summer, love. The sunsets come late and stay long. Gloss books me dreaming time at the window for every one.",
+    "Fireflies over the meadow are 'a lemon thinking about it'. I sat out in the dark and named them one by one.",
+    "Shaved ice in cherry. I ate it slowly to see the colour change as it melted. It went 'kitten's ear'.",
+    "The garden umbrellas along the lane are all stripes. Not one pair matches. I counted them happily."]
+});
+Object.assign(TALK.polish.sys,{
+  season_winter:["Winter. The studio's seasonal tab is white now. Pom says it looks blank. It's snow. Confirmed. Twice.",
+    "I sweep the snow off the studio step at six fifty-five. Lovely and clear by seven. Then it snows. Noted.",
+    "Cocoa at three, booked for the season. Pom brought marshmallows and was early. I've written it down.",
+    "The skaters on the little rink go round in the same direction. Very orderly. I approve of the rink."],
+  season_spring:["Spring. The seasonal tab is pink now. Blossom pink. I trimmed it with my good scissors.",
+    "Petals on the studio step every morning. I sweep at six fifty-five. Lovely. They're back by seven. Also lovely.",
+    "Spring cleaning. I've reorganised all forty polishes by colour. Then by name. Then back to colour. Perfect.",
+    "Pom is late more in spring. The blossom, apparently. I've moved the comb drawer an inch closer to the door."],
+  season_summer:["Summer. The evenings are long, so the book closes at five, exactly as it does in winter. Some things should stay put.",
+    "I've booked Blush at the studio window for every sunset this summer. A cushion and a pear. Confirmed.",
+    "The heat makes my cap stick a little. I click it twice to be sure. Lovely and shut.",
+    "Shaved ice at three instead of cake. Bunbun agreed. Napkins still in triangles, of course."]
+});
+Object.assign(TALK.spool.sys,{
+  season_winter:["Winter! Snow! I rolled down the hill on my side and also I was going faster than the sleds! Was that allowed?",
+    "My knit stall is all scarves now! And also mittens! And also one hat for the snowman because his head looked cold!",
+    "Cocoa! I drank it slower this time! Not much slower! A little slower!",
+    "I skated on the little rink! I spun round and round! That's what I do anyway! On ice I go further!"],
+  season_spring:["Spring! The birds want my thread for their nests! I gave a robin a bit! Now I've got a bit of thread in a nest! Two places at once!",
+    "Petals stick to my thread end and I come home all pink! Gloss labels them! 'Petals: Bobbin's'!",
+    "I found an egg basket and also I put buttons in it instead! Are buttons a kind of egg? Probably not!",
+    "The flowering arch! I ran under it eleven times! I was supposed to be on an errand! I was on the errand! Mostly!"],
+  season_summer:["Summer! Long days! More hours for errands! I did nine before lunch! And also I forgot one! I went back!",
+    "The splash fountain! I spun in it and the water went everywhere and also on Gloss! She said 'lovely'! I think she meant it!",
+    "Fireflies over the meadow! I tried to count them and also they kept moving! I got to forty-two! Like my buttons!",
+    "Beacon's still wearing my scarf even though it's hot! I asked if it was too warm! It said it's just right! I spun!"]
+});
+Object.assign(TALK.beacon.sys,{
+  season_winter:["Winter, friend. Cocoa in the tin mug every night now. The cocoa's glad. We'd missed each other.",
+    "Snow on my lamp room in the morning. The light melts a ring round the glass. I look like I'm wearing a hat.",
+    "Ice along the pier boards. Go steady, friend. Hold the rail. I'll count you in all the same.",
+    "The long nights give the light plenty of work. I don't mind it. I like being needed after dark."],
+  season_spring:["Spring, friend. The gulls are back and loud as ever. I'd missed the racket. I told them so.",
+    "Petals on the water in the bay. From the point they look like a fleet of very small boats. I waved. Twice.",
+    "Spring fog in the mornings now. The light has something to do again. Good. Fair winds to it.",
+    "A bird's built a nest on my balcony rail. I keep the light turned a little away from her. She's earned the dark."],
+  season_summer:["Summer, friend. Short nights. The light barely gets going before the sun's back. I let it rest.",
+    "Bobbin's scarf stays on, heat or no heat. It's how I'm known from the water. A tower doesn't change flags for the weather.",
+    "Fireflies over the meadow, and boats with lamps on the bay. Lights everywhere. I count them all in.",
+    "Long evenings on the pier. Folk walk all the way to the end now. I like a busy pier. Ahoy to every one."]
+});
+// ---- hill, season: Playhouse Hill residents on winter, spring and summer (autumn is in sys2).
+Object.assign(TALK.toymaker.sys,{
+  season_winter:["Snow! I sledded down the hill and the sled kept going without me! Okay okay, it had a lovely time on its own!",
+    "I built a snowman with a spring inside! He went boing once and sat down. Very tired now. Like my first toy!",
+    "I can't bounce on the ice rink, so I spin! Joy says I'm a top now. I'm a very dizzy top!",
+    "Cocoa with marshmallows! I drink it so fast I get a foam moustache like the Mayor's! Tock dabs it off with a napkin!"],
+  season_spring:["Petals in the wind! Wind is my favourite! I bounce up and try to catch them on my nose! I'm on two!",
+    "A bird is building a nest on the Toy Box sign! I'm being so quiet! Joy says it's the quietest I've ever been. It's still loud.",
+    "Egg baskets on the plaza! I made an egg that hops! It hopped out of the basket. Then out of the plaza. Prototype two!"],
+  season_summer:["The splash fountain! I bounce in, I bounce out, I bounce in! Tock dries me off with a towel every single time!",
+    "Shaved ice! I got a blue one and my spring went blue! Okay okay, it came off! Most of it!",
+    "Fireflies over the meadow! Tock and I counted them. Tock got further. Tock always gets further."]
+});
+Object.assign(TALK.joy.sys,{
+  season_winter:["Snow day! The ice rink is basically a physics level. I've fallen eleven times. Every fall is data!",
+    "Sledding the hill is a speedrun! Boing holds the record because he forgot to steer. Can't argue with results.",
+    "Cocoa after a cold lap is a full heal plus a warm buff. Bunbun says that isn't a real thing. It's a real thing.",
+    "Snowball fight on the plaza! Scone's on my team. Bad news for everyone else. GG in advance."],
+  season_spring:["Spring mode! Blossom all over the plaza means my laps come with confetti. Bonus round every morning!",
+    "A spring storm rolled in and I watched it from the arcade steps. Best light show in town and it's free to play!",
+    "Egg hunt practice! I hid one in a cabinet for Pixel. Pixel found it in four seconds. Pixel always finds it."],
+  season_summer:["Long days mean long laps! I'm out the door before the arcade lights warm up. The sun's on my team!",
+    "Paddling pool challenge: who can sit stillest? Boing lost in one second. I lost in three. Pixel's still sitting there.",
+    "Summer storms! Thunder's the bass line, lightning's the screen flash. Five stars. Would play again!"]
+});
+Object.assign(TALK.windup.sys,{
+  season_winter:["Winter. The snowman on the plaza has two coal eyes. They are level. Sketch checked. I was relieved.",
+    "Snow quiets the street. From the gate I can hear all twelve clocks. Tick. They agree.",
+    "Cocoa at four instead of cider. Sketch says it is a winter thing. I have written it in the ledger, under four.",
+    "Everyone on the ice rink goes round the same way. Nobody was asked. I find that very moving."],
+  season_spring:["Spring. The blossom falls in its own time. I sweep it at five. By six there is more. Tick.",
+    "Spring showers. My key squeaks. Sketch holds the umbrella and I count the drops on it. Too many. I stop.",
+    "Each birdhouse on the hill has one family in it. One per house. It is the tidiest street in town."],
+  season_summer:["Summer. The days run long. The clocks do not mind. I wind them at the same time anyway.",
+    "Fireflies over the meadow. Sketch asked how many. I said enough. Sketch was surprised. So was I.",
+    "Shaved ice melts at a steady rate. Sketch timed it. We finished ours before it finished. Tick."]
+});
+Object.assign(TALK.pencil.sys,{
+  season_winter:["Snow. Sorry. Every roof has the same layer. About a hand deep. I didn't measure. I did measure.",
+    "The ice rink is very nearly round. Sorry. I said so. Bolt said nearly round is round enough. I'm thinking about it.",
+    "Sorry. My lead goes stiff in the cold. Tock pours my cocoa to the line and I hold it with both hands."],
+  season_spring:["Spring. Sorry. The tulips by the Town Hall are in straight rows. Somebody planted them carefully. I'd like to thank them.",
+    "Rain again. Sorry. My shavings go soggy. Tock waits with me under the flowering arch until it stops.",
+    "Petals keep landing on my plans. Sorry. I've started drawing them in. Tock says they improve the margins."],
+  season_summer:["Summer. Sorry. At noon my shadow is shorter than I am. I measured. I find that very odd.",
+    "The garden umbrellas on the plaza are evenly spaced. Sorry. Almost. One's out by a hand. I think about it a lot.",
+    "Shaved ice. Sorry. I got lemon. Tock got lemon. We didn't plan it. We just both like lemon."]
+});
+Object.assign(TALK.builder.sys,{
+  season_winter:["Snow on every roof, chief! I'm up checking gutters again. Cushy's ladder. Still haven't given it back.",
+    "Built the edge round the ice rink, chief! Tapped every board. Slid the whole way home after. Solid work, wobbly exit.",
+    "The plaza snowman's wearing my spare hard hat, chief. Suits him. Never talks back either."],
+  season_spring:["Spring rain, chief. My hat keeps it off my face but it gets in the toolbox. I'll be grumbly till Thursday.",
+    "Birdhouse season, chief! The leaning one on my gate still fills up first. Birds like a bit of character.",
+    "That flowering arch on the plaza is mine, chief! Posy did the flowers, I did the arch. Teamwork!"],
+  season_summer:["Long days, chief! Light till late means more hours on the job. Then a sit on the porch. Mostly the sit.",
+    "Fixed the splash fountain's spout, chief! Got me right in the face. Best thing that's happened all week!",
+    "Garden umbrellas need sturdy poles, chief. I tapped every one on the plaza. Not a wobble. Grab a seat!"]
+});
+Object.assign(TALK.pixel.sys,{
+  season_winter:["Winter. Cold. My voxels click when I walk. I like the sound.",
+    "Snow is a lot of small white pixels. Very good resolution. Eight out of ten.",
+    "The ice rink. I slide in a straight line. Joy goes in circles and falls over. We both enjoy it.",
+    "Cocoa. Bunbun makes me square marshmallows. I did not ask. I am glad."],
+  season_spring:["Spring. Petals stick to my top. Joy says I look like a cherry tree. I look like a cube with petals.",
+    "Spring storms. Joy runs outside. I stay in the doorway and count the flashes. Six. A good storm.",
+    "Bolt built square birdhouses. A bird lives in one. I respect the bird."],
+  season_summer:["Summer. Hot. My top voxels go soft. I stay in the arcade by the fans. I do not complain. I mention it.",
+    "Shaved ice. I hold it on my top to keep my voxels firm. Joy eats it. Teamwork.",
+    "Fireflies over the meadow. They blink lime. I blink back. Same colour. We get along."]
+});
+Object.assign(TALK.parcel.sys,{
+  season_winter:["Snow on the round! I can see my footprints from the morning! A little dotted line to every door!",
+    "Cold mornings make my boots squeak higher! Fold says it's a different note! I'm a whole scale by ten!",
+    "The sledders on the hill wave at me! I can't sled, I've got post! I run down the path very fast instead!",
+    "Cocoa at quarter past eleven! Just to warm my hands! Then I drink it! Then I run!"],
+  season_spring:["Spring showers! Wet cardboard's the worst! I run door to door with the satchel tucked under my cap!",
+    "So many birdhouses on the gateposts! I nearly posted a letter in one at half past eight! A bird looked at me!",
+    "Petals in my satchel! I deliver them by accident! Nobody minds! The Mayor thinks his are from an admirer!"],
+  season_summer:["Long days! I finish the round at twenty to one and the sun's up for hours! I do a second lap for fun!",
+    "Paddling pools in the gardens! I hop over two on my round! Squeak, splash, squeak! Very musical!",
+    "Shaved ice after the round! Cherry! I'm almost sure stamps taste the same! Fold says I'm imagining it again!"]
+});
+Object.assign(TALK.crane.sys,{
+  season_winter:["Snow. It lands softly and settles. It does not crease anything. I can live with that.",
+    "I do not sled. Too damp. I watch from Parcel's window. The sleds leave long straight lines, like a ruled page.",
+    "I lettered the ice rink's sign. Small letters. Ice should be quiet too.",
+    "Cocoa steam. I hold the cup at arm's length. Parcel holds it closer for me."],
+  season_spring:["Spring wind. I stay in. Petals go past the window. I fold paper ones to keep them company.",
+    "Spring rain. Nimbus leaves an umbrella at our gate. I leave a small paper crane on theirs. It is our trade.",
+    "Cherry blossom has five petals. A good fold. Mine come out with four. I am still learning."],
+  season_summer:["Summer. Dry air. My edges are crisp. This is my season.",
+    "Long evenings. I paint signs on the step until the light goes gold. The letters dry in a minute.",
+    "I made a firefly a paper lantern. It did not use it. It was polite about it."]
+});
+Object.assign(TALK.pebble.sys,{
+  season_winter:["Snow. Mm. Covers the road. Nothing to mend. Nice.",
+    "Ice rink. Mm. I stand on it. Don't slide. Heavy.",
+    "Snowman. Mm. Round. Like a pebble that got ideas.",
+    "Cocoa. Mm. Yawn into the steam. Good."],
+  season_spring:["Spring. Mm. Dandelions in my gaps. Posy says leave them. I leave them.",
+    "Petals on the cobbles. Mm. Pink road. Don't sweep it.",
+    "Rain. Mm. Stones go shiny. Reminds me of the river."],
+  season_summer:["Summer. Mm. Warm stones. Best nap there is.",
+    "Splash fountain. Mm. Wet stone round it. Walk, don't run.",
+    "Shaved ice. Mm. Ate it slow. It went faster."]
+});
+// Seasons (winter, spring, summer): Lantern Meadow (mayor, book, lantern, cloud, posy, cactus, gramo)
+Object.assign(TALK.mayor.sys,{
+  season_winter:[
+    "I have offered to open the ice rink every morning. Bolt says it only needs opening once. Bolt has never given a speech.",
+    "Ahem. The snowman by the plaza is the finest listener in town. I tried part two on him. Not a flicker. Splendid posture.",
+    "A marshmallow in cocoa is a delicate subject, dear resident. Please don't offer me one. I shall be polite, and then go home.",
+    "Snow on the Town Hall roof, snow on my hat. I have kept it there all morning. One must look seasonal. It is very cold. Ahem. Quite."
+  ],
+  season_spring:[
+    "Spring, dear resident! I stand under the cherry blossom and give it a short speech. It applauds by dropping petals. Very gracious.",
+    "Posy put a birdhouse by the Town Hall. I asked who the tenants were. She said the birds will choose. Democracy, dear resident. In a box.",
+    "The flowering arch is a ribbon waiting to be cut, in my view. Posy does not share my view. Posy has the shears.",
+    "Ahem. I keep an egg basket on the guest-book desk. Visitors may take an egg and sign the book. Nobody takes an egg. Everyone signs."
+  ],
+  season_summer:[
+    "Summer! Long days, dear resident, so there is time for longer speeches. I'm teasing. Mostly. Part three is shorter in the heat.",
+    "Hot afternoons and marshmallows do not mix. I go soft by two and apologise to the handrails. Softening is in the regulations.",
+    "I wave from under a garden umbrella on my balcony. Sunshine is splendid, dear resident. From a dignified distance.",
+    "Ahem. Tutti brought me shaved ice. I ate it with great ceremony and very quickly. Part one only. It was melting."
+  ]
+});
+Object.assign(TALK.book.sys,{
+  season_winter:[
+    "Winter. Shh. Snow makes the whole town quiet, like the ten o'clock quiet but all day. I didn't arrange it. I'd like to think I helped.",
+    "Please knock the snow off your boots before the reading room. Snow is only slow damp. It took me years to see through it.",
+    "Oh, you'll like this one. A snowflake has six arms, always. I caught one on my cover to check. It melted. Damp, but true.",
+    "Cocoa goes on a saucer, well away from the atlas. That's the rule. The marshmallow is optional. Please don't tell the Mayor I said so."
+  ],
+  season_spring:[
+    "Spring. Posy marks my pages with blossom. Readers find a pressed flower halfway through and go quiet. The right kind of quiet.",
+    "Spring showers. Shh. I read by the window and keep the books well back. Nimbus waves from outside. Kindly. From outside.",
+    "Oh, you'll like this one. A bird took a bookmark off my step for its nest. The lost bookmark basket has a rival now.",
+    "Petals blow in whenever the door opens. I don't sweep them out. They land between pages, and later someone finds a bit of spring."
+  ],
+  season_summer:[
+    "Summer. Long days, long reading. I stay by the window until the light gives up. It doesn't, in summer. I give up first.",
+    "Please don't read by the splash fountain. I tried. Page forty-one has a ripple in it now. Shh. It's on the shelf with the others.",
+    "Oh, you'll like this one. Each kind of firefly flashes its own pattern. I've been writing them in the blank book. Lumi checks the spelling.",
+    "Shaved ice drips onto everything. I eat it on the step, outside, with the door shut. The books asked. Well. I asked for them."
+  ]
+});
+Object.assign(TALK.lantern.sys,{
+  season_winter:[
+    "Mm... winter. The lamps go on so early I hardly sleep. I don't mind. The snow under each lamp glows, like a little room of light.",
+    "I cried the first night of winter. I always do. Nimbus makes hot milk and doesn't ask. Mm. It's a good kind of crying.",
+    "The evergreen on the plaza... I helped light it. I said thank you to every bulb. Some flickered back. Mm, I think they meant it.",
+    "Snow on my cap melts a bit from the inside. I'm warm, you see. Little drips. Nimbus says it's a forecast of me."
+  ],
+  season_spring:[
+    "Mm... spring. The lilac minute comes a little later every evening. I wait for it on the porch. Some nights it's pink. Still counts.",
+    "Petals drift past the lamps at night and glow for a second. Like moths, but softer... I light slowly in spring so I can watch.",
+    "Posy hung a birdhouse on lamp post nine. The birds don't mind the light. Mm. They go to bed as I start. We wave.",
+    "Spring wind is the worst kind... it blows the blossom about and it blows my flame. We both hold on. Mm."
+  ],
+  season_summer:[
+    "Mm... summer. The lamps go on so late I sleep right through dinner. Nimbus leaves me a plate under a bowl.",
+    "Fireflies over the meadow... they light up before I do. I let them. I wait at the gate and watch the first ones, then I start.",
+    "Summer noon is very bright. I sleep with a sunhat over my face. It's Prickles'. He doesn't know. Mm. He might.",
+    "Warm nights... I leave the cottage door open and the porch light brings the moths in. Nimbus counts them. Mostly for company."
+  ]
+});
+Object.assign(TALK.cloud.sys,{
+  season_winter:[
+    "Winter forecast: snow, mostly, from the north. Snow is rain that took its time. I'm very proud of it.",
+    "Chance of a snowball fight on the plaza today: high. Chance Scone starts it: very high. I'll keep the flakes soft.",
+    "I always make three mugs. In winter the third cocoa goes to whoever knocks. Chance it's you today: good.",
+    "The ice rink stays frozen while I keep the sky thick. Forecast: overcast, kindly. For the skaters."
+  ],
+  season_spring:[
+    "Spring forecast: showers, then blossom getting rained on. I water the tulips on Posy's schedule. She wrote it inside my umbrella.",
+    "Spring needs a lot of rain to get going. I'm told I'm busy. I think I'm just useful. Chance of rainbows: good.",
+    "The birdhouses fill up when I drizzle. Everyone home at once. I like to think that's why they have such cosy evenings.",
+    "Chance of me sneezing at the cherry blossom: certain. Sorry about the sprinkle. And the rainbow. The rainbow I'm less sorry about."
+  ],
+  season_summer:[
+    "Summer forecast: sunny, mostly. Hot, likely. I'm sorry. I make a little shade over the meadow. It doesn't go far.",
+    "I hover over the paddling pools on hot days. Scone asks for rain and gets it. Crumb asks for drizzle. That's my favourite request.",
+    "The splash fountain is doing my job this summer. I don't mind. Much. I give it a small shower at night. No hard feelings.",
+    "Fireflies over the meadow at night. Lumi says they're tiny lamps. I say they're tiny lightning. We're both right, probably."
+  ]
+});
+Object.assign(TALK.posy.sys,{
+  season_winter:[
+    "Winter, sweetie. The bulbs are asleep under the snow. I say goodnight to them on my way past. Hm. They answer in spring.",
+    "Snow's a blanket for the beds. I don't brush it off. Prickles brushes it off his chair every morning, muttering. Hm hm.",
+    "The snowman by the plaza has a carrot nose. My carrot. I grew it. I'd like it back when he's done with it. I'll ask nicely.",
+    "Prickles hates the cold, sweetie. He sits by the stove and tells it about the desert. The stove listens. I bring him tea."
+  ],
+  season_spring:[
+    "Spring, sweetie! The seedlings come up when they're told. Mostly. Mint came up in the wrong pot again. Hm.",
+    "Mind the tulips. They're in a heart, for the Ferris wheel. Scone jumped one flat. It forgave him. I'm still deciding.",
+    "Prickles says my flower looks like me. He says it every spring like it's the first time. I go pink every time. Look at the marigolds.",
+    "I painted the birdhouses to match the flowers so the birds feel at home. Hm hm. The robins chose the pink one."
+  ],
+  season_summer:[
+    "Summer, sweetie. I water at dawn before it gets hot. The sunflowers face the town already. Three hundred seeds, one day. Hm hm.",
+    "Hot days, thirsty beds. I talk to the tomatoes while I water. They say thank you by going red. Very polite plants.",
+    "Prickles sits in the sun all afternoon and calls it his hour. It's four hours. I don't correct him. He's happiest warm.",
+    "Fireflies sleep in the long grass by the meadow in the day. Mind where you step, sweetie. Hm hm. They're up late."
+  ]
+});
+Object.assign(TALK.cactus.sys,{
+  season_winter:[
+    "Winter. Hmph. Snow on my helmet. In the Great Dry we'd have paid a fortune for a cold day. I'd pay double to give this one back.",
+    "Sledding, kid? I went down a dune on my helmet once. Faster than any sled. Landed in a cactus patch. Cousins. Very rude.",
+    "Cold. Hmph. I'd put my feet up by the stove, but my feet are a pot. Pot up, then. Don't tell Posy I'm sulking.",
+    "The loud blue muffin got me with a snowball. Hmph. I made one back. Took ten minutes. He'd gone home. It's under the porch. I'm patient."
+  ],
+  season_spring:[
+    "Spring, kid. First warm morning, Posy's out talking to the seedlings and I'm on the bench. Best part of the year. Hmph. One of.",
+    "Blossom in my helmet, blossom on my scarf. Posy says it suits me. Hmph. It doesn't. I've left it there.",
+    "Spring rain. Soggy soil, soggy pot. On the leaky blue boat it rained a month. The cat liked it. The cat was wrong.",
+    "Egg baskets on every step. In the Great Dry we found one egg in a month. Captain the lizard sat on it. Never found out what hatched."
+  ],
+  season_summer:[
+    "Summer! Hmph. Now we're talking. Sun on the window seat all afternoon. I'm resting my eyes. Don't wake me unless it's Posy.",
+    "Hot, kid? This is nothing. In the Great Dry the sand cooked breakfast. Sit down. No, you haven't heard this one.",
+    "Shaved ice. Tutti put spicy syrup on mine because I asked. Best thing in town. Don't tell Bunbun. She'd burn something out of spite.",
+    "Fireflies over the meadow. Saw a river of them once, past the maps. Posy and I sit out and watch. She holds my hand. I let her."
+  ]
+});
+Object.assign(TALK.gramo.sys,{
+  season_winter:[
+    "Winter... snow muffles everything. My notes land soft and stay put. I play slower so they don't pile up.",
+    "Mm... sled runners hiss down the hill in F. I've put it in the afternoon song. Scone hears it every time. Crumb pretends not to.",
+    "The cold makes my horn ring a little sharp by four... I let it. The snowman stood through the whole set. Nobody's complained.",
+    "Skates on the little rink go scrape and glide, like brushes on a drum. I sit at the edge and keep time."
+  ],
+  season_spring:[
+    "Spring... the birds start before I do now. Three o'clock and they're already mid-song. I come in on their key. It's polite.",
+    "Petals land in my horn and I stop to tip them out... a little rest in every song. I've started writing the rest in.",
+    "Mm... spring showers. Nimbus fills my horn and it plays the river song. I just open the lid and listen.",
+    "The robins in Posy's birdhouses sing in thirds... I answer them. They answer back, mostly in the wrong key. I love it."
+  ],
+  season_summer:[
+    "Summer... golden hour lasts so long my horn stays pink till nearly eight. I play the warm songs twice.",
+    "The splash fountain keeps a beat... drip and splash. I play over it in the afternoons. The twins dance. So does {n}. Both heads.",
+    "Mm... crickets and fireflies in the meadow at night. The crickets take the tune. The fireflies keep the lights. I just listen.",
+    "Hot days warp a record a little... mine wobble now. I play the wobble. It sounds like a heat haze. Nobody's asked me to stop."
+  ]
+});
+// season: Sugarloaf residents on winter, spring and summer (autumn is in sys2/sugar.js)
+Object.assign(TALK.baker.sys,{
+  season_winter:["Cocoa by the till, sweetie, with a marshmallow on top. Don't tell the Mayor I said marshmallow. Did you eat?",
+    "Snow on the bakery roof, hon. The oven keeps one patch clear over the chimney. The birds all sit there. I don't charge them.",
+    "Mittens, sweetie. Both of you. And a scarf for {n}. Two scarves, hon. Two necks.",
+    "The ice rink's lovely, hon, but I'm a baker. I'd go round once on my bottom and come back for a bun."],
+  season_spring:["Petals in my flour bin, sweetie! Pink ones. I picked them out one at a time and then I left the last few in.",
+    "Lemon buns this time of year, hon. Something about the blossom makes me want lemon. Did you eat?",
+    "I'd like a picnic on the plaza, sweetie. Blankets, egg buns, everyone. I think about it every time the cherry tree flowers.",
+    "Birds nesting over the bakery window, hon. I leave them crumbs on the sill. Pip says sorry to them when he opens it."],
+  season_summer:["Oh, it's warm, sweetie. The oven and the sun at once. I bake early and close the top half of the door by two.",
+    "Shaved ice from Tutti for me, hon. Don't tell her I said it's better than a bun on a day like this. Did you eat, though?",
+    "The long evenings are nice, sweetie. I sit on my step after closing. Six whole seconds, then I'm up wiping something.",
+    "Fruit tarts all summer, hon. Pip does the berries. He gets very serious about the berries."]
+});
+Object.assign(TALK.jam.sys,{
+  season_winter:["Sorry, my lid gets cold in the snow. Um, I wear a little hat over it. Sorry. Bunbun knitted it. It's a bit big.",
+    "Um, I'm doing winter jam. Sorry. It's cranberry. It sets better in the cold. Sorry, I'm a bit proud of that.",
+    "Sorry, I tried the ice rink. Um, I didn't fall. I held the side the whole way. Sorry. Does that count as skating?",
+    "Um, Bunbun lets me put the marshmallows on the cocoa. Sorry. One each. I counted twice."],
+  season_spring:["Sorry, the tulips came up by my door! Um, I said sorry for stepping near them. They didn't mind. I don't think.",
+    "Um, rhubarb jam. Sorry. It's pink and sour. Sorry. Bunbun made a face and then she had a second spoon.",
+    "Sorry, there's a bird in the birdhouse by the lane. Um, I bring it a crumb. Sorry. I'm not supposed to. I do anyway.",
+    "Um, petals keep landing in the jam pan. Sorry. I fish them out. Sorry. One tasted nice, actually."],
+  season_summer:["Sorry, it's so hot. Um, I sit in the shade so I don't go runny. Sorry. Jam goes runny. That's just jam.",
+    "Um, strawberry season! Sorry. I'm a strawberry jam. I feel a bit like it's my birthday. It isn't. Sorry.",
+    "Sorry, I put my feet in the paddling pool. Um, just my feet. Scone splashed me. I said sorry to him. I don't know why.",
+    "Um, fireflies over the meadow at night. Sorry. They look like little lit-up seeds. I watched for ages."]
+});
+Object.assign(TALK.cushion.sys,{
+  season_winter:["Mm... snow makes everything quiet... like the whole town put a blanket on...",
+    "Mm... cocoa and a window and the snow coming down... I could stay there till spring.",
+    "Mm... Scone asked me to be a sled... I said no... gently... he asked again...",
+    "Mm... cold days are for staying in... I'm good at staying in... I've practised."],
+  season_spring:["Mm... cherry petals on my tassels... I didn't brush them off... they looked nice there...",
+    "Mm... spring rain on the window... the best kind of nap noise...",
+    "Mm... I napped under the flowering arch... Posy watered me by accident... it was fine...",
+    "Mm... the birds start singing so early now... I listen with my eyes shut... it counts as both."],
+  season_summer:["Mm... a garden umbrella and a deckchair... somebody else can do the summer...",
+    "Mm... the evenings go on and on... longer naps... I'm not complaining...",
+    "Mm... a summer storm is the best... thunder far off... I nap right through it...",
+    "Mm... fireflies over the meadow... like a night light that floats off... I watched one till I fell asleep."]
+});
+Object.assign(TALK.dust.sys,{
+  season_winter:["Oh, sorry, the snow is so tidy. Everything the same white. Sorry. I stood and looked at it for a while.",
+    "Oh... the wind blows snow in under the Nest's door... sorry... I sweep it out. It melts on the dustpan. Sorry.",
+    "Oh, sorry, nobody feels behind in winter. Everything's slow. Sorry. I like that very much.",
+    "Oh, sorry, I watched the ice rink. Everyone went round in the same direction. Sorry. It was lovely."],
+  season_spring:["Oh, sorry, spring cleaning. Sorry. It's my favourite. I do the whole Nest top to bottom and nobody notices.",
+    "Oh... petals all over the lane... sorry... I didn't sweep them. They looked like they meant to be there.",
+    "Oh, sorry, the pollen. Sorry. I sneeze. Then I say sorry to the sneeze. Then I sneeze again.",
+    "Oh, sorry, the birdhouses on the lane are so neat. Sorry. Each bird has its own. I'd like that."],
+  season_summer:["Oh, sorry, the sun comes in long in summer. The showroom stays gold for hours. More dust shows. Sorry. I'm fine.",
+    "Oh... the garden umbrellas flap in the wind... sorry... I hold mine down. It wants to go to the bay.",
+    "Oh, sorry, I put my feet in the paddling pool. Sorry. I went very small and fluffy after. Sorry.",
+    "Oh, sorry, fireflies. They glow and then they don't. Sorry. Like a sunbeam that's shy."]
+});
+Object.assign(TALK.cone.sys,{
+  season_winter:["Brr. Cold, hm? I hate it, sweet pea. Ice cream in a snowstorm. Who's buying? Bunbun's cocoa queue, that's who.",
+    "The twins built a snowman by the cart, my loves. Scone gave it a cone for a nose. Crumb gave it pebble eyes. Lovely, hm?",
+    "I do hot chocolate with a tiny scoop on top in winter, sweet pea. Don't tell Dr. Patch. It'll have a word, hm?",
+    "Three scarves on the twins, my loves. Scone takes his off. I put it back. Scone takes it off. Every day, hm?"],
+  season_spring:["Warmer, sweet pea! The cart's out by nine again. Strawberry first. Always strawberry first, hm?",
+    "Petals in my sprinkles, my loves! Pink this time. Scone calls them blossom sprinkles. Don't eat them, hm?",
+    "Crumb found a robin's eggshell under the tree, sweet pea. Blue. It's on her shelf with the pebbles now, hm?",
+    "I'm working on a flavour for the blossom, my loves. Pink and a bit of almond. No name yet. Scone wants Speed, hm?"],
+  season_summer:["Sun! Oh, sweet pea, this is my season. The queue goes right round the fountain. Have you eaten?",
+    "Shaved ice on the cart now, my loves. Scone says blue isn't a flavour. Crumb has blue every time, hm?",
+    "The twins live in the paddling pool, sweet pea. I hand cones over the side. A small one each. A large small one.",
+    "Long evenings, hm? I keep the cart open till the fireflies come out. Then the twins want to chase them. Then it's bed."]
+});
+Object.assign(TALK.scone.sys,{
+  season_winter:["SNOW! I'm the fastest on the sled! Down the hill! I went into a hedge! STILL FASTEST!",
+    "The ice rink! I went round SO FAST! Crumb went round slow! She didn't fall over! I fell over! FAST!",
+    "I built a snowman! It's not fast! It just STANDS there! I gave it a cone nose so it looks like it's going somewhere!",
+    "Aunt Tutti says scarf ON! I'm too FAST for a scarf! She says nobody is! She caught me! She's fast too!"],
+  season_spring:["The birds are up before me! I'm going to get up EARLIER! Tomorrow! Probably!",
+    "Petals blowing down the lane! I race them! The wind helps them! That's CHEATING but I like wind!",
+    "I found an egg basket! There was nothing in it! I put Crumb's pebbles in it! She took them back! FAST!",
+    "Posy says don't run on the tulips! I didn't! I jumped OVER them! That's different!"],
+  season_summer:["The splash fountain! I ran through it ten times! I counted! Crumb says it was nine! It was TEN!",
+    "Shaved ice! I eat it FAST! Then my head hurts! Then I eat it fast AGAIN!",
+    "I'm going to catch a firefly! They're SO fast! No they're not, they're slow! They just go UP!",
+    "Summer's so LONG! The days go forever! More running! I'm not tired! I'm a bit tired!"]
+});
+Object.assign(TALK.crumb.sys,{
+  season_winter:["Um. Snow on my pebbles outside. I brushed it off one. It was still there. Underneath. Good.",
+    "Um. I go round the ice rink slowly. Holding the side. Scone goes fast and falls. I don't fall. Is that winning?",
+    "Um. I gave the snowman pebble eyes. Grey ones. They looked friendly? I think so.",
+    "Um. I like snow because it's quiet. Like the whole lane is whispering."],
+  season_spring:["Um. Spring rain is my favourite. The pebbles go shiny. The stripes show. Do you want to see?",
+    "Um. The cherry petals land on the pond. I watch them float. Some go round and round.",
+    "Um. A bird lives in the birdhouse on our lane. I don't look in. I just say hello. Quietly.",
+    "Um. Posy let me hold a tulip bulb. It looked like a pebble. A pebble that's going to be a flower."],
+  season_summer:["Um. Fireflies over the meadow. I counted them. I lost count. That was okay.",
+    "Um. The paddling pool has pebbles in it now. Mine. They look nicer wet. Please don't tell Aunt Tutti?",
+    "Um. Blue shaved ice. Scone says blue isn't a flavour. I think it is. It tastes like blue.",
+    "Um. A summer storm is nice from the window. I sit in my nook. Scone hides under the bunk. Don't tell him I said."]
+});
+Object.assign(TALK.patch.sys,{
+  season_winter:["Cold weather. I don't like it either. That's alright. Wrap up warm and have a cocoa when you come in.",
+    "The ice rink is fun. Fall on your bottom if you fall. Not your wrists. I've told Scone. I've told him several times.",
+    "Sledging's good for you. All that walking back up. I'll be at the bottom with a plaster, just in case.",
+    "Snow is pretty, but wet feet are not. That's alright. Change your socks when you come in. Both of you. And {n}."],
+  season_spring:["Pollen season. That's alright. If you sneeze, say bless me out loud. It helps. I've no proof. It helps.",
+    "Spring is a good time for walks. The air's soft. Twenty minutes under the blossom, then a sit-down. Doctor's orders.",
+    "Mind the tulips, Posy says. Mind your ankles on the roots, I say. We say it together sometimes.",
+    "Light evenings now. That's alright. Keep your nap time, though. The sun staying up isn't a reason to."],
+  season_summer:["Hot days. That's alright. Water first, then sit under a garden umbrella. In that order.",
+    "Shaved ice is mostly water. I've told Tutti it counts. She told the whole queue. That's alright.",
+    "Sun hats, both of you. And one for {n}. Two, actually. Two heads.",
+    "The splash fountain is good on a hot day. Walk round the wet bit, though. I've seen Scone run it. That's alright. Ow."]
+});
+/* </season-talk> */
 /* <together> */
 // ---- moments together (v94): when you're both in the app, one of you starts a moment (a group hug, a dance party, a cake to share,
 // a high five through the pet); the other phone gets an invitation and has a minute to join. Joined = the pet celebrates on both
@@ -66529,7 +67005,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=101;
+const APP_V=102;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

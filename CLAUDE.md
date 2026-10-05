@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v101** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v101'` in `sw.js`; bump both for anything
+**Current build: v102** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v102'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -74,16 +74,17 @@ anything the game uses. `tools/writing/holidays.md` is the holiday design doc.
 - Garrett liked: the round plaza, Market Street up to the Town Hall, the grid paths with tidy corners ("less blobby"), the night glow.
   He asked for edge-hold scrolling on the map (done in v77; ask if he wants it in the room too).
 
-**Open items / what to do next**
-1. Not verified on a phone: most of v72-v79 (exteriors, wardrobe, civic places, the market, the new town layout, paths, edge
-   scrolling, the performance pass). Ask Garrett for screenshots and how the map feels.
-2. Ideas offered and not built yet: one shared long-term goal for the two of them (a town project they both chip in to, e.g. restoring
-   the old park bridge, or choosing new neighbours for the empty lots), ambient sound (fountain, birds, crickets, footsteps that change
-   on brick/gravel/boardwalk), makeover rooms shown inside the residents' own houses, edge scrolling in the room camera.
+**Open items / what to do next** (updated Oct 5 2026, end of the overnight session v89 -> v102)
+1. Nothing from v72 onward is verified on a phone. Overnight Garrett was asleep and none of v89-v102 has been seen by him: seasons,
+   sound, 11 theme sets, ~56 town decorations, designs, photo mode, fishing, bug catching, the museum, town projects, residents
+   remembering, moments together, Swap-Face masks, the What's new card. Ask how the map, the sound and the bubbles feel on the phone.
+2. Ideas still open: new neighbours moving into the empty lots (needs resident models), edge scrolling in the room camera, a custom
+   pattern designer for clothes (designs exist for tiles/pictures/pet patterns), push notifications (needs Garrett's OK).
 3. Known small things: the Town Hall sign is too small to read from the map; the snail and Scone's plaster are tiny; the plaza tiles
-   read pale; Game Night's house keeps Boing's spring-head topper (Garrett hasn't said).
+   read pale. Map far view draws ~1,490 meshes (v88 was ~1,360); watch it when adding map things.
 4. `firestore.rules` requires `cv >= 44` on writes and must be published by hand in the Firebase console; ask Garrett before assuming.
 5. Working setup: Garrett drives sessions from his phone via Remote Control on his PC (no cloud sessions: cost). Max 4 agents at once.
+6. Every user-visible release: add a line to `WHATSNEW`, bump `APP_V` + `sw.js` CACHE, run the three sweeps, then push.
 
 ## Files
 - `index.html` — the whole app (~565 KB): CSS, a custom WebGL2 engine, game logic, UI. No build step, no framework.
@@ -984,4 +985,5 @@ same i → per-person max, else the larger i; done and pend unioned.
   vine (grows a Harvest Hearth pumpkin pouf `hv_pouf`). Residents' new-thing lines (`TALK[k].sys` bugs, museum, project, designs, season,
   fishing; block `/* <sys2> */` after the memories block, sources `.claude/sys2/<group>.js`, brief `tools/dev/town/SYS2_BRIEF.md`),
   weighted up in `cvSysLine` when they're relevant (a bug or fish found in the last 3 days, a recent museum donation, money in the
-  current project, having designs). The `season` lines are written for autumn; write spring/summer/winter ones before December.
+  current project, having designs). `season` = autumn lines; `season_winter`/`season_spring`/`season_summer` (v102, block
+  `/* <season-talk> */`, sources `.claude/season/<group>.js`, brief `tools/dev/town/SEASON_BRIEF.md`) are picked by `seasonNow()`.
