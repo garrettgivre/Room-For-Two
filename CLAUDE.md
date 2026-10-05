@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v88** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v88'` in `sw.js`; bump both for anything
+**Current build: v89** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v89'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -861,3 +861,28 @@ the wrapper, so add hooks the same way rather than editing those functions.
   day, or Dr. Patch's check-up cures it (wrapped `jobAct`). No stats change.
 - **Scrapbook** = the Journal's third tab (`openTab` 'scrap', `renderScrap`, `state.firsts` {key:{t,by,d}}, earliest wins in the merge;
   `firstOf(key,text)`; `plBackfill` adds the older ones once: the room's birth, bond 5/10, first treasure, first makeover, first friend).
+
+## Seasons and sound (v89)
+- **Seasons** (`/* <seasons> */`, source `.claude/items/seasons.js`, wired by `.claude/items/seasons.py`): `seasonNow()` from the
+  US Central date (Mar-May spring, Jun-Aug summer, Sep-Nov autumn, else winter; debug "Season" button in Neighbours and houses sets
+  `dbgSeason`). `tmSeasonPaint()` runs before every `tmMergeWorld`: green materials on the map turn into the season's foliage (autumn
+  golds/reds per material, winter snowy, spring some blossom pink; `seasonMat`, original colour kept in `m._c0`), big flat greens in the
+  countryside (`m._big`, from the ground group's mesh sizes) go golden-olive/snowy instead, and the town grass gets a tint or a snow
+  texture (`seasonGround`). `tmSeasonFx` draws drifting leaves / snow (also whenever it's snowing) / petals / summer-night fireflies on
+  the 2D canvas `#tmSeaFx` over the map. Seasonal decorations = `TM_DECOR` entries with `season`, placed by `tmSeasonDecor()` on
+  open (`seasonSpots`: up to 3 of each beside paths, seeded per room + season + year, not saved, block walking via `tm.seaCells`);
+  they're hidden from the Arrange palette. `seasonHello()` shows a card the first map visit of a new season (per device).
+- **Sound** (`/* <sound> */`, source `.claude/items/sound.js`, wired by `.claude/items/sound.py`): Web Audio, all synthesised, starts on
+  the first pointerdown/keydown, suspends when hidden. Buses: music (`musTick`: a generative music box, pentatonic melody over a chord
+  loop, slower and lower in the evening and at night, a short noise-impulse reverb), sounds (`SFX.*`: tap, open, coin, chime, pop,
+  squish, chirp (per head), giggle, whee, plop, sad, snore, sneeze, step(path type)), ambience (`ambTick`: fountain loudness by the
+  pet's distance from the plaza on the map, rain (muffled indoors), wind, room tone, birds by day / crickets at night). Residents babble
+  while their lines type (`sBabble(k,ch)`, voice pitch per resident, `VOICE_LOW/HIGH`) in map conversations, listening in and shop
+  bubbles. Hooks wrap existing functions (emote, petTouch, petPickUp, petDrop, payCur, buyOffer, nextReward, setTab, petAct). Settings
+  per device in `localStorage.r42snd` {m,s}: sliders on the Our room page.
+- **Town decorations, batch two** (block `/* <world-decor2> */` after the world-decor block; sources `.claude/decor2/*.js`, brief
+  `tools/dev/town/DECOR2_BRIEF.md`, put in by `.claude/decor2/integrate.py`, which also registers `glow` fields into `TM_GLOW` and keeps
+  `season` pieces out of the Arrange palette). Seasonal (placed automatically): autumn pumpkin patch, scarecrow, hay bales, leaf pile,
+  cider stand; winter snowman, lit evergreen, snowy bench, sled with presents, little ice rink; spring blossom cart, painted eggs,
+  flowering arch, birdhouse post; summer shaved-ice cart, splash fountain, paddling pool, garden umbrella. Beach (cat water): umbrella,
+  sandcastle, lifeguard tower, rowboat, deckchairs, dock, bucket and spade, crab pots. Walk-through ones are in `TW_WALK`.
