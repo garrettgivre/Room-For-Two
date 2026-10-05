@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v92** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v92'` in `sw.js`; bump both for anything
+**Current build: v93** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v93'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -66,7 +66,7 @@ anything the game uses. `tools/writing/holidays.md` is the holiday design doc.
 **Note to the next session (written at the end of a very long one, v59 -> v79, Oct 4 2026)**
 - Garrett is starting a fresh chat. Read this Start here section, then the bottom sections (v72 onward) for whatever you touch.
 - Everything is pushed; the working tree is clean apart from an untracked `tools/art/shop-interiors.zip` (his, leave it).
-- **Run `tools/dev/town/sweep.js` and `sweep2.js` before every release.** v76 shipped a crash that only hit events held at houses;
+- **Run `tools/dev/town/sweep.js`, `sweep2.js` and `sweep3.js` before every release** (sweep3 clicks through every dialogue card, the Bag, prizes, designs, photos, fishing, chats and conversations, and fails on buttons that are on screen but invisible). v76 shipped a crash that only hit events held at houses;
   the sweeps would have caught it. Test every data shape a change touches, not just the first one that comes to mind.
 - Search-and-replace across index.html is dangerous: it once rewrote a helper's own definition. Assert counts, read the result.
 - The laptop's headless software GL now stalls for seconds at random in every version; judge performance by draw counts
@@ -927,3 +927,5 @@ scrapbook.
   dock beside the boardwalk once (`tmM().dk`).
 - Fixed in passing: the small dialogue card's choice buttons were invisible since v87 (their fade-in animation left them at opacity 0
   inside `.dlybox`); `.dlybox .cvch button{animation:none}`.
+- v93: `tools/dev/town/sweep3.js` (interaction sweep, see Start here). It caught a race: closing an item card and opening another
+  within 250 ms hid the new one on slow frames (`closeProduct`'s timer now lives in `#shopcard._ct` and openers clear it).
