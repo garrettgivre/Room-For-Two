@@ -61461,12 +61461,12 @@ function sBabble(k,ch){if(!SND.on||!SND.set.s)return;const now=performance.now()
 // ---- the music box: a gentle tune made up as it goes, brighter in the morning, slower and lower at night
 const MUS_SC=[0,2,4,7,9],MUS_CH=[[0,4,7],[5,9,12],[7,11,14],[9,12,16]];
 function musTick(){if(!SND.on||!SND.set.m||document.visibilityState!=='visible')return;const c=SND.ctx;if(c.currentTime<SND.musT-.2)return;
-  const h=townHour(),night=h>=21||h<6,eve=h>=17&&h<21,bpm=night?62:eve?76:88,beat=60/bpm,root=night?196:eve?220:262,map=!!(tm&&tm.open),bar=Math.floor((SND.musT||c.currentTime)/(beat*4))%4,chd=MUS_CH[(bar+(map?1:0))%4];
+  const h=townHour(),night=h>=21||h<6,eve=h>=17&&h<21,bpm=musShop('bpm',night?62:eve?76:88),beat=60/bpm,root=musShop('root',night?196:eve?220:262),map=!!(tm&&tm.open),bar=Math.floor((SND.musT||c.currentTime)/(beat*4))%4,chd=MUS_CH[(bar+(map?1:0))%4];
   let t=Math.max(SND.musT,c.currentTime+.05);const st=SND.musStep=(SND.musStep||0);
   // bass on the first beat, then a soft broken chord and a melody note from the scale
   sTone({f:root/2*Math.pow(2,chd[0]/12),d:beat*2.6,v:.12,type:'sine',bus:'mus',at:t-c.currentTime,rev:1});
   for(let i=0;i<4;i++){const at=t-c.currentTime+i*beat;const n=chd[i%3]+(i===3?12:0);sTone({f:root*Math.pow(2,n/12),d:beat*1.6,v:.06,type:'triangle',bus:'mus',at,lp:2400,rev:1});
-    if(Math.random()<(night?.45:.7)){const deg=MUS_SC[Math.floor(Math.random()*5)]+(Math.random()<.5?12:0);sTone({f:root*2*Math.pow(2,deg/12),d:beat*1.2,v:.075,type:'sine',bus:'mus',at:at+(Math.random()<.3?beat/2:0),rev:1})}}
+    if(Math.random()<(night?.45:.7)){const deg=MUS_SC[Math.floor(Math.random()*5)]+(Math.random()<.5?12:0);sTone({f:root*2*Math.pow(2,deg/12),d:beat*1.2,v:musShop('wave','sine')==='square'?.035:.075,type:musShop('wave','sine'),bus:'mus',at:at+(Math.random()<.3?beat/2:0),rev:1})}}
   SND.musStep=st+1;SND.musT=t+beat*4}
 // ---- ambience
 function ambLoop(key,o){const A=SND.amb2;if(!SND.on)return;let L=A[key];if(!L){const c=SND.ctx,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=o.white?SND.white:SND.noise;s.loop=true;f.type=o.ft||'bandpass';f.frequency.value=o.f;f.Q.value=o.q||1;g.gain.value=0;s.connect(f);f.connect(g);g.connect(SND.amb);s.start();L=A[key]={s,f,g}}
@@ -66236,7 +66236,8 @@ function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS
 /* </swapface> */
 /* <whatsnew> */
 // ---- a one-time card per device listing what's new since the last version this phone saw (localStorage r42wn)
-const WHATSNEW=[[114,'Your pet reacts to more things: it waves when you zoom in close, bops to the music, gets excited about real snow, and is happy when you come home. The camera glides in when it does a trick and drifts gently when you leave it be. And about a hundred small fixes to what the neighbours say.'],
+const WHATSNEW=[[115,'Shops feel livelier: a bell when you walk in, each shop has its own music, and customers chat with the keepers. Everyone has a few new little moves, and neighbours fidget while they stand about in town.'],
+  [114,'Your pet reacts to more things: it waves when you zoom in close, bops to the music, gets excited about real snow, and is happy when you come home. The camera glides in when it does a trick and drifts gently when you leave it be. And about a hundred small fixes to what the neighbours say.'],
   [113,'Neighbours have moods now: good days, grumpy days, and a chat or a gift cheers them up. Each neighbourhood has a noticeboard (Neighbours > Noticeboard, or tap one in town) with notes and small optional favours. Your pet goes to bed by itself at night and has breakfast in the morning, and the lamps glow a little warmer in the evening.'],
   [112,'The app opens about twice as fast: your room comes first, and the town finishes setting itself up in the background.'],
   [111,'Stepping outside is quicker: neighbours’ full models now appear one at a time instead of all at once. The speed readout also notes how long the game takes to come back after you switch apps.'],
@@ -69158,6 +69159,46 @@ setInterval(()=>{try{if(document.visibilityState!=='visible'||!pcIdle())return;c
 let pcDrift=0;
 {const uc=updCam;updCam=function(){try{const now=performance.now(),idle=now-(typeof tmLastIn!=='undefined'?tmLastIn:0)>25000&&!away&&!openTab&&!styling()&&!camFollow&&!kmode;if(idle){const d=Math.sin(now/9000)*.00008;cam.yaw+=d;pcDrift+=d}}catch(_){}return uc.apply(this,arguments)}}
 /* </pet-cam> */
+/* <shop-life> */
+// ---- shop life (v115): a bell when you walk into a shop; each shop has its own take on the music (MUS_SHOP: tempo, key, melody sound);
+// a customer and the keeper chat now and then in speech bubbles (rcScene, the same scenes residents use on the street).
+const MUS_SHOP={snack:{bpm:92,root:247},salon:{bpm:68,root:233,wave:'triangle'},toys:{bpm:104,root:294},furn:{bpm:70,root:220},build:{bpm:84,root:196,wave:'triangle'},
+  glam:{bpm:96,root:277},wear:{bpm:80,root:262},arcade:{bpm:112,root:330,wave:'square'},p_library:{bpm:58,root:175},p_townhall:{bpm:76,root:220},p_postoffice:{bpm:86,root:247},p_weather:{bpm:64,root:196},p_lampshed:{bpm:62,root:185}};
+function musShop(k,v){try{if(typeof away==='undefined'||!away||(tm&&tm.open))return v;const S=MUS_SHOP[away.key]||(away.def&&away.def.house?{bpm:Math.round(v*.9),root:v}:null);if(!S)return v;if(k==='bpm')return Math.round((S.bpm||v)*(v<70?.8:v<80?.9:1));if(k==='root')return S.root||v;return S[k]||v}catch(_){return v}}
+{const tt=travelTo;travelTo=function(dest){const r=tt.apply(this,arguments);try{const S=SHOPS[dest];if(S&&!S.house&&!S.place)setTimeout(()=>{if(away&&away.key===dest)try{SFX.chime()}catch(_){}},1500)}catch(_){}return r}}
+let slT=-1e9,slRun=0;
+function shopChatTick(){if(!away||kmode||openTab||slRun||(typeof kbT!=='undefined'&&kbT>0)||!$('#game').hidden)return;const now=performance.now();if(now-slT<28000||Math.random()>.3)return;
+  const Ks=(away.keepers||[]).filter(K=>K&&K.kind&&RESIDENTS[K.kind]),C=Ks.find(K=>K.customer||K.guest),S=Ks.find(K=>!K.customer&&!K.guest&&K!==C);if(!C||!S)return;
+  let sc=null;try{sc=rcScene(C.kind,S.kind)}catch(e){return}if(!sc||!sc.l||!sc.l.length)return;slT=now;slRun=1;const shop=away,L=sc.l.slice(0,4);let i=0;
+  const step=()=>{if(away!==shop||kmode||openTab||i>=L.length){slRun=0;return}const [who,txt]=L[i++],K=who===C.kind?C:who===S.kind?S:null;if(!K||!txt){step();return}
+    try{kbShow(txt,K);keeperReact('greet',1.2,K)}catch(_){}setTimeout(step,1800+txt.length*45)};step()}
+setInterval(()=>{try{if(document.visibilityState==='visible')shopChatTick()}catch(e){console.warn('shop chat',e);slRun=0}},6000);
+/* </shop-life> */
+/* <anim-polish> */
+// ---- animation polish (v115): ten more idle moves, each resident gets a few that suit them; residents standing about on the map now
+// fidget too (their full model gets a layer group and runs the same keeperLayer as in shops while they're not walking).
+Object.assign(K_IDLE,{
+  nod:{d:1.4,f:(L,u,e)=>{L.rotation.x=Math.sin(u*Math.PI*6)*.07*e}},
+  shiver:{d:.9,f:(L,u,e)=>{L.rotation.z=Math.sin(u*Math.PI*30)*.03*e;L.scale.set(1+.02*e,1-.02*e,1+.02*e)}},
+  peek:{d:2.2,f:(L,u,e)=>{L.rotation.z=.16*e;L.position.x=.06*e;L.rotation.y=.25*e}},
+  bounce2:{d:1.2,f:(L,u,e)=>{const h=Math.abs(Math.sin(u*Math.PI*4));L.position.y=h*.06;L.scale.set(1+(1-h)*.03,1-(1-h)*.05,1+(1-h)*.03)}},
+  lookup:{d:2,f:(L,u,e)=>{L.rotation.x=-.14*e;L.position.y=.02*e}},
+  proud:{d:1.9,f:(L,u,e)=>{L.scale.set(1+.05*e,1+.06*e,1+.05*e);L.rotation.x=-.08*e}},
+  shy:{d:2,f:(L,u,e)=>{L.scale.set(1-.03*e,1-.05*e,1-.03*e);L.rotation.y=-.35*e;L.rotation.x=.06*e}},
+  giggle:{d:1.2,f:(L,u,e)=>{L.position.y=Math.abs(Math.sin(u*Math.PI*10))*.025*e;L.rotation.z=Math.sin(u*Math.PI*10)*.03*e}},
+  shuffle:{d:2.2,f:(L,u,e)=>{L.position.x=Math.sin(u*Math.PI*4)*.05*e;L.rotation.z=Math.sin(u*Math.PI*4)*.04*e}},
+  boogie:{d:2,f:(L,u,e)=>{L.rotation.z=Math.sin(u*Math.PI*8)*.1*e;L.position.y=Math.abs(Math.sin(u*Math.PI*8))*.04*e;L.rotation.y=Math.sin(u*Math.PI*4)*.2*e}}});
+const ANIM_MORE={baker:['nod','proud'],jam:['shy','shiver','giggle'],cushion:['shy','lookup'],dust:['shy','peek','shiver'],cone:['giggle','boogie','nod'],scone:['bounce2','giggle','boogie'],crumb:['peek','bounce2','shy'],
+  patch:['nod','lookup'],stylist:['proud','boogie'],sponge:['shiver','shy'],tailor:['nod','peek'],hair:['boogie','proud'],makeup:['proud','lookup'],polish:['nod','proud'],spool:['peek','shuffle','giggle'],
+  beacon:['lookup','shuffle'],toymaker:['bounce2','boogie','giggle'],joy:['bounce2','boogie','proud'],windup:['shuffle','nod'],pencil:['nod','peek'],builder:['proud','nod'],pixel:['shuffle','peek'],
+  parcel:['nod','shuffle'],crane:['lookup','shy','peek'],pebble:['shuffle','lookup'],mayor:['proud','nod','lookup'],book:['nod','lookup'],lantern:['lookup','shy'],cloud:['shiver','lookup'],
+  posy:['giggle','lookup','nod'],cactus:['nod','proud'],gramo:['boogie','lookup']};
+Object.entries(ANIM_MORE).forEach(([k,a])=>{const L=KEEPER_IDLES[k]||(KEEPER_IDLES[k]=['sway','look']);a.forEach(m=>{if(!L.includes(m))L.push(m)})});
+// map residents: a layer group between the outer group and the model, animated while they stand still
+{const tf=twFull;twFull=function(r){const had=r.full;const F=tf.apply(this,arguments);try{if(F&&!had&&F.K&&!F.K.layer){const lay=G();F.g.remove(F.K.g);lay.add(F.K.g);F.g.add(lay);F.K.layer=lay;F.K.kind=F.K.kind||r.k}}catch(e){console.warn('res layer',e)}return F}}
+{const rt=twResTick;twResTick=function(dt,t){const out=rt.apply(this,arguments);try{tw.res.forEach(r=>{const F=r.full;if(!F||!F.K||!F.K.layer||!F.g.visible)return;const moving=!!(r.path&&r.path.length)||r.out;
+  if(moving){F.K.anim=null;F.K.layer.position.set(0,0,0);F.K.layer.rotation.set(0,0,0);F.K.layer.scale.set(1,1,1);return}F.K.act='idle';const talk=!!r.chat||(tw.card&&tw.card.k===r.k);keeperLayer(F.K,dt,t,false,talk)})}catch(e){console.warn('res idle',e)}return out}}
+/* </anim-polish> */
 function mergeInto(L,R){if(!syncBase)return{};const B=syncBase,ch={},Bkr=B.kr?JSON.parse(B.kr)||{}:{},Rkr=R.kr||{};new Set([...Object.keys(L),...Object.keys(R)]).forEach(k=>{if(k==='rev')return;
     const lj=JSON.stringify(L[k]),rj=JSON.stringify(R[k]),bj=B[k];if(rj===lj||rj===bj)return;if(k!=='kr'&&(+Rkr[k]||0)<(+Bkr[k]||0))return;
     if(lj===bj){L[k]=R[k]===undefined?undefined:JSON.parse(rj);ch[k]=1;return}
@@ -69249,7 +69290,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=114;
+const APP_V=115;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

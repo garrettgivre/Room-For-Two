@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v114** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v114'` in `sw.js`; bump both for anything
+**Current build: v115** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v115'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1156,3 +1156,9 @@ walking toward the arcade (`.claude/town/t_walkperf.js`, `t_passes.js`): render 
   from town = a happy hop; dropped = a wobble) and camera niceties (`camFocusUntil` frames the pet for 3 s after `trickDo`, read in
   `updCam`; after 25 s untouched at home the yaw drifts slowly, via an `updCam` wrapper). Timers that compare with `performance.now()`
   must start at -1e9, not 0, or they can't fire in the first seconds after load.
+
+- v115: `/* <shop-life> */` (a chime on entering a shop via a `travelTo` wrapper; `MUS_SHOP` + `musShop()` give each shop and civic place
+  its own tempo/key/melody wave in `musTick`; `shopChatTick` plays an `rcScene` between a customer/guest and the staff in `#kbub` bubbles,
+  every ~30 s at most). `/* <anim-polish> */`: ten more `K_IDLE` moves (nod, shiver, peek, bounce2, lookup, proud, shy, giggle, shuffle,
+  boogie) and `ANIM_MORE` per resident; map residents' full models get a layer group (`twFull` wrapper) and run `keeperLayer` while not
+  walking (`twResTick` wrapper).
