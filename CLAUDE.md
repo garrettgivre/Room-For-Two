@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v103** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v103'` in `sw.js`; bump both for anything
+**Current build: v104** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v104'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -996,3 +996,16 @@ same i → per-person max, else the larger i; done and pend unioned.
   picked it) and a snack for the pet (once, +2 friendship, `td('visitor')`), then up to one more line (level topics, gossip, topics), then
   a goodbye bubble (`visLeave`) and they shrink out through the door. Unvisited after 4 min, or 75 s after the last chat, they say bye.
   The makeover host (`mkHost`, `visitor.mk`) skips all of this.
+
+## The map opens fast (v104)
+Beau tapped Explore, nothing happened for a while, he tapped again and the map opened and then closed.
+- Every open (and ~350 ms after every close, in `tmFresh`) ran `tmSync`, which rebuilds the home, paths and every decoration and forces
+  a full `tmMergeWorld` (~1.5 s of JS on the laptop, more on a phone). Now `tmSync` stores `tm.syncKey` (`tmSyncKey()`: the layout's
+  b/r/c/d, the door, owned doors, the place list) and `tmSyncNeeded()` skips it when nothing changed. Second open from home: 11.8 s ->
+  66 ms on software GL. If you add something `tmSync` builds from, put it in `tmSyncKey`.
+- Taps queued while the map opened: the scrim behind the map (`#town3` pointerdown, which is all that's under your finger while `#tmPop`
+  is hidden during the genie) closed it. The scrim, × and the back button now ignore a close in the first 700 ms (`tmJustOpened`) or
+  during the genie; Explore does nothing while the map is open; `tmOpen` returns early if already open (a second open started a second
+  `tmTick` loop). Code paths (travel, entering a building) still close at once.
+- `twResTick` threw every frame ("reading 'isConnected'") after a resident left the map: the cached nearest list `tw.near` kept the
+  dropped resident whose `dot` was null. Skips `!r.dot` and clears `tw.near` on a drop.

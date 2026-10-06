@@ -30918,8 +30918,10 @@ function tmAO(){const A=[];for(const k in tm.bld){const o=tm.bld[k],[w,d]=tmFoot
   tmM().d.forEach(q=>{if(A.length>=24)return;const big=TM_DECOR[q[0]]&&TM_DECOR[q[0]].sz;if(!big)return;A.push([q[1]+1-TM_W/2,q[2]+1-TM_D/2,1.2,.3])});tm.sc.userData.lighting.ao=A.slice(0,24)}
 function tmPlace(k){const o=tm.bld[k];if(!o)return;if(tm.mergedG&&!tm.arr)tm.mergeDirty=true;const [x,z,r]=tmM().b[k],[w,d]=tmFoot(k,r);o.position.set(x-TM_W/2+w/2,0,z-TM_D/2+d/2);o.rotation.y=r*Math.PI/2}
 function tmPad(o,k){const [w,d]=tmFoot(k,0),c=k==='home'?0x3EC8F2:parseInt((SHOPS[k].color||'#FF8A1C').slice(1),16),mx=v=>Math.round(255-(255-v)*.24),t=(mx(c>>16&255)<<16)|(mx(c>>8&255)<<8)|mx(c&255);ol(rb(o,w+.34,.04,d+.34,.12,M(t,{roughness:.7}),0,.02,0),.004)}
+function tmSyncKey(){try{const m=tmM();return JSON.stringify([tm.mk,m&&m.b,m&&m.r,m&&m.c,m&&m.d,state.door,state.downs,tmPlaces()])}catch(_){return Math.random()+''}}
+function tmSyncNeeded(){return!!(tm.pending||!tm.syncKey||tm.syncKey!==tmSyncKey()||!tm.bld.home)}
 function tmSync(full,budget){let n=0;tm.pending=false;for(const k of tmPlaces()){if(!(full||k==='home'||!tm.bld[k]))continue;if(budget&&n>=budget&&k!=='home'){tm.pending=true;continue}n++;if(tm.bld[k])tm.world.remove(tm.bld[k]);tm.signs=tm.signs.filter(q=>q.k!==k);try{tm.bld[k]=k==='home'?tmHome():tmGate(k)?tmGateM(k):tmShop(k);if(!tmGate(k))tmPad(tm.bld[k],k)}catch(e){console.warn('town '+k,e);delete tm.bld[k];continue}tm.world.add(tm.bld[k])}
-  for(const k in tm.bld)if(!tmPlaces().includes(k)){tm.world.remove(tm.bld[k]);delete tm.bld[k]}tm.mergeDirty=true;tmUnmerge();for(const k in tm.bld)tmPlace(k);tmPaths();tmDecor();tmAO();tm.anims=[];tm.world.traverse(o=>{if(o.userData.anim)tm.anims.push(o)});tmLabels()}
+  for(const k in tm.bld)if(!tmPlaces().includes(k)){tm.world.remove(tm.bld[k]);delete tm.bld[k]}tm.mergeDirty=true;tmUnmerge();for(const k in tm.bld)tmPlace(k);tmPaths();tmDecor();tmAO();tm.anims=[];tm.world.traverse(o=>{if(o.userData.anim)tm.anims.push(o)});tmLabels();tm.syncKey=tm.pending?'':tmSyncKey()}
 // build a few more of the missing buildings (called each frame while the map is open, and when idle)
 function tmUnmerge(){if(!tm||!tm.mergedG)return;if(tm.farChunks){tm.farChunks.forEach(f=>f.nodes.forEach(n=>n.visible=true));tm.farChunks=null}tm.world.remove(tm.mergedG);tm.mergedList.forEach(m=>m.visible=true);tm.mergedG=null;tm.mergedList=[]}
 function tmMergeWorld(){if(!tm||tm.arr||tm.pending)return;try{tmSeasonPaint()}catch(e){console.warn('season',e)}tmUnmerge();tm.mergeDirty=false;tm.sc.updateMatrixWorld();const CH=16,groups=new Map(),mid=new WeakMap();let mn=0;
@@ -34982,8 +34984,8 @@ function tmCircleAt(gx,gz){const m=tmM(),x=gx+.5,z=gz+.5;return(m.c||[]).findInd
 // ---------- open, close, input, frame ----------
 tmPlacesOf('town').filter(k=>!tmGate(k)).forEach(k=>{try{tmImg(k)}catch(_){}});
 {const warm=()=>{try{if(!tm)tmInit();if(tm)setTimeout(()=>{try{tmNormCur();tmFresh()}catch(e){}},250)}catch(e){}};setTimeout(()=>window.requestIdleCallback?requestIdleCallback(warm,{timeout:1500}):warm(),1600)}
-function tmOpen(){const T=tmInit();if(!T)return false;document.body.classList.add('mapopen');tmUse('world');tmTabs();tmNormCur();{const gifts=tmGifts();if(gifts.length){tmDecor();T.snapOk=0;setTimeout(()=>toast('New in town: '+jrList(gifts.map(k=>TM_DECOR[k].n.toLowerCase()))+'!',true),700)}}const el=$('#town3');el.hidden=false;el.classList.add('on');T.open=true;tmArrange(false);tmWhere();twStart();T.snapOk=0;$('#tmArr').hidden=false;tmWheelOpen(false);setTimeout(()=>{try{if(!sandbox)wxAsk()}catch(_){}},1800);try{fishDock()}catch(e){console.warn('dock',e)}try{musPlace()}catch(e){console.warn('museum',e)}try{projPlace()}catch(e){console.warn('project',e)}try{tmSeasonDecor();if(tm.seasonP&&tm.seasonP!==seasonNow())tm.mergeDirty=true;setTimeout(()=>{try{if(!sandbox)seasonHello()}catch(_){}},2600)}catch(e){console.warn('season',e)}{const rn=$('#tmRain');if(rn)rn.hidden=!['rain','storm'].includes(weatherOf(lifeDay()))}
-  $('#tmPop').classList.add('gen');if(!T.snapOk){tmSync(false,8);tmDraw(0);tmSnapNow()}T.snapOk=0;tmLast=performance.now();tmTick(tmLast);tmGenie(true);return true}
+function tmOpen(){const T=tmInit();if(!T)return false;if(T.open)return true;T.openT=performance.now();document.body.classList.add('mapopen');tmUse('world');tmTabs();tmNormCur();{const gifts=tmGifts();if(gifts.length){tmDecor();T.snapOk=0;setTimeout(()=>toast('New in town: '+jrList(gifts.map(k=>TM_DECOR[k].n.toLowerCase()))+'!',true),700)}}const el=$('#town3');el.hidden=false;el.classList.add('on');T.open=true;tmArrange(false);tmWhere();twStart();T.snapOk=0;$('#tmArr').hidden=false;tmWheelOpen(false);setTimeout(()=>{try{if(!sandbox)wxAsk()}catch(_){}},1800);try{fishDock()}catch(e){console.warn('dock',e)}try{musPlace()}catch(e){console.warn('museum',e)}try{projPlace()}catch(e){console.warn('project',e)}try{tmSeasonDecor();if(tm.seasonP&&tm.seasonP!==seasonNow())tm.mergeDirty=true;setTimeout(()=>{try{if(!sandbox)seasonHello()}catch(_){}},2600)}catch(e){console.warn('season',e)}{const rn=$('#tmRain');if(rn)rn.hidden=!['rain','storm'].includes(weatherOf(lifeDay()))}
+  $('#tmPop').classList.add('gen');if(!T.snapOk){if(tmSyncNeeded())tmSync(false,8);tmDraw(0);tmSnapNow()}T.snapOk=0;tmLast=performance.now();tmTick(tmLast);tmGenie(true);return true}
 function tmQuad(W,H,q){const[x0,y0,x1,y1,x2,y2,x3,y3]=q,dx1=x1-x2,dx2=x3-x2,dx3=x0-x1+x2-x3,dy1=y1-y2,dy2=y3-y2,dy3=y0-y1+y2-y3,D=dx1*dy2-dx2*dy1,g=(dx3*dy2-dx2*dy3)/D,h=(dx1*dy3-dx3*dy1)/D,a=x1-x0+g*x1,b=x3-x0+h*x3,c=x0,d=y1-y0+g*y1,e=y3-y0+h*y3,f=y0;
   return`matrix3d(${a/W},${d/W},0,${g/W},${b/H},${e/H},0,${h/H},0,0,1,0,${c},${f},0,1)`}
 const genA=new WeakMap();
@@ -35010,7 +35012,7 @@ function sheetGenie(open,t){const sh=$('#sheet'),btn=$(t==='pet'?'#dkPet':'#dkMe
 function tmClose(){if(!tm||!tm.open)return;twEnd();tm.open=false;document.body.classList.remove('mapopen');const el=$('#town3');try{tmDraw(0);tmSnapNow()}catch(_){}tmGenie(false);el.classList.remove('on');setTimeout(()=>{if(!tm.open)el.hidden=true},1500);$('#tmCard').hidden=true;clock.getDelta()}
 function tmFit(){const a=tm.cam.aspect,t=Math.tan((tmMk()==='world'?30:tm.cam.fov)*Math.PI/360),r=Math.hypot(TM_W,TM_D)/2;return r/(t*Math.min(1,a*1.12)*1.05)}
 function tmSnapNow(){const c=$('#tmc'),s=tm.snap||(tm.snap=document.createElement('canvas'));if(s.width!==c.width||s.height!==c.height){s.width=c.width;s.height=c.height}const x=s.getContext('2d');x.clearRect(0,0,s.width,s.height);x.drawImage(c,0,0)}
-function tmFresh(){if(!tm||tm.open)return;tmSync(false,6);if(tm.pending){tmPumpIdle()}tmArrange(false);tm.focus=null;tm.tgt.set(0,0,0);tmDraw(0);tmSnapNow();tm.snapOk=1}
+function tmFresh(){if(!tm||tm.open)return;if(tmSyncNeeded())tmSync(false,6);if(tm.pending){tmPumpIdle()}tmArrange(false);tm.focus=null;tm.tgt.set(0,0,0);tmDraw(0);tmSnapNow();tm.snapOk=1}
 function tmSize(){const pp=$('#tmPop');return[pp.clientWidth||innerWidth,pp.clientHeight||innerHeight]}
 // Time of day on the map follows US Central time (and the debug sky slider), like the room's sky:
 // [hour, sun/moon colour, intensity, sky fill, fill tint, lamp/emissive boost, night 0..1]
@@ -35123,9 +35125,11 @@ function tmTick(ts){if(!tm||!tm.open)return;requestAnimationFrame(tmTick);const 
   const tmPanPx=(dx,dy)=>{const k=(tm.focus?Math.min(9,tmFit()*.45):tmFit()*tm.zoom)/(cv.clientHeight||600)*.6,c=Math.cos(tm.yaw),sn=Math.sin(tm.yaw);tm.focus=null;tw.follow=false;$('#tmCard').hidden=true;tm.tgtTo.x-=(dx*c+dy*sn)*k;tm.tgtTo.z-=(-dx*sn+dy*c)*k;tm.tgt.copy(tm.tgtTo)};
   const up=e=>{if(!tm)return;tm.ptr.delete(e.pointerId);if(down&&down.edging){down.mv=99;tmEdgeShow(null)}if(tm.ptr.size<2){pinch=0;twist=null;tm.mid=null}if(down&&down.mv<8&&!down.painted)tmTap(e.clientX,e.clientY);down=null;paint=null};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',e=>{tm&&tm.ptr.delete(e.pointerId);if(down&&down.edging)tmEdgeShow(null);down=null});
   cv.addEventListener('wheel',e=>{if(!tm)return;e.preventDefault();tm.zoomTo=null;tm.zoom=clamp(tm.zoom*(e.deltaY>0?1.1:.9),.02,1.4)},{passive:false});
-  $('#tmBack').onclick=()=>{$('#tmCard').hidden=true;tm.focus=null};$('#tmX').onclick=()=>closeMap();$('#town3').addEventListener('pointerdown',e=>{if(e.target===e.currentTarget&&!tm.arr)closeMap()});$('#tmArr').onclick=()=>tmArrange(true);$('#tmWheelBtn').onclick=e=>{e.stopPropagation();tmWheelOpen(true)}}
+  $('#tmBack').onclick=()=>{$('#tmCard').hidden=true;tm.focus=null};$('#tmX').onclick=()=>{if(!tmJustOpened())closeMap()};$('#town3').addEventListener('pointerdown',e=>{if(e.target===e.currentTarget&&!tm.arr&&!tmJustOpened()&&!$('#tmPop').classList.contains('gen'))closeMap()});$('#tmArr').onclick=()=>tmArrange(true);$('#tmWheelBtn').onclick=e=>{e.stopPropagation();tmWheelOpen(true)}}
 
 function showMap(){if(tmOpen())return;const m=$('#map'),here=away?away.key:'home';$('#mapHome').hidden=!away;$('#mapTitle').textContent=away?'Where next?':'Where to?';m.querySelectorAll('[data-go]').forEach(b=>b.classList.toggle('here',b.dataset.go===here));m.hidden=false;requestAnimationFrame(()=>m.classList.add('on'))}
+// a tap on × or back that arrives right after the map opened was queued while it loaded: ignore it
+const tmJustOpened=()=>tm&&tm.open&&performance.now()-(tm.openT||0)<700;
 function closeMap(){tmClose();const m=$('#map');m.classList.remove('on');setTimeout(()=>{m.hidden=true},250);if(!traveling)doorTarget=0}
 function travelTo(dest,then,focus){if(traveling)return;const here=away?away.key:'home';if(dest===here){closeMap();then&&then();return}traveling=true;closeMap();closeProduct();setTab(null);select(null);if(brush)endBrush();if(visitor){scene.remove(visitor.K.g);visitor=null;const vb=$('#visBadge');if(vb)vb.hidden=true}
   const tv=$('#travel');$('#tvText').textContent=dest==='home'?'Heading home…':`Off to ${SHOPS[dest].n}…`;$('#tvIcon').src=ico(dest==='home'?'tab-room':SHOPS[dest].icon);tv.hidden=false;requestAnimationFrame(()=>tv.classList.add('on'));
@@ -35391,7 +35395,7 @@ window.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(wheelOn()){c
 // Android back (and the browser back button): we keep one spare history entry; going back closes the topmost thing instead of
 // leaving the app. With nothing open, a second back within 2.5 s leaves (a toast says so).
 function backAct(){if(traveling)return true;{const w=$('#tmWheel');if(tm&&tm.open&&w&&!w.hidden){tmWheelOpen(false);return true}}if(!$('#reward').hidden){$('#rwOk').click();return true}if(!$('#game').hidden){closeGame();return true}if(gc&&gc.open){closeGacha();return true}
-  if(tm&&tm.open){if(tm.arr){tmArrange(false);return true}if(!$('#tmCard').hidden){$('#tmCard').hidden=true;tm.focus=null;tm.tgtTo.set(0,0,0);return true}closeMap();return true}
+  if(tm&&tm.open){if(tm.arr){tmArrange(false);return true}if(!$('#tmCard').hidden){$('#tmCard').hidden=true;tm.focus=null;tm.tgtTo.set(0,0,0);return true}if(!tmJustOpened())closeMap();return true}
   if(!$('#map').hidden){closeMap();return true}if(wheelOn()){closeWheel();return true}if(brush){endBrush();return true}if(!$('#shopcard').hidden){closeProduct();return true}
   if(kmode){if(!$('#shopcard').hidden){closeProduct();return true}if(openTab==='shopcat'){kShopBack();return true}if(kmode.view!=='menu'){kPanel(kmode.view==='reply'?'chat':'menu',-1);return true}kClose();return true}
   if(openTab){const sb=$('#sback');if(sb&&!sb.hidden){sb.click();return true}setTab(null);return true}if(camFollow){setFollow(false);return true}if(away){showMap();return true}return false}
@@ -36108,7 +36112,7 @@ const TW_AREA=mk=>{const p=WORLD_PARTS[mk]||WORLD_PARTS.town,s=WPS(mk);return[p[
 function twRandomRoad(area,near,R){const m=tmM(),[ox,oz,w,d]=area?TW_AREA(area):[0,0,TM_W,TM_D];let c=m.r.filter(([x,z])=>x>=ox&&z>=oz&&x<ox+w&&z<oz+d);
   if(near){const [nx,nz]=twCell(near.x,near.z);c=c.filter(([x,z])=>Math.abs(x-nx)+Math.abs(z-nz)<7)}if(!c.length)c=m.r;let tot=0;const wt=c.map(q=>{const w_=1/PATH_T[pathT(q)].cost;tot+=w_;return w_});let r_=(R||Math.random)()*tot,k_=0;while(k_<c.length-1&&(r_-=wt[k_])>0)k_++;const q=c[k_];return twPos(q[0],q[1])}
 function twResSync(){const want=new Map();for(const k of Object.keys(RESIDENTS)){if(!resHere(k)||!KBIB[k])continue;const P=twPlan(k);if(P)want.set(k,P);if(want.size>=16)break}
-  for(const [k,r] of tw.res)if(!want.has(k)||want.get(k).mode!==r.plan.mode){twResDrop(r);tw.res.delete(k)}
+  for(const [k,r] of tw.res)if(!want.has(k)||want.get(k).mode!==r.plan.mode){twResDrop(r);tw.res.delete(k);tw.near=null}
   for(const [k,P] of want){if(tw.res.has(k))continue;const r={k,plan:P,x:0,z:0,ry:0,path:null,wait:Math.random()*2,full:null,dot:null,t:Math.random()*10,sc:P.mode==='go'?0:1,out:0};
     let start=null;if(P.mode==='go'){const d=twDoor(P.from);if(d){start=[d.in[0]+(d.x-d.in[0])*.4,d.in[1]+(d.z-d.in[1])*.4];r.path=[[d.x,d.z]];tmDoorOpen(P.from,1800)}}else if(P.mode==='mingle'){const d=twDoor(P.at);if(d){const a=Math.random()*Math.PI;start=[d.x+Math.cos(a)*.7,d.z+Math.sin(a)*.7]}}
     else if(P.mode==='stroll'){const d=twDoor(P.near);start=d?twRandomRoad(null,d):null}else if(P.mode==='stall')start=P.pos;else if(P.near)start=twSpotNear(P.near);if(!start)start=twRandomRoad(P.area||'town');
@@ -36135,7 +36139,7 @@ function twDot(k){const c=parseInt(((RES[k]||[])[1]||'#FFFFFF').slice(1),16),g=G
 function twFull(r){if(r.full)return r.full;try{const K=KEEPERS[r.k]();kPolish(K,r.k);bakeKeeper(K,r.k);const L=G();L.add(K.g);K.g.scale.setScalar(TW_RES_SCALE);L.userData.twk=r.k;K.g.traverse(o=>o.userData.twk=r.k);tm.world.add(L);r.full={K,g:L};try{swapMask(K.g,r.k)}catch(_){}}catch(e){console.warn('tw full',e)}return r.full}
 const _twV=new THREE.Vector3();
 function twResTick(dt,t){const cam=tm.tgt,close=tmFit()*tm.zoom<16;tw.sortT=(tw.sortT||0)-dt;if(tw.sortT<=0||!tw.near||tw.near.length!==tw.res.size){tw.sortT=.3;tw.near=[...tw.res.values()].sort((a,b)=>Math.hypot(a.x-cam.x,a.z-cam.z)-Math.hypot(b.x-cam.x,b.z-cam.z))}const near=tw.near;
-  near.forEach((r,i)=>{const full=close&&i<TW_FULL&&Math.hypot(r.x-cam.x,r.z-cam.z)<12;r.t+=dt;const talking=tw.card&&tw.card.k===r.k;let mv=false;
+  near.forEach((r,i)=>{if(!r.dot)return;const full=close&&i<TW_FULL&&Math.hypot(r.x-cam.x,r.z-cam.z)<12;r.t+=dt;const talking=tw.card&&tw.card.k===r.k;let mv=false;
     if(r.chat){}else if(!talking){if(r.path&&r.path.length){const [tx,tz]=r.path[0],dx=tx-r.x,dz=tz-r.z,d=Math.hypot(dx,dz),st=TW_RSPEED*dt;if(d<=st){r.x=tx;r.z=tz;r.path.shift()}else{r.x+=dx/d*st;r.z+=dz/d*st;r.ry=Math.atan2(dx,dz)}mv=true}
       else{r.wait-=dt;if(r.wait<0){const P=r.plan;let to=null;if(P.mode==='go'){const d=twDoor(P.to);if(d&&Math.hypot(d.x-r.x,d.z-r.z)<.3){r.out=1;r.inPt=d.in;tmDoorOpen(P.to,1800)}else if(d)to=[d.x,d.z]}
         else if(P.mode==='mingle'){r.wait=3+Math.random()*4}else if(P.mode==='stroll'){const d=twDoor(P.near);to=twRandomRoad(null,d||{x:r.x,z:r.z})}else if(P.mode==='stall'){r.wait=4+Math.random()*4;r.ry=P.ry}else if(r.atSpot){twSpotFree(r)}else if(r.spot){r.atSpot=1;if(r.spot.sit){r.x=r.spot.x;r.z=r.spot.z}r.ry=r.spot.ry;r.wait=r.spot.sit?14+Math.random()*22:r.spot.mkt?6+Math.random()*8:4+Math.random()*6}
@@ -64491,7 +64495,8 @@ function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS
 /* </swapface> */
 /* <whatsnew> */
 // ---- a one-time card per device listing what's new since the last version this phone saw (localStorage r42wn)
-const WHATSNEW=[[103,'Visitors: only neighbours you’ve already met come knocking now, and they talk in speech bubbles over their head. Your pet walks over to say hi; tap them to chat, and they wave goodbye when they go.'],
+const WHATSNEW=[[104,'The map opens much faster, from home and from inside shops, and tapping Explore again while it opens no longer closes it.'],
+  [103,'Visitors: only neighbours you’ve already met come knocking now, and they talk in speech bubbles over their head. Your pet walks over to say hi; tap them to chat, and they wave goodbye when they go.'],
   [101,'The garden grows with your bond: a new planter every three bond levels, up to eight. New seeds: potatoes, and a pumpkin vine that grows a pumpkin pouf.'],
   [100,'Town projects: the Mayor proposes something for the town (a Ferris wheel first) and the two of you chip in buttons. When it’s paid for, it goes up on the map. Neighbours, Project.'],
   [99,'The Little Museum: donate one of each fish, bug and find, and Dewey writes a card for it. Tap the museum on the map.'],
@@ -66448,7 +66453,7 @@ function fxScores(){const g=G();rb(g,1.9,1.24,.08,.06,M(0xB07BFF,{roughness:.4})
 /* ================= SHEETS ================= */
 let openTab=null;const thumbs={};
 // the dock: Explore (the town map; the way home from a shop), Pet (the care wheel) and Menu (everything else)
-$('#dkExplore').onclick=()=>{closeWheel();setTab(null);showMap()};
+$('#dkExplore').onclick=()=>{if(tm&&tm.open)return;closeWheel();setTab(null);showMap()};
 $('#dkMenu').onclick=()=>{if(!$('#menuwheel').hidden&&$('#menuwheel').classList.contains('on')){closeMenuWheel();return}setTab(null);openMenuWheel()};
 $('#dkPet').onclick=()=>{if(wheelOn()){closeWheel();return}setTab(null);openWheel()};
 $('#sback').onclick=()=>{if(kmode&&openTab==='shopcat'){kShopBack();return}if(openTab==='pet'){setTab(null);openWheel();return}setTab(null);openMenuWheel()};
@@ -67035,7 +67040,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=103;
+const APP_V=104;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
