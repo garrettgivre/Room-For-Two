@@ -1008,6 +1008,10 @@ body.styling .storechip{opacity:0}
 .nqx{font-family:var(--disp);font-size:11px;border:2px solid var(--ink);border-radius:999px;background:#fff;padding:2px 8px;color:var(--ink)}
 .nqm{position:absolute;left:0;top:0;pointer-events:none;z-index:3}.nqm i{display:block;width:22px;height:22px;border-radius:50%;background:var(--pink);border:3px solid #fff;box-shadow:0 0 0 2px var(--ink),0 0 14px #FF3D9A;animation:nqb 1.1s ease-in-out infinite}
 @keyframes nqb{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+/* menu polish (v116) */
+.baggrid>.bagkeeps{grid-column:1/-1}
+.chips,.bagtabs{-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 28px),transparent)}
+.sndrow{display:grid!important;grid-template-columns:64px 1fr;align-items:center;gap:8px}.sndrow input{width:100%}
 </style>
 </head>
 <body>
@@ -14913,7 +14917,7 @@ Object.assign(BUILD,(()=>{
     ol(cy(top,.05,.05,.06,Gr,0,-.03,0,12),.003);
     // pebbles and a snail on the pot
     [[.2,.24,.1],[-.15,.24,-.12],[.05,.24,.18]].forEach(([x,y,z],i)=>ol(ball(g,.035,M([0xD9D0C0,0xB8B0A8,0xE9E2D0][i],{roughness:.8}),x,y,z,8),.002).scale.set(1,.6,1));
-    const sn=piv(g,.26,.2,.14);sn.rotation.y=.6;ol(lathe(sn,[[.001,-.03],[.03,-.02],[.035,0],[.025,.025],[.001,.03]],M(0xE9A23B,{roughness:.5}),0,.04,0,10),.002).rotation.z=Math.PI/2;
+    const sn=piv(g,.26,.2,.14);sn.rotation.y=.6;sn.scale.setScalar(1.8);ol(lathe(sn,[[.001,-.03],[.03,-.02],[.035,0],[.025,.025],[.001,.03]],M(0xE9A23B,{roughness:.5}),0,.04,0,10),.002).rotation.z=Math.PI/2;
     return g},
   sunflower(c){const g=G(),T=M(TERRA,{roughness:.7}),Td=M(shade(TERRA,.15),{roughness:.7}),So=M(0x4A2E1C,{roughness:1}),Gr=M(0x4E9A3E,{roughness:.6}),Y=M(c,{roughness:.45}),Y2=M(shade(c,.12),{roughness:.5});
     ol(lathe(g,[[.22,0],[.25,.03],[.3,.36],[.34,.38],[.35,.46],[.31,.47],[.29,.44]],T,0,0,0,36),.008);ol(to(g,.35,.02,Td,0,.42,0,Math.PI/2),0);ol(cy(g,.3,.3,.02,So,0,.43,0,28),0);
@@ -30858,7 +30862,7 @@ function tmGateM(k){const g=G(),Wd=M(0xC98A5A,{roughness:.8}),Dk=M(0x8A5E3C,{rou
 const PATH_T={
   cobble:{n:'Cobble road',cost:.30,c:'#F1DDB6',e:'#C9A574'},
   brick:{n:'Brick street',cost:.33,c:'#E98A7F',e:'#A9564F'},
-  tile:{n:'Plaza tiles',cost:.36,c:'#FFF1F6',e:'#D9A5C2'},
+  tile:{n:'Plaza tiles',cost:.36,c:'#FFDCEA',e:'#CF8FB3'},
   flag:{n:'Flagstone lane',cost:.45,c:'#D8D2E6',e:'#9C93B5'},
   board:{n:'Boardwalk',cost:.50,c:'#D9A86E',e:'#8E6238'},
   gravel:{n:'Gravel path',cost:.58,c:'#E9E1CF',e:'#B8AA8A'},
@@ -30872,7 +30876,7 @@ function pathTex(t){const key='ptex_'+t;tm.ptex=tm.ptex||{};if(tm.ptex[t])return
     const shine=(bx,by,bw,bh,r)=>{const q=x.createLinearGradient(0,by,0,by+bh);q.addColorStop(0,'rgba(255,255,255,.4)');q.addColorStop(.5,'rgba(255,255,255,0)');q.addColorStop(1,'rgba(90,60,40,.18)');x.fillStyle=q;rr(x,bx,by,bw,bh,r);x.fill()};
     if(t==='cobble'){x.fillStyle='#D2B184';x.fillRect(0,0,w,h);for(let r=0;r<6;r++)for(let c=-1;c<6;c++){const bx=(c+(r%2?.5:0))*w/5+3,by=r*h/6+3,bw=w/5-6,bh=h/6-6;x.fillStyle=['#FFF3DC','#FBE8C8','#FFEFD2','#F6DDB8','#FFE6C4'][(R()*5)|0];rr(x,bx,by,bw,bh,10);x.fill();shine(bx,by,bw,bh,10)}}
     else if(t==='brick'){x.fillStyle='#C9796F';x.fillRect(0,0,w,h);const bw=w/4,bh=h/8;for(let r=0;r<8;r++)for(let c=-1;c<5;c++){const bx=(c+(r%2?.5:0))*bw+2,by=r*bh+2;x.fillStyle=['#F2A094','#EC9285','#F7B2A4','#E58676'][(R()*4)|0];rr(x,bx,by,bw-4,bh-4,4);x.fill();shine(bx,by,bw-4,bh-4,4)}}
-    else if(t==='tile'){const n=4,s=w/n,C=['#FFE3EF','#E8F7C8','#DDF3FF','#FFF6D8'];for(let i=0;i<n;i++)for(let j=0;j<n;j++){x.fillStyle='#E7C6D8';x.fillRect(i*s,j*s,s,s);x.fillStyle=C[(i+j*2)%4];rr(x,i*s+3,j*s+3,s-6,s-6,8);x.fill();shine(i*s+3,j*s+3,s-6,s-6,8)}
+    else if(t==='tile'){const n=4,s=w/n,C=['#FFCADF','#D9F2AE','#C4E9FF','#FFECB3'];for(let i=0;i<n;i++)for(let j=0;j<n;j++){x.fillStyle='#DDA9C6';x.fillRect(i*s,j*s,s,s);x.fillStyle=C[(i+j*2)%4];rr(x,i*s+3,j*s+3,s-6,s-6,8);x.fill();shine(i*s+3,j*s+3,s-6,s-6,8)}
       x.fillStyle='rgba(255,255,255,.7)';for(let i=0;i<=n;i++)for(let j=0;j<=n;j++){x.beginPath();x.arc(i*s,j*s,5,0,7);x.fill()}}
     else if(t==='flag'){x.fillStyle='#A9A0C0';x.fillRect(0,0,w,h);const rows=[0,70,140,200,256];for(let r=0;r<4;r++){let cx=-R()*40;const y0=rows[r]+3,hh=rows[r+1]-rows[r]-6;while(cx<w){const ww=50+R()*60;x.fillStyle=['#E2DCEE','#D6CFE5','#DDD6E9','#CEC6DF'][(R()*4)|0];rr(x,cx+3,y0,ww-6,hh,14);x.fill();shine(cx+3,y0,ww-6,hh,14);cx+=ww}
         // wrap the row seamlessly
@@ -34874,7 +34878,7 @@ const TM_SIGN={
     const h=piv(p,0,.42,0);ol(rb(h,.3,.16,.03,.02,M(parseInt(c.slice(1),16),{roughness:.5}),0,0,0),.003);[1,-1].forEach(q=>{const f=add(h,gcache('tmhsp',()=>new THREE.PlaneGeometry(.27,.135)),M(0xffffff,{map:tex,roughness:.5}),0,0,q*.017);if(q<0)f.rotation.y=Math.PI;f.outline=0});return p},
   _(fg,L){const p=piv(fg,-.5,0,.44);ol(rb(p,.04,.5,.04,.008,M(0xFFFFFF),0,.25,0),.003);tmFace(piv(p,0,.6,0),.3,L('#FFFFFF',1),.04,M(0x3B1273,{roughness:.4}),1);return p}};
 function tmSignFor(g,fg,k){const ms=[],L=(bg,round)=>{const m=M(0xffffff,{map:tmLogoTex(k,bg,round),roughness:.45,emissive:0xFFFFFF,emissiveIntensity:.02});ms.push(m);return m};
-  const p=(TM_SIGN[k]||(SHOPS[k]&&(SHOPS[k].house||SHOPS[k].place)?TM_SIGN._house:TM_SIGN._))(fg,L,k);let anim=false;p.traverse(q=>{if(q.userData.anim)anim=true});if(!anim)bakeStatic(p);tm.signs.push({k,ms})}
+  const p=(TM_SIGN[k]||(SHOPS[k]&&SHOPS[k].place?TM_SIGN._place||TM_SIGN._house:SHOPS[k]&&SHOPS[k].house?TM_SIGN._house:TM_SIGN._))(fg,L,k);let anim=false;p.traverse(q=>{if(q.userData.anim)anim=true});if(!anim)bakeStatic(p);tm.signs.push({k,ms})}
 // ---------- labels, card, pin ----------
 function tmLabels(){if(tmMk()==='world'){tmDistrictLabels();return}tmLabelsOld()}
 function tmDistrictLabels(){const lab=$('#tmLab'),D=[['town','Town square'],...HOOD_KEYS.map(h=>[h,HOODS[h].n])];$('#tmDock').innerHTML='';
@@ -35469,7 +35473,7 @@ function updEmotes(){if(!emotes.length)return;const v=new THREE.Vector3(pet.grou
     e.el.style.left=ex+e.dx+'px';e.el.style.top=ey+'px'})}
 // arriving (v82): while a visit opens, routine toasts wait and are shown (two at most) once the welcome is done
 var ARR={on:false,q:[],card:false,scene:null,gift:null};
-let toastT=0;function toast(m,force){if(!m)return;if(!force&&ARR&&ARR.on){if(!ARR.q.includes(m))ARR.q.push(m);return}if(!force&&(document.body.classList.contains('gaming')||document.body.classList.contains('kmode')))return;const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600)}
+let toastT=0;function toast(m,force){if(!m)return;if(!force&&ARR&&ARR.on){if(!ARR.q.includes(m))ARR.q.push(m);return}if(!force&&(document.body.classList.contains('gaming')||document.body.classList.contains('kmode')||document.body.classList.contains('styling')))return;const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600)}
 function moodFace(){const s=petStats(),a=spiritOf(s);if(pet.mode==='sleep')return'😴';return a>75?'😊':a>50?'🙂':a>30?'😕':'😢'}
 function updHUD(){updWish();$('#hearts').textContent=state.btn|0;{const g=$('#glims');if(g)g.textContent=state.glim|0}
   // the ring round the Pet button is the pet's overall mood; it wiggles when a need runs low
@@ -36065,7 +36069,7 @@ function renderTown(body){const day=lifeDay(),W=WEATHER[weatherOf(day)],F=festOn
   if(lifeTab==='people'){const W2=lifeWish(),bd=bdayToday(),E=eventNow();
     if(lifeGiftFor)html+=lifeGiftHtml(lifeGiftFor,!lifeGiftHand);
     if(E)html+=`<div class="tdc lifeev" style="--cc:#FFD21F"><span class="tdi">${lifeFace(E.guests[0])}</span><div class="tdt"><b>${esc(E.n)} is on now</b><small>${esc(E.t)} At ${esc(SHOPS[evAt(E)].n)}.</small></div><div class="tdr"><button class="gel pink tdgo" data-lgo="h_${E.house}">Go</button></div></div>`;
-    if(W2)html+=`<p class="hint lifewish">${esc(RESIDENTS[W2.k].n)} would love ${esc(tagName(W2.tag))} for their house today.</p>`;
+    if(W2)html+=`<p class="hint lifewish">${esc(RESIDENTS[W2.k].n)} would love ${esc(tagName(W2.tag))} for home today.</p>`;
     const groups=[['Shops','',Object.keys(RESIDENTS).filter(k=>resHere(k)&&RESIDENTS[k].shop)],...HOOD_KEYS.map(h=>[HODS_N(h),h,Object.keys(RESIDENTS).filter(k=>resHere(k)&&!RESIDENTS[k].shop&&HOUSES[houseOf(k)]&&HOUSES[houseOf(k)].hood===h)])];
     groups.forEach(([n,h,ks])=>{if(!ks.length)return;html+=`<div class="row-label">${esc(n)}</div><div class="tdlist">`+ks.map(k=>{const R=RESIDENTS[k],f=kfOf(k),lv=kfLevel(f.p),dk=(state.disc||{})[k]||[],given=(state.gifts||{})[k]===day,
         loves=LIKES[k]?LIKES[k].love.map(t=>dk.includes(t)?esc(tagName(t)):'?').join(', '):'',isB=bd.includes(k);
@@ -66236,7 +66240,8 @@ function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS
 /* </swapface> */
 /* <whatsnew> */
 // ---- a one-time card per device listing what's new since the last version this phone saw (localStorage r42wn)
-const WHATSNEW=[[115,'Shops feel livelier: a bell when you walk in, each shop has its own music, and customers chat with the keepers. Everyone has a few new little moves, and neighbours fidget while they stand about in town.'],
+const WHATSNEW=[[116,'Polish: keepsake letters read properly in the Bag, scrolling tab rows show there’s more, the plaza tiles are brighter, civic buildings have bigger name signs, and messages no longer pop over your pet while you dress it.'],
+  [115,'Shops feel livelier: a bell when you walk in, each shop has its own music, and customers chat with the keepers. Everyone has a few new little moves, and neighbours fidget while they stand about in town.'],
   [114,'Your pet reacts to more things: it waves when you zoom in close, bops to the music, gets excited about real snow, and is happy when you come home. The camera glides in when it does a trick and drifts gently when you leave it be. And about a hundred small fixes to what the neighbours say.'],
   [113,'Neighbours have moods now: good days, grumpy days, and a chat or a gift cheers them up. Each neighbourhood has a noticeboard (Neighbours > Noticeboard, or tap one in town) with notes and small optional favours. Your pet goes to bed by itself at night and has breakfast in the morning, and the lamps glow a little warmer in the evening.'],
   [112,'The app opens about twice as fast: your room comes first, and the town finishes setting itself up in the background.'],
@@ -69199,6 +69204,8 @@ Object.entries(ANIM_MORE).forEach(([k,a])=>{const L=KEEPER_IDLES[k]||(KEEPER_IDL
 {const rt=twResTick;twResTick=function(dt,t){const out=rt.apply(this,arguments);try{tw.res.forEach(r=>{const F=r.full;if(!F||!F.K||!F.K.layer||!F.g.visible)return;const moving=!!(r.path&&r.path.length)||r.out;
   if(moving){F.K.anim=null;F.K.layer.position.set(0,0,0);F.K.layer.rotation.set(0,0,0);F.K.layer.scale.set(1,1,1);return}F.K.act='idle';const talk=!!r.chat||(tw.card&&tw.card.k===r.k);keeperLayer(F.K,dt,t,false,talk)})}catch(e){console.warn('res idle',e)}return out}}
 /* </anim-polish> */
+// civic places get a bigger name plaque than houses (the Town Hall's was hard to read from the map)
+TM_SIGN._place=(fg,L,k)=>{const p=TM_SIGN._house(fg,L,k);p.scale.multiplyScalar(1.6);p.position.y+=.12;return p};
 function mergeInto(L,R){if(!syncBase)return{};const B=syncBase,ch={},Bkr=B.kr?JSON.parse(B.kr)||{}:{},Rkr=R.kr||{};new Set([...Object.keys(L),...Object.keys(R)]).forEach(k=>{if(k==='rev')return;
     const lj=JSON.stringify(L[k]),rj=JSON.stringify(R[k]),bj=B[k];if(rj===lj||rj===bj)return;if(k!=='kr'&&(+Rkr[k]||0)<(+Bkr[k]||0))return;
     if(lj===bj){L[k]=R[k]===undefined?undefined:JSON.parse(rj);ch[k]=1;return}
@@ -69290,7 +69297,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=115;
+const APP_V=116;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

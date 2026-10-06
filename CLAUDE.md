@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v115** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v115'` in `sw.js`; bump both for anything
+**Current build: v116** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v116'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -81,8 +81,7 @@ anything the game uses. `tools/writing/holidays.md` is the holiday design doc.
    remembering, moments together, Swap-Face masks, the What's new card. Ask how the map, the sound and the bubbles feel on the phone.
 2. Ideas still open: new neighbours moving into the empty lots (needs resident models), edge scrolling in the room camera, a custom
    pattern designer for clothes (designs exist for tiles/pictures/pet patterns), push notifications (needs Garrett's OK).
-3. Known small things: the Town Hall sign is too small to read from the map; the snail and Scone's plaster are tiny; the plaza tiles
-   read pale. Map far view draws ~1,490 meshes (v88 was ~1,360); watch it when adding map things.
+3. Known small things: (fixed in v116: Town Hall sign, snail, plaza tiles; Scone has no plaster, that note was wrong). Map far view draws ~1,490 meshes (v88 was ~1,360); watch it when adding map things.
 4. `firestore.rules` requires `cv >= 44` on writes and must be published by hand in the Firebase console; ask Garrett before assuming.
 5. Working setup: Garrett drives sessions from his phone via Remote Control on his PC (no cloud sessions: cost). Max 4 agents at once.
 6. Every user-visible release: add a line to `WHATSNEW`, bump `APP_V` + `sw.js` CACHE, run the three sweeps, then push.
@@ -1162,3 +1161,9 @@ walking toward the arcade (`.claude/town/t_walkperf.js`, `t_passes.js`): render 
   every ~30 s at most). `/* <anim-polish> */`: ten more `K_IDLE` moves (nod, shiver, peek, bounce2, lookup, proud, shy, giggle, shuffle,
   boogie) and `ANIM_MORE` per resident; map residents' full models get a layer group (`twFull` wrapper) and run `keeperLayer` while not
   walking (`twResTick` wrapper).
+
+- v116 polish: `.baggrid>.bagkeeps` spans the grid (keepsake letters were one word per line); chip/tab scrollers fade at the right edge;
+  sound sliders aligned; routine toasts are dropped while styling (they covered the pet in the Wardrobe); the house-wish line avoids a
+  pronoun ("for home today"; the game has no pronoun data, so templates naming a resident must not use he/she/they); plaza tiles are a
+  richer pastel; civic places use `TM_SIGN._place` (the house plaque at 1.6x); the flower-pot snail is 1.8x. `.claude/town/t_menus.js`
+  screenshots every menu page into `.claude/town/out/menus/` and lists elements wider than the screen.
