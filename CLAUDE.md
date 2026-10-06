@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v132** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v132'` in `sw.js`; bump both for anything
+**Current build: v133** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v133'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1393,3 +1393,8 @@ end of `/* <loop-fixes> */`, `IL`.
   Energy 306: every seat and bed fills Energy).
 - **Sandbox keep**: turning the sandbox off after changing the room asks (Bolt, `dlySay`) whether to keep it; keeping copies items,
   tiles, size and door into the real room, unlocks the tile sets and door used (`setSandbox` wrapper).
+- v133: the paint bar's Done was bound to the original `endBrush` (`onclick=endBrush` captures the function, so the wrapper that removes
+  `body.painting` never ran and the dock stayed hidden). Done now calls `endBrush()` by name and `updPaintBar` toggles `body.painting`
+  from `brush` itself. Lesson: when wrapping a function, check for `x.onclick=fn` references that captured the old one. The sheet's
+  "Menu"/"Pet" back button (`#sback`) is hidden for every page except the shop catalogue (Garrett: the dock already has those buttons).
+  `SET_ADD(setKey,{cat,build,use,need})` adds pieces to an existing set (for the By-need fill-ins, brief `tools/dev/town/FILL_BRIEF.md`).

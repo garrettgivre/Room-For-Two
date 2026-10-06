@@ -8021,6 +8021,8 @@ function SET_DEF(D){const s=D.set;if(SETMAP[s.k])return;s.img=s.img||('set-'+s.k
   // a matching door and window (dw:{n, wn, door(){...return dBase(...)}, win(){...return wBase(...)}}), like THEME_DW's
   if(D.dw&&D.dw.door&&D.dw.win){THEME_DW[s.k]=Object.assign({g:s.n},D.dw);THEME_OF_G[s.n]=s.k}}
 SET_DEF(treasureSet());
+// adds pieces to a set that already exists (v133, the "By need" fill-ins): SET_ADD('<set>',{cat:[...],build:{...},use:{...},need:{key:{clean:12}}})
+function SET_ADD(k,D){const s=SETMAP[k];if(!s){console.warn('SET_ADD: no set',k);return}(D.cat||[]).forEach(c=>{if(CATMAP[c.k])return;c.set=k;CAT.push(c);CATMAP[c.k]=c});Object.assign(BUILD,D.build||{});if(D.use)Object.assign(USE_ITEM,D.use);if(D.need)Object.assign(NEED_OVR,D.need)}
 /* <resident-sets> */
 // ---- rbaker
 SET_DEF({
@@ -36935,7 +36937,7 @@ $('#bStore').onclick=()=>{const it=itemById(selId);if(!it)return;const U=beginBu
 $('#bDone').onclick=()=>select(null);
 $('#mapX').onclick=closeMap;$('#followPill').onclick=()=>setFollow(false);$('#centerPill').onclick=camRecenter;$('#map').onclick=e=>{if(e.target.id==='map')closeMap()};document.querySelectorAll('#map [data-go]').forEach(b=>b.onclick=()=>travelTo(b.dataset.go));$('#mapHome').onclick=()=>{closeMap();travelTo('home')};
 document.querySelectorAll('#paintbar [data-tool]').forEach(b=>b.onclick=()=>{if(!brush)return;brush.tool=b.dataset.tool;updPaintBar()});
-$('#pbUndo').onclick=undoBuild;$('#sandX').onclick=()=>setSandbox(false);$('#pbDone').onclick=endBrush;$('#pbSwatch').onclick=()=>openDecorate(brush?(brush.kind==='d'?'door':brush.kind):'f');
+$('#pbUndo').onclick=undoBuild;$('#sandX').onclick=()=>setSandbox(false);$('#pbDone').onclick=()=>endBrush();$('#pbSwatch').onclick=()=>openDecorate(brush?(brush.kind==='d'?'door':brush.kind):'f');
 function projXY(o){const v=new THREE.Vector3();o.getWorldPosition(v);v.project(camera);return[(v.x+1)/2*W,(1-v.y)/2*H]}
 function clampPlaced(it){const o=itemObjs.get(it.id),e=o.userData.ext,d=CATMAP[it.k];
   if(d.wall){it.u=clamp(it.u,-HALF+e.x+.05,HALF-e.x-.05);it.y=clamp(it.y,e.y+.25,WALLH-e.y-.05)}
@@ -68400,6 +68402,7 @@ const WHATSNEW=[[119,'For the two of you: notes to each other are kept safe, you
   [130,'24 more furniture sets come alive when Mochi uses them, about 240 more pieces: the monster set’s eye lamp blinks, the fireplace roars, the piano plays notes, the carousel horse bobs, the washer spins, the disco ball sparkles and much more.'],
   [131,'Every furniture set comes alive now, about 900 pieces: all 32 neighbours’ sets, the town’s civic sets and the 11 theme sets. Drawers slide, jukeboxes thump, the pirate chest jingles, swings swing higher. Tap anything and watch.'],
   [132,'Decorating is friendlier: quick kind buttons, what’s in your room at a glance, your own pieces first, more of the room in view and pieces that pop in with a burst. Four new sets: Splash & Suds, Steam & Petals, Snuggle Burrow and Midnight Snack. And leaving the sandbox can keep the room you made.'],
+  [133,'The bottom bar comes back after painting floors and walls (it got stuck hidden), and pages no longer have their own Menu or Pet back button: the bottom bar does that.'],
   [118,'Friendships go deeper: every neighbour has five more heart-to-hearts, sends a letter (and a gift) when you become best friends, and remembers what you talked about lately. More fixes from playtesting: town projects always appear on the map (the bouncy castle comes first now), the Journal keeps months, not days, taps on the noticeboard, museum and well work, and the back button closes photos and fishing.'],
   [117,'Fixes from playtesting: finished makeovers now pay out properly (they hadn’t been!), events at the library, Town Hall and weather station pay too, party guests spread out, Today’s list sits right under the bond bar, and your pet’s Journal has a page summing up the month so far. Plus a gentler welcome back, fewer day-one strangers, and lots of small things.'],
   [116,'Polish: keepsake letters read properly in the Bag, scrolling tab rows show there’s more, the plaza tiles are brighter, civic buildings have bigger name signs, and messages no longer pop over your pet while you dress it.'],
@@ -70596,7 +70599,7 @@ function tileArr(kind){return kind==='f'?state.tf:state.tw}
 function startBrush(kind,k){brush={kind,k,tool:brush&&brush.kind===kind?brush.tool:'tile'};select(null);setTab(null);if(kind==='d'){updPaintBar();toast('Tap a wall to move the door there.');return}tileMat(kind,k);updPaintBar();
   if(!brushHinted){brushHinted=true;toast(`Drag across the ${kind==='f'?'floor':'walls'} to paint. Drag outside the room to turn it.`)}else toast(TILESETS[kind][k].n)}
 function endBrush(){if(stroke)cancelStroke();brush=null;updPaintBar();pruneTileTex()}
-function updPaintBar(){const pb=$('#paintbar');pb.classList.toggle('on',!!brush);if(!brush)return;pb.classList.toggle('doormode',brush.kind==='d');if(brush.kind==='d'){updUndoBtns();return}const key=brush.kind+':'+brush.k,th=$('#pbThumb');th.dataset.tk=key;th.style.backgroundImage=texThumb[key]?`url(${texThumb[key]})`:'';if(!texThumb[key])queueTexThumbs();
+function updPaintBar(){const pb=$('#paintbar');pb.classList.toggle('on',!!brush);try{document.body.classList.toggle('painting',!!brush)}catch(_){}if(!brush)return;pb.classList.toggle('doormode',brush.kind==='d');if(brush.kind==='d'){updUndoBtns();return}const key=brush.kind+':'+brush.k,th=$('#pbThumb');th.dataset.tk=key;th.style.backgroundImage=texThumb[key]?`url(${texThumb[key]})`:'';if(!texThumb[key])queueTexThumbs();
   $('#pbName').textContent=TILESETS[brush.kind][brush.k].n;pb.querySelectorAll('[data-tool]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tool===brush.tool));
   $('#pbAllLbl').textContent=brush.kind==='f'?'Floor':'Walls';updUndoBtns()}
 function paintHit(x,y){setRay(x,y);if(brush.kind==='f'){const q=new THREE.Vector3();if(!ray.ray.intersectPlane(floorPlane,q)||Math.abs(q.x)>=HALF||Math.abs(q.z)>=HALF)return null;return{i:clamp(Math.floor(q.x+HALF),0,GRID-1),j:clamp(Math.floor(q.z+HALF),0,GRID-1)}}
@@ -71661,6 +71664,10 @@ function decoBurst(id){try{const o=roomObjs().get(id);if(!o)return;const b=new T
 {const add={mirror:6,donutmirror:6,archmirror:6,crackmirror:4,bathmirror:8,sunmirror:6,shellmirror:6,rd_mirror:6,rhmirror:6,rmmirror:6,mpmirror:6,fzmirror:6,bo_sun:6,sdmirror:6,
   lfcubby:10,lfrobe:8,lfroll:6,lftimer:8,lfstove:12,lfbench:10,lfeuca:6,washer:10,sdvanity:8,beachtowel:6,rpscreen:4,fzorbtable:6,rhmirror2:6};
   for(const k in add){const d=CATMAP[k];if(!d)continue;try{if(!useOf(d))continue;const b=Object.assign({},needsOf(d));b.clean=Math.max(b.clean|0,add[k]);NEED_OVR[k]=b;delete d._nd}catch(_){}}}
+// ---- one way back: the bottom bar (v133). Pages opened from the Menu or Pet buttons no longer have their own "Menu"/"Pet" back
+// button (the same buttons sit in the dock); only the shop catalogue keeps its "back to the shopkeeper" button.
+{const st=setTab;setTab=function(t){const r=st.apply(this,arguments);try{const sb=$('#sback'),sh=$('#sheet');if(sb&&!(kmode&&openTab==='shopcat')){sb.hidden=true;if(sh)sh.classList.remove('hasback')}}catch(_){}return r}}
+setInterval(()=>{try{if(!brush&&document.body.classList.contains('painting'))document.body.classList.remove('painting')}catch(_){}},1000);
 /* </loop-fixes> */
 /* <anim-sets> */
 // per-piece animations (v128+): one Object.assign(BUILD,...) per set from .claude/anim/<set>.js (brief tools/dev/town/ANIM_BRIEF.md)
@@ -77368,7 +77375,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><p class="coachgo">Start by tapping ${nm} to say hello.</p><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=132;
+const APP_V=133;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
