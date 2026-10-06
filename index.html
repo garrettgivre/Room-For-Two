@@ -66956,6 +66956,7 @@ const WHATSNEW=[[119,'For the two of you: notes to each other are kept safe, you
   [127,'Furniture reacts now: seats and beds squish when Mochi sits and spring back after, things wobble when they’re used, and Mochi naps under a blanket that rises with its breathing. Getting up leaves the bed rumpled, and then Mochi makes it.'],
   [128,'About 150 pieces from 13 sets now have their own moving parts when Mochi uses them: fridge doors open, pillows dent, teapots pour, the campfire flares, screens flicker, and the toy chest pops open. More sets are on the way.'],
   [129,'Tap any piece of furniture and Mochi will go and use it, so you can watch the fridge open, the bed get rumpled or the campfire flare whenever you like.'],
+  [130,'24 more furniture sets come alive when Mochi uses them, about 240 more pieces: the monster set’s eye lamp blinks, the fireplace roars, the piano plays notes, the carousel horse bobs, the washer spins, the disco ball sparkles and much more.'],
   [118,'Friendships go deeper: every neighbour has five more heart-to-hearts, sends a letter (and a gift) when you become best friends, and remembers what you talked about lately. More fixes from playtesting: town projects always appear on the map (the bouncy castle comes first now), the Journal keeps months, not days, taps on the noticeboard, museum and well work, and the back button closes photos and fishing.'],
   [117,'Fixes from playtesting: finished makeovers now pay out properly (they hadn’t been!), events at the library, Town Hall and weather station pay too, party guests spread out, Today’s list sits right under the bond bar, and your pet’s Journal has a page summing up the month so far. Plus a gentler welcome back, fewer day-one strangers, and lots of small things.'],
   [116,'Polish: keepsake letters read properly in the Bag, scrolling tab rows show there’s more, the plaza tiles are brighter, civic buildings have bigger name signs, and messages no longer pop over your pet while you dress it.'],
@@ -70248,6 +70249,53 @@ try{Object.assign(BUILD,((P,K)=>({
  at(o,x,y,z,e){e=e||.004;return Math.abs(o.position.x-x)<e&&Math.abs(o.position.y-y)<e&&Math.abs(o.position.z-z)<e},
  find(par,x,y,z,grp){return par.children.find(o=>(grp==null||!o.isMesh===grp)&&this.at(o,x,y,z))},
  ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)}}));}catch(e){console.warn("anim set bath.js",e)}
+// ---- bday.js
+try{Object.assign(BUILD,((P,K)=>({
+ // asleep in the gift box: the pillows dent and the big bows on the headboard and footboard breathe in and out
+ favourbed(c){if(c==='kit')return P.favourbed(c);const g=P.favourbed.call(this,c),C=g.children.slice(),pl=[C[7],C[8]].filter(Boolean),s0=pl.map(q=>q.scale.clone()),bw=[C[13],C[18]].filter(o=>o&&!o.isMesh),b0=bw.map(o=>o.scale.x);
+  g.userData.use=(t,p)=>{if(t<0){pl.forEach((q,i)=>q.scale.copy(s0[i]));bw.forEach((o,i)=>{o.scale.setScalar(b0[i]);o.rotation.z=0});return}const d=K.ein(t,3);
+   pl.forEach((q,i)=>q.scale.set(s0[i].x*(1+.06*d),s0[i].y*(1-.22*d),s0[i].z));bw.forEach((o,i)=>{const b=Math.sin(t*1.4+i*1.5);o.scale.set(b0[i]*(1+.06*b*d),b0[i]*(1-.04*b*d),b0[i]);o.rotation.z=.04*Math.sin(t*.9+i)*d})};return g},
+ // sat on: the polka-dot cushion sinks and the two balloons tied to the back bob and sway
+ partybench(c){const g=P.partybench.call(this,c),C=g.children.slice(),cu=K.rp(g,K.piv(g,0,.47,.02),o=>[18,19,20,21,22].includes(C.indexOf(o))),bl=K.rp(g,K.piv(g,.56,1.0,-.28),o=>{const i=C.indexOf(o);return i>=41&&i<=48});
+  g.userData.use=(t,p)=>{if(t<0){cu.scale.set(1,1,1);bl.rotation.set(0,0,0);bl.position.y=1.0;return}const d=K.ein(t,4);cu.scale.set(1+.02*d,1-.4*d,1+.02*d);
+   bl.rotation.z=Math.sin(t*1.8)*.12*d;bl.rotation.x=Math.cos(t*1.4)*.06*d;bl.position.y=1.0+Math.abs(Math.sin(t*2.2))*.025*d};return g},
+ // make a wish: the candle flames flicker harder, then the pet blows them out one by one, a slice of cake on the plate gets eaten,
+ // and the candles are lit again after
+ caketable(c){const g=P.caketable.call(this,c),C=g.children.slice(),fl=C.filter(o=>!o.isMesh&&o.position.y>1.1),sl=C[136],a0=g.userData.anim;let on=0,pp=0;
+  g.userData.use=(t,p)=>{on=t<0?0:1;pp=p;if(t<0){fl.forEach(f=>f.visible=true);if(sl){sl.visible=true;sl.scale.setScalar(1)}return}fl.forEach((f,i)=>f.visible=!(p>.35+i*.04&&p<.93));if(sl){sl.visible=!(p>.6&&p<.93);sl.scale.setScalar(p>.93?K.ss(.93,1,p):1)}};
+  g.userData.anim=t=>{a0&&a0(t);if(on&&pp<.4)fl.forEach((f,i)=>{const k=K.ss(.2,.36+i*.04,pp);f.rotation.z=Math.sin(t*19+i)*.5*k;f.scale.y*=1-.5*k})};return g},
+ // booped: the balloons bounce up and sway along the arch in a wave
+ balloonarch(c){const g=P.balloonarch.call(this,c),C=g.children.slice(),bs=C.filter(o=>!o.isMesh&&C.indexOf(o)>=8&&C.indexOf(o)<=26),y0=bs.map(o=>o.position.y),x0=bs.map(o=>o.position.x);let on=0,w=0;
+  g.userData.use=(t,p)=>{on=t<0?0:1};
+  g.userData.anim=t=>{w+=(on-w)*.07;bs.forEach((o,i)=>{o.position.y=y0[i]+Math.sin(t*1.5+i)*.02+Math.max(0,Math.sin(t*4-i*.5))*.05*w;o.position.x=x0[i]+Math.sin(t*2.2-i*.4)*.02*w;o.rotation.z=Math.sin(t*2.2-i*.4)*.12*w})};return g},
+ // unwrapping: the top present gets lifted and shaken, the one at the front wiggles, then they settle back
+ giftpile(c){const g=P.giftpile.call(this,c),C=g.children.slice(),tp=C[2],fr=C[1],T=tp?{y:tp.position.y,r:tp.rotation.y}:null,F=fr?fr.rotation.y:0;
+  g.userData.use=(t,p)=>{if(t<0){if(tp){tp.position.y=T.y;tp.rotation.set(0,T.r,0)}if(fr){fr.rotation.set(0,F,0)}return}const k=K.ss(0,.08,p)*(1-K.ss(.85,1,p));
+   if(tp){tp.position.y=T.y+.12*k+Math.abs(Math.sin(t*10))*.02*k;tp.rotation.set(Math.sin(t*12)*.08*k,T.r+Math.sin(t*1.3)*.3*k,Math.cos(t*11)*.1*k)}if(fr)fr.rotation.set(0,F+Math.sin(t*6)*.06*k,Math.sin(t*7)*.04*k)};return g},
+ // booped: the star swings high on its string and spins
+ pinata(c){const g=P.pinata.call(this,c),C=g.children.slice(),sw=C[7],st=sw?sw.children.find(o=>!o.isMesh):null;let on=0,w=0,lt=0,a=0;
+  g.userData.use=(t,p)=>{on=t<0?0:Math.exp(-(t%3)*.8)};
+  g.userData.anim=t=>{const dt=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,dt*4);a+=dt*(.7+6*w);if(sw){sw.rotation.z=Math.sin(t*1.1+w*1.5)*(.1+.35*w);sw.rotation.x=Math.cos(t*1.3)*.12*w}if(st)st.rotation.y=Math.sin(t*.7)*.3*(1-Math.min(1,w*3))+a*Math.min(1,w*3)};return g},
+ // booped: the party hat shade twirls and wobbles and the light inside flares
+ partylamp(c){const g=P.partylamp.call(this,c),C=g.children.slice(),ht=K.rp(g,K.piv(g,0,1.1,0),o=>{const i=C.indexOf(o);return i>=15&&i<=37}),gl=C[38];
+  if(gl)gl.material=glowM(0xFFE2A0,1);const ge=gl?gl.material.emissiveIntensity:1;
+  g.userData.use=(t,p)=>{if(t<0){ht.rotation.set(0,0,0);if(gl)gl.material.emissiveIntensity=ge;return}const k=K.ss(0,.05,p)*(1-K.ss(.8,1,p));
+   ht.rotation.y=K.ss(0,.8,p)*Math.PI*2;ht.rotation.z=Math.sin(t*5)*.06*k;ht.rotation.x=Math.cos(t*4)*.05*k;if(gl)gl.material.emissiveIntensity=ge*(1+.8*k*(.7+.3*Math.sin(t*8)))};return g},
+ // danced on: the confetti bits hop and flip
+ confettirug(c){const g=P.confettirug.call(this,c),C=g.children.slice(),cf=[0,1].map(j=>K.rp(g,K.piv(g,0,0,0),o=>{const i=C.indexOf(o);return i>=30&&i<=39&&i%2===j}));
+  g.userData.use=(t,p)=>{cf.forEach((q,j)=>{if(t<0){q.position.y=0;q.rotation.y=0;return}const k=K.ss(0,.05,p)*(1-K.ss(.9,1,p));q.position.y=Math.max(0,Math.sin(t*6+j*Math.PI))*.05*k;q.rotation.y=Math.sin(t*3+j)*.08*k})};return g},
+ // looked at: the bunting flags flutter one after another
+ partybanner(c){const g=P.partybanner.call(this,c),C=g.children.slice(),fg=[];for(let j=0;j<7;j++){const m=C[1+j*3];if(!m)continue;fg.push(K.rp(g,K.piv(g,m.position.x,m.position.y+.1,.05),o=>{const i=C.indexOf(o);return i>=1+j*3&&i<=3+j*3}))}
+  g.userData.use=(t,p)=>{fg.forEach((q,i)=>{if(t<0){q.rotation.set(0,0,0);return}const k=K.ss(0,.06,p)*(1-K.ss(.85,1,p));q.rotation.x=-Math.abs(Math.sin(t*4-i*.6))*.35*k;q.rotation.z=Math.sin(t*3-i*.6)*.08*k})};return g},
+ // napping in the cupcake: the frosting cushion dents and the cherry on top rolls a little to one side
+ cupcakebed(c){const g=P.cupcakebed.call(this,c),C=g.children.slice(),fr=C[29],fs=fr?fr.scale.clone():null,ch=K.rp(g,K.piv(g,.1,.32,-.4),o=>[30,31,32].includes(C.indexOf(o)));
+  g.userData.use=(t,p)=>{if(t<0){if(fr)fr.scale.copy(fs);ch.rotation.set(0,0,0);ch.position.x=.1;return}const d=K.ein(t,2);if(fr)fr.scale.set(fs.x,fs.y,fs.z*(1-.3*d));
+   const r=K.ein(t-.5,2);ch.rotation.z=-.5*r+.03*Math.sin(t*1.3);ch.position.x=.1+.06*r};return g}
+}))(Object.assign({},BUILD),{
+ piv(par,x,y,z){const p=new THREE.Group();p.position.set(x,y,z);par.add(p);return p},
+ rp(par,pv,f){par.children.filter(o=>o!==pv&&f(o)).forEach(o=>{o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)});return pv},
+ ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)},
+ ein(t,k){return 1-Math.exp(-Math.max(0,t)*k)}}));}catch(e){console.warn("anim set bday.js",e)}
 // ---- books.js
 try{Object.assign(BUILD,((P,K)=>({
  // a book slides out of the middle shelf and tips forward while the pet reads, then goes back; the telescope on top swivels
@@ -70947,6 +70995,73 @@ try{Object.assign(BUILD,(()=>{
     g.userData.use=(t,p)=>{if(p<0){GL.visible=false;return}const ph=(t*.45)%1,u=Math.min(1,ph/.6),w=Math.sin(u*Math.PI);GL.visible=ph<.6;GL.position.set(-.2+u*.4,.2-u*.4,.09);GL.scale.set(.4*w+.01,2.2*w+.01,.2)};
     return g}
   }})());}catch(e){console.warn("anim set candy.js",e)}
+// ---- carnival.js
+try{Object.assign(BUILD,((P,K)=>({
+ // while ridden the horse bobs in time, nods its head, and the bulbs chase round the platform and canopy
+ carousel(c){const g=P.carousel.call(this,c);const hp=g.children.find(o=>!o.isMesh&&K.at(o,0,0,0)),hb=hp&&hp.children[0],hd=hb&&K.find(hb,0,.62,.4,true);
+  const ch=K.chase(g,o=>o.isMesh&&o.material.emissiveIntensity===1&&(Math.abs(o.position.y-.065)<.004||Math.abs(o.position.y-2.03)<.004),2);
+  let on=0,w=0,lt=0,ph=0;g.userData.use=(t,p)=>{on=p<0?0:1};
+  g.userData.anim=t=>{const dt=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,dt*2);ph+=dt*(1.6+.6*w);
+   if(hb)hb.position.y=.4+Math.sin(ph)*.08;if(hd)hd.rotation.x=-.9+Math.sin(ph*2)*.12*w;ch(t,w)};return g},
+ // the balls jostle as the pet dives in, and one of each colour pops up into the air
+ ballpit(c){const g=P.ballpit.call(this,c);const balls=g.children.filter(o=>o.isMesh&&o.position.y>.25&&Math.hypot(o.position.x,o.position.z)<.52);
+  const hop=[],seen=new Set();balls.forEach(o=>{if(!seen.has(o.material)&&o.position.y>.36){seen.add(o.material);hop.push(o)}});
+  const hp=hop.map((o,i)=>{const pv=piv(g,o.position.x,o.position.y,o.position.z);K.rp(g,pv,q=>q===o);return{pv,y:pv.position.y,i}});
+  const pool=piv(g,0,.32,0);K.rp(g,pool,o=>balls.includes(o)&&!hop.includes(o));
+  g.userData.use=(t,p)=>{if(p<0){pool.position.y=.32;pool.rotation.set(0,0,0);hp.forEach(q=>{q.pv.position.y=q.y;q.pv.rotation.set(0,0,0)});return}const k=K.env(p);
+   pool.position.y=.32+Math.abs(Math.sin(t*5))*.015*k;pool.rotation.y=Math.sin(t*1.7)*.05*k;pool.rotation.x=Math.sin(t*2.3)*.02*k;
+   hp.forEach(q=>{const u=(t*.9+q.i/hp.length)%1,h=Math.sin(Math.min(1,u/.55)*Math.PI);q.pv.position.y=q.y+(u<.55?h*.32:0)*k;q.pv.rotation.x=u*6*k})};return g},
+ // the tent flaps sway, the clothes swing on the rail and the pennant flaps while the pet rummages
+ tentrobe(c){const g=P.tentrobe.call(this,c);const fl=g.children.filter(o=>o.isMesh&&Math.abs(o.position.y-.06)<.004&&Math.abs(Math.abs(o.position.x)-.21)<.01).map(o=>({o,r:o.rotation.y,s:Math.sign(o.position.x)})),pn=K.find(g,.01,2,0,false);
+  const cl=[-.1,0,.1].map(x=>{const pv=piv(g,x,.735,.5);K.rp(g,pv,o=>o.isMesh&&Math.abs(o.position.x-x)<.004&&Math.abs(o.position.z-.5)<.004&&o.position.y>.55&&o.position.y<.74);return pv});
+  g.userData.use=(t,p)=>{if(p<0){fl.forEach(f=>f.o.rotation.y=f.r);if(pn)pn.rotation.y=0;cl.forEach(q=>q.rotation.set(0,0,0));return}const k=K.env(p);
+   fl.forEach(f=>f.o.rotation.y=f.r-f.s*(.14+Math.sin(t*2.2)*.06)*k);if(pn)pn.rotation.y=Math.sin(t*5)*.4*k;cl.forEach((q,i)=>{q.rotation.z=Math.sin(t*3+i*1.6)*.18*k;q.rotation.x=Math.cos(t*2.4+i)*.1*k})};return g},
+ // the floss cloud puffs up and down after a boop, wobbling on its cone
+ cottonlamp(c){const g=P.cottonlamp.call(this,c);const pf=piv(g,0,1.2,0);K.rp(g,pf,o=>o.isMesh&&o.position.y>1.15);
+  g.userData.use=(t,p)=>{if(p<0){pf.scale.set(1,1,1);pf.rotation.set(0,0,0);return}const k=K.env(p),b=Math.sin(t*3);
+   pf.scale.set(1+.05*b*k,1-.04*b*k,1+.05*b*k);pf.rotation.z=Math.sin(t*2.1)*.05*k;pf.rotation.x=Math.cos(t*1.7)*.04*k};return g},
+ // a ticket rolls out of the roll, the little bell rings and the marquee bulbs chase
+ ticketbooth(c){const g=P.ticketbooth.call(this,c);const tr=K.find(g,.26,.66,.43,true),tk=tr&&tr.children.find(o=>o.isMesh&&Math.abs(o.position.y+.04)<.004);const bl=K.find(g,-.25,0,.43,false);let bp=null;
+  if(bl){bp=piv(g,-.25,.62,.43);K.rp(g,bp,o=>o===bl)}const ch=K.chase(g,o=>o.isMesh&&o.material.emissiveIntensity===1&&o.position.y>1.6,3);
+  let on=0,w=0,lt=0;g.userData.use=(t,p)=>{on=p<0?0:1;if(p<0){if(tr)tr.children[0].rotation.x=0;if(tk){tk.scale.z=1;tk.position.z=.07}if(bp)bp.rotation.set(0,0,0);return}const k=K.env(p),u=K.ss(.1,.6,p)*(1-K.ss(.85,.95,p));
+   if(tr)tr.children[0].rotation.x=t*4*k*(u>0&&u<1?1:0);if(tk){tk.scale.z=1+u*1.5;tk.position.z=.07+u*.09}if(bp){const r=Math.max(0,Math.sin(t*2))**8;bp.rotation.z=Math.sin(t*30)*.2*r*k}};
+  g.userData.anim=t=>{const dt=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,dt*2);ch(t,w)};return g},
+ // a spare ring arcs through the air and drops onto a peg, again and again
+ ringtoss(c){const g=P.ringtoss.call(this,c);const rg=K.find(g,.4,.208,.3,false);let rp=null;if(rg){rp=piv(g,.4,.208,.3);K.rp(g,rp,o=>o===rg)}
+  g.userData.use=(t,p)=>{if(!rp)return;if(p<0){rp.position.set(.4,.208,.3);rp.rotation.set(0,0,0);return}const k=K.env(p),u=(t*.45)%1,f=K.ss(.1,.6,u),bk=K.ss(.85,1,u);
+   const x=.4+(.15-.4)*f,z=.3+(.15-.3)*f,y=.208+(.25-.208)*f+Math.sin(f*Math.PI)*.45;rp.position.set(x+(.4-x)*bk,(y+(.208-y)*bk)*k+.208*(1-k),z+(.3-z)*bk);rp.rotation.x=Math.sin(f*Math.PI)*.6*k;rp.rotation.z=f*.0;rp.rotation.y=f*Math.PI*4*k;
+   if(u>.6&&u<.85)rp.position.y=.25-Math.abs(Math.sin((u-.6)*30))*.02*(1-(u-.6)/.25)};return g},
+ // the mallet swings down, the puck shoots up the scale lighting each step and rings the bell
+ strongbell(c){const g=P.strongbell.call(this,c);const pk=K.find(g,0,.3,-.02,true),ml=K.find(g,.33,0,.15,true),bl=K.find(g,0,0,-.08,false),sc=g.children.filter(o=>o.isMesh&&o.material.emissiveIntensity===.35).sort((a,b)=>a.position.y-b.position.y).map(o=>o.material);
+  let bp=null;if(bl){bp=piv(g,0,1.98,-.08);K.rp(g,bp,o=>o===bl)}
+  let on=0,ut=0;g.userData.use=(t,p)=>{on=p<0?0:1;ut=t;if(p<0){if(ml)ml.rotation.set(0,0,.4);if(bp)bp.rotation.set(0,0,0)}};
+  g.userData.anim=t=>{let y=.3;if(on){const u=(ut*.5)%1,sw=u<.3?K.ss(0,.3,u):1-K.ss(.3,.45,u);if(ml)ml.rotation.z=.4+sw*1.15;const f=u<.3?0:u<.55?K.ss(.3,.55,u):u<.85?1-K.ss(.6,.85,u):0;y=.3+f*1.58;
+    if(bp){const r=u>.5&&u<.85?1-(u-.5)/.35:0;bp.rotation.z=Math.sin(ut*40)*.12*r}}else{const k=(t*.4)%1;y=.3+Math.sin(Math.min(1,k*3)*Math.PI)*(k<.33?1.5:0)}
+   if(pk)pk.position.y=y;sc.forEach((m,i)=>m.emissiveIntensity=.35+(y-.3>i*.205?1:0)*.9)};return g},
+ // the balloons bob and tug harder after a boop
+ balloons(c){const g=P.balloons.call(this,c);const bs=g.children.filter(o=>!o.isMesh&&K.at(o,0,.16,0));
+  let on=0,w=0,lt=0;g.userData.use=(t,p)=>{on=p<0?0:1};
+  g.userData.anim=t=>{const dt=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,dt*2.5);bs.forEach((b,i)=>{b.rotation.z=Math.sin(t*(.9+w*1.4)+i)*(.04+.07*w);b.rotation.x=Math.cos(t*(.7+w*1.2)+i)*(.03+.05*w);b.position.y=.16+Math.abs(Math.sin(t*2+i))*.03*w})};return g},
+ // the gold star in the middle spins while the pet wiggles on the rug
+ starrug2(c){const g=P.starrug2.call(this,c);const st=g.children.filter(o=>o.isMesh&&K.at(o,0,.035,0)).pop();
+  g.userData.use=(t,p)=>{if(!st)return;if(p<0){st.rotation.z=0;st.position.y=.035;return}const k=K.env(p);st.rotation.z=t*1.5*k;st.position.y=.035+Math.abs(Math.sin(t*3))*.01*k};return g},
+ // while the pet naps the cushion dips and the drum's gold button bobs with each breath
+ ringbed(c){const g=P.ringbed.call(this,c);const cu=K.find(g,0,.25,0,false),bt=K.find(g,0,.31,0,false);
+  g.userData.use=(t,p)=>{if(p<0){if(cu)cu.scale.set(1,1,1);if(bt)bt.position.y=.31;return}const k=K.ss(0,.05,p),b=Math.sin(t*1.6);if(cu)cu.scale.set(1+.01*b*k,1+.01*b*k,1-.35*k);if(bt)bt.position.y=.31-.02*k+.006*b*k};return g}
+}))(Object.assign({},BUILD),{
+ rp(par,pv,f){par.children.filter(o=>o!==pv&&f(o)).forEach(o=>{o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)})},
+ at(o,x,y,z,e){e=e||.004;return Math.abs(o.position.x-x)<e&&Math.abs(o.position.y-y)<e&&Math.abs(o.position.z-z)<e},
+ find(par,x,y,z,grp){return par.children.find(o=>(grp==null||!o.isMesh===grp)&&this.at(o,x,y,z))},
+ ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)},
+ env(p){return this.ss(0,.06,p)*(1-this.ss(.9,1,p))},
+ fuse(par,list,mat){const P=[],N=[],U=[],I=[];let b=0;list.forEach(m=>{m._upd();const a=m._local,g=m.geometry,p=g.pos,n=g.nrm;
+   for(let i=0;i<p.length;i+=3){const x=p[i],y=p[i+1],z=p[i+2];P.push(a[0]*x+a[4]*y+a[8]*z+a[12],a[1]*x+a[5]*y+a[9]*z+a[13],a[2]*x+a[6]*y+a[10]*z+a[14]);
+    const X=n[i]/((a[0]*a[0]+a[1]*a[1]+a[2]*a[2])||1),Y=n[i+1]/((a[4]*a[4]+a[5]*a[5]+a[6]*a[6])||1),Z=n[i+2]/((a[8]*a[8]+a[9]*a[9]+a[10]*a[10])||1),nx=a[0]*X+a[4]*Y+a[8]*Z,ny=a[1]*X+a[5]*Y+a[9]*Z,nz=a[2]*X+a[6]*Y+a[10]*Z,l=Math.hypot(nx,ny,nz)||1;N.push(nx/l,ny/l,nz/l)}
+   for(let i=0;i<g.uv.length;i++)U.push(g.uv[i]);for(let i=0;i<g.idx.length;i++)I.push(g.idx[i]+b);b+=p.length/3;par.remove(m)});
+  const o=add(par,new THREE.BufferGeometry(P,N,U,I),mat,0,0,0);o.outline=0;o.castShadow=false;return o},
+ chase(g,f,n){const ms=[];for(let i=0;i<n;i++)ms.push(M(0xFFF3C0,{emissive:0xFFD27A,emissiveIntensity:1}));const bs=[];g.traverse(o=>{if(f(o))bs.push(o)});
+  ms.forEach((m,i)=>{const L=bs.filter((o,j)=>j%n===i),par=new Map();L.forEach(o=>{if(!par.has(o.parent))par.set(o.parent,[]);par.get(o.parent).push(o)});par.forEach((l,pp)=>this.fuse(pp,l,m))});
+  return(t,w)=>{const s=Math.floor(t*6)%n;ms.forEach((m,i)=>m.emissiveIntensity=1-.75*w+(i===s?1.6*w:0))}}}));}catch(e){console.warn("anim set carnival.js",e)}
 // ---- cloud9.js
 try{Object.assign(BUILD,(()=>{
  // Cloud Nine: moving parts. Each builder runs the set's own model, then gathers the parts that move into pivots placed at
@@ -71065,6 +71180,196 @@ try{Object.assign(BUILD,(()=>{
   // eating: the kibble goes down a mouthful at a time, the two heart treats on top hop (all topped back up afterwards)
   g.userData.use=(t,p)=>{kb.forEach((q,i)=>{if(t<0){q.visible=true;q.position.y=0;return}q.visible=p<.25+i*.22;q.position.y=.008*Math.max(0,Math.sin(t*14+i*1.7))});tr.visible=t<0||p<.5;tr.position.y=t<0?.11:.11+.02*Math.max(0,Math.sin(t*6))};return g}
  }})());}catch(e){console.warn("anim set date.js",e)}
+// ---- dino.js
+try{Object.assign(BUILD,((P,K)=>({
+ // rocks harder while ridden, and the dino's head looks round and nods along
+ dinorocker(c){const g=P.dinorocker.call(this,c);const p=g.children.find(o=>!o.isMesh),hd=p&&K.find(p,0,1.15,.55,true);
+  let on=0,w=0,lt=0,ph=0;g.userData.use=(t,q)=>{on=q<0?0:1};
+  g.userData.anim=t=>{if(!p)return;const dt=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,dt*2);ph+=dt*(1.6+.9*w);
+   p.rotation.x=Math.sin(ph)*(.07+.07*w);if(hd){hd.rotation.y=Math.sin(t*.9)*.35*w;hd.rotation.x=Math.sin(ph*2)*.08*w;hd.rotation.z=Math.sin(t*1.3)*.08*w}};return g},
+ // the lava glows hotter, a blob of lava hops out of the crater and the smoke puffs come thick and fast
+ volcanolamp(c){const g=P.volcanolamp.call(this,c);const lv=[];g.children.forEach(o=>{if(o.isMesh&&o.material.emissiveIntensity===1.6&&!lv.includes(o.material))lv.push(o.material)});
+  const pf=g.children.filter(o=>o.isMesh&&o.material.transparent),Bm=M(0xFF7A1C,{emissive:0xFF5A10,emissiveIntensity:1.6,roughness:.4}),bl=nosh(sp(g,.035,Bm,0,.92,0));ol(bl,.003);bl.visible=false;
+  let on=0,w=0,lt=0,ph=0;g.userData.use=(t,q)=>{on=q<0?0:1;if(q<0){bl.visible=false;bl.position.set(0,.92,0)}else{const u=(t*.8)%1;bl.visible=u<.7;const h=Math.sin(u/.7*Math.PI);bl.position.set(Math.sin(t*.8)*.05*u,.9+h*.32,Math.cos(t*.8)*.05*u);bl.scale.setScalar(.6+h*.5)}};
+  g.userData.anim=t=>{const dt=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,dt*2);ph+=dt*(.35+.5*w);
+   lv.forEach(m=>m.emissiveIntensity=1.6+w*(.8+Math.sin(t*6)*.3));pf.forEach((m,i)=>{const k=(ph+i/3)%1;m.position.set(Math.sin(i*2)*k*.2,1.0+k*.7,0);m.scale.setScalar(.08*(.6+k*(1.4+.6*w)));m.material.opacity=(.6+.2*w)*(1-k)})};return g},
+ // the ammonite turns, the skull chatters its teeth and the crystals glow while the pet admires them
+ fossilshelf(c){const g=P.fossilshelf.call(this,c);const sk=K.find(g,-.24,.6,0,true),am=K.find(g,.25,.72,0,true),mg=K.find(g,.38,.09,.08,true),cm=[];
+  g.children.forEach(o=>{if(o.isMesh&&o.material.emissiveIntensity===.3&&!cm.includes(o.material))cm.push(o.material)});
+  g.userData.use=(t,p)=>{if(p<0){if(sk)sk.rotation.set(0,0,0);if(am)am.rotation.set(Math.PI/2-.2,0,0);if(mg)mg.rotation.set(-Math.PI/2+.2,0,.5);cm.forEach(m=>m.emissiveIntensity=.3);return}const k=K.env(p);
+   if(sk){sk.rotation.z=(.06+Math.max(0,Math.sin(t*14))*.05)*k;sk.rotation.y=Math.sin(t*1.5)*.12*k}if(am)am.rotation.y=t*1.2*k;if(mg)mg.rotation.z=.5+Math.sin(t*2)*.15*k;
+   cm.forEach((m,i)=>m.emissiveIntensity=.3+(.5+.4*Math.sin(t*3+i*1.3))*k)};return g},
+ // a bone wiggles up out of the sand, the trowel scoops and the flags flutter
+ digbox(c){const g=P.digbox.call(this,c);const bn=K.find(g,.38,.22,-.22,true),sh=K.find(g,-.5,.25,.3,true),fl=g.children.filter(o=>o.isMesh&&Math.abs(o.position.y-.37)<.004);
+  g.userData.use=(t,p)=>{if(p<0){if(bn){bn.position.y=.22;bn.rotation.set(0,.5,0)}if(sh)sh.rotation.set(.3,0,.8);fl.forEach(f=>f.rotation.y=0);return}const k=K.env(p),up=K.ss(.15,.6,p)*(1-K.ss(.85,.97,p));
+   if(bn){bn.position.y=.22+up*.05+Math.abs(Math.sin(t*8))*.008*up;bn.rotation.z=Math.sin(t*7)*.12*up;bn.rotation.y=.5+Math.sin(t*3)*.15*up}
+   if(sh){const d=Math.max(0,Math.sin(t*4));sh.rotation.z=.8-d*.5*k;sh.rotation.x=.3+d*.25*k}fl.forEach((f,i)=>f.rotation.y=Math.sin(t*6+i*1.7)*.5*k)};return g},
+ // the fronds sway and the fiddleheads bob while the pet sniffs
+ dinofern(c){const g=P.dinofern.call(this,c);const all=g.children.filter(o=>!o.isMesh&&K.at(o,0,.22,0)),fr=all.filter(o=>o.children.length>3),fd=all.filter(o=>o.children.length<=3);
+  const gs=[0,1,2].map(i=>{const pv=piv(g,0,.22,0);K.rp(g,pv,o=>fr.indexOf(o)%3===i);return pv});
+  g.userData.use=(t,p)=>{if(p<0){gs.forEach(q=>q.rotation.set(0,0,0));fd.forEach(f=>f.scale.set(1,1,1));return}const k=K.env(p);
+   gs.forEach((q,i)=>{q.rotation.x=Math.sin(t*2.2+i*2.1)*.09*k;q.rotation.z=Math.cos(t*1.8+i*1.4)*.09*k});fd.forEach((f,i)=>{const s=1+Math.sin(t*3+i*2)*.08*k;f.scale.set(1,s,1)})};return g},
+ // the mallets take turns tapping the bones, and each bone dips when it's hit
+ bonexylo(c){const g=P.bonexylo.call(this,c);const ml=g.children.filter(o=>!o.isMesh&&Math.abs(o.position.y-.5)<.004&&Math.abs(o.position.z-.35)<.004).map(o=>({o,s:Math.sign(o.position.x)}));
+  const bs=g.children.filter(o=>!o.isMesh&&Math.abs(o.position.y-.47)<.004),b2=bs.find(o=>Math.abs(o.position.x+.12)<.01),b4=bs.find(o=>Math.abs(o.position.x-.12)<.01);
+  g.userData.use=(t,p)=>{if(p<0){ml.forEach(m=>{m.o.rotation.set(.8,0,m.s*.3);m.o.position.y=.5});[b2,b4].forEach(b=>{if(b)b.position.y=.47});return}const k=K.env(p);
+   ml.forEach((m,i)=>{const ph=(t*1.6+i*.5)%1,hit=Math.sin(Math.min(1,ph/.5)*Math.PI);m.o.rotation.x=.8-1.7*hit*k;m.o.position.y=.5-.15*hit*k;
+    const b=m.s>0?b4:b2;if(b)b.position.y=.47-Math.max(0,hit-.7)*.1*k})};return g},
+ // while the pet naps the speckled eggs wobble now and then and the soft lining dips
+ nestbed(c){const g=P.nestbed.call(this,c);const eg=g.children.filter(o=>o.isMesh&&Math.abs(o.position.y-.22)<.004).map((o,i)=>({o,r:o.rotation.z,i})),cu=K.find(g,0,.12,0,false),cs=cu?cu.scale.y:1;
+  g.userData.use=(t,p)=>{if(p<0){eg.forEach(e=>e.o.rotation.z=e.r);if(cu)cu.scale.y=cs;return}const k=K.ss(0,.05,p);
+   eg.forEach(e=>{const w=Math.max(0,Math.sin(t*.9+e.i*2.2))**4;e.o.rotation.z=e.r+Math.sin(t*9)*.18*w*k});if(cu)cu.scale.y=cs*(1-.4*k)};return g},
+ // the kibble jiggles as the pet eats and the chew bone rolls back and forth
+ bonebowl(c){const g=P.bonebowl.call(this,c);const kb=piv(g,0,.075,0);K.rp(g,kb,o=>o.isMesh&&o.position.y>=.074&&o.position.y<=.091&&Math.hypot(o.position.x,o.position.z)<.145);
+  const bn=K.find(g,.27,.03,.13,true);
+  g.userData.use=(t,p)=>{if(p<0){kb.position.y=.075;kb.rotation.set(0,0,0);if(bn)bn.rotation.set(0,.6,0);return}const k=K.env(p);
+   kb.position.y=.075-.012*K.ss(.1,.9,p)+Math.abs(Math.sin(t*9))*.005*k;kb.rotation.y=Math.sin(t*4)*.2*k;if(bn){bn.rotation.x=Math.sin(t*2.5)*.5*k;bn.rotation.y=.6+Math.sin(t*1.3)*.1*k}};return g}
+}))(Object.assign({},BUILD),{
+ rp(par,pv,f){par.children.filter(o=>o!==pv&&f(o)).forEach(o=>{o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)})},
+ at(o,x,y,z,e){e=e||.004;return Math.abs(o.position.x-x)<e&&Math.abs(o.position.y-y)<e&&Math.abs(o.position.z-z)<e},
+ find(par,x,y,z,grp){return par.children.find(o=>(grp==null||!o.isMesh===grp)&&this.at(o,x,y,z))},
+ ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)},
+ env(p){return this.ss(0,.06,p)*(1-this.ss(.9,1,p))},
+ fuse(par,list,mat){const P=[],N=[],U=[],I=[];let b=0;list.forEach(m=>{m._upd();const a=m._local,g=m.geometry,p=g.pos,n=g.nrm;
+   for(let i=0;i<p.length;i+=3){const x=p[i],y=p[i+1],z=p[i+2];P.push(a[0]*x+a[4]*y+a[8]*z+a[12],a[1]*x+a[5]*y+a[9]*z+a[13],a[2]*x+a[6]*y+a[10]*z+a[14]);
+    const X=n[i]/((a[0]*a[0]+a[1]*a[1]+a[2]*a[2])||1),Y=n[i+1]/((a[4]*a[4]+a[5]*a[5]+a[6]*a[6])||1),Z=n[i+2]/((a[8]*a[8]+a[9]*a[9]+a[10]*a[10])||1),nx=a[0]*X+a[4]*Y+a[8]*Z,ny=a[1]*X+a[5]*Y+a[9]*Z,nz=a[2]*X+a[6]*Y+a[10]*Z,l=Math.hypot(nx,ny,nz)||1;N.push(nx/l,ny/l,nz/l)}
+   for(let i=0;i<g.uv.length;i++)U.push(g.uv[i]);for(let i=0;i<g.idx.length;i++)I.push(g.idx[i]+b);b+=p.length/3;par.remove(m)});
+  const o=add(par,new THREE.BufferGeometry(P,N,U,I),mat,0,0,0);o.outline=0;o.castShadow=false;return o},
+ chase(g,f,n){const ms=[];for(let i=0;i<n;i++)ms.push(M(0xFFF3C0,{emissive:0xFFD27A,emissiveIntensity:1}));const bs=[];g.traverse(o=>{if(f(o))bs.push(o)});
+  ms.forEach((m,i)=>{const L=bs.filter((o,j)=>j%n===i),par=new Map();L.forEach(o=>{if(!par.has(o.parent))par.set(o.parent,[]);par.get(o.parent).push(o)});par.forEach((l,pp)=>this.fuse(pp,l,m))});
+  return(t,w)=>{const s=Math.floor(t*6)%n;ms.forEach((m,i)=>m.emissiveIntensity=1-.75*w+(i===s?1.6*w:0))}}}));}catch(e){console.warn("anim set dino.js",e)}
+// ---- fort.js
+try{Object.assign(BUILD,(()=>{
+ // Pillow Fort: moving parts. Each builder runs the set's own model, then gathers the parts that move into pivots
+ // (placed at their hinge) so the model, footprint and perch spots stay exactly the same.
+ const O={};['fortbed','sleepbag','fairylights','gamestack','popcorn','beanbag','pillowbed','cloudlight','quiltrug','pennant'].forEach(k=>O[k]=BUILD[k]);
+ const rp=(par,list,x,y,z)=>{const p=new THREE.Group();p.position.set(x,y,z);list.filter(Boolean).forEach(q=>{par.remove(q);q.position.x-=x;q.position.y-=y;q.position.z-=z;p.add(q)});par.add(p);return p};
+ const ss=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)};
+ const ein=(t,k)=>t<0?0:1-Math.exp(-t*k);
+ // standing uses: ease in at the start, out over the last tenth
+ const EU=(t,p)=>p<0?0:Math.min(1,t*2)*(1-ss(.9,1,p));
+ // a pillow that dents while a head rests on it and breathes softly
+ const pillow=(q,t,k)=>{if(t<0){q.scale.set(1,1,1);return}const d=ein(t,3)*(k||1);q.scale.set(1+.07*d,1-.24*d+.025*Math.sin(t*1.7),1+.04*d)};
+ const KG=()=>gcache('anfort_kern',()=>new THREE.SphereGeometry(1,8,6));
+ return{
+ fortbed(c){const g=O.fortbed(c),C=g.children.slice();
+  const pl=[rp(g,[C[5]],-.28,.36,-.72),rp(g,[C[6]],.28,.36,-.72),rp(g,[C[7]],0,.42,-.82)];
+  const fl=[rp(g,[C[23],C[24]],-.1,1.5,1.07),rp(g,[C[25],C[26]],.1,1.5,1.07)];
+  const bulbs=C.slice(37,52).filter(o=>o&&o.isMesh),tc=C[53],lens=tc&&tc.children[2],l0=lens?lens.material.emissiveIntensity:1;
+  // tucked in: the pillows dent, the front flaps sway in a draught, the ridge lights twinkle slowly and the torch flickers on
+  g.userData.use=(t,p)=>{pl.forEach((q,i)=>pillow(q,t,i==2?.6:1));
+   fl.forEach((f,i)=>{if(t<0){f.rotation.set(0,0,0);return}const e=ein(t,1.5),s=i?1:-1;f.rotation.x=e*(.04+.05*Math.sin(t*1.3+i*.8));f.rotation.z=s*e*.035*Math.sin(t*1.1+i)});
+   bulbs.forEach((b,i)=>{b.material.emissiveIntensity=t<0?1.2:.5+1.1*Math.max(0,Math.sin(t*1.4+i*1.3))});
+   if(lens)lens.material.emissiveIntensity=t<0?l0:l0+1.4*ein(t-.5,4)*(1+.1*Math.sin(t*19)+.06*Math.sin(t*7))};return g},
+ sleepbag(c){const g=O.sleepbag(c),C=g.children.slice();
+  const pl=rp(g,[C[6]],0,.12,-.84),st=rp(g,[C[8]],-.3,.17,-.72),zp=C[5],bag=C[0],fold=rp(g,[C[2],C[3]],0,.15,-.5);
+  // zipped up: the pillow dents, the bag rises and falls with each breath, the zip pull swings, the plush star rocks by the pillow
+  g.userData.use=(t,p)=>{pillow(pl,t);if(t<0){bag.scale.set(1,1,1);st.rotation.set(0,0,0);if(zp)zp.rotation.set(0,0,0);fold.rotation.x=0;return}
+   const e=ein(t,2),b=Math.sin(t*1.6);bag.scale.set(1,1,1+.12*e*(.5+.5*b));fold.rotation.x=-.06*e*(.5+.5*b);
+   st.rotation.z=e*.25*Math.sin(t*2.2);st.rotation.x=e*.08*Math.sin(t*1.7);if(zp){zp.rotation.x=e*.4*Math.sin(t*3.1);zp.rotation.z=e*.2*Math.sin(t*2.3)}};return g},
+ fairylights(c){const g=O.fairylights(c),A=g.userData.anim;
+  const sw=rp(g,g.children.filter(o=>o.isMesh&&((o.position.x===0&&o.position.y===0&&o.position.z===0)||(Math.abs(o.position.x)<.69&&o.position.y>.8&&o.position.y<1.5))),0,1.5,0);
+  const bl=[];sw.traverse(o=>{if(o.isMesh&&o.material.emissive&&o.material.emissiveIntensity>1)bl.push(o)});
+  let on=0;
+  // a boop sets the strings swinging between the stakes and the lights race along them, brighter
+  g.userData.use=(t,p)=>{if(p<0){on=0;sw.rotation.set(0,0,0);return}const e=EU(t,p);on=e;const d=Math.exp(-((t%2.5))*1.2);sw.rotation.x=e*.3*d*Math.sin((t%2.5)*6);sw.rotation.z=e*.03*Math.sin(t*2.1)};
+  g.userData.anim=t=>{if(on>0)bl.forEach((b,i)=>{const k=(t*3-i*.35)%2;b.material.emissiveIntensity=.7+on*(1.6*Math.max(0,1-Math.abs(k-.5)*2))+(1-on)*.8*Math.max(0,Math.sin(t*2+i*.9))});else if(A)A(t)};return g},
+ gamestack(c){const g=O.gamestack(c),C=g.children.slice();
+  const spn=C[4],dice=[C[5],C[6]],dr=dice.map(d=>d?[d.position.y,d.rotation.y]:0);
+  const pw=[[7,8],[9,10],[11,12]].map(([a,b])=>{const o=C[a];return rp(g,[C[a],C[b]],o.position.x,0,o.position.z)});
+  // a peek at the games: the spinner whirls round, the dice tumble and the three pawns take turns hopping
+  g.userData.use=(t,p)=>{if(p<0){if(spn)spn.rotation.y=.1;dice.forEach((d,i)=>{if(d){d.position.y=dr[i][0];d.rotation.set(0,dr[i][1],0)}});pw.forEach(q=>{q.position.y=0;q.rotation.set(0,0,0)});return}
+   const e=EU(t,p);if(spn)spn.rotation.y=.1+e*(t*7-Math.min(t,3)*1.2);
+   dice.forEach((d,i)=>{if(!d)return;const u=(t*1.4+i*.5)%1.6,h=u<1?Math.sin(u*Math.PI):0;d.position.y=dr[i][0]+e*h*.08;d.rotation.x=e*h*1.2*(i?1:-1);d.rotation.y=dr[i][1]+e*Math.floor(t*1.4+i*.5)*1.57});
+   pw.forEach((q,i)=>{const u=(t*2-i*.45)%1.5,h=u>0&&u<.5?Math.sin(u*2*Math.PI):0;q.position.y=e*h*.06;q.rotation.z=e*h*.15*(i%2?1:-1)})};return g},
+ popcorn(c){const g=O.popcorn(c),C=g.children.slice();
+  const hp=rp(g,C.slice(18,108),0,.55,0),Km=C[21]&&C[21].material,Bm=C[18]&&C[18].material;
+  const pk=[0,1,2,3,4].map(i=>{const q=new THREE.Group();g.add(q);[0,1,2].forEach(k=>{const m=add(q,KG(),i%3?Km:Bm,Math.cos(k*2.1)*.022,(k%2)*.012,Math.sin(k*2.1)*.022);m.scale.set(.03,.026,.03);ol(m,.002);nosh(m)});q.visible=false;return q});
+  // a nibble: the heap jiggles and kernels keep popping up out of the bucket and dropping back in
+  g.userData.use=(t,p)=>{if(p<0){hp.scale.set(1,1,1);hp.rotation.set(0,0,0);pk.forEach(q=>q.visible=false);return}const e=EU(t,p);
+   const j=Math.max(0,Math.sin(t*9));hp.scale.set(1,1+.06*j*e,1);hp.rotation.y=.05*Math.sin(t*3)*e;
+   pk.forEach((q,i)=>{const u=(t*.9+i*.37)%1,a=i*1.9+Math.floor(t*.9+i*.37)*2.3,r=.06+.1*((i*7)%5)/5;q.visible=e>.05;q.position.set(Math.cos(a)*r*(1+u*.4),.6+Math.sin(u*Math.PI)*.28,Math.sin(a)*r*(1+u*.4));q.rotation.set(u*5,u*3+i,0)})};return g},
+ beanbag(c){const g=O.beanbag(c),C=g.children.slice();
+  const body=C[0],seat=rp(g,[C[1]],0,.36,.08),lp=rp(g,[C[2]],0,.41,-.43);
+  // sat in: the seat sinks, the beans spill outward round the pet and slowly shift, the carry loop flops; it puffs back up after
+  g.userData.use=(t,p)=>{if(t<0){body.scale.set(1,1,1);seat.scale.set(1,1,1);seat.position.y=.36;lp.rotation.set(0,0,0);return}
+   const d=ein(t,3),w=Math.sin(t*.9);body.scale.set(1+.05*d+.008*w,1-.07*d,1+.05*d-.008*w);seat.position.y=.36-.04*d;seat.scale.set(1+.05*d,1-.25*d,1+.05*d);
+   lp.rotation.x=-d*(.35+.08*Math.sin(t*1.3))};return g},
+ pillowbed(c){const g=O.pillowbed(c),C=g.children.slice();
+  const pl=[rp(g,[C[7]],-.2,.18,-.22),rp(g,[C[8]],.22,.18,-.2),rp(g,[C[9],C[10]],0,.22,-.34)],st=rp(g,[C[11]],.36,.16,.12),th=C[12],th0=th?[th.position.x,th.position.z,th.rotation.y]:0;
+  // a nap in the pile: the pillows dent and breathe, the plush star tips over onto its side, the knitted throw slides a little
+  g.userData.use=(t,p)=>{pl.forEach((q,i)=>pillow(q,t,i==2?.7:1));if(t<0){st.rotation.set(0,0,0);if(th){th.position.x=th0[0];th.position.z=th0[1];th.rotation.y=th0[2]}return}
+   const k=ss(.4,1.2,t);st.rotation.z=-k*.9-(k>.98?.03*Math.sin(t*1.6):Math.sin(k*Math.PI)*.15);st.position.y=.16-k*.02;
+   const s=ein(t-.3,2);if(th){th.position.x=th0[0]-.04*s;th.position.z=th0[1]+.03*s;th.rotation.y=th0[2]+.1*s}};return g},
+ cloudlight(c){const g=O.cloudlight(c),C=g.children.slice(),A=g.userData.anim;
+  const cl=rp(g,C.slice(3,17),0,.9,0),Cm=C[3]&&C[3].material,mo=C[16],eye=[C[12],C[14]];let off=0,last=0,on=0;
+  // booped: the cloud bobs and squishes on its stalk, glows brighter, smiles wider, and the rain drops fall faster
+  g.userData.use=(t,p)=>{if(p<0){on=0;last=0;cl.position.y=.9;cl.scale.set(1,1,1);cl.rotation.set(0,0,0);if(Cm)Cm.emissiveIntensity=.6;if(mo)mo.scale.set(1,1,1);eye.forEach(o=>o&&o.scale.set(1,1,1));return}
+   const e=EU(t,p),dt=t>=last?t-last:0;last=t;on=e;off+=dt*e*1.5;const b=Math.sin(t*4);cl.position.y=.9+e*(.04+.03*b);cl.scale.set(1+.05*e*b,1-.05*e*b,1);cl.rotation.z=e*.06*Math.sin(t*2.3);
+   if(Cm)Cm.emissiveIntensity=.6+.6*e*(.8+.2*Math.sin(t*6));if(mo)mo.scale.set(1+.6*e,1+.8*e,1);eye.forEach(o=>o&&o.scale.set(1,1-.4*e,1))};
+  if(A)g.userData.anim=t=>A(t+off);return g},
+ quiltrug(c){const g=O.quiltrug(c),C=g.children.slice(),cn=C[2],r0=cn?cn.rotation.x:0;
+  const cp=cn?rp(g,[cn],.78,.04,.54):null;
+  // a wiggle on the rug flaps the folded corner up and down
+  g.userData.use=(t,p)=>{if(!cp)return;if(p<0){cp.rotation.set(0,0,0);return}const e=EU(t,p);cp.rotation.x=-e*(.15+.15*Math.max(0,Math.sin(t*5)));cp.rotation.z=e*.1*Math.sin(t*5)};return g},
+ pennant(c){const g=O.pennant(c),C=g.children.slice();
+  const fl=[];for(let i=7;i<23;i+=2){const f=C[i],cl=C[i+1];if(f&&cl)fl.push(rp(g,[f,cl],cl.position.x,cl.position.y+.01,.03))}
+  // gazed at: the little flags flutter on the rope one after another, like a breeze running along it
+  g.userData.use=(t,p)=>{fl.forEach((q,i)=>{if(p<0){q.rotation.set(0,0,0);return}const e=EU(t,p),w=Math.sin(t*4-i*.8);q.rotation.x=-e*(.12+.12*w);q.rotation.z=e*.1*Math.sin(t*3.1-i*.7)})};return g}
+ }})());}catch(e){console.warn("anim set fort.js",e)}
+// ---- fruity.js
+try{Object.assign(BUILD,((P,K)=>({
+ // asleep in the melon: the pillows dent and the little melon bolster rolls a touch towards the pet
+ melonbed(c){if(c==='kit')return P.melonbed(c);const g=P.melonbed.call(this,c),C=g.children.slice(),pl=[C[39],C[40]].filter(Boolean),s0=pl.map(q=>q.scale.clone()),bo=K.rp(g,K.piv(g,0,.6,-.5),o=>o===C[41]);
+  g.userData.use=(t,p)=>{pl.forEach((q,i)=>{if(t<0){q.scale.copy(s0[i]);return}const d=K.ein(t,3);q.scale.set(s0[i].x*(1+.06*d),s0[i].y*(1-.22*d),s0[i].z)});
+   if(t<0){bo.position.z=-.5;bo.rotation.x=0;return}const r=K.ein(t-.4,3);bo.position.z=-.5+.06*r;bo.rotation.x=.5*r+.02*Math.sin(t*1.4)};return g},
+ // sat on: the seat cushion sinks and the leaf on top of the orange flutters
+ orangechair(c){const g=P.orangechair.call(this,c),C=g.children.slice(),cu=K.rp(g,K.piv(g,0,.4,0),o=>o===C[5]||o===C[6]),lf=K.rp(g,K.piv(g,0,.92,-.38),o=>o===C[16]||o===C[17]);
+  g.userData.use=(t,p)=>{if(t<0){cu.scale.set(1,1,1);lf.rotation.set(0,0,0);return}const d=K.ein(t,4);cu.scale.set(1+.03*d,1-.4*d,1+.03*d);
+   const w=Math.exp(-(t%3)*1.4);lf.rotation.z=Math.sin(t*9)*.25*w;lf.rotation.x=Math.cos(t*7)*.1*w};return g},
+ // sat on: both cherries squash down, the stems dip with them and the leaves give a little shake
+ cherrypoufs(c){const g=P.cherrypoufs.call(this,c),C=g.children.slice(),pf=[K.rp(g,K.piv(g,-.32,0,0),o=>[0,1,2,3].includes(C.indexOf(o))),K.rp(g,K.piv(g,.32,0,0),o=>[5,6,7,8].includes(C.indexOf(o)))],st=K.rp(g,K.piv(g,0,0,0),o=>[4,9,10,11,12].includes(C.indexOf(o))),lv=[C[11],C[12]].filter(Boolean),l0=lv.map(q=>[q.rotation.x,q.rotation.y,q.rotation.z]);
+  g.userData.use=(t,p)=>{if(t<0){pf.forEach(q=>q.scale.set(1,1,1));st.position.y=0;lv.forEach((q,i)=>q.rotation.set(...l0[i]));return}const d=K.ein(t,4);
+   pf.forEach((q,i)=>{const w=.015*Math.sin(t*2+i);q.scale.set(1+.05*d+w,1-.08*d-w,1+.05*d+w)});st.position.y=-.042*d;
+   const s=Math.exp(-(t%2.6)*1.6);lv.forEach((q,i)=>q.rotation.set(l0[i][0]+Math.sin(t*8+i)*.12*s,l0[i][1],l0[i][2]+Math.cos(t*7+i)*.15*s))};return g},
+ // booped: the pineapple glows brighter for a moment and its leafy crown rustles
+ pineapplelamp(c){const g=P.pineapplelamp.call(this,c),C=g.children.slice(),bd=C[2],bm=bd&&bd.material,be=bm?bm.emissiveIntensity:0,cr=K.rp(g,K.piv(g,0,.74,0),o=>C.indexOf(o)>=3&&C.indexOf(o)<23&&!o.isMesh);
+  g.userData.use=(t,p)=>{if(t<0){if(bm)bm.emissiveIntensity=be;cr.rotation.set(0,0,0);cr.scale.set(1,1,1);return}const k=K.ss(0,.05,p)*(1-K.ss(.85,1,p)),f=Math.exp(-(t%2.5)*1.8);
+   if(bm)bm.emissiveIntensity=be*(1+.9*f*k+.2*k);cr.rotation.y=Math.sin(t*6)*.1*f*k;cr.rotation.x=Math.cos(t*7)*.06*f*k;cr.rotation.z=Math.sin(t*8+1)*.06*f*k;cr.scale.set(1,1+.08*f*k,1)};return g},
+ // sipping: the middle glass drains and refills, its straw wiggles, the blender whirs and the umbrella turns a little in the breeze
+ juicecart(c){const g=P.juicecart.call(this,c),C=g.children.slice(),ju=C[23],st=C[24],s0=st?[st.rotation.z,st.position.y]:null,bl=K.rp(g,K.piv(g,-.3,.805,-.12),o=>o===C[10]||o===C[11]),um=K.rp(g,K.piv(g,-.35,1.35,-.15),o=>C.indexOf(o)>=31&&C.indexOf(o)<=44);
+  g.userData.use=(t,p)=>{if(t<0){if(ju){ju.scale.y=1;ju.position.y=.88}if(st){st.rotation.z=s0[0];st.position.y=s0[1]}bl.rotation.set(0,0,0);bl.position.y=.805;um.rotation.y=0;return}
+   const k=K.ss(0,.05,p)*(1-K.ss(.9,1,p)),dr=K.ss(.15,.7,p)*(1-K.ss(.85,.97,p)),s=1-.85*dr;if(ju){ju.scale.y=s;ju.position.y=.88-.065*(1-s)}
+   if(st){st.rotation.z=s0[0]+Math.sin(t*8)*.08*k;st.position.y=s0[1]+Math.abs(Math.sin(t*4))*.01*k}
+   const wr=(t%3.2)<1.2?1:0;bl.rotation.y=Math.sin(t*40)*.04*wr*k;bl.rotation.z=Math.sin(t*33)*.02*wr*k;bl.position.y=.805+Math.abs(Math.sin(t*37))*.004*wr*k;um.rotation.y=Math.sin(t*.9)*.35*k};return g},
+ // splashing: ripples spread across the water, the duck bobs and turns, the beach ball and the swim ring bounce on the waves
+ kiddiepool(c){const g=P.kiddiepool.call(this,c),C=g.children.slice(),rg=[C[13],C[14]].filter(Boolean),r0=rg.map(q=>q.scale.x),dk=C[15],bb=C[16],bb0=bb?[bb.position.y,bb.scale.x]:null,fr=C[17],wm=C[12]&&C[12].material,we=wm?wm.emissiveIntensity:0;
+  g.userData.use=(t,p)=>{if(t<0){rg.forEach((q,i)=>q.scale.setScalar(r0[i]));if(dk){dk.position.y=.25;dk.rotation.set(0,0,0)}if(bb){bb.position.y=bb0[0];bb.rotation.set(0,0,0)}if(fr){fr.position.y=.255;fr.rotation.set(Math.PI/2,0,0)}if(wm)wm.emissiveIntensity=we;return}
+   const k=K.ss(0,.05,p)*(1-K.ss(.88,1,p));rg.forEach((q,i)=>{const u=(t*.6+i*.5)%1;{const f=r0[i]*(.6+1.2*u*k+(1-k)*.4);q.scale.set(f,f,r0[i])}});
+   if(dk){dk.position.y=.25+Math.sin(t*3.4)*.018*k;dk.rotation.y=Math.sin(t*1.1)*.9*k;dk.rotation.z=Math.sin(t*3.4+1)*.12*k}
+   if(bb){bb.position.y=bb0[0]+Math.abs(Math.sin(t*2.6))*.05*k;bb.rotation.z=t*1.5*k;bb.rotation.x=t*.7*k}
+   if(fr){fr.position.y=.255+Math.sin(t*3+2)*.015*k;fr.rotation.set(Math.PI/2+Math.sin(t*2.7)*.08*k,Math.cos(t*2.3)*.08*k,0)}if(wm)wm.emissiveIntensity=we*(1+.8*k*Math.max(0,Math.sin(t*5)))};return g},
+ // looked at: the hands whizz round as if checking the time twice and the leaves on top shiver
+ citrusclock(c){const g=P.citrusclock.call(this,c),C=g.children.slice(),gs=C.filter(o=>!o.isMesh),hm=gs[0],mm=gs[1],lv=C.filter(o=>o.isMesh&&Math.abs(o.position.y-.38)<.004),l0=lv.map(q=>q.rotation.z),ck=K.clk();let on=0;
+  g.userData.use=(t,p)=>{on=t<0?0:Math.sin(Math.min(1,t/3)*Math.PI);lv.forEach((q,i)=>q.rotation.z=l0[i]+(t<0?0:Math.sin(t*9+i*2)*.12*Math.exp(-(t%2)*1.5)))};
+  g.userData.anim=t=>{const ph=ck(t,1+12*on);if(hm)hm.rotation.z=-ph*.1;if(mm)mm.rotation.z=-ph*1.2};return g},
+ // eating: the fruit cubes jiggle and go one mouthful at a time, the seeds on the flesh hop
+ melonbowl(c){const g=P.melonbowl.call(this,c),C=g.children.slice(),cb=C.slice(11,15).filter(Boolean),y0=cb.map(o=>o.position.y);
+  g.userData.use=(t,p)=>{cb.forEach((o,i)=>{if(t<0){o.visible=true;o.position.y=y0[i];return}o.visible=p<.2+i*.2;o.position.y=y0[i]+Math.max(0,Math.sin(t*12+i*1.7))*.012})};return g},
+ // napping in the banana boat: it rocks very gently like a boat on a calm sea and the little pillow dents
+ bananabed(c){const g=P.bananabed.call(this,c),C=g.children.slice(),rk=K.rp(g,K.piv(g,0,0,0),o=>true),pl=C[6],ps=pl?pl.scale.clone():null;
+  g.userData.use=(t,p)=>{if(t<0){rk.rotation.set(0,0,0);if(pl)pl.scale.copy(ps);return}const d=K.ein(t,1.2);rk.rotation.z=Math.sin(t*.9)*.03*d;rk.rotation.x=Math.sin(t*.7+1)*.012*d;if(pl)pl.scale.set(ps.x*(1+.06*d),ps.y*(1-.25*d),ps.z)};return g},
+ // sniffed: the leafy crown sways and rustles, lemons and all
+ lemontree(c){const g=P.lemontree.call(this,c),C=g.children.slice(),lm=C.filter(o=>!o.isMesh&&o.children[0]&&o.children[0].isMesh&&o.children.length===1&&C.indexOf(o)>60&&false),l0=lm.map(o=>[o.rotation.x,o.rotation.y,o.rotation.z]);
+  const cn=K.rp(g,K.piv(g,0,.95,0),o=>!(o.isMesh&&o.position.y<.5&&Math.abs(o.position.x)<.01&&Math.abs(o.position.z)<.01)&&o.position.y>.9&&!lm.includes(o));
+  g.userData.use=(t,p)=>{if(t<0){cn.rotation.set(0,0,0);lm.forEach((o,i)=>o.rotation.set(...l0[i]));return}const k=K.ss(0,.06,p)*(1-K.ss(.86,1,p));
+   cn.rotation.z=Math.sin(t*2.2)*.035*k;cn.rotation.x=Math.cos(t*1.8)*.025*k;cn.position.y=.95;lm.forEach((o,i)=>o.rotation.set(l0[i][0]+Math.sin(t*3+i)*.25*k,l0[i][1],l0[i][2]+Math.cos(t*2.6+i*1.3)*.25*k))};return g}
+}))(Object.assign({},BUILD),{
+ piv(par,x,y,z){const p=new THREE.Group();p.position.set(x,y,z);par.add(p);return p},
+ rp(par,pv,f){par.children.filter(o=>o!==pv&&f(o)).forEach(o=>{o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)});return pv},
+ ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)},
+ ein(t,k){return 1-Math.exp(-Math.max(0,t)*k)},
+ clk(){let ph=0,lt=null;return(t,rate)=>{const dt=lt==null||t<lt?0:Math.min(.1,t-lt);lt=t;ph+=dt*rate;return ph}}}));}catch(e){console.warn("anim set fruity.js",e)}
 // ---- games.js
 try{Object.assign(BUILD,((P,K)=>({
  // the screen brightens and shifts colour with a little sprite zipping across, the joystick waggles, buttons get mashed and the marquee pulses
@@ -71325,6 +71630,376 @@ try{Object.assign(BUILD,(()=>{
     g.userData.use=(t,p)=>{const k=p<0?0:env(p);roses.forEach((r,i)=>{r.rotation.z=Math.sin(t*2.4+i*1.3)*.15*k;r.rotation.x=-Math.max(0,Math.sin(t*1.8+i))*.12*k});buds.forEach((q,i)=>q.rotation.z=Math.sin(t*3+i*2)*.2*k)};
     return g}
   }})());}catch(e){console.warn("anim set garden.js",e)}
+// ---- green.js
+try{Object.assign(BUILD,((P,K)=>({
+ // the three little cacti sway shyly as the pet peers at them, each in its own time
+ cacti(c){const g=P.cacti.call(this,c);const cs=g.children.filter(o=>!o.isMesh&&Math.abs(o.position.y-.27)<.004).map((o,i)=>({o,i}));
+  g.userData.use=(t,p)=>{cs.forEach(q=>{if(p<0){q.o.rotation.set(0,0,0);q.o.scale.set(1,1,1);return}const k=K.ss(0,.1,p)*(1-K.ss(.85,1,p));q.o.rotation.z=Math.sin(t*2.2+q.i*1.9)*.07*k;q.o.rotation.x=Math.cos(t*1.7+q.i)*.04*k;q.o.scale.y=1+Math.sin(t*3+q.i*2)*.03*k})};return g},
+ // the hanging pot sways on its macramé cord while it's watered
+ hangplanter(c){const g=P.hangplanter.call(this,c);const hp=K.find(g,.4,1.62,0,true);
+  g.userData.use=(t,p)=>{if(!hp)return;if(p<0){hp.rotation.set(0,0,0);return}const k=K.ss(0,.1,p)*(1-K.ss(.85,1,p));hp.rotation.z=Math.sin(t*1.9)*.08*k;hp.rotation.x=Math.cos(t*1.5)*.06*k;hp.rotation.y=Math.sin(t*.8)*.2*k};return g},
+ // a little glow drifts round inside the dome like a firefly and the toadstool bobs
+ terrarium(c){const g=P.terrarium.call(this,c);const ms=g.children.find(o=>o.isMesh&&K.at(o,-.13,.535,-.04)),mS=ms?ms.scale.clone():null;
+  const ff=nosh(add(g,gcache('angreen_ff',()=>new THREE.SphereGeometry(.018,8,6)),M(0xFFF6A0,{emissive:0xFFE860,emissiveIntensity:1.6,roughness:.3}),0,.6,0));ff.outline=0;ff.visible=false;
+  g.userData.use=(t,p)=>{if(p<0){ff.visible=false;if(ms)ms.scale.copy(mS);return}const k=K.ss(0,.1,p)*(1-K.ss(.88,1,p));ff.visible=k>.05;ff.position.set(Math.cos(t*1.3)*.16,.56+Math.sin(t*2.1)*.06,Math.sin(t*1.3)*.13);ff.scale.setScalar(.6+.4*Math.sin(t*7)*k+.4*k);
+   if(ms)ms.scale.set(mS.x*(1+.08*Math.max(0,Math.sin(t*4))*k),mS.y*(1-.12*Math.max(0,Math.sin(t*4))*k),mS.z*(1+.08*Math.max(0,Math.sin(t*4))*k))};return g},
+ // the flowers in the buckets nod together as the pet sniffs them
+ flowercart(c){const g=P.flowercart.call(this,c);const fl=piv(g,0,.72,0);K.rp(g,fl,o=>o!==fl&&o.isMesh&&o.position.y>.73&&o.position.x>-.6);
+  g.userData.use=(t,p)=>{if(p<0){fl.rotation.set(0,0,0);fl.scale.set(1,1,1);return}const k=K.ss(0,.1,p)*(1-K.ss(.85,1,p));fl.rotation.z=Math.sin(t*1.8)*.03*k;fl.rotation.x=Math.cos(t*2.3)*.04*k;fl.scale.y=1+Math.abs(Math.sin(t*1.8))*.04*k};return g},
+ // the can tips forward a little and the drops of light fall faster when booped
+ wateringlamp(c){const g=P.wateringlamp.call(this,c);const cn=g.children.find(o=>!o.isMesh&&K.at(o,0,0,0)),dr=g.children.filter(o=>o.isMesh&&o.position.x>.57&&o.position.y>.03&&o.position.x<.7);let w=0,on=0,lt=0,T=0;
+  g.userData.use=(t,p)=>{on=p<0?0:1};
+  g.userData.anim=t=>{const d=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,d*3);T+=d*(.6+.9*w);if(cn)cn.rotation.z=-.12*w+Math.sin(t*3)*.02*w;dr.forEach((m,i)=>{m.position.y=.54-((T+i/5)%1)*.5})};return g},
+ // the watering can lifts and tips over the seedlings, which perk up, and the hanging tools swing
+ pottingbench(c){const g=P.pottingbench.call(this,c);const cn=K.find(g,.4,.875,.05,true),tl=g.children.filter(o=>!o.isMesh&&Math.abs(o.position.y-1.45)<.004).map((o,i)=>({o,i}));
+  const sd=piv(g,-.3,.92,.05);K.rp(g,sd,o=>o!==sd&&o.isMesh&&o.position.y>.91&&o.position.y<1&&o.position.x<-.15&&o.position.x>-.45&&o.position.z>-.03);
+  g.userData.use=(t,p)=>{if(p<0){if(cn){cn.position.set(.4,.875,.05);cn.rotation.set(0,0,0)}tl.forEach(q=>q.o.rotation.set(0,0,0));sd.scale.set(1,1,1);sd.rotation.set(0,0,0);return}
+   const l=K.ss(.1,.25,p)*(1-K.ss(.75,.9,p)),k=K.ss(0,.1,p)*(1-K.ss(.85,1,p));if(cn){cn.position.y=.875+l*.14;cn.position.x=.4-l*.06;cn.rotation.z=l*(.5+Math.sin(t*3)*.05)}
+   tl.forEach(q=>{q.o.rotation.z=Math.sin(t*2.6+q.i*1.4)*.12*k;q.o.rotation.x=Math.cos(t*2.1+q.i)*.05*k});const up=K.ss(.3,.7,p)*(1-K.ss(.9,1,p));sd.scale.y=1+up*.35;sd.rotation.z=Math.sin(t*3)*.05*k};return g},
+ // the leaf rug's stem wags and the leaf lifts a little at the edges in time with the pet's wiggles
+ leafrug(c){const g=P.leafrug.call(this,c);const st=g.children.find(o=>o.isMesh&&K.at(o,1.04,.012,0)),rg=g.children.find(o=>o.isMesh&&K.at(o,0,.018,0)),rS=rg?rg.scale.clone():null;
+  g.userData.use=(t,p)=>{if(p<0){if(st)st.rotation.set(0,Math.PI/2,0);if(rg)rg.scale.copy(rS);return}const k=K.ss(0,.08,p)*(1-K.ss(.88,1,p));if(st)st.rotation.y=Math.PI/2+Math.sin(t*5)*.3*k;
+   if(rg){const b=Math.abs(Math.sin(t*3));rg.scale.set(rS.x,rS.y,rS.z*(1+1.5*b*k))}};return g},
+ // the fronds bounce and sway together as the pet sniffs, the fiddleheads with them
+ fern(c){const g=P.fern.call(this,c);const fr=piv(g,0,.37,0);K.rp(g,fr,o=>o!==fr&&!o.isMesh&&Math.abs(o.position.y-.37)<.004);
+  g.userData.use=(t,p)=>{if(p<0){fr.rotation.set(0,0,0);fr.scale.set(1,1,1);return}const k=K.ss(0,.1,p)*(1-K.ss(.85,1,p));fr.rotation.z=Math.sin(t*2)*.05*k;fr.rotation.x=Math.cos(t*1.6)*.05*k;fr.rotation.y=Math.sin(t*.9)*.1*k;fr.scale.y=1-Math.abs(Math.sin(t*2))*.06*k};return g},
+ // the trailing vines sway out from the wall and back
+ wallplanter(c){const g=P.wallplanter.call(this,c);const vn=piv(g,0,-.04,.2);K.rp(g,vn,o=>o!==vn&&o.isMesh&&(K.at(o,0,0,0)||o.position.z>.195));
+  g.userData.use=(t,p)=>{if(p<0){vn.rotation.set(0,0,0);return}const k=K.ss(0,.1,p)*(1-K.ss(.85,1,p));vn.rotation.x=-Math.abs(Math.sin(t*1.7))*.08*k;vn.rotation.z=Math.sin(t*1.3)*.02*k};return g},
+ // the cushion rises and falls with the pet's sleepy breathing and the leaves round the rim stir
+ potbed(c){const g=P.potbed.call(this,c);const cu=g.children.find(o=>o.isMesh&&K.at(o,0,.18,0)),lv=piv(g,0,.33,0);K.rp(g,lv,o=>o!==lv&&o!==cu&&o.isMesh&&o.position.y>.32&&Math.hypot(o.position.x,o.position.z)>.45);
+  g.userData.use=(t,p)=>{if(p<0){if(cu)cu.scale.set(1,1,1);lv.rotation.set(0,0,0);lv.scale.set(1,1,1);return}const k=K.ss(0,.8,t),b=Math.sin(t*1.5);if(cu)cu.scale.set(1,1,1-.3*k+.07*b*k);lv.rotation.y=Math.sin(t*.5)*.04*k;lv.scale.set(1+.015*b*k,1,1+.015*b*k)};return g}
+}))(Object.assign({},BUILD),{
+ rp(par,pv,f){par.children.filter(o=>o!==pv&&f(o)).forEach(o=>{o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)})},
+ at(o,x,y,z,e){e=e||.004;return Math.abs(o.position.x-x)<e&&Math.abs(o.position.y-y)<e&&Math.abs(o.position.z-z)<e},
+ find(par,x,y,z,grp){return par.children.find(o=>(grp==null||!o.isMesh===grp)&&this.at(o,x,y,z))},
+ ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)}}));}catch(e){console.warn("anim set green.js",e)}
+// ---- groovy.js
+try{Object.assign(BUILD,(()=>{
+ // Groovy '70s: moving parts. Each builder runs the set's own model, then gathers the parts that move into pivots
+ // (placed at their hinge) so the model, footprint and perch spots stay exactly the same.
+ const O={};['lavalamp','shagrug','pitsofa','eggchair','discoball','sunmirror','macrame70','recordcrate','beadcurtain','poufbed'].forEach(k=>O[k]=BUILD[k]);
+ const rp=(par,list,x,y,z)=>{const p=new THREE.Group();p.position.set(x,y,z);list.filter(Boolean).forEach(q=>{par.remove(q);q.position.x-=x;q.position.y-=y;q.position.z-=z;p.add(q)});par.add(p);return p};
+ const ss=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)};
+ const ein=(t,k)=>t<0?0:1-Math.exp(-t*k);
+ const EU=(t,p)=>p<0?0:Math.min(1,t*2)*(1-ss(.9,1,p));
+ // extra clock time for pieces whose ambient anim runs on the clock: the use speeds it up while it lasts
+ const boost=k=>{const B={off:0,last:0,e:0};B.use=(t,p)=>{if(p<0){B.last=0;B.e=0;return}const d=t>=B.last?t-B.last:0;B.last=t;B.e=EU(t,p);B.off+=d*k*B.e};return B};
+ // which seat spot the pet is on, in the piece's own frame (falls back to the middle)
+ const petX=g=>{try{const v=new THREE.Vector3();pet.group.getWorldPosition(v);g.worldToLocal(v);return v.x}catch(_){return 0}};
+ return{
+ lavalamp(c){const g=O.lavalamp(c),A=g.userData.anim,B=boost(2.2);let Wx=null,Gl=null;g.children.forEach(o=>{if(o.isMesh&&o.material.emissiveIntensity>1.1)Wx=o.material;if(o.isMesh&&o.material.transparent&&o.material.emissiveIntensity>.4)Gl=o.material});
+  // peered at: the wax blobs rise and fall faster and the lamp glows warmer
+  g.userData.use=(t,p)=>{B.use(t,p);if(Wx)Wx.emissiveIntensity=1.15+.5*B.e*(.7+.3*Math.sin(t*3));if(Gl)Gl.emissiveIntensity=.42+.3*B.e};
+  if(A)g.userData.anim=t=>A(t+B.off);return g},
+ shagrug(c){const g=O.shagrug(c),C=g.children.slice(),tf=rp(g,C.slice(10),0,0,0);
+  // a wiggle in the shag: the tufts flatten under the pet in pulses and fluff back up, with a little swirl
+  g.userData.use=(t,p)=>{if(p<0){tf.scale.set(1,1,1);tf.rotation.y=0;return}const e=EU(t,p),k=Math.max(0,Math.sin(t*4));tf.scale.set(1,1-.35*k*e,1);tf.rotation.y=e*.015*Math.sin(t*2)};return g},
+ pitsofa(c){const g=O.pitsofa(c),C=g.children.slice();
+  const cu=[0,1,2].map(i=>rp(g,[C[4+i*2],C[5+i*2]],(i-1)*.6,.3,.07)),bo=[C[23],C[24]],pl=[rp(g,[C[25]],-.32,.5,-.12),rp(g,[C[26]],.34,.5,-.12)];let ci=-1;
+  // sat on: the cushion under the pet squashes (its neighbours lift a touch), the flower pillows tip towards the pet, the bolsters roll
+  g.userData.use=(t,p)=>{if(t<0){ci=-1;cu.forEach(q=>{q.scale.set(1,1,1);q.position.y=.3});pl.forEach(q=>q.rotation.set(0,0,0));bo.forEach(b=>{if(b)b.rotation.set(Math.PI/2,0,0)});return}
+   if(ci<0){const x=petX(g);ci=x<-.3?0:x>.3?2:1}const d=ein(t,3);
+   cu.forEach((q,i)=>{if(i===ci)q.scale.set(1+.04*d,1-.4*d,1+.03*d);else{q.scale.set(1,1,1);q.position.y=.3+.012*d*(Math.abs(i-ci)===1?1:0)}});
+   pl.forEach((q,i)=>{const s=(i?1:0)*2-1-(ci-1);q.rotation.z=-Math.sign(s||1)*.12*d+.02*Math.sin(t*1.3+i);q.rotation.x=.05*d});
+   bo.forEach((b,i)=>{if(b)b.rotation.set(Math.PI/2,.15*d*(i?1:-1)*Math.sin(t*.8),0)})};return g},
+ eggchair(c){const g=O.eggchair(c),C=g.children.slice();
+  const sw=rp(g,C.slice(0,23),0,0,0),seat=C[21],bc=C[22];
+  // sat in: the egg swivels gently from side to side on its pedestal, the seat cushion squashes and the back cushion gives
+  g.userData.use=(t,p)=>{if(t<0){sw.rotation.y=0;if(seat)seat.scale.set(1,1,1);if(bc)bc.scale.set(1,1,1);return}const d=ein(t,2.5);
+   sw.rotation.y=d*.12*Math.sin(t*.8);if(seat)seat.scale.set(1+.04*d,1+.04*d,1-.35*d);if(bc)bc.scale.set(1,1,1-.25*d)};return g},
+ discoball(c){const g=O.discoball(c),A=g.userData.anim,B=boost(2.5),sp=[];g.children.forEach(o=>{if(o.isMesh&&o.material.emissiveIntensity>=1.5)sp.push(o)});
+  // dancing: the ball spins faster, its coloured spots race round the room and flash brighter on the beat
+  g.userData.use=(t,p)=>{B.use(t,p);sp.forEach((m,i)=>{m.material.emissiveIntensity=1.5+B.e*.7*Math.max(0,Math.sin(t*6+i*1.3))})};
+  if(A)g.userData.anim=t=>A(t+B.off);return g},
+ sunmirror(c){const g=O.sunmirror(c),C=g.children.slice(),ry=rp(g,C.slice(0,24),0,0,0);
+  // admired: the rays turn slowly round the mirror like the sun coming up, and the whole burst breathes in and out
+  g.userData.use=(t,p)=>{if(p<0){ry.rotation.z=0;ry.scale.set(1,1,1);return}const e=EU(t,p);ry.rotation.z=e*.13*Math.sin(t*.9);const s=1+e*.05*Math.sin(t*2.4);ry.scale.set(s,s,1)};return g},
+ macrame70(c){const g=O.macrame70(c),C=g.children.slice(),hg=rp(g,C.slice(3),0,.35,.04);
+  // gazed at: the knotted hanging sways under its dowel, the fringe swinging out behind it
+  g.userData.use=(t,p)=>{if(p<0){hg.rotation.set(0,0,0);return}const e=EU(t,p);hg.rotation.z=e*.06*Math.sin(t*1.7);hg.rotation.x=-e*.04*(.5+.5*Math.sin(t*1.3))};return g},
+ recordcrate(c){const g=O.recordcrate(c),C=g.children.slice(),rec=C[32];
+  const bun=[[19,22],[22,25],[25,28],[28,32]].map(([a,b])=>{const L=C.slice(a,b),x=(L[0].position.x+L[L.length-1].position.x)/2;return rp(g,L,x,.15,0)});
+  // a rummage: the sleeves get flipped forward a bunch at a time, back to front, and the loose record rocks against the crate
+  g.userData.use=(t,p)=>{if(p<0){bun.forEach(q=>q.rotation.set(0,0,0));if(rec)rec.rotation.set(-.25,.2,0);return}const e=EU(t,p);
+   bun.forEach((q,i)=>{const u=(t*.9-(3-i)*.3)%2.2,k=u>0&&u<.9?Math.sin(u/.9*Math.PI):0;q.rotation.z=e*k*.35;q.position.y=.15+e*k*.03});
+   if(rec)rec.rotation.set(-.25-e*.06*Math.abs(Math.sin(t*3)),.2,e*.04*Math.sin(t*2.5))};return g},
+ beadcurtain(c){const g=O.beadcurtain(c),st=g.children.filter(o=>!o.isMesh&&Math.abs(o.position.y-1.86)<.01);let on=0,lt=0,a=0;
+  // a boop: the strands part round the pet and swing, clacking back into place after
+  g.userData.use=(t,p)=>{on=p<0?0:EU(t,p)};
+  g.userData.anim=t=>{const dt=Math.min(.1,Math.max(0,t-lt));lt=t;a+=(on-a)*Math.min(1,dt*(on>a?3:1.5));
+   st.forEach((s_,i)=>{const x=s_.position.x,part=Math.sign(x||.01)*Math.max(0,.35-Math.abs(x))*.6;s_.rotation.z=Math.sin(t*1.2+i*.4)*.04+a*(part+.05*Math.sin(t*3+i));s_.rotation.x=Math.sin(t*.9+i*.7)*(.03+.12*a)})};return g},
+ poufbed(c){const g=O.poufbed(c),C=g.children.slice(),body=C[0],cu=rp(g,C.slice(2,10),0,.25,0);
+  // a nap on the pouf: the cushion dents and rises with each breath, the knitted body bulges a little round it
+  g.userData.use=(t,p)=>{if(t<0){cu.scale.set(1,1,1);body.scale.set(1,1,1);return}const d=ein(t,2),b=Math.sin(t*1.6);
+   cu.scale.set(1+.03*d,1-.45*d+.08*b*d,1+.03*d);body.scale.set(1+.03*d,1-.04*d,1+.03*d)};return g}
+ }})());}catch(e){console.warn("anim set groovy.js",e)}
+// ---- gym.js
+try{Object.assign(BUILD,((P,K)=>({
+ // the wheel spins up to a proper run while the pet's inside, and slows back to its lazy turn after
+ runwheel(c){const g=P.runwheel.call(this,c);const wh=K.find(g,0,.74,0,true);
+  let on=0,w=0,lt=0,ph=0;g.userData.use=(t,p)=>{on=p<0?0:1};
+  g.userData.anim=t=>{if(!wh)return;const dt=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,dt*1.5);ph+=dt*(.6+3.4*w);wh.rotation.z=-ph;wh.position.y=.74+Math.abs(Math.sin(ph*4))*.004*w};return g},
+ // the mat and its star dip and spring back with every bounce
+ trampoline(c){const g=P.trampoline.call(this,c);const mt=piv(g,0,.27,0);K.rp(g,mt,o=>o.isMesh&&(K.at(o,0,.27,0)||K.at(o,0,.272,0)));
+  g.userData.use=(t,p)=>{if(p<0){mt.position.y=.27;mt.scale.set(1,1,1);return}const k=K.env(p),b=Math.max(0,Math.sin(t*4.7));mt.position.y=.27-b*b*.05*k;const s=1-b*b*.02*k;mt.scale.set(s,1,s)};return g},
+ // the rolled end of the mat rocks and starts to unroll as the pet wiggles on it
+ yogamat(c){const g=P.yogamat.call(this,c);const rl=piv(g,0,.1,-.95);K.rp(g,rl,o=>o.isMesh&&Math.abs(o.position.z+.95)<.004&&Math.abs(o.position.y-.1)<.004);
+  g.userData.use=(t,p)=>{if(p<0){rl.position.z=-.95;rl.rotation.set(0,0,0);return}const k=K.env(p);rl.position.z=-.95+Math.sin(t*2.2)*.035*k;rl.rotation.x=Math.sin(t*2.2)*.035*k/.1};return g},
+ // the ball squashes and springs as the pet bounces on it
+ balanceball(c){const g=P.balanceball.call(this,c);const bl=piv(g,0,0,0);K.rp(g,bl,o=>o.isMesh&&o.position.y>.3);
+  g.userData.use=(t,p)=>{if(p<0){bl.scale.set(1,1,1);bl.position.y=0;bl.rotation.set(0,0,0);return}const k=K.env(p),ph=t*5,sq=Math.max(0,-Math.sin(ph)),up=Math.max(0,Math.sin(ph));
+   bl.scale.set(1+sq*.06*k,1-sq*.1*k,1+sq*.06*k);bl.position.y=up*.03*k;bl.rotation.z=Math.sin(t*1.7)*.05*k};return g},
+ // the tunnel ripples and wobbles as the pet crawls through, and the ball inside rolls out to the end and back
+ crawltunnel(c){const g=P.crawltunnel.call(this,c);const bl=K.find(g,.3,.1,-.05,false),tn=piv(g,0,.34,0);K.rp(g,tn,o=>o.isMesh&&o!==bl&&o.position.y>.3);
+  g.userData.use=(t,p)=>{if(p<0){tn.rotation.set(0,0,0);tn.scale.set(1,1,1);if(bl){bl.position.x=.3;bl.rotation.z=0}return}const k=K.env(p);
+   tn.rotation.x=Math.sin(t*4)*.04*k;const s=1-Math.max(0,Math.sin(t*3))*.04*k;tn.scale.set(1,s,2-s);if(bl){const x=.3-Math.sin(K.ss(.1,.5,p)*Math.PI)*.55;bl.position.x=x;bl.rotation.z=-(x-.3)/.07}};return g},
+ // the belt runs fast while the pet jogs, the console screen brightens and the rails hum
+ treadmill(c){const g=P.treadmill.call(this,c);const st=g.children.filter(o=>o.isMesh&&Math.abs(o.position.y-.168)<.002),cn=K.find(g,0,1.08,-.62,true),sc=cn&&cn.children.find(o=>o.isMesh&&o.material.map&&o.material.emissiveIntensity===.25);
+  let on=0,w=0,lt=0,ph=0;g.userData.use=(t,p)=>{on=p<0?0:1};
+  g.userData.anim=t=>{const dt=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,dt*2);ph+=dt*(.4+1.4*w);st.forEach((s_,i)=>s_.position.z=-.55+((i*.2+ph)%1.1));
+   if(sc)sc.material.emissiveIntensity=.25+w*(.08+.04*Math.sin(t*5));if(cn)cn.rotation.x=-.5+Math.sin(t*40)*.002*w};return g},
+ // the top dumbbells rock in their cradle after a pat and the towel sways
+ dumbbells(c){const g=P.dumbbells.call(this,c);const t1=K.find(g,0,.45,-.06,true),db=t1?t1.children.filter(o=>!o.isMesh):[];db.forEach(d=>d.userData.x0=d.position.x);const tw=g.children.filter(o=>o.isMesh&&o.position.x>.41&&o.position.y>.36);
+  const tp=piv(g,.42,.48,-.05);K.rp(g,tp,o=>tw.includes(o));
+  g.userData.use=(t,p)=>{if(p<0){db.forEach(d=>{d.rotation.set(0,0,0);d.position.x=d.userData.x0});tp.rotation.set(0,0,0);return}const k=K.env(p);db.forEach((d,i)=>{const r=Math.sin(t*4+i*1.4)*.5*k*(.55+.45*Math.sin(t*.8));d.rotation.z=r;d.position.x=d.userData.x0-r*.05});tp.rotation.x=Math.sin(t*2.5)*.06*k};return g},
+ // the stopwatch rattles like an alarm, its button clicks in and the hand races round
+ gymlamp(c){const g=P.gymlamp.call(this,c);const w=K.find(g,0,1.18,0,true),hand=w&&w.children.find(o=>!o.isMesh&&K.at(o,0,0,.06)),sb=w&&w.children.find(o=>!o.isMesh&&K.at(o,0,0,0));
+  let on=0,e=0,lt=0,ph=0;g.userData.use=(t,p)=>{on=p<0?0:1;if(sb)sb.scale.setScalar(p<0?1:1-.05*(Math.sin(t*3)>.7?1:0))};
+  g.userData.anim=t=>{const dt=Math.min(.1,Math.max(0,t-lt));lt=t;e+=(on-e)*Math.min(1,dt*2.5);ph+=dt*(1.5+6*e);if(hand)hand.rotation.z=-ph;if(w){const r=Math.max(0,Math.sin(t*1.6))**4*e;w.rotation.z=Math.sin(t*38)*.05*r;w.position.y=1.18+r*.01}};return g},
+ // bubbles glug up through the bottle and the water ripples as the pet drinks
+ waterstation(c){const g=P.waterstation.call(this,c);const wt=K.find(g,0,.1,0,false),Bm=M(0xFFFFFF,{roughness:.1,transparent:true,opacity:.7}),bb=[0,1,2].map(()=>{const m=nosh(sp(g,.018,Bm,0,.2,-.1));ol(m,0);m.visible=false;return m});
+  g.userData.use=(t,p)=>{if(p<0){bb.forEach(m=>m.visible=false);if(wt)wt.scale.set(1,1,1);return}const k=K.env(p);
+   bb.forEach((m,i)=>{const u=(t*.7+i/3)%1;m.visible=k>.3;m.position.set(Math.sin(t*3+i*2)*.03,.2+u*.36,-.1+Math.cos(t*2+i)*.02);m.scale.setScalar(.7+u*.6)});if(wt){const s=1+Math.sin(t*6)*.02*k;wt.scale.set(s,s,1)}};return g},
+ // while the pet naps the cushion dips under it and the button in the middle bobs with each breath
+ bandbed(c){const g=P.bandbed.call(this,c);const cu=K.find(g,0,.1,0,false),bt=K.find(g,0,.16,0,false);
+  g.userData.use=(t,p)=>{if(p<0){if(cu)cu.scale.set(1,1,1);if(bt)bt.position.y=.16;return}const k=K.ss(0,.05,p),b=Math.sin(t*1.6);if(cu)cu.scale.set(1,1,1-.35*k);if(bt)bt.position.y=.16-.02*k+.006*b*k};return g}
+}))(Object.assign({},BUILD),{
+ rp(par,pv,f){par.children.filter(o=>o!==pv&&f(o)).forEach(o=>{o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)})},
+ at(o,x,y,z,e){e=e||.004;return Math.abs(o.position.x-x)<e&&Math.abs(o.position.y-y)<e&&Math.abs(o.position.z-z)<e},
+ find(par,x,y,z,grp){return par.children.find(o=>(grp==null||!o.isMesh===grp)&&this.at(o,x,y,z))},
+ ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)},
+ env(p){return this.ss(0,.06,p)*(1-this.ss(.9,1,p))},
+ fuse(par,list,mat){const P=[],N=[],U=[],I=[];let b=0;list.forEach(m=>{m._upd();const a=m._local,g=m.geometry,p=g.pos,n=g.nrm;
+   for(let i=0;i<p.length;i+=3){const x=p[i],y=p[i+1],z=p[i+2];P.push(a[0]*x+a[4]*y+a[8]*z+a[12],a[1]*x+a[5]*y+a[9]*z+a[13],a[2]*x+a[6]*y+a[10]*z+a[14]);
+    const X=n[i]/((a[0]*a[0]+a[1]*a[1]+a[2]*a[2])||1),Y=n[i+1]/((a[4]*a[4]+a[5]*a[5]+a[6]*a[6])||1),Z=n[i+2]/((a[8]*a[8]+a[9]*a[9]+a[10]*a[10])||1),nx=a[0]*X+a[4]*Y+a[8]*Z,ny=a[1]*X+a[5]*Y+a[9]*Z,nz=a[2]*X+a[6]*Y+a[10]*Z,l=Math.hypot(nx,ny,nz)||1;N.push(nx/l,ny/l,nz/l)}
+   for(let i=0;i<g.uv.length;i++)U.push(g.uv[i]);for(let i=0;i<g.idx.length;i++)I.push(g.idx[i]+b);b+=p.length/3;par.remove(m)});
+  const o=add(par,new THREE.BufferGeometry(P,N,U,I),mat,0,0,0);o.outline=0;o.castShadow=false;return o},
+ chase(g,f,n){const ms=[];for(let i=0;i<n;i++)ms.push(M(0xFFF3C0,{emissive:0xFFD27A,emissiveIntensity:1}));const bs=[];g.traverse(o=>{if(f(o))bs.push(o)});
+  ms.forEach((m,i)=>{const L=bs.filter((o,j)=>j%n===i),par=new Map();L.forEach(o=>{if(!par.has(o.parent))par.set(o.parent,[]);par.get(o.parent).push(o)});par.forEach((l,pp)=>this.fuse(pp,l,m))});
+  return(t,w)=>{const s=Math.floor(t*6)%n;ms.forEach((m,i)=>m.emissiveIntensity=1-.75*w+(i===s?1.6*w:0))}}}));}catch(e){console.warn("anim set gym.js",e)}
+// ---- holiday.js
+try{Object.assign(BUILD,(()=>{
+ // Festive Holidays: moving parts. Each builder runs the set's own model, then gathers the parts that move into pivots
+ // (placed at their hinge) so the model, footprint and perch spots stay exactly the same.
+ const O={};['xmastree','mantel','gingerhouse','canelamp','sleighbed','wreath','snowglobe','cookietable','presents','giftbed'].forEach(k=>O[k]=BUILD[k]);
+ const rp=(par,list,x,y,z)=>{const p=new THREE.Group();p.position.set(x,y,z);list.filter(Boolean).forEach(q=>{par.remove(q);q.position.x-=x;q.position.y-=y;q.position.z-=z;p.add(q)});par.add(p);return p};
+ const ss=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)};
+ const ein=(t,k)=>t<0?0:1-Math.exp(-t*k);
+ const EU=(t,p)=>p<0?0:Math.min(1,t*2)*(1-ss(.9,1,p));
+ const boost=k=>{const B={off:0,last:0,e:0};B.use=(t,p)=>{if(p<0){B.last=0;B.e=0;return}const d=t>=B.last?t-B.last:0;B.last=t;B.e=EU(t,p);B.off+=d*k*B.e};return B};
+ const near=(o,x,y,z,e)=>Math.abs(o.position.x-x)<(e||.01)&&Math.abs(o.position.y-y)<(e||.01)&&Math.abs(o.position.z-z)<(e||.01);
+ const pillow=(q,t,k)=>{if(t<0){q.scale.set(1,1,1);return}const d=ein(t,3)*(k||1);q.scale.set(1+.07*d,1-.24*d+.025*Math.sin(t*1.7),1+.04*d)};
+ return{
+ xmastree(c){const g=O.xmastree(c),A=g.userData.anim,B=boost(2.2),st=g.children.find(o=>o.isMesh&&near(o,0,1.72,0,.02)),sm=st?st.material:null,sp=st?rp(g,[st],0,1.72,0):null;
+  // admired: the lights twinkle faster, the star on top turns to show off and shines brighter
+  g.userData.use=(t,p)=>{B.use(t,p);if(sp)sp.rotation.y=p<0?0:B.e*Math.sin(t*1.2)*.6;if(sm)sm.emissiveIntensity=.8+B.e*(.6+.3*Math.sin(t*4))};
+  if(A)g.userData.anim=t=>A(t+B.off);return g},
+ mantel(c){const g=O.mantel(c),A=g.userData.anim,B=boost(1.6),sk=g.children.filter(o=>!o.isMesh&&Math.abs(o.position.y-1.08)<.01),cf=g.children.filter(o=>o.isMesh&&o.material.emissive&&o.material.emissiveIntensity>=1.5&&Math.abs(Math.abs(o.position.x)-.5)<.01);
+  const fl=g.children.filter(o=>o.isMesh&&o.userData.h);
+  // warming up: the fire flares taller, the stockings sway in the warm air and the candles on top flicker
+  g.userData.use=(t,p)=>{B.use(t,p);sk.forEach((s,i)=>{s.rotation.z=p<0?0:B.e*.07*Math.sin(t*1.4+i*1.3);s.rotation.x=p<0?0:B.e*.05*Math.sin(t*1.1+i)});cf.forEach((f,i)=>f.scale.set(1,p<0?1:1+B.e*(.15*Math.sin(t*12+i*2)+.08*Math.sin(t*5+i)),1))};
+  g.userData.anim=t=>{if(A)A(t+B.off);fl.forEach(f=>{if(f.userData.r0==null)f.userData.r0=f.scale.x;const s=1+.15*B.e;f.scale.y*=1+.35*B.e;f.scale.x=f.scale.z=f.userData.r0*s})};
+  return g},
+ gingerhouse(c){const g=O.gingerhouse(c),C=g.children.slice();
+  const lit=add(g,gcache('anholiday_gbdoor',()=>flatGeo(openPts(.13,.2,'arch'),.004)),M(0x6A3010,{emissive:0xFFB23A,emissiveIntensity:.9,roughness:.8}),0,0,.252);lit.outline=0;nosh(lit);
+  const dr=rp(g,[C[11],C[12]],-.065,0,.25),gd=C.slice(3,9).filter(Boolean),wm=C[13]&&C[13].material,w0=wm?wm.emissiveIntensity:.6;
+  // a nibble: the little door swings open onto a warm glow, the windows light up and the gumdrops on the ridge hop one by one
+  g.userData.use=(t,p)=>{if(p<0){dr.rotation.y=0;gd.forEach(o=>o.position.y=.65);if(wm)wm.emissiveIntensity=w0;return}const e=EU(t,p),o=ss(.04,.16,p)*(1-ss(.84,.96,p));
+   dr.rotation.y=-o*(1.5+.05*Math.sin(t*2));if(wm)wm.emissiveIntensity=w0+e*(.5+.15*Math.sin(t*3));
+   gd.forEach((q,i)=>{const u=(t*1.8-i*.25)%2.2;q.position.y=.65+e*(u>0&&u<.4?Math.sin(u/.4*Math.PI)*.04:0)})};return g},
+ canelamp(c){const g=O.canelamp(c),C=g.children.slice(),gm=C[7]&&C[7].material,sh=rp(g,[C[4],C[5],C[6],C[7]],.32,1.35,0);
+  // a boop: the bell shade swings on the end of the cane and its light brightens, then settles
+  g.userData.use=(t,p)=>{if(p<0){sh.rotation.set(0,0,0);if(gm)gm.emissiveIntensity=1.6;return}const e=EU(t,p),u=t%2.4,w=Math.exp(-u*1.3)*Math.sin(u*5.5);
+   sh.rotation.z=e*.25*w;sh.rotation.x=e*.12*Math.sin(t*2.6)*Math.exp(-u*.8);if(gm)gm.emissiveIntensity=1.6+e*.6};return g},
+ sleighbed(c){const g=O.sleighbed(c),C=g.children.slice(),pl=[rp(g,[C[31]],-.28,.52,-.78),rp(g,[C[32]],.28,.52,-.78)],sp=rp(g,[C[33]],0,.56,-.6),th=rp(g,[C[30]],0,.58,-.28);
+  // tucked in: the pillows dent, the little red cushion rolls aside, and the folded blanket at the top lifts and falls with each breath
+  g.userData.use=(t,p)=>{pl.forEach(q=>pillow(q,t));if(t<0){sp.rotation.set(0,0,0);sp.position.set(0,.56,-.6);th.scale.set(1,1,1);return}const d=ein(t,2);
+   sp.position.x=.18*d;sp.rotation.z=-1.2*d;sp.position.y=.56-.02*d;th.scale.set(1,1+.35*d*(.5+.5*Math.sin(t*1.6)),1)};return g},
+ wreath(c){const g=O.wreath(c),bl=g.children.filter(o=>o.isMesh&&Math.abs(o.position.y+.38)<.01&&Math.abs(Math.abs(o.position.x)-.08)<.01).map(o=>rp(g,[o],o.position.x,-.35,.13)),bw=g.children.find(o=>!o.isMesh&&near(o,0,-.3,.16));
+  // gazed at: the two little bells jingle on the wreath and the big bow's tails flutter
+  g.userData.use=(t,p)=>{bl.forEach((b,i)=>{b.rotation.z=p<0?0:EU(t,p)*.4*Math.sin(t*9+i*1.7)*(.6+.4*Math.sin(t*1.3))});if(bw)bw.rotation.z=p<0?0:EU(t,p)*.06*Math.sin(t*3.3)};return g},
+ snowglobe(c){const g=O.snowglobe(c),A=g.userData.anim,B=boost(5),C=g.children.slice(),ky=rp(g,[C[8]],0,.15,-.42),inr=rp(g,C.slice(9,17),0,0,0),fl=C.slice(19,43);
+  // a spin: the wind-up key turns, the little village inside rotates like a music box and the snow whirls up in a flurry
+  g.userData.use=(t,p)=>{B.use(t,p);if(p<0){ky.rotation.z=0;inr.rotation.y=0;return}ky.rotation.z=B.e*t*4;inr.rotation.y=B.e*t*.8};
+  g.userData.anim=t=>{if(A)A(t+B.off);if(B.e>0)fl.forEach((f,i)=>{const k=B.e*(.5+.5*Math.sin(t*2+i));f.position.x*=1+.5*k;f.position.z*=1+.5*k;f.position.y=Math.min(1.02,f.position.y+.12*k*Math.abs(Math.sin(t*1.5+i*.7)))})};return g},
+ cookietable(c){const g=O.cookietable(c),C=g.children.slice(),ck=rp(g,C.slice(24,28),-.01,.63,.02),mk=C[43],cr=C[44];
+  // a nibble: one cookie gets eaten (crumbs and all) and is back on the plate after, the milk goes down a sip at a time, the carrot rolls
+  g.userData.use=(t,p)=>{if(p<0){ck.visible=true;ck.scale.set(1,1,1);if(mk){mk.scale.set(1,1,1);mk.position.y=.685}if(cr)cr.rotation.set(0,.6,Math.PI/2);return}const e=EU(t,p);
+   const n=ss(.15,.45,p);ck.visible=p<.5||p>.93;ck.scale.setScalar(p>.93?ss(.93,.99,p):1-n*.35);ck.rotation.y=n*.4;
+   if(mk){const d=ss(.5,.85,p)*.45;mk.scale.set(1,1-d,1);mk.position.y=.685-.06*d}if(cr)cr.rotation.set(0,.6+e*.2*Math.sin(t*2.5),Math.PI/2)};return g},
+ presents(c){const g=O.presents(c),C=g.children.slice(),top=C[2],tp=C[8],lid=rp(g,[C[6],C[7]],-.3,.18,.3),bx=[C[0],C[1],C[3],C[4]];
+  // unwrapping time: the top present hops and twists, the hatbox lid pops up, the tube rolls back and forth, the boxes jiggle
+  g.userData.use=(t,p)=>{if(p<0){if(top){top.position.y=.3;top.rotation.set(0,.5,0)}lid.position.y=.18;lid.rotation.set(0,0,0);if(tp)tp.position.x=.26;bx.forEach((b,i)=>b&&b.scale.set(1,1,1));return}const e=EU(t,p);
+   if(top){const u=(t*1.2)%1.4,h=u<.6?Math.sin(u/.6*Math.PI):0;top.position.y=.3+e*h*.08;top.rotation.y=.5+e*h*.4;top.rotation.z=e*h*.08}
+   const l=ss(.2,.3,p)*(1-ss(.75,.85,p));lid.position.y=.18+l*(.1+.01*Math.sin(t*7));lid.rotation.x=-l*.3;if(tp)tp.position.x=.26+e*.04*Math.sin(t*2);
+   bx.forEach((b,i)=>{if(b){const j=1+e*.04*Math.max(0,Math.sin(t*6+i*1.6));b.scale.set(1,j,1)}})};return g},
+ giftbed(c){const g=O.giftbed(c),C=g.children.slice(),cu=rp(g,[C[2]],0,.3,0),ld=g.children.find(o=>!o.isMesh&&near(o,0,.32,-.42)),ts=rp(g,g.children.filter(o=>o.isMesh&&Math.abs(o.position.y-.33)<.005),0,.3,0);
+  // a nap in the gift box: the cushion dents and breathes, the tissue paper puffs up round the pet, the lid sways on its hinge
+  g.userData.use=(t,p)=>{if(t<0){cu.scale.set(1,1,1);ts.scale.set(1,1,1);if(ld)ld.rotation.x=-1.9;return}const d=ein(t,2),b=Math.sin(t*1.6);cu.scale.set(1+.03*d,1-.45*d+.08*b*d,1+.03*d);
+   ts.scale.set(1+.03*d,1+.25*d+.05*b*d,1+.03*d);if(ld)ld.rotation.x=-1.9+d*.05*Math.sin(t*.8)};return g}
+ }})());}catch(e){console.warn("anim set holiday.js",e)}
+// ---- lagoon.js
+try{Object.assign(BUILD,((P,K)=>({
+ // asleep in the clam: the lid sinks a little lower like a canopy and breathes slowly with the pet, the pillows dent and the
+ // pearl bolster glows softly
+ giantclam(c){if(c==='kit')return P.giantclam(c);const g=P.giantclam.call(this,c),C=g.children.slice(),lp=C[31],pl=[C[27],C[28]].filter(Boolean),bo=C[29];
+  const s0=pl.map(q=>q.scale.clone()),bm=bo?(bo.material=M(0xFFFFFF,{roughness:.08,metalness:.15,emissive:0xFFF0FA,emissiveIntensity:.15})):null,be=bm?bm.emissiveIntensity:0;let on=0,w=0,lt=0;
+  g.userData.use=(t,p)=>{on=t<0?0:1;pl.forEach((q,i)=>{if(t<0){q.scale.copy(s0[i]);return}const d=K.ein(t,3);q.scale.set(s0[i].x*(1+.06*d),s0[i].y*(1-.22*d),s0[i].z)});if(bm)bm.emissiveIntensity=t<0?be:be+.25*K.ein(t,2)*(.6+.4*Math.sin(t*1.3))};
+  g.userData.anim=t=>{const dt=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,dt*1.2);if(lp)lp.rotation.x=-1.15-Math.sin(t*.5)*.06*(1-w)+w*(.2+.03*Math.sin(t*1.3))};return g},
+ // sat on: both seat cushions sink, the shell throw pillow tips over and the scallop back leans back like it's taking the weight
+ shellsofa(c){const g=P.shellsofa.call(this,c),C=g.children.slice(),cu=[K.rp(g,K.piv(g,-.3,.41,.05),o=>o===C[7]||o===C[8]),K.rp(g,K.piv(g,.3,.41,.05),o=>o===C[9]||o===C[10])],fan=C[6],tp=K.rp(g,K.piv(g,.42,.42,-.12),o=>o===C[11]);
+  g.userData.use=(t,p)=>{if(t<0){cu.forEach(q=>q.scale.set(1,1,1));if(fan)fan.rotation.x=-.1;tp.rotation.set(0,0,0);tp.position.y=.42;return}
+   const d=K.ein(t,4);cu.forEach(q=>q.scale.set(1+.04*d,1-.35*d,1+.04*d));if(fan)fan.rotation.x=-.1-.06*d-.012*Math.sin(t*1.4);
+   const hop=t<.5?Math.sin(t/.5*Math.PI)*.04:0,tip=K.ein(t-.2,5);tp.position.y=.42+hop;tp.rotation.z=-.6*tip;tp.rotation.x=.15*tip};return g},
+ // rummaging: the conch rolls on its shelf, the pearl jar's lid pops and the starfish waves an arm
+ coralshelf(c){const g=P.coralshelf.call(this,c),C=g.children.slice(),cn=C[30],r0=cn?{x:cn.rotation.x,y:cn.rotation.y,z:cn.rotation.z}:null,lid=K.rp(g,K.piv(g,.15,1.47,0),o=>o===C[35]),sf=C[33],sz=sf?sf.rotation.z:0;
+  g.userData.use=(t,p)=>{if(t<0){if(cn)cn.rotation.set(r0.x,r0.y,r0.z);lid.position.y=1.47;lid.rotation.set(0,0,0);if(sf)sf.rotation.z=sz;return}const k=K.ss(0,.06,p)*(1-K.ss(.9,1,p));
+   if(cn)cn.rotation.set(r0.x,r0.y+Math.sin(t*2.2)*.25*k,r0.z+Math.sin(t*2.2+1)*.06*k);
+   const lp=(t%2.4)<.6?Math.sin((t%2.4)/.6*Math.PI):0;lid.position.y=1.47+.06*lp*k;lid.rotation.x=-.3*lp*k;lid.rotation.y=t*.8*k;
+   if(sf)sf.rotation.z=sz+Math.sin(t*4)*.18*k};return g},
+ // peered into: the fish swim faster and bob, the water glows brighter and a few bubbles rise to the top
+ fishbowllamp(c){const g=P.fishbowllamp.call(this,c),C=g.children.slice(),fp=C[48],f=fp&&fp.children[0],wt=C[27],wm=wt&&wt.material,we=wm?wm.emissiveIntensity:0,ck=K.clk();
+  const Bm=M(0xFFFFFF,{emissive:0xDFF6FF,emissiveIntensity:.5,roughness:.05}),bs=[0,1,2].map(i=>{const b=nosh(sp(g,.016+i*.004,Bm,0,.6,0));b.outline=0;b.visible=false;return b});let on=0;
+  g.userData.use=(t,p)=>{on=t<0?0:K.ein(t,2);if(wm)wm.emissiveIntensity=we*(1+.35*on+.08*on*Math.sin(t*3));bs.forEach((b,i)=>{if(t<0){b.visible=false;b.position.set(0,.6,0);return}const u=(t*.55+i/3)%1;b.visible=true;b.position.set(.06*Math.sin(i*2.1+t),.6+u*.38,.05*Math.cos(i*1.7));b.scale.setScalar(u>.9?(1-u)*10:1)})};
+  g.userData.anim=t=>{const ph=ck(t,.8*(1+1.6*on));if(fp)fp.rotation.y=ph;if(f){f.position.y=Math.sin(t*(2+2*on))*(.04+.02*on);f.rotation.z=Math.sin(t*6)*.15*on}};return g},
+ // peered at: the bubbles stream up faster and fatter and the water glows brighter
+ bubblecolumn(c){const g=P.bubblecolumn.call(this,c),C=g.children.slice(),bs=C.slice(41,55).filter(o=>o&&o.isMesh),wm=C[34]&&C[34].material,we=wm?wm.emissiveIntensity:0,ck=K.clk();let on=0,w=0;
+  g.userData.use=(t,p)=>{on=t<0?0:1};
+  g.userData.anim=t=>{w+=(on-w)*.06;const ph=ck(t,.25*(1+1.8*w));if(wm)wm.emissiveIntensity=we*(1+.5*w+.1*w*Math.sin(t*2.5));
+   bs.forEach((b,i)=>{const k=(ph+i/14)%1;b.position.set(Math.sin(i*2.3+t*2)*.07*(1+.4*w),.22+k*1.33,Math.cos(i*1.7)*.07);b.scale.setScalar(1+.35*w*Math.sin(k*Math.PI))})};return g},
+ // rummaging: the lid swings open wide, and the pink gem floats up off the coins and turns
+ treasurechest(c){const g=P.treasurechest.call(this,c),C=g.children.slice(),lp=C[44],gm=C[30],g0=gm?gm.position.clone():null,cs=[],c0=cs.map(o=>o.position.y);
+  g.userData.use=(t,p)=>{if(t<0){if(lp)lp.rotation.x=-.6;if(gm){gm.position.copy(g0);gm.rotation.set(0,0,.3)}cs.forEach((o,i)=>o.position.y=c0[i]);return}
+   const o=K.ss(.02,.15,p)*(1-K.ss(.86,.98,p));if(lp)lp.rotation.x=-.6-.75*o;
+   if(gm){gm.position.y=g0.y+o*(.12+.02*Math.sin(t*2.4));gm.rotation.y=t*1.6*o;gm.rotation.z=.3*(1-o)}
+   cs.forEach((q,i)=>q.position.y=c0[i]+Math.max(0,Math.sin(t*9+i*1.9))*.012*o)};return g},
+ // sniffed: the kelp blades sway harder for a while, then settle back to their slow drift
+ kelp(c){const g=P.kelp.call(this,c),fr=g.children.filter(o=>!o.isMesh);let on=0,w=0;
+  g.userData.use=(t,p)=>{on=t<0?0:1};
+  g.userData.anim=t=>{w+=(on-w)*.05;fr.forEach((p,i)=>{p.rotation.z=Math.sin(t*(.9+1.2*w)+i)*(.08+.1*w);p.rotation.x=Math.cos(t*(.7+1*w)+i)*(.06+.07*w)})};return g},
+ // gazed into: a shimmer slides across the mirror and the little starfish waves
+ shellmirror(c){const g=P.shellmirror.call(this,c),C=g.children.slice(),mr=C[1],sf=C[17],sz=sf?sf.rotation.z:0;
+  if(mr)mr.material=M(0xDDEEFF,{metalness:.9,roughness:.05,emissive:0xFFFFFF,emissiveIntensity:0});
+  g.userData.use=(t,p)=>{if(t<0){if(mr)mr.material.emissiveIntensity=0;if(sf){sf.rotation.z=sz;sf.position.y=-.13}return}const k=K.ss(0,.08,p)*(1-K.ss(.88,1,p));
+   if(mr)mr.material.emissiveIntensity=.22*k*Math.max(0,Math.sin(t*1.8))**4;if(sf){sf.rotation.z=sz+Math.sin(t*5)*.25*k;sf.position.y=-.13+Math.abs(Math.sin(t*2.5))*.015*k}};return g},
+ // napping in the oyster: the lid drifts lower like a blanket, the pearl glows with each breath and the pillow dents
+ oysterbed(c){const g=P.oysterbed.call(this,c),C=g.children.slice(),lp=C[8],pr=C[9],pc=C[10],ps=pc?pc.scale.clone():null,q0=pr?pr.scale.x:1;
+  if(pr)pr.material=M(0xFFFFFF,{roughness:.08,metalness:.15,emissive:0xFFF0FA,emissiveIntensity:.15});const pe=pr?pr.material.emissiveIntensity:0;
+  g.userData.use=(t,p)=>{if(t<0){if(lp)lp.rotation.x=-1;if(pr){pr.material.emissiveIntensity=pe;pr.scale.setScalar(q0)}if(pc)pc.scale.copy(ps);return}
+   const d=K.ein(t,1.5),b=Math.sin(t*1.5);if(lp)lp.rotation.x=-1+d*(.18+.025*b);if(pr){pr.material.emissiveIntensity=pe+d*(.25+.15*b);pr.scale.setScalar(q0*(1+.03*b*d))}if(pc)pc.scale.set(ps.x*(1+.05*d),ps.y*(1-.2*d),ps.z)};return g}
+}))(Object.assign({},BUILD),{
+ piv(par,x,y,z){const p=new THREE.Group();p.position.set(x,y,z);par.add(p);return p},
+ rp(par,pv,f){par.children.filter(o=>o!==pv&&f(o)).forEach(o=>{o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)});return pv},
+ at(o,x,y,z,e){e=e||.004;return Math.abs(o.position.x-x)<e&&Math.abs(o.position.y-y)<e&&Math.abs(o.position.z-z)<e},
+ ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)},
+ ein(t,k){return 1-Math.exp(-Math.max(0,t)*k)},
+ clk(){let ph=0,lt=null;return(t,rate)=>{const dt=lt==null||t<lt?0:Math.min(.1,t-lt);lt=t;ph+=dt*rate;return ph}}}));}catch(e){console.warn("anim set lagoon.js",e)}
+// ---- monster.js
+try{Object.assign(BUILD,((P,K)=>({
+ // the lid-backrest rocks back on its hinge when the pet settles in and the fishbone wiggles
+ trashcan(c){const g=P.trashcan.call(this,c);const lid=K.find(g,0,1.1,-.33,true),fb=K.find(g,.22,.95,.05,true);let hg=null;
+  if(lid){hg=piv(g,0,.72,-.45);K.mv(lid,hg)}
+  g.userData.use=(t,p)=>{if(p<0){if(hg)hg.rotation.set(0,0,0);if(fb)fb.rotation.set(0,0,-.7);return}const k=K.ss(0,.6,t);
+   if(hg)hg.rotation.x=-k*(.12+.04*Math.sin(t*1.7))+Math.sin(t*9)*.05*Math.exp(-t*2.2);if(fb){fb.rotation.z=-.7+Math.sin(t*3.1)*.12*k;fb.rotation.x=Math.sin(t*2.3)*.08*k}};return g},
+ // the patched cushion squishes down and the stuffing puffs out of the split, then both spring back
+ tire(c){const g=P.tire.call(this,c);const cu=g.children.find(o=>o.isMesh&&K.at(o,0,.6,0)),st=g.children.find(o=>o.isMesh&&K.at(o,-.2,.64,.12)),pt=g.children.find(o=>o.isMesh&&K.at(o,.1,.66,.05));
+  const cs=cu?cu.scale.clone():null,ss=st?st.scale.clone():null;
+  g.userData.use=(t,p)=>{if(p<0){if(cu)cu.scale.copy(cs);if(st)st.scale.copy(ss);if(pt)pt.position.y=.66;return}const k=K.ss(0,.5,t),b=Math.sin(t*1.4);
+   if(cu)cu.scale.set(cs.x*(1+.05*k),cs.y*(1+.05*k),cs.z*(1-.4*k+.05*b*k));if(pt)pt.position.y=.66-.03*k;if(st)st.scale.set(ss.x*(1+.35*k+.08*b*k),ss.y*(1+.3*k),ss.z*(1+.35*k))};return g},
+ // the escaped spring boings, the stuffing tufts bob and the cushions dent where the pet sits
+ patchcouch(c){const g=P.patchcouch.call(this,c);const spr=K.find(g,.3,.76,.35,true),cus=g.children.filter(o=>o.isMesh&&Math.abs(o.position.y-.64)<.005&&Math.abs(o.position.z-.08)<.005).map(o=>({o,s:o.scale.clone()}));
+  const tufts=g.children.filter(o=>o.isMesh&&o.position.x<-.9&&o.position.y>.9).map(o=>({o,y:o.position.y,s:o.scale.clone()}));
+  g.userData.use=(t,p)=>{if(p<0){if(spr)spr.scale.set(1,1,1);cus.forEach(q=>q.o.scale.copy(q.s));tufts.forEach(q=>{q.o.position.y=q.y;q.o.scale.copy(q.s)});return}const k=K.ss(0,.5,t);
+   if(spr)spr.scale.y=1+(.35*Math.sin(t*8))*(.3+.7*Math.exp(-t*.8))*k;cus.forEach((q,i)=>{const d=k*(i===1?.3:.12);q.o.scale.set(q.s.x*(1+d*.25),q.s.y*(1+d*.25),q.s.z*(1-d))});
+   tufts.forEach((q,i)=>{q.o.position.y=q.y+Math.abs(Math.sin(t*2.2+i*1.4))*.03*k;q.o.scale.copy(q.s).multiplyScalar(1+.1*k*Math.sin(t*2.2+i))})};return g},
+ // the cardboard flaps lift and settle with the pet's breathing and the flat pillow dents under the heads
+ crustybed(c){const g=P.crustybed.call(this,c);const fl=g.children.filter(o=>o.isMesh&&Math.abs(o.position.y-.33)<.004&&Math.abs(Math.abs(o.position.z)-1.34)<.01).map((o,i)=>({o,r:o.rotation.x,i}));
+  const pl=g.children.find(o=>o.isMesh&&K.at(o,-.3,.74,-1.05)),ps=pl?pl.scale.clone():null;
+  g.userData.use=(t,p)=>{if(p<0){fl.forEach(q=>q.o.rotation.x=q.r);if(pl)pl.scale.copy(ps);return}const k=K.ss(0,.8,t),b=Math.sin(t*1.5);
+   fl.forEach(q=>q.o.rotation.x=q.r+Math.sign(q.r)*(.12+.1*Math.sin(t*1.5+q.i))*k);if(pl)pl.scale.set(ps.x*(1+.06*k),ps.y*(1+.06*k),ps.z*(1-.35*k+.04*b*k))};return g},
+ // the soda can rattles and its straw spins, and the pizza slice lifts for a bite and comes back
+ crate(c){const g=P.crate.call(this,c);const can=piv(g,.25,.5,.1);K.rp(g,can,o=>o.isMesh&&Math.abs(o.position.x-.26)<.02&&Math.abs(o.position.z-.1)<.005&&o!==can);
+  const pz=piv(g,-.2,.52,0);K.rp(g,pz,o=>o!==pz&&o.isMesh&&o.position.y>.515&&o.position.x<-.1&&o.position.x>-.3);
+  g.userData.use=(t,p)=>{if(p<0){can.position.set(.25,.5,.1);can.rotation.set(0,0,0);pz.position.set(-.2,.52,0);pz.rotation.set(0,0,0);pz.scale.set(1,1,1);return}
+   const k=K.ss(0,.06,p)*(1-K.ss(.9,1,p)),r=Math.max(0,Math.sin(t*14))*k;can.position.y=.5+r*.01;can.rotation.z=Math.sin(t*17)*.05*r;can.rotation.y=t*2*k;
+   const l=K.ss(.25,.35,p)*(1-K.ss(.6,.7,p));pz.position.y=.52+l*.12;pz.position.z=l*.1;pz.rotation.x=-l*.5;pz.scale.setScalar(p>.45&&p<.95?.82:1)};return g},
+ // the goo eye peeks up out of the barrel and looks around while bubbles rise and pop
+ barrel(c){const g=P.barrel.call(this,c);const ey=piv(g,-.1,.93,-.05);K.rp(g,ey,o=>o!==ey&&o.isMesh&&(K.at(o,-.1,.98,-.05)||K.at(o,-.08,1.0,0)));
+  const lump=g.children.find(o=>o.isMesh&&K.at(o,.15,.93,.05)),ls=lump?lump.scale.clone():null,GM=M(GOO,{emissive:GOO,emissiveIntensity:.35,roughness:.1});
+  const bb=[0,1,2].map(i=>{const m=sp(g,.045,GM,.1*Math.cos(i*2.2),.93,.12*Math.sin(i*2.2));ol(m,.003);m.visible=false;return m});
+  g.userData.use=(t,p)=>{if(p<0){ey.position.set(-.1,.93,-.05);ey.rotation.set(0,0,0);if(lump)lump.scale.copy(ls);bb.forEach(m=>m.visible=false);return}
+   const u=K.ss(.04,.18,p)*(1-K.ss(.85,.97,p));ey.position.y=.93+u*.12;ey.rotation.y=Math.sin(t*1.3)*.7*u;ey.rotation.x=Math.sin(t*.9)*.2*u;
+   if(lump)lump.scale.set(ls.x*(1+.12*Math.sin(t*3)),ls.y*(1+.4*Math.sin(t*3)),ls.z*(1+.12*Math.sin(t*3)));
+   bb.forEach((m,i)=>{const q=(t*.7+i/3)%1;m.visible=q<.85;m.position.y=.93+q*.04;m.scale.setScalar(.3+q*1.1)})};return g},
+ // the bags jiggle as the pet digs through them and the fly zips round faster
+ trashbags(c){const g=P.trashbags.call(this,c);const bags=g.children.filter(o=>o.isMesh&&o.position.y>.2&&o.position.x<.4&&o.scale.x===1).slice(0,4).map((o,i)=>({o,r:{x:o.rotation.x,y:o.rotation.y,z:o.rotation.z},i}));
+  const fly=g.children.find(o=>!o.isMesh);let off=0,lt=0,on=0;
+  g.userData.use=(t,p)=>{on=p<0?0:1;if(p<0){bags.forEach(q=>q.o.rotation.set(q.r.x,q.r.y,q.r.z));return}const k=K.ss(0,.05,p)*(1-K.ss(.9,1,p));
+   bags.forEach(q=>{q.o.rotation.x=q.r.x+Math.sin(t*9+q.i*2)*.06*k;q.o.rotation.z=q.r.z+Math.cos(t*8+q.i*1.5)*.06*k})};
+  g.userData.anim=t=>{const d=Math.min(.1,Math.max(0,t-lt));lt=t;off+=d*on*1.5;const T=t+off;if(fly){fly.rotation.y=T*3;fly.position.y=1.1+Math.sin(T*7)*.08}};return g},
+ // the eyeball snaps round to look at the pet, opens wide and blinks twice, the neck wobbling like a spring
+ eyelamp(c){const g=P.eyelamp.call(this,c);const j=g.children.find(o=>!o.isMesh&&K.at(o,0,.77,0)),e=j&&j.children.find(o=>!o.isMesh),lid=e&&e.children[e.children.length-1],old=g.userData.anim;let w=0,on=0,lt=0,ut=0;
+  g.userData.use=(t,p)=>{on=p<0?0:1;ut=t};
+  g.userData.anim=t=>{old(t);const d=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,d*4);if(!e||w<.002)return;
+   e.rotation.y*=1-w;e.rotation.x=e.rotation.x*(1-w)+(-.35)*w;j.rotation.z=.4-w*(.4-Math.sin(ut*6)*.1*Math.exp(-ut*.8)-.05);
+   const bl=on&&((ut%2.6)<.14||((ut%2.6)>.3&&(ut%2.6)<.42));if(lid){lid.scale.y=bl?1.9:1-.15*w;lid.rotation.x=bl?.5:-.35-.3*w}};return g},
+ // the valve wheel turns and the caged bulb swings on its wire
+ bulb(c){const g=P.bulb.call(this,c);const vw=piv(g,0,1.4,.09);K.rp(g,vw,o=>o!==vw&&o.isMesh&&K.at(o,0,1.4,.09));
+  const sw=piv(g,.6,1.97,0);K.rp(g,sw,o=>o!==sw&&o.isMesh&&Math.abs(o.position.x-.6)<.005&&o.position.y<1.9);
+  g.userData.use=(t,p)=>{if(p<0){vw.rotation.set(0,0,0);sw.rotation.set(0,0,0);return}const k=K.ss(0,.08,p)*(1-K.ss(.85,1,p));vw.rotation.z=-t*2.2*K.ss(0,.3,p);
+   sw.rotation.z=Math.sin(t*3.4)*.14*k;sw.rotation.x=Math.cos(t*2.6)*.08*k};return g},
+ // the static screen flicks through colours, the bent antennae waggle and the set gives the odd jolt
+ bustedtv(c){const g=P.bustedtv.call(this,c);const tv=g.children.find(o=>!o.isMesh),scr=tv&&tv.children.find(o=>o.isMesh&&o.material.map===staticTex);
+  const ant=tv?tv.children.filter(o=>o.isMesh&&o.position.y>.55&&o.position.y<.65).map(o=>({o,r:o.rotation.z})):[];const r0=tv?{x:tv.rotation.x,y:tv.rotation.y,z:tv.rotation.z}:null,cl=[0xFFFFFF,0x9FFFC8,0xFFB3E0,0xA8D8FF,0xFFF0A0];
+  if(scr)scr.material=B(0xffffff,{map:staticTex});const CL=cl.map(col);
+  g.userData.use=(t,p)=>{if(p<0){if(tv)tv.rotation.set(r0.x,r0.y,r0.z);if(scr){const q=CL[0],m=scr.material.color;m.r=q.r;m.g=q.g;m.b=q.b};ant.forEach(q=>q.o.rotation.z=q.r);return}const k=K.ss(0,.05,p)*(1-K.ss(.92,1,p));
+   if(scr){const q=CL[Math.floor(t*2.5)%CL.length],m=scr.material.color;m.r=q.r;m.g=q.g;m.b=q.b};ant.forEach((q,i)=>q.o.rotation.z=q.r+Math.sin(t*4+i*2)*.15*k);
+   const j=(t%3.1)<.25?Math.sin((t%3.1)*25)*Math.exp(-(t%3.1)*8):0;if(tv){tv.rotation.z=r0.z+j*.08*k;tv.rotation.x=r0.x+j*.04*k}};return g},
+ // the tentacles stretch towards the pet and wave faster while it sniffs
+ tentacle(c){const g=P.tentacle.call(this,c);const ts=g.children.filter(o=>!o.isMesh);let w=0,on=0,lt=0;
+  g.userData.use=(t,p)=>{on=p<0?0:1};
+  g.userData.anim=t=>{const d=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,d*3);ts.forEach((q,i)=>{q.rotation.z=Math.sin(t*(1.2+w*1.6)+i)*(.12+.1*w)-.15*w;q.rotation.x=Math.cos(t*(.9+w)+i*2)*.1+.2*w*Math.sin(t*2+i)})};return g},
+ // goo bubbles burble up between the bars while the pet wiggles about
+ grate(c){const g=P.grate.call(this,c),GM=M(GOO,{emissive:GOO,emissiveIntensity:.4,roughness:.1});
+  const bb=[[.8,.6],[.6,.55],[.95,.65],[.35,.72],[-.6,.1]].map(([x,z],i)=>{const m=nosh(sp(g,.05,GM,x,.04,z));m.outline=.003;m.visible=false;return{m,i}});
+  g.userData.use=(t,p)=>{bb.forEach(q=>{if(p<0){q.m.visible=false;return}const u=(t*.8+q.i*.37)%1;q.m.visible=u<.8&&p<.95;q.m.position.y=.04+u*.05;q.m.scale.set(.4+u,.3+u*.9,.4+u)})};return g},
+ // the cushion rises and falls with the pet's sleepy breathing and the sock twitches
+ tirebed(c){const g=P.tirebed.call(this,c);const cu=g.children.find(o=>o.isMesh&&o.position.y===0&&o.position.x===0&&o.geometry.type!=='TorusGeometry'&&o.material.detail===1),sk=g.children.find(o=>o.isMesh&&K.at(o,.15,.18,-.05));
+  g.userData.use=(t,p)=>{if(p<0){if(cu)cu.scale.set(1,1,1);if(sk)sk.rotation.y=.7;return}const k=K.ss(0,.8,t),b=Math.sin(t*1.5);if(cu)cu.scale.set(1+.02*b*k,1-.25*k+.05*b*k,1+.02*b*k);if(sk)sk.rotation.y=.7+Math.sin(t*.7)*.15*k};return g},
+ // the kibble jiggles and sinks as the pet munches, and the hubcap rocks on its rim
+ hubcap(c){const g=P.hubcap.call(this,c);const kb=piv(g,0,.13,0);K.rp(g,kb,o=>o!==kb&&o.isMesh&&Math.abs(o.position.y-.13)<.004);const rk=piv(g,0,0,0);K.rp(g,rk,o=>o!==rk&&o!==kb);rk.add(kb);
+  g.userData.use=(t,p)=>{if(p<0){kb.position.y=.13;kb.rotation.set(0,0,0);rk.rotation.set(0,0,0);return}const k=K.ss(0,.05,p);
+   kb.position.y=.13-.02*K.ss(.1,.9,p)+Math.abs(Math.sin(t*9))*.006*k;kb.rotation.y=Math.sin(t*4)*.25*k;rk.rotation.x=Math.sin(t*5)*.03*k*(1-K.ss(.9,1,p));rk.rotation.z=Math.cos(t*4.3)*.03*k*(1-K.ss(.9,1,p))};return g},
+ // the loose corner of the poster flaps in a draught while the pet looks
+ fishposter(c){const g=P.fishposter.call(this,c);const cn=g.children.find(o=>o.isMesh&&K.at(o,.43,-.6,.026)),pp=g.children.filter(o=>o.isMesh&&Math.abs(o.position.x)<.01&&Math.abs(o.position.y)<.01);
+  g.userData.use=(t,p)=>{if(p<0){if(cn){cn.rotation.set(0,0,.8);cn.position.z=.026}pp.forEach(o=>o.rotation.x=0);return}const k=K.ss(0,.1,p)*(1-K.ss(.85,1,p)),f=Math.sin(t*5)*.5+Math.sin(t*11)*.2;
+   if(cn){cn.rotation.x=-Math.abs(f)*.9*k;cn.position.z=.026+Math.abs(f)*.05*k}pp.forEach(o=>o.rotation.x=-Math.abs(Math.sin(t*2.5))*.03*k)};return g},
+ // the drips come faster, the valve spins and the gauge needle jitters into the red
+ pipes(c){const g=P.pipes.call(this,c);const nd=g.children.find(o=>o.isMesh&&K.at(o,.22,.19,.182)),v=g.children.find(o=>!o.isMesh),drop=g.children.find(o=>o.isMesh&&K.at(o,.65,-.92,.14));let off=0,lt=0,on=0,ut=0;
+  const np=piv(g,.2,.18,.182);if(nd){g.remove(nd);np.add(nd);nd.position.set(.02,.01,0)}
+  g.userData.use=(t,p)=>{on=p<0?0:1;ut=t;if(p<0)np.rotation.z=0};
+  g.userData.anim=t=>{const d=Math.min(.1,Math.max(0,t-lt));lt=t;off+=d*on*1.4;const T=t+off;if(drop){const q=(T*.8)%1;drop.position.y=-.92-q*1.1;drop.visible=q<.9}if(v)v.rotation.z=T*.3;
+   np.rotation.z=on?-1.1*K.ss(0,1,ut)+Math.sin(ut*23)*.08:0};return g},
+ // the star mirror swings a little on its nail
+ crackmirror(c){const g=P.crackmirror.call(this,c);const pv=piv(g,0,.56,0);K.rp(g,pv,o=>o!==pv);
+  g.userData.use=(t,p)=>{if(p<0){pv.rotation.z=0;return}const k=K.ss(0,.1,p)*(1-K.ss(.85,1,p));pv.rotation.z=Math.sin(t*2.4)*.05*k};return g}
+}))(Object.assign({},BUILD),{
+ rp(par,pv,f){par.children.filter(o=>o!==pv&&f(o)).forEach(o=>{o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)})},
+ mv(o,pv){if(o.parent)o.parent.remove(o);o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)},
+ at(o,x,y,z,e){e=e||.004;return Math.abs(o.position.x-x)<e&&Math.abs(o.position.y-y)<e&&Math.abs(o.position.z-z)<e},
+ find(par,x,y,z,grp){return par.children.find(o=>(grp==null||!o.isMesh===grp)&&this.at(o,x,y,z))},
+ ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)}}));}catch(e){console.warn("anim set monster.js",e)}
 // ---- movie.js
 try{Object.assign(BUILD,(()=>{
  // Movie Night: moving parts. Each builder runs the set's own model, then gathers the parts that move into pivots placed at
@@ -71383,6 +72058,118 @@ try{Object.assign(BUILD,(()=>{
   // eating: the popcorn jiggles and goes down a mouthful at a time (it's topped back up afterwards)
   g.userData.use=(t,p)=>kb.forEach((q,i)=>{if(t<0){q.visible=true;q.position.y=0;return}q.visible=p<.25+i*.22;q.position.y=.008*Math.max(0,Math.sin(t*14+i*1.7))});return g}
  }})());}catch(e){console.warn("anim set movie.js",e)}
+// ---- nursery.js
+try{Object.assign(BUILD,((P,K)=>({
+ // warming up by it: the lamp in the dome glows brighter and the egg in its nest wobbles as if something inside is stirring
+ incubator(c){if(c==='kit')return P.incubator(c);const g=P.incubator.call(this,c),C=g.children.slice(),ep=C[21],bl=C[30],a0=g.userData.anim;
+  if(bl)bl.material=glowM(0xFFD27A,1);const b0=bl?bl.scale.x:1;let on=0,w=0;
+  g.userData.use=(t,p)=>{on=t<0?0:1};
+  g.userData.anim=t=>{a0&&a0(t);w+=(on-w)*.06;if(bl){bl.material.emissiveIntensity=1+.7*w*(.75+.25*Math.sin(t*3));bl.scale.setScalar(b0*(1+.12*w))}
+   if(ep&&w>.01){const b=Math.max(0,Math.sin(t*1.7))**3;ep.rotation.z+=Math.sin(t*9)*.1*w*b;ep.rotation.x=Math.cos(t*8)*.05*w*b;ep.position.y=.66+.012*w*b}else if(ep){ep.rotation.x=0;ep.position.y=.66}};return g},
+ // asleep in the crib: the pillow dents, the bumpers along the headboard breathe softly and the star plush tumbles over
+ cribbed(c){const g=P.cribbed.call(this,c),C=g.children.slice(),pl=C[8],ps=pl?pl.scale.clone():null,bm=C.slice(4,8).filter(Boolean),b0=bm.map(o=>o.scale.clone()),sp=C[47],s0=sp?[sp.rotation.x,sp.rotation.z,sp.position.y]:null;
+  g.userData.use=(t,p)=>{if(t<0){if(pl)pl.scale.copy(ps);bm.forEach((o,i)=>o.scale.copy(b0[i]));if(sp){sp.rotation.x=s0[0];sp.rotation.z=s0[1];sp.position.y=s0[2]}return}const d=K.ein(t,3);
+   if(pl)pl.scale.set(ps.x*(1+.06*d),ps.y*(1-.22*d),ps.z);bm.forEach((o,i)=>{const b=1+.05*d*Math.sin(t*1.4+i*.6);o.scale.set(b0[i].x*b,b0[i].y*b,b0[i].z)});
+   if(sp){const tp=K.ein(t-.6,4);sp.rotation.x=s0[0]+1.0*tp;sp.rotation.z=s0[1]+.4*tp;sp.position.y=s0[2]-.03*tp}};return g},
+ // sat on: the seat and back glide gently back and forth on their arms, the way a glider does
+ glider(c){const g=P.glider.call(this,c),C=g.children.slice(),sw=K.rp(g,K.piv(g,0,.75,0),o=>[20,21,22,23,24,25].includes(C.indexOf(o)));
+  g.userData.use=(t,p)=>{if(t<0){sw.rotation.x=0;sw.position.z=0;return}const d=K.ein(t,1.5),s=Math.sin(t*1.5);sw.rotation.x=.045*s*d;sw.position.z=.03*s*d};return g},
+ // peered at: the mobile spins faster and its stars, moon, heart and cloud swing out
+ starmobile(c){const g=P.starmobile.call(this,c),C=g.children.slice(),hub=C[7],it=[],ck=K.clk();if(hub)hub.children.filter(o=>!o.isMesh).forEach(h=>{const o=h.children.find(q=>!q.isMesh);if(o)it.push({h,o})});let on=0,w=0;
+  g.userData.use=(t,p)=>{on=t<0?0:1};
+  g.userData.anim=t=>{w+=(on-w)*.06;const ph=ck(t,.4*(1+2*w));if(hub)hub.rotation.y=ph;it.forEach((q,i)=>{q.o.rotation.y=Math.sin(t*(1+1.5*w)+i);q.h.rotation.z=-.25*w*(1+.2*Math.sin(t*2+i));q.o.position.y+=0})};return g},
+ // rummaging: the lid swings wide, the rattles shake and the yellow block hops
+ rattlebox(c){const g=P.rattlebox.call(this,c),C=g.children.slice(),lp=C[10],rt=[C[13],C[14],C[15]].filter(Boolean),z0=rt.map(o=>o.rotation.z),bk=C[16];
+  g.userData.use=(t,p)=>{if(t<0){if(lp)lp.rotation.x=-.45;rt.forEach((o,i)=>{o.rotation.z=z0[i];o.rotation.x=0});if(bk){bk.position.y=.53;bk.rotation.set(0,0,0)}return}
+   const o=K.ss(.02,.15,p)*(1-K.ss(.86,.98,p));if(lp)lp.rotation.x=-.45-.75*o;rt.forEach((q,i)=>{q.rotation.z=z0[i]+Math.sin(t*16+i*2)*.14*o;q.rotation.x=Math.cos(t*13+i)*.08*o});
+   if(bk){const h=(t%1.4)<.45?Math.sin((t%1.4)/.45*Math.PI):0;bk.position.y=.53+.07*h*o;bk.rotation.y=h*.8*o}};return g},
+ // admired: the heart marker slides up the chart to see how tall the pet has got, the star on top twirls, then it slides back
+ growthchart(c){const g=P.growthchart.call(this,c),C=g.children.slice(),mk=C[7],st=C[6];
+  g.userData.use=(t,p)=>{if(t<0){if(mk)mk.position.y=.12;if(st)st.rotation.y=0;return}const u=K.ss(.08,.45,p)*(1-K.ss(.75,.95,p));if(mk)mk.position.y=.12+.38*u+(u>.98?Math.abs(Math.sin(t*6))*.015:0);if(st)st.rotation.y=K.ss(.4,.6,p)*Math.PI*2};return g},
+ // wiggled on: the toys on the arch spin round and swing like a baby just batted them
+ playmat(c){const g=P.playmat.call(this,c),C=g.children.slice(),hub=C[20],ts=hub?hub.children.filter(o=>!o.isMesh):[],ck=K.clk();let on=0,w=0;
+  g.userData.use=(t,p)=>{on=t<0?0:1};
+  g.userData.anim=t=>{w+=(on-w)*.06;if(hub)hub.rotation.y=Math.sin(t*.6)*.6*(1-w)+ck(t,2.2*w);ts.forEach((h,i)=>{h.rotation.z=Math.sin(t*3+i*2)*.3*w;h.rotation.x=Math.cos(t*2.6+i)*.25*w})};return g},
+ // patted: the top block wobbles, the stacker rings spin and the ball on top bounces
+ blockstack(c){const g=P.blockstack.call(this,c),C=g.children.slice(),tb=K.rp(g,K.piv(g,0,.26,0),o=>o===C[2]),rg=K.rp(g,K.piv(g,.34,0,.22),o=>[5,6,7,8,9,10].includes(C.indexOf(o))),bl=C[10];
+  g.userData.use=(t,p)=>{if(t<0){tb.rotation.set(0,0,0);rg.rotation.set(0,0,0);if(bl)bl.position.y=.37;return}const k=K.ss(0,.05,p)*(1-K.ss(.85,1,p)),dm=Math.exp(-(t%2)*1.8);
+   tb.rotation.z=Math.sin(t*9)*.08*dm*k;tb.rotation.x=Math.cos(t*7)*.05*dm*k;rg.rotation.z=Math.sin(t*6+1)*.07*dm*k;rg.rotation.x=Math.cos(t*5)*.05*dm*k;if(bl)bl.position.y=.37+Math.abs(Math.sin(t*5))*.05*k};return g},
+ // drinking: the milk in the bowl goes down, the bottle drains a little and they're both full again after
+ milkbowl(c){const g=P.milkbowl.call(this,c),C=g.children.slice(),mk=C[6],bt=C[9];
+  g.userData.use=(t,p)=>{if(t<0){if(mk){mk.position.y=.11;mk.scale.setScalar(1)}if(bt){bt.scale.y=1;bt.position.y=.12}return}const d=K.ss(.1,.85,p);
+   if(mk){mk.position.y=.11-.035*d+Math.sin(t*10)*.002;mk.scale.set(1-.15*d,1,1-.15*d)}if(bt){const s=1-.4*d;bt.scale.y=s;bt.position.y=.12-.08*(1-s)}};return g},
+ // napping: the hood leans forward a little like a pram canopy and the small pillow dents
+ bassinet(c){const g=P.bassinet.call(this,c),C=g.children.slice(),hd=K.rp(g,K.piv(g,0,.28,-.12),o=>{const i=C.indexOf(o);return i>=8&&i<=24}),pl=C[7],ps=pl?pl.scale.clone():null;
+  g.userData.use=(t,p)=>{if(t<0){hd.rotation.x=0;if(pl)pl.scale.copy(ps);return}const d=K.ein(t,1.2);hd.rotation.x=d*(.22+.02*Math.sin(t*1.3));if(pl)pl.scale.set(ps.x*(1+.06*d),ps.y*(1-.25*d),ps.z)};return g}
+}))(Object.assign({},BUILD),{
+ piv(par,x,y,z){const p=new THREE.Group();p.position.set(x,y,z);par.add(p);return p},
+ rp(par,pv,f){par.children.filter(o=>o!==pv&&f(o)).forEach(o=>{o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)});return pv},
+ ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)},
+ ein(t,k){return 1-Math.exp(-Math.max(0,t)*k)},
+ clk(){let ph=0,lt=null;return(t,rate)=>{const dt=lt==null||t<lt?0:Math.min(.1,t-lt);lt=t;ph+=dt*rate;return ph}}}));}catch(e){console.warn("anim set nursery.js",e)}
+// ---- petpal.js
+try{Object.assign(BUILD,(()=>{
+ // Pet Palace: moving parts. Each builder runs the set's own model, then gathers the parts that move into pivots
+ // (placed at their hinge) so the model, footprint and perch spots stay exactly the same.
+ const O={};['climbtree','teepee','petswing','treatstation','scratchpost','petsofa','pawrug','pettoychest','pawart'].forEach(k=>O[k]=BUILD[k]);
+ const rp=(par,list,x,y,z)=>{const p=new THREE.Group();p.position.set(x,y,z);list.filter(Boolean).forEach(q=>{par.remove(q);q.position.x-=x;q.position.y-=y;q.position.z-=z;p.add(q)});par.add(p);return p};
+ const ss=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)};
+ const ein=(t,k)=>t<0?0:1-Math.exp(-t*k);
+ const EU=(t,p)=>p<0?0:Math.min(1,t*2)*(1-ss(.9,1,p));
+ const hop=(u)=>u>0&&u<.5?Math.sin(u*2*Math.PI):0;
+ return{
+ climbtree(c){const g=O.climbtree(c),C=g.children.slice(),cr=C[16],ty=C[17],cu=rp(g,[C[15]],.25,1.54,0);let on=0;
+  // a boop: the dangling toy swings wildly, the little crown on the top cup wobbles and the cushion bounces
+  g.userData.use=(t,p)=>{if(p<0){on=0;if(cr)cr.rotation.set(0,0,-.4);cu.scale.set(1,1,1);return}const e=EU(t,p);on=e;
+   if(cr){cr.rotation.z=-.4+e*.18*Math.sin(t*7)*Math.exp(-(t%1.5)*2);cr.rotation.x=e*.1*Math.sin(t*5)}const b=Math.abs(Math.sin(t*3));cu.scale.set(1,1-.3*b*e,1)};
+  g.userData.anim=t=>{if(!ty)return;ty.rotation.z=Math.sin(t*1.8)*(.25+.4*on)+on*.2*Math.sin(t*4.1);ty.rotation.x=on*.25*Math.sin(t*2.6)};return g},
+ teepee(c){const g=O.teepee(c),C=g.children.slice();
+  const bn=rp(g,C.slice(13,25),0,.48,0),pf=rp(g,[C[25]],.01,1.42,0),pm=rp(g,[C[27],C[28],C[29]],0,1.2,0),cu=rp(g,[C[26]],0,.02,.06);
+  // napping inside: the cushion dents, the pennant on top flutters, the bunting sways round the middle and the pom-poms bob
+  g.userData.use=(t,p)=>{if(t<0){bn.rotation.set(0,0,0);pf.rotation.set(0,0,0);pm.position.y=1.2;pm.rotation.y=0;cu.scale.set(1,1,1);return}
+   const e=ein(t,1.5);cu.scale.set(1+.04*e,1-.3*e+.06*Math.sin(t*1.6)*e,1+.04*e);pf.rotation.y=e*(.4*Math.sin(t*4)+.15*Math.sin(t*9.3));
+   bn.rotation.y=e*.06*Math.sin(t*.9);bn.rotation.x=e*.02*Math.sin(t*1.3);pm.position.y=1.2+e*.01*Math.sin(t*1.6);pm.rotation.y=e*.2*Math.sin(t*.7)};return g},
+ petswing(c){const g=O.petswing(c),sw=g.children[9];let on=0,amp=0,lt=0;
+  // on the swing: it swings properly (higher and higher, then gently down again after)
+  g.userData.use=(t,p)=>{on=p<0?0:EU(t,p)};
+  g.userData.anim=t=>{if(!sw)return;const dt=Math.min(.1,Math.max(0,t-lt));lt=t;amp+=(on-amp)*Math.min(1,dt*(on>amp?1.2:2.5));sw.rotation.x=Math.sin(t*(1.3+amp*.9))*(.08+.3*amp)};return g},
+ treatstation(c){const g=O.treatstation(c),C=g.children.slice(),jr=C[25],W=C[24];
+  const kb=rp(g,C.slice(9,23),-.22,.25,0);let ld=null;if(jr)ld=rp(jr,[jr.children[1],jr.children[2]],0,.28,0);const wm=W?W.material:null,w0=wm?wm.emissiveIntensity:0;
+  // a sniff: the treat jar's lid pops up and tips, the biscuits rattle inside, the kibble shifts and the water shimmers
+  g.userData.use=(t,p)=>{if(p<0){kb.position.y=.25;kb.rotation.set(0,0,0);if(ld){ld.position.y=.28;ld.rotation.set(0,0,0)}if(W)W.scale.set(1,1,1);if(wm)wm.emissiveIntensity=w0;if(jr)jr.rotation.set(0,0,0);return}
+   const e=EU(t,p),l=ss(.1,.25,p)*(1-ss(.75,.9,p));if(ld){ld.position.y=.28+l*(.06+.012*Math.sin(t*9));ld.rotation.z=-l*.5;ld.position.x=l*.03}
+   if(jr){jr.rotation.z=e*.03*Math.sin(t*16)*Math.max(0,Math.sin(t*2))}
+   kb.position.y=.25+e*.006*Math.abs(Math.sin(t*8));kb.rotation.y=e*.15*Math.sin(t*2.5);
+   if(W)W.scale.set(1+.03*e*Math.sin(t*6),1,1+.03*e*Math.cos(t*6));if(wm)wm.emissiveIntensity=w0+e*.25*(.5+.5*Math.sin(t*5))};return g},
+ scratchpost(c){const g=O.scratchpost(c),C=g.children.slice(),ty=C[8],cr=C[7];
+  const tp=rp(g,[C[2],C[4],C[5],C[6],C[7],C[8]],0,.1,0);let on=0;
+  // a pat on the post: it rocks on its base, the crown wobbles on top and the feather toy bats about
+  g.userData.use=(t,p)=>{if(p<0){on=0;tp.rotation.set(0,0,0);if(cr)cr.rotation.set(0,0,0);return}const e=EU(t,p);on=e;
+   const k=Math.max(0,Math.sin(t*5));tp.rotation.z=e*.035*Math.sin(t*10)*k;tp.rotation.x=e*.02*Math.sin(t*7);if(cr){cr.rotation.z=e*.12*Math.sin(t*8+1);cr.rotation.x=e*.08*Math.sin(t*6)}};
+  g.userData.anim=t=>{if(ty){ty.rotation.z=Math.sin(t*2.2)*(.3+.4*on);ty.rotation.x=on*.3*Math.sin(t*3.3)}};return g},
+ petsofa(c){const g=O.petsofa(c),C=g.children.slice(),cr=C[13],bn=C[20];
+  const cu=rp(g,[C[6]],0,.29,.05),bk=rp(g,[C[7],C[8],C[9],C[10],C[11],C[12]],0,.3,-.22);
+  // sat on: the seat cushion squashes, the tufted back gives a little, the crown wobbles and the bone toy rocks beside the pet
+  g.userData.use=(t,p)=>{if(t<0){cu.scale.set(1,1,1);bk.rotation.set(0,0,0);if(cr)cr.rotation.set(0,0,0);if(bn)bn.rotation.set(0,.3,0);return}
+   const d=ein(t,3);cu.scale.set(1+.05*d,1-.35*d,1+.03*d);bk.rotation.x=-.04*d+.008*Math.sin(t*1.5);
+   const w=Math.exp(-(t%5)*1.5)*Math.sin((t%5)*12);if(cr){cr.rotation.z=.12*w;cr.rotation.x=.06*w}if(bn){bn.rotation.z=.25*w*d;bn.rotation.y=.3}};return g},
+ pawrug(c){const g=O.pawrug(c),C=g.children.slice();
+  const pd=C.slice(26,31).filter(Boolean).map(o=>rp(g,[o],o.position.x,.026,o.position.z));
+  // a wiggle on the rug: the plush toe beans squish down one after another, then the big pad
+  g.userData.use=(t,p)=>{pd.forEach((q,i)=>{if(p<0){q.scale.set(1,1,1);return}const e=EU(t,p),j=i?i-1:4,u=(t*1.6-j*.22)%1.5,k=u>0&&u<.4?Math.sin(u/.4*Math.PI):0;
+   q.scale.set(1+.1*k*e,1-.55*k*e,1+.1*k*e)})};return g},
+ pettoychest(c){const g=O.pettoychest(c),C=g.children.slice(),ld=C[13],bone=C[16],dk=C[20];
+  const ball=rp(g,[C[14],C[15]],-.2,.42,.05),b0=bone?[bone.position.y,bone.rotation.y]:0,d0=dk?dk.position.y:0;
+  // a rummage: the lid swings wide open, the ball bounces out of the pile, the bone flips and the squeaky duck bobs about
+  g.userData.use=(t,p)=>{if(p<0){if(ld)ld.rotation.x=-.7;ball.position.y=.42;ball.rotation.set(0,0,0);if(bone){bone.position.y=b0[0];bone.rotation.set(0,b0[1],0)}if(dk){dk.position.y=d0;dk.rotation.set(0,0,0)}return}
+   const o=ss(.02,.14,p)*(1-ss(.86,.97,p)),e=EU(t,p);if(ld)ld.rotation.x=-.7-o*(.75+.05*Math.sin(t*3));
+   const u=(t*1.3)%1.6,h=u<1?Math.abs(Math.sin(u*Math.PI*2))*(1-u*.5):0;ball.position.y=.42+e*h*.12;ball.rotation.z=-e*t*2;
+   if(bone){const v=(t*1.1+.6)%2,f=v<.7?Math.sin(v/.7*Math.PI):0;bone.position.y=b0[0]+e*f*.1;bone.rotation.x=e*(v<.7?v/.7*Math.PI*2:0)}
+   if(dk){dk.position.y=d0+e*.025*Math.abs(Math.sin(t*4));dk.rotation.z=e*.25*Math.sin(t*4);dk.rotation.y=e*.4*Math.sin(t*1.5)}};return g},
+ pawart(c){const g=O.pawart(c),fr=rp(g,g.children.slice(),0,.42,0);
+  // gazed at: the frame tips a little crooked on its nail and swings back straight, the bow on top flutters with it
+  g.userData.use=(t,p)=>{if(p<0){fr.rotation.set(0,0,0);return}const e=EU(t,p),u=t%3;fr.rotation.z=e*.07*Math.exp(-u*1.6)*Math.sin(u*7+.5)};return g}
+ }})());}catch(e){console.warn("anim set petpal.js",e)}
 // ---- play.js
 try{Object.assign(BUILD,(()=>{
   const ball=(g,r,m,x,y,z,s)=>lathe(g,[[.0005,-r],[r*.5,-r*.87],[r*.87,-r*.5],[r,0],[r*.87,r*.5],[r*.5,r*.87],[.0005,r]],m,x,y,z,s||12);
@@ -71622,6 +72409,159 @@ try{Object.assign(BUILD,(()=>{
     g.userData.use=(t,p)=>{const k=p<0?0:env(p);pp.rotation.z=Math.sin(t*2)*.03*k;pp.rotation.x=-Math.max(0,Math.sin(t*2.6))*.08*k};
     return g}
   }})());}catch(e){console.warn("anim set play.js",e)}
+// ---- roadtrip.js
+try{Object.assign(BUILD,((P,K)=>({
+ // asleep under the moon: the pillows dent, the little moon plush topples onto them and the headboard moon and stars glow like
+ // a night light, the stars twinkling
+ crescentbed(c){if(c==='kit')return P.crescentbed(c);const g=P.crescentbed.call(this,c),C=g.children.slice(),pl=[C[32],C[33]].filter(Boolean),s0=pl.map(q=>q.scale.clone()),mc=C[34],m0=mc?[mc.rotation.x,mc.rotation.z,mc.position.y]:null,
+  mn=C[28]&&C[28].material,me=mn?mn.emissiveIntensity:0,st=[C[29],C[30],C[31]].filter(Boolean),t0=st.map(q=>q.scale.clone());
+  g.userData.use=(t,p)=>{if(t<0){pl.forEach((q,i)=>q.scale.copy(s0[i]));if(mc){mc.rotation.x=m0[0];mc.rotation.z=m0[1];mc.position.y=m0[2]}if(mn)mn.emissiveIntensity=me;st.forEach((q,i)=>q.scale.copy(t0[i]));return}
+   const d=K.ein(t,3);pl.forEach((q,i)=>q.scale.set(s0[i].x*(1+.06*d),s0[i].y*(1-.22*d),s0[i].z));
+   if(mc){const tp=K.ein(t-.5,4);mc.rotation.z=m0[1]+1.1*tp;mc.rotation.x=m0[0]-.25*tp;mc.position.y=m0[2]-.03*tp}
+   if(mn)mn.emissiveIntensity=me+K.ein(t,1)*(.5+.1*Math.sin(t*1.2));st.forEach((q,i)=>{const w=1+.18*K.ein(t,1)*Math.max(0,Math.sin(t*2.2+i*2.1))**3;q.scale.set(t0[i].x*w,t0[i].y*w,t0[i].z)})};return g},
+ // asleep: the pillows on both beds dent and the nightstand lamp dims down low, coming back up after
+ twinbeds(c){const g=P.twinbeds.call(this,c),C=g.children.slice(),pl=[C[13],C[27]].filter(Boolean),s0=pl.map(q=>q.scale.clone()),sh=C[36];
+  if(sh)sh.material=M(0xFFF3C0,{emissive:0xFFE2A0,emissiveIntensity:.9,roughness:.4});
+  g.userData.use=(t,p)=>{if(t<0){pl.forEach((q,i)=>q.scale.copy(s0[i]));if(sh)sh.material.emissiveIntensity=.9;return}const d=K.ein(t,3);
+   pl.forEach((q,i)=>q.scale.set(s0[i].x*(1+.05*d),s0[i].y*(1-.18*d),s0[i].z));if(sh)sh.material.emissiveIntensity=.9-.62*K.ein(t-.6,1.2)};return g},
+ // a button press: the keypad light blinks, the coil turns and a snack slides off the shelf and drops into the tray; a fresh one is
+ // back on the shelf after
+ vending(c){const g=P.vending.call(this,c),C=g.children.slice(),a0=g.userData.anim,cl=K.rp(g,K.piv(g,-.17,.89,0),o=>o===C[19]),sn=C[20],s0=sn?sn.position.clone():null,lt=C[63],In=C[6]&&C[6].material;
+  if(lt)lt.material=M(0x6FFFB0,{emissive:0x6FFFB0,emissiveIntensity:.6,roughness:.4});let on=0,fl=0;
+  g.userData.use=(t,p)=>{on=t<0?0:1;if(t<0){cl.rotation.z=0;if(sn){sn.position.copy(s0);sn.visible=true;sn.rotation.set(0,0,0)}if(lt)lt.material.emissiveIntensity=.6;fl=0;return}
+   const tn=K.ss(.12,.42,p);cl.rotation.z=-tn*Math.PI*2;if(lt)lt.material.emissiveIntensity=p<.12?.6+.8*(Math.sin(t*24)>0?1:0):.6;fl=p<.12?1:0;
+   if(sn){const fw=K.ss(.12,.42,p),dp=K.ss(.42,.6,p);sn.position.set(s0.x,s0.y-.6*dp*dp,s0.z+.035*fw);sn.rotation.x=dp*1.2;sn.visible=p<.66||p>.94;if(p>.94){sn.position.copy(s0);sn.rotation.x=0}}};
+  g.userData.anim=t=>{a0&&a0(t);if(In&&on)In.emissiveIntensity+=.12*fl+.04*Math.sin(t*9)};return g},
+ // sat in: the float squishes down and bobs as if on the water, and the drink in the cup holder sloshes
+ floatchair(c){const g=P.floatchair.call(this,c),C=g.children.slice(),dk=K.rp(g,K.piv(g,.34,.46,.14),o=>[9,10,11,12].includes(C.indexOf(o))),bb=K.rp(g,K.piv(g,0,0,0),o=>true);
+  g.userData.use=(t,p)=>{if(t<0){bb.scale.set(1,1,1);bb.position.y=0;bb.rotation.set(0,0,0);dk.rotation.set(0,0,0);return}const d=K.ein(t,4),w=Math.sin(t*1.6);
+   bb.scale.set(1+.04*d,1-.1*d+.015*w*d,1+.04*d);bb.rotation.z=.025*Math.sin(t*1.1)*d;bb.rotation.x=.02*Math.sin(t*1.3+1)*d;dk.rotation.z=Math.sin(t*3.2)*.08*d;dk.rotation.x=Math.cos(t*2.7)*.06*d};return g},
+ // booped: the three shades spin round the pole like an atom, the bulbs flare and the orbit rings on top turn, then everything
+ // drifts back into place
+ boomlamp(c){const g=P.boomlamp.call(this,c),C=g.children.slice(),ar=[C[10],C[11],C[12]].filter(Boolean),y0=ar.map(o=>o.rotation.y),at=K.rp(g,K.piv(g,0,1.64,0),o=>C.indexOf(o)>=13),gw=[];
+  ar.forEach(o=>o.traverse(q=>{if(q.isMesh&&q.material.emissiveIntensity>1&&!gw.includes(q.material))gw.push(q.material)}));
+  g.userData.use=(t,p)=>{if(t<0){ar.forEach((o,i)=>o.rotation.y=y0[i]);at.rotation.set(0,0,0);gw.forEach(m=>m.emissiveIntensity=1.1);return}const k=K.ss(0,.08,p),e=K.ss(.7,1,p),sp=k*(1-e);
+   ar.forEach((o,i)=>o.rotation.y=y0[i]+(i%2?-1:1)*Math.PI*2*K.ss(.05,.7,p)*(i===2?2:1)+Math.sin(t*3+i)*.05*sp);at.rotation.y=t*2*sp;at.rotation.x=Math.sin(t*1.5)*.2*sp;gw.forEach(m=>m.emissiveIntensity=1.1+.8*sp*(.7+.3*Math.sin(t*6)))};return g},
+ // rummaging: the top case hops and shuffles round with its luggage tag flapping, the middle one scoots
+ suitcase(c){const g=P.suitcase.call(this,c),C=g.children.slice(),tc=C[2],mc=C[1],tg=C[3],T=tc?{y:tc.position.y,r:tc.rotation.y}:null,My=mc?mc.rotation.y:0;
+  if(tc&&tg){const dx=tg.position.x-tc.position.x,dy=tg.position.y-tc.position.y,dz=tg.position.z-tc.position.z,cs=Math.cos(-tc.rotation.y),sn=Math.sin(-tc.rotation.y);g.remove(tg);tg.position.set(dx*cs+dz*sn,dy,-dx*sn+dz*cs);tg.rotation.y=0;tc.add(tg)}
+  const tz=tg?tg.rotation.z:0;
+  g.userData.use=(t,p)=>{if(t<0){if(tc){tc.position.y=T.y;tc.rotation.y=T.r;tc.rotation.z=0}if(mc){mc.rotation.y=My;mc.position.x=0}if(tg)tg.rotation.set(0,0,tz);return}const k=K.ss(0,.06,p)*(1-K.ss(.88,1,p));
+   const h=(t%1.6)<.5?Math.sin((t%1.6)/.5*Math.PI):0;if(tc){tc.position.y=T.y+.04*h*k;tc.rotation.y=T.r+Math.sin(t*2.1)*.15*k;tc.rotation.z=Math.sin(t*4)*.03*h*k}
+   if(mc){mc.rotation.y=My+Math.sin(t*1.7+1)*.06*k;mc.position.x=Math.sin(t*1.7)*.015*k}if(tg){tg.rotation.x=Math.sin(t*7)*.35*k;tg.rotation.z=tz+Math.sin(t*5)*.2*k}};return g},
+ // eating: the kibble goes down a mouthful at a time and the hubcap's spokes turn slowly under the bowl
+ hubcapbowl(c){const g=P.hubcapbowl.call(this,c),C=g.children.slice(),hb=K.rp(g,K.piv(g,0,0,0),o=>{const i=C.indexOf(o);return i>=2&&i<=21}),kb=[0,1,2,3].map(j=>K.rp(g,K.piv(g,0,0,0),o=>{const i=C.indexOf(o);return i>=24&&i<38&&(i-24)%4===j}));
+  g.userData.use=(t,p)=>{if(t<0){hb.rotation.y=0;kb.forEach(o=>{o.visible=true;o.position.y=0});return}hb.rotation.y=-t*.6;
+   kb.forEach((o,i)=>{o.visible=p<.25+i*.22;o.position.y=Math.max(0,Math.sin(t*14+i*1.7))*.008})};return g},
+ // looked at: the neon steadies and the bulbs along the bottom chase left to right
+ vacancysign(c){const g=P.vacancysign.call(this,c),C=g.children.slice(),a0=g.userData.anim,dt=C.slice(14,21).filter(Boolean),d0=dt.map(o=>o.scale.x),N=C[4]&&C[4].material;let on=0;
+  g.userData.use=(t,p)=>{on=t<0?0:1;dt.forEach((o,i)=>{if(t<0){o.scale.setScalar(d0[i]);return}const k=Math.max(0,Math.cos(((t*4-i)%7+7)%7/7*Math.PI*2))**4;o.scale.setScalar(d0[i]*(1+.6*k))})};
+  g.userData.anim=t=>{a0&&a0(t);if(on&&N)N.emissiveIntensity=.9+.15*Math.sin(t*3)};return g},
+ // looked at: the room keys swing and jingle on their hooks
+ keyrack(c){const g=P.keyrack.call(this,c),ks=g.children.filter(o=>!o.isMesh),z0=ks.map(o=>o.rotation.z);
+  g.userData.use=(t,p)=>{ks.forEach((o,i)=>{if(t<0){o.rotation.z=z0[i];o.rotation.x=0;return}const k=K.ss(0,.06,p)*(1-K.ss(.85,1,p)),dm=Math.exp(-(t%2.2)*1.5);o.rotation.z=z0[i]+Math.sin(t*6+i*1.3)*.3*dm*k;o.rotation.x=-Math.abs(Math.sin(t*5+i))*.12*dm*k})};return g}
+}))(Object.assign({},BUILD),{
+ piv(par,x,y,z){const p=new THREE.Group();p.position.set(x,y,z);par.add(p);return p},
+ rp(par,pv,f){par.children.filter(o=>o!==pv&&f(o)).forEach(o=>{o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)});return pv},
+ ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)},
+ ein(t,k){return 1-Math.exp(-Math.max(0,t)*k)}}));}catch(e){console.warn("anim set roadtrip.js",e)}
+// ---- sea.js
+try{Object.assign(BUILD,((P,K)=>({
+ // the sling, its ropes and tassels sway gently from the hooks while the pet lies in it
+ hammock(c){const g=P.hammock.call(this,c);const sl=g.children.find(o=>o.isMesh&&o.position.y===0&&o.material.side===2&&o.material.map),sw=piv(g,0,1.24,0);
+  K.rp(g,sw,o=>o!==sw&&o.isMesh&&((o.position.y>.3&&o.position.y<1.2)||o===sl));
+  g.userData.use=(t,p)=>{if(p<0){sw.rotation.set(0,0,0);return}const k=K.ss(0,1.2,t);sw.rotation.z=Math.sin(t*2.2)*.05*k};return g},
+ // the sun hat hops and spins round on the towel and the sunglasses jiggle as the pet wiggles about
+ beachtowel(c){const g=P.beachtowel.call(this,c);const hat=K.find(g,.22,.02,.35,true),sg=K.find(g,-.28,.03,.45,true);
+  g.userData.use=(t,p)=>{if(p<0){if(hat){hat.position.y=.02;hat.rotation.set(.08,.4,.05)}if(sg){sg.position.y=.03;sg.rotation.set(0,-.3,0)}return}const k=K.ss(0,.08,p)*(1-K.ss(.88,1,p));
+   const h=Math.max(0,Math.sin(t*4.5));if(hat){hat.position.y=.02+h*.06*k;hat.rotation.y=.4+Math.sin(t*1.7)*.5*k;hat.rotation.x=.08+h*.15*k}if(sg){sg.position.y=.03+Math.max(0,Math.sin(t*4.5+1.6))*.025*k;sg.rotation.z=Math.sin(t*9)*.08*k}};return g},
+ // the crown of fronds sways and bobs as if a sea breeze came through
+ palm(c){const g=P.palm.call(this,c);const fr=g.children.filter(o=>!o.isMesh&&o.position.y>1.5);let cr=null;
+  if(fr.length){const f0=fr[0];cr=piv(g,f0.position.x,f0.position.y,0);fr.forEach(o=>K.mv(o,cr))}
+  g.userData.use=(t,p)=>{if(!cr)return;if(p<0){cr.rotation.set(0,0,0);cr.scale.set(1,1,1);return}const k=K.ss(0,.1,p)*(1-K.ss(.85,1,p));cr.rotation.z=Math.sin(t*2.4)*.07*k;cr.rotation.x=Math.cos(t*1.9)*.05*k;cr.rotation.y=Math.sin(t*1.3)*.08*k;cr.scale.y=1-Math.abs(Math.sin(t*2.4))*.06*k};return g},
+ // the surfboards knock and wobble against the rack, one after another
+ surfrack(c){const g=P.surfrack.call(this,c);const bs=g.children.filter(o=>!o.isMesh&&Math.abs(o.position.y-.95)<.005).map((o,i)=>({o,z:o.rotation.z,i}));
+  g.userData.use=(t,p)=>{bs.forEach(q=>{if(p<0){q.o.rotation.z=q.z;q.o.rotation.y=0;return}const k=K.ss(0,.1,p)*(1-K.ss(.85,1,p)),e=Math.exp(-(((t-q.i*.35)%2.2+2.2)%2.2)*2.5);q.o.rotation.z=q.z+Math.sin(t*11+q.i)*.05*e*k;q.o.rotation.y=Math.sin(t*9+q.i)*.04*e*k})};return g},
+ // the scallop shell opens wider and the pearl brightens when booped
+ shelllamp(c){const g=P.shelllamp.call(this,c);const fan=g.children.find(o=>o.isMesh&&K.at(o,0,.13,.04)),pr=g.children.find(o=>o.isMesh&&K.at(o,0,.2,.12));if(pr)pr.material=M(0xFFF6EE,{roughness:.1,emissive:0xFFE6C0,emissiveIntensity:1.2});const PS=pr?pr.scale.clone():null;
+  g.userData.use=(t,p)=>{if(p<0){if(fan)fan.rotation.x=-.18;if(pr){pr.material.emissiveIntensity=1.2;pr.scale.copy(PS)}return}const k=K.ss(0,.1,p)*(1-K.ss(.85,1,p));
+   if(fan)fan.rotation.x=-.18+(.12+.04*Math.sin(t*3))*k;if(pr){pr.material.emissiveIntensity=1.2+.8*k*(.6+.4*Math.sin(t*4));pr.scale.copy(PS).multiplyScalar(1+.08*k*Math.sin(t*4))}};return g},
+ // the bottle rolls back and forth on the planks and the jar candle flickers
+ driftable(c){const g=P.driftable.call(this,c);const bt=K.find(g,.28,.61,.04,true),fl=g.children.find(o=>o.isMesh&&K.at(o,-.32,.65,-.08)),fs=fl?fl.scale.clone():null;
+  g.userData.use=(t,p)=>{if(p<0){if(bt){bt.position.set(.28,.61,.04);bt.rotation.set(0,.3,Math.PI/2-.05)}if(fl)fl.scale.copy(fs);return}const k=K.ss(0,.1,p)*(1-K.ss(.85,1,p)),r=Math.sin(t*2.2);
+   if(bt){bt.position.z=.04+r*.05*k;bt.rotation.x=r*.6*k}if(fl){const f=1+(.25*Math.sin(t*17)+.15*Math.sin(t*29))*k;fl.scale.set(fs.x*(2-f),fs.y*f*1.2,fs.z*(2-f))}};return g},
+ // the striped sling sags under the pet and the pillow tips back
+ deckchair(c){const g=P.deckchair.call(this,c);const sl=g.children.find(o=>o.isMesh&&o.position.y===0&&o.material.side===2&&o.material.map),pl=g.children.find(o=>o.isMesh&&K.at(o,0,.79,-.36));
+  g.userData.use=(t,p)=>{if(p<0){if(sl)sl.position.y=0;if(pl){pl.rotation.x=-.55;pl.position.set(0,.79,-.36)}return}const k=K.ss(0,.5,t),b=Math.sin(t*1.4);
+   if(sl)sl.position.y=-.025*k+.004*b*k;if(pl){pl.rotation.x=-.55-.2*k;pl.position.z=-.36-.02*k;pl.position.y=.79-.015*k}};return g},
+ // the life ring swings on its peg
+ lifebuoy(c){const g=P.lifebuoy.call(this,c);const pv=piv(g,0,.62,.06);K.rp(g,pv,o=>o!==pv&&!K.at(o,0,.62,.06));
+  g.userData.use=(t,p)=>{if(p<0){pv.rotation.z=0;return}const k=K.ss(0,.1,p)*(1-K.ss(.85,1,p));pv.rotation.z=Math.sin(t*2.6)*.09*k};return g},
+ // the flag flutters on the keep and the bucket wobbles on the sand when patted
+ sandcastle(c){const g=P.sandcastle.call(this,c);const fl=g.children.find(o=>o.isMesh&&K.at(o,.004,.6,-.14)),bk=K.find(g,.42,0,.3,true);let fp=null;
+  if(fl){fp=piv(g,0,.6,-.14);K.mv(fl,fp)}
+  g.userData.use=(t,p)=>{if(p<0){if(fp)fp.rotation.set(0,0,0);if(bk)bk.rotation.set(0,0,0);return}const k=K.ss(0,.08,p)*(1-K.ss(.88,1,p));
+   if(fp){fp.rotation.y=Math.sin(t*7)*.35*k;fp.rotation.z=Math.sin(t*11)*.05*k}if(bk){const w=Math.exp(-((t%1.4)*3));bk.rotation.z=Math.sin(t*14)*.12*w*k;bk.rotation.x=Math.cos(t*12)*.08*w*k}};return g},
+ // the shell lid opens and closes a little with the pet's sleepy breathing
+ clambed(c){const g=P.clambed.call(this,c);const lid=K.find(g,0,.21,-.52,true),cu=g.children.find(o=>o.isMesh&&K.at(o,0,.17,.02));
+  g.userData.use=(t,p)=>{if(p<0){if(lid)lid.rotation.x=-1.1;if(cu)cu.scale.set(1,1,1);return}const k=K.ss(0,1,t),b=Math.sin(t*1.5);if(lid)lid.rotation.x=-1.1+(.1+.08*b)*k;if(cu)cu.scale.set(1,1,1-.3*k+.06*b*k)};return g}
+}))(Object.assign({},BUILD),{
+ rp(par,pv,f){par.children.filter(o=>o!==pv&&f(o)).forEach(o=>{o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)})},
+ mv(o,pv){if(o.parent)o.parent.remove(o);o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)},
+ at(o,x,y,z,e){e=e||.004;return Math.abs(o.position.x-x)<e&&Math.abs(o.position.y-y)<e&&Math.abs(o.position.z-z)<e},
+ find(par,x,y,z,grp){return par.children.find(o=>(grp==null||!o.isMesh===grp)&&this.at(o,x,y,z))},
+ ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)}}));}catch(e){console.warn("anim set sea.js",e)}
+// ---- snow.js
+try{Object.assign(BUILD,((P,K)=>({
+ // the fire roars up taller while the pet warms itself and the stockings sway in the warm air
+ fireplace(c){const g=P.fireplace.call(this,c);const fl=g.children.filter(o=>o.isMesh&&o.userData.s),st=g.children.filter(o=>!o.isMesh&&Math.abs(Math.abs(o.position.x)-.38)<.005&&Math.abs(o.position.y-1.32)<.005).map(o=>({o,r:o.rotation.z}));let w=0,on=0,lt=0;
+  g.userData.use=(t,p)=>{on=p<0?0:1;if(p<0)st.forEach(q=>q.o.rotation.z=q.r)};
+  g.userData.anim=t=>{const d=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,d*2);
+   fl.forEach((f,i)=>{const k=1+Math.sin(t*(9+4*w)+i*2)*.15+Math.sin(t*23+i)*.08,s=f.userData.s*(1+.35*w);f.scale.set(s*(2-k),s*k*(1.1+.25*w),s*.6);f.rotation.z=Math.sin(t*5+i)*.08*(1+w)});
+   st.forEach((q,i)=>{q.o.rotation.z=q.r+Math.sin(t*1.7+i*1.3)*.07*w})};return g},
+ // the pillows dent under the heads and puff back, and the folded throw ruffles
+ bunkbed(c){const g=P.bunkbed.call(this,c);const pl=g.children.filter(o=>o.isMesh&&Math.abs(o.position.z+.74)<.005&&(Math.abs(o.position.y-.64)<.005||Math.abs(o.position.y-1.54)<.005)).map(o=>({o,s:o.scale.clone()}));
+  const th=g.children.find(o=>o.isMesh&&K.at(o,0,.635,.72)),ts=th?th.scale.clone():null;
+  g.userData.use=(t,p)=>{if(p<0){pl.forEach(q=>q.o.scale.copy(q.s));if(th){th.scale.copy(ts);th.rotation.set(0,0,0)}return}const k=K.ss(0,.8,t),b=Math.sin(t*1.5);
+   pl.forEach((q,i)=>{const d=(i?.12:.3)*k;q.o.scale.set(q.s.x*(1+d*.2),q.s.y*(1+d*.2),q.s.z*(1-d+.04*b*k))});if(th){th.scale.set(ts.x,ts.y*(1+.25*k+.08*b*k),ts.z);th.rotation.y=Math.sin(t*.6)*.04*k}};return g},
+ // the fur fluffs up round the pet's wiggles, tufts lifting and settling
+ furrug(c){const g=P.furrug.call(this,c);const tf=piv(g,0,.04,0);K.rp(g,tf,o=>o!==tf&&o.isMesh&&Math.abs(o.position.y-.04)<.002);const m2=g.children.find(o=>o.isMesh&&K.at(o,0,.05,0));
+  g.userData.use=(t,p)=>{if(p<0){tf.scale.set(1,1,1);if(m2)m2.scale.set(1,1,1);return}const k=K.ss(0,.08,p)*(1-K.ss(.88,1,p)),b=Math.abs(Math.sin(t*3));
+   tf.scale.set(1+.02*b*k,1+.8*b*k,1+.02*b*k);if(m2)m2.scale.set(1+.02*b*k,1+.02*b*k,1+1.2*b*k)};return g},
+ // the sled rocks on its runners and scoots a touch when patted
+ sled(c){const g=P.sled.call(this,c);const rk=piv(g,0,0,0);K.rp(g,rk,o=>o!==rk);
+  g.userData.use=(t,p)=>{if(p<0){rk.rotation.set(0,0,0);rk.position.set(0,0,0);return}const k=K.ss(0,.08,p)*(1-K.ss(.85,1,p));rk.rotation.x=Math.sin(t*4)*.035*k;rk.position.z=Math.sin(t*4-.6)*.03*k};return g},
+ // the tree gives a happy shiver from the pot up and the star on top turns
+ snowpine(c){const g=P.snowpine.call(this,c);const tr=piv(g,0,.3,0);K.rp(g,tr,o=>o!==tr&&o.position.y>.33);
+  const star=tr.children.find(o=>o.position.y>1.5&&o.position.y<1.6);
+  g.userData.use=(t,p)=>{if(p<0){tr.rotation.set(0,0,0);if(star)star.rotation.y=0;return}const k=K.ss(0,.06,p)*(1-K.ss(.85,1,p)),sh=Math.exp(-((t%2.4)*2.5));
+   tr.rotation.z=Math.sin(t*16)*.035*sh*k+Math.sin(t*1.3)*.01*k;tr.rotation.x=Math.cos(t*13)*.025*sh*k;if(star)star.rotation.y=t*1.6*k};return g},
+ // a mug of cocoa lifts for a sip and a cookie goes missing (there's another on the plate after)
+ cocoatable(c){const g=P.cocoatable.call(this,c);const mg=g.children.find(o=>!o.isMesh&&K.at(o,.1,.612,.04)),ck=g.children.filter(o=>o.isMesh&&o.position.y>.62&&o.position.y<.66&&o.position.z<-.1).sort((a,b)=>b.position.y-a.position.y)[0];
+  g.userData.use=(t,p)=>{if(p<0){if(mg){mg.position.set(.1,.612,.04);mg.rotation.set(0,0,0)}if(ck)ck.visible=true;return}const l=K.ss(.12,.22,p)*(1-K.ss(.55,.65,p));
+   if(mg){mg.position.y=.612+l*.14;mg.position.z=.04+l*.08;mg.rotation.x=l*.45;mg.rotation.z=Math.sin(t*3)*.03*l}if(ck)ck.visible=!(p>.7&&p<.97)};return g},
+ // the seat cushion sinks, the back pillow leans and the little round pillow tips over and pops back
+ logchair(c){const g=P.logchair.call(this,c);const st=g.children.find(o=>o.isMesh&&K.at(o,0,.44,.04)),bk=g.children.find(o=>o.isMesh&&K.at(o,0,.78,-.24)),cu=g.children.find(o=>o.isMesh&&K.at(o,.13,.62,-.13));
+  const S=st?st.scale.clone():null;
+  g.userData.use=(t,p)=>{if(p<0){if(st)st.scale.copy(S);if(bk){bk.rotation.x=-.16;bk.position.z=-.24}if(cu){cu.rotation.set(-.2,-.3,.1);cu.position.set(.13,.62,-.13)}return}const k=K.ss(0,.5,t),f=K.ss(.3,.9,t);
+   if(st)st.scale.set(S.x*(1+.04*k),S.y*(1+.04*k),S.z*(1-.35*k));if(bk){bk.rotation.x=-.16-.12*k;bk.position.z=-.24-.02*k}
+   if(cu){cu.rotation.z=.1-1.1*f+Math.sin(t*6)*.08*Math.exp(-t*1.5)*f;cu.position.x=.13+.12*f;cu.position.y=.62-.05*f}};return g},
+ // the candle flame flares and the lantern's ring rocks on top
+ snowlantern(c){const g=P.snowlantern.call(this,c);const fl=g.children.filter(o=>o.isMesh&&Math.abs(o.position.x)<.001&&Math.abs(o.position.z)<.001&&(Math.abs(o.position.y-.37)<.002||Math.abs(o.position.y-.43)<.002)).map(o=>({o,s:o.scale.clone()}));
+  const rg=g.children.find(o=>o.isMesh&&K.at(o,0,.97,0));
+  g.userData.use=(t,p)=>{if(p<0){fl.forEach(q=>q.o.scale.copy(q.s));if(rg)rg.rotation.set(0,0,0);return}const k=K.ss(0,.08,p)*(1-K.ss(.85,1,p)),f=1+(.25+.12*Math.sin(t*19)+.08*Math.sin(t*31))*k;
+   fl.forEach(q=>q.o.scale.set(q.s.x*(2-f)*1.0+q.s.x*.0,q.s.y*f*1.15,q.s.z*(2-f)));if(rg)rg.rotation.x=Math.sin(t*5)*.4*k};return g},
+ // the mittens swing on the line, each in its own rhythm
+ mittens(c){const g=P.mittens.call(this,c);const ms=g.children.filter(o=>!o.isMesh).map((o,i)=>({o,r:o.rotation.z,i}));
+  g.userData.use=(t,p)=>{ms.forEach(q=>{if(p<0){q.o.rotation.z=q.r;q.o.rotation.x=0;return}const k=K.ss(0,.1,p)*(1-K.ss(.85,1,p));q.o.rotation.z=q.r+Math.sin(t*2.6+q.i*1.4)*.14*k;q.o.rotation.x=-Math.abs(Math.sin(t*1.9+q.i))*.12*k})};return g},
+ // the cushion in the doorway rises and falls with the pet's sleepy breathing, and the igloo puffs a little with it
+ iglobed(c){const g=P.iglobed.call(this,c);const cu=g.children.find(o=>o.isMesh&&K.at(o,0,.06,.52)),dm=g.children.find(o=>o.isMesh&&K.at(o,0,0,0)&&o.geometry.parameters&&o.geometry.parameters.radius===.55);
+  g.userData.use=(t,p)=>{if(p<0){if(cu)cu.scale.set(1,1,1);if(dm)dm.scale.set(1,1,1);return}const k=K.ss(0,.8,t),b=Math.sin(t*1.5);if(cu)cu.scale.set(1,1,1-.3*k+.08*b*k);if(dm)dm.scale.set(1+.012*b*k,1+.02*b*k,1+.012*b*k)};return g}
+}))(Object.assign({},BUILD),{
+ rp(par,pv,f){par.children.filter(o=>o!==pv&&f(o)).forEach(o=>{o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)})},
+ at(o,x,y,z,e){e=e||.004;return Math.abs(o.position.x-x)<e&&Math.abs(o.position.y-y)<e&&Math.abs(o.position.z-z)<e},
+ find(par,x,y,z,grp){return par.children.find(o=>(grp==null||!o.isMesh===grp)&&this.at(o,x,y,z))},
+ ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)}}));}catch(e){console.warn("anim set snow.js",e)}
 // ---- space.js
 try{Object.assign(BUILD,(()=>{
   // ---- Space set, animated (per-piece reactions). Builders copied from the set refine with the moving parts in pivots.
@@ -71983,6 +72923,432 @@ try{Object.assign(BUILD,(()=>{
     g.userData.use=(t,p)=>{if(p<0){GL.visible=false;return}const ph=(t*.45)%1,w=Math.sin(Math.min(1,ph/.6)*Math.PI);GL.visible=ph<.6;GL.position.set(-.3+ph/.6*.6,.42-ph/.6*.84,.04);GL.scale.set(.5*w+.01,3*w+.01,.2)};
     return g}
   }})());}catch(e){console.warn("anim set space.js",e)}
+// ---- spooky.js
+try{Object.assign(BUILD,(()=>{
+ // Spooky Cute: moving parts. Each builder runs the set's own model, then gathers the parts that move into pivots
+ // (placed at their hinge) so the model, footprint and perch spots stay exactly the same.
+ const O={};['pumpkinlamp','ghostplush','cauldron','batgarland','coffinshelf','cauldronbowl','webrug','moonwindow','broom','witchbed'].forEach(k=>O[k]=BUILD[k]);
+ const rp=(par,list,x,y,z)=>{const p=new THREE.Group();p.position.set(x,y,z);list.filter(Boolean).forEach(q=>{par.remove(q);q.position.x-=x;q.position.y-=y;q.position.z-=z;p.add(q)});par.add(p);return p};
+ const ss=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)};
+ const ein=(t,k)=>t<0?0:1-Math.exp(-t*k);
+ const EU=(t,p)=>p<0?0:Math.min(1,t*2)*(1-ss(.9,1,p));
+ const boost=k=>{const B={off:0,last:0,e:0};B.use=(t,p)=>{if(p<0){B.last=0;B.e=0;return}const d=t>=B.last?t-B.last:0;B.last=t;B.e=EU(t,p);B.off+=d*k*B.e};return B};
+ const glowOf=(g,f)=>g.children.find(o=>o.isMesh&&o.material.emissive&&o.material.emissiveIntensity>=1.4&&f(o));
+ return{
+ pumpkinlamp(c){const g=O.pumpkinlamp(c),C=g.children.slice(),eyes=[C[1],C[2]],Gw=C[3]&&C[3].material,ig=C[8]&&C[8].material;
+  const all=rp(g,C,0,0,0);
+  // booped: the pumpkin gives a squashy hop, blinks its carved eyes and its glow flickers up like a candle caught by a draught
+  g.userData.use=(t,p)=>{if(p<0){all.scale.set(1,1,1);all.position.y=0;all.rotation.z=0;eyes.forEach(o=>o&&o.scale.set(1,1,1));if(Gw)Gw.emissiveIntensity=1.5;if(ig)ig.emissiveIntensity=1.5;return}
+   const e=EU(t,p),u=t%2.2,h=u<.5?Math.sin(u/.5*Math.PI):0,sq=u<.12?u/.12:u<.5?1-(u-.12)/.38:0;all.position.y=e*h*.06;all.rotation.z=e*.05*Math.sin(t*3.2);all.scale.set(1+.05*e*(sq-h*.5),1-.07*e*(sq-h*.6),1+.05*e*(sq-h*.5));
+   const bl=((t+.7)%2.2)<.14?.15:1;eyes.forEach(o=>o&&o.scale.set(1,1-(1-bl)*e,1));const f=e*(.5+.25*Math.sin(t*17)+.15*Math.sin(t*7.3));if(Gw)Gw.emissiveIntensity=1.5+f;if(ig)ig.emissiveIntensity=1.5+f};return g},
+ ghostplush(c){const g=O.ghostplush(c),b=g.children[0];let wv=null,ck=null;if(b){wv=b.children.find(o=>!o.isMesh&&Math.abs(o.position.x-.33)<.01);b.children.forEach(o=>{if(o.isMesh&&Math.abs(Math.abs(o.position.x)-.19)<.01&&Math.abs(o.position.y-.55)<.01)ck=o.material})}
+  const ck0=ck&&ck.emissive?ck.emissive.clone():null;let on=0;
+  // patted: the ghost squishes down happily, blushes pink, floats a little higher and waves faster
+  g.userData.use=(t,p)=>{on=p<0?0:EU(t,p);if(ck&&ck0){if(on>0)ck.emissive.setRGB(1,.35,.6);else ck.emissive.copy(ck0);ck.emissiveIntensity=on*(.35+.15*Math.sin(t*3))}};
+  g.userData.anim=t=>{if(!b)return;const pat=on*Math.max(0,Math.sin(t*5));b.position.y=.06+Math.sin(t*1.8)*.05+on*.05;b.rotation.z=Math.sin(t*1.3)*.05;b.scale.set(1+.06*pat,1-.08*pat,1+.06*pat);if(wv)wv.rotation.z=-.7+Math.sin(t*(4+4*on))*(.25+.2*on)};return g},
+ cauldron(c){const g=O.cauldron(c),A=g.userData.anim,B=boost(1.8),C=g.children.slice();const pd=C.find(o=>!o.isMesh&&Math.abs(o.position.x-.12)<.01&&Math.abs(o.position.y-.62)<.01);
+  const st=pd?rp(g,[pd],0,.62,0):null;let br=null;g.children.forEach(o=>{if(o.isMesh&&o.geometry&&o.geometry.type==='CircleGeometry')br=o.material});const b0=br?br.emissiveIntensity:.8;
+  // stirring: the paddle goes round the pot, the brew glows brighter and bubbles faster, the little fire flares up
+  g.userData.use=(t,p)=>{B.use(t,p);if(p<0){if(st)st.rotation.set(0,0,0);if(br)br.emissiveIntensity=b0;return}if(st){st.rotation.y=B.e*t*2.4;st.rotation.x=B.e*.05*Math.sin(t*4.8)}if(br)br.emissiveIntensity=b0+B.e*(.5+.2*Math.sin(t*5))};
+  if(A)g.userData.anim=t=>A(t+B.off);return g},
+ batgarland(c){const g=O.batgarland(c),A=g.userData.anim,B=boost(2.5);
+  // gazed at: the paper bats flap faster on their threads, as if about to fly off
+  g.userData.use=(t,p)=>{B.use(t,p)};if(A)g.userData.anim=t=>A(t+B.off);return g},
+ coffinshelf(c){const g=O.coffinshelf(c),bk=g.children.filter(o=>!o.isMesh&&Math.abs(o.position.y-1.015)<.005),pick=[bk[1],bk[3]].filter(Boolean),p0=pick.map(o=>[o.position.z,o.rotation.x,o.rotation.z]);
+  const fl=glowOf(g,o=>Math.abs(o.position.x-.12)<.01),fm=fl?fl.material:null;
+  // a rummage: a couple of books slide out of the middle shelf to be looked at and go back, and the candle flame flickers
+  g.userData.use=(t,p)=>{pick.forEach((o,i)=>{if(p<0){o.position.z=p0[i][0];o.rotation.x=p0[i][1];o.rotation.z=p0[i][2];return}const k=ss(.1+i*.25,.2+i*.25,p)*(1-ss(.4+i*.25,.5+i*.25,p));o.position.z=p0[i][0]+k*.13;o.rotation.x=p0[i][1]+k*.25;o.rotation.z=p0[i][2]+k*.05*Math.sin(t*3)});
+   if(fl){if(p<0){fl.scale.set(1,1,1);if(fm)fm.emissiveIntensity=1.5;return}const e=EU(t,p);fl.scale.set(1,1+e*(.2*Math.sin(t*13)+.1*Math.sin(t*7)),1);if(fm)fm.emissiveIntensity=1.5+e*.4*Math.sin(t*11)}};return g},
+ cauldronbowl(c){const g=O.cauldronbowl(c),cd=g.children.filter(o=>!o.isMesh&&o.position.y>.29),hp=rp(g,cd,0,.3,0);
+  // a nibble: the candy heap jiggles with every bite and sinks a little as it goes down (it's full again after)
+  g.userData.use=(t,p)=>{if(p<0){hp.position.y=.3;hp.scale.set(1,1,1);hp.rotation.set(0,0,0);return}const e=EU(t,p),j=Math.max(0,Math.sin(t*8));hp.position.y=.3-.03*ss(.1,.85,p)+.006*j*e;hp.scale.set(1,1-.15*ss(.1,.85,p)*e,1);hp.rotation.y=.08*e*Math.sin(t*3)};return g},
+ webrug(c){const g=O.webrug(c),s=g.children.find(o=>!o.isMesh&&Math.abs(o.position.x-.42)<.01);
+  // a wiggle on the web: the little spider scurries round in a circle and comes back to its spot
+  g.userData.use=(t,p)=>{if(!s)return;if(p<0){s.position.set(.42,.05,-.3);s.rotation.set(0,0,0);return}const e=EU(t,p),a=t*1.4;
+   s.position.set(.42+e*(Math.cos(a)-1)*.18,.05+e*.008*Math.abs(Math.sin(t*16)),-.3+e*Math.sin(a)*.18);s.rotation.y=e*(-a);s.rotation.z=e*.05*Math.sin(t*16)};return g},
+ moonwindow(c){const g=O.moonwindow(c),C=g.children.slice(),sky=C[0]&&C[0].material,s0=sky?sky.emissiveIntensity:.2,fl=glowOf(g,o=>Math.abs(o.position.x-.26)<.01),fm=fl?fl.material:null;
+  // gazed at: the moonlit sky in the window brightens and dims and the candle on the sill flickers
+  g.userData.use=(t,p)=>{if(p<0){if(sky)sky.emissiveIntensity=s0;if(fl)fl.scale.set(1,1,1);if(fm)fm.emissiveIntensity=1.5;return}const e=EU(t,p);
+   if(sky)sky.emissiveIntensity=s0+e*(.25+.1*Math.sin(t*1.5));if(fl)fl.scale.set(1,1+e*(.22*Math.sin(t*13)+.1*Math.sin(t*6)),1);if(fm)fm.emissiveIntensity=1.5+e*.4*Math.sin(t*11)};return g},
+ broom(c){const g=O.broom(c),C=g.children.slice(),all=rp(g,C,0,0,0);
+  // booped: the broom wakes up, hops on its bristles and sways like it's thinking about taking off
+  g.userData.use=(t,p)=>{if(p<0){all.position.y=0;all.rotation.set(0,0,0);all.scale.set(1,1,1);return}const e=EU(t,p),u=t%1.8,h=u<.45?Math.sin(u/.45*Math.PI):0;
+   all.position.y=e*h*.05;all.rotation.z=e*.08*Math.sin(t*2.5);all.rotation.x=e*.05*Math.sin(t*1.9);all.scale.set(1,1-e*.04*(u>.45&&u<.6?1:0),1)};return g},
+ witchbed(c){const g=O.witchbed(c),C=g.children.slice(),cu=rp(g,[C[4]],0,.12,0),tip=rp(g,[C[5],C[6]],-.1,.22,-.36);
+  // a nap in the hat: the cushion dents and breathes, and the floppy tip of the hat nods slowly with the star charm swinging
+  g.userData.use=(t,p)=>{if(t<0){cu.scale.set(1,1,1);tip.rotation.set(0,0,0);return}const d=ein(t,2);cu.scale.set(1+.03*d,1-.4*d+.06*Math.sin(t*1.6)*d,1+.03*d);
+   tip.rotation.x=d*.06*Math.sin(t*.9);tip.rotation.z=d*.05*Math.sin(t*.7+1)};return g}
+ }})());}catch(e){console.warn("anim set spooky.js",e)}
+// ---- spring.js
+try{Object.assign(BUILD,((P,K)=>({
+ // the folded corner flutters, the plate rattles, a strawberry hops and the cup wobbles
+ picnicrug(c){const g=P.picnicrug.call(this,c);const pl=K.find(g,.35,.02,.3,true),fc=K.find(g,.9,.02,.75,true),f=fc&&fc.children.find(o=>o.isMesh);
+  let sb=null;if(pl){sb=piv(pl,.1176,.03,-.0483);K.rp(pl,sb,o=>Math.abs(o.position.x-.1176)<.004&&Math.abs(o.position.z+.0483)<.004)}
+  const cup=K.find(g,.05,0,-.42,false);let cp=null;if(cup){cp=piv(g,.05,0,-.42);K.rp(g,cp,o=>o===cup)}
+  g.userData.use=(t,p)=>{if(p<0){if(pl){pl.position.y=.02;pl.rotation.set(0,0,0)}if(sb){sb.position.y=.03;sb.rotation.set(0,0,0)}if(f)f.rotation.x=-Math.PI/2;if(cp)cp.rotation.set(0,0,0);return}
+   const k=K.env(p),h=Math.max(0,Math.sin(t*5));if(pl){pl.position.y=.02+Math.max(0,Math.sin(t*17))*.004*k;pl.rotation.y=Math.sin(t*3)*.04*k}
+   if(sb){sb.position.y=.03+h*h*.06*k;sb.rotation.y=t*3*k}if(f)f.rotation.x=-Math.PI/2-(.15+.15*Math.sin(t*4))*k;if(cp){cp.rotation.z=Math.sin(t*9)*.08*k;cp.rotation.x=Math.cos(t*7)*.06*k}};return g},
+ // the apple comes out for a bite and goes back, the baguette bobs, the cloth rustles and the juice sloshes
+ picnicbasket(c){const g=P.picnicbasket.call(this,c);const ap=piv(g,-.12,.42,.06);K.rp(g,ap,o=>Math.abs(o.position.x+.12)<.004&&Math.abs(o.position.z-.06)<.004&&o.position.y>.41);
+  const bg=K.find(g,.06,.45,-.06,false),cl=K.find(g,.12,.37,.02,false),bt=piv(g,.2,.3,-.06);K.rp(g,bt,o=>o!==bt&&Math.abs(o.position.x-.2)<.004&&Math.abs(o.position.z+.06)<.004);
+  g.userData.use=(t,p)=>{if(p<0){ap.position.set(-.12,.42,.06);ap.rotation.set(0,0,0);if(bg)bg.position.y=.45;if(cl)cl.rotation.x=0;bt.rotation.set(0,0,0);return}
+   const k=K.env(p),up=K.ss(.08,.25,p)*(1-K.ss(.75,.9,p));ap.position.y=.42+up*.16+Math.abs(Math.sin(t*6))*.015*up;ap.position.z=.06+up*.12;ap.rotation.y=Math.sin(t*2)*.6*up;ap.rotation.z=Math.sin(t*7)*.15*up;
+   if(bg)bg.position.y=.45+Math.max(0,Math.sin(t*4.5))*.02*k;if(cl)cl.rotation.x=Math.sin(t*3.1)*.05*k;bt.rotation.z=Math.sin(t*5)*.07*k;bt.rotation.x=Math.cos(t*4)*.05*k};return g},
+ // every blossom nods while the pet sniffs, as if a breeze went through the arch
+ flowerarch(c){const g=P.flowerarch.call(this,c);const bs=g.children.filter(o=>!o.isMesh&&o.children.length).filter((o,i)=>i%3===1).map((o,i)=>({o,r:[o.rotation.x,o.rotation.y,o.rotation.z],i}));
+  g.userData.use=(t,p)=>{bs.forEach(q=>{if(p<0){q.o.rotation.set(q.r[0],q.r[1],q.r[2]);return}const k=K.env(p);q.o.rotation.x=q.r[0]+Math.sin(t*2.6+q.i*.7)*.22*k;q.o.rotation.z=q.r[2]+Math.cos(t*2.1+q.i*1.3)*.2*k})};return g},
+ // the egg rocks in its twig nest after a boop, like it's about to hatch
+ egglamp(c){const g=P.egglamp.call(this,c);const eg=g.children.find(o=>o.isMesh&&K.at(o,0,.84,0));const pv=piv(g,0,.84,0);if(eg)K.rp(g,pv,o=>o===eg);
+  g.userData.use=(t,p)=>{if(p<0){pv.rotation.set(0,0,0);pv.position.y=.84;return}const k=K.env(p),b=Math.sin(t*5)*Math.max(0,Math.sin(t*1.3));pv.rotation.z=b*.08*k;pv.rotation.x=Math.cos(t*4.2)*.03*k;pv.position.y=.84+Math.max(0,Math.sin(t*10))*.006*k*Math.abs(b)};return g},
+ // the bunny's ears twitch and one flops while the pet sits, and the carrot pillow rolls over
+ bunnychair(c){const g=P.bunnychair.call(this,c);const es=g.children.filter(o=>!o.isMesh&&Math.abs(o.position.y-.9)<.004).map(o=>({o,r:o.rotation.z,s:Math.sign(o.position.x)})),cp=K.find(g,.18,.5,.05,true);
+  g.userData.use=(t,p)=>{if(p<0){es.forEach(e=>{e.o.rotation.set(0,0,e.r)});if(cp){cp.rotation.set(.3,0,-1.1);cp.position.x=.18}return}const k=K.env(p);
+   es.forEach((e,i)=>{const tw=Math.max(0,Math.sin(t*3+i*2))**6;e.o.rotation.x=-tw*.25*k-(i?.0:.35*K.ss(.1,.3,p));e.o.rotation.z=e.r-e.s*(i?tw*.15:.55*K.ss(.1,.3,p))*k});
+   if(cp){const r=K.ss(.05,.2,p);cp.position.x=.18+r*.03;cp.rotation.x=.3+r*.5+Math.sin(t*2)*.05*k}};return g},
+ // the tulips sway and the watering can lifts and pours
+ tulips(c){const g=P.tulips.call(this,c);const wc=K.find(g,-.36,.27,.1,true),st0=g.children.filter(o=>!o.isMesh&&o!==wc&&Math.abs(o.position.y-.27)<.004),st=[[0,3],[3,7],[7,10]].map(([a,b],i)=>{const sl=st0.slice(a,b),cx=sl.reduce((s,o)=>s+o.position.x,0)/(sl.length||1),pv=piv(g,cx,.27,0);K.rp(g,pv,o=>sl.includes(o));return{o:pv,r:0,i}});
+  const Dm=M(0x8FD8FF,{roughness:.1,transparent:true,opacity:.8}),dg=piv(g,-.25,.37,.1),dr=[0,1,2].map(()=>{const m=nosh(sp(dg,.012,Dm,0,0,0));ol(m,0);m.visible=false;return m});
+  g.userData.use=(t,p)=>{if(p<0){st.forEach(q=>q.o.rotation.set(0,q.o.rotation.y,q.r));if(wc){wc.position.set(-.36,.27,.1);wc.rotation.set(0,0,0)}dr.forEach(m=>m.visible=false);return}
+   const k=K.env(p),pr=K.ss(.1,.25,p)*(1-K.ss(.7,.85,p));st.forEach(q=>{q.o.rotation.z=q.r+Math.sin(t*2.4+q.i*1.7)*.06*k;q.o.rotation.x=Math.cos(t*1.9+q.i)*.06*k});
+   if(wc){wc.position.y=.27+pr*.12;wc.position.x=-.36+pr*.03;wc.rotation.z=-pr*.55}dr.forEach((m,i)=>{const u=(t*1.8+i/3)%1;m.visible=pr>.6;m.position.set(.02*u,-u*.1,0);m.scale.setScalar(1-u*.5)})};return g},
+ // the kite tugs and sways on the wall as if the wind caught it
+ kite(c){const g=P.kite.call(this,c);const k=g.children.find(o=>!o.isMesh&&K.at(o,0,.1,.03));
+  g.userData.use=(t,p)=>{if(!k)return;if(p<0){k.rotation.set(0,0,-.3);k.position.y=.1;return}const e=K.env(p);k.rotation.z=-.3+Math.sin(t*1.7)*.14*e;k.rotation.y=Math.sin(t*2.3)*.12*e;k.position.y=.1+Math.sin(t*1.1)*.025*e};return g},
+ // the jug tips and pours, the glass fills up, then goes down as the pet sips (it's topped up again after)
+ lemonade(c){const g=P.lemonade.call(this,c);const jg=K.find(g,-.22,.845,.05,true),lq=K.find(g,.12,.895,0,false);let lp=null;if(lq){lp=piv(g,.12,.855,0);K.rp(g,lp,o=>o===lq)}
+  g.userData.use=(t,p)=>{if(p<0){if(jg){jg.rotation.set(0,0,0);jg.position.set(-.22,.845,.05)}if(lp)lp.scale.set(1,1,1);return}
+   const po=K.ss(.04,.14,p)*(1-K.ss(.3,.4,p));if(jg){jg.position.y=.845+po*.06;jg.position.x=-.22+po*.06;jg.rotation.z=-po*.75}
+   if(lp){const lv=.3+.7*K.ss(.1,.36,p)-.55*K.ss(.45,.85,p);lp.scale.set(1,Math.max(.12,lv),1)}};return g},
+ // the butterflies flap faster and circle further while the pet watches
+ butterflies(c){const g=P.butterflies.call(this,c);const bf=g.children.filter(o=>!o.isMesh&&Math.abs(o.position.y-1.42)<.004&&Math.hypot(o.position.x,o.position.z)>.2).map((h,i)=>{const b=h.children.find(o=>!o.isMesh);
+   const ws=b?b.children.filter(o=>!o.isMesh).map(w=>({w,sd:Math.sign((w.children.find(m=>m.isMesh)||{scale:{x:1}}).scale.x)||1})):[];return{h,b,ws,i}});
+  let on=0,w=0,lt=0,ph=0;g.userData.use=(t,p)=>{on=p<0?0:1;if(p<0)bf.forEach(q=>{if(q.b)q.b.position.y=-.32})};
+  g.userData.anim=t=>{const dt=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,dt*2);ph+=dt*(1+w*1.5);
+   bf.forEach(q=>{q.h.rotation.y=Math.sin(ph*.6+q.i)*(.4+.5*w);if(q.b)q.b.position.y=-.32+Math.sin(ph*3+q.i*2)*.03*w;q.ws.forEach(x=>x.w.rotation.y=x.sd*Math.sin(t*(12+8*w)+q.i)*.7)})};return g},
+ // while the pet naps the cushion dips under it and the little blanket rises and falls with its breathing
+ eggbed(c){const g=P.eggbed.call(this,c);const cu=K.find(g,0,.2,0,false),bl=K.find(g,.12,.28,.08,false);
+  g.userData.use=(t,p)=>{if(p<0){if(cu)cu.scale.set(1,1,1);if(bl){bl.scale.set(1,1,1);bl.position.y=.28}return}const k=K.ss(0,.05,p),b=Math.sin(t*1.6);
+   if(cu)cu.scale.set(1,1,1-.35*k);if(bl){bl.scale.set(1,1+.45*b*k,1);bl.position.y=.28+.01*b*k}};return g}
+}))(Object.assign({},BUILD),{
+ rp(par,pv,f){par.children.filter(o=>o!==pv&&f(o)).forEach(o=>{o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)})},
+ at(o,x,y,z,e){e=e||.004;return Math.abs(o.position.x-x)<e&&Math.abs(o.position.y-y)<e&&Math.abs(o.position.z-z)<e},
+ find(par,x,y,z,grp){return par.children.find(o=>(grp==null||!o.isMesh===grp)&&this.at(o,x,y,z))},
+ ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)},
+ env(p){return this.ss(0,.06,p)*(1-this.ss(.9,1,p))}}));}catch(e){console.warn("anim set spring.js",e)}
+// ---- stars.js
+try{Object.assign(BUILD,((P,K)=>({
+ // the tube sweeps slowly across the sky as the pet looks for stars, pausing on something good
+ telescope(c){const g=P.telescope.call(this,c);const tb=K.find(g,0,1.08,0,true);
+  g.userData.use=(t,p)=>{if(!tb)return;if(p<0){tb.rotation.set(-.3,.2,-.95);return}const k=K.ss(0,.15,p)*(1-K.ss(.85,1,p)),s=Math.sin(t*.7);tb.rotation.y=.2+s*.35*k;tb.rotation.x=-.3+Math.sin(t*.45)*.08*k;tb.rotation.z=-.95+(Math.cos(t*.55)*.06)*k};return g},
+ // the moon spins faster, glows brighter and rocks in its cradle when booped
+ moonlamp(c){const g=P.moonlamp.call(this,c);const mn=K.find(g,0,.66,0,true),mm=mn&&mn.children[0]&&mn.children[0].material;let w=0,on=0,lt=0,a=0;
+  g.userData.use=(t,p)=>{on=p<0?0:1};
+  g.userData.anim=t=>{const d=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,d*3);a+=d*(.15+1.2*w);if(!mn)return;mn.rotation.y=a;mn.rotation.x=Math.sin(t*2.2)*.12*w;if(mm)mm.emissiveIntensity=.55+.45*w};return g},
+ // the pillows dent under the heads, the crescent moon on the headboard rocks and the little stars turn
+ cloudbed(c){const g=P.cloudbed.call(this,c);const pl=g.children.filter(o=>o.isMesh&&Math.abs(o.position.y-.6)<.004&&Math.abs(o.position.z+.7)<.004).map(o=>({o,s:o.scale.clone()}));
+  const mo=g.children.find(o=>o.isMesh&&K.at(o,.42,.96,-.95)),st=g.children.filter(o=>o.isMesh&&(K.at(o,-.24,.98,-.88)||K.at(o,-.42,.86,-.84))).map((o,i)=>({o,y:o.position.y,i}));
+  g.userData.use=(t,p)=>{if(p<0){pl.forEach(q=>q.o.scale.copy(q.s));if(mo)mo.rotation.z=1.1;st.forEach(q=>{q.o.rotation.y=0;q.o.position.y=q.y});return}const k=K.ss(0,.8,t),b=Math.sin(t*1.5);
+   pl.forEach(q=>q.o.scale.set(q.s.x*1.05,q.s.y*1.05,q.s.z*(1-.3*k+.04*b*k)));if(mo)mo.rotation.z=1.1+Math.sin(t*.8)*.12*k;st.forEach(q=>{q.o.rotation.y=Math.sin(t*.9+q.i)*.8*k;q.o.position.y=q.y+Math.sin(t*1.2+q.i*2)*.015*k})};return g},
+ // the corner tassels flick about as the pet wiggles on the quilt
+ starrug(c){const g=P.starrug.call(this,c);const ts=g.children.filter(o=>!o.isMesh&&Math.abs(o.position.y-.03)<.002).map((o,i)=>({o,y:o.rotation.y,i}));
+  g.userData.use=(t,p)=>{ts.forEach(q=>{if(p<0){q.o.rotation.set(0,q.y,0);return}const k=K.ss(0,.08,p)*(1-K.ss(.88,1,p));q.o.rotation.y=q.y+Math.sin(t*6+q.i*1.7)*.4*k;q.o.rotation.x=-Math.abs(Math.sin(t*4+q.i))*.25*k})};return g},
+ // the globe spins, the shelf star twirls and little clouds puff out of the nozzle like a pretend lift-off
+ rocketshelf(c){const g=P.rocketshelf.call(this,c);const gl=K.find(g,-.12,1.0,.12,true),st=g.children.find(o=>o.isMesh&&K.at(o,.14,1.07,.14)),sm=M(0xFFFFFF,{roughness:1});
+  const pf=[0,1,2,3].map(i=>{const m=nosh(add(g,gcache('anstars_pf',()=>new THREE.SphereGeometry(.08,10,8)),sm,0,.02,0));m.outline=.004;m.visible=false;return m});
+  g.userData.use=(t,p)=>{if(p<0){if(gl)gl.rotation.y=0;if(st)st.rotation.y=-.3;pf.forEach(m=>m.visible=false);return}const k=K.ss(0,.08,p)*(1-K.ss(.88,1,p));if(gl)gl.rotation.y=t*3*k;if(st)st.rotation.y=-.3+t*2*k;
+   pf.forEach((m,i)=>{const u=(t*.6+i/4)%1,a=i*1.57+.8;m.visible=k>.05&&u<.9;m.position.set(Math.cos(a)*(.28+u*.25),.03+u*.08,Math.sin(a)*(.28+u*.25));m.scale.setScalar((.4+u*.8)*k)})};return g},
+ // the golden ring turns slowly round the planet and the seat sinks while the pet sits
+ planetchair(c){const g=P.planetchair.call(this,c);const r=g.children.find(o=>o.isMesh&&K.at(o,0,.36,0)&&o.material.map&&o.material.side===2),cu=g.children.find(o=>o.isMesh&&K.at(o,0,.66,.06)),mp=g.children.find(o=>o.isMesh&&K.at(o,.32,.66,-.12));
+  g.userData.use=(t,p)=>{if(p<0){if(r)r.rotation.set(-.2,0,0);if(cu)cu.scale.set(1,1,1);if(mp)mp.position.y=.66;return}const k=K.ss(0,.6,t);if(r){r.rotation.y=t*.5;r.rotation.x=-.2+Math.sin(t*.8)*.03*k}
+   if(cu)cu.scale.set(1+.04*k,1+.04*k,1-.35*k);if(mp)mp.position.y=.66+Math.abs(Math.sin(t*1.3))*.02*k};return g},
+ // the planets speed round the sun while the pet peers in
+ orrery(c){const g=P.orrery.call(this,c);const arms=g.children.filter(o=>!o.isMesh&&o.userData.s);let w=0,on=0,lt=0,T=0;
+  g.userData.use=(t,p)=>{on=p<0?0:1};
+  g.userData.anim=t=>{const d=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,d*2);T+=d*(1+3*w);arms.forEach(a=>{a.rotation.y=T*a.userData.s;if(a.userData.mo)a.userData.mo.rotation.y=T*2})};return g},
+ // the star popping out of the picture twirls and twinkles
+ cometart(c){const g=P.cometart.call(this,c);const st=g.children.find(o=>o.isMesh&&K.at(o,.24,.17,.09));if(st)st.material=M(0xFFE27A,{roughness:.3,emissive:0xFFD27A,emissiveIntensity:.25});
+  g.userData.use=(t,p)=>{if(!st)return;if(p<0){st.rotation.set(0,0,0);st.material.emissiveIntensity=.25;return}const k=K.ss(0,.1,p)*(1-K.ss(.85,1,p));st.rotation.y=Math.sin(t*2)*.6*k;st.rotation.z=t*1.2*k;st.material.emissiveIntensity=.25+.6*k*(.5+.5*Math.sin(t*5))};return g},
+ // the cushion rises and falls with the pet's sleepy breathing and the stars above it bob
+ moonbed(c){const g=P.moonbed.call(this,c);const cu=g.children.find(o=>o.isMesh&&K.at(o,.04,.12,-.02)),st=g.children.filter(o=>o.isMesh&&Math.abs(o.position.y-.4)<.004).map((o,i)=>({o,r:o.rotation.y,i}));
+  g.userData.use=(t,p)=>{if(p<0){if(cu)cu.scale.set(1,1,1);st.forEach(q=>{q.o.position.y=.4;q.o.rotation.y=q.r});return}const k=K.ss(0,.8,t),b=Math.sin(t*1.5);if(cu)cu.scale.set(1,1,1-.3*k+.07*b*k);
+   st.forEach(q=>{q.o.position.y=.4+Math.sin(t*.9+q.i*2)*.04*k;q.o.rotation.y=q.r+Math.sin(t*.5+q.i)*.5*k})};return g}
+}))(Object.assign({},BUILD),{
+ rp(par,pv,f){par.children.filter(o=>o!==pv&&f(o)).forEach(o=>{o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)})},
+ at(o,x,y,z,e){e=e||.004;return Math.abs(o.position.x-x)<e&&Math.abs(o.position.y-y)<e&&Math.abs(o.position.z-z)<e},
+ find(par,x,y,z,grp){return par.children.find(o=>(grp==null||!o.isMesh===grp)&&this.at(o,x,y,z))},
+ ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)}}));}catch(e){console.warn("anim set stars.js",e)}
+// ---- studio.js
+try{Object.assign(BUILD,((P,K)=>({
+ // the metronome ticks faster, the sheet music flutters and little notes float up while the pet plays
+ piano(c){const g=P.piano.call(this,c);const mt=K.find(g,.45,1.36,-.1,true),arm=mt&&mt.children.find(o=>!o.isMesh),sh=g.children.filter(o=>o.isMesh&&Math.abs(o.position.y-1.07)<.004&&o.position.z>.14);
+  const NM=M(0x9B4DF2,{roughness:.3}),notes=[0,1,2].map(i=>{const n=piv(g,0,1.2,.2);ol(sp(n,.035,NM,0,0,0,1.2,.9,.6),.003);ol(cy(n,.007,.007,.12,NM,.035,.06,0,6),0);n.visible=false;return n});
+  let w=0,on=0,lt=0,ph=0,ut=0;
+  g.userData.use=(t,p)=>{on=p<0?0:1;ut=t;sh.forEach(o=>o.rotation.x=-.18-(p<0?0:Math.abs(Math.sin(t*3.3))*.06));notes.forEach((n,i)=>{if(p<0){n.visible=false;return}const k=(t*.45+i/3)%1;n.visible=k<.92;n.position.set(-.4+i*.35+Math.sin(t*2+i*2)*.06,1.2+k*.6,.2);n.rotation.z=Math.sin(t*3+i)*.3;n.scale.setScalar(k<.1?k*10:k>.8?(1-k)/.2:1)})};
+  g.userData.anim=t=>{const d=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,d*3);ph+=d*(3+3*w);if(arm)arm.rotation.z=Math.sin(ph)*.35};return g},
+ // the canvas jiggles with each brush stroke, the palette swings and new dabs of colour appear (the canvas is wiped clean after)
+ easel(c){const g=P.easel.call(this,c);const cv=K.find(g,0,.97,.06,true),pa=K.find(g,.4,.75,.16,true);
+  const dabs=cv?[[-.2,.08,0xFF5FA8],[.05,-.05,0xFFD21F],[.18,.12,0x9B4DF2]].map(([x,y,col],i)=>{const m=sp(cv,.035,M(col,{roughness:.25}),x,y,.03,1.4,1,.25);m.visible=false;return m}):[];
+  g.userData.use=(t,p)=>{if(p<0){if(cv)cv.rotation.set(-.08,0,0);if(pa)pa.rotation.set(.1,-.3,.25);dabs.forEach(m=>m.visible=false);return}const k=K.ss(0,.06,p)*(1-K.ss(.9,1,p)),st=Math.max(0,Math.sin(t*5));
+   if(cv){cv.rotation.x=-.08-st*.02*k;cv.rotation.z=Math.sin(t*5)*.012*k}if(pa){pa.rotation.z=.25+Math.sin(t*2.3)*.12*k}dabs.forEach((m,i)=>m.visible=p>.18+i*.22&&p<.97)};return g},
+ // the drums bounce to a beat, the cymbals shimmer and wobble and the sticks hop on the snare
+ drumkit(c){const g=P.drumkit.call(this,c);const dr=g.children.filter(o=>!o.isMesh&&(K.at(o,-.4,.56,.18)||K.at(o,.42,.36,.14))).map((o,i)=>({o,y:o.position.y,s:o.scale.clone(),i}));
+  const cy_=g.children.filter(o=>o.isMesh&&o.position.y>.85&&o.position.y<1.1&&Math.abs(o.position.x-.62)<.005).map((o,i)=>({o,r:{x:o.rotation.x,z:o.rotation.z},i}));
+  const skp=piv(g,-.4,.63,.2);K.rp(g,skp,o=>o!==skp&&!o.isMesh&&K.at(o,-.4,.63,.2));const sk=[{o:skp,i:0}];const st=g.children.find(o=>K.at(o,0,.32,.08)),ss=st?st.scale.clone():null;
+  g.userData.use=(t,p)=>{const k=p<0?0:K.ss(0,.05,p)*(1-K.ss(.92,1,p));const bt=t*4;
+   dr.forEach(q=>{const h=Math.exp(-(((bt+q.i*.5)%2)*6))*k;q.o.position.y=q.y-h*.012;q.o.scale.set(q.s.x*(1+h*.05),q.s.y*(1-h*.05),q.s.z*(1+h*.05))});
+   cy_.forEach(q=>{const h=Math.exp(-(((bt*.5+q.i*.7)%2)*3))*k;q.o.rotation.x=q.r.x+Math.sin(t*14+q.i)*.12*h;q.o.rotation.z=q.r.z+Math.cos(t*12+q.i)*.12*h});
+   sk.forEach(q=>{const h=Math.exp(-(((bt+q.i)%2)*5))*k;q.o.position.y=.63+h*.05;q.o.rotation.z=h*.08});if(st){const h=Math.exp(-((bt%2)*6))*k;st.scale.copy(ss).multiplyScalar(1+h*.12)}};return g},
+ // the tonearm swings onto the record, the record spins faster and the notes float up bigger
+ recordplayer(c){const g=P.recordplayer.call(this,c);const rec=K.find(g,-.06,.565,0,true),arm=K.find(g,.24,.6,-.14,true),notes=g.children.filter(o=>!o.isMesh&&o!==rec&&o!==arm);let w=0,on=0,lt=0,a=0,nt=0;
+  g.userData.use=(t,p)=>{on=p<0?0:1};
+  g.userData.anim=t=>{const d=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,d*2.5);a+=d*(3+3*w);nt+=d*(.35+.25*w);if(rec)rec.rotation.y=-a;if(arm)arm.rotation.y=.55-.35*w;
+   notes.forEach((n,i)=>{const k=(nt+i*.5)%1;n.position.set(-.06+Math.sin(t*2+i*3)*(.1+.05*w),.7+k*(.5+.2*w),0);n.scale.setScalar((k<.1?k*10:k>.85?(1-k)/.15:1)*(1+.4*w))})};return g},
+ // the paint tube gets a squeeze and a fresh blob of purple swells out of it
+ splatrug(c){const g=P.splatrug.call(this,c);const tb=K.find(g,.62,.05,.28,true),bl=sp(g,.05,M(0x9B4DF2,{roughness:.2}),.53,.04,.36,1,.25,1);bl.visible=false;
+  g.userData.use=(t,p)=>{if(p<0){if(tb)tb.scale.set(1,1,1);bl.visible=false;return}const k=K.ss(0,.08,p)*(1-K.ss(.88,1,p)),q=Math.max(0,Math.sin(t*3));if(tb)tb.scale.set(1-.3*q*k,1,1);
+   const gr=K.ss(.1,.6,p)*(1-K.ss(.9,1,p));bl.visible=gr>.02;bl.scale.set(.3+gr,.25*(.3+gr),.3+gr)};return g},
+ // the seat swivels a little this way and that while the pet sits
+ studiostool(c){const g=P.studiostool.call(this,c);const sw=piv(g,0,0,0);K.rp(g,sw,o=>o!==sw&&o.isMesh&&o.position.y>.44);
+  g.userData.use=(t,p)=>{if(p<0){sw.rotation.y=0;return}const k=K.ss(0,.8,t);sw.rotation.y=Math.sin(t*.9)*.3*k};return g},
+ // the guitar sways on its hanger and the strings hum
+ guitarwall(c){const g=P.guitarwall.call(this,c);const b=K.find(g,0,-.3,.1,true),strs=b?b.children.filter(o=>o.isMesh&&Math.abs(o.position.y-.42)<.004&&Math.abs(o.position.z-.084)<.004):[];const hg=piv(g,0,.8,.1);
+  if(b)K.mv(b,hg);K.rp(g,hg,o=>o!==hg&&o.isMesh&&K.at(o,0,0,0));const st=piv(b||g,0,0,0);strs.forEach(o=>{b.remove(o);st.add(o)});
+  g.userData.use=(t,p)=>{if(p<0){hg.rotation.z=0;st.scale.set(1,1,1);return}const k=K.ss(0,.1,p)*(1-K.ss(.85,1,p));hg.rotation.z=Math.sin(t*2.2)*.035*k;st.scale.x=1+Math.abs(Math.sin(t*40))*1.5*k*Math.exp(-((t%1.6)*2))};return g},
+ // the brushes rattle in the tin and the splattered shade sways
+ brushlamp(c){const g=P.brushlamp.call(this,c);const bp=piv(g,0,.37,0);K.rp(g,bp,o=>o!==bp&&!o.isMesh&&Math.abs(o.position.y-.37)<.004);const br=[{o:bp,r:{x:0,z:0},i:0}];
+  const sh=piv(g,-.1,.95,-.06);K.rp(g,sh,o=>o!==sh&&o.isMesh&&o.position.y>.8&&Math.abs(o.position.x+.1)<.005);
+  g.userData.use=(t,p)=>{const k=p<0?0:K.ss(0,.08,p)*(1-K.ss(.85,1,p));br.forEach(q=>{q.o.rotation.x=q.r.x+Math.sin(t*15+q.i*2)*.06*k;q.o.rotation.z=q.r.z+Math.cos(t*13+q.i)*.06*k});sh.rotation.z=Math.sin(t*3)*.06*k;sh.rotation.x=Math.cos(t*2.4)*.04*k};return g},
+ // the pillow rises and falls with the pet's sleepy breathing and the drumsticks roll a touch
+ drumbed(c){const g=P.drumbed.call(this,c);const cu=g.children.find(o=>o.isMesh&&K.at(o,0,.34,0)),ks=g.children.filter(o=>!o.isMesh&&K.at(o,.36,.36,.36)).map(o=>({o,y:o.rotation.y}));
+  g.userData.use=(t,p)=>{if(p<0){if(cu)cu.scale.set(1,1,1);ks.forEach(q=>q.o.rotation.y=q.y);return}const k=K.ss(0,.8,t),b=Math.sin(t*1.5);if(cu)cu.scale.set(1,1,1-.3*k+.07*b*k);ks.forEach((q,i)=>q.o.rotation.y=q.y+Math.sin(t*.6+i)*.04*k)};return g}
+}))(Object.assign({},BUILD),{
+ rp(par,pv,f){par.children.filter(o=>o!==pv&&f(o)).forEach(o=>{o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)})},
+ mv(o,pv){if(o.parent)o.parent.remove(o);o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)},
+ at(o,x,y,z,e){e=e||.004;return Math.abs(o.position.x-x)<e&&Math.abs(o.position.y-y)<e&&Math.abs(o.position.z-z)<e},
+ find(par,x,y,z,grp){return par.children.find(o=>(grp==null||!o.isMesh===grp)&&this.at(o,x,y,z))},
+ ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)}}));}catch(e){console.warn("anim set studio.js",e)}
+// ---- tree.js
+try{Object.assign(BUILD,((P,K)=>({
+ // the lantern swings under the eave and the pillows dent under the heads, then fluff back
+ hutbed(c){if(c==='kit')return P.hutbed(c);const g=P.hutbed.call(this,c);const ln=K.find(g,.45,1.06,.98,true);let sw=null;if(ln){sw=piv(g,.45,1.31,.98);K.rp(g,sw,o=>o===ln||(o.isMesh&&K.at(o,.45,1.21,.98)))}
+  const pl=g.children.filter(o=>o.isMesh&&Math.abs(o.position.y-.53)<.004&&Math.abs(o.position.z+.74)<.004).map(o=>({o,s:o.scale.z}));
+  g.userData.use=(t,p)=>{if(p<0){if(sw)sw.rotation.set(0,0,0);pl.forEach(q=>q.o.scale.z=q.s);return}const k=K.env(p);if(sw){sw.rotation.x=Math.sin(t*1.8)*.12*k;sw.rotation.z=Math.cos(t*1.3)*.06*k}
+   pl.forEach((q,i)=>q.o.scale.z=q.s*(1-.4*K.ss(0,.1,p)*(1-K.ss(.88,1,p))+Math.sin(t*1.6+i)*.03*k))};return g},
+ // the sling sways gently between the palms with its tassels while the pet lounges
+ duohammock(c){const g=P.duohammock.call(this,c);const sg=gcache('v2tree_sling',()=>null),ts=gcache('v2tree_tas',()=>null),sw=piv(g,0,.7,0);
+  K.rp(g,sw,o=>o.isMesh&&(o.geometry===sg||o.geometry===ts||K.at(o,-.58,.62,0)));
+  g.userData.use=(t,p)=>{if(p<0){sw.rotation.set(0,0,0);return}const k=K.env(p);sw.rotation.x=Math.sin(t*1.3)*.07*k};return g},
+ // the swing goes higher while the pet plays on it, then eases back to its little sway
+ ropeswing(c){const g=P.ropeswing.call(this,c);const sw=K.find(g,0,1.7,0,true);
+  let on=0,w=0,lt=0,ph=0;g.userData.use=(t,p)=>{on=p<0?0:1};
+  g.userData.anim=t=>{if(!sw)return;const dt=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,dt*1.2);ph+=dt*(1.4+.4*w);sw.rotation.x=Math.sin(ph)*(.12+.28*w)};return g},
+ // the banana leaves behind sway as the pet settles in, and the little pillow squashes
+ leafchair(c){const g=P.leafchair.call(this,c);const lv=g.children.filter(o=>!o.isMesh&&(K.at(o,0,.34,-.24)||K.at(o,.05,.32,-.2)||K.at(o,-.05,.32,-.2))).map((o,i)=>({o,r:o.rotation.z,i})),pw=K.find(g,.1,.52,-.12,false),ps=pw?pw.scale.clone():null;
+  g.userData.use=(t,p)=>{if(p<0){lv.forEach(q=>q.o.rotation.set(0,0,q.r));if(pw)pw.scale.copy(ps);return}const k=K.env(p);lv.forEach(q=>{q.o.rotation.x=-.08*k+Math.sin(t*1.9+q.i*.9)*.05*k;q.o.rotation.z=q.r+Math.cos(t*1.5+q.i*1.3)*.04*k});
+   if(pw)pw.scale.set(ps.x*(1+.1*k),ps.y*(1+.1*k),ps.z*(1-.3*k))};return g},
+ // the coconut rocks on the planks and the bananas wobble while the pet leans on the crate
+ cratetable(c){const g=P.cratetable.call(this,c);const cn=piv(g,.26,.545,-.07);K.rp(g,cn,o=>o.isMesh&&Math.abs(o.position.x-.26)<.03&&o.position.y>.6&&o.position.z<-.04&&o.position.z>-.1);const bp=K.find(g,-.13,.545,.03,true);
+  g.userData.use=(t,p)=>{if(p<0){cn.rotation.set(0,0,0);if(bp)bp.rotation.set(0,.4,0);return}const k=K.env(p);cn.rotation.z=Math.sin(t*3)*.15*k;cn.rotation.x=Math.cos(t*2.4)*.08*k;if(bp){bp.rotation.y=.4+Math.sin(t*4)*.06*k;bp.rotation.z=Math.max(0,Math.sin(t*5))*.04*k}};return g},
+ // the hanging flower shade sways after a boop and its petals flutter
+ vinelamp(c){const g=P.vinelamp.call(this,c);const sh=K.find(g,.38,1.82,0,true),pt=sh?sh.children.filter(o=>!o.isMesh).map(p=>p.children.find(o=>o.isMesh)).filter(Boolean):[];
+  g.userData.use=(t,p)=>{if(p<0){if(sh)sh.rotation.set(0,0,0);pt.forEach(l=>l.rotation.x=Math.PI-.45);return}const k=K.env(p);if(sh){sh.rotation.z=Math.sin(t*2.2)*.12*k;sh.rotation.x=Math.cos(t*1.8)*.08*k}
+   pt.forEach((l,i)=>l.rotation.x=Math.PI-.45+Math.sin(t*3+i*1.05)*.07*k)};return g},
+ // the knotted rope swings down the side of the wall
+ climbwall(c){const g=P.climbwall.call(this,c);const rg=gcache('v2tree_trope',()=>null),rp=piv(g,.38,.64,.1);K.rp(g,rp,o=>o.isMesh&&(o.geometry===rg||K.at(o,.38,.64,.1)||(Math.abs(o.position.z-.1)<.004&&o.position.x>.3&&o.material===(g.children.find(q=>q.geometry===rg)||{}).material)));
+  g.userData.use=(t,p)=>{if(p<0){rp.rotation.set(0,0,0);return}const k=K.env(p);rp.rotation.z=Math.sin(t*2)*.09*k};return g},
+ // the big split leaves sway and nod while the pet sniffs
+ monstera(c){const g=P.monstera.call(this,c);const lv=g.children.filter(o=>!o.isMesh&&K.at(o,0,.38,0));const gs=[0,1,2].map(i=>{const pv=piv(g,0,.38,0);K.rp(g,pv,o=>lv.indexOf(o)%3===i);return pv});
+  g.userData.use=(t,p)=>{if(p<0){gs.forEach(q=>q.rotation.set(0,0,0));return}const k=K.env(p);gs.forEach((q,i)=>{q.rotation.x=Math.sin(t*1.8+i*2.1)*.05*k;q.rotation.z=Math.cos(t*1.5+i*1.4)*.05*k})};return g},
+ // while the pet naps the cushion dips, the leaf pillow dents and the paper umbrella turns slowly
+ coconutbed(c){const g=P.coconutbed.call(this,c);const cu=piv(g,0,.33,0);K.rp(g,cu,o=>o.isMesh&&(K.at(o,0,.33,0)||(Math.abs(o.position.y-.38)<.004&&Math.abs(Math.hypot(o.position.x,o.position.z)-.22)<.004)));
+  const lp=K.find(g,-.05,.45,-.24,false),fl=K.find(g,.38,.37,.22,true),ls=lp?lp.scale.z:1;
+  g.userData.use=(t,p)=>{if(p<0){cu.scale.set(1,1,1);if(lp)lp.scale.z=ls;if(fl)fl.rotation.set(-1.1,0,.3);return}const k=K.ss(0,.05,p),b=Math.sin(t*1.6);cu.scale.set(1,1-.3*k+.03*b*k,1);if(lp)lp.scale.z=ls*(1-.35*k);if(fl)fl.rotation.z=.3+t*.4*k};return g},
+ // the two drums take turns hopping as they're hit, their skins trembling
+ bongos(c){const g=P.bongos.call(this,c);const dr=[[-.14,.2],[.16,.16]].map(([x,r])=>{const pv=piv(g,x,.44,0);K.rp(g,pv,o=>o.isMesh&&(K.at(o,x,0,0)||(o.position.y>=.43&&Math.abs(o.position.x-x)<r+.03)));return pv});
+  g.userData.use=(t,p)=>{dr.forEach((d,i)=>{if(p<0){d.position.y=.44;d.scale.set(1,1,1);d.rotation.set(0,0,0);return}const k=K.env(p),h=Math.max(0,Math.sin(t*9+i*Math.PI))**6;d.position.y=.44+h*.012*k;d.scale.set(1+h*.015*k,1-h*.02*k,1+h*.015*k);d.rotation.z=Math.sin(t*20)*.02*h*k})};return g}
+}))(Object.assign({},BUILD),{
+ rp(par,pv,f){par.children.filter(o=>o!==pv&&f(o)).forEach(o=>{o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)})},
+ at(o,x,y,z,e){e=e||.004;return Math.abs(o.position.x-x)<e&&Math.abs(o.position.y-y)<e&&Math.abs(o.position.z-z)<e},
+ find(par,x,y,z,grp){return par.children.find(o=>(grp==null||!o.isMesh===grp)&&this.at(o,x,y,z))},
+ ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)},
+ env(p){return this.ss(0,.06,p)*(1-this.ss(.9,1,p))},
+ fuse(par,list,mat){const P=[],N=[],U=[],I=[];let b=0;list.forEach(m=>{m._upd();const a=m._local,g=m.geometry,p=g.pos,n=g.nrm;
+   for(let i=0;i<p.length;i+=3){const x=p[i],y=p[i+1],z=p[i+2];P.push(a[0]*x+a[4]*y+a[8]*z+a[12],a[1]*x+a[5]*y+a[9]*z+a[13],a[2]*x+a[6]*y+a[10]*z+a[14]);
+    const X=n[i]/((a[0]*a[0]+a[1]*a[1]+a[2]*a[2])||1),Y=n[i+1]/((a[4]*a[4]+a[5]*a[5]+a[6]*a[6])||1),Z=n[i+2]/((a[8]*a[8]+a[9]*a[9]+a[10]*a[10])||1),nx=a[0]*X+a[4]*Y+a[8]*Z,ny=a[1]*X+a[5]*Y+a[9]*Z,nz=a[2]*X+a[6]*Y+a[10]*Z,l=Math.hypot(nx,ny,nz)||1;N.push(nx/l,ny/l,nz/l)}
+   for(let i=0;i<g.uv.length;i++)U.push(g.uv[i]);for(let i=0;i<g.idx.length;i++)I.push(g.idx[i]+b);b+=p.length/3;par.remove(m)});
+  const o=add(par,new THREE.BufferGeometry(P,N,U,I),mat,0,0,0);o.outline=0;o.castShadow=false;return o},
+ chase(g,f,n){const ms=[];for(let i=0;i<n;i++)ms.push(M(0xFFF3C0,{emissive:0xFFD27A,emissiveIntensity:1}));const bs=[];g.traverse(o=>{if(f(o))bs.push(o)});
+  ms.forEach((m,i)=>{const L=bs.filter((o,j)=>j%n===i),par=new Map();L.forEach(o=>{if(!par.has(o.parent))par.set(o.parent,[]);par.get(o.parent).push(o)});par.forEach((l,pp)=>this.fuse(pp,l,m))});
+  return(t,w)=>{const s=Math.floor(t*6)%n;ms.forEach((m,i)=>m.emissiveIntensity=1-.75*w+(i===s?1.6*w:0))}}}));}catch(e){console.warn("anim set tree.js",e)}
+// ---- washday.js
+try{Object.assign(BUILD,((P,K)=>({
+ // asleep in the laundry basket: the pillows dent and the pair of socks at the foot gives a sleepy little shuffle
+ hamperbed(c){if(c==='kit')return P.hamperbed(c);const g=P.hamperbed.call(this,c),C=g.children.slice(),pl=[C[16],C[17]].filter(Boolean),s0=pl.map(q=>q.scale.clone()),sk=[K.rp(g,K.piv(g,.3,.5,.82),o=>o===C[19]||o===C[20]),K.rp(g,K.piv(g,.4,.5,.7),o=>o===C[21]||o===C[22])];
+  g.userData.use=(t,p)=>{if(t<0){pl.forEach((q,i)=>q.scale.copy(s0[i]));sk.forEach(q=>q.rotation.set(0,0,0));return}const d=K.ein(t,3);pl.forEach((q,i)=>q.scale.set(s0[i].x*(1+.06*d),s0[i].y*(1-.22*d),s0[i].z));
+   sk.forEach((q,i)=>{const s=Math.exp(-Math.max(0,t-.4-i*.3)*2)*(t>.4+i*.3?1:0);q.rotation.y=Math.sin(t*9+i)*.25*s+.15*d*(i?1:-1);q.rotation.z=Math.sin(t*11+i)*.08*s})};return g},
+ // watched: the drum spins up faster, the machine shudders on its feet, the display blinks and the soap bubbles on top bob
+ washer(c){const g=P.washer.call(this,c),C=g.children.slice(),dr=C[14],ds=C[10],bb=[[20,21],[22,23],[24,25]].map(([a,b])=>{const m=C[a];return m?K.rp(g,K.piv(g,m.position.x,m.position.y,m.position.z),o=>o===C[a]||o===C[b]):null}).filter(Boolean),
+  sh=K.rp(g,K.piv(g,0,0,0),o=>true),ck=K.clk();if(ds)ds.material=glowM(0x6FFFB0,.6);let on=0,w=0;
+  g.userData.use=(t,p)=>{on=t<0?0:1;if(t<0){sh.position.set(0,0,0);sh.rotation.set(0,0,0);if(ds)ds.material.emissiveIntensity=.6;bb.forEach(q=>{q.position.y=q.userData.y0;q.scale.setScalar(1)});return}
+   const k=K.ss(0,.08,p)*(1-K.ss(.88,1,p));sh.position.x=Math.sin(t*31)*.004*k;sh.rotation.z=Math.sin(t*27)*.006*k;if(ds)ds.material.emissiveIntensity=.6+.5*k*(Math.sin(t*5)>0?1:0);
+   bb.forEach((q,i)=>{q.position.y=q.userData.y0+Math.abs(Math.sin(t*2+i*1.3))*.03*k;q.scale.setScalar(1+.15*k*Math.sin(t*3+i))})};
+  bb.forEach(q=>q.userData.y0=q.position.y);
+  g.userData.anim=t=>{w+=(on-w)*.05;if(dr)dr.rotation.z=ck(t,2.4*(1+2.5*w))};return g},
+ // rummaging: the shirts, the towel and the socks swing on the rails
+ dryingrack(c){const g=P.dryingrack.call(this,c),C=g.children.slice(),gp=[[15,18,.88],[19,22,.88],[23,26,.63],[27,31,1.0]].map(([a,b,y])=>{const m=C[a];return K.rp(g,K.piv(g,m.position.x,y,m.position.z),o=>{const i=C.indexOf(o);return i>=a&&i<=b})}),sk=[32,33].map(i=>{const m=C[i];return K.rp(g,K.piv(g,m.position.x,.5,m.position.z),o=>o===m)});
+  const all=gp.concat(sk);
+  g.userData.use=(t,p)=>{all.forEach((q,i)=>{if(t<0){q.rotation.set(0,0,0);return}const k=K.ss(0,.06,p)*(1-K.ss(.86,1,p));q.rotation.x=Math.sin(t*3.2+i*1.1)*.18*k;q.rotation.z=Math.cos(t*2.6+i*.7)*.05*k})};return g},
+ // folding: the top towel is lifted at one edge, given a shake and laid back down neatly
+ foldtable(c){const g=P.foldtable.call(this,c),C=g.children.slice(),tw=K.rp(g,K.piv(g,-.45,.975,0),o=>[20,21,22].includes(C.indexOf(o)));
+  g.userData.use=(t,p)=>{if(t<0){tw.rotation.set(0,0,0);tw.position.y=.975;return}const u=(t%3.2)/3.2,l=Math.sin(Math.min(1,u/.7)*Math.PI),k=K.ss(0,.05,p)*(1-K.ss(.88,1,p));
+   tw.rotation.z=.75*l*k;tw.position.y=.975+.03*l*k;tw.rotation.x=Math.sin(t*14)*.06*l*k};return g},
+ // leaning on the board: the iron glides up and down it, puffing steam as it goes
+ ironboard(c){const g=P.ironboard.call(this,c),C=g.children.slice(),ir=C[10],st=[C[11],C[12],C[13]].filter(Boolean);let on=0,w=0;
+  g.userData.use=(t,p)=>{on=t<0?0:1;if(ir){if(t<0){ir.position.x=.25;ir.rotation.y=0}else{const k=K.ss(0,.06,p)*(1-K.ss(.86,1,p));ir.position.x=.25-.32*k*(.5-.5*Math.cos(t*1.8));ir.rotation.y=Math.sin(t*1.8)*.08*k}}};
+  g.userData.anim=t=>{w+=(on-w)*.08;const x=ir?ir.position.x+.07:.32;st.forEach((q,i)=>{const k=(t*(.5+.4*w)+i/3)%1;q.position.set(x+Math.sin(k*6+i)*.03,.9+k*.35,0);q.scale.setScalar((.6+k*1.2)*(1+.4*w))})};return g},
+ // snuggled: the fluffy bunny squishes into the hug and its ears flop
+ lintbunny(c){const g=P.lintbunny.call(this,c),C=g.children.slice(),ea=[C[48],C[49]].filter(o=>o&&!o.isMesh),z0=ea.map(o=>o.rotation.z),bd=K.rp(g,K.piv(g,0,0,0),o=>true);
+  g.userData.use=(t,p)=>{if(t<0){bd.scale.set(1,1,1);ea.forEach((o,i)=>{o.rotation.z=z0[i];o.rotation.x=0});return}const k=K.ss(0,.06,p)*(1-K.ss(.88,1,p)),b=Math.sin(t*2.4);
+   bd.scale.set(1+.05*k+.015*b*k,1-.07*k-.015*b*k,1+.05*k);ea.forEach((o,i)=>{o.rotation.z=z0[i]+(i?-1:1)*(.25*k+Math.sin(t*5+i)*.1*k);o.rotation.x=Math.cos(t*4+i)*.1*k})};return g},
+ // rummaging: the bottles on the bottom shelf wobble and the bubbles on the soap flakes box bob
+ soapshelf(c){const g=P.soapshelf.call(this,c),C=g.children.slice(),bt=[[15,18],[19,22],[23,28]].map(([a,b])=>K.rp(g,K.piv(g,C[a].position.x,.06,0),o=>{const i=C.indexOf(o);return i>=a&&i<=b})),bu=K.rp(g,K.piv(g,.3,.78,0),o=>o===C[33]||o===C[34]);
+  g.userData.use=(t,p)=>{if(t<0){bt.forEach(q=>q.rotation.set(0,0,0));bu.position.y=.78;bu.scale.setScalar(1);return}const k=K.ss(0,.06,p)*(1-K.ss(.86,1,p));
+   bt.forEach((q,i)=>{const dm=Math.exp(-((t+i*.7)%2.2)*1.6);q.rotation.z=Math.sin(t*9+i*2)*.1*dm*k;q.rotation.x=Math.cos(t*8+i)*.06*dm*k});bu.position.y=.78+Math.abs(Math.sin(t*2.5))*.03*k;bu.scale.setScalar(1+.12*Math.sin(t*3)*k)};return g},
+ // booped: the glowing bubbles pulse brighter one after another, as if they might float away
+ soaplamp(c){const g=P.soaplamp.call(this,c),C=g.children.slice(),bs=[7,10,13,16,19].map(i=>C[i]).filter(Boolean),s0=bs.map(o=>o.scale.clone()),e0=bs.map(o=>o.material.emissiveIntensity);
+  g.userData.use=(t,p)=>{bs.forEach((o,i)=>{if(t<0){o.scale.copy(s0[i]);o.material.emissiveIntensity=e0[i];return}const k=K.ss(0,.05,p)*(1-K.ss(.85,1,p)),q=Math.max(0,Math.sin(t*3-i*1.1))**2;
+   o.scale.set(s0[i].x*(1+.1*q*k),s0[i].y*(1+.1*q*k),s0[i].z*(1+.1*q*k));o.material.emissiveIntensity=e0[i]*(1+.8*q*k)})};return g},
+ // looked at: the washing on the line flaps as if a breeze came through
+ clothesline(c){const g=P.clothesline.call(this,c),it=g.children.filter(o=>!o.isMesh);let on=0,w=0;
+  g.userData.use=(t,p)=>{on=t<0?0:1};
+  g.userData.anim=t=>{w+=(on-w)*.06;it.forEach((p,i)=>{p.rotation.x=Math.sin(t*(1.3+2.5*w)+i)*(.08+.25*w);p.rotation.z=Math.sin(t*2.1+i*1.7)*.06*w})};return g},
+ // napping in the sock: the cushion dents and the toe of the sock flops over
+ sockbed(c){const g=P.sockbed.call(this,c),C=g.children.slice(),cu=C[2],cs=cu?cu.scale.clone():null,tp=K.rp(g,K.piv(g,0,.1,-.4),o=>o===C[3]||o===C[4]);
+  g.userData.use=(t,p)=>{if(t<0){if(cu)cu.scale.copy(cs);tp.rotation.set(0,0,0);return}const d=K.ein(t,2);if(cu)cu.scale.set(cs.x,cs.y,cs.z*(1-.3*d));tp.rotation.x=-.35*K.ein(t-.4,3)+.02*Math.sin(t*1.4)};return g}
+}))(Object.assign({},BUILD),{
+ piv(par,x,y,z){const p=new THREE.Group();p.position.set(x,y,z);par.add(p);return p},
+ rp(par,pv,f){par.children.filter(o=>o!==pv&&f(o)).forEach(o=>{o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)});return pv},
+ ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)},
+ ein(t,k){return 1-Math.exp(-Math.max(0,t)*k)},
+ clk(){let ph=0,lt=null;return(t,rate)=>{const dt=lt==null||t<lt?0:Math.min(.1,t-lt);lt=t;ph+=dt*rate;return ph}}}));}catch(e){console.warn("anim set washday.js",e)}
+// ---- work.js
+try{Object.assign(BUILD,((P,K)=>({
+ // both screens wake up and flicker with colour, the mice slide about and the monitors nod as the pet types
+ doubledesk(c){const g=P.doubledesk.call(this,c);const mn=g.children.filter(o=>!o.isMesh&&Math.abs(o.position.y-.79)<.004&&Math.abs(o.position.z+.2)<.004),sc=[];
+  mn.forEach(m=>{const s=m.children.find(o=>o.isMesh&&o.material.map&&o.material.emissiveIntensity>0&&o.material.emissiveIntensity<.1);if(s)sc.push(s.material)});
+  const mi=[-.5,.5].map(x=>{const o=K.find(g,x+.32,.8,.14,false);if(!o)return null;const pv=piv(g,x+.32,.8,.14);K.rp(g,pv,q=>q===o);return pv}).filter(Boolean);
+  g.userData.use=(t,p)=>{if(p<0){sc.forEach(m=>m.emissiveIntensity=.08);mi.forEach((m,i)=>{m.position.x=i?.82:-.18;m.position.z=.14});mn.forEach(m=>m.rotation.set(0,0,0));return}const k=K.env(p);
+   sc.forEach((m,i)=>m.emissiveIntensity=.08+(.05+.025*Math.sin(t*7+i*2)+(Math.sin(t*23+i)>.8?.03:0))*k);mi.forEach((m,i)=>{m.position.x=(i?.82:-.18)+Math.sin(t*2.3+i)*.025*k;m.position.z=.14+Math.cos(t*3.1+i*2)*.02*k});
+   mn.forEach((m,i)=>m.rotation.x=Math.max(0,Math.sin(t*6+i*3))*.012*k)};return g},
+ // the chair sinks a little on its gas lift and swivels gently side to side while the pet sits
+ deskchair(c){const g=P.deskchair.call(this,c);const tp=piv(g,0,.44,0);K.rp(g,tp,o=>o.isMesh&&(o.position.y>.43||K.at(o,0,0,0)));
+  g.userData.use=(t,p)=>{if(p<0){tp.position.y=.44;tp.rotation.set(0,0,0);return}const k=K.env(p);tp.position.y=.44-.025*K.ss(0,.08,p);tp.rotation.y=Math.sin(t*.9)*.13*k};return g},
+ // the machine hums, coffee drips into the cup, the steam thickens, then the cup lifts for a sip
+ coffeemaker(c){const g=P.coffeemaker.call(this,c);const mc=K.find(g,-.12,.76,-.02,true),st=g.children.filter(o=>o.isMesh&&o.material.transparent);let cp=null,dr=[];
+  if(mc){cp=piv(mc,0,.04,.16);K.rp(mc,cp,o=>o.isMesh&&(K.at(o,0,0,.16)||K.at(o,.04,.07,.16)));const Dm=M(0x6A3A1A,{roughness:.2});dr=[0,1].map(()=>{const m=nosh(sp(mc,.008,Dm,0,.19,.16));ol(m,0);m.visible=false;return m})}
+  let on=0,w=0,lt=0;g.userData.use=(t,p)=>{on=p<0?0:1;if(p<0){if(mc)mc.position.x=-.12;if(cp){cp.position.set(0,.04,.16);cp.rotation.set(0,0,0)}dr.forEach(m=>m.visible=false);return}
+   const br=K.ss(.04,.1,p)*(1-K.ss(.45,.5,p)),sip=K.ss(.55,.65,p)*(1-K.ss(.8,.9,p));if(mc)mc.position.x=-.12+Math.sin(t*60)*.0015*br;
+   dr.forEach((m,i)=>{const u=(t*2.2+i*.5)%1;m.visible=br>.5;m.position.y=.19-u*.1});if(cp){cp.position.y=.04+sip*.12;cp.position.z=.16+sip*.1;cp.rotation.x=sip*.3}};
+  g.userData.anim=t=>{const dt=Math.min(.1,Math.max(0,t-lt));lt=t;w+=(on-w)*Math.min(1,dt*2);st.forEach((m,i)=>{const k=(t*(.5+.4*w)+i/2)%1;m.position.y=.9+k*(.3+.15*w);m.scale.setScalar(.03*(.6+k*(1.2+.8*w)));m.material.opacity=(.5+.2*w)*(1-k)})};return g},
+ // the middle bin slides out for a rummage and back, and the box on top pops its lid
+ cubeshelf(c){const g=P.cubeshelf.call(this,c);const bn=piv(g,0,.63,.02);K.rp(g,bn,o=>o.isMesh&&Math.abs(o.position.x)<.004&&(K.at(o,0,.63,.02)||K.at(o,0,.72,.19)));
+  const ld=K.find(g,0,1.12,0,false);
+  g.userData.use=(t,p)=>{if(p<0){bn.position.z=.02;bn.rotation.set(0,0,0);if(ld){ld.position.y=1.12;ld.rotation.set(0,0,0)}return}const o=K.ss(.05,.2,p)*(1-K.ss(.75,.9,p));
+   bn.position.z=.02+o*.2;bn.rotation.y=Math.sin(t*5)*.03*o;bn.rotation.z=Math.sin(t*7)*.02*o;if(ld){const l=Math.max(0,Math.sin(t*3))**3*K.env(p);ld.position.y=1.12+l*.05;ld.rotation.z=l*.15}};return g},
+ // the long leaves sway while the pet waters the plant
+ deskplant(c){const g=P.deskplant.call(this,c);const lv=g.children.filter(o=>!o.isMesh&&Math.abs(o.position.y-.31)<.004);const gs=[0,1,2].map(i=>{const pv=piv(g,0,.31,0);K.rp(g,pv,o=>lv.indexOf(o)%3===i);return pv});
+  g.userData.use=(t,p)=>{if(p<0){gs.forEach(q=>q.rotation.set(0,0,0));return}const k=K.env(p);gs.forEach((q,i)=>{q.rotation.z=Math.sin(t*2+i*2.1)*.07*k;q.rotation.x=Math.cos(t*1.7+i*1.3)*.07*k})};return g},
+ // the dome shade swings on the end of its arc after a boop and settles
+ arclamp(c){const g=P.arclamp.call(this,c);const hd=K.find(g,.95,1.3,0,true);let sw=null;if(hd){sw=piv(g,.95,1.52,0);K.rp(g,sw,o=>o===hd)}
+  g.userData.use=(t,p)=>{if(!sw)return;if(p<0){sw.rotation.set(0,0,0);return}const k=K.env(p)*(.4+.6*Math.exp(-t*.3));sw.rotation.z=Math.sin(t*3)*.2*k;sw.rotation.x=Math.cos(t*2.6)*.1*k};return g},
+ // the pegged photos swing on their string and the calendar page lifts in a draught
+ pinboard(c){const g=P.pinboard.call(this,c);const ph=g.children.filter(o=>o.isMesh&&o.geometry&&Math.abs(o.position.z-.072)<.002&&o.position.y>.12).map((o,i)=>{const pv=piv(g,o.position.x,o.position.y+.05,.072);K.rp(g,pv,q=>q===o);return{pv,i,r:o.rotation.z}});
+  const cp=K.find(g,.36,-.18,.066,false);let cv=null;if(cp){cv=piv(g,.36,-.105,.066);K.rp(g,cv,o=>o===cp)}
+  g.userData.use=(t,p)=>{if(p<0){ph.forEach(q=>q.pv.rotation.set(0,0,0));if(cv)cv.rotation.set(0,0,0);return}const k=K.env(p);ph.forEach(q=>q.pv.rotation.z=Math.sin(t*2.5+q.i*1.9)*.15*k);if(cv)cv.rotation.x=(.15+Math.sin(t*3)*.12)*k};return g},
+ // a marker lifts out of the tray and doodles little loops on the board, then goes back
+ whiteboard(c){const g=P.whiteboard.call(this,c);const mk=piv(g,-.32,-.4,.07);K.rp(g,mk,o=>o.isMesh&&(K.at(o,-.32,-.4,.07)||K.at(o,-.37,-.4,.07)));
+  g.userData.use=(t,p)=>{if(p<0){mk.position.set(-.32,-.4,.07);mk.rotation.set(0,0,0);return}const u=K.ss(.08,.22,p)*(1-K.ss(.8,.94,p));
+   mk.position.set(-.32+u*(.2+Math.cos(t*4)*.08),-.4+u*(.45+Math.sin(t*4)*.06),.07+u*.06);mk.rotation.y=u*Math.PI/2;mk.rotation.z=u*Math.sin(t*4)*.15};return g},
+ // while the pet naps the cushion dips and the knitted throw rises and falls with its breathing
+ cablebed(c){const g=P.cablebed.call(this,c);const cu=K.find(g,0,.27,0,false),bl=K.find(g,.18,.32,.08,false);
+  g.userData.use=(t,p)=>{if(p<0){if(cu)cu.scale.set(1,1,1);if(bl){bl.scale.set(1,1,1);bl.position.y=.32}return}const k=K.ss(0,.05,p),b=Math.sin(t*1.6);
+   if(cu)cu.scale.set(1,1,1-.35*k);if(bl){bl.scale.set(1,1+.45*b*k,1);bl.position.y=.32+.008*b*k}};return g}
+}))(Object.assign({},BUILD),{
+ rp(par,pv,f){par.children.filter(o=>o!==pv&&f(o)).forEach(o=>{o.position.x-=pv.position.x;o.position.y-=pv.position.y;o.position.z-=pv.position.z;pv.add(o)})},
+ at(o,x,y,z,e){e=e||.004;return Math.abs(o.position.x-x)<e&&Math.abs(o.position.y-y)<e&&Math.abs(o.position.z-z)<e},
+ find(par,x,y,z,grp){return par.children.find(o=>(grp==null||!o.isMesh===grp)&&this.at(o,x,y,z))},
+ ss(a,b,x){const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)},
+ env(p){return this.ss(0,.06,p)*(1-this.ss(.9,1,p))},
+ fuse(par,list,mat){const P=[],N=[],U=[],I=[];let b=0;list.forEach(m=>{m._upd();const a=m._local,g=m.geometry,p=g.pos,n=g.nrm;
+   for(let i=0;i<p.length;i+=3){const x=p[i],y=p[i+1],z=p[i+2];P.push(a[0]*x+a[4]*y+a[8]*z+a[12],a[1]*x+a[5]*y+a[9]*z+a[13],a[2]*x+a[6]*y+a[10]*z+a[14]);
+    const X=n[i]/((a[0]*a[0]+a[1]*a[1]+a[2]*a[2])||1),Y=n[i+1]/((a[4]*a[4]+a[5]*a[5]+a[6]*a[6])||1),Z=n[i+2]/((a[8]*a[8]+a[9]*a[9]+a[10]*a[10])||1),nx=a[0]*X+a[4]*Y+a[8]*Z,ny=a[1]*X+a[5]*Y+a[9]*Z,nz=a[2]*X+a[6]*Y+a[10]*Z,l=Math.hypot(nx,ny,nz)||1;N.push(nx/l,ny/l,nz/l)}
+   for(let i=0;i<g.uv.length;i++)U.push(g.uv[i]);for(let i=0;i<g.idx.length;i++)I.push(g.idx[i]+b);b+=p.length/3;par.remove(m)});
+  const o=add(par,new THREE.BufferGeometry(P,N,U,I),mat,0,0,0);o.outline=0;o.castShadow=false;return o},
+ chase(g,f,n){const ms=[];for(let i=0;i<n;i++)ms.push(M(0xFFF3C0,{emissive:0xFFD27A,emissiveIntensity:1}));const bs=[];g.traverse(o=>{if(f(o))bs.push(o)});
+  ms.forEach((m,i)=>{const L=bs.filter((o,j)=>j%n===i),par=new Map();L.forEach(o=>{if(!par.has(o.parent))par.set(o.parent,[]);par.get(o.parent).push(o)});par.forEach((l,pp)=>this.fuse(pp,l,m))});
+  return(t,w)=>{const s=Math.floor(t*6)%n;ms.forEach((m,i)=>m.emissiveIntensity=1-.75*w+(i===s?1.6*w:0))}}}));}catch(e){console.warn("anim set work.js",e)}
+// ---- zen.js
+try{Object.assign(BUILD,(()=>{
+ // Zen Tea Room: moving parts. Each builder runs the set's own model, then gathers the parts that move into pivots
+ // (placed at their hinge) so the model, footprint and perch spots stay exactly the same.
+ const O={};['zentable','zabuton','paperlantern','bonsai','shoji','sandgarden','fountain','koibowl','zenbasketbed'].forEach(k=>O[k]=BUILD[k]);
+ const rp=(par,list,x,y,z)=>{const p=new THREE.Group();p.position.set(x,y,z);list.filter(Boolean).forEach(q=>{par.remove(q);q.position.x-=x;q.position.y-=y;q.position.z-=z;p.add(q)});par.add(p);return p};
+ const ss=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)};
+ const ein=(t,k)=>t<0?0:1-Math.exp(-t*k);
+ const EU=(t,p)=>p<0?0:Math.min(1,t*2)*(1-ss(.9,1,p));
+ const boost=k=>{const B={off:0,last:0,e:0};B.use=(t,p)=>{if(p<0){B.last=0;B.e=0;return}const d=t>=B.last?t-B.last:0;B.last=t;B.e=EU(t,p);B.off+=d*k*B.e};return B};
+ const SG=()=>gcache('anzen_puff',()=>new THREE.SphereGeometry(1,10,8));
+ const puff=(g,col,op)=>{const m=add(g,SG(),M(col||0xFFFFFF,{roughness:.9,transparent:true,opacity:op||.5}),0,0,0);m.outline=0;nosh(m);m.visible=false;return m};
+ const ring=(g,col)=>{const m=to(g,1,.04,M(col||0xDFF6FF,{roughness:.2,transparent:true,opacity:.6}),0,0,0,Math.PI/2,0,0);m.outline=0;nosh(m);m.visible=false;return m};
+ return{
+ zentable(c){const g=O.zentable(c),C=g.children.slice(),tp=C[13],sk=C[19];
+  const st=[0,1].map(()=>puff(g,0xFFFFFF,.45));
+  // tea time: the teapot lifts and tips to pour into the near cup, steam curls up from the cup, the dango skewer rolls a little
+  g.userData.use=(t,p)=>{if(p<0){if(tp){tp.position.set(-.24,.37,-.02);tp.rotation.set(0,0,0)}if(sk)sk.rotation.set(0,.6,0);st.forEach(m=>m.visible=false);return}const e=EU(t,p);
+   const l=ss(.08,.2,p)*(1-ss(.4,.52,p)),pr=ss(.14,.24,p)*(1-ss(.36,.46,p));if(tp){tp.position.set(-.24+l*.06,.37+l*.08,-.02+l*.06);tp.rotation.z=-pr*(.55+.04*Math.sin(t*9));tp.rotation.y=-l*.5}
+   if(sk)sk.rotation.set(e*.12*Math.sin(t*2),.6,0);
+   st.forEach((m,i)=>{const u=(t*.55+i*.5)%1;m.visible=e>.05;m.position.set(Math.sin(t*1.7+i*3)*.015,.45+u*.22,.16);m.scale.setScalar(.02+u*.035);m.material.opacity=.45*(1-u)*e})};return g},
+ zabuton(c){const g=O.zabuton(c),C=g.children.slice(),cu=rp(g,C.slice(0,7),0,.01,0);
+  const ts=[[-1,-1],[-1,1],[1,-1],[1,1]].map(([x,z],i)=>rp(g,[C[7+i*2],C[8+i*2]],x*.3,.085,z*.3));
+  // sat on: the cushion squashes flat round the pet and the corner tassels swing out and settle
+  g.userData.use=(t,p)=>{if(t<0){cu.scale.set(1,1,1);ts.forEach(q=>{q.rotation.set(0,0,0);q.position.y=.085});return}const d=ein(t,4);cu.scale.set(1+.04*d,1-.4*d,1+.04*d);
+   const w=Math.exp(-t*1.8)*Math.sin(t*9);ts.forEach((q,i)=>{const s=i<2?-1:1,s2=i%2?1:-1;q.position.y=.085-.025*d;q.rotation.z=-s*.35*w;q.rotation.x=s2*.35*w})};return g},
+ paperlantern(c){const g=O.paperlantern(c),C=g.children.slice(),Pp=C[7]&&C[7].material,i0=Pp?Pp.emissiveIntensity:.5,ln=rp(g,C.slice(7,24),0,.57,0);
+  // a boop: the lantern swings on top of its pole and glows brighter, flickering like a candle, then calms
+  g.userData.use=(t,p)=>{if(p<0){ln.rotation.set(0,0,0);if(Pp)Pp.emissiveIntensity=i0;return}const e=EU(t,p),u=t%2.5,w=Math.exp(-u*1.4)*Math.sin(u*6);
+   ln.rotation.z=e*.12*w;ln.rotation.x=e*.05*Math.sin(t*2.3);if(Pp)Pp.emissiveIntensity=i0+e*(.6+.12*Math.sin(t*13)+.08*Math.sin(t*5.3))};return g},
+ bonsai(c){const g=O.bonsai(c),C=g.children.slice(),soil=C[6],sm=soil?soil.material:null,s0=sm?sm.color.clone():null;
+  const pads=[[25,33],[33,41],[41,49],[49,57]].map(([a,b])=>{const o=C[a];return rp(g,C.slice(a,b),o.position.x,o.position.y-.02,o.position.z)});
+  const dr=[0,1,2].map(()=>puff(g,0x8FD8FF,.8));
+  // watered: drops fall onto the pads, the pads perk up and rustle, the soil darkens as it drinks and dries back after
+  g.userData.use=(t,p)=>{if(p<0){pads.forEach(q=>{q.rotation.set(0,0,0);q.scale.set(1,1,1)});if(sm)sm.color.copy(s0);dr.forEach(m=>m.visible=false);return}const e=EU(t,p),wet=ss(.1,.5,p);
+   pads.forEach((q,i)=>{const k=e*(.5+.5*Math.max(0,Math.sin(t*3+i)));q.rotation.z=.05*k*Math.sin(t*5+i*1.7);q.rotation.x=.04*k*Math.sin(t*4.3+i);const s=1+.06*wet*e;q.scale.set(1,s,1)});
+   if(sm)sm.color.setRGB(s0.r*(1-.45*wet),s0.g*(1-.45*wet),s0.b*(1-.45*wet));
+   dr.forEach((m,i)=>{const u=(t*1.4+i/3)%1,x=[.22,-.12,.08][i],z=[.05,0,-.06][i];m.visible=e>.05&&p<.7;m.position.set(x,.95-u*.75,z);m.scale.set(.012,.02,.012);m.material.opacity=.8*(1-u*.5)})};return g},
+ shoji(c){const g=O.shoji(c),pn=g.children.filter(o=>!o.isMesh).slice(0,3),r0=pn.map(o=>o.rotation.y);
+  // a boop: the folding panels shiver on their hinges, the outer two swinging in a little and back
+  g.userData.use=(t,p)=>{pn.forEach((o,i)=>{if(p<0){o.rotation.y=r0[i];return}const e=EU(t,p),u=t%3,w=Math.exp(-u*1.3)*Math.sin(u*7+i);o.rotation.y=r0[i]+(i===1?.02:.09)*w*e*(i?1:-1)})};return g},
+ sandgarden(c){const g=O.sandgarden(c),C=g.children.slice(),rk=C[12],moss=[C[7],C[9],C[11]],ms0=moss.map(m=>m?m.scale.clone():null);
+  const pf=[0,1,2].map(()=>puff(g,0xF4E8CA,.7));
+  // raking: little puffs of sand kick up across the garden, the moss caps on the rocks quiver and the tiny rake rattles in its corner
+  g.userData.use=(t,p)=>{if(p<0){if(rk)rk.rotation.set(0,-.5,.9);moss.forEach((m,i)=>m&&m.scale.copy(ms0[i]));pf.forEach(m=>m.visible=false);return}const e=EU(t,p);
+   if(rk)rk.rotation.set(e*.05*Math.sin(t*11),-.5,.9+e*.06*Math.abs(Math.sin(t*5)));moss.forEach((m,i)=>{if(m){const s=1+e*.08*Math.sin(t*7+i*2);m.scale.set(ms0[i].x*s,ms0[i].y,ms0[i].z*s)}});
+   pf.forEach((m,i)=>{const u=(t*1.1+i/3)%1,k=Math.floor(t*1.1+i/3),x=-.4+((k*37+i*13)%9)/9*.75,z=-.25+((k*17+i*7)%7)/7*.5;m.visible=e>.05;m.position.set(x,.15+u*.07,z);m.scale.set(.03+u*.04,.02+u*.02,.03+u*.04);m.material.opacity=.7*(1-u)*e})};return g},
+ fountain(c){const g=O.fountain(c),A=g.userData.anim,B=boost(1.6),arm=g.children[17],rg=ring(g,0xE8FAFF),dp=puff(g,0x8FD8FF,.8);
+  // peered at: the bamboo rocker fills and tips faster, each tip sends a ripple across the basin and a drop splashes
+  g.userData.use=(t,p)=>{B.use(t,p);if(p<0){rg.visible=false;dp.visible=false}};
+  g.userData.anim=t=>{if(A)A(t+B.off);const ph=((t+B.off)*.5)%1;if(B.e>.02){const u=ph<.85?(ph+.15)/1:(ph-.85)/1;rg.visible=true;rg.position.set(.2,.185,-.1);const s=.03+u*.22;rg.scale.set(s,s,1);rg.material.opacity=.6*(1-u)*B.e;
+    const k=ph>.85?(ph-.85)/.15:0;dp.visible=k>0;dp.position.set(.28-k*.05,.45-k*.25,-.15+k*.05);dp.scale.set(.015,.022,.015)}else{rg.visible=false;dp.visible=false}};return g},
+ koibowl(c){const g=O.koibowl(c),A=g.userData.anim,B=boost(2),fs=[g.children[5],g.children[6]],rg=ring(g,0xE8FAFF);
+  // peered at: the koi swim faster, rise to the surface to say hello, and rings spread across the water
+  g.userData.use=(t,p)=>{B.use(t,p);if(p<0){fs.forEach(f=>{if(f)f.position.y=.27});rg.visible=false;return}fs.forEach((f,i)=>{if(f)f.position.y=.27+B.e*(.012+.006*Math.sin(t*3+i*2))});
+   const u=(t*.7)%1;rg.visible=B.e>.05;rg.position.set(.08,.282,-.05);const s=.03+u*.25;rg.scale.set(s,s,1);rg.material.opacity=.6*(1-u)*B.e};
+  if(A)g.userData.anim=t=>A(t+B.off);return g},
+ zenbasketbed(c){const g=O.zenbasketbed(c),C=g.children.slice(),cu=rp(g,[C[2]],0,.08,0),bl=C[3],b0=bl?[bl.position.x,bl.rotation.y]:0;
+  // a nap in the basket: the cushion dents and breathes, the folded blanket slides over towards the pet
+  g.userData.use=(t,p)=>{if(t<0){cu.scale.set(1,1,1);if(bl){bl.position.x=b0[0];bl.rotation.y=b0[1]}return}const d=ein(t,2);cu.scale.set(1+.03*d,1-.4*d+.06*Math.sin(t*1.6)*d,1+.03*d);
+   if(bl){bl.position.x=b0[0]-.04*d;bl.rotation.y=b0[1]+.12*d}};return g}
+ }})());}catch(e){console.warn("anim set zen.js",e)}
 /* </anim-sets> */
 // civic places get a bigger name plaque than houses (the Town Hall's was hard to read from the map)
 TM_SIGN._place=(fg,L,k)=>{const p=TM_SIGN._house(fg,L,k);p.scale.multiplyScalar(1.6);p.position.y+=.12;return p};
@@ -72077,7 +73443,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><p class="coachgo">Start by tapping ${nm} to say hello.</p><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=129;
+const APP_V=130;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
