@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v125** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v125'` in `sw.js`; bump both for anything
+**Current build: v126** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v126'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1320,3 +1320,21 @@ it rides on wishes. Block at the end of `/* <loop-fixes> */`.
   (`acts['intro:'+k]`) as the opener of the first map conversation (`cvOpener` wrapper) or close-up (`socialLine` wrapper).
 - **Card**: "Things to try in town" at the top of Neighbours > People (`renderTown` wrapper, `.ttcard`): up to 3 untried with Go, the tried
   ones ticked; gone once all are tried. Also fixed: that page's event Go used `'h_'+E.house` (now `evAt(E)`).
+
+## Your yard (v126): the big thing to save buttons for
+Garrett chose a yard (over a second room or room upgrades), bought then grown. Block at the end of `/* <loop-fixes> */`.
+- `state.yard` {lv 0-3, items, tf, tw, at, by}: sizes `YARD_SZ` [0,8,10,12], prices `YARD_COST` [0,3000,5000,8000] buttons. Normalised by
+  a `normalize` wrapper; `MERGE.yard` = the newer design (`at`) with the larger `lv`.
+- **The place**: `SHOPS.yard` {house:1, yard:1, hid:null, res:[]}; its `plan` is a getter (`yardPlan()`: one level, W=D=round(size/1.25)
+  cells of room 'y', floor = the design's most used floor tile (default `s_camp` Backyard lawn), walls the most used wall (default
+  `leafy`)); `layout` = `yardItems()` (the design scaled into the footprint like `houseMkItems`). `tmHouses` skips it (not on the map),
+  `twDoor('yard')` = the home door, `travelTo('yard')` refuses until bought, `houseVisit` tolerates a missing HOUSES entry.
+- **Buying**: Bolt's (and Sketch's) close-up action 'yard' → `yardBuy()` (a `dlySay` card from Bolt); first purchase gives
+  `YARD_GIFT` (camp chair, lantern, pine tree) to storage, a Journal line, scrapbook first, a reward card with Go outside.
+- **Decorating**: `yardEdit()` is a sandbox like the makeovers (room shell at the yard's size, its items/tiles, outdoor tiles added to
+  `state.town`), but with your real storage (`fown`); `yardDone()` saves the design and adjusts `fown` by the difference in placed
+  counts (`fown` is what's in storage). The `#mkbar` shows the yard bar (`mkBar` wrapper → `yardBar`); back = Done.
+- **Ways in**: Decorate's home page card (`mkDecoHtml`/`mkDecoBind` wrappers, `.ydcard`: Go outside / Decorate it, or Ask Bolt), and
+  in the yard a top bar `#yardbar` (Decorate the yard / Go inside / Bigger?).
+- Not yet: the pet using furniture in the yard (shops have no autonomy), weather/seasons on the lawn, the yard on the map behind the
+  cottage.

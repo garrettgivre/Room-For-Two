@@ -1054,6 +1054,14 @@ body:has(#fishv:not([hidden])) #fishv button{visibility:visible}
 .ttrow>div{flex:1;min-width:0}.ttrow b{display:block;font-family:var(--disp);font-weight:400;font-size:15px;color:var(--ink)}
 .ttrow small{display:block;font-size:12.5px;color:#6B4E95;line-height:1.3}
 .ttdone{display:flex;flex-wrap:wrap;gap:4px 10px;margin:6px 0 0;font-size:12px;color:#3a8a12}
+/* your yard (v126) */
+.ydcard{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#F1FBE4;border:3px solid var(--ink);border-radius:18px;box-shadow:0 4px 0 var(--ink);padding:10px 12px;margin:0 0 12px}
+.ydcard{grid-column:1/-1;width:100%;box-sizing:border-box}.ydcard>div{flex:1 1 150px;min-width:0}.ydcard b{display:block;font-family:var(--disp);font-weight:400;font-size:16px;color:var(--ink)}
+.ydcard small{display:block;font-size:12.5px;color:#4E6B2E}.ydcard.off{background:#FFF6FB}.ydcard.off small{color:#6B4E95}
+.ydcard .gel{min-height:40px;padding:0 14px;font-size:14px}
+.yardbar{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 74px);z-index:8;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:min(94vw,460px)}
+.yardbar .gel{min-height:40px;padding:0 14px;font-size:14px}
+.yardbar[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -26846,7 +26854,7 @@ const HOUSES={bunbun:{hood:'sugar',res:['baker'],at:[1,4,1]},pip:{hood:'sugar',r
 const houseOf=k=>Object.keys(HOUSES).find(h=>HOUSES[h].res.includes(k));
 const resNames=ks=>ks.map(k=>RESIDENTS[k].n).join(' & ');
 // a house can be visited once one of its residents has invited you (Friend for keepers, Regular for assistants) and someone's home
-function houseVisit(id){{const E=typeof eventNow==='function'&&eventNow();if(E&&E.house===id)return{ok:1,why:`${E.n} is on! ${E.t}`}}const H=HOUSES[id],R=H.res.map(k=>[k,RESIDENTS[k]]),inv=R.filter(([k,r])=>sandbox||!r.shop||kfLevel(kfOf(k).p)>=(r.boss?2:1)),home=R.filter(([k])=>resWhere(k)==='home'),nm=a=>resNames(a.map(q=>q[0]));
+function houseVisit(id){{const E=typeof eventNow==='function'&&eventNow();if(E&&E.house===id)return{ok:1,why:`${E.n} is on! ${E.t}`}}const H=HOUSES[id];if(!H)return{ok:1,why:''};const R=H.res.map(k=>[k,RESIDENTS[k]]),inv=R.filter(([k,r])=>sandbox||!r.shop||kfLevel(kfOf(k).p)>=(r.boss?2:1)),home=R.filter(([k])=>resWhere(k)==='home'),nm=a=>resNames(a.map(q=>q[0]));
   if(!inv.length){const [k,r]=R[0],shop=SHOPS[r.shop]?SHOPS[r.shop].n:'their shop';return{ok:0,btn:'Not invited yet',why:`${nm(R)} ${R.length>1?'haven’t':'hasn’t'} invited you over yet. Chat with ${r.n} at ${shop} to become ${r.boss?'friends':'regulars'}.`}}
   if(!home.length){const [k,r]=R[0],w=resWhere(k);return{ok:0,btn:'Nobody home',why:`${R.length>1?'Everyone’s out. ':''}${r.n} is ${lifeWhere(k)}${w==='shop'||w==='out'?` until ${hourName(resUntil(k))}`:''}.`}}
   return{ok:1,why:`${nm(home)} ${home.length>1?'are':'is'} home. Come on in!`}}
@@ -27970,7 +27978,7 @@ const TM_INFO={home:'Your room. Decorate it, care for your pet, and head out whe
   wear:'Hands, shoes and accessories, tailored by Stitch.',arcade:'Minigames, high scores and a party floor upstairs.'};
 const tmShops=()=>Object.keys(SHOPS).filter(k=>SHOPS[k].plan&&!SHOPS[k].house&&!SHOPS[k].place);
 const tmPlacesP=()=>Object.keys(SHOPS).filter(k=>SHOPS[k].place);
-const tmHouses=mk=>Object.keys(SHOPS).filter(k=>SHOPS[k].house&&(!mk||SHOPS[k].hood===mk));
+const tmHouses=mk=>Object.keys(SHOPS).filter(k=>SHOPS[k].house&&!SHOPS[k].yard&&(!mk||SHOPS[k].hood===mk));
 const tmMk=()=>tm&&tm.mk||'world',tmMOf=mk=>mk==='world'?state.wmap:isHood(mk)?(state.nmaps||(state.nmaps={}))[mk]:state.tmap,tmM=()=>tmMOf(tmMk());
 const tmSetM=(mk,m)=>{if(mk==='world')state.wmap=m;else if(isHood(mk))(state.nmaps||(state.nmaps={}))[mk]=m;else state.tmap=m;return m};
 const tmPlacesOf=mk=>mk==='world'?['home',...tmShops(),...tmHouses(),...tmPlacesP()]:isHood(mk)?[...tmHouses(mk),'gate_town']:['home',...tmShops(),'gate_hood'],tmPlaces=()=>tmPlacesOf(tmMk());
@@ -66944,6 +66952,7 @@ const WHATSNEW=[[119,'For the two of you: notes to each other are kept safe, you
   [123,'Neighbours now walk to the friends and shops they visit, noticeboards offer a few fresh favours each week instead of repeating, the back button closes the museum and little cards first, and the game frees memory it no longer needs, which should help on long evenings.'],
   [124,'Arcade: quitting with × keeps your score in every game, pinball is friendlier with short intros, and Drop lists what you won. Mochi stays in bed at night, learns a proper Roly-poly, and wishes no longer copy the daily list. The Wardrobe and studios have more room on small phones, and price stickers are coins instead of hearts.'],
   [125,'Now and then Mochi wishes for something out in town, like meeting a neighbour, catching a fish or planting the garden, and Go shows you the way. Neighbours with a job tell you about it the first time you chat, and Neighbours has a Things to try card.'],
+  [126,'A yard of your own! Save up 3,000 buttons and Bolt at Hammer & Hue will build one behind your house. Decorate it with your own furniture, step outside with Mochi, and make it bigger later.'],
   [118,'Friendships go deeper: every neighbour has five more heart-to-hearts, sends a letter (and a gift) when you become best friends, and remembers what you talked about lately. More fixes from playtesting: town projects always appear on the map (the bouncy castle comes first now), the Journal keeps months, not days, taps on the noticeboard, museum and well work, and the back button closes photos and fishing.'],
   [117,'Fixes from playtesting: finished makeovers now pay out properly (they hadn’t been!), events at the library, Town Hall and weather station pay too, party guests spread out, Today’s list sits right under the bond bar, and your pet’s Journal has a page summing up the month so far. Plus a gentler welcome back, fewer day-one strangers, and lots of small things.'],
   [116,'Polish: keepsake letters read properly in the Bag, scrolling tab rows show there’s more, the plaza tiles are brighter, civic buildings have bigger name signs, and messages no longer pop over your pet while you dress it.'],
@@ -70079,6 +70088,60 @@ function ttIntro(k){try{if(!TT_INTRO[k])return null;const A=state.acts||(state.a
 {const rt=renderTown;renderTown=function(body){const r=rt.apply(this,arguments);try{if(lifeTab==='people'&&state){const L=ttLeft();if(L.length){const done=TT.filter(q=>!L.includes(q));
   const el=document.createElement('div');el.className='ttcard';el.innerHTML=`<h3>Things to try in town <small>${done.length} of ${TT.length}</small></h3>${L.slice(0,3).map(q=>`<div class="ttrow"><div><b>${esc(q[1])}</b><small>${esc(q[2])}</small></div><button class="gel pink tdgo" data-tt="${q[0]}">Go</button></div>`).join('')}${done.length?`<p class="ttdone">${done.map(q=>`<span>✓ ${esc(q[1])}</span>`).join('')}</p>`:''}`;
   const tabs=body.querySelector('.lifetabs');if(tabs)tabs.after(el);else body.prepend(el);el.querySelectorAll('[data-tt]').forEach(b=>b.onclick=()=>ttGo(b.dataset.tt))}}}catch(e){console.warn('things to try',e)}return r}}
+// ---- your yard (v126): something big to save buttons for. Bolt builds it (3,000 buttons) and makes it bigger (5,000, then 8,000).
+// It's a place like the houses (SHOPS.yard, a one-level plan made from state.yard) that you walk out to; you decorate it with your own
+// furniture in a sandbox like the makeover rooms, and it's saved back on Done. state.yard {lv 0-3, items, tf, tw, at, by}.
+const YARD_SZ=[0,8,10,12],YARD_COST=[0,3000,5000,8000],YARD_GIFT=['campchair','camplantern','pinetree'];
+function yardS(){const Y=state&&state.yard;return Y&&typeof Y==='object'?Y:{lv:0}}
+function yardPlan(){const Y=yardS(),n=YARD_SZ[Y.lv|0]||8,W=Math.max(6,Math.round(n/PLAN_CS)),D=W,f=tileMode(Y.tf),w=tileMode(Y.tw);
+  return{W,D,ext:0xE9F6D2,base:0xD9EFC0,door:[0,Math.floor(D/2),'w'],arrive:[[1.2,D/2+.4]],levels:[{grid:Array.from({length:D},()=>'y'.repeat(W)),rooms:{y:{n:'Yard',f:TILESETS.f[f]?f:'s_camp',w:TILESETS.w[w]?w:'leafy'}},doors:[],open:[],rugs:[]}]}}
+function yardItems(){const Y=yardS(),P=yardPlan(),n=YARD_SZ[Y.lv|0]||8,C=PLAN_CS,hw=P.W*C/2,hd=P.D*C/2,sx=hw/(n/2+.3),sz=hd/(n/2+.3),out=[];
+  (Y.items||[]).forEach(it=>{const d=CATMAP[it.k];if(!d)return;const q={k:it.k,c:it.c|0};
+    if(d.wall){const u=+it.u||0,y=it.y||1.4;if(it.w===3)Object.assign(q,{at:[-hw+WT/2+.02,clamp(-u*sz,-hd+.4,hd-.4),Math.PI/2],y,cls:3});else Object.assign(q,{at:[clamp(u*sx,-hw+.4,hw-.4),-hd+WT/2+.02,0],y,cls:0})}
+    else Object.assign(q,{x:clamp((+it.x||0)*sx,-hw+.3,hw-.3),z:clamp((+it.z||0)*sz,-hd+.3,hd-.3),r:it.r||0,y:it.y||0});out.push(q)});return out}
+SHOPS.yard={n:'Your yard',house:1,yard:1,hid:null,res:[],owner:null,kind:'home',door:'classic',icon:'tab-room',color:'#A6E22E',blurb:'Your own little yard.',tf:()=>[],tw:()=>[],kgs:[],lines:[],layout:()=>yardItems()};
+Object.defineProperty(SHOPS.yard,'plan',{get:yardPlan,enumerable:true});
+MERGE.yard=(l,r,b)=>{l=l||{};r=r||{};const n=(+l.at||0)>=(+r.at||0)?l:r;return Object.assign({},n,{lv:Math.max(l.lv|0,r.lv|0)})};
+{const n0=normalize;normalize=function(){const s_=n0.apply(this,arguments);try{if(s_){const Y=s_.yard&&typeof s_.yard==='object'?s_.yard:{};s_.yard={lv:clamp(Y.lv|0,0,3),items:Array.isArray(Y.items)?Y.items.filter(i=>i&&CATMAP[i.k]):[],tf:Array.isArray(Y.tf)?Y.tf:null,tw:Array.isArray(Y.tw)?Y.tw:null,at:+Y.at||0,by:Y.by||''}}}catch(e){console.warn('yard norm',e)}return s_}}
+if(state&&!state.yard)state.yard={lv:0,items:[],tf:null,tw:null,at:0,by:''};
+{const tt=travelTo;travelTo=function(dest){if(dest==='yard'&&!(yardS().lv>0)){toast('You don’t have a yard yet. Bolt at Hammer & Hue can build one.',true);return}return tt.apply(this,arguments)}}
+{const td_=twDoor;twDoor=function(k){return td_.call(this,k==='yard'?'home':k)}}
+function yardBuy(){const Y=yardS(),lv=Y.lv|0;if(lv>=3){toast('Your yard is as big as it gets.',true);return}const cost=YARD_COST[lv+1],big=lv>0;
+  dlySay('builder',big?`Bigger yard? Love it. I can push the hedge back for ${cost.toLocaleString()} buttons. Everything you've put out there stays.`:`A yard of your own! I'll lay the lawn, plant a hedge and put in a gate by your door. ${cost.toLocaleString()} buttons and it's yours.`,
+    [[big?`Make it bigger (${cost.toLocaleString()})`:`Build it (${cost.toLocaleString()})`,()=>{if(!payCur(cost,'b')){toast(`That's ${cost.toLocaleString()} buttons. Keep saving, you two!`,true);return}
+      if(!state.yard||typeof state.yard!=='object')state.yard={lv:0,items:[]};state.yard.lv=lv+1;state.yard.at=Date.now();state.yard.by=pid();
+      if(!big)YARD_GIFT.forEach(k=>{if(CATMAP[k])state.fown[k]=(state.fown[k]|0)+1});saveSoon();updHUD();
+      try{firstOf(big?'yard'+(lv+1):'yard',big?'We made the yard bigger.':'We got a yard of our own.')}catch(_){}jrAdd(big?`The yard got bigger today. ${headNames()[0]} ran all the way to the new hedge and back.`:`We have a yard now! Grass and everything. ${headNames()[1]} has already found the best patch of sun.`,'','yard',0,'');logEvent(big?'made the yard bigger':'had Bolt build a yard');
+      setTimeout(()=>showReward(big?'A bigger yard!':'A yard of your own!','tab-room',`<p>${big?'Bolt pushed the hedge back. There’s room for more now.':'Bolt laid the lawn and planted a hedge. Step outside from Decorate, or from here.'}</p>${big?'':'<p>Bolt left you a camp chair, a lantern and a little pine tree. They’re in storage.</p>'}<p><button type="button" class="rwlink">Later</button></p>`,{ok:'Go outside',fn:()=>travelTo('yard')}),500)}],
+     ['Not yet',()=>{}]])}
+// decorating the yard: your own furniture (storage counts carry over), saved on Done
+function yardEdit(){const Y=yardS();if(!(Y.lv>0))return;if(away){travelTo('home',()=>yardEdit());return}if(sandbox)return;setTab(null);try{closeWheel()}catch(_){}select(null);if(brush)endBrush();if(dirty){clearTimeout(saveT);flush()}
+  const saved=JSON.parse(JSON.stringify(state)),n=YARD_SZ[Y.lv];sandbox={saved,yard:1};state.size=n;state.items=JSON.parse(JSON.stringify(Y.items||[]));
+  const N=n*n,M=4*n;state.tf=Array.isArray(Y.tf)&&Y.tf.length===N?Y.tf.slice():Array(N).fill('s_camp');state.tw=Array.isArray(Y.tw)&&Y.tw.length===M?Y.tw.slice():Array(M).fill('leafy');
+  state.town=[...new Set((state.town||[]).concat(['f:s_camp','w:leafy','f:garden','f:gardenrug','w:gardenrun','f:s_garden']))];
+  buildHist.length=0;updUndoBtns();syncScene();pet.key=null;buildPet();updHUD();document.body.classList.add('mkmode');yardBar();setTimeout(()=>{if(sandbox&&sandbox.yard)openDecorate('furn')},350)}
+function yardBar(){const b=$('#mkbar');if(!b)return;if(!sandbox||!sandbox.yard){return}b.hidden=false;
+  b.innerHTML=`<div class="mkt"><div><b>Your yard</b><small>Use your own furniture and paint the lawn. It saves when you tap Done.</small></div></div><div class="mkbtns"><button class="gel lilac" id="ydDeco">Furniture</button><button class="gel slime" id="ydDone">Done</button></div>`;
+  $('#ydDeco').onclick=()=>openDecorate('furn');$('#ydDone').onclick=yardDone}
+function yardDone(){if(!sandbox||!sandbox.yard)return;const S=sandbox,design={items:state.items.map(({k,x,z,r,c,w,u,y})=>({id:uid(),k,x,z,r,c,w,u,y})),tf:state.tf.slice(),tw:state.tw.slice()};
+  const before={},after={};((S.saved.yard&&S.saved.yard.items)||[]).forEach(i=>before[i.k]=(before[i.k]|0)+1);design.items.forEach(i=>after[i.k]=(after[i.k]|0)+1);
+  select(null);if(brush)endBrush();setTab(null);state=S.saved;sandbox=null;dirty=false;document.body.classList.remove('mkmode');$('#mkbar').hidden=true;
+  const F=state.fown||(state.fown={});new Set([...Object.keys(before),...Object.keys(after)]).forEach(k=>{const dl=(after[k]|0)-(before[k]|0);F[k]=Math.max(0,(F[k]|0)-dl);if(!F[k])delete F[k]});
+  state.yard=Object.assign(state.yard||{lv:1},design,{at:Date.now(),by:pid()});buildHist.length=0;updUndoBtns();syncScene();pet.key=null;buildPet();updHUD();saveSoon();try{tryRemote()}catch(_){}
+  try{firstOf('yarddeco','We decorated our yard.')}catch(_){}toast('The yard is saved. Step outside to see it.',true)}
+{const mb=mkBar;mkBar=function(){if(sandbox&&sandbox.yard){yardBar();return}return mb.apply(this,arguments)}}
+{const ba=backAct;backAct=function(){try{if(sandbox&&sandbox.yard&&!openTab){yardDone();return true}}catch(_){}return ba.apply(this,arguments)}}
+// Bolt (and Sketch) build it; Decorate's home page and the yard itself have the way in
+{const ka=kActs;kActs=function(kind){const A=ka.apply(this,arguments);try{if((kind==='builder'||kind==='pencil')&&yardS().lv<3)A.push(['yard',yardS().lv?'Make the yard bigger':'Build a yard',yardS().lv?`${YARD_COST[yardS().lv+1].toLocaleString()} buttons`:'Your own lawn, 3,000 buttons','#E6F8D2','tab-room'])}catch(_){}return A}}
+{const kc=kAct;kAct=function(a){if(a==='yard'){kClose(true);yardBuy();return}return kc.apply(this,arguments)}}
+{const dh=mkDecoHtml;mkDecoHtml=function(){let h='';try{if(!sandbox&&!(away&&!away.def.yard)){const Y=yardS();h=Y.lv>0?`<div class="ydcard"><div><b>Your yard</b><small>${(Y.items||[]).length?`${Y.items.length} thing${Y.items.length>1?'s':''} out there`:'Empty lawn, waiting for you'}</small></div><button class="gel slime" data-yd="go">Go outside</button><button class="gel lilac" data-yd="edit">Decorate it</button></div>`
+  :`<div class="ydcard off"><div><b>A yard of your own</b><small>Save up 3,000 buttons and Bolt at Hammer &amp; Hue will build one.</small></div><button class="gel lilac" data-yd="bolt">Ask Bolt</button></div>`}}catch(e){console.warn('yard card',e)}return h+dh.apply(this,arguments)}}
+{const db=mkDecoBind;mkDecoBind=function(root){try{(root||document).querySelectorAll('[data-yd]').forEach(b=>b.onclick=()=>{const a=b.dataset.yd;setTab(null);if(a==='go')travelTo('yard');else if(a==='edit')yardEdit();else travelTo('build')})}catch(_){}return db.apply(this,arguments)}}
+function yardTick(){let el=$('#yardbar');const on=!!(away&&away.key==='yard'&&!openTab&&!kmode&&!sandbox&&!(typeof tm!=='undefined'&&tm&&tm.open));
+  if(!on){if(el)el.hidden=true;return}if(!el){el=document.createElement('div');el.id='yardbar';el.className='yardbar';document.body.appendChild(el)}
+  if(el.hidden||!el.innerHTML){el.innerHTML=`<button class="gel lilac" id="ydE">Decorate the yard</button><button class="gel slime" id="ydIn">Go inside</button>${yardS().lv<3?'<button class="gel silver" id="ydB">Bigger?</button>':''}`;
+    $('#ydE').onclick=()=>yardEdit();$('#ydIn').onclick=()=>travelTo('home');const bb=$('#ydB');if(bb)bb.onclick=()=>yardBuy()}el.hidden=false}
+setInterval(()=>{try{yardTick()}catch(e){}},500);
 /* </loop-fixes> */
 // civic places get a bigger name plaque than houses (the Town Hall's was hard to read from the map)
 TM_SIGN._place=(fg,L,k)=>{const p=TM_SIGN._house(fg,L,k);p.scale.multiplyScalar(1.6);p.position.y+=.12;return p};
@@ -70173,7 +70236,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><p class="coachgo">Start by tapping ${nm} to say hello.</p><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=125;
+const APP_V=126;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

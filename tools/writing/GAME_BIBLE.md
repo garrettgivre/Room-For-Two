@@ -2145,3 +2145,10 @@ Re-scan for pronouns after any new writing (a regex scan can miss a pronoun two 
 - Pronouns: Boing he, Blush she, Joy she are final (Garrett: "whatever feels right").
 - There is a sea: the town sits on a coast. A bay opens to the east-south-east beyond the woods, by Bubble Bay: a sandy beach, rocks, a pier at the end of the east road, a lighthouse on its own rock out in the bay, sailboats. The town is not an island; the shore curves away at both ends.
 - New landmarks on the map (v71): a windmill in Lantern Meadow, a water tower on Playhouse Hill, a clock tower on the plaza, an observatory at the east lookout, a greenhouse by the Potted Lodge, a waterfall and stream in Bubble Bay under a stone bridge on the south lane, a playground west of Sugarloaf Lane, a carousel and a hot-air balloon on Playhouse Hill, market stalls and bus stops near the plaza.
+
+### Your yard (v126)
+- Bolt builds the yard behind your house: lawn, a hedge all round and a gate by your door. He makes it bigger twice by pushing the
+  hedge back, and leaves a camp chair, a lantern and a little pine tree from the Backyard Campout set as a housewarming gift.
+- Neighbours with a job introduce it the first time you talk (v125): Beacon buys what you don't keep from fishing, Posy hands out
+  seeds, Dewey writes the museum cards, Parcel carries presents for free, Dr. Patch does daily check-ups, Tutti's first scoop is free,
+  Echo plays a song a day, Prickles wants jokes, Nimbus reads the weather.
