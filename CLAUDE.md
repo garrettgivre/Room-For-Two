@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v120** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v120'` in `sw.js`; bump both for anything
+**Current build: v121** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v121'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1243,3 +1243,10 @@ Agents: readability and taps, generated text, retest of v119 (the fresh first we
 - Quitting pinball pays out like Stack/Says (`closeGame` wrapper); game intro cards fit 640px tall screens; the keeper bubble avoids
   the close-up panel; readability CSS (gel shine under labels, `.rcx`/`.grab` hit areas, 40px chips/back buttons, aria-labels on the
   note box, sound sliders and name box).
+- v121 (the week-one playtest): needs drain at full rate for 4 h, then 40%, and drain alone never takes a need below 25 (`needDrain`,
+  used by `petStats` and `petAt`, which must match for the merge); room gifts get a button to Decorate (`decoOpen(view,page)`, a
+  `showReward` wrapper keyed on the card text: "room set is yours" = Open Decorate, "for your room. It's in storage" = Place it); the
+  Menu and Journal badges show 9+; opening the Journal marks Footprints seen; `petDeliver` waits while the map, a conversation,
+  fishing or photo mode is open; a blank name asks again a day later; Footprints quote two-do and arcade titles.
+  Open from that report (design, ask Garrett): buttons pile up with little to spend on (~300 a day), and fishing, bugs, the museum,
+  the garden, projects, makeovers and resident chats are never nudged by the daily list or wishes.
