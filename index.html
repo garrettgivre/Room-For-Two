@@ -1062,6 +1062,29 @@ body:has(#fishv:not([hidden])) #fishv button{visibility:visible}
 .yardbar{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 74px);z-index:8;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:min(94vw,460px)}
 .yardbar .gel{min-height:40px;padding:0 14px;font-size:14px}
 .yardbar[hidden]{display:none}
+/* Decorate, friendlier (v132) */
+.sheet.deco{height:min(48%,440px)}
+.dkinds,.dinroom,.dhint,.dshowall{grid-column:1/-1}
+.sheet.deco .pgh,.sheet.deco .pgsub{display:none}
+.dkinds{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 10px;margin:0 -2px;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent)}
+.dkinds::-webkit-scrollbar{display:none}
+.dkind{flex:none;min-height:38px;padding:0 14px;border-radius:999px;border:2.5px solid var(--ink);background:#fff;font-family:var(--disp);font-size:14px;color:var(--ink);box-shadow:0 3px 0 var(--ink)}
+.dkind small{display:inline-block;min-width:18px;padding:0 5px;margin-left:3px;border-radius:9px;background:var(--lime);font-size:11px;line-height:18px}
+.dkind.none{opacity:.55;box-shadow:none}
+.dinroom{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 8px;scrollbar-width:none}
+.dinroom::-webkit-scrollbar{display:none}
+.dinr{flex:none;width:58px;height:58px;border-radius:16px;border:2.5px solid var(--ink);background:#F3EEF8;padding:3px;box-shadow:0 3px 0 var(--ink)}
+.dinr img{width:100%;height:100%;object-fit:contain}
+.dinr:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.dhint{font-size:12px;color:#6B4E95;margin:0 2px 10px}
+.dshowall{display:block;width:100%;margin:10px 0 6px;min-height:46px;border-radius:16px;border:2.5px dashed rgba(59,18,115,.45);background:#FFF6FB;font-family:var(--disp);font-size:15px;color:var(--ink)}
+.dshowall small{display:block;font-size:11.5px;color:#6B4E95}
+.dburst{position:fixed;z-index:60;pointer-events:none;transform:translate(-50%,-50%);text-shadow:0 0 0 #3B1273,1px 1px 0 #3B1273,-1px 1px 0 #3B1273,1px -1px 0 #3B1273,-1px -1px 0 #3B1273;animation:dburst .72s cubic-bezier(.2,.8,.3,1) forwards}
+@keyframes dburst{0%{opacity:1;transform:translate(-50%,-50%) scale(.4)}60%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1) rotate(40deg)}}
+.dcard .stock{top:auto;bottom:-10px;right:-6px;height:24px;min-width:0;padding:0 8px;border-radius:12px;font-size:11.5px;background:var(--lime);transform:rotate(-3deg);border-width:2.5px;box-shadow:0 2px 0 var(--ink)}
+.dcard .stock::before,.dcard .stock::after{content:none!important}
+.dcard .stock.zero{background:#EDE6F5;color:#6B4E95}
+.dcard .own{left:4px;bottom:4px;background:#3EC8F2;color:#fff;border-radius:8px}
 </style>
 </head>
 <body>
@@ -23404,6 +23427,1424 @@ SET_DEF({
     return W}}
 });
 /* </theme-sets> */
+/* <need-sets> */
+// four sets that even out "By need" (v132): Splash & Suds, Steam & Petals (Hygiene), Snuggle Burrow (Love), Midnight Snack (Hunger); sources .claude/sets3/, brief tools/dev/town/NEEDSET_BRIEF.md
+// ---- nsuds
+try{
+SET_DEF({
+ set:{k:'nsuds',n:'Splash & Suds',c:'#4FC9E8'},
+ tiles:{
+  f:['Fish-scale bath tiles',(x,w,h)=>{const s=64,rows=h/(s/2),cols=w/s;x.fillStyle='#F4FBFD';x.fillRect(0,0,w,h);
+    const pal=['#7FD8EC','#93E0F0','#6CCDE6','#A8E8F4','#86DBEE','#7FD8EC'];
+    const hsh=(i,j)=>{const v=Math.sin(i*12.9898+j*78.233)*43758.5453;return v-Math.floor(v)};
+    for(let j=-2;j<=rows+1;j++)for(let i=-1;i<=cols;i++){const cx=i*s+(((j%2)+2)%2)*s/2,cy=j*s/2,jm=((j%rows)+rows)%rows,im=((i%cols)+cols)%cols,k=hsh(im,jm);
+      const c=k<.05?'#FFB3D4':k<.08?'#FFE07A':k<.2?'#FFFFFF':pal[Math.floor(k*97)%pal.length];
+      x.beginPath();x.arc(cx,cy,s/2-1.5,0,Math.PI*2);x.fillStyle=c;x.fill();x.lineWidth=3;x.strokeStyle='#FFFFFF';x.stroke();
+      const g=x.createRadialGradient(cx-8,cy-12,2,cx,cy,s/2);g.addColorStop(0,'rgba(255,255,255,.55)');g.addColorStop(.5,'rgba(255,255,255,0)');g.addColorStop(1,'rgba(30,90,130,.16)');
+      x.beginPath();x.arc(cx,cy,s/2-3,0,Math.PI*2);x.fillStyle=g;x.fill()}
+    mottle(x,w,h,9302,5,.12);grain(x,4,9303)}],
+  w:['Bubbles and ducks wall',(x,w,h)=>{const top=h*.6;x.fillStyle='#FFE3F0';x.fillRect(0,0,w,top);mottle(x,w,top,9311,4,.18);
+    for(let i=0;i<w;i+=64){x.fillStyle='rgba(255,255,255,.35)';x.fillRect(i+26,0,12,top)}
+    const bub=(cx,cy,r)=>{wrap(w,top+400,cx,cy,r,(px,py)=>{x.beginPath();x.arc(px,py,r,0,7);x.fillStyle='rgba(255,255,255,.55)';x.fill();x.lineWidth=2.2;x.strokeStyle='rgba(79,170,214,.85)';x.stroke();
+      x.beginPath();x.arc(px-r*.35,py-r*.35,r*.28,0,7);x.fillStyle='rgba(255,255,255,.95)';x.fill();x.beginPath();x.arc(px+r*.4,py+r*.3,r*.5,.2,1.3);x.strokeStyle='rgba(255,143,192,.7)';x.lineWidth=2;x.stroke()})};
+    const duck=(cx,cy,s,fl)=>{x.save();x.translate(cx,cy);x.scale(fl*s,s);x.lineWidth=2.4/s;x.strokeStyle='rgba(59,18,115,.75)';x.fillStyle='#FFD23F';
+      x.beginPath();x.ellipse(0,6,15,10,0,0,7);x.fill();x.stroke();x.beginPath();x.moveTo(-14,2);x.quadraticCurveTo(-24,-6,-16,10);x.fill();
+      x.beginPath();x.arc(8,-8,8,0,7);x.fill();x.stroke();x.fillStyle='#FF9A2E';x.beginPath();x.ellipse(17,-7,6,3,0,0,7);x.fill();x.stroke();
+      x.fillStyle='#3B1273';x.beginPath();x.arc(10,-10,1.8,0,7);x.fill();x.fillStyle='rgba(255,255,255,.7)';x.beginPath();x.ellipse(-3,2,6,3,-.3,0,7);x.fill();x.restore()};
+    const R=rnd(9312);
+    for(let c=0;c<6;c++){const cx=(c%3)*w/3+w/6+(c>2?w/6:0),cy=c>2?top*.7:top*.28;for(let k=0;k<5;k++)bub(cx+(R()-.5)*70,cy+(R()-.5)*90,7+R()*14)}
+    for(let c=0;c<4;c++){const cx=c*w/4+w/8,cy=c%2?top*.52:top*.12+30;duck(cx,cy,1.1,c%2?-1:1)}
+    // aqua tiles below, a pink rail
+    const ts=64,ty=top+14;x.fillStyle='#FFFFFF';x.fillRect(0,ty,w,h-ty);
+    for(let j=0;ty+j*ts<h;j++)for(let i=0;i<w/ts;i++){const px=i*ts,py=ty+j*ts,k=Math.sin(i*7.1+j*3.3)*.5+.5;
+      bevel(x,px+3,py+3,ts-6,ts-6,9,k>.88?'#FFB3D4':k>.4?'#7FD8EC':'#93E0F0',8,'rgba(255,255,255,.6)','rgba(20,70,110,.25)')}
+    x.fillStyle='#FF8FC0';x.fillRect(0,top-6,w,22);x.fillStyle='rgba(255,255,255,.55)';x.fillRect(0,top-3,w,5);x.fillStyle=INK;x.fillRect(0,top-9,w,3);x.fillRect(0,top+16,w,3);
+    for(let i=0;i<w;i+=32){x.fillStyle='#FFFFFF';x.beginPath();x.arc(i+16,top+5,4,0,7);x.fill()}
+    x.fillStyle='#2C9BC0';x.fillRect(0,h-26,w,26);x.fillStyle=INK;x.fillRect(0,h-28,w,3);grain(x,4,9313)}]},
+ cat:[
+  {k:'sushower',n:'Rain-head shower stall',fn:'fun',p:13,dc:7},
+  {k:'sutub',n:'Bubble tub for two',fn:'seat',p:14,dc:0,perch:{y:.5,z:.02,x:[-.36,.36],w:.62,bz:-.3,fe:.5}},
+  {k:'susink',n:'Double sink with two mirrors',fn:'storage',p:11,dc:5},
+  {k:'suladder',n:'Heated towel ladder',fn:'deco',p:6,dc:0},
+  {k:'sucaddy',n:'Potion caddy shelf',fn:'wall',p:6,dc:9,wall:1,y:1.35},
+  {k:'supool',n:'Rubber-duck paddling ring',fn:'fun',p:8,dc:7,flat:1},
+  {k:'subed',n:'Foam bubble pet bed',fn:'pet',p:6,dc:5,flat:1,sleep:1},
+  {k:'subrush',n:'Toothbrush cup station',fn:'deco',p:4,dc:7},
+  {k:'suscreen',n:'Shower-curtain screen',fn:'deco',p:7,dc:0},
+  {k:'sumat',n:'Cloud bath mat',fn:'rug',p:4,dc:9,flat:1},
+  {k:'sulamp',n:'Bubble mist lamp',fn:'light',p:8,dc:7},
+  {k:'suhamper',n:'Pop-lid laundry hamper',fn:'storage',p:5,dc:9}],
+ build:(()=>{
+  const AQ=0x5CCFE6,AQd=0x2C9BC0,PK=0xFF8FC0,YE=0xFFD23F,OR=0xFF9A2E,WH=0xFFFFFF,LIME=0xA6E22E,BLU=0x3EC8F2,EYE=0x23173A,hx=v=>'#'+v.toString(16).padStart(6,'0');
+  const ss=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)};
+  const env=(p,a,b)=>p<0?0:ss(0,a,p)*(1-ss(b,1,p)); // fade in and out over a use
+  const CH=()=>M(0xDDE3EE,{metalness:.8,roughness:.18});
+  const POR=()=>M(WH,{roughness:.14});
+  const FOAM=()=>M(WH,{roughness:.6});
+  const WAT=()=>M(0xBFEFFF,{roughness:.05,emissive:0x8FDFFF,emissiveIntensity:.3});
+  const BUB=(t)=>M(t||0xF2FBFF,{roughness:.06,emissive:0xCFEFFF,emissiveIntensity:.2});
+  const GL=()=>M(0xD8F6FF,{roughness:.04,metalness:.1,transparent:true,opacity:.3,emissive:0xFFFFFF,emissiveIntensity:0});
+  const dropG=()=>gcache('nsuds_drop',()=>latheGeo([[.001,-1],[.5,-.9],[.8,-.6],[.86,-.3],[.7,.05],[.45,.4],[.2,.75],[.001,1.05]],12));
+  const drop=(p,r,m,x,y,z)=>{const d=add(p,dropG(),m,x,y,z);d.scale.setScalar(r);d.outline=0;return nosh(d)};
+  // low-poly spheres for foam and bubbles (lots of them)
+  const lsG=()=>gcache('nsuds_ls',()=>{const P=[];for(let i=0;i<=8;i++){const t=-Math.PI/2+i/8*Math.PI;P.push([Math.max(.001,Math.cos(t)),Math.sin(t)])}return latheGeo(P,14)}),ls=(p,r,m,x,y,z,sx,sy,sz)=>{const o=add(p,lsG(),m,x,y,z);o.scale.set(r*(sx??1),r*(sy??1),r*(sz??1));return o};
+  const puffs=(p,L,m,o)=>L.forEach(q=>ol(ls(p,q[3],m,q[0],q[1],q[2],q[4]??1,q[5]??.85,q[6]??1),o??.006));
+  // a soap bubble with a little window shine
+  const bubble=(p,r,m,x,y,z,shine)=>{const q=piv(p,x,y,z);ol(ls(q,r,m,0,0,0),r>.04?.004:.002);if(shine!==false)nosh(ls(q,r*.24,M(WH,{emissive:WH,emissiveIntensity:.6}),-r*.38,r*.4,r*.72)).outline=0;return q};
+  // a rubber duck (faces +z), origin under its belly
+  const duck=(p,x,y,z,s,ry)=>{const q=piv(p,x,y,z);q.scale.setScalar(s||1);q.rotation.y=ry||0;const Y=jel(YE,{roughness:.25}),O=M(OR,{roughness:.3}),E=M(EYE,{roughness:.3});
+   ol(ls(q,.1,Y,0,.065,0,1.15,.72,1.05),.004);ol(ls(q,.064,Y,0,.165,.045),.004);ol(ls(q,.034,O,0,.15,.108,1.1,.42,1),.003);
+   nosh(sp(q,.012,E,-.03,.182,.096)).outline=0;nosh(sp(q,.012,E,.03,.182,.096)).outline=0;const tl=ol(co(q,.04,.08,Y,0,.1,-.1,8),.003);tl.rotation.x=-1.0;
+   [-1,1].forEach(s_=>{const wg=ol(ls(q,.045,Y,s_*.095,.075,-.01,.35,.6,1),.002);wg.rotation.y=s_*.25});return q};
+  // little tile texture for walls and splashbacks
+  const tileTex=(c,n,m)=>gcache('nsuds_tile'+c+n+m,()=>ctex(128,128*m/n,(x,w,h)=>{x.fillStyle='#FFFFFF';x.fillRect(0,0,w,h);const s=w/n;
+   for(let j=0;j<m;j++)for(let i=0;i<n;i++){const k=Math.sin(i*7.1+j*3.3)*.5+.5;bevel(x,i*s+1.5,j*s+1.5,s-3,s-3,4,k>.9?'#FFB3D4':k>.45?hx(c):hx(lighten(c,.3)),4,'rgba(255,255,255,.6)','rgba(20,60,100,.25)')}}));
+  const weave=c=>gcache('nsuds_weave'+c,()=>ctex(128,128,(x,w,h)=>{x.fillStyle=hx(c);x.fillRect(0,0,w,h);const d=hx(shade(c,.18)),l=hx(lighten(c,.35));
+   for(let j=0;j<8;j++)for(let i=0;i<8;i++){const px=i*16,py=j*16;x.fillStyle=(i+j)%2?l:d;x.beginPath();x.ellipse(px+8,py+8,7,(i+j)%2?4:6.5,(i+j)%2?0:Math.PI/2,0,7);x.fill()}grain(x,6,9321)},[3,2]));
+  return{
+  // ---- a corner shower stall: tiled walls, a glass side, a big rain head; while used the rain falls, ripples spread on the tray,
+  // steam drifts out of the open front, the glass fogs up and the duck on the shelf wobbles
+  sushower(c){const g=G(),Ch=CH(),Po=POR(),Tw=M(WH,{map:tileTex(c,4,8),roughness:.2}),Ts=M(WH,{map:tileTex(c,4,8),roughness:.2}),Gl=GL();
+   ol(rb(g,1.12,.14,1.02,.05,Po,0,.07,0),.008);ol(rb(g,.94,.02,.84,.008,M(lighten(c,.55),{roughness:.1}),0,.14,.02),0);ol(cy(g,.05,.05,.012,Ch,0,.15,.02,18),.002);
+   ol(rb(g,1.12,2.0,.08,.03,Tw,0,1.14,-.47),.008);ol(rb(g,.08,2.0,.94,.03,Ts,.52,1.14,.04),.008);
+   ol(rb(g,1.16,.07,.12,.03,M(PK,{roughness:.3}),0,2.17,-.46),.005);ol(rb(g,.12,.07,.98,.03,M(PK,{roughness:.3}),.52,2.17,.04),.005);
+   // glass side on the left with a chrome frame and a top bar across the front
+   const gs=add(g,gcache('nsuds_glass',()=>new THREE.BoxGeometry(.02,1.86,.9)),Gl,-.53,1.07,.02);gs.outline=0;nosh(gs);
+   ol(cy(g,.02,.02,1.98,Ch,-.53,1.13,.48,10),.003);ol(cy(g,.02,.02,1.98,Ch,-.53,1.13,-.44,10),.003);
+   const tb=ol(cy(g,.02,.02,1.06,Ch,0,2.06,.48,10),.003);tb.rotation.z=Math.PI/2;const tb2=ol(cy(g,.02,.02,.94,Ch,-.53,2.06,.02,10),.003);tb2.rotation.x=Math.PI/2;
+   [-1,1].forEach(s=>ol(sp(g,.035,Ch,-.53,s>0?2.06:.16,.48),.002));
+   // the rain head
+   nsLine(g,[0,1.98,-.43],[0,1.98,-.08],.022,Ch);ol(sp(g,.03,Ch,0,1.98,-.43),.002);nsLine(g,[0,1.98,-.08],[0,1.93,-.03],.022,Ch);
+   ol(cy(g,.21,.17,.05,Ch,0,1.9,0,28),.004);
+   const holes=gcache('nsuds_holes',()=>ctex(64,64,(x,w,h)=>{x.fillStyle='#E8EEF6';x.fillRect(0,0,w,h);x.fillStyle='#8A97AE';for(let r=6;r<30;r+=6){const n=Math.round(r*1.1);for(let i=0;i<n;i++){const a=i/n*Math.PI*2;x.beginPath();x.arc(32+Math.cos(a)*r,32+Math.sin(a)*r,1.4,0,7);x.fill()}}}));
+   nosh(cy(g,.17,.17,.006,M(WH,{map:holes,roughness:.3}),0,1.872,0,28)).outline=0;
+   // taps and a soap niche with bottles and a duck
+   [[-.16,PK],[.16,AQ]].forEach(([x,col])=>{const k=ol(cy(g,.045,.045,.05,Ch,x,1.05,-.41,16),.003);k.rotation.x=Math.PI/2;ol(sp(g,.04,M(col,{roughness:.25}),x,1.05,-.37,1,1,.6),.003)});
+   nosh(ol(rb(g,.5,.3,.06,.02,M(shade(c,.15),{roughness:.3}),-.18,1.42,-.42),.004));ol(rb(g,.52,.03,.12,.01,Po,-.18,1.28,-.38),.003);
+   [[-.36,PK,.16],[-.26,0xC9B6FF,.12],[-.04,0x9BEFD0,.14]].forEach(([x,col,hh])=>{ol(lathe(g,[[.001,0],[.035,0],[.04,.02],[.04,hh*.75],[.025,hh],[.015,hh],[.015,hh+.03],[.001,hh+.03]],M(col,{roughness:.2}),x,1.295,-.39,14),.003)});
+   const dk=duck(g,-.15,1.295,-.37,.5,.3);
+   // water: falling drops, ripples on the tray, steam
+   const W=WAT(),rain=piv(g,0,0,0),R=rnd(311),drops=[];for(let i=0;i<18;i++){const a=R()*Math.PI*2,r=Math.sqrt(R())*.15;const d=drop(rain,.022,W,Math.cos(a)*r,1.8,Math.sin(a)*r);d.scale.set(.024,.075,.024);drops.push({d,ph:R()})}
+   const rip=[0,1,2].map(i=>{const t=nosh(to(g,.12,.008,M(WH,{roughness:.1,emissive:0xBFEFFF,emissiveIntensity:.3}),0,.16,.02,Math.PI/2));t.outline=0;return t});
+   const stm=[0,1,2,3].map(i=>{const q=piv(g,0,1.4,0);nosh(sp(q,.14,M(WH,{roughness:.9,emissive:WH,emissiveIntensity:.15,transparent:true,opacity:.55}),0,0,0)).outline=0;return q});
+   g.userData.use=(t,p)=>{if(p<0){rain.visible=false;rip.forEach(r=>r.visible=false);stm.forEach(q=>q.visible=false);dk.rotation.set(0,.3,0);Gl.emissiveIntensity=0;Gl.opacity=.3;return}const k=env(p,.08,.9);rain.visible=k>.05;
+    drops.forEach(o=>{const u=(t*1.6+o.ph)%1;o.d.position.y=1.84-u*1.66;o.d.visible=u<.97});
+    rip.forEach((r,i)=>{const u=(t*.9+i/3)%1;r.scale.setScalar((.3+u*2.4)*Math.max(.01,k));r.visible=k>.05&&u<.9});
+    stm.forEach((q,i)=>{const u=(t*.22+i/4)%1;q.position.set(Math.sin(t*.7+i*2)*.25,.9+u*1.0,.1+u*.55);q.scale.setScalar(Math.max(.01,k*Math.sin(u*Math.PI)*(.6+u)));q.visible=k>.05});
+    Gl.emissiveIntensity=.35*k;Gl.opacity=.3+.25*k;
+    dk.rotation.z=Math.sin(t*5)*.18*k;dk.rotation.x=Math.cos(t*3.7)*.08*k;
+    };
+   rain.visible=false;rip.forEach(r=>r.visible=false);stm.forEach(q=>q.visible=false);return g},
+
+  // ---- an oval bubble bath with two headrests and lime and blue taps; the foam heaves and breathes, bubbles rise and pop,
+  // the duck bobs on the foam
+  sutub(c){const g=G(),En=M(c,{roughness:.18}),In=M(lighten(c,.7),{roughness:.12}),Ch=CH(),Fo=FOAM(),Y=jel(YE,{roughness:.25});
+   [[-.56,-.24],[.56,-.24],[-.56,.24],[.56,.24]].forEach(([x,z],i)=>{ol(lathe(g,[[.001,0],[.07,0],[.08,.03],[.07,.08],[.045,.12]],Y,x,0,z,14),.004)});
+   const sh=ol(lathe(g,[[.001,.1],[.62,.1],[.78,.15],[.86,.3],[.9,.48],[.9,.6]],En,0,0,0,40),.01);sh.scale.set(1,1,.6);
+   const inn=nosh(lathe(g,[[.87,.6],[.85,.48],[.74,.3],[.001,.26]],In,0,0,0,40));inn.scale.set(1,1,.6);inn.outline=0;
+   ol(add(g,gcache('nsuds_rim',()=>{const P=[];for(let i=0;i<=56;i++){const a=i/56*Math.PI*2;P.push([Math.sin(a)*.885,.61,Math.cos(a)*.53])}return sweepGeo(P,()=>[.045,.04],{len:112,seg:10})}),M(WH,{roughness:.15}),0,0,0),.006);
+   const wt=nosh(cy(g,.84,.84,.02,WAT(),0,.47,0,40));wt.scale.set(1,1,.58);wt.outline=0;
+   // taps at the back
+   ol(rb(g,.2,.12,.12,.04,Ch,0,.64,-.5),.004);ol(add(g,gcache('nsuds_spout',()=>sweepGeo([[0,0,0],[0,.12,0],[0,.18,.06],[0,.15,.13]],()=>[.025,.025],{len:16,seg:8})),Ch,0,.68,-.5),.004);
+   [[-.16,LIME],[.16,BLU]].forEach(([x,col])=>{ol(cy(g,.03,.03,.08,Ch,x,.7,-.5,12),.003);ol(sp(g,.045,M(col,{roughness:.25}),x,.77,-.5,1,.7,1),.004)});
+   // headrests
+   [-.36,.36].forEach(x=>{const q=add(g,gcache('nsuds_hrest',()=>cushionGeo(.15,.08,.05,{pinch:.05,n:3,seg:32,rings:6})),M(PK,{roughness:.5}),x,.72,-.47);q.rotation.x=-.5;ol(q,.005)});
+   // the foam: three heaps that breathe, a fringe round the rim
+   const heaps=[[-.6,.0],[0,.1],[.6,-.02]].map(([x,z],i)=>{const q=piv(g,x,.5,z);puffs(q,[[0,.06,0,.17],[-.13,.03,.06,.12],[.12,.04,-.04,.13],[.04,.13,-.02,.1],[-.06,.02,-.12,.11],[.1,.0,.12,.1]],Fo,.006);return q});
+   const R=rnd(77);const fr=[];for(let i=0;i<16;i++){const a=i/16*Math.PI*2,r=.075+R()*.04;fr.push([Math.sin(a)*.8,.56+R()*.03,Math.cos(a)*.46,r])}const fringe=piv(g,0,0,0);puffs(fringe,fr,Fo,.005);
+   const loose=[];for(let i=0;i<7;i++){const q=bubble(g,.035+(i%3)*.018,BUB(i%2?0xFFF0FA:0xF2FBFF),(R()-.5)*1.2,.75,(R()-.5)*.5);loose.push({q,x:q.position.x,z:q.position.z,i,ph:R()})}
+   const dk=duck(g,-.25,.62,.3,.85,.6);
+   g.userData.use=(t,p)=>{if(p<0){heaps.forEach(q=>q.scale.set(1,1,1));fringe.scale.set(1,1,1);loose.forEach(b=>{b.q.position.set(b.x,.75,b.z);b.q.scale.setScalar(1)});dk.position.y=.62;dk.rotation.set(0,.6,0);return}const k=p<0?0:ss(0,.06,p);
+    heaps.forEach((q,i)=>{q.scale.set(1+.05*k*Math.sin(t*2.1+i),1+k*(.12+.08*Math.sin(t*2.6+i*1.7)),1+.05*k*Math.cos(t*1.8+i))});
+    fringe.scale.set(1,1+.08*k*Math.sin(t*3),1);
+    loose.forEach(b=>{const u=(t*.3+b.ph)%1;b.q.position.set(b.x+Math.sin(t*1.4+b.i)*.05,.62+u*.75,b.z);b.q.scale.setScalar(Math.max(.01,k*(u<.85?Math.min(1,u*5):1-(u-.85)/.15*1)))});
+    dk.position.y=.62+Math.abs(Math.sin(t*2.2))*.03*k;dk.rotation.z=Math.sin(t*2.2)*.15*k;dk.rotation.y=.6+Math.sin(t*.6)*.4*k;
+    };
+   return g},
+
+  // ---- a double sink, one basin and one round mirror each (lime frame and blue frame); while used both taps run, bubbles
+  // build up in the basins, the mirrors fog over and clear, and the soap pump bobs
+  susink(c){const g=G(),Cb=M(c,{roughness:.35}),Cd=M(shade(c,.12),{roughness:.35}),Po=POR(),Ch=CH(),Tl=M(WH,{map:tileTex(AQ,8,2),roughness:.2});
+   ol(rb(g,1.5,.7,.52,.06,Cb,0,.4,0),.009);
+   [-.37,.37].forEach(x=>{ol(rb(g,.64,.5,.04,.04,Cd,x,.4,.26),.005);ol(sp(g,.035,Ch,x+(x<0?.24:-.24),.42,.3),.002)});
+   [[-.62,-.2],[.62,-.2],[-.62,.18],[.62,.18]].forEach(([x,z])=>ol(lathe(g,[[.05,0],[.06,.02],[.05,.05]],M(YE,{roughness:.3}),x,0,z,12),.003));
+   ol(rb(g,1.62,.07,.6,.03,Po,0,.785,0),.007);
+   ol(rb(g,1.62,.46,.06,.03,Tl,0,1.05,-.27),.006);ol(rb(g,1.66,.05,.1,.02,M(PK,{roughness:.3}),0,1.29,-.25),.004);
+   const W=WAT(),streams=[],foams=[],mirrors=[];
+   [[-.4,LIME],[.4,BLU]].forEach(([x,col],i)=>{
+    const bs=ol(lathe(g,[[.001,0],[.12,0],[.2,.04],[.24,.1],[.25,.14]],Po,x,.82,.04,32),.006);bs.scale.set(1,1,.78);
+    const iw=nosh(cy(g,.21,.21,.01,M(lighten(AQ,.5),{roughness:.08}),x,.93,.04,28));iw.scale.set(1,1,.78);iw.outline=0;
+    ol(add(g,gcache('nsuds_ftap',()=>sweepGeo([[0,0,0],[0,.2,0],[0,.27,.06],[0,.23,.15]],()=>[.022,.022],{len:16,seg:8})),Ch,x,.82,-.19),.004);
+    ol(sp(g,.035,M(col,{roughness:.25}),x+.1,.86,-.19,1,.7,1),.003);ol(cy(g,.012,.012,.07,Ch,x+.1,.83,-.19,8),0);
+    const st=nosh(cy(g,.012,.016,.16,W,x,.97,.0,8));st.outline=0;streams.push(st);
+    const fq=piv(g,x,.93,.06);puffs(fq,[[0,0,0,.06],[-.07,0,.02,.045],[.07,0,-.01,.05],[.02,.02,.06,.04]],FOAM(),.003);foams.push(fq);
+    // the mirror on a stem
+    nsLine(g,[x,1.28,-.27],[x,1.36,-.27],.02,Ch);const mm=M(0xD6EEFA,{metalness:.55,roughness:.08,emissive:WH,emissiveIntensity:0});
+    ol(cy(g,.23,.23,.03,mm,x,1.62,-.26,32),.004).rotation.x=Math.PI/2;ol(to(g,.24,.035,jel(col,{roughness:.22}),x,1.62,-.25),.006);
+    nosh(sp(g,.05,M(WH,{emissive:WH,emissiveIntensity:.25,roughness:.1}),x-.1,1.71,-.235,1,.6,.2)).outline=0;mirrors.push(mm)});
+   // soap pump between the basins
+   ol(lathe(g,[[.001,0],[.06,0],[.065,.03],[.065,.14],[.04,.17],[.001,.17]],M(PK,{roughness:.2}),0,.82,-.12,18),.004);
+   const pump=piv(g,0,.99,-.12);ol(cy(pump,.014,.014,.05,Ch,0,.025,0,8),.002);ol(rb(pump,.05,.025,.09,.01,Ch,0,.06,.02),.002);
+   const bb=bubble(g,.03,BUB(0xFFF0FA),0,1.12,-.08);
+   g.userData.use=(t,p)=>{if(p<0){streams.forEach(s=>s.visible=false);foams.forEach(f=>f.visible=false);mirrors.forEach(m=>m.emissiveIntensity=0);pump.position.y=.99;bb.position.y=1.12;bb.scale.setScalar(0);return}const run=env(p,.1,.88);
+    streams.forEach((s,i)=>{s.visible=run>.05;s.scale.set(.8+Math.sin(t*31+i)*.15,Math.max(.01,run),.8+Math.cos(t*27+i)*.15);s.position.y=1.05-.08*run});
+    foams.forEach((f,i)=>{const s=ss(.08,.4,p)*(1-ss(.9,1,p));f.visible=s>.02;f.scale.set(.3+s*.8,(.3+s*.9)*(1+Math.sin(t*4+i)*.08),.3+s*.8)});
+    mirrors.forEach((m,i)=>{m.emissiveIntensity=.45*ss(.15,.5,p)*(1-ss(.7,.95,p))});
+    const pu=Math.max(0,Math.sin(t*3));pump.position.y=.99-.03*pu*pu*(p<0?0:1);
+    const u=(t*.4)%1;bb.position.y=1.0+u*.5;bb.scale.setScalar(Math.max(.01,(p<0?0:1)*Math.sin(u*Math.PI)));
+    };
+   streams.forEach(s=>s.visible=false);foams.forEach(f=>f.visible=false);bb.scale.setScalar(0);return g},
+
+  // ---- a chrome ladder leaning on the wall with warm rungs and two striped towels; while used the rungs glow warmer, the towels
+  // swing and steam curls off them, and the little duck on top rocks
+  suladder(c){const g=G(),Ch=CH(),L=piv(g,0,0,.12);L.rotation.x=-.17;
+   const Hm=M(0xFFC9A0,{roughness:.2,metalness:.5,emissive:0xFF7A3A,emissiveIntensity:.08});
+   [-.3,.3].forEach(x=>{ol(add(L,gcache('nsuds_rail',()=>sweepGeo([[0,0,0],[0,.6,0],[0,1.3,0],[0,1.62,-.04],[0,1.7,-.12]],()=>[.032,.032],{len:30,seg:10})),Ch,x,0,0),.004);
+    ol(sp(L,.05,M(PK,{roughness:.4}),x,.02,0,1,.6,1.2),.003)});
+   const rungs=[.3,.58,.86,1.14,1.42];rungs.forEach(y=>{const r=ol(cy(L,.026,.026,.6,Hm,0,y,0,12),.003);r.rotation.z=Math.PI/2});
+   const stripe=(a,b)=>gcache('nsuds_tws'+a+b,()=>ctex(64,128,(x,w,h)=>{x.fillStyle=hx(a);x.fillRect(0,0,w,h);x.fillStyle=hx(b);[14,22,98,106].forEach(y=>x.fillRect(0,y,w,5));x.fillStyle='rgba(255,255,255,.18)';for(let i=0;i<w;i+=4)x.fillRect(i,0,1.5,h);grain(x,8,9331)}));
+   const towel=(y,w,len,col,col2,ph)=>{const q=piv(L,0,y,0),m=M(WH,{map:stripe(col,col2),roughness:.85});
+    ol(cy(q,.05,.05,w,m,0,0,0,14),.004).rotation.z=Math.PI/2;
+    ol(rb(q,w,len,.035,.017,m,0,-len/2,.04),.005);ol(rb(q,w,len*.6,.035,.017,m,0,-len*.3,-.04),.005);
+    for(let i=0;i<7;i++)nosh(cy(q,.006,.006,.05,M(col2,{roughness:.8}),-w/2+.03+i*(w-.06)/6,-len-.02,.04,5)).outline=0;return{q,ph}};
+   const tws=[towel(1.14,.5,.62,c,WH,0),towel(.58,.46,.4,AQ,0xFFE07A,1.7)];
+   const dk=duck(L,.18,1.47,0,.5,-.4);
+   const stm=[0,1,2].map(i=>{const q=piv(L,0,1.2,.05);nosh(sp(q,.06,M(WH,{roughness:.9,emissive:WH,emissiveIntensity:.15,transparent:true,opacity:.55}),0,0,0)).outline=0;return q});
+   g.userData.use=(t,p)=>{if(p<0){Hm.emissiveIntensity=.08;tws.forEach(o=>o.q.rotation.x=0);stm.forEach(q=>q.visible=false);dk.rotation.z=0;return}const k=env(p,.08,.9);Hm.emissiveIntensity=.08+.6*k*(.8+.2*Math.sin(t*3));
+    tws.forEach(o=>{o.q.rotation.x=Math.sin(t*3.2+o.ph)*.22*k*(.7+.3*Math.sin(t*1.3))});
+    stm.forEach((q,i)=>{const u=(t*.35+i/3)%1;q.position.set(-.15+i*.15+Math.sin(t+i)*.04,1.2+u*.5,.08);q.scale.setScalar(Math.max(.01,k*Math.sin(u*Math.PI)));q.visible=k>.03});
+    dk.rotation.z=Math.sin(t*4)*.2*k;
+    };
+   stm.forEach(q=>q.visible=false);return g},
+
+  // ---- a scalloped wall caddy of bath potions; while used the bottles jiggle in a wave, the spray bottle puffs a pink mist and the
+  // cork on the tall bottle pops up and drops back
+  sucaddy(c){const g=G(),Bd=M(c,{roughness:.35}),Po=POR(),Ch=CH();
+   const P=[[-.46,-.42],[.46,-.42]];nsScallop(.46,5,.08).forEach(([x,y])=>P.push([x,y*.62+.18]));P.push([-.46,.18]);
+   ol(flat(g,P,.04,Bd,0,0,0),.008);
+   [-.28,.08].forEach(y=>{ol(rb(g,.94,.04,.2,.015,Po,0,y,.11),.005);const r=ol(cy(g,.012,.012,.9,Ch,0,y+.07,.2,8),.002);r.rotation.z=Math.PI/2;[-.44,.44].forEach(x=>ol(cy(g,.01,.01,.07,Ch,x,y+.035,.2,6),0))});
+   const B=[],bot=(x,y,col,prof,kind)=>{const q=piv(g,x,y,.11);ol(lathe(q,prof,M(col,{roughness:.18}),0,0,0,16),.003);B.push({q,i:B.length});return q};
+   bot(-.34,-.26,PK,[[.001,0],[.05,0],[.055,.03],[.055,.11],[.03,.14],[.018,.15],[.001,.15]]);
+   bot(-.2,-.26,0x9BEFD0,[[.001,0],[.045,0],[.06,.05],[.045,.1],[.02,.12],[.02,.16],[.001,.16]]);
+   const tall=bot(-.04,-.26,0xC9B6FF,[[.001,0],[.04,0],[.045,.02],[.045,.2],[.025,.24],[.015,.26],[.001,.26]]);
+   const cork=piv(tall,0,.26,0);ol(cy(cork,.018,.015,.04,M(0xD9A35E,{roughness:.7}),0,.02,0,10),.002);
+   // a jar of bath bombs
+   const jar=bot(.14,-.26,0xE8FAFF,[[.001,0],[.07,0],[.075,.02],[.075,.13],[.06,.15],[.001,.15]]);
+   [[-.03,.06,PK],[.03,.07,YE],[0,.11,0x9BEFD0],[.035,.12,0xC9B6FF]].forEach(([x,y,col])=>ol(sp(jar,.03,M(col,{roughness:.5}),x,y,.03),.002));
+   ol(cy(jar,.065,.065,.02,M(AQ,{roughness:.3}),0,.16,0,16),.002);
+   // the spray bottle and its mist
+   const spray=bot(.33,-.26,AQ,[[.001,0],[.05,0],[.055,.02],[.055,.13],[.035,.16],[.001,.16]]);
+   const noz=piv(spray,0,.16,0);ol(rb(noz,.04,.05,.04,.01,M(WH,{roughness:.3}),0,.025,0),.002);ol(rb(noz,.025,.02,.06,.008,M(WH,{roughness:.3}),0,.045,.03),.002);
+   const mist=[0,1,2,3].map(i=>{const q=piv(g,.33,-.06,.2);nosh(sp(q,.05,M(0xFFE3F0,{roughness:.9,emissive:0xFFD0E6,emissiveIntensity:.3,transparent:true,opacity:.6}),0,0,0)).outline=0;return q});
+   // top shelf: rolled towels, a soap and a little plant
+   [[-.32,PK],[-.2,WH],[-.26,AQ]].forEach(([x,col],i)=>{const r=ol(cy(g,.055,.055,.18,M(col,{roughness:.85}),x,.155+(i==2?.1:0),.11,16),.004);r.rotation.x=Math.PI/2});
+   ol(rb(g,.12,.05,.08,.025,M(0xFFE07A,{roughness:.4}),.02,.125,.12),.003);
+   ol(lathe(g,[[.001,0],[.06,0],[.07,.09],[.075,.1],[.001,.1]],M(WH,{roughness:.3}),.3,.1,.1,16),.003);
+   for(let i=0;i<6;i++){const l=add(g,gcache('nsuds_lf',()=>leafGeo(.14,.07)),M(0x5BB36A,{roughness:.55,side:THREE.DoubleSide}),.3,.19,.1);l.rotation.set(-.3+(i%2)*.4,i*1.05,(i%3-1)*.5);ol(l,.002)}
+   g.userData.use=(t,p)=>{if(p<0){B.forEach(b=>{b.q.position.y=-.26;b.q.rotation.z=0});noz.position.y=.16;mist.forEach(q=>q.visible=false);cork.position.y=.26;cork.rotation.z=0;return}const k=env(p,.06,.9);
+    B.forEach(b=>{const w=Math.max(0,Math.sin(t*5-b.i*.9));b.q.position.y=-.26+w*w*.03*k;b.q.rotation.z=Math.sin(t*5-b.i*.9)*.06*k});
+    const pf=(t*.8)%1;noz.position.y=.16-(pf<.12?.012:0)*k;
+    mist.forEach((q,i)=>{const u=(pf+i*.06)%1;q.position.set(.33-u*.25,-.06+u*.12,.2+u*.25);q.scale.setScalar(Math.max(.01,k*(u<.6?u*2.2:Math.max(0,(1-u)*3))));q.visible=k>.03});
+    const cp=(t*.5)%1;cork.position.y=.26+Math.max(0,Math.sin(Math.min(1,cp*3)*Math.PI))*.09*k;cork.rotation.z=Math.max(0,Math.sin(Math.min(1,cp*3)*Math.PI))*.5*k;
+    };
+   mist.forEach(q=>q.visible=false);return g},
+
+  // ---- an inflatable paddling ring with three ducks; while the pet splashes in it the ducks paddle round, ripples run and droplets fly
+  supool(c){const g=G(),Fl=M(WH,{map:gcache('nsuds_ring'+c,()=>ctex(128,32,(x,w,h)=>{for(let i=0;i<8;i++){x.fillStyle=i%2?'#FFFFFF':hx(c);x.fillRect(i*w/8,0,w/8+1,h)}x.fillStyle='rgba(255,255,255,.35)';x.fillRect(0,6,w,4)})),roughness:.2});
+   ol(to(g,.68,.1,Fl,0,.1,0,Math.PI/2),.008);ol(to(g,.68,.06,M(lighten(c,.4),{roughness:.25}),0,.2,0,Math.PI/2),.005).scale.set(1,1,.6);
+   ol(cy(g,.62,.62,.02,M(lighten(AQ,.3),{roughness:.2}),0,.01,0,36),.004);
+   const wt=nosh(cy(g,.6,.6,.02,WAT(),0,.09,0,36));wt.outline=0;
+   ol(cy(g,.03,.03,.05,M(WH,{roughness:.3}),.5,.2,.48,10),.002).rotation.x=-.6; // valve
+   const rip=[0,1,2].map(i=>{const t=nosh(to(g,.15,.008,M(WH,{roughness:.1,emissive:0xBFEFFF,emissiveIntensity:.3}),0,.105,0,Math.PI/2));t.outline=0;return t});
+   const ring=piv(g,0,.1,0);const dks=[[0,PK],[2.1,YE],[4.2,YE]].map(([a,col],i)=>{const d=duck(ring,Math.cos(a)*.42,0,Math.sin(a)*.42,i?.55:.65,-a);return{d,a}});
+   const sps=[];for(let i=0;i<8;i++){sps.push(drop(g,.035,WAT(),0,.1,0))}
+   g.userData.use=(t,p)=>{if(p<0){ring.rotation.y=0;dks.forEach(o=>{o.d.position.y=0;o.d.rotation.z=0});rip.forEach(r=>r.visible=false);sps.forEach(d=>d.visible=false);return}const k=env(p,.06,.92);ring.rotation.y=-t*.6*k;
+    dks.forEach((o,i)=>{o.d.position.y=Math.abs(Math.sin(t*3+i*2))*.025*k;o.d.rotation.z=Math.sin(t*3+i*2)*.15*k});
+    rip.forEach((r,i)=>{const u=(t*.6+i/3)%1;r.scale.setScalar(Math.max(.01,(.4+u*3)*k));r.visible=k>.05&&u<.9});
+    const u=(t*1.2)%1;sps.forEach((d,i)=>{const a=i/8*Math.PI*2,rr=.08+u*.32;d.position.set(Math.cos(a)*rr,.12+Math.sin(u*Math.PI)*.35,Math.sin(a)*rr);d.visible=k>.05&&u<.92});
+    };
+   rip.forEach(r=>r.visible=false);sps.forEach(d=>d.visible=false);return g},
+
+  // ---- a round foam pet bed rimmed with bubbles; while the pet sleeps the foam breathes slowly and little bubbles drift up and pop
+  subed(c){const g=G(),Bs=M(c,{roughness:.3}),Fo=FOAM(),Cu=M(lighten(c,.75),{roughness:.85});Cu.detail=1;
+   ol(lathe(g,[[.001,0],[.42,0],[.5,.04],[.54,.12],[.52,.18],[.46,.16]],Bs,0,0,0,36),.008);
+   const q=add(g,gcache('nsuds_bcush',()=>cushionGeo(.42,.42,.06,{pinch:0,n:2,seg:48,rings:7})),Cu,0,.14,0);q.rotation.x=-Math.PI/2;ol(q,.006);
+   const rim=piv(g,0,.18,0);const R=rnd(51),L=[];for(let i=0;i<16;i++){const a=i/16*Math.PI*2,r=.07+R()*.04;L.push([Math.sin(a)*.49,R()*.03,Math.cos(a)*.49,r])}puffs(rim,L,Fo,.005);
+   [[.3,.33,PK],[-.38,.24,0x9BEFD0],[.08,-.46,0xC9B6FF]].forEach(([x,z,col])=>bubble(rim,.06,BUB(lighten(col,.6)),x,.08,z));
+   const fl=[];for(let i=0;i<5;i++){const b=bubble(g,.025+(i%2)*.015,BUB(i%2?0xFFF0FA:0xF2FBFF),(R()-.5)*.6,.3,(R()-.5)*.6);fl.push({b,x:b.position.x,z:b.position.z,ph:R()})}
+   g.userData.use=(t,p)=>{if(p<0){rim.scale.set(1,1,1);fl.forEach(o=>o.b.scale.setScalar(.01));return}const on=p<0?0:1;rim.scale.set(1+.03*on*Math.sin(t*1.3),1+.08*on*Math.sin(t*1.3),1+.03*on*Math.sin(t*1.3));
+    fl.forEach((o,i)=>{const u=(t*.18+o.ph)%1;o.b.position.set(o.x+Math.sin(t*.9+i)*.04,.25+u*.6,o.z);o.b.scale.setScalar(Math.max(.01,on*(u<.85?Math.min(1,u*6):Math.max(0,1-(u-.85)*7))))});
+    };
+   fl.forEach(o=>o.b.scale.setScalar(.01));return g},
+
+  // ---- a little pedestal with a cup of two toothbrushes (lime and blue), a toothpaste tube and a two-minute sand timer;
+  // while used the brushes wiggle, the tube squeezes out a curl of paste, the timer flips and foam bubbles rise
+  subrush(c){const g=G(),Pd=M(c,{roughness:.3}),Po=POR(),Ch=CH();
+   ol(lathe(g,[[.001,0],[.22,0],[.23,.04],[.18,.08],[.13,.12],[.11,.5],[.15,.56],[.2,.6],[.21,.62],[.001,.62]],Pd,0,0,0,28),.007);
+   for(let i=0;i<8;i++){const a=i/8*Math.PI*2;nosh(cy(g,.012,.012,.36,M(lighten(c,.35),{roughness:.3}),Math.sin(a)*.115,.32,Math.cos(a)*.115,6)).outline=0}
+   ol(cy(g,.26,.26,.04,Po,0,.64,0,32),.005);
+   // the cup and brushes
+   ol(lathe(g,[[.001,0],[.06,0],[.07,.02],[.075,.15],[.08,.16],[.001,.16]],M(PK,{roughness:.2}),-.08,.66,-.02,18),.004);
+   const brushes=[[LIME,-.25],[BLU,.25]].map(([col,a])=>{const q=piv(g,-.08,.7,-.02);q.rotation.z=a;const h=piv(q);ol(cy(h,.013,.016,.34,M(col,{roughness:.25}),0,.17,0,10),.003);
+    ol(rb(h,.03,.06,.025,.01,M(col,{roughness:.25}),0,.35,0),.002);ol(rb(h,.026,.05,.04,.008,M(WH,{roughness:.7}),0,.36,.03),.002);return q});
+   // the toothpaste tube lying down, its cap and a curl of paste
+   const tube=piv(g,.1,.69,.1);tube.rotation.y=-.5;ol(add(tube,gcache('nsuds_tube',()=>loftGeo([[-.1,.006,.035],[-.08,.03,.03],[0,.035,.03],[.06,.034,.03],[.09,.02,.02],[.1,.015,.015]],{seg:24})),M(WH,{roughness:.3}),0,0,0),.003).rotation.z=Math.PI/2;
+   ol(add(tube,gcache('nsuds_tstripe',()=>loftGeo([[-.02,.037,.032],[.03,.037,.032]],{seg:24})),M(AQ,{roughness:.3}),0,0,0),0).rotation.z=Math.PI/2;
+   const cap=ol(cy(tube,.02,.02,.04,M(PK,{roughness:.3}),-.12,0,0,10),.002);cap.rotation.z=Math.PI/2;
+   const paste=piv(tube,.12,0,0);ol(add(paste,gcache('nsuds_paste',()=>sweepGeo([[0,0,0],[.03,.01,0],[.05,.03,.01],[.05,.05,0]],()=>[.012,.012],{len:14,seg:8})),M(WH,{roughness:.4}),0,0,0),.002);
+   ol(add(paste,gcache('nsuds_paste2',()=>sweepGeo([[0,0,0],[.03,.01,0],[.05,.03,.01],[.05,.05,0]],()=>[.006,.006],{len:14,seg:6})),M(0x9BEFD0,{roughness:.4}),0,0,.006),0);
+   // the timer
+   const tm=piv(g,.12,.66,-.1);const hg=piv(tm,0,.09,0);[-1,1].forEach(s=>ol(cy(hg,.055,.055,.015,M(0xFFE07A,{roughness:.3}),0,s*.085,0,14),.003));
+   [-1,1].forEach(s=>ol(sp(hg,.042,M(0xE8FAFF,{roughness:.05,emissive:0xE8FAFF,emissiveIntensity:.15}),0,s*.04,0,1,1.05,1),.002));
+   ol(cy(hg,.022,.035,.03,M(0xFFC28A,{roughness:.8}),0,-.06,0,10),0);
+   [[-.045,.045],[.045,-.045]].forEach(([x,z])=>ol(cy(hg,.006,.006,.17,M(0xFFE07A,{roughness:.3}),x,0,z,6),0));
+   const fb=[0,1,2].map(i=>bubble(g,.022,BUB(),-.08,.9,-.02,false));
+   g.userData.use=(t,p)=>{if(p<0){brushes.forEach((q,i)=>q.rotation.z=i?.25:-.25);tube.scale.set(1,1,1);paste.scale.setScalar(.01);hg.rotation.z=0;hg.position.y=.09;fb.forEach(b=>b.scale.setScalar(.01));return}const k=env(p,.05,.92);
+    brushes.forEach((q,i)=>{q.rotation.z=(i?.25:-.25)+Math.sin(t*14+i*1.5)*.08*k});
+    const sq=ss(.1,.4,p)*(1-ss(.9,1,p));tube.scale.set(1,1-.25*sq,1+.15*sq);paste.scale.setScalar(Math.max(.01,sq));
+    const fl=(t*.25)%1;hg.rotation.z=ss(.1,.25,fl)*Math.PI*k;hg.position.y=.09+Math.sin(ss(.1,.25,fl)*Math.PI)*.05*k;
+    fb.forEach((b,i)=>{const u=(t*.5+i/3)%1;b.position.set(-.08+Math.sin(t*2+i)*.04,.9+u*.35,-.02);b.scale.setScalar(Math.max(.01,k*Math.sin(u*Math.PI)))});
+    };
+   paste.scale.setScalar(.01);fb.forEach(b=>b.scale.setScalar(.01));return g},
+
+  // ---- a chrome screen hung with a bubble-print curtain; while used the right half draws back and closes again, the curtain
+  // sways, and bubbles float up over the top bar
+  suscreen(c){const g=G(),Ch=CH();
+   [-.68,.68].forEach(x=>{ol(cy(g,.025,.025,1.82,Ch,x,.93,0,10),.003);const f=ol(rb(g,.08,.04,.42,.02,Ch,x,.02,0),.003);ol(sp(g,.04,Ch,x,1.85,0),.002)});
+   const bar=ol(cy(g,.02,.02,1.36,Ch,0,1.82,0,10),.003);bar.rotation.z=Math.PI/2;
+   const tex=gcache('nsuds_curt'+c,()=>ctex(128,128,(x,w,h)=>{x.fillStyle=hx(lighten(c,.55));x.fillRect(0,0,w,h);const R=rnd(9341);
+     for(let i=0;i<w;i+=16){x.fillStyle='rgba(255,255,255,.35)';x.fillRect(i,0,6,h)}
+     for(let k=0;k<26;k++){const px=R()*w,py=R()*h,r=3+R()*7;wrap(w,h,px,py,r,(a,b)=>{x.beginPath();x.arc(a,b,r,0,7);x.fillStyle='rgba(255,255,255,.75)';x.fill();x.lineWidth=1.2;x.strokeStyle=hx(shade(c,.15));x.stroke();x.beginPath();x.arc(a-r*.35,b-r*.35,r*.25,0,7);x.fillStyle='#FFFFFF';x.fill()})}
+     x.fillStyle=hx(c);x.fillRect(0,h-10,w,10);grain(x,5,9342)},[2,2]));
+   const cm=M(WH,{map:tex,roughness:.75,side:THREE.DoubleSide});
+   const sheet=(x0,x1,n)=>gcache('nsuds_sheet'+x0+x1,()=>{const P=[],U=[],I=[],ny=8;for(let j=0;j<=ny;j++)for(let i=0;i<=n;i++){const u=i/n,x=x0+(x1-x0)*u,y=1.76-j/ny*1.5;P.push(x,y,.045*Math.sin(u*n*Math.PI/2));U.push(u*(x1-x0)/1.3,1-j/ny)}
+     for(let j=0;j<ny;j++)for(let i=0;i<n;i++){const a=j*(n+1)+i,b=a+n+1;I.push(a,b,a+1,a+1,b,b+1)}return meshGeo(P,U,I)});
+   const left=piv(g,-.64,0,0),right=piv(g,.64,0,0);
+   const sl=add(left,sheet(0,.66,12),cm,0,0,0);sl.outline=.006;const sr=add(right,sheet(-.66,0,12),cm,0,0,0);sr.outline=.006;
+   [[left,0,.66],[right,-.66,0]].forEach(([pv,a,b])=>{for(let i=0;i<5;i++){const x=a+(b-a)*(i+.5)/5;ol(to(pv,.03,.007,Ch,x,1.8,0,Math.PI/2,0,0),0).rotation.set(0,Math.PI/2,0)}});
+   // a towel on a hook at the left post
+   ol(sp(g,.025,Ch,-.68,1.45,.05),.002);ol(rb(g,.2,.44,.04,.02,M(AQ,{roughness:.85}),-.68,1.24,.08),.004);ol(rb(g,.22,.06,.05,.02,M(WH,{roughness:.85}),-.68,1.05,.08),.003);
+   const bub=[0,1,2,3].map(i=>bubble(g,.03+(i%2)*.02,BUB(i%2?0xFFF0FA:0xF2FBFF),0,1.6,-.15));
+   g.userData.use=(t,p)=>{if(p<0){right.scale.set(1,1,1);left.rotation.x=0;right.rotation.x=0;bub.forEach(b=>b.scale.setScalar(.01));return}const k=env(p,.06,.92),op=ss(.05,.2,p)*(1-ss(.75,.9,p));right.scale.set(1-.55*op,1,1);
+    left.rotation.x=Math.sin(t*2.1)*.03*k;right.rotation.x=Math.sin(t*2.1+1)*.03*k;
+    bub.forEach((b,i)=>{const u=(t*.3+i/4)%1;b.position.set(-.4+i*.27+Math.sin(t+i)*.05,1.3+u*.9,-.15);b.scale.setScalar(Math.max(.01,k*Math.sin(u*Math.PI)))});
+    };
+   bub.forEach(b=>b.scale.setScalar(.01));return g},
+
+  // ---- a cloud-shaped bath mat with soft bubble tufts; while the pet dries its feet on it the tufts squish one after another and pop back
+  sumat(c){const g=G(),C=hx(c),D=hx(shade(c,.12));
+   const tx=gcache('nsuds_mat'+c,()=>ctex(128,128,(x,w,h)=>{x.fillStyle=C;x.fillRect(0,0,w,h);const R=rnd(9351);for(let i=0;i<500;i++){x.fillStyle=R()<.5?'rgba(255,255,255,.22)':'rgba(40,20,90,.1)';x.beginPath();x.arc(R()*w,R()*h,1+R()*2,0,7);x.fill()}},[1.5,1.5]));
+   const P=[];const lobes=[[-.42,0,.36],[0,.08,.42],[.42,0,.36],[-.2,-.16,.3],[.22,-.15,.3],[-.2,.18,.28],[.2,.2,.28]];
+   for(let i=0;i<72;i++){const a=i/72*Math.PI*2,dx=Math.cos(a),dz=Math.sin(a);let best=0;lobes.forEach(([cx,cz,r])=>{const b=cx*dx+cz*dz,cc=cx*cx+cz*cz-r*r,disc_=b*b-cc;if(disc_>0)best=Math.max(best,b+Math.sqrt(disc_))});P.push([dx*best,dz*best*.82])}
+   const m=add(g,gcache('nsuds_matg',()=>flatGeo(P,.035)),M(WH,{map:tx,roughness:.9}),0,0,0);m.rotation.x=-Math.PI/2;ol(m,.006);
+   const rim=add(g,gcache('nsuds_matr',()=>flatGeo(P.map(([a,b])=>[a*1.04,b*1.05]),.018)),M(D,{roughness:.9}),0,0,0);rim.rotation.x=-Math.PI/2;rim.outline=.004;
+   const tufts=[[-.48,.02],[-.2,-.2],[.12,-.22],[.42,-.04],[.5,.1],[.18,.22],[-.15,.25],[-.05,0],[.25,0]].map(([x,z],i)=>{const q=piv(g,x,.035,z);ol(sp(q,.075+(i%3)*.015,M(i%3?WH:lighten(c,.5),{roughness:.8}),0,0,0,1,.45,1),.003);return{q,i}});
+   g.userData.use=(t,p)=>{const k=env(p,.05,.95);tufts.forEach(o=>{const w=Math.max(0,Math.sin(t*4-o.i*.8));o.q.scale.set(1+.25*w*k,1-.6*w*k,1+.25*w*k)});
+    if(p<0)tufts.forEach(o=>o.q.scale.set(1,1,1))};
+   return g},
+
+  // ---- a floor lamp topped with glowing bubbles over a soap-film wand loop, with a mister tank at its foot; while used the bubbles
+  // glow brighter and drift up, soft mist puffs from the tank and the wand loop turns
+  sulamp(c){const g=G(),Bs=M(c,{roughness:.25}),Ch=CH();
+   ol(lathe(g,[[.001,0],[.24,0],[.25,.03],[.2,.09],[.1,.13],[.05,.16]],Bs,0,0,0,28),.007);
+   ol(add(g,gcache('nsuds_lstem',()=>sweepGeo([[0,.14,0],[0,.6,0],[.04,1.0,0],[.02,1.3,0],[0,1.48,0]],()=>[.025,.025],{len:30,seg:10})),Ch,0,0,0),.004);
+   const glow=M(0xF4FBFF,{roughness:.1,emissive:0xDFF6FF,emissiveIntensity:.7});
+   const head=piv(g,0,1.66,0);const hb=[[0,0,0,.18],[-.18,-.06,.05,.1],[.17,-.03,-.03,.11],[.06,.16,.02,.085],[-.1,.14,-.06,.075]];
+   hb.forEach(([x,y,z,r],i)=>{ol(ls(head,r,i?BUB(i%2?0xFFF0FA:0xE8FAFF):glow,x,y,z),.004);nosh(ls(head,r*.24,M(WH,{emissive:WH,emissiveIntensity:.6}),x-r*.38,y+r*.4,z+r*.72)).outline=0});
+   const wand=piv(g,0,1.46,0);ol(to(wand,.16,.018,M(PK,{roughness:.25}),0,0,0,Math.PI/2.4),.003);nosh(to(wand,.16,.006,M(WH,{roughness:.1,emissive:0xFFD8F0,emissiveIntensity:.4}),0,0,0,Math.PI/2.4)).outline=0;
+   // the mister tank at the foot
+   ol(lathe(g,[[.001,0],[.09,0],[.1,.02],[.1,.16],[.07,.2],[.03,.22],[.001,.22]],M(0xBFEFFF,{roughness:.05,emissive:0x8FDFFF,emissiveIntensity:.15}),.32,0,.08,18),.004);
+   ol(cy(g,.035,.03,.05,M(WH,{roughness:.3}),.32,.24,.08,10),.002);ol(sp(g,.03,M(YE,{roughness:.3}),.32,.1,.18,1,1,.5),.002);
+   const mist=[0,1,2,3].map(i=>{const q=piv(g,.32,.28,.08);nosh(sp(q,.06,M(WH,{roughness:.9,emissive:WH,emissiveIntensity:.25,transparent:true,opacity:.55}),0,0,0)).outline=0;return q});
+   const fl=[0,1,2].map(i=>bubble(g,.035,BUB(i%2?0xFFF0FA:0xF2FBFF),0,1.7,0));
+   g.userData.use=(t,p)=>{if(p<0){glow.emissiveIntensity=.7;wand.rotation.y=0;head.rotation.y=0;mist.forEach(q=>q.visible=false);fl.forEach(b=>b.scale.setScalar(.01));return}const k=env(p,.06,.92);glow.emissiveIntensity=.7+.6*k*(.8+.2*Math.sin(t*2));wand.rotation.y=t*.8*k;head.rotation.y=Math.sin(t*.7)*.25*k;
+    mist.forEach((q,i)=>{const u=(t*.35+i/4)%1;q.position.set(.32+Math.sin(t*.8+i*2)*.08-u*.12,.28+u*.7,.08+u*.15);q.scale.setScalar(Math.max(.01,k*Math.sin(u*Math.PI)*(.6+u*1.2)));q.visible=k>.03});
+    fl.forEach((b,i)=>{const u=(t*.25+i/3)%1;b.position.set(Math.sin(t*.9+i*2)*.2,1.75+u*.55,Math.cos(t*.7+i)*.12);b.scale.setScalar(Math.max(.01,k*Math.sin(u*Math.PI)))});
+    };
+   mist.forEach(q=>q.visible=false);fl.forEach(b=>b.scale.setScalar(.01));return g},
+
+  // ---- a woven round hamper with rope handles and a duck on its lid; while used the lid flips open, a sock hops up and drops in,
+  // the lid shuts and the duck wobbles
+  suhamper(c){const g=G(),Wv=M(WH,{map:weave(c),roughness:.8}),Rp=M(0xF2E3C6,{roughness:.9});
+   ol(lathe(g,[[.001,0],[.24,0],[.27,.04],[.3,.3],[.31,.56],[.3,.6],[.27,.6]],Wv,0,0,0,32),.008);
+   ol(to(g,.3,.03,M(shade(c,.15),{roughness:.6}),0,.58,0,Math.PI/2),.004);ol(to(g,.26,.02,M(shade(c,.15),{roughness:.6}),0,.03,0,Math.PI/2),.003);
+   [-1,1].forEach(s=>{const h=ol(to(g,.07,.016,Rp,s*.3,.46,0,0,Math.PI/2,0,Math.PI),.003)});
+   // a towel peeking out at the back, a sleeve hanging over the front
+   ol(rb(g,.22,.1,.05,.02,M(PK,{roughness:.85}),-.05,.62,-.18),.004);
+   const sl=ol(rb(g,.08,.22,.035,.015,M(AQ,{roughness:.85}),.16,.5,.29),.003);sl.rotation.x=.12;sl.rotation.z=.15;
+   const lid=piv(g,0,.6,-.3);const lw=piv(lid,0,0,.3);ol(lathe(lw,[[.001,-.01],[.33,-.01],[.33,0],[.26,.03],[.12,.06],[.001,.07]],M(WH,{map:weave(c),roughness:.8}),0,0,0,32),.006);
+   ol(sp(lw,.05,M(shade(c,.2),{roughness:.5}),0,.07,0,1,.6,1),.003);
+   const dk=duck(lw,.13,.04,.06,.55,.5);
+   const sock=piv(g,0,.5,0);ol(add(sock,gcache('nsuds_sock',()=>sweepGeo([[0,-.08,0],[0,.04,0],[.03,.09,0],[.09,.1,0]],()=>[.04,.035],{len:16,seg:10})),M(LIME,{roughness:.85}),0,0,0),.003);
+   ol(to(sock,.038,.012,M(WH,{roughness:.8}),0,-.08,0,Math.PI/2),0);sock.visible=false;
+   g.userData.use=(t,p)=>{if(p<0){lid.rotation.x=0;sock.visible=false;dk.rotation.z=0;return}const k=p<0?0:1,cyc=(t*.45)%1;const open=ss(0,.15,cyc)*(1-ss(.6,.75,cyc));lid.rotation.x=-1.25*open*k;
+    const s=Math.sin(Math.min(1,Math.max(0,(cyc-.12)/.45))*Math.PI);sock.visible=k>0&&cyc>.12&&cyc<.57;sock.position.y=.45+s*.45;sock.rotation.z=s*1.2;sock.rotation.y=t*2;
+    dk.rotation.z=Math.sin(t*5)*.25*k*(1-open);
+    };
+   return g}}})(),
+ use:{
+  sushower:{kind:'stand',front:1,anim:'u_splash',d:5.5,dist:.04,emo:['🫧','🎉'],w:.8},
+  sutub:{kind:'perch',w:s=>s.clean<55?2:.6},
+  susink:{kind:'stand',front:1,anim:'u_wash',d:5,dist:.05,emo:['🫧','💗'],w:s=>s.clean<60?1.2:.5},
+  suladder:{kind:'stand',front:1,anim:'u_dry',d:4.5,dist:.06,emo:['💗','🎵'],w:.6},
+  sucaddy:{kind:'wall',anim:'spritz',d:4,emo:['🫧','💗'],w:.5},
+  supool:{kind:'rug',anim:'u_splash',d:5,emo:['🎉','🫧'],w:s=>s.clean<60?1.1:.6},
+  subed:NAP,
+  subrush:{kind:'stand',anim:'brush',d:4.5,dist:.05,emo:['🫧','⭐'],w:.6},
+  suscreen:{kind:'stand',front:1,anim:'lather',d:4.5,dist:.06,emo:['🫧','🎵'],w:.55},
+  sumat:{kind:'rug',anim:'u_dry',d:4,emo:['💗','🫧'],w:.5},
+  sulamp:{kind:'stand',anim:'soak',d:5,dist:.15,emo:['💗','🫧'],w:.45},
+  suhamper:{kind:'stand',front:1,anim:'u_rummage',d:4.5,dist:.06,emo:['❓','🫧'],w:.45}},
+ dw:{n:'Bathhouse',wn:'Bubble porthole',
+  door(){const Aq=mt(0x5CCFE6,.25),Wh=mt(0xFFFFFF,.2),Pk=mt(0xFF8FC0,.3),D=dBase({top:'arch',F:Wh,fw:.16,L:Aq,S:mt(0x2C9BC0,.4)});
+   const fog=M(0xDDF4FF,{emissive:0xC8EEFF,emissiveIntensity:.45,roughness:.1});porthole(D.hinge,D.w/2,1.55,.25,Pk,.05,fog);
+   [[-.1,.08,.035],[.08,.12,.025],[.04,-.08,.03],[-.12,-.09,.02],[.13,-.02,.022]].forEach(([x,y,r])=>{sp(D.hinge,r,mt(0xFFFFFF,.05),D.w/2+x,1.55+y,.075,1,1,.4)});
+   [.95,.6,.25].forEach(y=>inset(D.hinge,D.w/2,y,.74,.28,mt(0x7FD8EC,.25)));
+   // a towel on a hook and a little duck on a shelf by the door
+   sp(D.hinge,.03,mt(0xDDE3EE,.2),.3,1.24,.08);rb(D.hinge,.24,.42,.04,.02,Pk,.3,1.0,.1);rb(D.hinge,.26,.05,.05,.02,Wh,.3,.82,.1);
+   lumps(D.g,[[-.62,D.h+.1],[-.42,D.h+.26],[-.18,D.h+.36],[.08,D.h+.38],[.32,D.h+.3],[.55,D.h+.14]],mt(0xFFFFFF,.5),.14,.12,.8);
+   [[-.32,D.h+.4,0xFF8FC0],[.22,D.h+.44,0xC9B6FF],[.48,D.h+.3,0x9BEFD0]].forEach(([x,y,col])=>sp(D.g,.06,mt(lighten(col,.5),.05),x,y,.2));
+   const sh=G();sh.position.set(D.w/2+.4,1.3,.12);D.g.add(sh);rb(sh,.3,.04,.18,.015,Wh,0,0,0);
+   const dk=G();dk.position.set(0,.02,0);sh.add(dk);sp(dk,.08,mt(0xFFD23F,.25),0,.06,0,1.15,.75,1);sp(dk,.05,mt(0xFFD23F,.25),.05,.14,0);sp(dk,.026,mt(0xFF9A2E,.3),.1,.13,0,1.1,.45,1);
+   knob(D,mt(0xDDE3EE,.15),1.02);return D},
+  win(){const Pk=mt(0xFF8FC0,.3),Wh=mt(0xFFFFFF,.3),fog=M(0xCFF0FF,{emissive:0xB8E6FF,emissiveIntensity:.45,roughness:.05});
+   const W=wBase({top:'circle',w:.9,F:Pk,fw:.14,mull:'cross',MM:Wh,S:mt(0x5CCFE6,.3),Gl:fog});
+   const cy0=W.y0+W.w/2;[[-.22,.18,.04],[.16,.24,.03],[.24,-.1,.035],[-.1,-.2,.025],[.02,.05,.02],[-.28,-.04,.02]].forEach(([x,y,r])=>sp(W.g,r,mt(0xFFFFFF,.05),x,cy0+y,.03,1,1,.4));
+   // little bolts round the frame like a porthole, foam on the sill and a duck
+   for(let i=0;i<8;i++){const a=i/8*Math.PI*2+.39;sp(W.g,.025,mt(0xFFFFFF,.2),Math.cos(a)*(W.w/2+.07),cy0+Math.sin(a)*(W.w/2+.07),.1)}
+   lumps(W.g,[[-.32,W.y0-.04],[-.18,W.y0-.02],[.24,W.y0-.03]],mt(0xFFFFFF,.5),.18,.07,.8);
+   const dk=G();dk.position.set(.05,W.y0-.12,.17);W.g.add(dk);sp(dk,.07,mt(0xFFD23F,.25),0,.05,0,1.15,.75,1);sp(dk,.045,mt(0xFFD23F,.25),0,.12,.03);sp(dk,.024,mt(0xFF9A2E,.3),0,.11,.075,1.1,.45,1);
+   return W}}
+});
+Object.assign(NEED_OVR,{sushower:{clean:16,fun:3},sutub:{clean:14,affection:4},susink:{clean:12},suladder:{clean:10},sucaddy:{clean:9},supool:{clean:12,fun:6},
+ subed:{energy:40,clean:5},subrush:{clean:8},suscreen:{clean:10},sumat:{clean:8},sulamp:{clean:8,affection:3},suhamper:{clean:8}});
+}catch(e){console.warn("need set nsuds",e)}
+// ---- nspa
+try{
+SET_DEF({
+ set:{k:'nspa',n:'Steam & Petals',c:'#F28DAA'},
+ tiles:{
+  f:['Cedar duckboard',(x,w,h)=>{planksF(x,w,h,8,R=>hsl(28,50,64+R()*8),9301);
+    for(let j=0;j<=8;j++){const y=j*h/8;x.fillStyle='rgba(92,52,30,.55)';x.fillRect(0,y-2,w,4);x.fillStyle='rgba(255,240,220,.35)';x.fillRect(0,y+2,w,2)}
+    const R=rnd(9302);for(let i=0;i<9;i++){const px=R()*w,py=R()*h,a=R()*6.3,c=R()<.6?'#F28DAA':'#FFC9D6';
+      wrap(w,h,px,py,14,(qx,qy)=>{x.save();x.translate(qx,qy);x.rotate(a);x.fillStyle='rgba(80,40,40,.18)';x.beginPath();x.ellipse(1,2,7,10,0,0,7);x.fill();
+        x.fillStyle=c;x.beginPath();x.moveTo(0,10);x.bezierCurveTo(9,6,9,-6,4,-10);x.quadraticCurveTo(0,-6,-4,-10);x.bezierCurveTo(-9,-6,-9,6,0,10);x.fill();
+        x.fillStyle='rgba(255,255,255,.5)';x.beginPath();x.ellipse(-2,-2,2,4,.3,0,7);x.fill();x.restore()})}
+    grain(x,5,9303)}],
+  w:['Eucalyptus scallop tile',(x,w,h)=>{fillBg(x,w,h,'#CFE7D6',9311,.18);const top=h*.6,s=64,rh=26;
+    for(let j=0;j*rh<top+rh;j++){for(let i=-1;i<=w/s;i++){const cx=i*s+(j%2?s/2:0)+s/2,cy=top-j*rh;
+      x.fillStyle=j%4===2&&(i+j)%3===0?'#F7BFD0':(i+j)%2?'#A8D3B6':'#D3ECDB';x.beginPath();x.arc(cx,cy,s/2-2,Math.PI,0);x.lineTo(cx+s/2-2,cy+rh);x.lineTo(cx-s/2+2,cy+rh);x.closePath();x.fill();
+      x.strokeStyle='rgba(80,140,104,.45)';x.lineWidth=5;x.beginPath();x.arc(cx,cy+1,s/2-2,Math.PI,0);x.stroke();x.strokeStyle='rgba(255,255,255,.9)';x.lineWidth=2.5;x.beginPath();x.arc(cx,cy,s/2-2,Math.PI,0);x.stroke();
+      x.fillStyle='rgba(255,255,255,.4)';x.beginPath();x.ellipse(cx-10,cy-14,6,3,-.4,0,7);x.fill()}}
+    // a cedar slat wainscot with a rail
+    const y0=top;x.fillStyle='#D9A066';x.fillRect(0,y0,w,h-y0);for(let i=0;i<w;i+=32){x.fillStyle=(i/32)%2?'#CF955B':'#DDA86F';x.fillRect(i+2,y0+14,28,h-y0-30);x.fillStyle='rgba(92,52,30,.45)';x.fillRect(i,y0+14,2,h-y0-30)}
+    x.fillStyle='#F28DAA';x.fillRect(0,y0,w,14);x.fillStyle=INK;x.fillRect(0,y0-3,w,3);x.fillStyle='rgba(255,255,255,.5)';x.fillRect(0,y0+3,w,3);
+    for(let i=0;i<8;i++){const px=i*64+32;x.fillStyle='#FFF4E6';x.beginPath();x.arc(px,y0+7,4,0,7);x.fill()}
+    x.fillStyle='#B57A45';x.fillRect(0,h-16,w,16);x.fillStyle=INK;x.fillRect(0,h-18,w,3);grain(x,4,9312)}]},
+ cat:[
+  {k:'spafoot',n:'Footbath stool',fn:'seat',p:6,dc:0,perch:{y:.5,z:-.14,fe:.22}},
+  {k:'spasteam',n:'Cedar steam cabinet',fn:'deco',p:12,dc:0},
+  {k:'spabench',n:'Massage bench',fn:'bed',p:12,dc:0,perch:{y:.64,z:.3,x:[-.25,0,.25],w:.8,bz:-.8,pz:-.72,side:1,se:.9,kind:'bed',foot:1.3}},
+  {k:'spavanity',n:'Face-mask vanity',fn:'surface',p:9,dc:0},
+  {k:'spadiff',n:'Rosebud diffuser lamp',fn:'light',p:7,dc:0},
+  {k:'spasoak',n:'Rose-petal soak tub',fn:'deco',p:14,dc:0},
+  {k:'spahood',n:'Hood dryer chair',fn:'seat',p:10,dc:0,perch:{y:.5,z:.06,w:.5,bz:-.18,fe:.3}},
+  {k:'spabucket',n:'Sauna stones and ladle',fn:'deco',p:7,dc:12},
+  {k:'sparobe',n:'Robe wardrobe',fn:'storage',p:11,dc:0},
+  {k:'sparug',n:'River pebble mat',fn:'rug',p:5,dc:5,flat:1},
+  {k:'spaspout',n:'Bamboo rain spout',fn:'wall',p:6,dc:5,wall:1,y:1.3},
+  {k:'spabed',n:'Towel-roll pet bed',fn:'pet',p:6,dc:0,flat:1,sleep:1}],
+ build:(()=>{
+  const RO=0xF28DAA,RL=0xFFC9D6,SA=0x9CC9A8,SD=0x6FA584,CE=0xD9A066,CD=0xB57A45,CR=0xFFF4E6,ST=0xC9C0CF,SK=0x8E8597,CU=0xD98C5F,WH=0xFFFFFF,hx=v=>'#'+v.toString(16).padStart(6,'0');
+  const ss=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)};
+  const kU=p=>ss(0,.08,p)*(1-ss(.9,1,p)),kT=t=>ss(0,1.2,t);
+  const ced=()=>{const m=M(CE,{roughness:.5});m.detail=2;return m},cedD=()=>{const m=M(CD,{roughness:.55});m.detail=2;return m};
+  const water=()=>M(0x9FDDE8,{roughness:.04,emissive:0x8AD6E6,emissiveIntensity:.3});
+  const copper=()=>M(CU,{metalness:.55,roughness:.3});
+  const soft=c=>{const m=M(c,{roughness:.85});m.detail=1;return m};
+  // low-poly stand-ins for the kit's sphere and torus (furniture turns SphereGeometry into 560 triangles)
+  const ballG=()=>gcache('nspa_ball',()=>{const P=[];for(let i=0;i<=7;i++){const a=-Math.PI/2+i/7*Math.PI;P.push([Math.max(.001,Math.cos(a)),Math.sin(a)])}return latheGeo(P,14)});
+  const sp=(g,r,m,x,y,z,sx,sy,sz)=>{const b=add(g,ballG(),m,x,y,z);b.scale.set(r*(sx??1),r*(sy??1),r*(sz??1));return b};
+  const to=(g,R,t,m,x,y,z,rx,ry,rz,arc)=>{const s=add(g,gcache('nspa_t'+[R,t,arc||0],()=>new THREE.TorusGeometry(R,t,7,R>.2?44:R>.08?26:16,arc||Math.PI*2)),m,x,y,z);s.rotation.set(rx||0,ry||0,rz||0);return s};
+  const slab=(g,w,h,d,m,x,y,z,o)=>{const b=add(g,gcache('nspa_sl'+[w,h,d],()=>flatGeo([[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]],d)),m,x,y,z-d/2);b.outline=o||0;b.castShadow=false;return b};
+  const petalG=()=>gcache('nspa_petal',()=>flatGeo([[0,-.03],[.026,-.018],[.036,.006],[.03,.026],[.014,.036],[0,.03],[-.014,.036],[-.03,.026],[-.036,.006],[-.026,-.018]],.008));
+  const petal=(p,x,y,z,s,m,ry)=>{const q=add(p,petalG(),m,x,y,z);q.rotation.set(-Math.PI/2,0,ry||0);q.scale.setScalar(s||1);q.outline=.002;q.castShadow=false;return q};
+  const pebG=()=>gcache('nspa_peb',()=>latheGeo([[.001,0],[.8,.04],[1,.22],[.86,.46],[.45,.6],[.001,.63]],12));
+  const peb=(p,r,m,x,y,z,sz,ry)=>{const q=add(p,pebG(),m,x,y,z);q.scale.set(r,r*.55,r*(sz||1));q.rotation.y=ry||0;ol(q,.003);return q};
+  // a rolled towel standing on its end (spiral rings on top), origin at its foot
+  const rollUp=(p,x,y,z,r,h,col)=>{const q=piv(p,x,y,z),m=soft(col),d=soft(shade(col,.12));ol(cy(q,r,r,h,m,0,h/2,0,16),.004);
+    [r*.62,r*.3].forEach((rr,i)=>nosh(ol(to(q,rr,r*.06,d,0,h+.002,0,Math.PI/2),0)));return q};
+  // a rolled towel lying along x
+  const rollX=(p,x,y,z,r,l,col,stripe)=>{const q=piv(p,x,y,z),m=soft(col),d=soft(shade(col,.12));const b=ol(cy(q,r,r,l,m,0,0,0,16),.005);b.rotation.z=Math.PI/2;
+    [-1,1].forEach(s=>[r*.62,r*.3].forEach(rr=>{const t=nosh(ol(to(q,rr,r*.06,d,s*(l/2+.002),0,0,0,Math.PI/2,0),0))}));
+    if(stripe!=null)[-.3,.3].forEach(f=>{const t=ol(to(q,r+.002,.008,soft(stripe),l*f,0,0,0,Math.PI/2,0),0)});return q};
+  // rising steam: n puffs that drift up from (x,y,z); returns f(t,k)
+  const steamer=(p,x,y,z,n,o)=>{o=o||{};const m=M(0xFFFFFF,{roughness:.9,emissive:0xFFFFFF,emissiveIntensity:.18}),P=[];
+    for(let i=0;i<n;i++){const q=piv(p,x,y,z);nosh(ol(sp(q,.05,m,0,0,0),.003));q.visible=false;P.push(q)}
+    const h=o.h||.4,r=o.r||1,sp_=o.sp||.45,sw=o.sw||.06,dz=o.dz||0;
+    return(t,k)=>P.forEach((q,i)=>{if(k<.02){q.visible=false;return}const u=(t*sp_+i/n)%1,s=Math.sin(u*Math.PI)*r*k*(.7+.3*Math.sin(i*1.7));
+      q.visible=s>.03;q.position.set(x+Math.sin(i*2.3+t*1.3)*sw*u*2,y+u*h,z+Math.cos(i*1.9+t)*sw*u+dz*u);q.scale.setScalar(Math.max(.01,s)*(1+u))})};
+  const flatXZ=(p,key,P,d,m,y)=>{const f=add(p,gcache(key,()=>flatGeo(P,d)),m,0,y,0);f.rotation.x=-Math.PI/2;return f};
+  const blobP=(n,rx,rz,seed,amp)=>{const R=rnd(seed),ph=[R()*6,R()*6],P=[];for(let i=0;i<n;i++){const a=i/n*Math.PI*2,k=1+amp*(.6*Math.sin(a*2+ph[0])+.4*Math.sin(a*3+ph[1]));P.push([Math.cos(a)*rx*k,Math.sin(a)*rz*k])}return P};
+  const leafS=(p,x,y,z,L,W,col,rx,ry,rz)=>{const l=add(p,gcache('nspa_lf'+L+'|'+W,()=>leafGeo(L,W)),M(col,{roughness:.55,side:THREE.DoubleSide}),x,y,z);l.rotation.set(rx||0,ry||0,rz||0);ol(l,.002);return l};
+  // a eucalyptus sprig: stem with round leaf pairs, along +y
+  const sprig=(p,x,y,z,len,ry,rz)=>{const q=piv(p,x,y,z);q.rotation.set(0,ry||0,rz||0);const st=M(0x7C8F6E,{roughness:.6}),lf=M(0xA9C8B4,{roughness:.6});
+    nsLine(q,[0,0,0],[0,len,0],.006,st);const n=Math.round(len/.05);for(let i=1;i<=n;i++){const yy=i*len/(n+.5),s=1-i/(n+2)*.5;[-1,1].forEach(sd=>{const l=nosh(ol(cy(q,.028*s,.028*s,.006,lf,sd*.03*s,yy,0,10),.002));l.rotation.set(Math.PI/2,0,sd*.5)})}return q};
+  const rose=(p,x,y,z,s,col)=>{const q=piv(p,x,y,z);q.scale.setScalar(s);const m=M(col,{roughness:.4});ol(sp(q,.05,m,0,.03,0,1,.8,1),.003);
+    for(let i=0;i<5;i++){const a=i/5*Math.PI*2;const pp=ol(sp(q,.04,m,Math.cos(a)*.045,.02,Math.sin(a)*.045,1,.55,.6),.003);pp.rotation.y=-a}
+    ol(to(q,.022,.008,M(shade(col,.2),{roughness:.4}),0,.075,0,Math.PI/2),0);return q};
+  return{
+  // a cedar stool with a petal soak basin in front: the water ripples, the petals drift and bubbles rise while the pet sits
+  spafoot(c){const g=G(),W=ced(),Wd=cedD(),Cu=copper(),Wa=water(),Wl=M(0xD6F4F8,{roughness:.05,emissive:0xBFEFF6,emissiveIntensity:.3}),Pk=M(RO,{roughness:.4}),Pl=M(RL,{roughness:.4});
+    [[-.13,-.27],[.13,-.27],[-.13,-.01],[.13,-.01]].forEach(([x,z])=>{const l=ol(cy(g,.03,.035,.42,Wd,x,.21,z,10),.004);l.rotation.set((z+.14)*.5,0,-x*.6)});
+    ol(rb(g,.26,.03,.22,.012,W,0,.16,-.14),.003);
+    ol(lathe(g,[[.001,.4],[.2,.4],[.22,.42],[.21,.45],[.001,.45]],W,0,0,-.14,28),.006);
+    const q=add(g,gcache('nspa_fcu',()=>cushionGeo(.19,.19,.045,{pinch:.02,n:2.4,seg:48,rings:7})),soft(c),0,.47,-.14);q.rotation.x=-Math.PI/2;ol(q,.006);
+    ol(sp(g,.018,M(CR,{roughness:.4}),0,.52,-.14),.002);
+    // the basin
+    ol(lathe(g,[[.001,0],[.22,0],[.245,.02],[.255,.12],[.245,.2],[.225,.21],[.21,.19],[.2,.04],[.001,.04]],W,0,0,.28,30),.007);
+    [.05,.16].forEach(y=>ol(to(g,.252,.011,Cu,0,y,.28,Math.PI/2),.002));
+    nosh(ol(cy(g,.205,.205,.01,Wa,0,.155,.28,30),0));
+    const pw=piv(g,0,.163,.28);const R=rnd(931);for(let i=0;i<7;i++){const a=R()*6.3,r=.04+R()*.13;petal(pw,Math.cos(a)*r,0,Math.sin(a)*r,.9+R()*.4,i%3?Pk:Pl,R()*6)}
+    const rings=[0,1].map(i=>{const t=nosh(to(g,.06,.005,Wl,.05,.162,.3,Math.PI/2));t.outline=0;t.visible=false;return t});
+    const bub=[0,1,2].map(i=>{const b=nosh(ol(sp(g,.016,Wl,0,.17,.28),.002));b.visible=false;return b});
+    [[.3,.02,.42,.05],[.36,.02,.3,.04],[-.3,.02,.44,.045]].forEach(([x,y,z,r],i)=>peb(g,r,M([ST,SK,0xE9DDE4][i],{roughness:.35}),x,0,z,1.2,i));
+    rollUp(g,-.3,0,.22,.06,.13,c);
+    g.userData.use=(t,p)=>{if(p<0){pw.rotation.y=0;pw.position.y=.163;rings.forEach(r=>r.visible=false);bub.forEach(b=>b.visible=false);return}const k=kT(t);
+      pw.rotation.y=Math.sin(t*.5)*.9*k;pw.position.y=.163+Math.sin(t*2.6)*.005*k;
+      rings.forEach((r,i)=>{const u=(t*.6+i*.5)%1;r.visible=k>.1&&u<.9;r.scale.setScalar(.3+u*2.4)});
+      bub.forEach((b,i)=>{const u=(t*.7+i/3)%1;b.visible=k>.1&&u<.85;b.position.set(Math.sin(i*2.1)*.1,.165+u*.12,.28+Math.cos(i*2.1)*.08);b.scale.setScalar(.016*(.6+u))})};
+    return g},
+  // a slatted cedar box with a sliding door: the door slides open, a warm glow shows inside and steam rolls out of the top and the door
+  spasteam(c){const g=G(),W=ced(),Wd=cedD(),Cu=copper(),Gl=M(0xFFF1E6,{roughness:.05,emissive:0xFFD9C2,emissiveIntensity:.5});
+    ol(rb(g,.9,.08,.78,.03,Wd,0,.04,0),.006);
+    ol(rb(g,.84,1.12,.72,.06,W,0,.64,0),.009);
+    for(let i=0;i<6;i++){const z=-.3+i*.12;[-1,1].forEach(s=>slab(g,.012,1.0,.02,Wd,s*.422,.64,z))}
+    ol(rb(g,.92,.08,.8,.035,Wd,0,1.22,0),.006);
+    const rf=lathe(g,[[.001,0],[.42,0],[.38,.08],[.25,.14],[.001,.16]],soft(c),0,1.26,0,28);rf.scale.set(1,1,.86);ol(rf,.007);
+    ol(cy(g,.06,.07,.14,Cu,0,1.46,0,16),.004);ol(lathe(g,[[.001,0],[.11,0],[.1,.03],[.001,.06]],Cu,0,1.53,0,16),.003);
+    // the warm inside behind the door
+    nosh(ol(rb(g,.68,.86,.02,.01,M(0xFFE6D6,{roughness:.6,emissive:0xFFB89A,emissiveIntensity:.35}),0,.66,.34),0));
+    ol(rb(g,.6,.05,.1,.02,Wd,0,.5,.3),.003);
+    // top rail and the sliding door
+    ol(rb(g,.9,.05,.06,.02,Wd,0,1.13,.38),.004);
+    const dr=piv(g,0,0,.39);
+    ol(rb(dr,.74,.96,.05,.03,M(0xE8BC88,{roughness:.5}),0,.64,0),.007);
+    ol(rb(dr,.6,.82,.02,.02,soft(c),0,.64,.03),.003);
+    ol(disc(dr,.15,Gl,0,.82,.035,28),0);ol(to(dr,.15,.025,Cu,0,.82,.05),.003);
+    ol(rb(dr,.04,.22,.04,.015,Cu,.3,.62,.05),.003);
+    rollX(dr,-.05,.5,.07,.05,.36,WH,c);
+    // a dial on the side
+    const dl=piv(g,.43,.95,.15);ol(cy(dl,.07,.07,.025,M(CR,{roughness:.3}),0,0,0,20),.004).rotation.z=Math.PI/2;ol(to(dl,.07,.012,Cu,.014,0,0,0,Math.PI/2,0),.002);
+    const nd=piv(dl,.03,0,0);nosh(slab(nd,.012,.055,.012,M(RO,{roughness:.3,emissive:RO,emissiveIntensity:.2}),0,.025,0));
+    const st1=steamer(g,0,1.56,0,6,{h:.5,r:1.2,sp:.4}),st2=steamer(g,.2,1.0,.45,4,{h:.45,r:.9,sp:.5,dz:.15});
+    sprig(g,-.32,1.26,.3,.22,0,.5);
+    g.userData.use=(t,p)=>{if(p<0){dr.position.x=0;nd.rotation.x=0;st1(0,0);st2(0,0);return}const k=kU(p),o=ss(.04,.16,p)*(1-ss(.84,.94,p));
+      dr.position.x=.36*o;nd.rotation.x=-2.2*k;st1(t,k);st2(t,o)};
+    return g},
+  // a padded bench: a massage roller runs along its side rail, the hot stones glow and steam, the towel bolster squishes
+  spabench(c){const g=G(),W=ced(),Wd=cedD(),Cu=copper(),Cs=soft(c),Cr=soft(CR);
+    [[-.4,-.82],[.4,-.82],[-.4,.82],[.4,.82]].forEach(([x,z])=>ol(lathe(g,[[.04,0],[.05,.02],[.04,.06],[.035,.5]],Wd,x,0,z,12),.004));
+    [-1,1].forEach(s=>ol(rb(g,.05,.06,1.7,.02,Wd,s*.4,.3,0),.004));
+    ol(rb(g,.8,.04,1.6,.02,W,0,.14,0),.005);
+    ol(rb(g,1.0,.08,1.96,.04,W,0,.5,0),.008);
+    const q=add(g,gcache('nspa_bcu',()=>cushionGeo(.47,.95,.065,{pinch:.02,n:4,seg:64,rings:8})),Cs,0,.56,0);q.rotation.x=-Math.PI/2;ol(q,.009);
+    // a donut head pillow
+    const hp=ol(to(g,.13,.055,Cr,0,.66,-.74,Math.PI/2),.005);
+    // a towel bolster at the foot
+    const bo=rollX(g,0,.68,.8,.075,.7,WH,c);
+    // the shelf: stones, oils, a towel
+    const Sg=M(0x6E6577,{roughness:.3,emissive:0xFF8A5C,emissiveIntensity:0});
+    [[-.18,.62],[-.05,.66],[.08,.62],[.18,.67]].forEach(([x,z],i)=>peb(g,.06,Sg,x,.16,z,1.3,i));
+    [[-.2,-.4,RO],[-.08,-.45,SA]].forEach(([x,z,col])=>{ol(lathe(g,[[.001,0],[.045,0],[.05,.08],[.03,.12],[.015,.15],[.015,.17],[.001,.17]],M(col,{roughness:.1,metalness:.1}),x,.16,z,14),.003);ol(cy(g,.02,.02,.03,Wd,x,.34,z,10),.002)});
+    rollX(g,.15,.22,-.3,.055,.36,c);
+    const st=steamer(g,0,.26,.64,4,{h:.32,r:.7,sp:.4});
+    // a side rail with a bead roller
+    [-.7,.7].forEach(z=>ol(rb(g,.06,.06,.06,.02,Wd,.53,.46,z),.003));ol(cy(g,.015,.015,1.4,Cu,.53,.47,0,8),.002).rotation.x=Math.PI/2;
+    const rl=piv(g,.53,.47,0);const rr=piv(rl,0,0,0);[-.06,0,.06].forEach((z,i)=>ol(sp(rr,.04,i===1?M(RO,{roughness:.3}):W,0,0,z,1,1,.8),.003));
+    rose(g,-.36,.54,-.86,.7,RO);
+    g.userData.use=(t,p)=>{if(p<0){rl.position.z=0;rr.rotation.x=0;bo.scale.set(1,1,1);Sg.emissiveIntensity=0;st(0,0);return}const k=kT(t);
+      rl.position.z=Math.sin(t*1.1)*.55*k;rr.rotation.x=rl.position.z/.04;
+      bo.scale.set(1,1-.08*k*(.5+.5*Math.sin(t*2)),1+.06*k*(.5+.5*Math.sin(t*2)));Sg.emissiveIntensity=k*(.25+.15*Math.sin(t*2.4));st(t,k)};
+    return g},
+  // a cedar vanity with a round mirror: the bulbs brighten, the mask jars pop their lids and the spray bottle puffs mist
+  spavanity(c){const g=G(),W=ced(),Wd=cedD(),Bm=M(0xFFF6E0,{roughness:.2,emissive:0xFFE6B0,emissiveIntensity:.5}),Mi=M(0xE4F4F2,{roughness:.04,metalness:.4,emissive:0xCFEFEA,emissiveIntensity:.15});
+    [[-.4,-.16],[.4,-.16],[-.4,.16],[.4,.16]].forEach(([x,z])=>ol(lathe(g,[[.035,0],[.04,.02],[.03,.1],[.04,.6],[.045,.66]],Wd,x,0,z,12),.004));
+    ol(rb(g,.9,.14,.4,.03,soft(c),0,.6,0),.006);ol(cy(g,.03,.03,.02,M(CR),0,.6,.205,12),.002).rotation.x=Math.PI/2;
+    ol(rb(g,.98,.05,.48,.025,W,0,.69,0),.006);
+    // the mirror
+    [-1,1].forEach(s=>ol(rb(g,.05,.5,.05,.02,Wd,s*.34,.95,-.18),.004));
+    ol(disc(g,.3,Mi,0,1.22,-.18,36),0);ol(to(g,.3,.04,soft(SA),0,1.22,-.16),.006);
+    for(let i=0;i<10;i++){const a=i/10*Math.PI*2;ol(sp(g,.03,Bm,Math.cos(a)*.36,1.22+Math.sin(a)*.36,-.15),.002)}
+    // jars of masks with lids that pop
+    const lids=[];[[-.32,.04,SA],[-.18,-.06,RL],[-.3,-.12,CR]].forEach(([x,z,col],i)=>{ol(lathe(g,[[.001,0],[.06,0],[.065,.02],[.065,.08],[.055,.09]],M(col,{roughness:.15,metalness:.05}),x,.715,z,16),.003);
+      const ld=piv(g,x,.805,z);ol(lathe(ld,[[.001,0],[.07,0],[.07,.025],[.04,.035],[.001,.035]],M(i===1?SA:RO,{roughness:.3}),0,0,0,16),.003);lids.push(ld)});
+    // cucumber dish
+    ol(cy(g,.1,.08,.02,M(WH,{roughness:.2}),.05,.725,.08,20),.003);[[0,0],[.05,.03],[.09,-.01]].forEach(([x,z],i)=>{const s=ol(cy(g,.04,.04,.012,M(0xBFE29A,{roughness:.4}),.02+x,.742+i*.004,.06+z,14),.002);s.rotation.x=.15;nosh(cy(g,.03,.03,.013,M(0xE6F5C8),.02+x,.743+i*.004,.06+z,12)).rotation.x=.15});
+    // a spray bottle with a puff of mist
+    const sb=piv(g,.3,.715,-.02);ol(lathe(sb,[[.001,0],[.05,0],[.055,.12],[.035,.16],[.02,.18],[.02,.2],[.001,.2]],M(0xBFE8EE,{roughness:.05,emissive:0x9FD8E0,emissiveIntensity:.2}),0,0,0,14),.003);
+    const tp=piv(sb,0,.2,0);ol(rb(tp,.04,.04,.07,.012,M(RO,{roughness:.3}),0,.02,.02),.002);
+    const mi=steamer(g,.3,.92,.06,3,{h:.12,r:.6,sp:.9,sw:.03,dz:.15});
+    // a headband with a bow
+    const hb=piv(g,.12,.72,-.12);ol(to(hb,.07,.014,soft(c),0,0,0,Math.PI/2+.1),.002);ol(sp(hb,.03,soft(c),.07,.01,0,1.2,.7,.6),.002);
+    rose(g,-.05,.715,-.13,.55,RO);
+    g.userData.use=(t,p)=>{if(p<0){lids.forEach(l=>{l.position.y=.805;l.rotation.set(0,0,0)});tp.position.y=.2;Bm.emissiveIntensity=.5;mi(0,0);return}const k=kU(p);
+      lids.forEach((l,i)=>{const u=Math.max(0,Math.sin(t*2.2-i*1.4));l.position.y=.805+u*u*.07*k;l.rotation.y=u*1.2*k;l.rotation.z=u*.15*k});
+      const pr=Math.max(0,Math.sin(t*3.1));tp.position.y=.2-pr*.015*k;Bm.emissiveIntensity=.5+k*(.6+.2*Math.sin(t*5));mi(t,k*ss(.1,.2,p))};
+    return g},
+  // a tall lamp with a rosebud shade over a diffuser: the petals open, the bud glows brighter and scented mist curls up
+  spadiff(c){const g=G(),W=ced(),Ce=M(SA,{roughness:.2}),Bu=M(0xFFF1E0,{roughness:.4,emissive:0xFFD6B8,emissiveIntensity:.9}),Pm=M(c,{roughness:.35,emissive:c,emissiveIntensity:.12});Pm.detail=4;
+    ol(lathe(g,[[.001,0],[.2,0],[.21,.03],[.17,.09],[.08,.13],[.05,.15]],Ce,0,0,0,26),.006);
+    ol(cy(g,.022,.022,1.0,W,0,.62,0,10),.004);
+    ol(cy(g,.17,.16,.03,W,0,.52,0,26),.004);
+    ol(lathe(g,[[.001,0],[.08,0],[.11,.06],[.1,.13],[.06,.18],[.03,.2],[.035,.21],[.001,.21]],M(RL,{roughness:.15}),.07,.535,0,20),.004);
+    const mist=steamer(g,.08,.76,0,5,{h:.42,r:.75,sp:.35,sw:.05});
+    leafS(g,0,1.08,0,.16,.08,0x7FB08F,-.9,0,0);leafS(g,0,1.08,0,.16,.08,0x7FB08F,-.9,2.1,0);leafS(g,0,1.08,0,.16,.08,0x7FB08F,-.9,4.2,0);
+    nosh(ol(sp(g,.1,Bu,0,1.22,0,1,1.25,1),.004));
+    const pv=[];for(let i=0;i<5;i++){const a=i/5*Math.PI*2,q=piv(g,Math.sin(a)*.05,1.1,Math.cos(a)*.05);q.rotation.y=a;const r=piv(q,0,0,0);r.rotation.x=.25;
+      ol(sp(r,.1,Pm,0,.15,.03,1.05,1.6,.42),.005);pv.push(r)}
+    g.userData.use=(t,p)=>{if(p<0){pv.forEach(r=>r.rotation.x=.25);Bu.emissiveIntensity=.9;mist(0,0);return}const k=kU(p);
+      pv.forEach((r,i)=>r.rotation.x=.25+k*(.4+.05*Math.sin(t*2+i)));Bu.emissiveIntensity=.9+k*(.35+.1*Math.sin(t*3));mist(t,k)};
+    return g},
+  // a round cedar soak tub: the petals swirl, the candle tray bobs, the water rocks and steam rises while the pet splashes
+  spasoak(c){const g=G(),W=ced(),Wd=cedD(),Cu=copper(),Wa=water(),Pk=M(RO,{roughness:.4}),Pl=M(RL,{roughness:.4}),Pw=M(WH,{roughness:.4});
+    const tx=gcache('nspa_stave',()=>ctex(256,16,(x,w,h)=>{for(let i=0;i<24;i++){x.fillStyle=i%2?'#D29A60':'#DEAA72';x.fillRect(i*w/24,0,w/24+1,h);x.fillStyle='rgba(92,52,30,.5)';x.fillRect(i*w/24,0,1.5,h)}}));
+    const Ws=M(0xffffff,{map:tx,roughness:.5});Ws.detail=2;
+    ol(lathe(g,[[.001,0],[.5,0],[.54,.03],[.56,.3],[.56,.58],[.53,.62],[.5,.6],[.48,.06],[.001,.06]],Ws,0,0,0,40),.01);
+    [.12,.48].forEach(y=>ol(to(g,.565,.016,Cu,0,y,0,Math.PI/2),.003));
+    const wv=piv(g,0,.52,0);nosh(ol(cy(wv,.49,.49,.02,Wa,0,0,0,40),0));
+    const pt=piv(g,0,.535,0);const R=rnd(9361);for(let i=0;i<16;i++){const a=R()*6.3,r=.12+R()*.3;petal(pt,Math.cos(a)*r,0,Math.sin(a)*r,1.2+R()*.5,[Pk,Pl,Pk,Pw][i%4],R()*6)}
+    const tr=piv(g,-.12,.54,-.1);ol(rb(tr,.32,.03,.18,.012,W,0,.01,0),.004);ol(cy(tr,.035,.035,.07,M(CR,{roughness:.3}),-.08,.06,0,12),.003);
+    nosh(ol(sp(tr,.018,M(0xFFD27A,{emissive:0xFFB040,emissiveIntensity:1.4}),-.08,.115,0,1,1.4,1),0));rose(tr,.07,.025,0,.6,RO);
+    const st=steamer(g,0,.56,0,6,{h:.55,r:1.3,sp:.32,sw:.12});
+    // a step with rolled towels
+    ol(rb(g,.56,.16,.24,.04,Wd,0,.08,.66),.006);rollUp(g,-.14,.16,.66,.06,.13,c);rollUp(g,.0,.16,.68,.06,.13,WH);
+    sprig(g,.44,.6,-.25,.28,.4,-.4);
+    const drops=[0,1,2,3].map(i=>{const d=nosh(ol(sp(g,.025,M(0xD6F4F8,{roughness:.05}),0,.6,0),.002));d.visible=false;return d});
+    g.userData.use=(t,p)=>{if(p<0){wv.position.y=.52;wv.rotation.set(0,0,0);pt.rotation.y=0;pt.position.y=.535;tr.position.set(-.12,.54,-.1);tr.rotation.set(0,0,0);st(0,0);drops.forEach(d=>d.visible=false);return}const k=kU(p);
+      wv.rotation.x=Math.sin(t*2.4)*.02*k;wv.rotation.z=Math.cos(t*2)*.02*k;wv.position.y=.52+Math.sin(t*3)*.008*k;
+      pt.rotation.y=t*.7*k;pt.position.y=.535+Math.sin(t*3)*.008*k;
+      tr.position.set(-.12+Math.sin(t*.8)*.08*k,.54+Math.sin(t*3.2)*.012*k,-.1+Math.cos(t*.8)*.06*k);tr.rotation.z=Math.sin(t*2.6)*.08*k;tr.rotation.y=Math.sin(t*.5)*.5*k;
+      st(t,k);drops.forEach((d,i)=>{const u=(t*1.1+i/4)%1;d.visible=k>.1&&u<.9;const a=i*1.6+.4;d.position.set(Math.cos(a)*(.15+u*.25),.56+Math.sin(u*Math.PI)*.3,.2+Math.sin(a)*.12)})};
+    return g},
+  // a salon chair under a hood dryer: the inside of the hood glows warm, its fan spins and warm air puffs out of the vents
+  spahood(c){const g=G(),W=ced(),Wd=cedD(),Cs=soft(c),Cr=M(CR,{roughness:.3}),In=M(0xFFE9DA,{roughness:.6,emissive:0xFFB78F,emissiveIntensity:.1});
+    [[-.24,-.2],[.24,-.2],[-.24,.22],[.24,.22]].forEach(([x,z])=>{const l=ol(cy(g,.025,.03,.36,Wd,x,.18,z,10),.004);l.rotation.set(z*.4,0,-x*.4)});
+    ol(rb(g,.6,.1,.56,.04,W,0,.38,0),.007);
+    const q=add(g,gcache('nspa_hcu',()=>cushionGeo(.26,.25,.055,{pinch:.03,n:3,seg:48,rings:7})),Cs,0,.45,.02);q.rotation.x=-Math.PI/2;ol(q,.007);
+    const bk=piv(g,0,.42,-.25);bk.rotation.x=-.12;ol(rb(bk,.58,.55,.12,.06,Cs,0,.3,0),.008);[[-.13,.36],[.13,.36],[0,.22]].forEach(([x,y])=>ol(sp(bk,.018,Cr,x,y,.065,1,1,.5),.002));
+    [-1,1].forEach(s=>{ol(rb(g,.08,.2,.5,.04,W,s*.3,.5,0),.005);ol(rb(g,.12,.06,.52,.03,Cs,s*.3,.62,0),.005)});
+    // stand and hood
+    ol(cy(g,.16,.18,.03,Cr,0,.015,-.42,22),.004);ol(cy(g,.024,.024,1.5,Cr,0,.78,-.42,10),.004);
+    ol(add(g,gcache('nspa_harm',()=>sweepGeo([[0,0,0],[0,.08,.02],[0,.14,.1],[0,.15,.22]],()=>[.022,.022],{len:14,seg:8})),Cr,0,1.5,-.42),.003);
+    const hd=piv(g,0,1.56,-.12);
+    const hs=lathe(hd,[[.32,0],[.33,.06],[.31,.18],[.22,.29],[.001,.33]],Cs,0,0,0,32);ol(hs,.007);hs.rotation.x=-.25;
+    const hi=nosh(lathe(hd,[[.001,.3],[.2,.26],[.28,.16],[.3,.05],[.3,0]],In,0,0,0,32));hi.outline=0;hi.rotation.x=-.25;
+    ol(to(hd,.32,.03,Cr,0,0,0,Math.PI/2-.25),.004);
+    for(let i=0;i<4;i++){const v=slab(hd,.18-Math.abs(i-1.5)*.03,.015,.03,M(shade(c,.3),{roughness:.6}),0,.27,-.13+i*.07);v.rotation.x=-.25-(i-1.5)*.25}
+    const fn=piv(hd,0,.1,-.33);fn.rotation.x=-.25;ol(cy(fn,.08,.08,.03,Cr,0,0,0,18),.003).rotation.x=Math.PI/2;
+    const bl=piv(fn,0,0,-.02);for(let i=0;i<3;i++){const b=slab(bl,.03,.12,.01,M(RO,{roughness:.3}),0,.05,0,.002);const w=piv(bl,0,0,0);w.rotation.z=i/3*Math.PI*2;w.add(b)}
+    const puff=steamer(hd,0,.3,0,4,{h:.3,r:.6,sp:.6,sw:.08});
+    g.userData.use=(t,p)=>{if(p<0){bl.rotation.z=0;In.emissiveIntensity=.1;hd.rotation.z=0;puff(0,0);return}const k=kT(t);
+      bl.rotation.z=t*14*k;In.emissiveIntensity=.1+k*(.6+.2*Math.sin(t*4));hd.rotation.z=Math.sin(t*9)*.012*k;puff(t,k)};
+    return g},
+  // a basket of sauna stones beside a cedar bucket: the ladle scoops, swings over the stones and pours, the stones glow and hiss steam
+  spabucket(c){const g=G(),W=ced(),Wd=cedD(),Cu=copper(),Ir=M(0x4A4458,{metalness:.5,roughness:.35}),Wa=water();
+    ol(rb(g,.92,.06,.5,.03,Wd,0,.03,0),.005);
+    // stone basket
+    [0,1,2].forEach(i=>{const a=i/3*Math.PI*2+.5;ol(cy(g,.018,.018,.16,Ir,-.18+Math.cos(a)*.14,.13,Math.sin(a)*.14,8),.002)});
+    ol(lathe(g,[[.001,.2],[.18,.2],[.2,.24],[.2,.4],[.18,.42],[.001,.42]],Ir,-.18,0,0,20),.005);
+    [.27,.35].forEach(y=>ol(to(g,.205,.01,Cu,-.18,y,0,Math.PI/2),.002));
+    const Sg=M(0x8E8597,{roughness:.35,emissive:0xFF7A4A,emissiveIntensity:0}),Sl=M(0xC9C0CF,{roughness:.35,emissive:0xFF7A4A,emissiveIntensity:0});
+    const R=rnd(9381);[[0,0],[.08,.05],[-.08,.06],[.06,-.08],[-.07,-.07],[0,.1],[.1,-.02],[-.11,0],[0,-.1]].forEach(([x,z],i)=>peb(g,.06+R()*.02,i%2?Sg:Sl,-.18+x,.4+(i<1?.03:0),z,1.1,R()*6));
+    peb(g,.055,Sg,-.18,.44,0,1,1);
+    // bucket
+    ol(lathe(g,[[.001,.06],[.12,.06],[.14,.08],[.15,.3],[.13,.31],[.12,.1],[.001,.1]],W,.27,0,.02,22),.005);
+    [.11,.26].forEach(y=>ol(to(g,.148,.01,Cu,.27,y,.02,Math.PI/2),.002));nosh(ol(cy(g,.125,.125,.01,Wa,.27,.26,.02,20),0));
+    const hn=to(g,.15,.01,Cu,.27,.31,.02,0,0,0,Math.PI);ol(hn,.002);
+    // the ladle (cup at the pivot's +x, handle leaning up and out)
+    const arm=piv(g,.135,.34,.02),lp=piv(arm,.135,0,0);
+    ol(lathe(lp,[[.001,-.06],[.04,-.06],[.05,-.03],[.048,0],[.001,0]],W,0,0,0,14),.003);
+    const hdl=ol(cy(lp,.012,.012,.36,Wd,.07,.15,0,8),.002);hdl.rotation.z=-.42;ol(sp(lp,.022,M(RO,{roughness:.3}),.15,.32,0,1,1.3,1),.002);
+    const drip=nosh(ol(cy(g,.01,.006,.1,M(0xD6F4F8,{roughness:.05,emissive:0xBFEFF6,emissiveIntensity:.3}),-.18,.5,0,8),0));drip.visible=false;
+    const st=steamer(g,-.18,.48,0,6,{h:.5,r:1.2,sp:.55,sw:.08});
+    rollUp(g,.33,.06,-.15,.055,.12,c);sprig(g,.15,.06,-.18,.22,0,-.3);
+    g.userData.use=(t,p)=>{if(p<0){arm.rotation.set(0,0,0);arm.position.y=.34;lp.rotation.z=0;Sg.emissiveIntensity=0;Sl.emissiveIntensity=0;st(0,0);drip.visible=false;return}const k=kU(p);
+      const u=(t*.42)%1,sw=ss(.1,.35,u)*(1-ss(.7,.92,u)),pour=ss(.38,.48,u)*(1-ss(.58,.66,u));
+      arm.rotation.y=Math.PI*sw*k;arm.position.y=.34+(.18*Math.sin(Math.min(1,sw*1.2)*Math.PI*.5)-.04*ss(0,.08,u)*(1-ss(.08,.16,u)))*k;lp.rotation.z=pour*.9*k;
+      const hot=k*(.15+Math.max(0,1-Math.abs(u-.55)*5)*.9);Sg.emissiveIntensity=hot;Sl.emissiveIntensity=hot*.8;drip.visible=pour*k>.4;drip.scale.y=.6+Math.sin(t*20)*.2;
+      st(t,k*(.3+.7*ss(.45,.55,u)*(1-ss(.8,.95,u))))};
+    return g},
+  // a cedar wardrobe with louvred doors: the doors swing open and the fluffy robes sway on their hangers
+  sparobe(c){const g=G(),W=ced(),Wd=cedD(),Cu=copper(),In=M(0xFBEDE2,{roughness:.6}),Cs=soft(c),Cw=soft(WH);
+    [[-.44,-.2],[.44,-.2],[-.44,.2],[.44,.2]].forEach(([x,z])=>ol(lathe(g,[[.04,0],[.05,.02],[.045,.08]],Wd,x,0,z,12),.003));
+    ol(rb(g,1.02,1.6,.04,.02,W,0,.88,-.25),.006);[-1,1].forEach(s=>ol(rb(g,.05,1.6,.54,.02,W,s*.49,.88,0),.006));
+    ol(rb(g,1.06,.07,.58,.03,Wd,0,.1,0),.006);ol(rb(g,1.08,.08,.6,.03,Wd,0,1.7,0),.006);
+    nosh(rb(g,.92,1.5,.02,.01,In,0,.88,-.22));ol(rb(g,.93,.03,.48,.01,W,0,.5,0),.003);
+    const pd=[];for(let i=0;i<=16;i++){const a=i/16*Math.PI;pd.push([Math.cos(a)*.5,Math.sin(a)*.2])}
+    ol(flat(g,pd,.08,Wd,0,1.74,-.04),.006);rose(g,0,1.82,.05,.9,RO);
+    ol(cy(g,.015,.015,.9,Cu,0,1.5,-.05,8),.002).rotation.z=Math.PI/2;
+    // robes on hangers
+    const robes=[];[[-.2,Cs],[.2,Cw]].forEach(([x,m],i)=>{const r=piv(g,x,1.5,-.05);ol(to(r,.025,.006,Cu,0,.02,0,0,0,0,Math.PI*1.4),0);
+      ol(rb(r,.36,.06,.06,.025,Wd,0,-.06,0),.002);ol(rb(r,.34,.72,.14,.07,m,0,-.43,0),.005);
+      [-1,1].forEach(s=>{const cl=ol(rb(r,.08,.42,.03,.03,soft(i?RL:shade(c,.15)),s*.06,-.28,.075),.002);cl.rotation.z=s*.28});
+      ol(rb(r,.36,.05,.16,.02,soft(i?RL:shade(c,.15)),0,-.48,0),.002);robes.push(r)});
+    // towels on the shelf
+    [[-.24,c],[.0,WH],[.24,RL]].forEach(([x,col],i)=>{ol(rb(g,.2,.07,.3,.03,soft(col),x,.555,-.02),.003);ol(rb(g,.2,.07,.3,.03,soft(i%2?c:WH),x,.625,-.02),.003)});
+    [-.15,.15].forEach(x=>ol(rb(g,.12,.06,.22,.04,soft(RL),x,.16,0),.003));
+    // doors
+    const drs=[-1,1].map(s=>{const d=piv(g,s*.49,0,.27);const px=-s*.235;ol(rb(d,.47,1.48,.04,.02,W,px,.88,0),.006);
+      for(let i=0;i<9;i++){const l=slab(d,.36,.03,.025,Wd,px,.42+i*.1,.03,.002);l.rotation.x=-.35}ol(rb(d,.36,.36,.02,.01,Wd,px,1.42,.025),.002);
+      ol(sp(d,.03,M(RO,{roughness:.3}),-s*.42,.95,.04),.002);return d});
+    g.userData.use=(t,p)=>{if(p<0){drs.forEach(d=>d.rotation.y=0);robes.forEach(r=>r.rotation.set(0,0,0));return}const o=ss(.04,.16,p)*(1-ss(.84,.95,p)),k=kU(p);
+      drs[0].rotation.y=-1.6*o;drs[1].rotation.y=1.6*o;robes.forEach((r,i)=>{r.rotation.z=Math.sin(t*3+i*1.7)*.12*k;r.rotation.x=Math.sin(t*2.2+i)*.06*k})};
+    return g},
+  // a felt mat set with smooth river pebbles: they rise and settle in a ripple as the pet wiggles its toes on them
+  sparug(c){const g=G(),C=hx(c),L=hx(lighten(c,.45)),D=hx(shade(c,.2));
+    const tx=gcache('nspa_rug'+c,()=>ctex(256,256,(x,w,h)=>{x.fillStyle=C;x.fillRect(0,0,w,h);mottle(x,w,h,9391,5,.3);
+      for(let k=0;k<6;k++){x.beginPath();x.ellipse(128,128,30+k*18,22+k*13,0,0,7);x.setLineDash([6,5]);x.lineWidth=2.2;x.strokeStyle=k%2?L:'rgba(255,255,255,.6)';x.stroke()}x.setLineDash([]);grain(x,5,9392)}));
+    const P=blobP(56,.88,.6,939,.06);ol(flatXZ(g,'nspa_rugg',P,.025,M(0xffffff,{map:tx,roughness:.85}),0),.006);
+    flatXZ(g,'nspa_rugr',P.map(([a,b])=>[a*1.04,b*1.06]),.015,M(D,{roughness:.8}),0).outline=.004;
+    const cols=[ST,SK,0xE9DDE4,RL,0xF5F0EA,0xB8C9BC],ms=cols.map(cc=>M(cc,{roughness:.3})),R=rnd(9393),pb=[];
+    for(let i=0;i<17;i++){const a=i*2.4,r=Math.sqrt((i+.5)/17)*.72,x=Math.cos(a)*r,z=Math.sin(a)*r*.62,s=.065+R()*.04;const q=peb(g,s,ms[i%6],x,.024,z,.8+R()*.5,R()*6);pb.push({q,x,z,d:Math.hypot(x,z)})}
+    g.userData.use=(t,p)=>{pb.forEach(b=>{if(p<0){b.q.position.y=.024;return}const w=Math.max(0,Math.sin(t*4-b.d*7));b.q.position.y=.024+w*w*.03*kU(p)})};
+    return g},
+  // a cedar board with a bamboo spout: water runs into the stone basin, rings spread and the little dipper swings
+  spaspout(c){const g=G(),W=ced(),Wd=cedD(),Ba=M(0xB9C97A,{roughness:.35}),Bd=M(0x8FA05A,{roughness:.4}),Sb=M(ST,{roughness:.4}),Wa=water(),Wl=M(0xD6F4F8,{roughness:.05,emissive:0xBFEFF6,emissiveIntensity:.35});
+    ol(rb(g,.62,1.0,.06,.04,W,0,0,.03),.007);for(let i=-2;i<=2;i++)slab(g,.01,.92,.01,Wd,i*.12,0,.065);
+    const rf=ol(rb(g,.74,.06,.16,.03,soft(SA),0,.52,.07),.005);
+    // bamboo pipe
+    ol(cy(g,.045,.045,.36,Ba,0,.32,.24,14),.004).rotation.x=Math.PI/2;[.12,.3].forEach(z=>ol(to(g,.047,.01,Bd,0,.32,z),.002));
+    ol(cy(g,.04,.04,.01,M(0xE4EDB8,{roughness:.4}),0,.32,.42,14),0).rotation.x=Math.PI/2;
+    ol(cy(g,.04,.04,.12,Ba,0,.32,.02,12),.003);
+    // the basin on its bracket
+    ol(rb(g,.36,.05,.36,.02,Wd,0,-.42,.2),.004);[-1,1].forEach(s=>{const b=ol(rb(g,.04,.2,.04,.015,Wd,s*.14,-.5,.14),.002);b.rotation.x=.6});
+    ol(lathe(g,[[.001,0],[.15,0],[.19,.04],[.21,.13],[.19,.15],[.17,.05],[.001,.04]],Sb,0,-.4,.36,24),.005);
+    nosh(ol(cy(g,.17,.17,.01,Wa,0,-.28,.36,24),0));
+    const strm=nosh(ol(cy(g,.014,.02,1,Wl,0,0,.42,10),0));strm.visible=false;
+    const ring=nosh(to(g,.06,.005,Wl,0,-.272,.4,Math.PI/2));ring.outline=0;ring.visible=false;
+    // a dipper on a peg
+    ol(cy(g,.012,.012,.08,Wd,.24,.05,.07,8),.002).rotation.x=Math.PI/2;
+    const dp=piv(g,.24,.05,.11);ol(cy(dp,.008,.008,.3,Ba,0,-.15,0,8),.002);ol(lathe(dp,[[.001,-.32],[.05,-.32],[.05,-.26],[.045,-.25],[.001,-.25]],Ba,0,0,0,12),.003);
+    sprig(g,-.22,-.15,.08,.4,0,.25);sprig(g,-.25,-.1,.08,.3,0,-.15);rose(g,-.22,-.16,.1,.55,RO);
+    g.userData.use=(t,p)=>{if(p<0){strm.visible=false;ring.visible=false;dp.rotation.set(0,0,0);return}const k=kU(p),run=ss(.04,.12,p)*(1-ss(.86,.94,p));
+      strm.visible=run>.05;strm.scale.set(.85+Math.sin(t*31)*.15,.6*run,.85+Math.cos(t*27)*.15);strm.position.y=.32-.3*run;
+      const u=(t*1.2)%1;ring.visible=run>.3&&u<.9;ring.scale.setScalar(.4+u*2.2);dp.rotation.z=Math.sin(t*2.8)*.25*k;dp.rotation.x=Math.cos(t*2.1)*.08*k};
+    return g},
+  // a woven basket ringed with rolled towels: the rolls rise and fall softly while the pet naps, the sprig sways
+  spabed(c){const g=G(),Wv=M(0xE2B98A,{roughness:.6}),Cr=soft(CR);Wv.detail=1;
+    const tx=gcache('nspa_weave',()=>ctex(128,32,(x,w,h)=>{x.fillStyle='#D9AE7C';x.fillRect(0,0,w,h);for(let j=0;j<4;j++)for(let i=0;i<16;i++){x.fillStyle=(i+j)%2?'#E9C595':'#C9965F';x.fillRect(i*8,j*8,8,8)}grain(x,6,9)}));
+    const bk=lathe(g,[[.001,0],[.36,0],[.4,.04],[.42,.14],[.4,.16],[.38,.07],[.001,.06]],M(0xffffff,{map:tx,roughness:.6}),0,0,0,36);bk.scale.set(1,1,.82);ol(bk,.007);
+    const q=add(g,gcache('nspa_pcu',()=>cushionGeo(.33,.27,.05,{pinch:.02,n:3,seg:48,rings:7})),Cr,0,.09,0);q.rotation.x=-Math.PI/2;ol(q,.006);
+    const rolls=[];for(let i=0;i<11;i++){const a=i/11*Math.PI*2+.3,x=Math.sin(a)*.38,z=Math.cos(a)*.31;if(z>.22&&Math.abs(x)<.18)continue;rolls.push(rollUp(g,x,.06,z,.065,.14,i%2?WH:c))}
+    rollX(g,0,.27,-.3,.06,.3,RL);rose(g,0,.32,-.3,.55,RO);
+    const sg=sprig(g,.16,.24,-.3,.24,0,-.4);
+    g.userData.use=(t,p)=>{if(p<0){rolls.forEach(r=>r.scale.set(1,1,1));sg.rotation.z=-.4;return}const k=kT(t);
+      rolls.forEach((r,i)=>{const s=Math.sin(t*1.4-i*.6);r.scale.set(1+.03*k*s,1+.06*k*s,1+.03*k*s)});sg.rotation.z=-.4+Math.sin(t*1.1)*.12*k};
+    return g}}})(),
+ use:{
+  spafoot:{kind:'perch',w:1},
+  spasteam:{kind:'stand',anim:'soak',d:5,dist:.12,emo:['💗','🫧'],w:.8},
+  spabench:{kind:'perch',w:(s,a)=>s.energy<45?1.6:.7},
+  spavanity:{kind:'stand',anim:'spritz',d:4.5,dist:.06,emo:['💗','🫧'],w:.7},
+  spadiff:{kind:'stand',anim:'u_sniff',d:4,dist:.12,emo:['💗'],w:.6},
+  spasoak:{kind:'stand',anim:'u_splash',d:5.5,dist:.06,emo:['🎉','🫧'],w:1},
+  spahood:{kind:'perch',w:.9},
+  spabucket:{kind:'stand',anim:'u_wash',d:5,dist:.1,emo:['🫧','💗'],w:.7},
+  sparobe:{kind:'stand',anim:'u_rummage',d:4.5,dist:.12,emo:['💗','❓'],w:.6},
+  sparug:{kind:'rug',anim:'u_wiggle',d:4,emo:['💗','🎵'],w:.55},
+  spaspout:{kind:'wall',anim:'u_wash',d:5,emo:['🫧','💗'],w:.8},
+  spabed:NAP},
+ dw:{n:'Bathhouse',wn:'Steamy round window',
+  door(){const Ce=mt(0xD9A066,.5),Cd=mt(0xB57A45,.55),Sa=mt(0x9CC9A8,.4),Ro=mt(0xF28DAA,.4),Cu=M(0xD98C5F,{metalness:.55,roughness:.3}),Fg=M(0xF4FBFA,{roughness:.1,emissive:0xE6F6F3,emissiveIntensity:.45});
+    const D=dBase({top:'arch',F:Ce,fw:.15,L:Sa,S:Cd});
+    for(let i=1;i<5;i++)nosh(bx(D.hinge,.015,1.2,.01,mt(0x83B693,.45),D.w*i/5,.66,.05));
+    porthole(D.hinge,D.w/2,1.6,.25,Cu,.05,Fg);
+    [[-.08,.08,.05],[.06,.12,.04],[.1,-.05,.045],[-.06,-.08,.035]].forEach(([x,y,r])=>sp(D.hinge,r,mt(0xFFFFFF,.9),D.w/2+x,1.6+y,.08,1,.8,.35));
+    inset(D.hinge,D.w/2,.42,.7,.26,Cd);
+    alongTop(D.w+.18,D.h+.09,'arch',14).forEach(([x,y],i)=>{if(i%2)sp(D.g,.045,i%4===1?Ro:mt(0xFFC9D6,.4),x,y,.12,1,.8,.6);else leaf3(D.g,.1,.06,0x7FB08F,x,y,.11,0,0,i*.7)});
+    // a rolled towel on a hook and a little stone lantern by the step
+    const tg=G();tg.position.set(D.w/2+.38,1.5,.12);D.g.add(tg);sp(tg,.025,Cu,0,.08,-.04);const tw=cy(tg,.07,.07,.32,mt(0xFFFFFF,.85),0,0,.03,14);tw.rotation.z=Math.PI/2;to(tg,.04,.008,Ro,.16,0,.03,0,Math.PI/2,0);to(tg,.04,.008,Ro,-.16,0,.03,0,Math.PI/2,0);
+    const ln=G();ln.position.set(-D.w/2-.38,0,.25);D.g.add(ln);rb(ln,.2,.08,.2,.03,mt(0xC9C0CF,.45),0,.04,0);rb(ln,.1,.22,.1,.03,mt(0xC9C0CF,.45),0,.19,0);rb(ln,.2,.16,.2,.04,mt(0xC9C0CF,.45),0,.38,0);
+    disc(ln,.05,M(0xFFE6B0,{emissive:0xFFC870,emissiveIntensity:1}),0,.38,.1,14);lathe(ln,[[.001,0],[.16,0],[.12,.06],[.001,.12]],mt(0x8E8597,.45),0,.46,0,4);
+    knob(D,Cu,1.02);return D},
+  win(){const Ce=mt(0xD9A066,.5),Ro=mt(0xF28DAA,.4),Fg=M(0xEAF7F5,{roughness:.1,emissive:0xD9F1EC,emissiveIntensity:.45});
+    const W=wBase({top:'circle',F:Ce,fw:.12,mull:'cross',MM:mt(0xB57A45,.5),S:mt(0x9CC9A8,.4),Gl:Fg});
+    const cy0=W.y0+W.w/2;[[-.2,.18,.07],[.15,.22,.06],[.22,-.1,.05],[-.12,-.2,.05],[0,.05,.04]].forEach(([x,y,r])=>sp(W.g,r,mt(0xFFFFFF,.9),x,cy0+y,.03,1,.8,.3));
+    for(let i=0;i<10;i++){const a=i/10*Math.PI*2;if(i%2)sp(W.g,.045,i%4===1?Ro:mt(0xFFC9D6,.4),Math.cos(a)*(W.w/2+.14),cy0+Math.sin(a)*(W.w/2+.14),.08,1,.8,.6);else leaf3(W.g,.1,.06,0x7FB08F,Math.cos(a)*(W.w/2+.14),cy0+Math.sin(a)*(W.w/2+.14),.08,0,0,a)}
+    // a eucalyptus bundle hanging from the top
+    const b=G();b.position.set(.28,cy0+.2,.12);W.g.add(b);for(let i=0;i<5;i++)leaf3(b,.14,.07,0xA9C8B4,(i-2)*.03,-.08-i%2*.05,0,0,0,Math.PI+(i-2)*.25);to(b,.03,.01,Ro,0,0,0,0,0,0);
+    return W}}
+});
+Object.assign(NEED_OVR,{spafoot:{clean:10,affection:4},spasteam:{clean:14},spabench:{affection:10,clean:6},spavanity:{clean:10,affection:4},spadiff:{clean:8,affection:5},
+  spasoak:{clean:16,affection:4},spahood:{clean:10,affection:3},spabucket:{clean:10,affection:3},sparobe:{clean:8,affection:4},sparug:{clean:6,affection:4},spaspout:{clean:12},spabed:{energy:40,clean:5}});
+}catch(e){console.warn("need set nspa",e)}
+// ---- nhug
+try{
+SET_DEF({
+ set:{k:'nhug',n:'Snuggle Burrow',c:'#F06A9A'},
+ tiles:{
+  f:['Quilted heart carpet',(x,w,h)=>{carpetF(x,w,h,'#F6CEC6',9301,6000);
+    // diamond quilting stitched across the carpet, a little heart at every crossing
+    x.save();x.setLineDash([9,7]);x.lineWidth=2.6;x.strokeStyle='rgba(200,80,120,.55)';x.lineCap='round';
+    for(let k=-4;k<=8;k++){const o=k*128;x.beginPath();x.moveTo(o,0);x.lineTo(o+h,h);x.stroke();x.beginPath();x.moveTo(o,h);x.lineTo(o+h,0);x.stroke()}x.restore();
+    x.fillStyle='rgba(255,255,255,.16)';for(let j=0;j<4;j++)for(let i=0;i<4;i++){x.beginPath();x.arc(i*128+64,j*128+64,40,0,7);x.fill()}
+    for(let j=0;j<=4;j++)for(let i=0;i<=4;i++){const cx=i*128,cy=j*128;
+      wrapX(w,cx,20,qx=>{for(const dy of [-h,0,h]){const qy=cy+dy;if(qy<-20||qy>h+20)continue;heartAt(x,qx,qy,11,'#E8789E');x.fillStyle='rgba(255,255,255,.55)';x.beginPath();x.arc(qx-5,qy-4,3,0,7);x.fill()}})}
+    for(let j=0;j<4;j++)for(let i=0;i<4;i++){wrapX(w,i*128+64,8,qx=>{x.fillStyle='rgba(138,90,68,.35)';x.beginPath();x.arc(qx,j*128+64,4,0,7);x.fill()})}
+    grain(x,5,9302)}],
+  w:['Tufted blush wallpaper',(x,w,h)=>{fillBg(x,w,h,'#FFE3E6',9311,.16);
+    // soft vertical bands and small hearts on the upper wall
+    for(let i=0;i<8;i++){x.fillStyle=i%2?'rgba(255,255,255,.28)':'rgba(240,106,154,.07)';x.fillRect(i*64,0,64,h)}
+    const y0=Math.round(h*.6);
+    for(let j=0;j<9;j++)for(let i=0;i<8;i++){const cx=i*64+32+(j%2)*32,cy=j*58+30;if(cy>y0-30)continue;wrapX(w,cx,14,qx=>{heartAt(x,qx,cy,j%2?9:11,j%2?'rgba(201,168,255,.85)':'rgba(240,106,154,.75)')})}
+    // padded, buttoned panel below a cocoa rail
+    const ph=h-y0;x.fillStyle='#F59AB8';x.fillRect(0,y0,w,ph);
+    const cs=64,rows=Math.ceil(ph/cs)+1;
+    for(let j=0;j<rows;j++)for(let i=0;i<=8;i++){const cx=i*64+(j%2)*32,cy=y0+18+j*cs*.62;
+      const gr=x.createRadialGradient(cx-8,cy-10,4,cx,cy,34);gr.addColorStop(0,'rgba(255,255,255,.42)');gr.addColorStop(.7,'rgba(255,255,255,0)');gr.addColorStop(1,'rgba(150,40,90,.18)');
+      x.fillStyle=gr;x.beginPath();x.ellipse(cx,cy,32,22,0,0,7);x.fill()}
+    x.strokeStyle='rgba(170,50,100,.38)';x.lineWidth=2;for(let j=0;j<rows+1;j++)for(let i=-1;i<=8;i++){const cx=i*64+(j%2)*32,cy=y0+18+j*cs*.62-20;
+      x.beginPath();x.moveTo(cx,cy);x.lineTo(cx+32,cy+20);x.moveTo(cx+32,cy+20);x.lineTo(cx+64,cy);x.stroke()}
+    for(let j=0;j<rows+1;j++)for(let i=0;i<=8;i++){const cx=i*64+(j%2)*32,cy=y0+18+j*cs*.62-20;if(cy<y0+4)continue;x.fillStyle='#B8456F';x.beginPath();x.arc(cx,cy,4.5,0,7);x.fill();x.fillStyle='rgba(255,255,255,.6)';x.beginPath();x.arc(cx-1.4,cy-1.6,1.6,0,7);x.fill()}
+    x.fillStyle='#8A5A44';x.fillRect(0,y0-14,w,16);x.fillStyle='rgba(255,255,255,.3)';x.fillRect(0,y0-12,w,3);x.fillStyle='rgba(59,18,115,.85)';x.fillRect(0,y0-16,w,3);x.fillRect(0,y0+2,w,2);
+    x.fillStyle='#8A5A44';x.fillRect(0,h-30,w,30);x.fillStyle=INK;x.fillRect(0,h-32,w,3);grain(x,4,9312)}]},
+ cat:[
+  {k:'sbplush',n:'Giant hug plush',fn:'fun',p:10,dc:9},
+  {k:'sbpillows',n:'Hug pillow heap',fn:'deco',p:7,dc:0},
+  {k:'sbheartbag',n:'Heart beanbag for two',fn:'seat',p:9,dc:0,perch:{y:.42,z:.12,x:[-.28,.28],w:.56,bz:-.22,fe:.42}},
+  {k:'sbfort',n:'Blanket burrow nook',fn:'deco',p:12,dc:10},
+  {k:'sbbed',n:'Weighted blanket bed',fn:'bed',p:13,dc:9,perch:{y:.57,z:.2,x:[-.36,0,.36],w:1.0,bz:-.82,pz:-.62,side:1,se:.82,kind:'bed',foot:1.25}},
+  {k:'sbshelf',n:'Plush display shelf',fn:'storage',p:8,dc:0},
+  {k:'sbswing',n:'Cuddle swing',fn:'seat',p:12,dc:0,perch:{y:.53,z:.1,w:.48,bz:-.12,fe:.36}},
+  {k:'sbrug',n:'Fuzzy heart rug',fn:'rug',p:5,dc:0,flat:1},
+  {k:'sblamp',n:'Teddy ear lamp',fn:'light',p:7,dc:10},
+  {k:'sbmail',n:'Love letter mailbox',fn:'deco',p:6,dc:0},
+  {k:'sbmat',n:'Cuddle nest mat',fn:'pet',p:6,dc:9,flat:1,sleep:1},
+  {k:'sbchair',n:'Heart-back armchair',fn:'seat',p:10,dc:0,perch:{y:.5,z:.08,w:.5,bz:-.18,fe:.4}}],
+ build:(()=>{
+  const CR=0xFFF1E6,CO=0x8A5A44,RO=0xF06A9A,PE=0xFFB89A,LI=0xC9A8FF,HW=0xD9A27A,EYE=0x3B1273;
+  const ss=(a,b,v)=>{const u=Math.max(0,Math.min(1,(v-a)/(b-a)));return u*u*(3-2*u)};
+  const env=(p,a,b)=>ss(0,a,p)*(1-ss(b,1,p));
+  // fuzzy plush texture (near white, tinted by the material colour)
+  const fuzz=()=>gcache('nhug_fuzz',()=>ctex(128,128,(x,w,h)=>{x.fillStyle='#ECE6E4';x.fillRect(0,0,w,h);const R=rnd(9321);x.lineCap='round';
+    for(let i=0;i<1400;i++){const px=R()*w,py=R()*h,a=R()*6.28,l=1.5+R()*3.5;x.strokeStyle=R()<.5?'rgba(255,255,255,.75)':'rgba(150,130,140,.22)';x.lineWidth=.8+R()*.8;
+      for(const dx of[-w,0,w])for(const dy of[-h,0,h]){x.beginPath();x.moveTo(px+dx,py+dy);x.lineTo(px+dx+Math.cos(a)*l,py+dy+Math.sin(a)*l);x.stroke()}}},[2,2]));
+  const FZ=c=>{const m=M(c,{map:fuzz(),roughness:.95});m.detail=1;return m};
+  // chunky knit for the weighted blanket
+  const chunky=()=>gcache('nhug_chunky',()=>ctex(128,128,(x,w,h)=>{x.fillStyle='#B9B1B0';x.fillRect(0,0,w,h);const n=4,cw=w/n;
+    for(let j=-1;j<=n;j++)for(let i=0;i<n;i++){const cx=i*cw+cw/2,cy=j*cw+cw/2+(i%2)*cw/2;const gr=x.createRadialGradient(cx-6,cy-8,3,cx,cy,cw*.55);gr.addColorStop(0,'#FFFFFF');gr.addColorStop(.75,'#E2DCDA');gr.addColorStop(1,'#9C9494');
+      x.fillStyle=gr;x.beginPath();x.ellipse(cx,cy,cw*.47,cw*.5,0,0,7);x.fill();x.strokeStyle='rgba(80,60,70,.25)';x.lineWidth=1.5;x.stroke()}},[3,2]));
+  const WD=()=>{const m=M(HW,{roughness:.5});m.detail=2;return m};
+  const ballG=n=>gcache('nhug_ball'+n,()=>{const P=[],k=Math.max(6,n>>1);for(let i=0;i<=k;i++){const a=-Math.PI/2+i/k*Math.PI;P.push([Math.max(.001,Math.cos(a)),Math.sin(a)])}return latheGeo(P,n)});
+  const ball=(p,r,m,x,y,z,sx,sy,sz,n)=>{const b=add(p,ballG(n||(r>.2?28:r>.08?16:10)),m,x,y,z);b.scale.set(r*(sx??1),r*(sy??1),r*(sz??1));return b};
+  // a puffy 2D outline (like cushionGeo, any star-shaped outline B(th)->[x,y])
+  const puff=(key,B,D,T,K)=>gcache('nhug_'+key,()=>{T=T||64;K=K||8;const P=[],U=[],I=[],rows=[];for(let k=0;k<=K;k++)rows.push([k/K,1]);for(let k=K;k>=0;k--)rows.push([k/K,-1]);
+    rows.forEach(([r,sd],ri)=>{const z=sd*(D*Math.pow(Math.max(0,1-Math.pow(r,2.6)),.55)+.0015);for(let j=0;j<=T;j++){const b=B(j/T*Math.PI*2);P.push(b[0]*r,b[1]*r,z);U.push(j/T,ri/(rows.length-1))}});
+    for(let i=0;i<rows.length-1;i++)for(let j=0;j<T;j++){const a=i*(T+1)+j,b=a+T+1;I.push(a,b,a+1,b,b+1,a+1)}
+    return meshGeo(P,U,I,[(K>>1)*(T+1)+5,[0,0,0]])});
+  const heartB=t=>{const s=Math.sin(t),x=16*s*s*s,y=13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);return[x/32,(y+2.5)/32]};
+  const heartPuff=(D)=>puff('hp'+D,heartB,D,72,8);   // ~1.0 wide, ~.9 tall, puffed +-D
+  const pillow=(w,h,d,n)=>gcache('nhug_pl'+[w,h,d,n],()=>cushionGeo(w,h,d,{pinch:.08,n:n||3,seg:44,rings:7}));
+  // small embroidered face on a plush (eyes, shine, smile)
+  const face=(p,x,y,z,s)=>{const E=M(EYE,{roughness:.3}),W=M(0xffffff,{roughness:.2});[-1,1].forEach(k=>{ball(p,.03*s,E,x+k*.07*s,y,z,1,1.2,.5,10).outline=0;ball(p,.011*s,W,x+k*.07*s-.008*s,y+.012*s,z+.012*s,1,1,1,8).outline=0});
+    const sm=to(p,.028*s,.007*s,E,x,y-.045*s,z+.005,0,0,Math.PI,Math.PI);sm.outline=0;return p};
+  const heart=(p,s,m,x,y,z)=>{const h=add(p,gcache('nhug_hg',heartGeo),m,x,y,z);h.scale.set(s,s,s*.6);return h};
+  // a bean plush buddy (little bear-ish) centred on its base
+  const buddy=(p,col,s)=>{const B=FZ(col),C=FZ(CR);ol(ball(p,.13*s,B,0,.13*s,0,1,1,.88),.004);[-1,1].forEach(k=>{ol(ball(p,.045*s,B,k*.085*s,.245*s,0,1,1,.6),.003);ball(p,.025*s,FZ(PE),k*.085*s,.245*s,.02*s,1,1,.4).outline=0});
+    ball(p,.06*s,C,0,.09*s,.085*s,1,1,.5).outline=0;face(p,0,.15*s,.112*s,.8*s);[-1,1].forEach(k=>ball(p,.025*s,M(0xFF8FB0,{roughness:.6}),k*.08*s,.12*s,.1*s,1,.7,.4,8).outline=0);return p};
+  return{
+  // a big round plush you hug: its arms wrap round the pet, it squeezes and its ears wiggle
+  sbplush(c){const g=G(),B=FZ(c),C=FZ(CR),Bl=M(0xFF8FB0,{roughness:.6}),In=FZ(lighten(RO,.35));const bd=piv(g,0,0,0);
+    ol(ball(bd,.5,B,0,.5,0,1,.98,.86),.012);
+    ol(ball(bd,.3,C,0,.42,.29,1,1.05,.5),.006);heart(bd,.14,M(RO,{roughness:.5}),0,.44,.44).outline=.003;
+    const ears=[-1,1].map(s=>{const e=piv(bd,s*.3,.86,-.02);ol(ball(e,.13,B,0,.06,0,1,1,.62),.006);ball(e,.08,In,0,.06,.055,1,1,.35).outline=0;return e});
+    face(bd,0,.73,.385,2.1);[-1,1].forEach(s=>ball(bd,.055,Bl,s*.26,.64,.355,1,.7,.3,10).outline=0);
+    [-1,1].forEach(s=>{ol(ball(bd,.14,C,s*.22,.07,.3,1,.55,1.15),.005);ball(bd,.045,In,s*.22,.075,.45,1,1,.3,10).outline=0});
+    const arms=[-1,1].map(s=>{const sh=piv(bd,s*.4,.6,.06),inn=piv(sh);ol(ball(inn,.12,B,0,-.15,0,.9,1.55,.9),.006);ball(inn,.065,In,0,-.28,.085,1,1,.4,10).outline=0;sh.rotation.z=s*.5;inn.rotation.x=-.2;return[sh,inn,s]});
+    g.userData.use=(t,p)=>{if(t<0){bd.scale.set(1,1,1);arms.forEach(([sh,inn,s])=>{sh.rotation.set(0,0,s*.5);inn.rotation.x=-.2});ears.forEach(e=>e.rotation.z=0);return}
+      const k=env(p,.12,.88),sq=k*(.6+.4*Math.sin(t*2.4));bd.scale.set(1+.035*sq,1-.045*sq,1+.035*sq);
+      arms.forEach(([sh,inn,s])=>{sh.rotation.set(0,-s*.55*k,s*(.5-.25*k));inn.rotation.x=-.2-1.05*k-.08*sq});
+      ears.forEach((e,i)=>e.rotation.z=Math.sin(t*5+i*1.7)*.18*k)};
+    return g},
+  // a heap of hug pillows: they squish in turn as the pet burrows in, the little round one on top tips over and back
+  sbpillows(c){const g=G(),A=FZ(c),R=FZ(RO),C=FZ(CR),P=FZ(PE),L=FZ(LI),Lc=FZ(lighten(c,.35));
+    const f1=add(g,pillow(.44,.4,.09,3.2),A,-.08,.1,.05);f1.rotation.set(-Math.PI/2,0,.2);ol(f1,.008);
+    const f2=add(g,pillow(.36,.34,.08,3),R,.3,.13,-.12);f2.rotation.set(-Math.PI/2+.05,0,-.4);ol(f2,.008);
+    const bo=ol(cy(g,.13,.13,.92,C,0,.2,-.32,22),.008);bo.rotation.z=Math.PI/2;[-1,1].forEach(s=>{ol(ball(g,.13,C,s*.46,.2,-.32,.25,1,1),.004);ol(ball(g,.045,FZ(RO),s*.5,.2,-.32,.6,1,1),.003)});
+    for(let i=0;i<5;i++){const r=to(g,.132,.008,FZ(PE),-.3+i*.15,.2,-.32,0,Math.PI/2,0);r.outline=0}
+    const pv=[];const mk=(x,y,z,rx,rz,fn)=>{const q=piv(g,x,y,z);q.userData.r=[rx,rz];q.rotation.set(rx,0,rz);fn(q);pv.push(q);return q};
+    mk(-.3,.18,-.14,-.35,.12,q=>{const m=add(q,pillow(.24,.22,.08,3),Lc,0,.22,0);ol(m,.007);for(let i=0;i<4;i++)ol(ball(q,.025,C,(i%2?1:-1)*.2,i<2?.42:.02,.0,1,1,1,8),.002)});
+    mk(.24,.2,-.12,-.3,-.15,q=>{const m=add(q,heartPuff(.09),R,0,.2,0);m.scale.set(.46,.46,1);ol(m,.007)});
+    mk(.42,.12,.22,-.9,-.3,q=>{const m=add(q,pillow(.15,.15,.07,2),L,0,.13,0);ol(m,.006);ball(q,.03,C,0,.13,.07,1,1,.6,8).outline=.002});
+    const top=mk(-.02,.36,-.24,-.2,.05,q=>{const m=add(q,pillow(.15,.15,.08,2),P,0,.14,0);ol(m,.006);heart(q,.08,M(RO,{roughness:.5}),0,.14,.075).outline=.002});
+    g.userData.use=(t,p)=>{pv.forEach((q,i)=>{const [rx,rz]=q.userData.r;if(t<0){q.scale.set(1,1,1);q.rotation.set(rx,0,rz);return}const k=env(p,.1,.9),w=.5+.5*Math.sin(t*2.6-i*1.3);
+      q.scale.set(1+.05*w*k,1-.12*w*k,1+.05*w*k);q.rotation.set(rx,0,rz+Math.sin(t*1.7+i)*.04*k)});
+      if(t>=0){const k=env(p,.1,.9),tip=Math.max(0,Math.sin(t*1.1))**2*k;top.rotation.x=-.2+.55*tip;top.position.z=-.24+.1*tip}};
+    return g},
+  // a big squashy heart beanbag for two: the seat sinks and the heart back breathes slowly while you sit
+  sbheartbag(c){const g=G(),A=FZ(c),Ad=FZ(shade(c,.12)),C=FZ(CR);
+    const sp_=piv(g,0,0,.08),bs=add(sp_,gcache('nhug_bbase',()=>cushionGeo(.7,.5,.2,{pinch:.04,n:2.4,seg:56,rings:8})),A,0,.2,0);bs.rotation.x=-Math.PI/2;ol(bs,.01);
+    const sc=add(sp_,gcache('nhug_bseat',()=>cushionGeo(.5,.32,.06,{pinch:.06,n:2.6,seg:48,rings:6})),FZ(lighten(c,.3)),0,.39,.08);sc.rotation.x=-Math.PI/2;ol(sc,.007);
+    const bk=piv(g,0,.12,-.3);bk.rotation.x=-.3;const hm=add(bk,heartPuff(.2),Ad,0,.5,0);hm.scale.set(1.5,1.22,1);ol(hm,.011);
+    const st=[];for(let i=0;i<=16;i++){const b=heartB(i/16*Math.PI*2);st.push([b[0]*1.08,b[1]*.86+.5,.17])}
+    // stitched inner heart and two tufts
+    heart(bk,.42,FZ(CR),0,.55,.215).outline=.004;[-1,1].forEach(s=>ol(ball(bk,.035,M(RO,{roughness:.4}),s*.38,.72,.13,1,1,.6,10),.002));
+    g.userData.use=(t,p)=>{if(t<0){sp_.scale.set(1,1,1);bk.scale.set(1,1,1);bk.rotation.x=-.3;return}const k=ss(0,.15,p<0?0:Math.min(1,t/3)),b=Math.sin(t*1.4);
+      sp_.scale.set(1+.03*k,1-.08*k-.015*b*k,1+.03*k);bk.scale.set(1+.025*b*k,1+.02*b*k,1);bk.rotation.x=-.3-.06*k};
+    return g},
+  // a plush burrow with a doorway: the curtain flaps swing open, the heart lights twinkle and the pennant flutters
+  sbfort(c){const g=G(),A=FZ(c),R=FZ(RO),C=FZ(CR),Wd=WD();
+    const Pl=M(0xffffff,{map:s1Plaid(0xF59AB8),roughness:.85});
+    ol(lathe(g,[[.001,0],[.78,0],[.79,.08],[.76,.3],[.68,.55],[.52,.8],[.3,.96],[.001,1.02]],A,0,0,0,40),.012);
+    // patchwork patches stitched on
+    [[-.5,.42,.45,.5,.1],[.55,.3,.42,-.7,-.1],[-.18,.82,.22,.3,.5]].forEach(([x,y,z,ry,rx],i)=>{const q=add(g,pillow(.13,.11,.02,3),i%2?R:FZ(LI),x,y,z);q.rotation.set(rx,ry,i*.3);ol(q,.004)});
+    ol(to(g,.77,.07,C,0,.04,0,Math.PI/2),.007);
+    // the doorway: a short plush tunnel with a warm, dark inside
+    const AP=(r,hs,n)=>{const P=[[-r,0],[r,0],[r,hs]];for(let i=1;i<n;i++){const a=i/n*Math.PI;P.push([Math.cos(a)*r,hs+Math.sin(a)*r])}P.push([-r,hs]);return P};
+    ol(flat(g,gcache('nhug_fta',()=>AP(.36,.3,20)),.3,A,0,0,.5),.01);
+    nosh(flat(g,gcache('nhug_ftb',()=>AP(.27,.27,20)),.01,M(0x3A1C44,{roughness:.9,emissive:0xFF8A5A,emissiveIntensity:.05}),0,0,.802)).outline=0;
+    const rim=AP(.32,.3,20).slice(1).concat([[-.32,0]]).map(([a,b])=>[a,b,.81]);ol(add(g,gcache('nhug_frim',()=>sweepGeo(rim,()=>[.05,.04],{len:50,seg:8})),C,0,0,0),.005);
+    const cu=add(g,pillow(.18,.14,.06,2),FZ(PE),0,.08,.7);cu.rotation.x=-1.2;ol(cu,.005);
+    // tied-back curtain flaps
+    const fl=[-1,1].map(s=>{const q=piv(g,s*.34,.6,.86);const m=rb(q,.2,.6,.035,.015,Pl,-s*.06,-.3,0);ol(m,.004);ol(to(q,.05,.012,R,-s*.06,-.36,0,Math.PI/2),.002);q.rotation.z=s*.18;return[q,s]});
+    // heart lights round the doorway (two materials so they twinkle in turn)
+    const L1=M(0xFF8FB8,{emissive:0xFF6FA0,emissiveIntensity:.4,roughness:.3}),L2=M(0xFFE08A,{emissive:0xFFD060,emissiveIntensity:.4,roughness:.3});
+    for(let i=0;i<9;i++){const a=(i+.5)/9*Math.PI,x=-Math.cos(a)*.42,y=.3+Math.sin(a)*.42;const h=heart(g,.075,i%2?L2:L1,x,y,.84);h.outline=.002;nosh(h)}
+    // pennant on a little pole
+    ol(cy(g,.012,.012,.36,Wd,.12,1.12,.05,8),.003);ol(ball(g,.025,M(RO,{roughness:.4}),.12,1.31,.05,1,1,1,10),.002);
+    const pn=piv(g,.13,1.27,.05);ol(flat(pn,[[0,0],[.22,-.06],[0,-.12]],.012,R,0,0,-.006),.003);
+    g.userData.use=(t,p)=>{if(t<0){fl.forEach(([q,s])=>q.rotation.z=s*.18);L1.emissiveIntensity=L2.emissiveIntensity=.4;pn.rotation.y=0;return}
+      const k=env(p,.12,.88);fl.forEach(([q,s])=>q.rotation.z=s*(.18+.45*k)+Math.sin(t*2.2+s)*.05*k);
+      const tw=Math.sin(t*4);L1.emissiveIntensity=.4+.9*k*Math.max(0,tw);L2.emissiveIntensity=.4+.9*k*Math.max(0,-tw);pn.rotation.y=Math.sin(t*7)*.35*k};
+    return g},
+  // a cosy bed under a chunky weighted throw: the heart pillows dent and puff back, the tufted heart headboard breathes
+  sbbed(c){const g=G(),Wd=WD(),Sh=M(CR,{roughness:.85}),Du=FZ(c),Hb=FZ(lighten(c,.2)),Ch=M(lighten(RO,.45),{map:chunky(),roughness:.95});Sh.detail=1;
+    ol(rb(g,1.58,.26,2.06,.09,Wd,0,.17,.02),.009);[[-.7,-.92],[.7,-.92],[-.7,.96],[.7,.96]].forEach(([x,z])=>ol(ball(g,.08,Wd,x,.05,z,1,.75,1),.004));
+    ol(rb(g,1.48,.18,1.96,.08,Sh,0,.38,.04),.008);
+    const dv=add(g,gcache('nhug_duv',()=>cushionGeo(.76,.68,.05,{pinch:.03,n:5,seg:56,rings:8})),Du,0,.52,.32);dv.rotation.x=-Math.PI/2;ol(dv,.008);
+    [-1,1].forEach(s=>ol(rb(g,.05,.2,1.3,.03,Du,s*.76,.44,.32),.005));
+    ol(rb(g,1.62,.11,.52,.05,Ch,0,.6,.74),.007);[-1,1].forEach(s=>ol(rb(g,.08,.34,.52,.04,Ch,s*.8,.48,.74),.005));
+    for(let i=0;i<6;i++)ol(ball(g,.035,M(RO,{roughness:.6}),-.7+i*.28,.3,1.0,1,1,1,10),.002);
+    const hp=piv(g,0,.32,-1.04),hb=add(hp,heartPuff(.1),Hb,0,.5,0);hb.scale.set(1.55,1.25,1);ol(hb,.01);
+    for(let i=0;i<5;i++)for(let j=0;j<3;j++){const x=-.4+i*.2,y=.42+j*.2;const b=heartB(0);if(Math.abs(x)>.55-j*.06&&j===0)continue;if(j===2&&Math.abs(x)<.05)continue;ol(ball(hp,.026,M(shade(lighten(c,.2),.2),{roughness:.4}),x,y,.1,1,1,.6,8),.002)}
+    ol(rb(g,1.6,.14,.1,.05,Wd,0,.36,-1.03),.006);
+    const pl=[-1,1].map(s=>{const q=piv(g,s*.31,.47,-.68);q.rotation.set(-.85,0,-s*.1);const m=add(q,heartPuff(.1),FZ(s<0?CR:lighten(RO,.25)),0,.18,0);m.scale.set(.48,.44,1);ol(m,.007);return q});
+    g.userData.use=(t,p)=>{if(t<0){pl.forEach(q=>q.scale.set(1,1,1));hp.scale.set(1,1,1);return}const k=ss(0,1,Math.min(1,t/2.5)),b=Math.sin(t*1.2);
+      pl.forEach((q,i)=>{const d=k*(.7+.3*Math.sin(t*.9+i*2));q.scale.set(1+.06*d,1+.03*d,1-.3*d)});hp.scale.set(1+.012*b*k,1+.018*b*k,1)};
+    return g},
+  // cubbies full of little plushes: each one hops and wiggles in turn as the pet pats them
+  sbshelf(c){const g=G(),Wd=WD(),Bk=FZ(lighten(c,.35));
+    [[-.46,-.14],[.46,-.14],[-.46,.14],[.46,.14]].forEach(([x,z])=>ol(ball(g,.05,Wd,x,.04,z,1,.8,1,10),.003));
+    ol(rb(g,1.06,1.24,.04,.02,Bk,0,.7,-.17),.006);
+    [-1,1].forEach(s=>ol(rb(g,.07,1.32,.42,.03,Wd,s*.53,.71,0),.007));
+    [.1,.52,.94,1.34].forEach(y=>ol(rb(g,1.13,.06,.42,.025,Wd,0,y,0),.006));
+    [.31,.73,1.14].forEach(y=>ol(rb(g,.05,.36,.38,.015,Wd,0,y,-.01),.004));
+    // scalloped crown with a heart
+    for(let i=0;i<7;i++)ol(ball(g,.085,FZ(c),-.48+i*.16,1.37,.0,1,.7,.55,12),.004);heart(g,.2,M(RO,{roughness:.4}),0,1.5,.04).outline=.004;
+    const pv=[];const slot=(x,y,fn)=>{const q=piv(g,x,y,.02);q.userData.y=y;fn(q);pv.push(q)};
+    slot(-.27,.13,q=>{const Y=FZ(0xFFD95A);ol(ball(q,.13,Y,0,.13,0,1,.95,.9),.004);ol(add(q,gcache('c'+[0,.03,.06,8],()=>new THREE.CylinderGeometry(0,.03,.06,8)),M(0xFF9A3C,{roughness:.4}),0,.13,.13),.002).rotation.x=Math.PI/2;
+      face(q,0,.18,.11,.8);[-1,1].forEach(s=>{const w=ol(ball(q,.06,Y,s*.12,.11,0,.5,1,.9,10),.003);w.rotation.z=s*.4});ol(ball(q,.03,Y,0,.27,0,1,1.4,1,8),.002)});
+    slot(.27,.13,q=>{const B=FZ(LI);ol(ball(q,.12,B,0,.12,0,1,.95,.9),.004);[-1,1].forEach(s=>{const e=ol(ball(q,.035,B,s*.05,.29,0,1,2.4,.7,10),.003);e.rotation.z=-s*.2});face(q,0,.14,.1,.8);ol(ball(q,.04,FZ(CR),0,.09,.1,1,1,.5,8),0)});
+    slot(-.27,.55,q=>{const m=add(q,heartPuff(.08),FZ(RO),0,.15,0);m.scale.set(.3,.3,1);ol(m,.004);face(q,0,.16,.075,.7)});
+    slot(.27,.55,q=>{const W=FZ(0xFFFFFF);[[-.08,.1,.07],[.08,.1,.07],[0,.15,.1]].forEach(([x,y,r])=>ol(ball(q,r,W,x,y,0,1,.9,.8),.004));face(q,0,.15,.075,.7)});
+    slot(-.27,.97,q=>{buddy(q,0xD9A27A,1)});
+    slot(.27,.97,q=>{const P=FZ(PE);ol(ball(q,.13,P,0,.1,0,1,.75,.95),.004);for(let i=0;i<5;i++){const a=i/5*Math.PI*2;ball(q,.03,P,Math.cos(a)*.05,.19,Math.sin(a)*.05,1,.6,1,8).outline=0}face(q,0,.11,.12,.75)});
+    g.userData.use=(t,p)=>{pv.forEach((q,i)=>{if(t<0){q.position.y=q.userData.y;q.rotation.set(0,0,0);return}const k=env(p,.1,.9),h=Math.max(0,Math.sin(t*3.2-i*1.05))**3;
+      q.position.y=q.userData.y+.05*h*k;q.rotation.set(0,Math.sin(t*2+i)*.2*k,Math.sin(t*7+i*2)*.12*h*k)})};
+    return g},
+  // a hanging swing seat with a heart back on a curved stand: it sways gently while the pet sits
+  sbswing(c){const g=G(),Wd=WD(),A=FZ(c),R=FZ(RO),C=FZ(CR),Rp=M(0xF3D9C4,{roughness:.8});Rp.detail=1;
+    ol(lathe(g,[[.001,0],[.5,0],[.52,.03],[.48,.07],[.001,.08]],Wd,0,0,-.08,32),.008);
+    const pole=[[0,.06,-.5],[0,.7,-.56],[0,1.5,-.52],[0,1.95,-.3],[0,2.06,-.05],[0,2.0,.1]];
+    ol(add(g,gcache('nhug_pole',()=>sweepGeo(pole,()=>[.045,.045],{len:40,seg:10})),Wd,0,0,0),.006);ol(ball(g,.05,Wd,0,2.0,.1,1,1,1,10),.003);
+    const sw=piv(g,0,1.96,.1);
+    // ropes to the seat ring
+    [[-.34,.62,-.04],[.34,.62,-.04],[-.26,.62,.2],[.26,.62,.2]].forEach(([x,y,z])=>{const r=nsLine(sw,[0,0,0],[x,y-1.96,z-.1],.013,Rp);r.outline=.002});
+    // the seat: a padded round tray with a cushion and the heart back
+    ol(lathe(sw,[[.001,-1.56],[.36,-1.56],[.42,-1.5],[.43,-1.38],[.001,-1.38]],A,0,0,0,36),.008);
+    ol(to(sw,.42,.045,C,0,-1.38,0,Math.PI/2),.005);
+    const cu=add(sw,gcache('nhug_swc',()=>cushionGeo(.34,.34,.06,{pinch:.02,n:2,seg:48,rings:6})),FZ(lighten(c,.35)),0,-1.37,0);cu.rotation.x=-Math.PI/2;ol(cu,.006);
+    const bk=add(sw,heartPuff(.08),A,0,-1.06,-.3);bk.scale.set(.82,.74,1);bk.rotation.x=-.2;ol(bk,.008);heart(sw,.22,C,0,-1.04,-.24).outline=.003;
+    [-1,1].forEach(s=>{const tp=ol(ball(sw,.04,R,s*.36,-1.36,.1,1,1,1,10),.002)});
+    g.userData.use=(t,p)=>{if(t<0){sw.rotation.set(0,0,0);return}const k=ss(0,1,Math.min(1,t/1.5));sw.rotation.z=Math.sin(t*1.6)*.035*k;sw.rotation.x=Math.sin(t*1.6+1.2)*.02*k};
+    return g},
+  // a shaggy heart rug: the fluffy tufts round its edge ripple when the pet wriggles on it
+  sbrug(c){const g=G(),A=FZ(c),C=FZ(CR),T=FZ(lighten(c,.25));
+    const r1=add(g,heartPuff(.025),A,0,.026,0);r1.rotation.x=-Math.PI/2;r1.scale.set(2.0,1.7,1);ol(r1,.006);
+    const r2=add(g,heartPuff(.02),C,0,.045,.04);r2.rotation.x=-Math.PI/2;r2.scale.set(1.15,.98,1);ol(r2,.004);
+    const r3=add(g,heartPuff(.015),FZ(lighten(c,.15)),0,.06,.06);r3.rotation.x=-Math.PI/2;r3.scale.set(.55,.47,1);r3.outline=.003;
+    const tf=[];const N=30;for(let i=0;i<N;i++){const b=heartB(i/N*Math.PI*2),q=piv(g,b[0]*1.92,.03,-b[1]*1.63);ol(ball(q,.075,T,0,0,0,1,.55,1,10),.003);tf.push(q)}
+    g.userData.use=(t,p)=>{tf.forEach((q,i)=>{if(t<0){q.scale.set(1,1,1);return}const k=env(p,.1,.9),w=Math.max(0,Math.sin(t*4.5-i*.42));q.scale.set(1+.1*w*k,1+.9*w*k,1+.1*w*k)})};
+    return g},
+  // a floor lamp with a fuzzy round shade and two ears: tug the heart cord and it glows warmer, the shade wobbles
+  sblamp(c){const g=G(),Wd=WD(),A=FZ(c),In=FZ(lighten(RO,.35)),Gl=M(0xFFF1DC,{emissive:0xFFC77A,emissiveIntensity:.8,roughness:.6});
+    ol(lathe(g,[[.001,0],[.22,0],[.23,.03],[.18,.07],[.06,.09],[.001,.1]],Wd,0,0,0,28),.006);
+    ol(cy(g,.026,.03,1.12,Wd,0,.64,0,12),.004);ol(ball(g,.05,Wd,0,.3,0,1,.7,1,12),.003);ol(ball(g,.05,Wd,0,.9,0,1,.7,1,12),.003);
+    const sh=piv(g,0,1.2,0);
+    nosh(lathe(sh,[[.001,.02],[.14,.03],[.24,.1],[.28,.2]],Gl,0,0,0,28)).outline=.004;
+    ol(lathe(sh,[[.28,.19],[.29,.24],[.26,.34],[.18,.43],[.001,.47]],A,0,0,0,28),.007);
+    ol(to(sh,.282,.03,FZ(CR),0,.2,0,Math.PI/2),.004);
+    [-1,1].forEach(s=>{ol(ball(sh,.085,A,s*.17,.44,0,1,1,.6,14),.004);ball(sh,.05,In,s*.17,.44,.04,1,1,.35,10).outline=0});
+    heart(sh,.11,M(RO,{roughness:.4}),0,.31,.27).outline=.003;
+    const cd=piv(sh,.12,.05,.08);ol(cy(cd,.005,.005,.24,M(0xFFF1E6,{roughness:.6}),0,-.12,0,6),0);heart(cd,.06,M(RO,{roughness:.4}),0,-.26,0).outline=.002;
+    g.userData.use=(t,p)=>{if(t<0){cd.position.y=.05;sh.rotation.set(0,0,0);Gl.emissiveIntensity=.8;return}const tug=p<.25?Math.sin(p/.25*Math.PI):0,k=env(p,.15,.9);
+      cd.position.y=.05-.06*tug;sh.rotation.z=Math.sin(t*3)*.05*k+.04*tug;Gl.emissiveIntensity=.8+.7*ss(.08,.3,p)*(1-ss(.9,1,p))+.1*Math.sin(t*2)*k};
+    return g},
+  // a heart mailbox on a post: the door drops open, a sealed letter slides out and the flag pops up
+  sbmail(c){const g=G(),Wd=WD(),A=M(c,{roughness:.35}),Ad=M(lighten(c,.25),{roughness:.35}),R=M(RO,{roughness:.4}),Gr=FZ(0x8CCB6A),Pa=M(0xFFFBF2,{roughness:.6});A.detail=2;
+    ol(rb(g,.1,.82,.1,.03,Wd,0,.43,-.02),.005);
+    ol(ball(g,.2,Gr,0,.05,-.02,1,.4,1,16),.005);[[-.13,.07,.08,RO],[.12,.08,.06,0xFFD95A],[.02,.1,-.13,0xFFFFFF],[.14,.07,-.1,RO]].forEach(([x,y,z,col])=>{ol(ball(g,.035,M(col,{roughness:.5}),x,y,z,1,.7,1,10),.002)});
+    const AP=(r,hs,n)=>{const P=[[-r,0],[r,0],[r,hs]];for(let i=1;i<n;i++){const a=i/n*Math.PI;P.push([Math.cos(a)*r,hs+Math.sin(a)*r])}P.push([-r,hs]);return P};
+    ol(flat(g,gcache('nhug_mb',()=>AP(.15,.12,18)),.42,A,0,.84,-.24),.008);ol(rb(g,.34,.04,.46,.02,Wd,0,.83,-.03),.004);
+    const dr=piv(g,0,.85,.185);ol(flat(dr,gcache('nhug_md',()=>AP(.155,.11,18)),.03,Ad,0,0,0),.005);heart(dr,.13,R,0,.13,.035).outline=.003;ol(ball(dr,.02,M(0xFFD21F,{metalness:.5,roughness:.3}),0,.24,.035,1,1,1,8),.002);
+    const lt=piv(g,0,.93,.02);ol(rb(lt,.2,.015,.15,.006,Pa,0,0,0),.003);heart(lt,.05,R,0,.012,.02).rotation.x=-Math.PI/2;nsLine(lt,[-.1,.009,-.075],[0,.009,.01],.003,M(0xE8D8C8,{roughness:.6})).outline=0;nsLine(lt,[.1,.009,-.075],[0,.009,.01],.003,M(0xE8D8C8,{roughness:.6})).outline=0;
+    const fg=piv(g,.165,.92,-.12);ol(rb(fg,.02,.24,.025,.008,Wd,0,.12,0),.003);heart(fg,.09,R,0,.25,0).outline=.002;fg.rotation.x=-Math.PI/2;
+    g.userData.use=(t,p)=>{if(t<0){dr.rotation.x=0;lt.position.set(0,.93,.02);lt.rotation.x=0;fg.rotation.x=-Math.PI/2;return}
+      const o=ss(.06,.22,p)*(1-ss(.82,.95,p)),l=ss(.25,.45,p)*(1-ss(.7,.85,p)),f=ss(.35,.45,p)*(1-ss(.88,.98,p));
+      dr.rotation.x=1.45*o;lt.position.set(0,.93+.03*l,.02+.25*l);lt.rotation.x=-.5*l+Math.sin(t*6)*.05*l;fg.rotation.x=-Math.PI/2*(1-f)+Math.sin(t*9)*.08*f};
+    return g},
+  // a round quilted nest with a plush bolster and a little cuddle buddy: the buddy leans in and both breathe with the sleeper
+  sbmat(c){const g=G(),A=FZ(c),B=FZ(lighten(c,.3)),C=FZ(CR);
+    const m=add(g,gcache('nhug_mat',()=>cushionGeo(.52,.52,.05,{pinch:0,n:2,seg:56,rings:7})),A,0,.05,0);m.rotation.x=-Math.PI/2;ol(m,.007);
+    for(let i=0;i<2;i++){const r=to(g,.18+i*.17,.006,FZ(shade(c,.15)),0,.1-i*.008,0,Math.PI/2);r.outline=0}
+    const bo=piv(g,0,.1,0),tb=add(bo,gcache('nhug_bol',()=>new THREE.TorusGeometry(.52,.09,12,40,Math.PI*2-1.1)),B,0,0,0);tb.rotation.set(Math.PI/2,0,Math.PI/2+.55);ol(tb,.007);
+    [-1,1].forEach(s=>{const a=Math.PI/2+s*.55;ol(ball(bo,.09,B,Math.cos(a)*.52,0,Math.sin(a)*.52,1,1,1,14),.004)});
+    const bp=piv(g,.05,.14,-.47);buddy(bp,0xD9A27A,1);bp.rotation.y=-.15;
+    const hp=add(g,heartPuff(.05),FZ(RO),-.3,.24,-.36);hp.scale.set(.26,.26,1);hp.rotation.set(-.3,.6,0);ol(hp,.004);
+    g.userData.use=(t,p)=>{if(t<0){bp.rotation.set(0,-.15,0);bo.scale.set(1,1,1);return}const k=ss(0,1,Math.min(1,t/2)),b=Math.sin(t*1.3);
+      bp.rotation.set(.32*k+.04*b*k,-.15,.06*Math.sin(t*.7)*k);bo.scale.set(1+.02*b*k,1+.06*b*k,1+.02*b*k)};
+    return g},
+  // a round armchair with a big tufted heart back: the cushion sinks and the heart back gives a happy double beat now and then
+  sbchair(c){const g=G(),Wd=WD(),A=FZ(c),Al=FZ(lighten(c,.15)),C=FZ(CR);
+    [[-.32,-.26],[.32,-.26],[-.32,.26],[.32,.26]].forEach(([x,z])=>ol(lathe(g,[[.03,0],[.045,.03],[.05,.09],[.04,.13]],Wd,x,0,z,12),.003));
+    ol(rb(g,.9,.3,.78,.13,A,0,.27,0),.009);
+    const sp_=piv(g,0,.4,.04),cu=add(sp_,gcache('nhug_chc',()=>cushionGeo(.33,.31,.07,{pinch:.06,n:3,seg:48,rings:7})),C,0,.03,0);cu.rotation.x=-Math.PI/2;ol(cu,.007);
+    [-1,1].forEach(s=>{const a=ol(cy(g,.12,.12,.7,A,s*.41,.46,.02,22),.007);a.rotation.x=Math.PI/2;ol(ball(g,.12,Al,s*.41,.46,.37,1,1,.35,16),.004);heart(g,.08,M(RO,{roughness:.4}),s*.41,.46,.41).outline=.002});
+    const bk=piv(g,0,.38,-.3);bk.rotation.x=-.16;const hm=add(bk,heartPuff(.13),Al,0,.42,0);hm.scale.set(1.0,.92,1);ol(hm,.009);
+    [[-.22,.55],[.22,.55],[0,.4],[-.12,.28],[.12,.28],[0,.16]].forEach(([x,y])=>ol(ball(bk,.024,M(shade(lighten(c,.15),.22),{roughness:.4}),x,y,.12,1,1,.6,8),.002));
+    const beat=t=>{const ph=t%2.4;return Math.exp(-(((ph-.15)/.06)**2))+.6*Math.exp(-(((ph-.38)/.06)**2))};
+    g.userData.use=(t,p)=>{if(t<0){sp_.scale.set(1,1,1);bk.scale.set(1,1,1);return}const k=ss(0,1,Math.min(1,t/1.2)),bt=beat(t)*k;
+      sp_.scale.set(1+.03*k,1-.25*k,1+.03*k);const br=.012*Math.sin(t*1.5)*k;bk.scale.set(1+.05*bt+br,1+.05*bt+br,1+.04*bt)};
+    return g}}})(),
+ use:{
+  sbplush:{kind:'stand',anim:'hug',d:5,dist:0,front:1,emo:['💗','💗','💤'],w:.9},
+  sbpillows:{kind:'stand',anim:'u_snuggle',d:6,dist:.02,emo:['💗','💤'],w:.8},
+  sbheartbag:{kind:'perch',w:(s,a)=>.8+(s.affection<60?.6:0)},
+  sbfort:{kind:'stand',front:1,anim:'u_snuggle',d:7,dist:.05,emo:['💗','💤'],w:.8},
+  sbshelf:{kind:'stand',front:1,anim:'u_pat',d:4.5,dist:.06,emo:['💗','⭐'],w:.6},
+  sbswing:{kind:'perch',w:(s,a)=>.8+(s.affection<60?.5:0)},
+  sbrug:{kind:'rug',anim:'u_snuggle',d:5,emo:['💗','🎵'],w:.6},
+  sblamp:{kind:'stand',anim:'u_warm',d:7,dist:.2,emo:['💗','💤'],w:.5},
+  sbmail:{kind:'stand',front:1,anim:'u_rummage',d:4.6,dist:.05,emo:['💗','❗'],w:.6},
+  sbmat:NAP,
+  sbchair:{kind:'perch',w:(s,a)=>.8+(s.affection<60?.5:0)}},
+ dw:{n:'Burrow',wn:'Burrow window',
+  door(){const Co=mt(0x8A5A44,.5),Pk=mt(0xF59AB8,.6),Cm=mt(0xFFF1E6,.7),Ro=mt(0xF06A9A,.4),D=dBase({top:'round',F:Co,fw:.16,L:Pk,S:mt(0x6E4434,.5)});
+    // tufted padding: a diamond of buttons on the leaf
+    const SG=gcache('nhug_dsp',()=>new THREE.SphereGeometry(1,12,9)),bs=(p,r,m,x,y,z,sz)=>{const b=add(p,SG,m,x,y,z);b.scale.set(r,r,r*(sz||1));return b},Bt=mt(0xC9577F,.4);
+    for(let j=0;j<5;j++)for(let i=0;i<3;i++){const x=D.w*(i+(j%2?.0:.5)+.25)/3.5+.06,y=.35+j*.27;if(x<.12||x>D.w-.12||y>1.38)continue;bs(D.hinge,.03,Bt,x,y,.05,.6)}
+    // a heart window up top
+    heart3(D.hinge,.42,DGL(),D.w/2,1.72,.05);heart3(D.hinge,.5,Ro,D.w/2,1.72,.035);
+    // fluffy pompom trim round the frame
+    const Rp=mt(0xF06A9A,.8);alongTop(D.w+.16,D.h+.08,'round',17).forEach(([x,y],i)=>bs(D.g,.075+(i%2)*.012,i%3===1?Rp:Cm,x,y,.12,.7));
+    knob(D,mt(0xFFD21F,.3,{metalness:.5}),1.02);heart3(D.hinge,.09,Ro,D.w-.14,1.2,.07);return D},
+  win(){const Co=mt(0x8A5A44,.5),Cm=mt(0xFFF1E6,.7),Ro=mt(0xF06A9A,.45),
+      W=wBase({top:'round',F:Co,fw:.1,mull:'vert',MM:Co,S:mt(0xF59AB8,.5),Gl:M(0xFFE6EE,{emissive:0xFFD6E2,emissiveIntensity:.45,roughness:.05})});
+    curtains(W,mt(0xF59AB8,.75),Ro,Co);
+    // a plush scalloped valance of puffs
+    const vy=W.y0+W.h+W.fw+.1;for(let i=0;i<9;i++){const x=-W.w/2-.15+i*(W.w+.3)/8;sp(W.g,.08,i%2?Cm:mt(0xF59AB8,.8),x,vy,.17,1,.85,.7)}
+    heart3(W.g,.16,Ro,0,vy+.1,.2);
+    // a tiny plush heart sitting on the sill
+    heart3(W.g,.14,mt(0xF06A9A,.8),.28,W.y0-.0,.14);return W}}
+});
+Object.assign(NEED_OVR,{
+  sbplush:{affection:14,fun:3},sbpillows:{affection:10,energy:5},sbheartbag:{affection:12,energy:5},sbfort:{affection:12,energy:5},
+  sbbed:{energy:30,affection:12},sbshelf:{affection:9,fun:3},sbswing:{affection:12,energy:4},sbrug:{affection:8,energy:3},
+  sblamp:{affection:10,energy:5},sbmail:{affection:11},sbmat:{energy:28,affection:10},sbchair:{affection:12,energy:5}});
+}catch(e){console.warn("need set nhug",e)}
+// ---- nsnack
+try{
+SET_DEF({
+  set:{k:'nsnack',n:'Midnight Snack',c:'#4B57B8'},
+  tiles:{
+    f:['Moonlit harlequin tiles',(x,w,h)=>{const n=4,s=w/n;x.fillStyle='#F6E7C6';x.fillRect(0,0,w,h);
+      const dia=(cx,cy,c1,c2)=>{const g=x.createLinearGradient(cx-s/2,cy-s/2,cx+s/2,cy+s/2);g.addColorStop(0,c1);g.addColorStop(1,c2);x.fillStyle=g;x.beginPath();x.moveTo(cx,cy-s/2);x.lineTo(cx+s/2,cy);x.lineTo(cx,cy+s/2);x.lineTo(cx-s/2,cy);x.closePath();x.fill()};
+      // the cream diamonds get a soft sheen, the periwinkle ones sit on the grid points (so the tile wraps)
+      for(let j=0;j<n;j++)for(let i=0;i<n;i++)dia(i*s+s/2,j*s+s/2,'#FFF4DA','#EBD7AE');
+      for(let j=0;j<=n;j++)for(let i=0;i<=n;i++)dia(i*s,j*s,'#7E86D2','#5A62B4');
+      // grout
+      x.strokeStyle='rgba(59,18,115,.45)';x.lineWidth=3;for(let k=-2*n;k<=2*n;k++){const q=k*s+s/2;x.beginPath();x.moveTo(q,0);x.lineTo(q-h,h);x.moveTo(q,0);x.lineTo(q+h,h);x.stroke()}
+      // little butter studs where four tiles meet
+      for(let j=0;j<=n;j++)for(let i=0;i<=n;i++)[[i*s+s/2,j*s],[i*s,j*s+s/2]].forEach(([a,b])=>{x.fillStyle='#FFD465';x.beginPath();x.arc(a,b,5,0,7);x.fill();x.strokeStyle='#3B1273';x.lineWidth=1.6;x.stroke()});
+      mottle(x,w,h,9311,5,.12);grain(x,6,9312)}],
+    w:['Night sky pantry wallpaper',(x,w,h)=>{const yb=h*.6;vgrad(x,w,yb,[[0,'#262C68'],[1,'#3A4596']]);
+      const R=rnd(9321);x.fillStyle='rgba(255,244,214,.55)';for(let i=0;i<160;i++){const px=R()*w,py=R()*yb,r=.8+R()*1.6;for(const o of [-w,0,w]){x.beginPath();x.arc(px+o,py,r,0,7);x.fill()}}
+      lattice(x,w,yb,3,4,15,(x,k)=>{if(k%3===0){x.rotate(-.4);MOT.moon(x,16,'#FFD465',0)}else if(k%3===1)MOT.star(x,11,'#FFE7A3');else{MOT.dot(x,10,'#E9B66A');x.fillStyle='#6B3E26';[[-4,-3],[4,1],[-1,5],[3,-5]].forEach(([a,b])=>{x.beginPath();x.arc(a,b,1.8,0,7);x.fill()})}},{seed:9322,jit:.3,rot:.5,area:[0,yb]});
+      // butter beadboard below, a cream rail with a scalloped edge
+      x.fillStyle='#FFE29A';x.fillRect(0,yb,w,h-yb);const n=16;for(let i=0;i<n;i++){const px=i*w/n;const g=x.createLinearGradient(px,0,px+w/n,0);g.addColorStop(0,'rgba(180,120,40,.22)');g.addColorStop(.15,'rgba(255,255,255,.35)');g.addColorStop(1,'rgba(180,120,40,.06)');x.fillStyle=g;x.fillRect(px,yb,w/n,h-yb);x.fillStyle='rgba(59,18,115,.35)';x.fillRect(px,yb,2,h-yb)}
+      x.fillStyle='#FFF3DC';for(let i=0;i<16;i++){x.beginPath();x.arc(i*w/16+w/32,yb+10,w/32,0,Math.PI);x.fill()}
+      x.fillStyle='#FFF3DC';x.fillRect(0,yb-12,w,22);x.fillStyle='#3B1273';x.fillRect(0,yb-14,w,3);x.fillRect(0,yb+9,w,2);
+      x.fillStyle='#FFF3DC';x.fillRect(0,h-30,w,30);x.fillStyle='#3B1273';x.fillRect(0,h-32,w,3);
+      mottle(x,w,h,9323,5,.1);grain(x,4,9324)}]
+  },
+  cat:[
+    {k:'mncereal',n:'Cereal bar',fn:'surface',p:11,dc:7},
+    {k:'mntoast',n:'Pop-up toaster cart',fn:'surface',p:8,dc:0},
+    {k:'mnfruit',n:'Fruit bowl table',fn:'surface',p:9,dc:5},
+    {k:'mncupboard',n:'Snack cupboard',fn:'storage',p:10,dc:8},
+    {k:'mnfloss',n:'Cotton candy spinner',fn:'fun',p:12,dc:9},
+    {k:'mnjars',n:'Cookie jar shelf',fn:'wall',p:6,dc:0,wall:1,y:1.45},
+    {k:'mnhoney',n:'Honey pot lamp table',fn:'light',p:7,dc:3},
+    {k:'mngriddle',n:'Pancake griddle cart',fn:'surface',p:10,dc:7},
+    {k:'mnblend',n:'Smoothie blender stand',fn:'deco',p:8,dc:0},
+    {k:'mnbench',n:'Bread box bench',fn:'seat',p:9,dc:7,perch:{y:.53,z:.02,x:[-.48,.0],w:.5,bz:-.2,fe:.26}},
+    {k:'mnbowl',n:'Crescent snack bowl',fn:'pet',p:3,dc:7,flat:1,feed:1},
+    {k:'mnkettle',n:'Tea kettle stove',fn:'surface',p:11,dc:5}
+  ],
+  build:{
+    nsnack_kit(){return gcache('nsnack_kit',()=>{const ss=(a,b,v)=>{v=Math.min(1,Math.max(0,(v-a)/(b-a)));return v*v*(3-2*v)};const K={ss,
+      mats(){return{cream:M(0xFFF3DC,{roughness:.5}),navy:M(0x2E3577,{roughness:.38}),butter:M(0xFFD465,{roughness:.36}),wood:M(0xE2AA68,{roughness:.6}),woodD:M(0xB57843,{roughness:.6}),
+        cr:M(0xE6EBF4,{metalness:.7,roughness:.2}),pink:M(0xFF8FB8,{roughness:.4}),milk:M(0xFFFDF8,{roughness:.3}),dark:M(0x3A2E48,{roughness:.45}),choc:M(0x6B3E26,{roughness:.55}),
+        toast:M(0xEDBB6E,{roughness:.7}),crust:M(0xB06F33,{roughness:.7}),red:M(0xE8384F,{roughness:.3}),grn:M(0x5DBB63,{roughness:.45}),shine:M(0xFFFFFF,{roughness:.1,emissive:0xFFFFFF,emissiveIntensity:.35}),
+        amber:M(0xF2A22E,{roughness:.15}),plum:M(0x8E4BC9,{roughness:.3}),orange:M(0xFF9A2E,{roughness:.45}),yel:M(0xFFE14D,{roughness:.4})}},
+      // a few soft puffs that rise and fade while k > 0
+      steam(g,x,y,z,n,s){const L=[];for(let i=0;i<(n||3);i++){const m=sp(g,.03*(s||1),M(0xFFFFFF,{roughness:.9,transparent:true,opacity:.5}),x,y,z);m.outline=0;nosh(m);m.visible=false;L.push(m)}
+        L.upd=(t,k,hh)=>L.forEach((m,i)=>{const u=(t*.55+i/L.length)%1;m.visible=k>.01;m.position.set(x+Math.sin(t*2.1+i*2)*.02,y+u*(hh||.3),z+Math.cos(t*1.7+i)*.015);m.scale.setScalar(.5+u*1.6);m.material.opacity=.5*(1-u)*k});return L},
+      // counter: toe kick, dyeable doors, butcher-block top; returns the top height
+      counter(g,c,Q,w,d,h){const V=M(c,{roughness:.35}),Vl=M(lighten(c,.16),{roughness:.35});
+        ol(rb(g,w-.08,.08,d-.08,.02,Q.navy,0,.04,-.02),.005);ol(rb(g,w,h-.12,d,.04,V,0,h/2+.02,0),.009);
+        [-1,1].forEach(s=>{ol(rb(g,w/2-.1,h-.34,.03,.03,Vl,s*w/4,h/2+.02,d/2+.008),.004);ol(sp(g,.03,Q.butter,s*.07,h*.62,d/2+.03),.003)});
+        ol(rb(g,w+.07,.02,d+.07,.008,Q.navy,0,h-.045,0),.003);ol(rb(g,w+.06,.07,d+.06,.025,Q.wood,0,h-.005,0),.007);return h+.03},
+      // a little chocolate-chip cookie facing +z
+      cookie(g,r,Q,x,y,z){const p=piv(g,x,y,z);const c_=ol(cy(p,r,r,r*.32,Q.toast,0,0,0,18),.004);c_.rotation.x=Math.PI/2;
+        [[-.4,.3],[.35,.4],[.1,-.1],[-.3,-.45],[.45,-.3]].forEach(([a,b])=>{const ch=K.ls(p,r*.16,Q.choc,a*r,b*r,r*.16,1,1,.5);ch.outline=0});return p},
+      // builders run at a lower geometry detail (rounded boxes, cylinders and lathes), plus cheap tori and spheres for tiny bits
+      lod(f){const o=GEO_LOD;setGeoLod(Math.min(o,.6));try{return f()}finally{setGeoLod(o)}},
+      lt(g,R,t,m,x,y,z,rx,ry,rz,n){const s=add(g,gcache('nsnack_t'+[R,t,n||14],()=>new THREE.TorusGeometry(R,t,6,n||14)),m,x,y,z);s.rotation.set(rx||0,ry||0,rz||0);return s},
+      ls(g,r,m,x,y,z,sx,sy,sz){const s=add(g,gcache('nsnack_s'+r,()=>latheGeo([[.001,-r],[r*.5,-r*.87],[r*.87,-r*.5],[r,0],[r*.87,r*.5],[r*.5,r*.87],[.001,r]],12)),m,x,y,z);if(sx!==undefined)s.scale.set(sx,sy,sz);return s},
+      leg(g,m,x,z,h){ol(cy(g,.028,.022,h,m,x,h/2,z,10),.004);ol(sp(g,.034,m,x,.02,z,1,.7,1),0)}};return K})},
+
+    mncereal(c){return BUILD.nsnack_kit().lod(()=>{const g=G(),T=BUILD.nsnack_kit(),Q=T.mats(),top=T.counter(g,c,Q,1.4,.56,.86);
+      // a navy back board with an arched top
+      const bk=gcache('nsnack_cbk',()=>{const P=[[-.66,0],[.66,0],[.66,.5]];for(let i=1;i<20;i++){const a=i/20*Math.PI;P.push([Math.cos(a)*.66,.5+Math.sin(a)*.16])}P.push([-.66,.5]);return P});
+      ol(flat(g,bk,.05,Q.navy,0,top,-.27),.008);ol(rb(g,1.2,.03,.08,.012,Q.butter,0,top+.62,-.2),.003);
+      [[-.5,.67],[.5,.67],[0,.74]].forEach(([x,y])=>{const s=star3(g,.035,Q.butter,x,top+y,-.215);s.outline=.002});
+      // three gravity dispensers full of cereal
+      const tex=[['#FFE9B0',['#FF8FB8','#FFD465','#8FD86B','#FF9A4D']],['#F0C066',['#E6A93E','#F7D488']],['#7A4A2E',['#5B3420','#F3DDB6']]].map(([bg,cs],i)=>nsTex('nsnack_cer'+i,128,128,(x,w,h)=>{x.fillStyle=bg;x.fillRect(0,0,w,h);const R=rnd(9330+i);
+        for(let k=0;k<170;k++){const px=R()*w,py=R()*h,r=4+R()*3,cl=cs[k%cs.length];for(const o of [-w,0,w]){x.beginPath();x.arc(px+o,py,r,0,7);x.fillStyle=cl;x.fill();x.strokeStyle='rgba(59,18,115,.35)';x.lineWidth=1;x.stroke();
+          if(i===0){x.fillStyle=bg;x.beginPath();x.arc(px+o,py,r*.4,0,7);x.fill()}}}
+        const gr=x.createLinearGradient(0,0,w,0);gr.addColorStop(0,'rgba(255,255,255,0)');gr.addColorStop(.3,'rgba(255,255,255,.28)');gr.addColorStop(.42,'rgba(255,255,255,0)');x.fillStyle=gr;x.fillRect(0,0,w,h)}));
+      const y0=top+.24,dz=-.1;let knob=null;
+      [-.42,0,.42].forEach((x,i)=>{ol(rb(g,.06,.08,.12,.02,Q.cr,x,y0+.3,dz-.1),.003);
+        ol(cy(g,.115,.115,.34,M(0xffffff,{map:tex[i],roughness:.22}),x,y0+.25,dz,24),.006);
+        [y0+.08,y0+.42].forEach(y=>ol(T.lt(g,.118,.015,Q.cr,x,y,dz,Math.PI/2,0,0,28),.003));
+        const sh=rb(g,.022,.24,.01,.005,Q.shine,x-.045,y0+.25,dz+.108);sh.outline=0;
+        ol(cy(g,.1,.12,.06,Q.cr,x,y0+.45,dz,24),.005);ol(sp(g,.035,Q.butter,x,y0+.5,dz),.003);
+        ol(lathe(g,[[.001,0],[.03,0],[.03,.035],[.115,.08],[.001,.08]],Q.cr,x,y0,dz,24),.005);
+        // the crank on the funnel
+        const kn=piv(g,x,y0+.05,dz+.075);const hb=ol(cy(kn,.028,.028,.04,Q.butter,0,0,.02,14),.003);hb.rotation.x=Math.PI/2;
+        for(let a=0;a<3;a++){const arm=piv(kn,0,0,.035);arm.rotation.z=a/3*Math.PI*2;ol(rb(arm,.018,.07,.018,.008,Q.butter,0,.04,0),.002);ol(T.ls(arm,.022,Q.navy,0,.08,0),.002)}
+        if(i===1)knob=kn});
+      // the bowl under the middle one, with milk, floating loops and a spoon
+      ol(lathe(g,[[.001,0],[.05,0],[.09,.03],[.11,.075],[.1,.08],[.088,.055],[.001,.055]],Q.pink,0,top,dz,26),.005);
+      ol(cy(g,.088,.088,.006,Q.milk,0,top+.054,dz,22),0);
+      const lc=[Q.butter,Q.pink,Q.grn,Q.orange];for(let i=0;i<7;i++){const a=i*2.3,r=.025+(i%3)*.02,l=T.lt(g,.012,.006,lc[i%4],Math.cos(a)*r,top+.06,dz+Math.sin(a)*r,Math.PI/2);l.outline=0}
+      const spn=piv(g,.05,top+.06,dz+.04);const sh_=ol(cy(spn,.008,.008,.17,Q.cr,.05,.06,0,6),.002);sh_.rotation.z=-.9;ol(sp(spn,.022,Q.cr,-.01,.01,0,1,.4,1.3),.002);
+      // falling cereal while it's cranked
+      const fall=[];for(let i=0;i<5;i++){const f=T.lt(g,.011,.006,lc[i%4],0,top+.2,dz,Math.PI/2);f.outline=0;nosh(f);f.visible=false;fall.push(f)}
+      // two spare bowls and a milk jug
+      ol(lathe(g,[[.001,0],[.05,0],[.09,.03],[.11,.075],[.1,.08],[.088,.055],[.001,.055]],Q.butter,-.42,top,dz,26),.005);ol(lathe(g,[[.001,0],[.05,0],[.09,.03],[.11,.075],[.1,.08],[.088,.055],[.001,.055]],Q.navy,-.42,top+.045,dz,26),.005);
+      ol(lathe(g,[[.001,0],[.06,0],[.065,.14],[.04,.19],[.035,.22],[.04,.23],[.001,.23]],Q.milk,.42,top,dz,20),.005);ol(cy(g,.042,.042,.03,Q.butter,.42,top+.245,dz,16),.003);
+      ol(rb(g,.13,.05,.012,.006,M(0x7FB8E8,{roughness:.4}),.42,top+.1,dz+.064),0);
+      // a gingham tea towel over the front edge
+      const gt=nsTex('nsnack_ging',64,64,(x,w,h)=>{x.fillStyle='#FFFFFF';x.fillRect(0,0,w,h);x.fillStyle='rgba(75,87,184,.45)';for(let i=0;i<4;i++){x.fillRect(i*16,0,8,h);x.fillRect(0,i*16,w,8)}});
+      const Tw=M(0xffffff,{map:gt,roughness:.8});ol(rb(g,.2,.32,.015,.006,Tw,.45,top-.17,.3),.003);ol(rb(g,.2,.02,.1,.008,Tw,.45,top+.005,.26),0);
+      g.userData.use=(t,p)=>{if(p<0){knob.rotation.z=0;fall.forEach(f=>f.visible=false);spn.rotation.set(0,0,0);return}
+        knob.rotation.z=-t*5;fall.forEach((f,i)=>{const u=(t*1.6+i/5)%1;f.visible=true;f.position.set(Math.sin(i*2.7+t)*.015,y0-.005-u*.15,dz+Math.cos(i*1.9)*.015);f.rotation.y=t*3+i});
+        spn.rotation.z=Math.sin(t*3)*.18;spn.rotation.y=Math.sin(t*1.5)*.3};
+      return g})},
+
+    mntoast(c){return BUILD.nsnack_kit().lod(()=>{const g=G(),T=BUILD.nsnack_kit(),Q=T.mats(),V=M(c,{roughness:.3}),H=.835;
+      // an open butcher-block cart
+      [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>T.leg(g,Q.woodD,a*.42,b*.2,.8));
+      ol(rb(g,.9,.04,.44,.015,Q.navy,0,.22,0),.005);ol(rb(g,.98,.07,.52,.025,Q.wood,0,.8,0),.007);ol(rb(g,.99,.02,.53,.008,Q.navy,0,.762,0),.003);
+      const bar=ol(cy(g,.014,.014,.4,Q.cr,.53,.7,0,8),.002);bar.rotation.x=Math.PI/2;[-1,1].forEach(s=>ol(rb(g,.05,.03,.03,.01,Q.cr,.5,.7,s*.19),0));
+      const gt=nsTex('nsnack_ging',64,64,(x,w,h)=>{x.fillStyle='#FFFFFF';x.fillRect(0,0,w,h);x.fillStyle='rgba(75,87,184,.45)';for(let i=0;i<4;i++){x.fillRect(i*16,0,8,h);x.fillRect(0,i*16,w,8)}});
+      ol(rb(g,.015,.24,.16,.006,M(0xffffff,{map:gt,roughness:.8}),.545,.6,.02),.003);
+      // on the shelf: a loaf and two jam jars
+      ol(sp(g,.12,Q.toast,-.2,.3,0,1.6,.75,1),.005);for(let i=0;i<3;i++){const s_=T.lt(g,.07,.008,Q.crust,-.32+i*.11,.355,0,0,Math.PI/2+.4,0);s_.outline=0}
+      [[.15,Q.red],[.3,Q.plum]].forEach(([x,m])=>{ol(lathe(g,[[.001,0],[.05,0],[.055,.1],[.045,.12],[.001,.12]],m,x,.24,0,16),.004);ol(cy(g,.055,.06,.04,M(0xffffff,{map:gt,roughness:.8}),x,.38,0,16),.003)});
+      // the toaster
+      const tx=-.12,tz=-.04;ol(rb(g,.38,.25,.22,.08,V,tx,H+.135,tz),.008);ol(rb(g,.39,.03,.23,.012,Q.cr,tx,H+.04,tz),.003);ol(rb(g,.3,.015,.17,.006,Q.cr,tx,H+.262,tz),.002);
+      [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>ol(sp(g,.022,Q.cr,tx+a*.15,H+.012,tz+b*.08,1,.6,1),0));
+      const glow=M(0xFF7A2A,{emissive:0xFF5A1F,emissiveIntensity:0,roughness:.5});[-1,1].forEach(s=>{const sl=rb(g,.25,.012,.045,.01,glow,tx,H+.268,tz+s*.045);sl.outline=0});
+      ol(rb(g,.012,.14,.03,.006,Q.dark,tx+.192,H+.15,tz),0);ol(sp(g,.03,Q.butter,tx-.1,H+.09,tz+.115,1,1,.5),.002);
+      const lev=piv(g,tx+.2,H+.2,tz);ol(rb(lev,.06,.035,.06,.015,Q.butter,.025,0,0),.003);
+      const slices=[-1,1].map(s=>{const p=piv(g,tx,H+.215,tz+s*.045);ol(rb(p,.18,.17,.022,.04,Q.crust,0,0,0),.003);const f=rb(p,.15,.14,.03,.035,Q.toast,0,-.005,0);f.outline=0;return p});
+      // a plate of buttered toast, a butter dish
+      ol(cy(g,.12,.13,.02,Q.cream,.27,H+.01,.1,24),.004);ol(rb(g,.15,.022,.14,.035,Q.toast,.27,H+.03,.1),.003);ol(rb(g,.05,.02,.04,.008,Q.butter,.28,H+.05,.1),.002);
+      const kf=ol(rb(g,.18,.008,.025,.004,Q.cr,.31,H+.025,.2),0);kf.rotation.y=.35;
+      ol(rb(g,.18,.02,.1,.01,Q.cream,.28,H+.01,-.14),.003);ol(rb(g,.1,.05,.06,.012,Q.butter,.28,H+.045,-.14),.003);
+      g.userData.use=(t,p)=>{if(p<0){lev.position.y=H+.2;glow.emissiveIntensity=0;slices.forEach(s=>{s.position.y=H+.215;s.rotation.z=0});return}
+        const ph=(t%2.6)/2.6,dn=T.ss(0,.08,ph)*(1-T.ss(.55,.6,ph));lev.position.y=H+.2-dn*.1;glow.emissiveIntensity=T.ss(.05,.3,ph)*(1-T.ss(.5,.62,ph))*1.4;
+        const u=Math.min(1,Math.max(0,(ph-.56)/.28)),hop=4*u*(1-u)*.2;
+        slices.forEach((s,i)=>{s.position.y=H+.215-dn*.1+hop*(1+i*.15);s.rotation.z=Math.sin(u*Math.PI)*(i?.25:-.2)})};
+      return g})},
+
+    mnfruit(c){return BUILD.nsnack_kit().lod(()=>{const g=G(),T=BUILD.nsnack_kit(),Q=T.mats(),V=M(c,{roughness:.35});
+      ol(lathe(g,[[.001,0],[.26,0],[.27,.03],[.2,.06],[.08,.1],[.055,.16],[.07,.24],[.045,.4],[.06,.52],[.045,.62],[.09,.68],[.001,.68]],Q.wood,0,0,0,28),.007);
+      ol(cy(g,.46,.46,.05,V,0,.7,0,40),.008);ol(to(g,.46,.022,Q.butter,0,.7,0,Math.PI/2),.003);
+      // a scalloped doily under the bowl
+      const dl=nsTex('nsnack_doily',128,128,(x,w,h)=>{x.fillStyle='#FFF3DC';x.fillRect(0,0,w,h);x.strokeStyle='rgba(75,87,184,.5)';x.lineWidth=2;for(let r=12;r<64;r+=12){x.beginPath();x.arc(64,64,r,0,7);x.stroke()}
+        for(let i=0;i<16;i++){const a=i/16*Math.PI*2;x.beginPath();x.arc(64+Math.cos(a)*44,64+Math.sin(a)*44,4,0,7);x.stroke()}});
+      ol(cy(g,.3,.3,.008,M(0xffffff,{map:dl,roughness:.8}),0,.729,0,32),0);
+      const bw=piv(g,0,.733,0);
+      ol(lathe(bw,[[.001,0],[.08,0],[.08,.02],[.045,.045],[.07,.07],[.19,.12],[.23,.2],[.215,.205],[.001,.15]],Q.navy,0,0,0,30),.007);ol(to(bw,.225,.012,Q.butter,0,.2,0,Math.PI/2),.002);
+      [[.1,.07],[-.08,.11],[.02,-.12],[-.13,-.05],[.14,-.06]].forEach(([x,z],i)=>{const m=[Q.red,Q.orange,Q.red,Q.yel,Q.orange][i];const f=ol(sp(bw,i===3?.06:.068,m,x,.2,z,i===3?1.35:1,1,1),.004);if(i!==3&&i!==1&&i!==4){ol(cy(bw,.006,.006,.04,Q.choc,x,.27,z,5),0)}});
+      // a pear, grapes over the rim and a banana bunch
+      ol(lathe(bw,[[.001,0],[.05,.005],[.065,.04],[.05,.08],[.03,.11],[.02,.14],[.001,.15]],M(0xC6DB5A,{roughness:.4}),-.02,.21,.04,16),.004);
+      for(let i=0;i<11;i++){const a=i*1.1,r=(i%3)*.018;ol(T.ls(bw,.026,Q.plum,.18+Math.cos(a)*r,.19-i*.012,.1+Math.sin(a)*r+i*.004),.002)}
+      for(let i=0;i<3;i++){const P=[];for(let k=0;k<=10;k++){const u=k/10;P.push([-.16+u*.22,.24+Math.sin(u*Math.PI)*.07+i*.012,-.02+i*.035-u*.02])}
+        ol(add(bw,gcache('nsnack_ban'+i,()=>sweepGeo(P,u=>{const r=.026*Math.sin(Math.PI*(.12+u*.76));return[r,r]},{len:20,seg:10})),Q.yel),.003)}
+      // the apple on top that hops
+      const ap=piv(bw,.02,.3,-.01);ol(sp(ap,.07,Q.red,0,0,0,1,.92,1),.004);ol(cy(ap,.006,.006,.05,Q.choc,0,.07,0,5),0);const lf=ol(add(ap,gcache('nsnack_leaf',()=>leafGeo(.07,.04)),Q.grn,.005,.085,0),.002);lf.rotation.z=-1.1;
+      const hi=sp(ap,.02,Q.shine,-.03,.03,.05);hi.outline=0;
+      g.userData.use=(t,p)=>{if(p<0){ap.position.set(.02,.3,-.01);ap.rotation.set(0,0,0);bw.rotation.set(0,0,0);return}
+        const h=Math.abs(Math.sin(t*3.2));ap.position.y=.3+h*.14;ap.rotation.y=t*4;ap.rotation.z=Math.sin(t*3.2)*.3;bw.rotation.z=Math.max(0,.25-h)*.12*Math.sin(t*20)};
+      return g})},
+
+    mncupboard(c){return BUILD.nsnack_kit().lod(()=>{const g=G(),T=BUILD.nsnack_kit(),Q=T.mats(),V=M(c,{roughness:.35}),Vl=M(lighten(c,.16),{roughness:.35});
+      [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>ol(sp(g,.05,Q.butter,a*.38,.05,b*.17,1,.9,1),.003));
+      // the carcass: back, sides, top, the drawer section and shelves; cream inside
+      ol(rb(g,.9,1.46,.04,.02,V,0,.81,-.21),.008);[-1,1].forEach(s=>ol(rb(g,.05,1.46,.46,.02,V,s*.425,.81,0),.008));
+      ol(rb(g,.9,.06,.46,.02,V,0,1.51,0),.006);ol(rb(g,.9,.3,.46,.03,V,0,.23,0),.008);ol(rb(g,.82,1.04,.01,.004,Q.cream,0,.9,-.185),0);
+      ol(rb(g,1.0,.08,.54,.03,Q.navy,0,1.57,.01),.007);ol(rb(g,.96,.04,.5,.015,Q.butter,0,1.62,.01),.003);
+      const mn=crescent(g,.09,Q.butter,0,1.76,.01,.3);mn.outline=.003;ol(cy(g,.02,.03,.08,Q.navy,0,1.66,.01,10),.002);
+      [.62,.98].forEach(y=>ol(rb(g,.8,.03,.4,.01,Q.cream,0,y,-.01),.003));
+      // shelf 1: two cereal boxes; shelf 2: jars of cookies; shelf 3: a cracker tin and a popcorn bag
+      const bt=['#FF8FB8','#7FB8E8'].map((cc,i)=>nsTex('nsnack_box'+i,64,96,(x,w,h)=>{x.fillStyle=cc;x.fillRect(0,0,w,h);x.fillStyle='#FFF3DC';x.beginPath();x.ellipse(32,60,22,14,0,0,7);x.fill();
+        x.fillStyle=['#FFD465','#E6A93E'][i];for(let k=0;k<6;k++){x.beginPath();x.arc(18+k*6,54+(k%2)*5,4,0,7);x.fill()}x.fillStyle='#3B1273';x.fillRect(0,0,w,10);x.fillRect(0,h-6,w,6)}));
+      [[-.22,0],[-.04,1]].forEach(([x,i])=>{const b=ol(rb(g,.15,.25,.09,.012,M(0xffffff,{map:bt[i],roughness:.5}),x,.52,-.05),.003);b.rotation.y=.1-i*.2});
+      ol(lathe(g,[[.001,0],[.06,0],[.065,.16],[.001,.16]],Q.pink,.22,.405,-.04,16),.003);ol(cy(g,.066,.066,.025,Q.navy,.22,.58,-.04,16),.002);
+      [-.24,0,.22].forEach((x,i)=>{ol(lathe(g,[[.001,0],[.06,0],[.07,.12],[.05,.16],[.001,.16]],M([0xFFE7A3,0xC7E6FF,0xFFD0E2][i],{roughness:.2}),x,.635,-.04,16),.003);ol(cy(g,.052,.052,.03,Q.butter,x,.81,-.04,16),.002);
+        T.cookie(g,.04,Q,x,.71,.035)});
+      ol(cy(g,.1,.1,.18,Q.red,-.18,1.085,-.04,20),.004);ol(cy(g,.102,.102,.02,Q.cr,-.18,1.18,-.04,20),.002);
+      const pb=ol(rb(g,.16,.24,.08,.03,M(0xFFF6E4,{roughness:.6}),.17,1.11,-.04),.003);ol(rb(g,.162,.06,.082,.01,Q.red,.17,1.08,-.04),0);nsPuffs(g,[[.13,1.25,-.04,.035],[.18,1.26,-.03,.03],[.21,1.24,-.05,.03]],Q.cream,.002);
+      // doors with crescent-moon cutouts
+      const doors=[-1,1].map(s=>{const d=piv(g,s*.43,.9,.215);ol(rb(d,.42,1.02,.04,.03,V,-s*.21,0,0),.007);ol(rb(d,.32,.84,.012,.01,Vl,-s*.21,-.02,.024),.003);
+        const cm=crescent(d,.075,Q.butter,-s*.21,.3,.03,s>0?Math.PI:0);cm.outline=.002;ol(sp(d,.032,Q.butter,-s*.37,-.06,.04),.003);return[d,s]});
+      // a drawer of sweets
+      const dr=piv(g,0,.23,.215);ol(rb(dr,.78,.24,.03,.03,Vl,0,0,.005),.006);ol(rb(dr,.2,.03,.04,.012,Q.butter,0,.02,.03),.003);
+      ol(rb(dr,.72,.02,.36,.008,Q.cream,0,-.08,-.18),0);[-1,1].forEach(s=>ol(rb(dr,.02,.14,.36,.008,Q.cream,s*.35,-.02,-.18),0));
+      for(let i=0;i<9;i++){const m=[Q.pink,Q.butter,Q.grn,Q.red][i%4];ol(T.ls(dr,.03,m,-.28+i*.07,-.04,-.1-(i%2)*.1,1,.8,1),.002)}
+      g.userData.use=(t,p)=>{if(p<0){doors.forEach(([d])=>d.rotation.y=0);dr.position.z=.215;return}
+        const o=T.ss(.04,.16,p)*(1-T.ss(.84,.97,p)),w=Math.sin(t*1.8)*.05;doors.forEach(([d,s])=>d.rotation.y=s*(o*1.5+w*o));
+        dr.position.z=.215+T.ss(.2,.32,p)*(1-T.ss(.74,.86,p))*.22};
+      return g})},
+
+    mnfloss(c){return BUILD.nsnack_kit().lod(()=>{const g=G(),T=BUILD.nsnack_kit(),Q=T.mats(),V=M(c,{roughness:.35});
+      // a candy cart on two big wheels
+      ol(rb(g,.8,.55,.5,.06,V,0,.43,0),.009);for(let i=0;i<5;i++){const s=rb(g,.06,.47,.012,.012,Q.cream,-.3+i*.15,.43,.255);s.outline=0}
+      [-1,1].forEach(s=>{const wh=piv(g,s*.43,.16,.08);ol(to(wh,.13,.03,Q.navy,0,0,0,0,Math.PI/2,0),.004);ol(cy(wh,.04,.04,.06,Q.butter,0,0,0,12),.003).rotation.z=Math.PI/2;
+        for(let k=0;k<3;k++){const sp_=rb(wh,.012,.22,.012,.005,Q.butter,0,0,0);sp_.rotation.x=k/3*Math.PI;sp_.outline=0}});
+      [-1,1].forEach(s=>ol(cy(g,.025,.02,.16,Q.navy,s*.3,.08,-.18,8),.003));
+      ol(rb(g,.86,.05,.56,.02,Q.cream,0,.725,0),.005);
+      const hd=ol(cy(g,.016,.016,.42,Q.cr,-.5,.62,0,8),.002);hd.rotation.x=Math.PI/2;[-1,1].forEach(s=>ol(rb(g,.08,.025,.025,.01,Q.cr,-.45,.62,s*.2),0));
+      // the steel tub, the spinner head and the floss
+      ol(lathe(g,[[.001,0],[.12,0],[.2,.04],[.24,.16],[.232,.17],[.19,.06],[.001,.05]],Q.cr,0,.75,-.02,30),.006);
+      const sh=piv(g,0,.8,-.02);ol(cy(sh,.06,.065,.04,Q.cr,0,0,0,16),.003);ol(sp(sh,.05,Q.butter,0,.02,0,1,.55,1),.002);for(let i=0;i<4;i++){const a=i/4*Math.PI*2;ol(T.ls(sh,.014,Q.pink,Math.cos(a)*.055,.0,Math.sin(a)*.055),0)}
+      const fl=piv(g,.06,.8,-.02);fl.rotation.z=-.25;ol(cy(fl,.012,.008,.34,Q.cream,0,.17,0,8),.002);for(let i=0;i<3;i++){const b=T.lt(fl,.012,.004,Q.pink,0,.08+i*.06,0,Math.PI/2);b.outline=0}
+      const cl=piv(fl,0,.28,0);nsPuffs(cl,[[0,0,0,.1],[.07,.03,.02,.07],[-.07,.02,-.01,.07],[.02,.08,-.03,.07],[-.02,-.05,.05,.07],[.03,-.02,-.07,.065],[-.05,.07,.04,.055]],M(0xFFB3D4,{roughness:.85}),.004);
+      // a striped canopy on two poles
+      [-1,1].forEach(s=>ol(cy(g,.018,.018,.86,Q.cr,s*.36,1.17,-.22,8),.003));
+      const cn=ol(co(g,.56,.24,M(0xffffff,{map:s1Stripe(0xFF8FB8,0xFFF3DC,10,true),roughness:.6}),0,1.7,-.06,20),.007);
+      for(let i=0;i<14;i++){const a=i/14*Math.PI*2;ol(T.ls(g,.055,i%2?Q.cream:Q.pink,Math.cos(a)*.54,1.57,-.06+Math.sin(a)*.54,1,.6,.6),.003)}
+      ol(sp(g,.05,Q.butter,0,1.84,-.06),.003);
+      // sugar jars
+      [[-.3,Q.pink],[.3,M(0x7FD0F0,{roughness:.3})]].forEach(([x,m])=>{ol(lathe(g,[[.001,0],[.05,0],[.055,.12],[.04,.14],[.001,.14]],m,x,.75,.15,14),.003);ol(cy(g,.045,.045,.03,Q.navy,x,.905,.15,14),.002)});
+      g.userData.use=(t,p)=>{if(p<0){sh.rotation.y=0;fl.rotation.set(0,0,-.25);cl.scale.setScalar(1);return}
+        sh.rotation.y=t*16;fl.rotation.y=t*3;fl.rotation.z=-.25+Math.sin(t*2)*.05;const gr=(t%5)/5;cl.scale.setScalar(.55+gr*.65+Math.sin(t*9)*.02)};
+      return g})},
+
+    mnjars(c){return BUILD.nsnack_kit().lod(()=>{const g0=G(),g=piv(g0,0,0,0);g.scale.setScalar(1.3);const T=BUILD.nsnack_kit(),Q=T.mats(),V=M(c,{roughness:.3});
+      // a shelf on two scroll brackets with a scalloped valance
+      ol(rb(g,1.02,.05,.28,.02,Q.wood,0,-.2,.14),.006);ol(rb(g,1.02,.14,.03,.015,Q.navy,0,-.12,.015),.004);
+      [-1,1].forEach(s=>{ol(rb(g,.04,.16,.18,.02,Q.navy,s*.38,-.3,.1),.004);ol(sp(g,.03,Q.butter,s*.38,-.39,.17),.002)});
+      for(let i=0;i<10;i++){const d=disc(g,.048,i%2?Q.butter:Q.cream,-.45+i*.1,-.225,.27,14);d.outline=.002}
+      const Y=-.175;
+      // left: a round navy jar; middle: the big dyeable one whose lid pops; right: milk and a cookie stack
+      ol(lathe(g,[[.001,0],[.06,0],[.09,.05],[.09,.12],[.06,.16],[.001,.16]],Q.navy,-.33,Y,.14,20),.004);ol(lathe(g,[[.001,0],[.06,0],[.04,.03],[.001,.04]],Q.cream,-.33,Y+.16,.14,16),.003);ol(sp(g,.022,Q.butter,-.33,Y+.215,.14),.002);
+      for(let i=0;i<5;i++){const a=i/5*Math.PI*2;ol(T.ls(g,.012,Q.butter,-.33+Math.cos(a)*.08,Y+.09,.14+Math.sin(a)*.08,1,1,.4),0)}
+      ol(lathe(g,[[.001,0],[.09,0],[.13,.06],[.14,.14],[.11,.2],[.075,.22],[.001,.22]],V,0,Y,.14,26),.006);ol(to(g,.14,.012,Q.butter,0,Y+.12,.14,Math.PI/2),.002);
+      const lid=piv(g,0,Y+.22,.14);ol(lathe(lid,[[.001,0],[.085,0],[.09,.02],[.05,.05],[.001,.06]],Q.cream,0,0,0,22),.004);ol(sp(lid,.028,Q.butter,0,.075,0),.002);
+      const ck=T.cookie(g,.055,Q,0,Y+.14,.14);
+      ol(lathe(g,[[.001,0],[.045,0],[.05,.1],[.03,.15],[.025,.18],[.03,.19],[.001,.19]],Q.milk,.27,Y,.12,16),.004);ol(cy(g,.03,.03,.02,Q.butter,.27,Y+.2,.12,12),.002);ol(rb(g,.09,.04,.01,.005,M(0x7FB8E8,{roughness:.4}),.27,Y+.08,.168),0);
+      ol(cy(g,.075,.08,.015,Q.cream,.39,Y+.008,.17,20),.002);for(let i=0;i<3;i++){const cc=ol(cy(g,.05,.05,.016,Q.toast,.39+(i%2)*.006,Y+.024+i*.017,.17,16),.002);[[.02,.01],[-.015,-.02]].forEach(([a,b])=>{const ch=T.ls(g,.009,Q.choc,.39+a,Y+.033+i*.017,.17+b,1,.5,1);ch.outline=0})}
+      g0.userData.use=(t,p)=>{if(p<0){lid.position.y=Y+.22;lid.rotation.set(0,0,0);ck.position.y=Y+.14;ck.rotation.set(0,0,0);return}
+        const ph=(t%2.4)/2.4,up=T.ss(.05,.25,ph)*(1-T.ss(.75,.95,ph));lid.position.y=Y+.22+up*.13+Math.max(0,Math.sin(t*14))*.006*(1-up);lid.rotation.z=up*.5;lid.position.x=up*.06;
+        ck.position.y=Y+.14+T.ss(.15,.4,ph)*(1-T.ss(.65,.9,ph))*.24;ck.rotation.y=t*4};
+      return g0})},
+
+    mnhoney(c){return BUILD.nsnack_kit().lod(()=>{const g=G(),T=BUILD.nsnack_kit(),Q=T.mats(),V=M(c,{roughness:.32});
+      ol(cy(g,.3,.3,.05,V,0,.56,0,36),.007);ol(to(g,.3,.018,Q.navy,0,.56,0,Math.PI/2),.003);
+      for(let i=0;i<3;i++){const a=i/3*Math.PI*2+.5;const l=nsLine(g,[Math.cos(a)*.17,.54,Math.sin(a)*.17],[Math.cos(a)*.26,0,Math.sin(a)*.26],.025,Q.wood);l.outline=.004;ol(sp(g,.03,Q.butter,Math.cos(a)*.26,.015,Math.sin(a)*.26),.002)}
+      ol(to(g,.2,.014,Q.wood,0,.2,0,Math.PI/2),.002);
+      // the lamp: a glowing honey pot under a lid-shaped shade
+      const ham=M(0xFFB32E,{emissive:0xFF9A1F,emissiveIntensity:.8,roughness:.2});const H=.585,lx=-.05,lz=-.04;
+      ol(lathe(g,[[.001,0],[.09,0],[.13,.06],[.14,.13],[.12,.2],[.08,.23],[.085,.25],[.001,.25]],ham,lx,H,lz,26),.006);ol(to(g,.088,.014,Q.woodD,lx,H+.245,lz,Math.PI/2),.002);
+      for(let i=0;i<6;i++){const a=i/6*Math.PI*2+.3;ol(T.ls(g,.022,ham,lx+Math.cos(a)*.09,H+.215-(i%2)*.03,lz+Math.sin(a)*.09,1,1.6,1),0)}
+      ol(cy(g,.016,.016,.12,Q.cream,lx,H+.31,lz,8),0);
+      ol(lathe(g,[[.18,0],[.17,.04],[.12,.13],[.04,.165],[.001,.17]],Q.cream,lx,H+.34,lz,28),.006);ol(to(g,.18,.012,Q.navy,lx,H+.342,lz,Math.PI/2),.002);ol(sp(g,.03,Q.butter,lx,H+.53,lz),.003);
+      // the honey dipper in its pot
+      const px=.16,pz=.1;ol(lathe(g,[[.001,0],[.045,0],[.055,.08],[.05,.1],[.001,.1]],Q.cream,px,H,pz,16),.003);ol(to(g,.054,.008,Q.navy,px,H+.06,pz,Math.PI/2),0);
+      const dp=piv(g,px,H+.05,pz),rest=.25;dp.rotation.z=rest;ol(cy(dp,.008,.008,.24,Q.wood,0,.14,0,6),.002);ol(sp(dp,.014,Q.wood,0,.26,0),0);
+      for(let i=0;i<3;i++)ol(T.lt(dp,.022-i*.003,.007,Q.amber,0,.01+i*.016,0,Math.PI/2),.001);ol(cy(dp,.018,.018,.05,Q.amber,0,.025,0,10),0);
+      const drop=sp(g,.013,M(0xF2A22E,{roughness:.1}),px,H+.1,pz,1,1.3,1);drop.outline=0;nosh(drop);drop.visible=false;
+      g.userData.use=(t,p)=>{if(p<0){dp.position.y=H+.05;dp.rotation.set(0,0,rest);drop.visible=false;ham.emissiveIntensity=.8;return}
+        const lift=T.ss(0,.12,p)*(1-T.ss(.88,1,p))*.6+.4*(.5+.5*Math.sin(t*1.4));dp.position.y=H+.05+lift*.15;dp.rotation.z=rest*(1-lift);dp.rotation.y=t*2;
+        const u=(t*1.3)%1;drop.visible=lift>.5;drop.position.set(px-Math.sin(rest*(1-lift))*.03,H+.06+lift*.15-u*.1,pz);drop.scale.setScalar(1-u*.5);ham.emissiveIntensity=.85+.3*Math.sin(t*3)};
+      return g})},
+
+    mngriddle(c){return BUILD.nsnack_kit().lod(()=>{const g=G(),T=BUILD.nsnack_kit(),Q=T.mats(),V=M(c,{roughness:.3});
+      [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>T.leg(g,Q.cr,a*.4,b*.2,.78));
+      ol(rb(g,.9,.04,.44,.015,Q.wood,0,.24,0),.005);ol(rb(g,.92,.06,.5,.02,V,0,.78,0),.007);ol(rb(g,.93,.02,.51,.008,Q.navy,0,.745,0),.003);
+      // on the shelf: a bag of pancake mix and a bowl with a whisk
+      ol(rb(g,.2,.26,.12,.04,Q.cream,-.24,.39,0),.004);ol(rb(g,.202,.07,.122,.01,Q.butter,-.24,.38,0),0);ol(rb(g,.18,.04,.1,.02,Q.cream,-.24,.53,0,),.002);
+      ol(lathe(g,[[.001,0],[.06,0],[.11,.05],[.12,.1],[.11,.105],[.1,.06],[.001,.06]],Q.pink,.18,.26,0,20),.004);const wk=piv(g,.18,.33,0);wk.rotation.z=.5;ol(cy(wk,.01,.01,.14,Q.wood,0,.12,0,6),0);for(let i=0;i<3;i++){const l=T.lt(wk,.03,.004,Q.cr,0,.02,0,0,i/3*Math.PI,0);l.scale.set(1,1.6,1);l.outline=0}
+      // the griddle on its little burner
+      const gx=-.12;ol(cy(g,.24,.26,.06,Q.navy,gx,.84,0,30),.006);ol(sp(g,.03,Q.butter,gx,.84,.255,1,1,.5),.002);
+      ol(cy(g,.25,.25,.025,Q.dark,gx,.882,0,32),.006);ol(to(g,.25,.012,Q.dark,gx,.893,0,Math.PI/2),.002);
+      const hdl=ol(rb(g,.16,.03,.04,.012,Q.dark,gx-.33,.88,-.06),.003);hdl.rotation.y=-.35;
+      for(let i=0;i<5;i++){const b=T.ls(g,.008,M(0xE9C17C,{roughness:.5}),gx+Math.cos(i*1.3)*.17,.896,Math.sin(i*1.3)*.17,1,.4,1);b.outline=0}
+      const pk=piv(g,gx,.9,0);ol(cy(pk,.12,.12,.022,Q.toast,0,.011,0,26),.004);const tp=cy(pk,.1,.1,.004,M(0xF4CB86,{roughness:.6}),0,.023,0,24);tp.outline=0;const bt=cy(pk,.1,.1,.004,M(0xC98B45,{roughness:.6}),0,-.001,0,24);bt.outline=0;
+      const spa=piv(g,.06,.9,.12);ol(rb(spa,.12,.006,.09,.004,Q.cr,-.07,0,0),.002);ol(cy(spa,.012,.012,.18,Q.woodD,.09,0,0,8),.002).rotation.z=Math.PI/2;
+      // a stack with butter and syrup, the syrup bottle
+      ol(cy(g,.14,.15,.02,Q.cream,.24,.82,-.07,26),.004);for(let i=0;i<4;i++)ol(cy(g,.11,.11,.028,Q.toast,.24+(i%2?.006:-.004),.844+i*.03,-.07,22),.003);
+      const sy=M(0xD9822B,{roughness:.1});ol(cy(g,.085,.09,.012,sy,.24,.962,-.07,20),0);[[.09,0],[-.06,.07]].forEach(([a,b])=>ol(sp(g,.018,sy,.24+a,.93,-.07+b,1,2.4,1),0));ol(rb(g,.05,.022,.04,.008,Q.butter,.245,.98,-.07),.002);
+      ol(lathe(g,[[.001,0],[.045,0],[.05,.12],[.025,.17],[.02,.2],[.001,.2]],Q.amber,.34,.81,.15,16),.003);ol(cy(g,.024,.024,.03,Q.navy,.34,1.02,.15,10),.002);
+      const st=T.steam(g,gx,.93,0,3);
+      g.userData.use=(t,p)=>{if(p<0){pk.position.y=.9;pk.rotation.set(0,0,0);spa.position.x=.06;spa.rotation.z=0;st.upd(0,0);return}
+        const ph=(t%2.2)/2.2,u=Math.min(1,Math.max(0,(ph-.3)/.45)),fly=4*u*(1-u);
+        pk.position.y=.9+fly*.28+(u===0||u===1?Math.sin(t*30)*.002:0);pk.rotation.x=T.ss(0,1,u)*Math.PI*2;pk.position.x=Math.sin(u*Math.PI)*.02;
+        const sl=T.ss(.1,.28,ph)*(1-T.ss(.5,.7,ph));spa.position.x=.06-sl*.07;spa.rotation.z=-T.ss(.26,.34,ph)*(1-T.ss(.45,.6,ph))*.6;st.upd(t,1,.25)};
+      return g})},
+
+    mnblend(c){return BUILD.nsnack_kit().lod(()=>{const g=G(),T=BUILD.nsnack_kit(),Q=T.mats(),V=M(c,{roughness:.3});
+      [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>T.leg(g,Q.wood,a*.21,b*.16,.78));
+      ol(rb(g,.5,.05,.42,.02,V,0,.78,0),.006);ol(rb(g,.51,.018,.43,.008,Q.navy,0,.75,0),.002);ol(rb(g,.44,.035,.36,.012,Q.wood,0,.3,0),.004);
+      // a basket of fruit on the shelf
+      ol(lathe(g,[[.001,0],[.11,0],[.14,.08],[.13,.085],[.001,.07]],Q.woodD,0,.318,0,20),.004);for(let i=0;i<3;i++)ol(T.lt(g,.12+i*.008,.006,Q.wood,0,.34+i*.022,0,Math.PI/2),0);
+      [[-.05,.03,Q.red],[.05,-.02,Q.red],[0,.06,Q.orange]].forEach(([x,z,m])=>ol(sp(g,.035,m,x,.42,z,1,1.15,1),.002));
+      for(let i=0;i<2;i++){const P=[];for(let k=0;k<=8;k++){const u=k/8;P.push([-.09+u*.16,.41+Math.sin(u*Math.PI)*.04+i*.01,-.05+i*.03])}ol(add(g,gcache('nsnack_bn2'+i,()=>sweepGeo(P,u=>{const r=.018*Math.sin(Math.PI*(.12+u*.76));return[r,r]},{len:16,seg:8})),Q.yel),.002)}
+      // the blender: base, buttons, a jar that shakes and a smoothie that swirls
+      const bx_=-.06,bz=-.03,Y=.805;ol(rb(g,.2,.14,.18,.05,Q.navy,bx_,Y+.07,bz),.006);[Q.butter,Q.pink,Q.cream].forEach((m,i)=>ol(sp(g,.016,m,bx_-.05+i*.05,Y+.06,bz+.09,1,1,.5),0));
+      const jp=piv(g,bx_,Y+.14,bz);ol(cy(jp,.085,.075,.03,Q.cr,0,.015,0,20),.003);
+      const sw=nsTex('nsnack_swirl',128,64,(x,w,h)=>{x.fillStyle='#FF7FAE';x.fillRect(0,0,w,h);for(let i=-2;i<8;i++){x.fillStyle=i%2?'#FFC3DA':'#E04D86';x.beginPath();x.moveTo(i*20,h);x.quadraticCurveTo(i*20+18,h/2,i*20+8,0);x.lineTo(i*20+18,0);x.quadraticCurveTo(i*20+28,h/2,i*20+10,h);x.fill()}});
+      const sm=piv(jp,0,.03,0);ol(lathe(sm,[[.001,0],[.064,0],[.08,.19],[.001,.19]],M(0xffffff,{map:sw,roughness:.3}),0,0,0,22),0);
+      const gj=lathe(jp,[[.001,0],[.074,0],[.092,.25],[.098,.26],[.001,.26]],M(0xEAF6FF,{roughness:.05,transparent:true,opacity:.32}),0,.03,0,22);gj.outline=.004;
+      ol(rb(jp,.03,.18,.035,.012,Q.navy,.12,.14,0),.003);[.06,.22].forEach(y=>ol(rb(jp,.04,.02,.03,.008,Q.navy,.1,y,0),0));
+      const lp=piv(jp,0,.29,0);ol(cy(lp,.1,.1,.035,Q.navy,0,0,0,22),.004);ol(cy(lp,.035,.035,.03,Q.butter,0,.03,0,12),.002);
+      // two smoothies to go
+      [[.13,.1,0],[.19,-.06,1]].forEach(([x,z,i])=>{ol(lathe(g,[[.001,0],[.035,0],[.045,.15],[.001,.15]],i?M(0xB98BFF,{roughness:.3}):Q.pink,x,Y,z,14),.003);ol(sp(g,.044,Q.cream,x,Y+.155,z,1,.45,1),.002);
+        const s_=piv(g,x+.01,Y+.15,z);s_.rotation.z=-.25;for(let k=0;k<3;k++){const q=cy(s_,.007,.007,.04,k%2?Q.cream:Q.red,0,.02+k*.04,0,6);q.outline=0}});
+      g.userData.use=(t,p)=>{if(p<0){jp.rotation.set(0,0,0);jp.position.set(bx_,Y+.14,bz);sm.rotation.y=0;lp.position.y=.29;return}
+        const k=.6+.4*Math.abs(Math.sin(t*1.3));jp.rotation.z=Math.sin(t*41)*.025*k;jp.rotation.x=Math.cos(t*37)*.018*k;jp.position.x=bx_+Math.sin(t*53)*.003*k;sm.rotation.y=t*18;lp.position.y=.29+Math.abs(Math.sin(t*23))*.01*k};
+      return g})},
+
+    mnbench(c){return BUILD.nsnack_kit().lod(()=>{const g=G(),T=BUILD.nsnack_kit(),Q=T.mats(),V=M(c,{roughness:.4});
+      // a long wooden base with bread-drawer fronts, bun feet
+      [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>ol(sp(g,.05,Q.woodD,a*.68,.04,b*.2,1,.8,1),.003));
+      ol(rb(g,1.5,.38,.5,.05,Q.wood,0,.26,0),.008);
+      [-.5,-.12].forEach(x=>{ol(rb(g,.34,.24,.02,.03,M(0xEFC287,{roughness:.6}),x,.26,.255),.003);ol(rb(g,.12,.03,.03,.012,Q.butter,x,.3,.27),.002)});
+      // the seat cushion and a bolster at the end
+      ol(rb(g,1.12,.09,.48,.045,V,-.19,.495,0),.007);for(let i=0;i<3;i++)ol(T.ls(g,.018,Q.butter,-.55+i*.36,.54,0,1,.5,1),0);
+      const bl=ol(cy(g,.09,.09,.42,V,-.66,.6,0,18),.005);bl.rotation.x=Math.PI/2;[-1,1].forEach(s=>ol(sp(g,.035,Q.butter,-.66,.6,s*.215,1,1,.6),.002));
+      // the bread box arm with its roll-top lid
+      ol(rb(g,.36,.36,.5,.06,Q.woodD,.57,.62,0),.007);ol(rb(g,.3,.02,.44,.01,M(0x7A4A28,{roughness:.8}),.57,.79,0),0);
+      ol(rb(g,.28,.2,.02,.03,M(0xEFC287,{roughness:.6}),.57,.6,.255),.003);const mk=crescent(g,.05,Q.butter,.57,.6,.27,.4);mk.outline=.002;
+      const lf=piv(g,.57,.68,0);ol(sp(lf,.1,Q.toast,0,0,0,1.25,.75,1.9),.004);for(let i=0;i<4;i++){const s_=T.lt(lf,.07,.007,Q.crust,0,.06,-.13+i*.085,0,0,.5);s_.rotation.y=Math.PI/2;s_.outline=0}
+      const lid=piv(g,.57,.8,-.24);ol(rb(lid,.36,.06,.5,.03,Q.woodD,0,.03,.24),.006);ol(rb(lid,.37,.02,.06,.01,Q.wood,0,.04,.47),.002);ol(sp(lid,.028,Q.butter,0,.045,.49,1,.7,1),.002);
+      for(let i=0;i<4;i++){const r=nosh(rb(lid,.33,.006,.01,.003,M(0x8E5A31,{roughness:.8}),0,.062,.08+i*.1));r.outline=0}
+      g.userData.use=(t,p)=>{if(p<0){lid.rotation.x=0;lf.position.y=.68;lf.rotation.z=0;return}
+        const cyc=(t%6)/6,o=T.ss(.04,.18,cyc)*(1-T.ss(.72,.88,cyc));lid.rotation.x=-o*1.15;lf.position.y=.68+o*.1+Math.sin(t*5)*.008*o;lf.rotation.z=Math.sin(t*3)*.08*o};
+      return g})},
+
+    mnbowl(c){return BUILD.nsnack_kit().lod(()=>{const g=G(),T=BUILD.nsnack_kit(),Q=T.mats(),V=M(c,{roughness:.25});
+      ol(lathe(g,[[.001,0],[.16,0],[.2,.03],[.22,.085],[.205,.095],[.175,.065],[.001,.055]],V,0,0,.04,30),.006);ol(to(g,.213,.01,Q.butter,0,.09,.04,Math.PI/2),.002);
+      const kb=piv(g,0,.06,.04);for(let i=0;i<10;i++){const a=i*2.4,r=.03+(i%4)*.032;const s=star3(kb,.028,i%3?M(0xE9B66A,{roughness:.6}):Q.butter,Math.cos(a)*r,.012+(i%3)*.01,Math.sin(a)*r,i);s.rotation.x=-Math.PI/2+(i%2)*.4;s.outline=.001}
+      for(let i=0;i<5;i++){const a=i*1.3+.5,r=.06+(i%2)*.06;ol(T.ls(kb,.02,Q.choc,Math.cos(a)*r,.015,Math.sin(a)*r,1,.6,1),.001)}
+      // a crescent moon rests behind the dish
+      const mp=piv(g,0,.02,-.2);ol(cy(mp,.07,.08,.04,Q.navy,0,0,0,18),.003);const mn=crescent(mp,.16,Q.butter,0,.2,0,.35);mn.outline=.004;
+      const s2=star3(mp,.035,Q.cream,.16,.31,0,.2);s2.outline=.002;
+      g.userData.use=(t,p)=>{if(p<0){kb.position.y=.06;kb.rotation.y=0;mp.rotation.z=0;return}kb.position.y=.06+Math.abs(Math.sin(t*9))*.014;kb.rotation.y=Math.sin(t*3)*.25;mp.rotation.z=Math.sin(t*2)*.08};
+      return g})},
+
+    mnkettle(c){return BUILD.nsnack_kit().lod(()=>{const g=G(),T=BUILD.nsnack_kit(),Q=T.mats(),V=M(c,{roughness:.28});
+      // a little enamel range on chrome legs
+      [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>T.leg(g,Q.cr,a*.36,b*.2,.2));
+      ol(rb(g,.82,.62,.52,.06,V,0,.48,0),.009);ol(rb(g,.86,.04,.56,.02,Q.cream,0,.8,0),.005);ol(rb(g,.86,.24,.06,.03,V,0,.94,-.25),.006);
+      ol(rb(g,.7,.03,.1,.012,Q.cream,0,1.07,-.24),.003);[[-.25,Q.red],[-.13,Q.grn],[.22,Q.navy]].forEach(([x,m])=>{ol(cy(g,.04,.04,.09,m,x,1.13,-.24,14),.003);ol(cy(g,.042,.042,.015,Q.butter,x,1.18,-.24,14),0)});
+      for(let i=0;i<4;i++)ol(sp(g,.028,Q.butter,-.27+i*.18,.7,.27,1,1,.6),.002);
+      ol(rb(g,.62,.34,.03,.04,Q.cream,0,.42,.265),.004);const owin=M(0x4A3150,{emissive:0xFF9A3A,emissiveIntensity:0,roughness:.1});const ow=rb(g,.42,.16,.01,.02,owin,0,.44,.282);ow.outline=0;
+      const oh=ol(cy(g,.015,.015,.4,Q.cr,0,.58,.3,8),.002);oh.rotation.z=Math.PI/2;
+      // burners: the kettle on the left, a teapot and cups on the right
+      const fm=M(0x6FB8FF,{emissive:0x5AA8FF,emissiveIntensity:1,roughness:.3});
+      [-.2,.2].forEach(x=>{ol(to(g,.1,.012,Q.dark,x,.825,.02,Math.PI/2),.002);ol(cy(g,.05,.05,.01,Q.dark,x,.822,.02,14),0)});
+      const fl=to(g,.075,.01,fm,-.2,.83,.02,Math.PI/2);fl.outline=0;nosh(fl);fl.visible=false;
+      const kt=piv(g,-.2,.835,.02),Kb=Q.butter;ol(lathe(kt,[[.001,0],[.13,0],[.15,.05],[.14,.13],[.09,.19],[.04,.2],[.001,.2]],Kb,0,0,0,28),.007);ol(to(kt,.142,.01,Q.navy,0,.06,0,Math.PI/2),.002);
+      const spt=[];for(let k=0;k<=8;k++){const u=k/8;spt.push([.11+u*.12,.06+u*u*.16,0])}ol(add(kt,gcache('nsnack_spout',()=>sweepGeo(spt,u=>{const r=.034-u*.016;return[r,r]},{len:16,seg:10})),Kb),.004);
+      ol(cy(kt,.017,.017,.02,Q.cr,.235,.225,0,8),0);
+      const hp=[];for(let k=0;k<=12;k++){const a=k/12*Math.PI;hp.push([0,.17+Math.sin(a)*.14,-Math.cos(a)*.1])}ol(add(kt,gcache('nsnack_kh',()=>sweepGeo(hp,()=>[.016,.016],{len:24,seg:8})),Q.navy),.003);
+      const ld=piv(kt,0,.2,0);ol(cy(ld,.045,.05,.02,Kb,0,0,0,16),.002);ol(sp(ld,.022,Q.navy,0,.025,0),.002);
+      ol(lathe(g,[[.001,0],[.07,0],[.09,.05],[.08,.1],[.04,.12],[.001,.12]],Q.cream,.18,.82,-.02,20),.004);ol(sp(g,.018,Q.navy,.18,.95,-.02),.002);
+      const tsp=nsLine(g,[.25,.86,-.02],[.32,.92,-.02],.012,Q.cream);tsp.outline=.002;
+      [[.3,.13],[.12,.15]].forEach(([x,z])=>{ol(cy(g,.045,.04,.012,Q.cream,x,.826,z,14),.002);ol(lathe(g,[[.001,0],[.025,0],[.035,.05],[.001,.05]],Q.pink,x,.832,z,12),.002)});
+      const st=T.steam(g,.035,1.07,.02,4,.9);
+      g.userData.use=(t,p)=>{if(p<0){fl.visible=false;kt.rotation.set(0,0,0);ld.position.y=.2;ld.rotation.set(0,0,0);owin.emissiveIntensity=0;st.upd(0,0);return}
+        const k=T.ss(0,.15,p)*(1-T.ss(.9,1,p))*.7+.3;fl.visible=true;fm.emissiveIntensity=.8+.4*Math.sin(t*13)+.2*Math.sin(t*29);owin.emissiveIntensity=.3*k;
+        kt.rotation.z=Math.sin(t*17)*.02*k;ld.position.y=.2+Math.max(0,Math.sin(t*12))*.015*k;ld.rotation.x=Math.sin(t*9)*.08*k;st.upd(t,k,.32)};
+      return g})}
+  },
+  use:{
+    mncereal:{kind:'stand',front:1,anim:'u_nibble',d:5,dist:.05,emo:['😋','💗'],w:.8},
+    mntoast:{kind:'stand',front:1,anim:'u_nibble',d:5.5,dist:.05,emo:['😋','❗'],w:.7},
+    mnfruit:{kind:'stand',anim:'u_nibble',d:4.5,dist:.05,emo:['😋','💗'],w:.7},
+    mncupboard:{kind:'stand',front:1,anim:'u_rummage',d:5,dist:.1,emo:['😋','❓'],w:.7},
+    mnfloss:{kind:'stand',front:1,anim:'u_stir',d:6,dist:.05,emo:['😋','🎉'],w:.8},
+    mnjars:{kind:'wall',anim:'u_nibble',d:4.5,emo:['😋','💗'],w:.6},
+    mnhoney:{kind:'stand',anim:'u_sip',d:4.5,dist:.05,emo:['😋','💗'],w:.6},
+    mngriddle:{kind:'stand',front:1,anim:'u_stir',d:6.5,dist:.05,emo:['😋','🎉'],w:.8},
+    mnblend:{kind:'stand',front:1,anim:'u_sip',d:5,dist:.05,emo:['😋','🎉'],w:.7},
+    mnbench:{kind:'perch',w:.8},
+    mnbowl:BOWL,
+    mnkettle:{kind:'stand',front:1,anim:'u_stir',d:5.5,dist:.05,emo:['😋','💗'],w:.7}
+  },
+  dw:{n:'Pantry',wn:'Pantry window',
+    door(){const Bt=mt(0xFFD465,.38),Nv=mt(0x2E3577,.36),Cr=mt(0xFFF3DC,.5),D=dBase({top:'round',F:Bt,fw:.15,L:Nv,S:Cr}),w=D.w,h=D.h;
+      // a round porthole with a crescent moon in it, two cream panels below
+      porthole(D.hinge,w/2,1.62,.22,Bt,.05);const m=crescent(D.hinge,.13,mt(0xFFC23A,.3),w/2-.02,1.62,.1,.4);m.outline=.003;
+      inset(D.hinge,w/2,.95,w-.34,.36,Cr);inset(D.hinge,w/2,.42,w-.34,.36,Cr);
+      [.95,.42].forEach(y=>{for(let i=0;i<3;i++)nosh(sp(D.hinge,.025,Bt,w/2-.18+i*.18,y,.075,1,1,.5))});
+      // little stars on the frame and a hanging moon lamp over it
+      [[-w/2-.08,1.3],[w/2+.08,1.3],[-w/2-.08,.7],[w/2+.08,.7]].forEach(([x,y])=>star3(D.g,.05,Cr,x,y,.1));
+      hang(D.g,0,h+.32,h+.18,.16);const ml=crescent(D.g,.1,glowM(0xFFD465,.9),0,h+.08,.16,.4);ml.outline=0;
+      knob(D,Bt);return D},
+    win(){const Nv=mt(0x2E3577,.36),Cr=mt(0xFFF3DC,.5),W=wBase({top:'arch',F:Nv,fw:.1,S:Cr,mull:'cross',MM:Nv});
+      // gingham cafe curtains across the lower half
+      const gt=nsTex('nsnack_ging',64,64,(x,w,h)=>{x.fillStyle='#FFFFFF';x.fillRect(0,0,w,h);x.fillStyle='rgba(75,87,184,.45)';for(let i=0;i<4;i++){x.fillRect(i*16,0,8,h);x.fillRect(0,i*16,w,8)}});
+      const ym=W.y0+W.h*.48,rod=cy(W.g,.016,.016,W.w+.1,mt(0xFFD465,.35),0,ym,.09,8);rod.rotation.z=Math.PI/2;
+      [-1,1].forEach(s=>{for(let i=0;i<3;i++)cy(W.g,.075,.085,W.h*.46,M(0xffffff,{map:gt,roughness:.8}),s*(W.w/2-.08-i*.14),ym-W.h*.23,.07+(i%2)*.02,12)});
+      // a moon suncatcher and a pie cooling on the sill
+      hang(W.g,0,W.y0+W.h-.05,W.y0+W.h*.72,.06);const mn=crescent(W.g,.08,glowM(0xFFD465,.7),0,W.y0+W.h*.66,.06,.4);mn.outline=0;
+      const sy=W.y0-W.fw+.02,p=G();p.position.set(.25,sy,.12);W.g.add(p);cy(p,.15,.13,.04,mt(0xFFF3DC,.4),0,.02,0,20);lathe(p,[[.001,0],[.14,0],[.15,.04],[.12,.07],[.001,.08]],mt(0xE2A04E,.6),0,.04,0,20);
+      for(let i=0;i<3;i++){nosh(bx(p,.24,.012,.025,mt(0xC9813A,.6),0,.12,-.07+i*.07));const b=nosh(bx(p,.025,.012,.24,mt(0xC9813A,.6),-.07+i*.07,.125,0))}
+      return W}}
+});
+Object.assign(NEED_OVR,{mncereal:{hunger:14,fun:3},mntoast:{hunger:12,fun:3},mnfruit:{hunger:12},mncupboard:{hunger:12,fun:2},mnfloss:{hunger:8,fun:8},mnjars:{hunger:9,fun:3},
+  mnhoney:{hunger:8,energy:3},mngriddle:{hunger:15,fun:3},mnblend:{hunger:10,energy:4},mnbench:{hunger:8,energy:6},mnbowl:{e:1,hunger:4,fun:2},mnkettle:{hunger:9,energy:5}});
+}catch(e){console.warn("need set nsnack",e)}
+/* </need-sets> */
 Object.entries(THEME_DW).forEach(([k,T])=>{const wk='win_'+k,c={k:wk,n:T.wn,set:'build',fn:'window',p:4,dc:0,wall:1,y:1.85,winOf:k};CAT.push(c);CATMAP[wk]=c;BUILD[wk]=()=>buildWindowModel(k);WIN_KEYS.push(wk)});
 SETS.push({k:'build',img:'tab-room',n:'Build',e:'',c:'#FFD21F'});SETMAP.build=SETS[SETS.length-1];FUNCS.push(['window','Windows','🪟']);
 const DOOR_KEYS=Object.keys(THEME_DW);
@@ -35499,7 +36940,7 @@ function projXY(o){const v=new THREE.Vector3();o.getWorldPosition(v);v.project(c
 function clampPlaced(it){const o=itemObjs.get(it.id),e=o.userData.ext,d=CATMAP[it.k];
   if(d.wall){it.u=clamp(it.u,-HALF+e.x+.05,HALF-e.x-.05);it.y=clamp(it.y,e.y+.25,WALLH-e.y-.05)}
   else{const r=it.r||0,ex=Math.abs(Math.cos(r))*e.x+Math.abs(Math.sin(r))*e.z,ez=Math.abs(Math.sin(r))*e.x+Math.abs(Math.cos(r))*e.z;it.x=clamp(it.x,-HALF+ex+.02,HALF-ex-.02);it.z=clamp(it.z,-HALF+ez+.02,HALF-ez-.02)}placeObj(o,it)}
-$('#bTurn').onclick=()=>{const it=itemById(selId);if(!it)return;const U=beginBuild();it.r=((it.r||0)+Math.PI/4)%(Math.PI*2);clampPlaced(it);endBuild(U);saveSoon()};
+$('#bTurn').onclick=()=>{const it=itemById(selId);if(!it)return;const U=beginBuild();it.r=((it.r||0)+Math.PI/4)%(Math.PI*2);clampPlaced(it);endBuild(U);saveSoon();try{ilKick(it.id,-.04,.06);SFX.tap()}catch(_){}};
 
 /* spawn from tray */
 function visibleWall(){let best=0,bd=-1e9;walls.forEach((w,i)=>{if(!w.g.visible)return;const d=WALLDEF[i];const v=(camera.position.x-d.c[0])*d.n[0]+(camera.position.z-d.c[1])*d.n[1];if(v>bd){bd=v;best=i}});return best}
@@ -66958,6 +68399,7 @@ const WHATSNEW=[[119,'For the two of you: notes to each other are kept safe, you
   [129,'Tap any piece of furniture and Mochi will go and use it, so you can watch the fridge open, the bed get rumpled or the campfire flare whenever you like.'],
   [130,'24 more furniture sets come alive when Mochi uses them, about 240 more pieces: the monster set’s eye lamp blinks, the fireplace roars, the piano plays notes, the carousel horse bobs, the washer spins, the disco ball sparkles and much more.'],
   [131,'Every furniture set comes alive now, about 900 pieces: all 32 neighbours’ sets, the town’s civic sets and the 11 theme sets. Drawers slide, jukeboxes thump, the pirate chest jingles, swings swing higher. Tap anything and watch.'],
+  [132,'Decorating is friendlier: quick kind buttons, what’s in your room at a glance, your own pieces first, more of the room in view and pieces that pop in with a burst. Four new sets: Splash & Suds, Steam & Petals, Snuggle Burrow and Midnight Snack. And leaving the sandbox can keep the room you made.'],
   [118,'Friendships go deeper: every neighbour has five more heart-to-hearts, sends a letter (and a gift) when you become best friends, and remembers what you talked about lately. More fixes from playtesting: town projects always appear on the map (the bouncy castle comes first now), the Journal keeps months, not days, taps on the noticeboard, museum and well work, and the back button closes photos and fishing.'],
   [117,'Fixes from playtesting: finished makeovers now pay out properly (they hadn’t been!), events at the library, Town Hall and weather station pay too, party guests spread out, Today’s list sits right under the bond bar, and your pet’s Journal has a page summing up the month so far. Plus a gentler welcome back, fewer day-one strangers, and lots of small things.'],
   [116,'Polish: keepsake letters read properly in the Bag, scrolling tab rows show there’s more, the plaza tiles are brighter, civic buildings have bigger name signs, and messages no longer pop over your pet while you dress it.'],
@@ -69067,7 +70509,7 @@ function roomCounts(){const n={};state.items.forEach(i=>n[i.k]=(n[i.k]||0)+1);re
 // Furniture cards. Placing: what you own (count in storage, ×n in the room). Collecting: pieces you don't have yet, faded,
 // tagged when they're in at Cozy Nest today or on the wishlist; tapping one shows where to get it. Buying: price stickers.
 function decoCard(c,n,want){const own=state.fown[c.k]||0,buy=decoMode==='buy',pr=furnPrice(c.k),w=wished(c.k),tag=want?(c.gacha?'':inStock(c.k)?'<i class="dtag in">In today</i>':''):'';
-  return`<div class="card dcard${want?' want':buy?(wal(furnCur(c.k))<pr?' poor':''):own?'':' poor'}" data-k="${c.k}"${want?' data-peek="1"':''} role="button" tabindex="0" aria-label="${want?'See':buy?'Buy':'Add'} ${esc(c.n)}${n?`, ${n} in your room`:''}"><span class="setb" aria-hidden="true"><img src="${ico(SETMAP[c.set].img)}" alt=""></span>${w?'<i class="dwish" aria-label="On the wishlist"></i>':''}<div class="thumb">${thumbs[c.k]?`<img src="${thumbs[c.k]}" alt="">`:'<i class="spin"></i>'}${(()=>{const ks=needKeys(c);return ks.length?`<span class="dneeds" aria-label="Fills: ${ks.map(k=>NEED_SHORT[k]).join(', ')}">${ks.map(k=>`<img src="${ico(NEED_IC[k])}" alt="">`).join('')}</span>`:''})()}${buy?`<span class="own have"${own+(n||0)?'':' hidden'}>have ${own+(n||0)}</span>`:want?'':`<span class="own"${n?'':' hidden'}>×${n||0}</span>`}</div><b>${esc(c.n)}</b>${tag}${buy?`<span class="price${pr>99?' long':''}${furnCur(c.k)==='b'&&pr<c.p*BTN?' deal':''}">${curIc(furnCur(c.k))}${pr}</span>`:want?'':`<span class="stock">${own}</span>`}</div>`}
+  return`<div class="card dcard${want?' want':buy?(wal(furnCur(c.k))<pr?' poor':''):own?'':' poor'}" data-k="${c.k}"${want?' data-peek="1"':''} role="button" tabindex="0" aria-label="${want?'See':buy?'Buy':'Add'} ${esc(c.n)}${n?`, ${n} in your room`:''}"><span class="setb" aria-hidden="true"><img src="${ico(SETMAP[c.set].img)}" alt=""></span>${w?'<i class="dwish" aria-label="On the wishlist"></i>':''}<div class="thumb">${thumbs[c.k]?`<img src="${thumbs[c.k]}" alt="">`:'<i class="spin"></i>'}${(()=>{const ks=needKeys(c);return ks.length?`<span class="dneeds" aria-label="Fills: ${ks.map(k=>NEED_SHORT[k]).join(', ')}">${ks.map(k=>`<img src="${ico(NEED_IC[k])}" alt="">`).join('')}</span>`:''})()}${buy?`<span class="own have"${own+(n||0)?'':' hidden'}>have ${own+(n||0)}</span>`:want?'':`<span class="own"${n?'':' hidden'}>${n||0} in room</span>`}</div><b>${esc(c.n)}</b>${tag}${buy?`<span class="price${pr>99?' long':''}${furnCur(c.k)==='b'&&pr<c.p*BTN?' deal':''}">${curIc(furnCur(c.k))}${pr}</span>`:want?'':`<span class="stock${own?'':' zero'}">${own?own+' to place':'all placed'}</span>`}</div>`}
 const decoOwn=(c,n)=>(state.fown[c.k]||0)>0||n[c.k]>0;
 // pieces that show up in the collection (windows only once you have one: Hammer & Hue sells them)
 const decoCol=(c,n)=>c.fn!=='window'||decoOwn(c,n);
@@ -69104,15 +70546,15 @@ function renderDeco(toTop){const grid=$('#tray');if(!grid)return;
       const bySet=pk==='fn'||pk==='need'||words.length,grp=(l,want)=>{if(!bySet||l.length<8)return decoSection(l,n,want);const g=[];l.forEach(c=>{let G=g.find(x=>x.k===c.set);if(!G)g.push(G={k:c.set,l:[]});G.l.push(c)});
           return g.map(G=>`<h3 class="tgh sm"><img class="chi" src="${ico(SETMAP[G.k].img)}" alt="">${esc(SETMAP[G.k].n)}</h3>`+decoSection(G.l,n,want)).join('')};
       html=top+(have.length?(pk==='wish'||!pg&&!words.length?'':decoHead(`Yours <small>${have.length}</small>`))+grp(have,false):'')+
-        (want.length?decoHead(pk==='wish'?`Wished for <small>${want.length}</small>`:`To collect <small>${want.length}</small>`)+grp(want,true):'')+
+        (want.length?(have.length&&!decoAll&&pk!=='wish'&&!words.length?`<button type="button" class="dshowall" id="decoAll">Show ${want.length} more to collect <small>from Cozy Nest</small></button>`:decoHead(pk==='wish'?`Wished for <small>${want.length}</small>`:`To collect <small>${want.length}</small>`)+grp(want,true)):'')+
         (pool.length?'':`<div class="dempty"><p>${words.length?`Nothing called “${esc(decoQ.trim())}”.`:pk==='wish'?'No wishes yet. Tap a piece you don’t have and wish for it.':'Your storage is empty.'}</p>${pk==='store'||pk==='wish'?shopBtn:''}</div>`)+
         (pool.length?`<div class="dend tmore"><p>${have.length?'Tap to place, or hold and drag it into the room.':'Tap a piece to see where to get it.'}</p>${shopBtn}</div>`:'')}
     else{// home: storage and wishes on shelves, then everything as tiles by kind or by set
       const store=Object.keys(state.fown).reverse().map(k=>CATMAP[k]).filter(c=>c&&state.fown[c.k]>0),wl=CAT.filter(c=>wished(c.k)),wIn=wishesIn();cnt=col.filter(c=>decoOwn(c,n)).length;
-      html=mkDecoHtml()+(wIn.length?`<button type="button" class="dnews" id="decoNews"><img src="${ico('tab-decorate')}" alt=""><span><b>${wIn.length===1?esc(CATMAP[wIn[0]].n)+' is':wIn.length+' wishes are'} in at Cozy Nest today!</b><small>The stock changes every day.</small></span></button>`:'')+
+      html=decoKindsHtml(col,n)+mkDecoHtml()+(wIn.length?`<button type="button" class="dnews" id="decoNews"><img src="${ico('tab-decorate')}" alt=""><span><b>${wIn.length===1?esc(CATMAP[wIn[0]].n)+' is':wIn.length+' wishes are'} in at Cozy Nest today!</b><small>The stock changes every day.</small></span></button>`:'')+
         (sandbox&&sandbox.mk?'<p class="dnone">Every piece in the catalogue is free to use for this room. Browse by kind or by set below.</p>':`<h3 class="tgh">In storage <small>${store.reduce((a,c)=>a+state.fown[c.k],0)}</small>${store.length>3?'<button type="button" class="dmore" data-go="store:">See all</button>':''}</h3>`+
         (store.length?decoShelf(store.slice(0,24),n):`<p class="dnone">New pieces wait here until you place them. ${shopBtn}</p>`))+
-        (wl.length?`<h3 class="tgh">Wishlist <small>${wl.length}</small>${wl.length>3?'<button type="button" class="dmore" data-go="wish:">See all</button>':''}</h3>`+decoShelf(wl.slice(0,24),n,true):'')+
+        decoInRoomHtml()+(wl.length?`<h3 class="tgh">Wishlist <small>${wl.length}</small>${wl.length>3?'<button type="button" class="dmore" data-go="wish:">See all</button>':''}</h3>`+decoShelf(wl.slice(0,24),n,true):'')+
         `<div class="dtog" role="tablist"><button type="button" role="tab" data-br="fn" aria-selected="${decoBrowse==='fn'}">By kind</button><button type="button" role="tab" data-br="set" aria-selected="${decoBrowse==='set'}">By set</button><button type="button" role="tab" data-br="need" aria-selected="${decoBrowse==='need'}">By need</button></div>`;
       if(decoBrowse==='need')html+=`<p class="dnone" style="margin:4px 2px 10px">${esc(state.pet.name)} uses these on its own when it needs to.</p>`+NEEDS.map(([k,nm,c])=>{const l=col.filter(q=>needHas(q,k));if(!l.length)return'';const h=l.filter(q=>decoOwn(q,n)).length;
           return decoTile('need:'+k,ico(NEED_IC[k]),'',NEED_NM[k],`${h} of ${l.length}`,h/l.length,'',lighten(parseInt(c.slice(1),16),.72).toString(16).padStart(6,'0').replace(/^/,'#'))}).join('');
@@ -69120,14 +70562,14 @@ function renderDeco(toTop){const grid=$('#tray');if(!grid)return;
           return decoTile('fn:'+k,'',rep.k,nm,`${h.length} of ${l.length}`,h.length/l.length)}).join('');
       else{const st=nestStock();html+=SETS.filter(S=>S.k!=='build').map(S=>{const l=col.filter(c=>c.set===S.k);if(!l.length)return'';const h=l.filter(c=>decoOwn(c,n)).length;
           return decoTile('set:'+S.k,ico(S.img),'',S.n,h===l.length?'All collected!':`${h} of ${l.length}`,h/l.length,st.sets.includes(S.k)?'In today':'',S.c)}).join('')}
-      html+=`<div class="dend tmore"><p>Cozy Nest has new stock every day.</p>${shopBtn}</div>`}}
+      html+=yardCardHtml()+`<div class="dend tmore"><p>Cozy Nest has new stock every day.</p>${shopBtn}</div>`}}
   const dc=$('#decoCount');if(dc)dc.textContent=buy?nestLeft():'';
   grid.innerHTML=html;
   const q=(id,f)=>{const e=$(id);if(e)e.onclick=f};
-  mkDecoBind(grid);q('#decoShop',()=>shopFor('furn'));q('#decoNews',()=>shopFor('furn'));q('#decoGoSet',()=>shopFor('furn'));
-  q('#decoBack',()=>{decoPage=null;renderDeco(true)});
+  mkDecoBind(grid);decoExtraBind(grid);q('#decoShop',()=>shopFor('furn'));q('#decoNews',()=>shopFor('furn'));q('#decoGoSet',()=>shopFor('furn'));
+  q('#decoBack',()=>{decoPage=null;decoAll=0;renderDeco(true)});
   q('#decoTiles',()=>{const k=decoPage.split(':')[1];if(state.town.includes('f:s_'+k)||state.town.includes('w:s_'+k)){decoView=state.town.includes('f:s_'+k)?'f':'w';renderSheet()}else shopFor('build','f')});
-  grid.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{decoPage=b.dataset.go;renderDeco(true)});
+  grid.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{decoPage=b.dataset.go;decoAll=0;renderDeco(true)});
   grid.querySelectorAll('[data-br]').forEach(b=>b.onclick=()=>{if(decoBrowse===b.dataset.br)return;decoBrowse=b.dataset.br;const y=grid.scrollTop;renderDeco(false);grid.scrollTop=y});
   if(toTop)grid.scrollTop=0;
   if(decoIO)decoIO.disconnect();
@@ -70139,8 +71581,8 @@ function yardDone(){if(!sandbox||!sandbox.yard)return;const S=sandbox,design={it
 // Bolt (and Sketch) build it; Decorate's home page and the yard itself have the way in
 {const ka=kActs;kActs=function(kind){const A=ka.apply(this,arguments);try{if((kind==='builder'||kind==='pencil')&&yardS().lv<3)A.push(['yard',yardS().lv?'Make the yard bigger':'Build a yard',yardS().lv?`${YARD_COST[yardS().lv+1].toLocaleString()} buttons`:'Your own lawn, 3,000 buttons','#E6F8D2','tab-room'])}catch(_){}return A}}
 {const kc=kAct;kAct=function(a){if(a==='yard'){kClose(true);yardBuy();return}return kc.apply(this,arguments)}}
-{const dh=mkDecoHtml;mkDecoHtml=function(){let h='';try{if(!sandbox&&!(away&&!away.def.yard)){const Y=yardS();h=Y.lv>0?`<div class="ydcard"><div><b>Your yard</b><small>${(Y.items||[]).length?`${Y.items.length} thing${Y.items.length>1?'s':''} out there`:'Empty lawn, waiting for you'}</small></div><button class="gel slime" data-yd="go">Go outside</button><button class="gel lilac" data-yd="edit">Decorate it</button></div>`
-  :`<div class="ydcard off"><div><b>A yard of your own</b><small>Save up 3,000 buttons and Bolt at Hammer &amp; Hue will build one.</small></div><button class="gel lilac" data-yd="bolt">Ask Bolt</button></div>`}}catch(e){console.warn('yard card',e)}return h+dh.apply(this,arguments)}}
+function yardCardHtml(){let h='';try{if(!sandbox&&!(away&&!away.def.yard)){const Y=yardS();h=Y.lv>0?`<div class="ydcard"><div><b>Your yard</b><small>${(Y.items||[]).length?`${Y.items.length} thing${Y.items.length>1?'s':''} out there`:'Empty lawn, waiting for you'}</small></div><button class="gel slime" data-yd="go">Go outside</button><button class="gel lilac" data-yd="edit">Decorate it</button></div>`
+  :`<div class="ydcard off"><div><b>A yard of your own</b><small>Save up 3,000 buttons and Bolt at Hammer &amp; Hue will build one.</small></div><button class="gel lilac" data-yd="bolt">Ask Bolt</button></div>`}}catch(e){console.warn('yard card',e)}return h}
 {const db=mkDecoBind;mkDecoBind=function(root){try{(root||document).querySelectorAll('[data-yd]').forEach(b=>b.onclick=()=>{const a=b.dataset.yd;setTab(null);if(a==='go')travelTo('yard');else if(a==='edit')yardEdit();else travelTo('build')})}catch(_){}return db.apply(this,arguments)}}
 function yardTick(){let el=$('#yardbar');const on=!!(away&&away.key==='yard'&&!openTab&&!kmode&&!sandbox&&!(typeof tm!=='undefined'&&tm&&tm.open));
   if(!on){if(el)el.hidden=true;return}if(!el){el=document.createElement('div');el.id='yardbar';el.className='yardbar';document.body.appendChild(el)}
@@ -70192,6 +71634,33 @@ function petUseItem(id){try{if(sandbox&&!sandbox.yard)return false;if(away&&away
   if(!u){emote('❓');try{petAct('curious')}catch(_){}toast(`${PN()} has a look at the ${nmLow(d?d.n:'thing')}.`);return true}
   if(pet.use)endUse(false);if(pet.mode==='perch')leaveSeatNow();pet.mode='idle';pet.act=null;
   const ok=goUse({o,it,d,u});if(!ok){emote('💕');try{petAct('curious')}catch(_){}toast(`${PN()} admires the ${nmLow(d.n)}.`)}else{try{emote('❗')}catch(_){}if(!localStorage.r42useTip){try{localStorage.r42useTip='1'}catch(_){}toast(`Tap any piece of furniture and ${PN()} will go and use it. Open Decorate to move things.`,true)}}return true}catch(e){console.warn('use item',e);return false}}
+// ---- leaving the sandbox can keep the room you made there (v132): Bolt asks; keeping copies the furniture, floors, walls, door and
+// room size into your real room (the pieces stay placed; tile sets and the door style you used are unlocked)
+{const s0=setSandbox;setSandbox=function(on){try{if(!on&&sandbox&&!sandbox.mk&&!sandbox.yard&&!sandbox.ask){const S=sandbox.saved,ch=JSON.stringify([state.items.map(i=>[i.k,i.x,i.z,i.r,i.c,i.w,i.u]),state.tf,state.tw,state.size,state.door])!==JSON.stringify([S.items.map(i=>[i.k,i.x,i.z,i.r,i.c,i.w,i.u]),S.tf,S.tw,S.size,S.door]);
+  if(ch){sandbox.ask=1;setTab(null);dlySay('builder','Nice work in there! Want me to leave your room like this when the sandbox closes? Everything you placed stays where it is.',[['Keep this room',()=>{const R=JSON.parse(JSON.stringify({items:state.items,tf:state.tf,tw:state.tw,size:state.size,door:state.door}));s0.call(this,false);
+      state.items=R.items;state.tf=R.tf;state.tw=R.tw;state.size=R.size;state.door=R.door;if(R.door&&R.door.s&&!(state.downs||[]).includes(R.door.s))(state.downs=state.downs||[]).push(R.door.s);
+      const T=new Set(state.town||[]);R.tf.forEach(k=>k&&T.add('f:'+k));R.tw.forEach(k=>k&&T.add('w:'+k));state.town=[...T];try{setRoomSize(R.size)}catch(_){}buildHist.length=0;updUndoBtns();syncScene();try{syncDoor()}catch(_){}updHUD();saveSoon();toast('Kept! This is your room now.',true)}],
+    ['Put my old room back',()=>s0.call(this,false)]]);return}}}catch(e){console.warn('sandbox keep',e)}return s0.apply(this,arguments)}}
+// ---- Decorate, friendlier (v132): quick kind chips and "In your room" on the front page, owned pieces first with the rest folded
+// away, a lower sheet so more of the room shows, no routine pop-ups while decorating, and pieces that pop in with a little burst.
+var decoAll=0;
+function decoKindsHtml(col,n){try{if(sandbox&&sandbox.mk)return'';const ch=FUNCS.map(([k,nm])=>{const l=col.filter(c=>c.fn===k);if(!l.length)return'';const h=l.filter(c=>decoOwn(c,n)).length;
+  return`<button type="button" class="dkind${h?'':' none'}" data-go="fn:${k}">${esc(nm)}${h?` <small>${h}</small>`:''}</button>`}).join('');return`<div class="dkinds" role="list">${ch}</div>`}catch(e){return''}}
+function decoInRoomHtml(){try{if(sandbox&&sandbox.mk)return'';const seen=new Set(),L=state.items.filter(i=>CATMAP[i.k]&&!seen.has(i.k)&&seen.add(i.k)).slice(0,30);if(!L.length)return'';
+  return`<h3 class="tgh">In your room <small>${state.items.length}</small></h3><div class="dinroom">${L.map(i=>`<button type="button" class="dinr" data-sel="${i.id}" aria-label="${esc(CATMAP[i.k].n)}"><img data-tt="${i.k}" data-q="${i.k}" src="${thumbs[i.k]||'assets/icons/tab-decorate.webp'}" class="${thumbs[i.k]?'model':''}" alt=""></button>`).join('')}</div><p class="dhint">Tap one to pick it up in the room: then drag, turn or put it away.</p>`}catch(e){return''}}
+function decoExtraBind(root){try{root.querySelectorAll('[data-sel]').forEach(b=>b.onclick=()=>{const id=b.dataset.sel;if(roomItem(id)){select(id);try{SFX.tap()}catch(_){}ilKick(id,-.05,.04)}});const a=root.querySelector('#decoAll');if(a)a.onclick=()=>{decoAll=1;renderDeco()}}catch(e){console.warn('deco extra',e)}}
+// no routine toasts while decorating or painting (forced ones still show)
+{const tf=toast;toast=function(t,force){try{if(!force&&(openTab==='decorate'||brush||document.body.classList.contains('painting')))return}catch(_){}return tf.apply(this,arguments)}}
+// pieces pop in, and land with a squish when moved
+function decoBurst(id){try{const o=roomObjs().get(id);if(!o)return;const b=new THREE.Box3().setFromObject(o),c=new THREE.Vector3();b.getCenter(c);c.y=b.max.y;c.project(camera);const r=renderer.domElement.getBoundingClientRect(),x=r.left+(c.x+1)/2*r.width,y=r.top+(1-c.y)/2*r.height;
+  const cols=['#FF3D9A','#A6E22E','#3EC8F2','#FFD21F','#9B4DF2','#FF8A1C'];for(let i=0;i<9;i++){const e=document.createElement('i');e.className='dburst';e.textContent='★';const a=i/9*Math.PI*2+Math.random()*.4,d=34+Math.random()*28;
+    e.style.cssText=`left:${x}px;top:${y}px;color:${cols[i%cols.length]};--dx:${Math.cos(a)*d}px;--dy:${Math.sin(a)*d-18}px;font-size:${12+Math.random()*8}px`;document.body.appendChild(e);setTimeout(()=>e.remove(),750)}}catch(_){}}
+{const tdw=td;td=function(ev){const r=tdw.apply(this,arguments);try{if((ev==='place'||ev==='move')&&typeof selId!=='undefined'&&selId){const id=selId;setTimeout(()=>{if(ev==='place'){const e=ilGet(id);e.s=-.42;e.v=0;e.w=0;e.wv=.35;decoBurst(id);try{SFX.pop()}catch(_){}}else{ilKick(id,-.05,.03);try{SFX.squish()}catch(_){}}},30)}}catch(_){}return r}}
+// ---- more pieces count for Hygiene (v132): mirrors (a quick tidy-up), Loofah's spa pieces, the washer, vanities, towels.
+// Only pieces the pet can actually use; their other needs are kept.
+{const add={mirror:6,donutmirror:6,archmirror:6,crackmirror:4,bathmirror:8,sunmirror:6,shellmirror:6,rd_mirror:6,rhmirror:6,rmmirror:6,mpmirror:6,fzmirror:6,bo_sun:6,sdmirror:6,
+  lfcubby:10,lfrobe:8,lfroll:6,lftimer:8,lfstove:12,lfbench:10,lfeuca:6,washer:10,sdvanity:8,beachtowel:6,rpscreen:4,fzorbtable:6,rhmirror2:6};
+  for(const k in add){const d=CATMAP[k];if(!d)continue;try{if(!useOf(d))continue;const b=Object.assign({},needsOf(d));b.clean=Math.max(b.clean|0,add[k]);NEED_OVR[k]=b;delete d._nd}catch(_){}}}
 /* </loop-fixes> */
 /* <anim-sets> */
 // per-piece animations (v128+): one Object.assign(BUILD,...) per set from .claude/anim/<set>.js (brief tools/dev/town/ANIM_BRIEF.md)
@@ -75899,7 +77368,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><p class="coachgo">Start by tapping ${nm} to say hello.</p><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=131;
+const APP_V=132;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

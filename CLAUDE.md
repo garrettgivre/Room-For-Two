@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v131** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v131'` in `sw.js`; bump both for anything
+**Current build: v132** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v132'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1376,3 +1376,20 @@ end of `/* <loop-fixes> */`, `IL`.
   material (a material change stops bakeStatic merging, e.g. the blossom lamp went 7 → 115 meshes until fused); changing emissive on
   a material shared across a subtree unmerges that whole subtree. Resident/place/theme files keep helper scripts and child dumps in
   `.claude/anim/x/` (gitignored). If a builder changes, re-check that set's override with `.claude/anim/dump.js`.
+
+## Decorate, friendlier; By need evened out; sandbox keep (v132)
+- **Decorate** (block in `/* <loop-fixes> */` + small edits in `renderDeco`/`decoCard`): the sheet is lower (`.sheet.deco` 48%) and
+  hides the big page title (the tab row says where you are); the front page starts with kind chips (`decoKindsHtml`: each FUNCS kind
+  with how many you own, tap = that page) and has an "In your room" row (`decoInRoomHtml`: tap = select that piece in the room); the
+  yard card moved to the bottom (`yardCardHtml`). Kind/need/set pages list what you own and fold the rest behind "Show N more to
+  collect" (`decoAll`, reset when the page changes). Card badges say "N to place" / "N in room" (the old ×N looked like a close
+  button). Routine toasts are dropped while decorating or painting (forced ones still show). Placing a piece pops it in (squash spring
+  + a burst of five-point stars `decoBurst` + `SFX.pop`); moving lands with a squish; Turn wobbles. The front page's rows need
+  `grid-column:1/-1` because `#tray` is a card grid.
+- **By need**: four new sets between `/* <need-sets> */` (right after the theme sets; sources `.claude/sets3/`, brief
+  `tools/dev/town/NEEDSET_BRIEF.md`; each with its own use animations and `NEED_OVR` amounts): Splash & Suds `nsuds` and Steam & Petals
+  `nspa` (Hygiene), Snuggle Burrow `nhug` (Love), Midnight Snack `nsnack` (Hunger). Plus ~25 existing usable pieces now also count for
+  Hygiene (mirrors, Loofah's spa pieces, the washer, vanities). Counts: Hunger 59 → 71, Hygiene 16 → 66, Love 66 → 89 (Fun 138,
+  Energy 306: every seat and bed fills Energy).
+- **Sandbox keep**: turning the sandbox off after changing the room asks (Bolt, `dlySay`) whether to keep it; keeping copies items,
+  tiles, size and door into the real room, unlocks the tile sets and door used (`setSandbox` wrapper).
