@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v109** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v109'` in `sw.js`; bump both for anything
+**Current build: v110** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v110'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1105,3 +1105,17 @@ mkDecoHtml, mkDecoBind, mkBar; twGrid, tmOpen, twTap, twResTick, tmSkyDraw).
   (the Mayor first) walking the biggest cobble circle (`paradeRing`), spaced out; they join as they finish what they were doing.
 - **Fireworks** (`fwOn`: `EVF_FIRE` holidays from 20:00): bursts drawn on `#tmSky` after `tmSkyDraw` (`FW` particles, a soft glow and a
   bright core per spark; `SFX.pop`).
+
+
+## Smoother walking on the map (v110)
+From Garrett's phone readout (v109: 23 fps walking, 1,070 drawn at the 0.85x resolution floor), CPU-bound. Measured on the laptop GPU
+walking toward the arcade (`.claude/town/t_walkperf.js`, `t_passes.js`): render CPU 9.5 -> 5.3 ms, GL draws 1,606 -> ~1,400.
+- `Object3D.updateMatrixWorld(all)` skips hidden subtrees and `frozen` ones (true = everything). `/* <tm-freeze> */`: after every merge
+  `tmFreeze(true)` marks every subtree of buildings, decorations, merged batches, paths and the seasonal/festival groups that has no
+  `userData.anim` as frozen (~4,000 of ~5,200 visible nodes); `tmUnmerge` (arranging) unfreezes. Anything that moves on the map must have
+  `userData.anim` (or live outside those roots), or its matrix won't update.
+- Per-frame layout reads were forcing reflows: `tmSize` is cached until a resize (1 s max), `tmSeasonFx` uses it, resident pins only
+  write their transform when it changes (`pin._k`). `cDate`/`centralHour` reuse one `Intl.DateTimeFormat` and cache for a second.
+- Renderer flags: `outlineFar` (skip outlines on meshes whose bounding sphere is that far from the camera; the map sets
+  max(16, 2.4 x camera distance)) and `shadowMinR` (skip shadow casters smaller than that; the map sets .1, which halves its shadow draws).
+- Still to look at: hitches in the arcade (15 a minute in Mochi Drop), app start (7 s on the phone).

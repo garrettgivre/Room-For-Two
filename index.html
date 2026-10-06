@@ -1181,7 +1181,7 @@ class Object3D{
   remove(o){const i=this.children.indexOf(o);if(i>=0){this.children.splice(i,1);o.parent=null}return this}
   traverse(fn){fn(this);const c=this.children.slice();for(let i=0;i<c.length;i++)c[i].traverse(fn)}
   _upd(){M4.compose(this._local,this.position,this.rotation,this.scale);if(this.parent)M4.mul(this.matrixWorld,this.parent.matrixWorld,this._local);else this.matrixWorld.set(this._local)}
-  updateMatrixWorld(){this._upd();for(const c of this.children)c.updateMatrixWorld()}
+  updateMatrixWorld(all){if(this.frozen&&!all)return;this._upd();for(const c of this.children)if(all||c.visible)c.updateMatrixWorld(all)}
   updateWorldMatrix(parents,children){if(parents&&this.parent)this.parent.updateWorldMatrix(true,false);this._upd();if(children)for(const c of this.children)c.updateWorldMatrix(false,true)}
   getWorldPosition(v){this.updateWorldMatrix(true,false);const m=this.matrixWorld;return v.set(m[12],m[13],m[14])}
   localToWorld(v){this.updateWorldMatrix(true,false);return v.applyMatrix4(this.matrixWorld)}
@@ -1545,7 +1545,7 @@ class WebGLRenderer{
         gl.bindFramebuffer(gl.FRAMEBUFFER,this.shadowFbo);gl.viewport(0,0,this._shadowSize,this._shadowSize);gl.depthMask(true);gl.clear(gl.DEPTH_BUFFER_BIT);gl.disable(gl.CULL_FACE);
         gl.enable(gl.POLYGON_OFFSET_FILL);gl.polygonOffset(1.5,3);
         const P=this.dprog;gl.useProgram(P.p);gl.uniformMatrix4fv(P.u.uLightVP,false,LVP);const _cv=this.curve||[0,0,0,0,0,1],_sc=(u)=>{if(u.uCurve){gl.uniform4f(u.uCurve,_cv[0],_cv[1],_cv[2],_cv[3]);gl.uniform2f(u.uCurveDir,_cv[4],_cv[5])}};_sc(P.u);
-        const lvis=this.cull?this._frustum(LVP):null;for(const m of meshes){if(!m.castShadow||m.material.transparent&&m.material.opacity<.5)continue;if(lvis&&!lvis(m))continue;const e=this._geo(m.geometry);gl.uniformMatrix4fv(P.u.uModel,false,m.matrixWorld);gl.bindVertexArray(e.vao);gl.drawElements(gl.TRIANGLES,e.n,e.type,0)}
+        const lvis=this.cull?this._frustum(LVP):null;const sMin=this.shadowMinR||0;for(const m of meshes){if(!m.castShadow||m.material.transparent&&m.material.opacity<.5)continue;if(lvis&&!lvis(m))continue;if(sMin&&!m.geometry.dyn){const b=m.geometry._bs,w=m.matrixWorld;if(b&&b[3]*Math.hypot(w[0],w[1],w[2])<sMin)continue}const e=this._geo(m.geometry);gl.uniformMatrix4fv(P.u.uModel,false,m.matrixWorld);gl.bindVertexArray(e.vao);gl.drawElements(gl.TRIANGLES,e.n,e.type,0)}
         gl.disable(gl.POLYGON_OFFSET_FILL);gl.bindFramebuffer(gl.FRAMEBUFFER,null);useShadow=true}}
     const cw=this.domElement.width,ch=this.domElement.height;let T=this.post?this._ensureTargets(cw,ch):null;const hdr=!!(T&&this.hdr);
     gl.bindFramebuffer(gl.FRAMEBUFFER,T?T.ms:null);gl.viewport(0,0,cw,ch);gl.clearColor(0,0,0,0);gl.depthMask(true);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
@@ -1583,7 +1583,7 @@ class WebGLRenderer{
       gl.bindVertexArray(e.vao);gl.drawElements(gl.TRIANGLES,e.n,e.type,0)};
     opaque.forEach(m=>{if(m.renderOrder<=-100)draw(m)});
     {const O=this.oprog;gl.useProgram(O.p);gl.uniformMatrix4fv(O.u.uVP,false,VP);{const _cv=this.curve||[0,0,0,0,0,1],_sc=(u)=>{if(u.uCurve){gl.uniform4f(u.uCurve,_cv[0],_cv[1],_cv[2],_cv[3]);gl.uniform2f(u.uCurveDir,_cv[4],_cv[5])}};_sc(O.u)}gl.uniform3fv(O.u.uColor,this.outlineColor);gl.uniform1i(O.u.uPost,hdr?1:0);gl.uniform1f(O.u.uExposure,Lt.exposure);gl.enable(gl.CULL_FACE);gl.cullFace(gl.FRONT);gl.enable(gl.DEPTH_TEST);
-      if(this.outlines!==false)for(const m of opaque){if(!(m.outline>0))continue;const e=this._geo(m.geometry);gl.uniformMatrix4fv(O.u.uModel,false,m.matrixWorld);gl.uniformMatrix3fv(O.u.uNrm,false,M4.normal3(m.matrixWorld));gl.uniform1f(O.u.uW,m.outline);gl.bindVertexArray(e.vao);gl.drawElements(gl.TRIANGLES,e.n,e.type,0)}
+      const oF=this.outlineFar||0;if(this.outlines!==false)for(const m of opaque){if(!(m.outline>0))continue;if(oF){const b=m.geometry._bs;if(b){const w=m.matrixWorld,sx=Math.hypot(w[0],w[1],w[2]),dx=w[0]*b[0]+w[4]*b[1]+w[8]*b[2]+w[12]-cp.x,dy=w[1]*b[0]+w[5]*b[1]+w[9]*b[2]+w[13]-cp.y,dz=w[2]*b[0]+w[6]*b[1]+w[10]*b[2]+w[14]-cp.z;if(Math.hypot(dx,dy,dz)-b[3]*sx>oF)continue}}const e=this._geo(m.geometry);gl.uniformMatrix4fv(O.u.uModel,false,m.matrixWorld);gl.uniformMatrix3fv(O.u.uNrm,false,M4.normal3(m.matrixWorld));gl.uniform1f(O.u.uW,m.outline);gl.bindVertexArray(e.vao);gl.drawElements(gl.TRIANGLES,e.n,e.type,0)}
       gl.useProgram(P.p)}
     opaque.forEach(m=>{if(m.renderOrder>-100)draw(m)});
     gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE_MINUS_SRC_ALPHA);trans.forEach(m=>{gl.depthMask(m.material.depthWrite!==false);draw(m)});gl.depthMask(true);
@@ -35026,7 +35026,8 @@ function tmClose(){if(!tm||!tm.open)return;twEnd();tm.open=false;document.body.c
 function tmFit(){const a=tm.cam.aspect,t=Math.tan((tmMk()==='world'?30:tm.cam.fov)*Math.PI/360),r=Math.hypot(TM_W,TM_D)/2;return r/(t*Math.min(1,a*1.12)*1.05)}
 function tmSnapNow(){const c=$('#tmc'),s=tm.snap||(tm.snap=document.createElement('canvas'));if(s.width!==c.width||s.height!==c.height){s.width=c.width;s.height=c.height}const x=s.getContext('2d');x.clearRect(0,0,s.width,s.height);x.drawImage(c,0,0)}
 function tmFresh(){if(!tm||tm.open)return;if(tmSyncNeeded())tmSync(false,6);if(tm.pending){tmPumpIdle()}tmArrange(false);tm.focus=null;tm.tgt.set(0,0,0);tmDraw(0);tmSnapNow();tm.snapOk=1}
-function tmSize(){const pp=$('#tmPop');return[pp.clientWidth||innerWidth,pp.clientHeight||innerHeight]}
+let tmSz=null;addEventListener('resize',()=>{tmSz=null});
+function tmSize(){if(tmSz&&performance.now()-tmSz.t<1000&&tmSz.v[0])return tmSz.v;const pp=$('#tmPop'),v=[pp.clientWidth||innerWidth,pp.clientHeight||innerHeight];tmSz={t:performance.now(),v};return v}
 // Time of day on the map follows US Central time (and the debug sky slider), like the room's sky:
 // [hour, sun/moon colour, intensity, sky fill, fill tint, lamp/emissive boost, night 0..1]
 // ---- the sky behind the town map (v71): painted every frame on a 2D canvas under the WebGL one. Colours follow US Central time
@@ -35095,7 +35096,7 @@ function tmTOD(){const now=performance.now();if(now-tmTodT<1000&&skyHourOverride
   $('#town3').style.setProperty('--tmn',night.toFixed(3));tm.night=night}
 function tmDraw(dt){const[W_,H_]=tmSize(),R=tm.R;if(tm.mergeDirty&&!tm.arr&&!tm.pending)tmMergeWorld();tmTOD();{const d=$('#tmDock'),bk=$('#tmBack'),sh=!!tm.focus&&!tm.arr&&!$('#tmCard').hidden;if(bk.hidden===sh)bk.hidden=!sh;if(d&&d._f!==tm.focus){d._f=tm.focus;d.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.k===tm.focus))}}
   {const top=Math.min(1.5,devicePixelRatio||1);if(tm.pr==null)tm.pr=top;tm.pr=Math.min(tm.pr,top);if(R.__w!==W_||R.__h!==H_||R.__pr!==tm.pr){R.setPixelRatio(tm.pr);R.setSize(W_,H_,false);R.__w=W_;R.__h=H_;R.__pr=tm.pr;tm.cam.aspect=W_/H_;tm.cam.updateProjectionMatrix()}}
-  R.outlines=!tm.far;tmFarLod();
+  R.outlines=!tm.far;R.outlineFar=Math.max(16,tmFit()*tm.zoom*2.4);R.shadowMinR=.1;tmFarLod();
   if(tm.pitchTo!=null){tm.pitch+=(tm.pitchTo-tm.pitch)*Math.min(1,dt*3);if(Math.abs(tm.pitchTo-tm.pitch)<.01)tm.pitchTo=null}if(tm.zoomTo!=null){tm.zoom+=(tm.zoomTo-tm.zoom)*Math.min(1,dt*4);if(Math.abs(tm.zoomTo-tm.zoom)<.002)tm.zoomTo=null}tm.tgtTo.x=clamp(tm.tgtTo.x,-TM_W/2,TM_W/2);tm.tgtTo.z=clamp(tm.tgtTo.z,-TM_D/2,TM_D/2);
   {const L=Math.hypot(tm.tgtTo.x,tm.tgtTo.z),mx=ISLAND_R-2;if(tmMk()==='world'&&L>mx){tm.tgtTo.x*=mx/L;tm.tgtTo.z*=mx/L}}
   vlerp(tm.tgt,tm.tgtTo,1-Math.exp(-dt*(tw.on&&tw.follow?6:4)));const d=tm.focus?Math.min(9,tmFit()*.45):tmFit()*tm.zoom;if(tmMk()==='world'){const nr=clamp(d*.06,.05,4);if(tm.cam.fov!==50||Math.abs(tm.cam.near-nr)>nr*.25){tm.cam.fov=50;tm.cam.near=nr;tm.cam.far=600;tm.cam.updateProjectionMatrix()}}
@@ -35261,7 +35262,8 @@ function placeObj(o,it){const d=defOf(it.k);
 let curFloor='',curWall='',curSky='';
 function swapMap(mat,t){const old=mat.map;mat.map=t;mat.needsUpdate=true;if(old&&old!==t)renderer.disposeTexture(old)}
 const skyTexCache={};function timeSky(k){return skyTexCache[k]||(skyTexCache[k]=roomTexture('s',k))}
-function centralHour(){try{const p=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',hour:'numeric',minute:'numeric',second:'numeric',hourCycle:'h23'}).formatToParts(new Date()),g=t=>+p.find(x=>x.type===t).value;return g('hour')%24+g('minute')/60+g('second')/3600}
+let cHourF=null,cHourC=null;function centralHour(){const now=Date.now();if(cHourC&&now-cHourC.t<1000)return cHourC.v;const v=centralHour0();cHourC={t:now,v};return v}
+function centralHour0(){try{const p=(cHourF=cHourF||new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',hour:'numeric',minute:'numeric',second:'numeric',hourCycle:'h23'})).formatToParts(new Date()),g=t=>+p.find(x=>x.type===t).value;return g('hour')%24+g('minute')/60+g('second')/3600}
   catch(_){const d=new Date();return d.getHours()+d.getMinutes()/60}}
 let skyHourOverride=null;
 function updateSky(){const h=skyHourOverride??centralHour();let i=0;while(i<SKY_TIMES.length-2&&h>=SKY_TIMES[i+1][0])i++;const [h0,a]=SKY_TIMES[i],[h1,b]=SKY_TIMES[i+1];
@@ -36161,7 +36163,7 @@ function twResTick(dt,t){const cam=tm.tgt,close=tmFit()*tm.zoom<16;tw.sortT=(tw.
     else{const p=tw.pet;if(p)r.ry=Math.atan2(p.x-r.x,p.z-r.z)}
     if(r.out){if(r.inPt){const dx=r.inPt[0]-r.x,dz=r.inPt[1]-r.z,dd=Math.hypot(dx,dz);if(dd>.02){const st=Math.min(dd,TW_RSPEED*.8*dt);r.x+=dx/dd*st;r.z+=dz/dd*st;r.ry=Math.atan2(dx,dz);mv=true}}r.sc=Math.max(0,r.sc-dt*1.4);if(r.sc<=0)r.gone=1}else if(r.sc<1)r.sc=Math.min(1,r.sc+dt*1.8);
     if(r.gone){r.dot.hidden=true;if(r.full)r.full.g.visible=false;return}
-    {const pin=r.dot,cam=tm.cam;if(!pin.isConnected)$('#tmLab').appendChild(pin);if(pin.classList.contains('chat')!==!!r.chat)pin.classList.toggle('chat',!!r.chat);if(full)pin.hidden=true;else{const v=_twV.set(r.x,.62-tmCurveY(r.x,r.z)+(mv?Math.abs(Math.sin(r.t*9))*.05:0),r.z).project(cam),[W_,H_]=tmSize();pin.hidden=v.z>1;pin.style.transform=`translate(${(v.x*.5+.5)*W_}px,${(-v.y*.5+.5)*H_}px) translate(-50%,-100%) scale(${clamp(1.15-tm.zoom*.5,.62,1)*Math.max(.05,ease(r.sc))})`;
+    {const pin=r.dot,cam=tm.cam;if(!pin.isConnected)$('#tmLab').appendChild(pin);if(pin.classList.contains('chat')!==!!r.chat)pin.classList.toggle('chat',!!r.chat);if(full)pin.hidden=true;else{const v=_twV.set(r.x,.62-tmCurveY(r.x,r.z)+(mv?Math.abs(Math.sin(r.t*9))*.05:0),r.z).project(cam),[W_,H_]=tmSize();pin.hidden=v.z>1;{const tx=Math.round((v.x*.5+.5)*W_*2)/2,ty=Math.round((-v.y*.5+.5)*H_*2)/2,sc_=Math.round(clamp(1.15-tm.zoom*.5,.62,1)*Math.max(.05,ease(r.sc))*100)/100,key=tx+','+ty+','+sc_;if(pin._k!==key){pin._k=key;pin.style.transform=`translate(${tx}px,${ty}px) translate(-50%,-100%) scale(${sc_})`}};
       {const fk=swapOn()&&SWAP_AS[r.k]||r.k;if(!pin.querySelector('img')&&thumbs['fig_'+fk])pin.innerHTML=lifeFace(fk)+'<i class="dots">···</i>'}}}
     if(full){const F=twFull(r);if(F){F.g.visible=true;F.g.scale.setScalar(Math.max(.001,ease(r.sc)));F.g.position.set(r.x,r.atSpot&&r.spot&&r.spot.sit?r.spot.sit-.04:mv?Math.abs(Math.sin(r.t*9))*.03:0,r.z);F.g.rotation.y=r.ry;try{F.K.upd(dt,t,'idle',0,(talking&&(!cv||cv.k!==r.k||cv.shown<(cv.full||'').length))||rcTalking(r))}catch(_){}}}else if(r.full)r.full.g.visible=false})}
 // ---- tapping outdoors: a resident (chat card), a building (walk to its door and go in), the ground (walk there)
@@ -61347,7 +61349,7 @@ function tmSeasonDecor(){if(!tm||!tm.world||tmMk()!=='world')return;const S=seas
   try{bakeStatic(gm)}catch(e){console.warn('season bake',e)}tm.seaG=g;tm.world.add(g);if(tw)tw.gkey=''}
 // particles over the map: a 2D canvas drawn each frame (cheap); denser at street level
 const SEAFX={p:[],S:'',t:0};
-function tmSeasonFx(dt){const cv=$('#tmSeaFx');if(!cv||!tm)return;const S=seasonNow(),W_=cv.clientWidth|0,H_=cv.clientHeight|0;if(!W_||!H_)return;if(cv.width!==W_||cv.height!==H_){cv.width=W_;cv.height=H_}
+function tmSeasonFx(dt){const cv=$('#tmSeaFx');if(!cv||!tm)return;const S=seasonNow(),[W_,H_]=tmSize().map(v=>v|0);if(!W_||!H_)return;if(cv.width!==W_||cv.height!==H_){cv.width=W_;cv.height=H_}
   const x=cv.getContext('2d');x.clearRect(0,0,W_,H_);const night=(tm.night||0)>.4,wx=typeof wxNow==='function'&&wxNow(),snowing=wx&&wx.kind==='snow';
   const kind=snowing||S==='winter'?'snow':S==='autumn'?'leaf':S==='spring'?'petal':night?'fly':'';if(!kind){SEAFX.p.length=0;return}
   const far=tmFit()*tm.zoom,N=Math.round({snow:70,leaf:26,petal:30,fly:22}[kind]*(far>40?.45:1));if(SEAFX.S!==kind){SEAFX.S=kind;SEAFX.p.length=0}
@@ -65511,7 +65513,8 @@ function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS
 /* </swapface> */
 /* <whatsnew> */
 // ---- a one-time card per device listing what's new since the last version this phone saw (localStorage r42wn)
-const WHATSNEW=[[109,'Makeovers: some requests now come with a theme to try for a bonus, and residents write back a few days later asking for one more thing. Town events: stalls and Hook-a-duck on the plaza during festivals and big holidays, the Pumpkin Parade round the ring road, and fireworks on Bubblework Night.'],
+const WHATSNEW=[[110,'Walking around town should be noticeably smoother, especially on phones.'],
+  [109,'Makeovers: some requests now come with a theme to try for a bonus, and residents write back a few days later asking for one more thing. Town events: stalls and Hook-a-duck on the plaza during festivals and big holidays, the Pumpkin Parade round the ring road, and fireworks on Bubblework Night.'],
   [108,'Neighbours have birthday parties now: an evening at their house with their closest friends, cake and decorations, and you’re welcome to drop in. They also visit each other’s houses, and friendships shift from week to week. Ask them about it.'],
   [107,'Your pet can learn tricks! Teach them from the pet page (a few tries a day each), and watch for them when it’s happy. It also has opinions now: it misses its favourite spot if you put it away, gets excited about pieces it loves, and each head picks up its person’s habits. Bond milestones change what it does, like bringing you little finds.'],
   [106,'When you both change the room or the town at the same time, both of your changes now stick (before, one phone could undo the other). New: a speed readout in Debug that shows how smooth the game is running; tap it to copy the numbers.'],
@@ -66235,8 +66238,7 @@ function cheerSync(quiet){const C=cheerOf(),L=cheerLv(C.p),out=[];while((C.lv|0)
   try{if(RESIDENTS.mayor)resPost("mayor",`Ahem! The town is now “${X[1]}”. We cut the ribbon this morning${X[2]&&TM_DECOR[X[2]]?` on a new ${TM_DECOR[X[2]].n.toLowerCase()}`:""}. Thank you both, truly.`)}catch(_){}}
   return out}
 function lifeTick(){if(!state||sandbox)return;try{townLifeTick();mkTick();holTick();dlyTick()}catch(e){console.warn('life',e)}}
-function cDate(){try{const p=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',year:'numeric',month:'numeric',day:'numeric'}).formatToParts(new Date()),g=t=>+p.find(x=>x.type===t).value;return new Date(Date.UTC(g('year'),g('month')-1,g('day')))}
-  catch(_){const d=new Date();return new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()))}}
+let cDateF=null,cDateC=null;function cDate(){const now=Date.now();if(cDateC&&now-cDateC.t<1000)return new Date(cDateC.v);try{cDateF=cDateF||new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',year:'numeric',month:'numeric',day:'numeric'});const p=cDateF.formatToParts(new Date(now)),g=t=>+p.find(x=>x.type===t).value,v=Date.UTC(g('year'),g('month')-1,g('day'));cDateC={t:now,v};return new Date(v)}catch(e){return new Date(Date.UTC(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()))}}
 let tdDayShift=0;// debug: pretend it's a later day
 function tdDay(){const d=cDate();d.setUTCDate(d.getUTCDate()+tdDayShift);return d.toISOString().slice(0,10)}
 const TD_CAT={care:{h:3,c:'#FF8A1C'},home:{h:3,c:'#FF3D9A'},town:{h:4,c:'#3EC8F2'},play:{h:4,c:'#9B4DF2'},together:{h:5,c:'#A6E22E'}};
@@ -68222,6 +68224,17 @@ function fwOn(){const H=holOn(),h=townHour();return!!H&&EVF_FIRE.includes(H.k)&&
     for(let i=0;i<n;i++){const a=i/n*Math.PI*2+Math.random()*.1,v=sp*(.6+Math.random()*.4);FW.p.push({x:cx,y:cy,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:1,h:hue+(Math.random()*20-10)})}if(Math.random()<.6)try{SFX.pop()}catch(_){}}
   x.save();FW.p.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=H*.12*dt;p.vx*=.985;p.vy*=.985;p.l-=dt*.7;if(p.l<=0)return;const r=Math.max(1.5,W*.0065*(.5+.5*p.l));x.globalAlpha=Math.max(0,p.l)*.35;x.fillStyle=`hsl(${p.h},100%,60%)`;x.beginPath();x.arc(p.x,p.y,r*2.2,0,6.283);x.fill();x.globalAlpha=Math.max(0,p.l);x.fillStyle=`hsl(${p.h},100%,${62+14*p.l}%)`;x.beginPath();x.arc(p.x,p.y,r,0,6.283);x.fill()});x.restore();FW.p=FW.p.filter(p=>p.l>0)}catch(e){console.warn('fireworks',e)}}}
 /* </town-events> */
+/* <tm-freeze> */
+// map performance (v110): subtrees of the town that never move are "frozen" after each merge, so the per-frame matrix update skips them
+// (buildings' group nodes, decorations, merged batches, paths: ~4,000 of ~5,200 visible nodes). A subtree is static when nothing in it has
+// userData.anim. Unmerging (arranging) unfreezes everything; updateMatrixWorld(true) still updates frozen nodes.
+function tmFreezeRoots(){return[...Object.values(tm.bld||{}),tm.decor,tm.mergedG,tm.paths,tm.seaG,tm.festG].filter(Boolean)}
+function tmFreeze(on){if(!tm)return;const mark=o=>{let st=!o.userData.anim;for(const c of o.children)if(!mark(c))st=false;o.frozen=on&&st;return st};tmFreezeRoots().forEach(mark);if(on)try{tm.sc.updateMatrixWorld(true)}catch(_){}}
+{const mw=tmMergeWorld;tmMergeWorld=function(){const r=mw.apply(this,arguments);try{if(!tm.arr&&!tm.pending)tmFreeze(true)}catch(e){console.warn('freeze',e)}return r}}
+{const um=tmUnmerge;tmUnmerge=function(){try{if(tm)tmFreeze(false)}catch(_){}return um.apply(this,arguments)}}
+{const sd=tmSeasonDecor;tmSeasonDecor=function(){const r=sd.apply(this,arguments);try{if(tm&&tm.seaG&&tm.mergedG&&!tm.arr)tmFreeze(true)}catch(_){}return r}}
+{const fd=tmFestDecor;tmFestDecor=function(){const r=fd.apply(this,arguments);try{if(tm&&tm.festG&&tm.mergedG&&!tm.arr)tmFreeze(true)}catch(_){}return r}}
+/* </tm-freeze> */
 function mergeInto(L,R){if(!syncBase)return{};const B=syncBase,ch={},Bkr=B.kr?JSON.parse(B.kr)||{}:{},Rkr=R.kr||{};new Set([...Object.keys(L),...Object.keys(R)]).forEach(k=>{if(k==='rev')return;
     const lj=JSON.stringify(L[k]),rj=JSON.stringify(R[k]),bj=B[k];if(rj===lj||rj===bj)return;if(k!=='kr'&&(+Rkr[k]||0)<(+Bkr[k]||0))return;
     if(lj===bj){L[k]=R[k]===undefined?undefined:JSON.parse(rj);ch[k]=1;return}
@@ -68311,7 +68324,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=109;
+const APP_V=110;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
