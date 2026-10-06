@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v116** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v116'` in `sw.js`; bump both for anything
+**Current build: v117** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v117'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1167,3 +1167,26 @@ walking toward the arcade (`.claude/town/t_walkperf.js`, `t_passes.js`): render 
   pronoun ("for home today"; the game has no pronoun data, so templates naming a resident must not use he/she/they); plaza tiles are a
   richer pastel; civic places use `TM_SIGN._place` (the house plaque at 1.6x); the flower-pot snail is 1.8x. `.claude/town/t_menus.js`
   screenshots every menu page into `.claude/town/out/menus/` and lists elements wider than the screen.
+
+
+## Playtest round one (v117)
+Four agents played headless (`tools/dev/town/PLAYTEST_BRIEF.md`; areas first-hour, daily-loop, town, decorating; scripts in `.claude/play/`).
+Subagents can't write report files, so their reports come back as their final message. Fixed:
+- **Makeovers never paid since v83**: `mkFinish` reassigned a const (`h*=BTN`) and threw after saving the room. Events held at places never
+  paid (`travelTo` only called `eventArrive` for houses). Capsule machine: closing after paying kept nothing (now `closeGacha` keeps the
+  prize in any state after the coin). Your designs counted as a tile set for "collect a whole room set" (`d.dz` skipped).
+- Daily loop: care pays bond/buttons only below 85 and buttons once per need per 12 min (`careBtnT`); gentle welcome-back wording (`SOFT`);
+  "together" two-dos only when both people played in the last 30 h (`tdOk` wrapper); no wish that duplicates a list item (`wishPick`
+  wrapper); bond perks/tricks appended to the bond-level card (`bondExtra` + `showReward` wrapper; no "growing up" card); the same Journal
+  kind at most every 45 s (`jrEvent` wrapper); Journal keeps 360 entries; Today sits under the bond bar; pet night/morning use `townHour()`
+  (debug slider works); toasts last longer for long text and stay away from the intro card, styling and (for wishes) open screens.
+- First hour: intro card layout (block flow, "Start by tapping <pet>"); Mayor's monthly parcel waits a day; birthday letters and makeover
+  requests only for residents you've met; weather card has "Not now"; pats count every 250 ms; new floor pieces go to the nearest clear spot
+  toward the camera (`spawn`, `spotClear`); first map open is wider with a tip (`localStorage.r42map1`).
+- Town: party guests keep apart (`crewPlace` spacing + fallback ring); the map noticeboard checks every ray hit; a "find" favour flies the
+  camera to its marker once; `resMood` skips the generator's first values (similar keys were correlated); "strolling" label.
+- Decorating: makeover titles drop "the"/trailing punctuation in sentences; the makeover sandbox has no storage shelf; designs named
+  "...pic" don't become "... pic picture"; a 0-star arcade round pays 2 tickets; the dock hides while painting (`body.painting`).
+- Journal: `/* <journal-month> */` "<Month>, so far" page at the top of the diary (`jrMonth`).
+Not changed (design): assistants are home 7-13 only; the town is quiet at midday; favour thanks text vs reward type; visit/deliver favours
+finish on any close-up with that resident.
