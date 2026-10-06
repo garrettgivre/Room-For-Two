@@ -10,8 +10,8 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v104** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v104'` in `sw.js`; bump both for anything
-user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
+**Current build: v105** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v105'` in `sw.js`; bump both for anything
+user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
 **Who and how**
@@ -1009,3 +1009,17 @@ Beau tapped Explore, nothing happened for a while, he tapped again and the map o
   `tmTick` loop). Code paths (travel, entering a building) still close at once.
 - `twResTick` threw every frame ("reading 'isConnected'") after a resident left the map: the cached nearest list `tw.near` kept the
   dropped resident whose `dot` was null. Skips `!r.dot` and clears `tw.near` on a drop.
+
+## The town layout stopped resetting; faster map loads (v105)
+- **Data bug since v75:** `worldV4` wrote `m.v=Math.max(m.v|0,4)`, and `|0` cut the world layout's version 6.3 to 6. `tmNorm` replaces
+  any world layout below 6.3 with a fresh `worldDesign()`, so every load threw away the town: Edit town changes, the dock and museum
+  (placed again each session), and finished project landmarks (gone, since `pend` was already empty). Now `+m.v||0`, a saved 6 counts as
+  6.3, `projPlace` puts back any finished project missing from the map, and `SYNC_MIN_V` is 105 so older apps (which would keep
+  resetting the shared layout) refresh instead of saving. Never use `|0` on a version number with a fraction.
+- First open of a session no longer rebuilds and re-merges the town: `tmPump` records the sync key when the startup build finishes
+  (`tm.syncKeyP`), and `tmSeasonDecor` no longer sets `mergeDirty` (the seasonal pieces aren't part of the town merge; they're built
+  behind the loader now). Laptop software GL: 6.5 s -> 0.4 s; reopening from the arcade ~650 -> ~150 ms.
+- `smoothNormals` uses a numeric hash table (same quantisation, ~4.7x faster); `bakeWatch` compares numbers instead of joined strings;
+  `renderer.disposeGeometry(g)` frees the old merged town batches' GPU buffers in `tmUnmerge`; `tmDecor` marks the merge dirty when a
+  merged world exists (otherwise the old merged copy lingered and decorations drew twice); residents' pin portraits are drawn in idle
+  time after load. `tmWarmAll` (draw everything once to upload it) exists but isn't called: on software GL it made startup minutes long.
