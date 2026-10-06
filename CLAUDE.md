@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v124** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v124'` in `sw.js`; bump both for anything
+**Current build: v125** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v125'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1303,3 +1303,20 @@ some hats hide in the antenna tufts; photo mode doesn't frame the pet; new furni
 **Disk**: the laptop's C: drive filled up overnight (60 MB free at worst; 5.6 GB after an agent shrank its screenshots). Test
 screenshots in `.claude/town/out/` (~1 GB) and session temp in `%LOCALAPPDATA%/Temp/claude` (~3 GB) are safe for Garrett to clear;
 playtest agents should save small JPEGs and check `df -h /c` first.
+
+## Things to try: the town's extras get found (v125)
+Garrett agreed: playtesters never found fishing, bugs, the museum, the garden, makeovers, gifts or neighbour chats. No new daily system;
+it rides on wishes. Block at the end of `/* <loop-fixes> */`.
+- `TT` [key, title, how-to, times to count as tried] for meet (6 residents met), gift (3), fish (2 species), bug (2), garden (1), museum
+  (2), makeover (1); `ttCount(k)` derives progress from existing shared state (`tfound`, `kf`, `gifts`, `garden`, `museum`,
+  `mkAllRooms()`), so there is no new saved field. `ttLeft()` = not yet tried.
+- **Town wishes**: `WISH_T.tfish/tbug/tmeet/tgift/tgarden/tmuseum` (in the WISH_T literal so `normalize` keeps them; `town:` key).
+  A `wishTick` wrapper makes one at most once a day (`acts.twish`), 40% of the time a wish is due, once `ttReady()` (bond 2+ or a day
+  old), never one already on today's list; `tmeet` stores the resident in `state.wish.res` (an unmet one, preferring someone at a shop
+  or place). `wishGo` → `ttGo(k,res)`: meet travels to them and opens the close-up (or the map with where they are), gift/garden open
+  Neighbours, fish/bug/museum open the map with the how-to. `musDonate` now reports `td('museum')`. First time: a hint bubble
+  (`localStorage.r42ttHint`).
+- **Intros**: `TT_INTRO` (Beacon, Posy, Dewey, Mayor, Parcel, Dr. Patch, Tutti, Echo, Prickles, Nimbus) said once per room
+  (`acts['intro:'+k]`) as the opener of the first map conversation (`cvOpener` wrapper) or close-up (`socialLine` wrapper).
+- **Card**: "Things to try in town" at the top of Neighbours > People (`renderTown` wrapper, `.ttcard`): up to 3 untried with Go, the tried
+  ones ticked; gone once all are tried. Also fixed: that page's event Go used `'h_'+E.house` (now `evAt(E)`).

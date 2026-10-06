@@ -1046,6 +1046,14 @@ body:has(#fishv:not([hidden])) #fishv button{visibility:visible}
 .price::before{background:var(--sun)!important;border:3px solid var(--ink);border-radius:50%;clip-path:none!important;box-sizing:border-box}
 .price::after{display:none!important}
 .price{color:var(--ink)!important;text-shadow:none!important}
+/* things to try (v125) */
+.ttcard{background:#FFF6FB;border:3px solid var(--ink);border-radius:18px;box-shadow:0 4px 0 var(--ink);padding:10px 12px;margin:10px 0}
+.ttcard h3{font-family:var(--disp);font-weight:400;font-size:17px;margin:0 0 6px;display:flex;justify-content:space-between;align-items:baseline;color:var(--ink)}
+.ttcard h3 small{font-size:12px;color:#6B4E95}
+.ttrow{display:flex;gap:10px;align-items:center;padding:6px 0;border-top:2px dashed rgba(59,18,115,.15)}
+.ttrow>div{flex:1;min-width:0}.ttrow b{display:block;font-family:var(--disp);font-weight:400;font-size:15px;color:var(--ink)}
+.ttrow small{display:block;font-size:12.5px;color:#6B4E95;line-height:1.3}
+.ttdone{display:flex;flex-wrap:wrap;gap:4px 10px;margin:6px 0 0;font-size:12px;color:#3a8a12}
 </style>
 </head>
 <body>
@@ -36104,7 +36112,7 @@ function renderTown(body){const day=lifeDay(),W=WEATHER[weatherOf(day)],F=festOn
   let html=`${pgHead('town',{right:`<span class="lifewx">${LIFE_IC[W.ic].replace('width="30" height="30"','width="22" height="22"')} ${esc(W.n)}</span>`,sub:F?`The ${esc(F.n)} is on at the Town Hall!`:'Everyone in town, what they love, and what’s on.'})}<div class="lifetabs">${tabs}</div>`;
   if(lifeTab==='people'){const W2=lifeWish(),bd=bdayToday(),E=eventNow();
     if(lifeGiftFor)html+=lifeGiftHtml(lifeGiftFor,!lifeGiftHand);
-    if(E)html+=`<div class="tdc lifeev" style="--cc:#FFD21F"><span class="tdi">${lifeFace(E.guests[0])}</span><div class="tdt"><b>${esc(E.n)} is on now</b><small>${esc(E.t)} At ${esc(SHOPS[evAt(E)].n)}.</small></div><div class="tdr"><button class="gel pink tdgo" data-lgo="h_${E.house}">Go</button></div></div>`;
+    if(E)html+=`<div class="tdc lifeev" style="--cc:#FFD21F"><span class="tdi">${lifeFace(E.guests[0])}</span><div class="tdt"><b>${esc(E.n)} is on now</b><small>${esc(E.t)} At ${esc(SHOPS[evAt(E)].n)}.</small></div><div class="tdr"><button class="gel pink tdgo" data-lgo="${evAt(E)}">Go</button></div></div>`;
     if(W2)html+=`<p class="hint lifewish">${esc(RESIDENTS[W2.k].n)} would love ${esc(tagName(W2.tag))} for home today.</p>`;
     const groups=[['Shops','',Object.keys(RESIDENTS).filter(k=>resHere(k)&&RESIDENTS[k].shop)],...HOOD_KEYS.map(h=>[HODS_N(h),h,Object.keys(RESIDENTS).filter(k=>resHere(k)&&!RESIDENTS[k].shop&&HOUSES[houseOf(k)]&&HOUSES[houseOf(k)].hood===h)])];
     groups.forEach(([n,h,ks])=>{if(!ks.length)return;html+=`<div class="row-label">${esc(n)}</div><div class="tdlist">`+ks.map(k=>{const R=RESIDENTS[k],f=kfOf(k),lv=kfLevel(f.p),dk=(state.disc||{})[k]||[],given=(state.gifts||{})[k]===day,
@@ -66935,6 +66943,7 @@ const WHATSNEW=[[119,'For the two of you: notes to each other are kept safe, you
   [122,'Fixes from a big round of playtests: a makeover theme bonus no longer breaks that room or the house, Later keeps your makeover design, the Designs editor scrolls on a phone, tapping past the edge of town no longer freezes the map, guests spread out at events, and more words read naturally.'],
   [123,'Neighbours now walk to the friends and shops they visit, noticeboards offer a few fresh favours each week instead of repeating, the back button closes the museum and little cards first, and the game frees memory it no longer needs, which should help on long evenings.'],
   [124,'Arcade: quitting with × keeps your score in every game, pinball is friendlier with short intros, and Drop lists what you won. Mochi stays in bed at night, learns a proper Roly-poly, and wishes no longer copy the daily list. The Wardrobe and studios have more room on small phones, and price stickers are coins instead of hearts.'],
+  [125,'Now and then Mochi wishes for something out in town, like meeting a neighbour, catching a fish or planting the garden, and Go shows you the way. Neighbours with a job tell you about it the first time you chat, and Neighbours has a Things to try card.'],
   [118,'Friendships go deeper: every neighbour has five more heart-to-hearts, sends a letter (and a gift) when you become best friends, and remembers what you talked about lately. More fixes from playtesting: town projects always appear on the map (the bouncy castle comes first now), the Journal keeps months, not days, taps on the noticeboard, museum and well work, and the back button closes photos and fishing.'],
   [117,'Fixes from playtesting: finished makeovers now pay out properly (they hadn’t been!), events at the library, Town Hall and weather station pay too, party guests spread out, Today’s list sits right under the bond bar, and your pet’s Journal has a page summing up the month so far. Plus a gentler welcome back, fewer day-one strangers, and lots of small things.'],
   [116,'Polish: keepsake letters read properly in the Bag, scrolling tab rows show there’s more, the plaza tiles are brighter, civic buildings have bigger name signs, and messages no longer pop over your pet while you dress it.'],
@@ -67575,7 +67584,13 @@ const WISH_T={
   look:{ev:'wear',ic:'tab-pet',go:'wardrobe',txt:()=>'a change of outfit'},
   friend:{ev:'visit:house',ic:'tab-room',go:'map',txt:()=>'a visit to a neighbour'},
   trip:{ev:'visit',ic:'tab-room',go:'map',txt:(n,k)=>`a trip to ${SHOPS[k]?SHOPS[k].n:'town'}`},
-  need:{ev:'need',get ic(){const W=state&&state.wish;return W&&W.need?NEED_IC[W.need]:'tab-decorate'},go:'decorate',txt:(n,k,W)=>{W=W||state.wish;return W&&W.need?NEED_WANT[W.need]:'something new'}}};
+  need:{ev:'need',get ic(){const W=state&&state.wish;return W&&W.need?NEED_IC[W.need]:'tab-decorate'},go:'decorate',txt:(n,k,W)=>{W=W||state.wish;return W&&W.need?NEED_WANT[W.need]:'something new'}},
+  tfish:{ev:'fish',ic:'tab-room',go:'map',town:'fish',txt:()=>'to watch you catch a fish'},
+  tbug:{ev:'bug',ic:'tab-room',go:'map',town:'bug',txt:()=>'to catch a bug with you'},
+  tmeet:{ev:'chat',ic:'tab-room',go:'map',town:'meet',txt:(n,k,W)=>{W=W||(state&&state.wish);const R=W&&RESIDENTS[W.res];return R?`to meet ${R.n}`:'to meet a neighbour'}},
+  tgift:{ev:'gift',ic:'tab-room',go:'map',town:'gift',txt:()=>'to give a neighbour a present'},
+  tgarden:{ev:'plant',ic:'tab-room',go:'map',town:'garden',txt:()=>'to plant something in the garden'},
+  tmuseum:{ev:'museum',ic:'tab-room',go:'map',town:'museum',txt:()=>'to take a find to the museum'}};
 const WISH_HOURS=4,WISH_GAP=[25,45];
 function wishPick(){const st=petStats(),P=persOf(),c=['pats','look','trip','trip','friend'];if(st.hunger<60)c.push('snack','snack');if(P&&st.hunger<90)c.push('fav');if(st.clean<60)c.push('bath','bath');
   if(st.fun<65)c.push('play','play');if(st.energy<40)c.push('nap','nap');const ok=c.filter(k=>!WISH_T[k].ok||WISH_T[k].ok());return ok[Math.random()*ok.length|0]}
@@ -70007,6 +70022,63 @@ setInterval(()=>{try{if(!ready||document.hidden)return;const tr=$('#travel');if(
 {const ko=kOpen;kOpen=function(K){const r=ko.apply(this,arguments);try{if(kmode&&away&&away.keepers){kmode.hid=[];away.keepers.forEach(o=>{if(o&&o!==kmode.K&&o.g&&o.g.visible){o.g.visible=false;kmode.hid.push(o)}})}}catch(_){}return r}}
 {const kc=kClose;kClose=function(){const H=kmode&&kmode.hid;const r=kc.apply(this,arguments);try{(H||[]).forEach(o=>{if(o&&o.g)o.g.visible=true})}catch(_){}return r}}
 addEventListener('pointerdown',()=>{window._r42ptr=Date.now()},true);
+// ---- things to try (v125): the town's extras get found. Wishes sometimes point into town, neighbours with a job say so the
+// first time you talk, and the Neighbours page keeps a small "Things to try" card until each one has been tried.
+const TT=[['meet','Meet the neighbours','Tap anyone walking about on the map to chat. Friends invite you round.',6],
+  ['gift','Give a present','Every neighbour has favourite things to discover. Tap Gift next to their name.',3],
+  ['fish','Go fishing','Tap a pond, a stream or the dock on the map. Beacon buys what you don’t keep.',2],
+  ['bug','Catch a bug','Bugs flutter near flowers, trees and lamps on the map. Tap one, then tap when the ring turns green.',2],
+  ['garden','Plant the garden','Posy hands out seeds. Plant and water them on the Garden tab.',1],
+  ['museum','Start the museum','Dewey’s little museum on the map takes one of every fish, bug and find.',2],
+  ['makeover','Design a room','Neighbours sometimes write asking for a room. Start it from Decorate.',1]];
+function ttCount(k){const S=state;try{switch(k){
+  case 'fish':return Object.keys(S.tfound||{}).filter(id=>FISHMAP[id]).length;
+  case 'bug':return Object.keys(S.tfound||{}).filter(id=>BUGMAP[id]).length;
+  case 'meet':return Object.keys(RESIDENTS).filter(r=>{const f=(S.kf||{})[r];return f&&(f.c||f.m||f.p)}).length;
+  case 'gift':return Object.keys(S.gifts||{}).length;
+  case 'garden':return(Array.isArray(S.garden)?S.garden:Object.values(S.garden||{})).some(p=>p&&(p.s||p.u))?1:0;
+  case 'museum':return Object.keys(S.museum||{}).length;
+  case 'makeover':return mkAllRooms().length}}catch(_){}return 0}
+const ttLeft=()=>TT.filter(q=>ttCount(q[0])<q[3]);
+function ttReady(){try{return bondOf(state.pet.xp).lv>=2||(state.born&&Date.now()-state.born>20*36e5)}catch(_){return false}}
+function ttMeetPick(){const un=Object.keys(RESIDENTS).filter(r=>{const f=(state.kf||{})[r];return!(f&&(f.c||f.m||f.p))});if(!un.length)return null;
+  const here=un.filter(r=>{try{return['shop','place'].includes(resWhere(r))}catch(_){return false}});const L=here.length?here:un;return L[Math.floor(Math.random()*L.length)]}
+function ttWishable(){let evs=new Set();try{evs=new Set(((state.td&&state.td.list)||[]).map(e=>TD_T[e.k]&&TD_T[e.k].ev).filter(Boolean))}catch(_){}
+  return ttLeft().map(q=>q[0]).filter(k=>WISH_T['t'+k]&&!evs.has(WISH_T['t'+k].ev)&&(k!=='museum'||TREASURES.some(t=>(state.inv[t.id]|0)>0&&!(state.museum||{})[t.id]&&t.col!=='prize'))&&(k!=='gift'||Object.values(state.inv||{}).some(v=>v>0))&&(k!=='meet'||ttMeetPick()))}
+function ttHint(){try{if(localStorage.r42ttHint)return;localStorage.r42ttHint='1'}catch(_){return}setTimeout(()=>toast(`Some of ${PN()}’s wishes are out in town. Tap Go and you’ll be shown the way.`,true),2600)}
+function ttGo(k,res){setTab(null);closeWheel&&closeWheel();const T=TT.find(q=>q[0]===k);
+  if(k==='gift'){lifeTab='people';setTab('town');setTimeout(()=>toast('Tap Gift next to a neighbour to send them something.',true),400);return}
+  if(k==='garden'){lifeTab='garden';setTab('town');return}
+  if(k==='makeover'){if(mkReq&&mkReq()){openDecorate('furn')}else toast('Nobody has asked yet. Their letters arrive in your Inbox.',true);return}
+  if(k==='meet'){const r=res&&RESIDENTS[res]?res:ttMeetPick();if(r){let w='';try{w=resWhere(r)}catch(_){}const at=w==='shop'?RESIDENTS[r].shop:w==='place'&&placeOf(r)?'p_'+placeOf(r).id:null;
+      if(at&&SHOPS[at]){travelTo(at,()=>{setTimeout(()=>{try{const K=away&&away.keepers&&away.keepers.find(q=>q.kind===r);if(K)kOpen(K)}catch(_){}},700)});return}
+      showMap();setTimeout(()=>toast(`${RESIDENTS[r].n} is ${typeof lifeWhere==='function'?lifeWhere(r).replace(/ · .*$/,''):'out'} right now. Tap anyone on the map to chat.`,true),900);return}}
+  showMap();if(T)setTimeout(()=>toast(T[2],true),900)}
+{const wg=wishGo;wishGo=function(){try{const W=state.wish,T=W&&WISH_T[W.k];if(T&&T.town){ttGo(T.town,W.res);return}}catch(e){console.warn('town wish go',e)}return wg.apply(this,arguments)}}
+{const wt=wishTick;wishTick=function(){try{if(ready&&!sandbox&&state&&stageOf(state.pet.xp)){const W=state.wish||{},now=Date.now();
+  if(!W.k&&!(W.next&&now<W.next)){const A=state.acts||(state.acts={}),day=lifeDay();if(A.twish!==day&&ttReady()&&Math.random()<.4){const c=ttWishable();
+    if(c.length){const k=c[Math.floor(Math.random()*c.length)],T=WISH_T['t'+k];A.twish=day;state.wish={k:'t'+k,ev:T.ev,n:1,got:0,t:now,until:now+WISH_HOURS*36e5,res:k==='meet'?ttMeetPick():undefined};
+      saveSoon();updWish();wishEmote();toast(`${PN()} has a wish: ${wishText()}!`);ttHint();if(openTab==='pet')renderSheet();return}}}}}catch(e){console.warn('town wish',e)}return wt.apply(this,arguments)}}
+{const md=musDonate;musDonate=function(){const n0=Object.keys(state.museum||{}).length;const r=md.apply(this,arguments);try{if(Object.keys(state.museum||{}).length>n0)td('museum')}catch(_){}return r}}
+// neighbours with a job mention it the first time you talk (once, shared between your phones)
+const TT_INTRO={
+  beacon:"Evening, friend. If you ever want to fish, the dock past the boardwalk is the spot. Tap the water. Anything you don’t keep, I’ll buy for my shelf.",
+  posy:"Oh! Hello, hello. If you’d like a garden, I hand out seeds, a couple every day. And watch the flowers on the map. The bugs love them.",
+  book:"Hm. Welcome. The little museum takes one of every fish, bug and find. Bring them along and I’ll write the cards. Neatly.",
+  mayor:"Ahem! Welcome to town! Do look at the town project on the Neighbours page. Every button helps. Part three of this speech is simply thank you.",
+  parcel:"Parcel, post! Want to send a neighbour a present? Find them on the Neighbours page and I’ll carry it over. Free of charge.",
+  patch:"Hello there. If your little one ever feels off, come by for a check-up. Once a day, no charge, and I have heart plasters.",
+  cone:"Sweet pea! The first scoop’s on me, every day. Just say hello at the cart. Mind the twins.",
+  gramo:"...oh. Hello. If you’d like a song, just ask... I play one a day... the little one can dance, if it likes...",
+  cactus:"Hm. You look like someone with a joke. Tell me one some time. If I laugh, there might be something in it for you.",
+  cloud:"Oh, hi. Ask me about the weather any time. I’m usually right. Rain waters your garden for you, by the way."};
+function ttIntro(k){try{if(!TT_INTRO[k])return null;const A=state.acts||(state.acts={}),key='intro:'+k;if(A[key])return null;A[key]=lifeDay();saveSoon();return kFill(TT_INTRO[k])}catch(_){return null}}
+{const co=cvOpener;cvOpener=function(T){try{if(typeof cv!=='undefined'&&cv&&cv.k){const l=ttIntro(cv.k);if(l)return l}}catch(_){}return co.apply(this,arguments)}}
+{const sl=socialLine;socialLine=function(k){try{const l=ttIntro(k);if(l)return l}catch(_){}return sl.apply(this,arguments)}}
+// the card on the Neighbours page
+{const rt=renderTown;renderTown=function(body){const r=rt.apply(this,arguments);try{if(lifeTab==='people'&&state){const L=ttLeft();if(L.length){const done=TT.filter(q=>!L.includes(q));
+  const el=document.createElement('div');el.className='ttcard';el.innerHTML=`<h3>Things to try in town <small>${done.length} of ${TT.length}</small></h3>${L.slice(0,3).map(q=>`<div class="ttrow"><div><b>${esc(q[1])}</b><small>${esc(q[2])}</small></div><button class="gel pink tdgo" data-tt="${q[0]}">Go</button></div>`).join('')}${done.length?`<p class="ttdone">${done.map(q=>`<span>✓ ${esc(q[1])}</span>`).join('')}</p>`:''}`;
+  const tabs=body.querySelector('.lifetabs');if(tabs)tabs.after(el);else body.prepend(el);el.querySelectorAll('[data-tt]').forEach(b=>b.onclick=()=>ttGo(b.dataset.tt))}}}catch(e){console.warn('things to try',e)}return r}}
 /* </loop-fixes> */
 // civic places get a bigger name plaque than houses (the Town Hall's was hard to read from the map)
 TM_SIGN._place=(fg,L,k)=>{const p=TM_SIGN._house(fg,L,k);p.scale.multiplyScalar(1.6);p.position.y+=.12;return p};
@@ -70101,7 +70173,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><p class="coachgo">Start by tapping ${nm} to say hello.</p><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=124;
+const APP_V=125;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
