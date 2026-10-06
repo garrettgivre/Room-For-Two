@@ -66953,6 +66953,7 @@ const WHATSNEW=[[119,'For the two of you: notes to each other are kept safe, you
   [124,'Arcade: quitting with × keeps your score in every game, pinball is friendlier with short intros, and Drop lists what you won. Mochi stays in bed at night, learns a proper Roly-poly, and wishes no longer copy the daily list. The Wardrobe and studios have more room on small phones, and price stickers are coins instead of hearts.'],
   [125,'Now and then Mochi wishes for something out in town, like meeting a neighbour, catching a fish or planting the garden, and Go shows you the way. Neighbours with a job tell you about it the first time you chat, and Neighbours has a Things to try card.'],
   [126,'A yard of your own! Save up 3,000 buttons and Bolt at Hammer & Hue will build one behind your house. Decorate it with your own furniture, step outside with Mochi, and make it bigger later.'],
+  [127,'Furniture reacts now: seats and beds squish when Mochi sits and spring back after, things wobble when they’re used, and Mochi naps under a blanket that rises with its breathing. Getting up leaves the bed rumpled, and then Mochi makes it.'],
   [118,'Friendships go deeper: every neighbour has five more heart-to-hearts, sends a letter (and a gift) when you become best friends, and remembers what you talked about lately. More fixes from playtesting: town projects always appear on the map (the bouncy castle comes first now), the Journal keeps months, not days, taps on the noticeboard, museum and well work, and the back button closes photos and fishing.'],
   [117,'Fixes from playtesting: finished makeovers now pay out properly (they hadn’t been!), events at the library, Town Hall and weather station pay too, party guests spread out, Today’s list sits right under the bond bar, and your pet’s Journal has a page summing up the month so far. Plus a gentler welcome back, fewer day-one strangers, and lots of small things.'],
   [116,'Polish: keepsake letters read properly in the Bag, scrolling tab rows show there’s more, the plaza tiles are brighter, civic buildings have bigger name signs, and messages no longer pop over your pet while you dress it.'],
@@ -70142,6 +70143,45 @@ function yardTick(){let el=$('#yardbar');const on=!!(away&&away.key==='yard'&&!o
   if(el.hidden||!el.innerHTML){el.innerHTML=`<button class="gel lilac" id="ydE">Decorate the yard</button><button class="gel slime" id="ydIn">Go inside</button>${yardS().lv<3?'<button class="gel silver" id="ydB">Bigger?</button>':''}`;
     $('#ydE').onclick=()=>yardEdit();$('#ydIn').onclick=()=>travelTo('home');const bb=$('#ydB');if(bb)bb.onclick=()=>yardBuy()}el.hidden=false}
 setInterval(()=>{try{yardTick()}catch(e){}},500);
+// ---- furniture comes alive (v127): every piece reacts when the pet uses it, and beds get a blanket.
+// IL.sp: per item a squash spring (s,v) and a wobble spring (w,wv) applied to the item's root on top of its resting scale/tilt.
+// Seats and beds squish when the pet sits or lies and spring back when it gets up; things it uses wobble; bouncing on a bed bounces it.
+// Beds: napping puts the pet under a blanket that rises and falls with its breathing; getting up leaves the blanket in a heap at the
+// foot of the bed, and a little later the pet makes the bed (the heap smooths out and is folded away). Local only, nothing saved.
+const IL={sp:new Map(),bl:new Map()};
+function ilGet(id){let e=IL.sp.get(id);if(!e){e={s:0,v:0,w:0,wv:0,hold:0,ws:1};IL.sp.set(id,e)}return e}
+function ilKick(id,a,w){const e=ilGet(id);e.v+=a*14;if(w)e.wv+=w*10}
+function ilBase(o){const U=o.userData;if(!U.ilB)U.ilB={sx:o.scale.x,sy:o.scale.y,sz:o.scale.z,rx:o.rotation.x};return U.ilB}
+function ilCol(k){try{const d=CATMAP[k],S=d&&SETMAP[d.set],c=S&&S.c?parseInt(String(S.c).replace('#',''),16):0x9B4DF2,r=(c>>16)&255,g=(c>>8)&255,b=c&255,L=v=>Math.round(v+(255-v)*.3);return(L(r)<<16)|(L(g)<<8)|L(b)}catch(_){return 0xD9C6FF}}
+function ilBlanket(o,sp,k){const P=defOf(k).perch||{},top=(P.y||.7)+.01,bz=P.bz!=null?P.bz:-.8,feet=sp.z!=null?sp.z:.2,x=sp.x||0,front=(P.foot!=null?bz+P.foot:feet+.55)-.06,z0=bz+.5,hw=Math.max(.42,(P.w||.7)*.82);
+  const g=G(),m=M(ilCol(k),{roughness:.88});m.detail=1;
+  const quilt=new THREE.Mesh(new THREE.SphereGeometry(1,22,10),m);quilt.scale.set(hw,.12,(front-z0)/2);quilt.position.set(-x,.035,(front+z0)/2-((feet+.1+bz+.55)/2));quilt.castShadow=false;g.add(quilt);
+  const zc=(feet+.1+bz+.55)/2,hd=Math.max(.3,(feet+.1-(bz+.55))/2+.12),lump=new THREE.Mesh(new THREE.SphereGeometry(1,18,12),m);lump.scale.set(.56,.42,hd);lump.castShadow=false;g.add(lump);
+  const fold=new THREE.Mesh(new THREE.SphereGeometry(1,14,8),M(0xFFFFFF,{roughness:.9}));fold.scale.set(hw*.98,.07,.08);fold.position.set(-x,.06,z0-zc+.04);fold.castShadow=false;g.add(fold);
+  g.position.set(x,top,zc);o.add(g);return g}
+function ilHeap(o,sp,k){const P=defOf(k).perch||{},top=(P.y||.7)+.01,feet=sp.z!=null?sp.z:.2,x=sp.x||0,m=M(ilCol(k),{roughness:.88});m.detail=1;const g=G();
+  [[0,0,0,.42,.13,.22],[.22,.05,.08,.26,.12,.2],[-.2,.03,-.05,.24,.1,.18],[.05,.12,.02,.2,.09,.16]].forEach(([px,py,pz,a,b,c])=>{const q=new THREE.Mesh(new THREE.SphereGeometry(1,14,9),m);q.scale.set(a,b,c);q.position.set(px,py,pz);q.rotation.y=px*2;q.castShadow=false;g.add(q)});
+  g.position.set(x,top,feet+.05);o.add(g);return g}
+function ilDrop(g){try{if(g&&g.parent)g.parent.remove(g)}catch(_){}}
+{const sp0=startPerch;startPerch=function(sp){const r=sp0.apply(this,arguments);try{if(pet.mode==='perch'&&pet.seat===sp){const e=ilGet(sp.id);e.hold=sp.kind==='bed'?-.035:sp.kind==='ride'?0:-.025;ilKick(sp.id,sp.kind==='ride'?-.03:-.08,sp.kind==='sit'?.04:0);
+  const o=roomObjs().get(sp.id),B=IL.bl.get(sp.id);if(B){ilDrop(B.g);IL.bl.delete(sp.id)}if(o&&sp.kind==='bed'&&sp.nap&&!away)IL.bl.set(sp.id,{st:'sleep',g:ilBlanket(o,sp,o.userData.k),sp,t:0})}}catch(e){console.warn('item life perch',e)}return r}}
+{const ls=leaveSeatNow;leaveSeatNow=function(){const sp=pet.seat;const r=ls.apply(this,arguments);try{if(sp){const e=ilGet(sp.id);e.hold=0;ilKick(sp.id,.06,sp.kind==='sit'?-.03:0);
+  const B=IL.bl.get(sp.id),o=roomObjs().get(sp.id);if(B&&B.st==='sleep'){ilDrop(B.g);if(o){IL.bl.set(sp.id,{st:'heap',g:ilHeap(o,sp,o.userData.k),sp,t:0,at:performance.now()+6000+Math.random()*8000})}else IL.bl.delete(sp.id)}}}catch(e){console.warn('item life leave',e)}return r}}
+{const su=startUse;startUse=function(C){const r=su.apply(this,arguments);try{if(pet.use&&C&&C.it){const d=defOf(C.it.k)||{},N=needsOf(d)||{};ilKick(C.it.id,N.hunger?-.025:-.04,N.hunger||N.fun?.05:.025)}}catch(_){}return r}}
+{const eu=endUse;endUse=function(){const U=pet.use;const r=eu.apply(this,arguments);try{if(U)ilKick(U.id,.03,.02)}catch(_){}return r}}
+function ilTick(dt,t){dt=Math.min(dt,.05);const objs=roomObjs();try{if(pet.mode==='perch'&&pet.seat){const o=objs.get(pet.seat.id);if(o&&o.userData.use){IL.pt=(IL.pid===pet.seat.id?IL.pt||0:0)+dt;IL.pid=pet.seat.id;o.userData.use(IL.pt,Math.min(1,IL.pt/Math.max(4,pet.perchT||10)))}}else if(IL.pid){const o=objs.get(IL.pid);if(o&&o.userData.use)o.userData.use(-1,-1);IL.pid=null;IL.pt=0}}catch(_){}
+  if(!IL.sp.size&&!IL.bl.size)return;
+  for(const [id,e] of IL.sp){const o=objs.get(id);if(!o){IL.sp.delete(id);continue}const B=ilBase(o);let tgt=e.hold;
+    if(pet.mode==='perch'&&pet.seat&&pet.seat.id===id&&pet.seat.bounce)tgt+=-.05*Math.max(0,Math.sin(t*7.2));
+    e.v+=(-(e.s-tgt)*170-e.v*9)*dt;e.s+=e.v*dt;e.wv+=(-e.w*120-e.wv*6)*dt;e.w+=e.wv*dt;
+    const s=clamp(e.s,-.12,.08);o.scale.set(B.sx*(1-s*.45),B.sy*(1+s),B.sz*(1-s*.45));o.rotation.x=B.rx+clamp(e.w,-.08,.08);
+    if(Math.abs(e.s-tgt)<.0005&&Math.abs(e.v)<.001&&Math.abs(e.w)<.0005&&Math.abs(e.wv)<.001&&!e.hold){o.scale.set(B.sx,B.sy,B.sz);o.rotation.x=B.rx;IL.sp.delete(id)}}
+  for(const [id,B] of IL.bl){const o=objs.get(id);if(!o){IL.bl.delete(id);continue}if(B.g.parent!==o){ilDrop(B.g);IL.bl.delete(id);continue}B.t+=dt;const g=B.g;
+    if(B.st==='sleep'){const L=g.children[1],br=Math.sin(t*1.7);L.scale.y=.42*(1+.06*br);L.scale.x=.56*(1+.02*br)}
+    else if(B.st==='heap'){if(performance.now()>B.at&&!away&&pet.mode!=='perch'&&!(pet.seat&&pet.seat.id===id)){B.st='make';B.t=0;try{petAct('jiggle')}catch(_){}}}
+    else if(B.st==='make'){const p=Math.min(1,B.t/1.6);g.children.forEach((q,i)=>{q.position.x*=1-dt*2;q.position.z*=1-dt*2});g.scale.set(1+p*.9,Math.max(.05,1-p*.95),1+p*.2);if(p>=1){ilDrop(g);IL.bl.delete(id)}}}}
+{const up=updatePet;updatePet=function(dt,t){const r=up.apply(this,arguments);try{ilTick(dt,t)}catch(e){console.warn('item life',e)}return r}}
+{const tt=travelTo;travelTo=function(){try{for(const [id,B] of IL.bl)ilDrop(B.g);IL.bl.clear();for(const [id] of IL.sp){const o=roomObjs().get(id);if(o&&o.userData.ilB){const B=o.userData.ilB;o.scale.set(B.sx,B.sy,B.sz);o.rotation.x=B.rx}}IL.sp.clear()}catch(_){}return tt.apply(this,arguments)}}
 /* </loop-fixes> */
 // civic places get a bigger name plaque than houses (the Town Hall's was hard to read from the map)
 TM_SIGN._place=(fg,L,k)=>{const p=TM_SIGN._house(fg,L,k);p.scale.multiplyScalar(1.6);p.position.y+=.12;return p};
@@ -70236,7 +70276,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><p class="coachgo">Start by tapping ${nm} to say hello.</p><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=126;
+const APP_V=127;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

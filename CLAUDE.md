@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v126** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v126'` in `sw.js`; bump both for anything
+**Current build: v127** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v127'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1338,3 +1338,19 @@ Garrett chose a yard (over a second room or room upgrades), bought then grown. B
   in the yard a top bar `#yardbar` (Decorate the yard / Go inside / Bigger?).
 - Not yet: the pet using furniture in the yard (shops have no autonomy), weather/seasons on the lawn, the yard on the map behind the
   cottage.
+
+## Furniture comes alive (v127, phase 1 and 2 of 3)
+Garrett: "make the items themselves a bit less static" (beds' blankets move, the bed gets made after getting out...). Block at the
+end of `/* <loop-fixes> */`, `IL`.
+- **Reactions for every piece**: `IL.sp` per item = a squash spring and a wobble spring applied to the item's root object on top of its
+  resting scale/tilt (`ilBase` remembers it in `userData.ilB`; the entry is dropped and the pose restored when it settles). Kicks from
+  wrappers: `startPerch` (squish, held while seated/lying), `leaveSeatNow` (spring back), `startUse`/`endUse` (wobble). Bouncing on a
+  bed bounces it. `ilTick` runs after `updatePet`; `travelTo` resets everything.
+- **Perched pieces run their `userData.use(t,p)`** while the pet sits/lies/rides (before v127 only standing uses called it), and
+  `use(-1,-1)` when it gets up.
+- **Beds** (`IL.bl`): a nap on a bed puts the pet under a blanket (`ilBlanket`: a quilt over the lower bed, a lump over the pet's body,
+  a white fold; colour = the set's colour lightened, `ilCol`) that breathes; getting up swaps it for a rumpled heap (`ilHeap`), and
+  6-14 s later the pet gives a shake and the heap smooths out and is folded away (the bed is made). Local only.
+- **Phase 3 (per-piece moving parts)**: brief `tools/dev/town/ANIM_BRIEF.md`, agents write `.claude/anim/<setkey>.js`
+  (`Object.assign(BUILD,{...})` overrides with pivots + `userData.use`), preview with `tools/dev/town/aview.js` (rest, three use frames,
+  after; prints `movedNodes`). They get inserted as a `/* <anim-sets> */` block just before `/* </loop-fixes> */`.
