@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v130** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v130'` in `sw.js`; bump both for anything
+**Current build: v131** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v131'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1370,3 +1370,9 @@ end of `/* <loop-fixes> */`, `IL`.
   pieces with `use` now; building all 430 pieces of those sets: 5,202 → 6,183 meshes. Pieces with continuous motion do their in-use
   motion inside `anim`, eased by a value `use` sets. carnival.js has `K.fuse` (merge meshes sharing an animated material by hand,
   since bakeStatic never merges a mesh whose material changes) and `K.chase` (chasing bulbs in 2-3 shared materials).
+- v131, per-piece animations done: the 32 resident sets, 6 civic place sets and 11 theme sets. All 86 furniture sets: 908 of 971
+  pieces have `userData.use` (rugs, plain decor and a few with their own motion left as they were). Building every piece: 10,897 →
+  12,627 meshes (+16%). Helpers worth reusing: `K.fuse` (carnival.js) / `fuseW` (thanami.js) merge meshes that share an animated
+  material (a material change stops bakeStatic merging, e.g. the blossom lamp went 7 → 115 meshes until fused); changing emissive on
+  a material shared across a subtree unmerges that whole subtree. Resident/place/theme files keep helper scripts and child dumps in
+  `.claude/anim/x/` (gitignored). If a builder changes, re-check that set's override with `.claude/anim/dump.js`.
