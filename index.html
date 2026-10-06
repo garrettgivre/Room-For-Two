@@ -1502,7 +1502,7 @@ class WebGLRenderer{
     if(!gl)throw new Error('This device or browser does not support WebGL2, which the 3D room needs.');
     this.gl=gl;this.pixelRatio=1;this.shadowMap={enabled:false,type:0};this.outputEncoding=3000;this.bg={c1:[.29,.16,.47],c2:[.69,.28,.49],c3:[.14,.27,.25],pat:null,img:null};this._initGL()}
   // every GPU object is (re)made here; geometry and texture uploads live in the two caches and redo themselves lazily
-  _initGL(){const gl=this.gl;this._vao=new WeakMap();this._tex=new WeakMap();this._shadowSize=0;this.shadowTex=null;this.shadowFbo=null;this._T=null;this._tw=0;this._th=0;
+  _initGL(){const gl=this.gl;this._vlist=new Set();this._vao=new WeakMap();this._tex=new WeakMap();this._shadowSize=0;this.shadowTex=null;this.shadowFbo=null;this._T=null;this._tw=0;this._th=0;
     const mk=(vs,fs)=>{const p=gl.createProgram();for(const [t,s] of [[gl.VERTEX_SHADER,vs],[gl.FRAGMENT_SHADER,fs]]){const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw new Error('Shader: '+gl.getShaderInfoLog(sh));gl.attachShader(p,sh)}
       gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw new Error('Link: '+gl.getProgramInfoLog(p));const u={};const n=gl.getProgramParameter(p,gl.ACTIVE_UNIFORMS);for(let i=0;i<n;i++){const a=gl.getActiveUniform(p,i);u[a.name]=gl.getUniformLocation(p,a.name)}
       return{p,u:new Proxy(u,{get:(t,k)=>k in t?t[k]:null})}};
@@ -1522,7 +1522,7 @@ class WebGLRenderer{
   setBackground(c1,c2,c3,patImg){this.bg.c1=c1;this.bg.c2=c2;this.bg.c3=c3;if(patImg){if(this.bg.pat)this.disposeTexture(this.bg.pat);const t=new CanvasTexture(patImg);t.wrapS=t.wrapT=1000;this.bg.pat=t}}
   setBackdrop(t,t2,m){this.bg.img=t;this.bg.img2=t2||null;this.bg.mix=t2?m:0}
   dispose(){}
-  disposeGeometry(g){const e=this._vao&&this._vao.get(g);if(!e)return;const gl=this.gl;try{gl.deleteVertexArray(e.vao);e.bufs.forEach(b=>gl.deleteBuffer(b))}catch(_){}this._vao.delete(g)}
+  disposeGeometry(g){const e=this._vao&&this._vao.get(g);if(!e)return;const gl=this.gl;try{gl.deleteVertexArray(e.vao);e.bufs.forEach(b=>gl.deleteBuffer(b))}catch(_){}this._vao.delete(g);if(this._vlist)this._vlist.delete(g)}
   forceContextLoss(){const e=this.gl.getExtension('WEBGL_lose_context');e&&e.loseContext()}
   disposeTexture(t){const e=this._tex.get(t);if(e){this.gl.deleteTexture(e);this._tex.delete(t)}}
   _ensureShadow(size){const gl=this.gl;if(this._shadowSize===size)return;if(this.shadowTex)gl.deleteTexture(this.shadowTex);
@@ -1550,7 +1550,7 @@ class WebGLRenderer{
     const vao=gl.createVertexArray();gl.bindVertexArray(vao);const bufs=[];[[g.pos,3],[g.nrm,3],[g.uv,2],[g.dyn?g.nrm:(g._sn&&g._sn.length===g.nrm.length?g._sn:(g._sn=smoothNormals(g))),3]].forEach(([d,n],i)=>{const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,d,g.dyn?gl.DYNAMIC_DRAW:gl.STATIC_DRAW);gl.enableVertexAttribArray(i);gl.vertexAttribPointer(i,n,gl.FLOAT,false,0,0);bufs.push(b)});
     let cb=null;if(g.col){cb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,cb);gl.bufferData(gl.ARRAY_BUFFER,g.col,gl.STATIC_DRAW);gl.enableVertexAttribArray(4);gl.vertexAttribPointer(4,3,gl.FLOAT,false,0,0)}
     const ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,g.idx,gl.STATIC_DRAW);bufs.push(ib);if(cb)bufs.push(cb);gl.bindVertexArray(null);
-    e={vao,bufs,n:g.idx.length,type:g.idx instanceof Uint32Array?gl.UNSIGNED_INT:gl.UNSIGNED_SHORT,v:g.version,nv:g.pos.length};this._vao.set(g,e);return e}
+    e={vao,bufs,n:g.idx.length,type:g.idx instanceof Uint32Array?gl.UNSIGNED_INT:gl.UNSIGNED_SHORT,v:g.version,nv:g.pos.length};this._vao.set(g,e);(this._vlist||(this._vlist=new Set())).add(g);return e}
   _texture(t,env){const gl=this.gl;let e=this._tex.get(t);if(e)return e;e=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,e);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
     gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,t.image);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);gl.generateMipmap(gl.TEXTURE_2D);
     const rep=env||t.wrapS===1000;gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,rep?gl.REPEAT:gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,!env&&t.wrapT===1000?gl.REPEAT:gl.CLAMP_TO_EDGE);
@@ -36183,9 +36183,9 @@ function twPetPose(dt,t,mv){const R=pet.rig;if(!R||!tw.pet)return;const k=m=>Mat
 function twPlan(k){const R=RESIDENTS[k],h=townHour(),w=resWhere(k),hm=houseOf(k),home=hm&&SHOPS['h_'+hm]?'h_'+hm:null,soon=resWhere(k,h+.2);
   if(w==='market'){const st=twStallOf(k);if(st)return{mode:'stall',pos:st.pos,ry:st.ry};return{mode:'rounds',area:'town'}}
   if(w==='out')return{mode:'rounds',area:hm?HOUSES[hm].hood:'town',near:RES_NEAR[k]?twNearOf(RES_NEAR[k]):null};
-  const at_=x=>x==='shop'?R.shop:x==='place'?(placeOf(k)?'p_'+placeOf(k).id:null):x==='home'?home:null;
+  const at_=(x,hh)=>x==='shop'?R.shop:x==='place'?(placeOf(k)?'p_'+placeOf(k).id:null):x==='home'?home:x==='visit'?(()=>{try{const v=shopVisitOf(k,hh??h);return v&&SHOPS[v]?v:null}catch(_){return null}})():null;
   if(w!=='event'&&soon==='event'){const E=eventNow(h+.2);if(E)return{mode:'go',to:evAt(E),from:at_(w)||home}}
-  if(w!==soon&&at_(w)&&at_(soon))return{mode:'go',from:at_(w),to:at_(soon)};
+  if(w!==soon&&at_(w)&&at_(soon,h+.2)&&at_(w)!==at_(soon,h+.2))return{mode:'go',from:at_(w),to:at_(soon,h+.2)};
   if(w==='home'&&home){const r=jrRand('stroll|'+lifeDay()+'|'+Math.floor(h)+'|'+k)();if(r<.22)return{mode:'stroll',near:home}}
   if(w==='event'){const E=eventNow();if(E)return{mode:'mingle',at:evAt(E)}}
   return null}
@@ -66921,6 +66921,7 @@ const WHATSNEW=[[119,'For the two of you: notes to each other are kept safe, you
   [120,'Words read better everywhere: “a UFO lamp”, “some fairy lights”, the rooms you design have proper names, and letters start with capitals. Quitting pinball keeps your score, bigger tap areas on small buttons, and clearer button labels.'],
   [121,'Mochi doesn’t get so hungry and grubby while you’re away, room gifts have a button that takes you straight to Decorate, the Menu badge stops at 9+, and notes from your person wait until you’re back from town.'],
   [122,'Fixes from a big round of playtests: a makeover theme bonus no longer breaks that room or the house, Later keeps your makeover design, the Designs editor scrolls on a phone, tapping past the edge of town no longer freezes the map, guests spread out at events, and more words read naturally.'],
+  [123,'Neighbours now walk to the friends and shops they visit, noticeboards offer a few fresh favours each week instead of repeating, the back button closes the museum and little cards first, and the game frees memory it no longer needs, which should help on long evenings.'],
   [118,'Friendships go deeper: every neighbour has five more heart-to-hearts, sends a letter (and a gift) when you become best friends, and remembers what you talked about lately. More fixes from playtesting: town projects always appear on the map (the bouncy castle comes first now), the Journal keeps months, not days, taps on the noticeboard, museum and well work, and the back button closes photos and fishing.'],
   [117,'Fixes from playtesting: finished makeovers now pay out properly (they hadn’t been!), events at the library, Town Hall and weather station pay too, party guests spread out, Today’s list sits right under the bond bar, and your pet’s Journal has a page summing up the month so far. Plus a gentler welcome back, fewer day-one strangers, and lots of small things.'],
   [116,'Polish: keepsake letters read properly in the Bag, scrolling tab rows show there’s more, the plaza tiles are brighter, civic buildings have bigger name signs, and messages no longer pop over your pet while you dress it.'],
@@ -67011,7 +67012,7 @@ function bugCatch(b){let el=$('#bugv');if(!el){el=document.createElement('div');
     const x=cv.getContext('2d'),cx=W/2,cy=H*.46,R0=Math.min(W,H)*.36,k=(S.t%2.2)/2.2,R=R0*(1-k)+12,ok=R<R0*.36&&R>R0*.08;x.clearRect(0,0,W,H);
     x.fillStyle='rgba(255,255,255,.45)';x.beginPath();x.arc(cx,cy,R0*.2,0,7);x.fill();x.strokeStyle='#A6E22E';x.lineWidth=R0*.1;x.globalAlpha=.4;x.beginPath();x.arc(cx,cy,R0*.21,0,7);x.stroke();x.globalAlpha=1;
     x.strokeStyle=ok?'#A6E22E':'#FF3D9A';x.lineWidth=8;x.beginPath();x.arc(cx,cy,R,0,7);x.stroke();x.font=`${Math.round(R0*.18)}px "R42 Bubble",sans-serif`;x.textAlign='center';x.lineWidth=6;x.strokeStyle='#3B1273';x.strokeText(b.B.n,cx,cy+R0*1.2);x.fillStyle='#FFFFFF';x.fillText(b.B.n,cx,cy+R0*1.2);
-    S.ok=ok;if(S.t>6.6){S.done=true;el.hidden=true;bugFlee(b,'It got bored and flew off.');return}requestAnimationFrame(tick)};
+    S.ok=ok;if(el.hidden){S.done=true;return}if(S.t>6.6){S.done=true;el.hidden=true;bugFlee(b,'It got bored and flew off.');return}requestAnimationFrame(tick)};
   el.onpointerdown=e=>{if(S.done)return;S.done=true;el.hidden=true;if(S.ok)bugGot(b);else bugFlee(b,'Too early! It got away.')};requestAnimationFrame(tick)}
 function bugFlee(b,msg){tm.world.remove(b.g);BG.list=BG.list.filter(q=>q!==b);toast(msg,true);try{SFX.sad()}catch(_){}}
 function bugGot(b){tm.world.remove(b.g);BG.list=BG.list.filter(q=>q!==b);const B=b.B,r=treasureGet(B.id,true);try{SFX.chime()}catch(_){}try{firstOf('bug',`Our first bug: ${nmLow(B.n)}.`)}catch(_){}td('bug');saveSoon();
@@ -69775,11 +69776,11 @@ function moodCheer(k,how){if(resMood(k)!=='grumpy'||moodCheered(k)||!RESIDENTS[k
 // thing (a marker on the map near the place) and talk to them; visit = talk to the other resident, then back to them; deliver = talk to
 // the other resident. Rewards: buttons, a treasure, or a piece of furniture; their thanks arrives as a letter.
 const NQ_MAX=2,NQ_PER=3;
-function nqState(){const Q=state.nq&&typeof state.nq==='object'?state.nq:(state.nq={list:[],done:[]});if(!Array.isArray(Q.list))Q.list=[];if(!Array.isArray(Q.done))Q.done=[];return Q}
+function nqState(){const Q=state.nq&&typeof state.nq==='object'?state.nq:(state.nq={list:[],done:[]});if(!Array.isArray(Q.list))Q.list=[];if(!Array.isArray(Q.done))Q.done=[];if(!Q.dw||typeof Q.dw!=='object')Q.dw={};return Q}
 const nqId=(h,i)=>h+':'+i,nqWeek=()=>Math.floor((Date.parse(lifeDay()+'T12:00:00Z')/864e5+3)/7);
 function nqBoard(h){const L=(NOTICES[h]||[]).map((n,i)=>Object.assign({i,id:nqId(h,i),hood:h},n)).filter(n=>RESIDENTS[n.by]&&(!n.q||!n.q.to||RESIDENTS[n.q.to])),Q=nqState(),R=jrRand('nq|'+(roomCode||'solo')+'|'+nqWeek()+'|'+h);
   if(L.filter(n=>n.q).every(n=>Q.done.includes(n.id))){Q.done=Q.done.filter(id=>!id.startsWith(h+':'))}
-  const pool=L.filter(n=>!Q.done.includes(n.id)),out=[],fav=pool.filter(n=>n.q),pl=pool.filter(n=>!n.q);
+  const wk=nqWeek(),doneWk=Object.keys(Q.dw).filter(id=>id.startsWith(h+':')&&Q.dw[id]===wk).length,pool=L.filter(n=>!Q.done.includes(n.id)),out=[],fav=doneWk>=3?[]:pool.filter(n=>n.q),pl=pool.filter(n=>!n.q);
   [fav,fav,pl].forEach(src=>{if(!src.length)return;const c=src.filter(n=>!out.includes(n));if(c.length)out.push(c[Math.floor(R()*c.length)])});
   Q.list.filter(x=>x.hood===h).forEach(x=>{const n=L.find(q=>q.id===x.id);if(n&&!out.includes(n))out.unshift(n)});return out.slice(0,NQ_PER+1)}
 function nqActive(id){return nqState().list.find(x=>x.id===id)}
@@ -69787,7 +69788,7 @@ function nqNote(id){const [h,i]=id.split(':');const n=(NOTICES[h]||[])[+i];retur
 function nqTake(id){const Q=nqState();if(nqActive(id)||Q.done.includes(id))return;if(Q.list.length>=NQ_MAX){toast(`You’re already helping with ${NQ_MAX}. Finish one first.`,true);return}const n=nqNote(id);if(!n||!n.q)return;
   Q.list.push({id,hood:n.hood,step:0,t:Date.now()});saveSoon();const R=RESIDENTS[n.by];toast(n.q.k==='find'?`Look for it ${nqPlaceName(n.q.at)}. It’s marked on the map.`:n.q.k==='bring'?`Bring ${R.n} ${nqNeedName(n.q.need)}.`:n.q.k==='deliver'?`Take it to ${RESIDENTS[n.q.to].n}.`:`Go and see ${RESIDENTS[n.q.to].n}, then tell ${R.n}.`,true);try{tw.gkey&&0}catch(_){}renderSheet()}
 function nqDrop(id){const Q=nqState();Q.list=Q.list.filter(x=>x.id!==id);saveSoon();renderSheet()}
-function nqDone(id){const Q=nqState(),n=nqNote(id);Q.list=Q.list.filter(x=>x.id!==id);if(!Q.done.includes(id))Q.done.push(id);if(!n)return;const R=RESIDENTS[n.by];let gift='';
+function nqDone(id){const Q=nqState(),n=nqNote(id);Q.list=Q.list.filter(x=>x.id!==id);if(!Q.done.includes(id))Q.done.push(id);Q.dw[id]=nqWeek();if(!n)return;const R=RESIDENTS[n.by];let gift='';
   if(n.reward==='treasure'){const pool=TREASURES.filter(t=>(t.col==='shore'||t.col==='trail')&&!t.fish&&!t.bug),t=pool[Math.floor(Math.random()*pool.length)];if(t){treasureGet(t.id,true);gift=aOf(t.n)}}
   else if(n.reward==='furniture'){const pool=CAT.filter(c=>!c.gacha&&c.p>0&&c.p<=4&&!c.k.startsWith('win_')),c=pool[Math.floor(Math.random()*pool.length)];if(c){state.fown[c.k]=(state.fown[c.k]||0)+1;gift=c.n.toLowerCase()}}
   const b=(n.reward==='buttons'?15:6)*BTN;state.btn=(state.btn|0)+b;kfAdd(n.by,3);logEvent(`helped ${R.n} with a note from the noticeboard`);
@@ -69828,7 +69829,7 @@ function nqOpen(hood){nqHood=hood&&HOODS[hood]?hood:null;lifeTab='notice';try{cl
 // tapping a noticeboard on the map opens its neighbourhood's notes
 {const tt=twTap;twTap=function(cx,cy){try{if(tm.decor){tmCell(cx,cy);const hs=tm.ray.intersectObjects([tm.decor],true);for(const h of hs){let o=h.object;while(o&&o!==tm.world&&o.userData.td==null)o=o.parent;const q=o&&o.userData.td!=null&&tmM().d[o.userData.td];
   if(q&&q[0]==='noticeboard'){const [x_,z_]=twPos(q[1],q[2]),d=plDistrictOf(x_,z_);const P=tw.pet,a=Math.atan2(P.x-x_,P.z-z_);twWalk(x_+Math.sin(a)*1.2,z_+Math.cos(a)*1.2,()=>nqOpen(HOODS[d]?d:null));return}}}}catch(e){console.warn('nq tap',e)}return tt.apply(this,arguments)}}
-Object.assign(MERGE,{nq:(l,r,b)=>{l=l||{};r=r||{};const done=[...new Set([...(l.done||[]),...(r.done||[])])],L=new Map();[...(r.list||[]),...(l.list||[])].forEach(x=>{if(x&&!done.includes(x.id)){const o=L.get(x.id);L.set(x.id,o&&(o.step|0)>(x.step|0)?o:x)}});return{list:[...L.values()].slice(0,NQ_MAX+1),done}}});
+Object.assign(MERGE,{nq:(l,r,b)=>{l=l||{};r=r||{};const done=[...new Set([...(l.done||[]),...(r.done||[])])],L=new Map();[...(r.list||[]),...(l.list||[])].forEach(x=>{if(x&&!done.includes(x.id)){const o=L.get(x.id);L.set(x.id,o&&(o.step|0)>(x.step|0)?o:x)}});return{list:[...L.values()].slice(0,NQ_MAX+1),done,dw:Object.assign({},r.dw||{},l.dw||{})}}});
 /* </noticeboard> */
 /* <pet-cam> */
 // ---- pet reactions and camera niceties (v114).
@@ -69923,6 +69924,8 @@ const jrLastK={};{const je=jrEvent;jrEvent=function(k){const now=Date.now();if(n
   if(typeof PH!=='undefined'&&PH.on){phClose();return true}
   if(typeof FI!=='undefined'&&FI){fishEnd();return true}
   const bv=$('#bugv');if(bv&&!bv.hidden){bv.hidden=true;return true}
+  const mv=$('#musv');if(mv&&!mv.hidden){mv.hidden=true;return true}
+  const db=$('#dlyBox');if(db&&!db.hidden&&db.style.display!=='none'){db.hidden=true;return true}
   }catch(e){console.warn('back',e)}return ba.apply(this,arguments)}}
 {const tc=tmClose;tmClose=function(){try{if(typeof cv!=='undefined'&&cv)cvEnd()}catch(_){}return tc.apply(this,arguments)}}
 {const tt=travelTo;travelTo=function(){try{closeWheel();if(typeof cv!=='undefined'&&cv)cvEnd();if(pet.mode==='held')petDrop()}catch(_){}return tt.apply(this,arguments)}}
@@ -69977,6 +69980,15 @@ function decoOpen(view,page){if(away){travelTo('home',()=>decoOpen(view,page));r
 // ---- makeover rooms saved while the theme flag overwrote their walls (v122): keep the flag, drop the bad walls
 function mkRepairRooms(){try{const R=state&&state.mk&&state.mk.rooms;if(!R)return;for(const k in R)for(const i in R[k]){const r=R[k][i];if(r&&r.tw!=null&&!Array.isArray(r.tw)){if(r.tw===1)r.twOk=1;delete r.tw}}}catch(e){console.warn('mk repair',e)}}
 {const n0=normalize;normalize=function(){const r=n0.apply(this,arguments);try{const R=r&&r.mk&&r.mk.rooms;if(R)for(const k in R)for(const i in R[k]){const x=R[k][i];if(x&&x.tw!=null&&!Array.isArray(x.tw)){if(x.tw===1)x.twOk=1;delete x.tw}}}catch(_){}return r}}
+// ---- overlays never outlive a trip or the map closing; old GPU buffers are freed (v123)
+function ovClose(){try{if(typeof PH!=='undefined'&&PH.on)phClose()}catch(_){}try{if(typeof FI!=='undefined'&&FI)fishEnd()}catch(_){}try{const b=$('#bugv');if(b)b.hidden=true;const m=$('#musv');if(m)m.hidden=true}catch(_){}}
+{const tt=travelTo;travelTo=function(){ovClose();return tt.apply(this,arguments)}}
+{const tc=tmClose;tmClose=function(){try{if(typeof FI!=='undefined'&&FI)fishEnd();const b=$('#bugv');if(b)b.hidden=true;const m=$('#musv');if(m)m.hidden=true}catch(_){}return tc.apply(this,arguments)}}
+function gpuSweep(R,roots){if(!R||!R._vlist||!R._vlist.size)return 0;const live=new Set();roots.forEach(r=>{if(r&&r.traverse)r.traverse(o=>{if(o.geometry)live.add(o.geometry)})});let n=0;for(const g of [...R._vlist])if(!live.has(g)){R.disposeGeometry(g);n++}return n}
+setInterval(()=>{try{if(!ready||document.hidden)return;const tr=$('#travel');if(tr&&!tr.hidden&&tr.classList.contains('on'))return;
+  if(typeof tm==='undefined'||!tm||!tm.open)gpuSweep(renderer,[scene]);
+  if(typeof gpR!=='undefined'&&gpR&&$('#game').hidden)gpuSweep(gpR,[gpSc]);
+  if(typeof tm!=='undefined'&&tm&&tm.R&&tm.sc&&!tm.open)gpuSweep(tm.R,[tm.sc])}catch(e){console.warn('gpu sweep',e)}},45000);
 /* </loop-fixes> */
 // civic places get a bigger name plaque than houses (the Town Hall's was hard to read from the map)
 TM_SIGN._place=(fg,L,k)=>{const p=TM_SIGN._house(fg,L,k);p.scale.multiplyScalar(1.6);p.position.y+=.12;return p};
@@ -70071,7 +70083,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><p class="coachgo">Start by tapping ${nm} to say hello.</p><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=122;
+const APP_V=123;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

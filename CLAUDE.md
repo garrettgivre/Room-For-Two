@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v122** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v122'` in `sw.js`; bump both for anything
+**Current build: v123** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v123'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1268,6 +1268,13 @@ Agents: retest of v120/v121 text, Beau's decorating side with real taps, two wee
   card's "Place it" matches the escaped apostrophe; noticeboard thanks fill `{me}`; with no name set, `{me}` reads "friend";
   holiday letters don't repeat the greeting; Journal event lines go through `capSent`; letters from Prickles and the twins don't
   end "back to work"; days of the week are capitalised; the Inbox trims to 150.
-Known, not fixed: residents visiting friends don't walk there on the map (`twPlan` has no 'visit' case); a boss can show behind the
-counter while also elsewhere when their assistant is away; noticeboard favours repeat within about a week; new furniture can land
+Known, not fixed: a boss can show behind the
+counter while also elsewhere when their assistant is away; new furniture can land
 under the Decorate sheet; moving the door can land on a window.
+- v123: `twPlan`'s `at_(x,hh)` knows 'visit' (`shopVisitOf`), so residents walk to friends' houses and shops they visit; noticeboards
+  give at most 3 favours per neighbourhood per week (`state.nq.dw` {id: week done}, merged as a union); `backAct` closes `#musv` and
+  `#dlyBox` before the map; the bug ring's tick stops when hidden; `travelTo`/`tmClose` close photo mode, fishing, the bug ring and the
+  museum (`ovClose`). **GPU memory**: renderers keep `_vlist` (a Set of uploaded geometries, alongside the `_vao` WeakMap) and
+  `gpuSweep(R,roots)` every 45 s disposes buffers of geometries no longer in that renderer's scene (main when the map is closed, the
+  arcade renderer when no game is open, the map renderer when closed). Before, they waited for garbage collection (the long-session
+  run saw ~19k VAOs and ~97k buffers after 15 loops).
