@@ -996,6 +996,8 @@ body.styling .storechip{opacity:0}
 .kbub{background:color-mix(in oklab,var(--kc,#FF8A1C) 18%,#FBFCFF)!important;border:3px solid color-mix(in oklab,var(--kc,#FF8A1C) 40%,#FFFFFF)!important;border-radius:26px!important;box-shadow:0 4px 0 rgba(59,18,115,.16)!important;padding:13px 18px 12px!important;color:#2E2A5C;font-family:var(--disp)}
 .kbub .tl{background:color-mix(in oklab,var(--kc,#FF8A1C) 18%,#FBFCFF)!important;border-color:color-mix(in oklab,var(--kc,#FF8A1C) 40%,#FFFFFF)!important}
 .kbub .kn{background:color-mix(in oklab,var(--kc,#FF8A1C) 40%,#FFFFFF)!important;border:2px solid #fff!important;color:#2E2A5C!important;text-shadow:none!important;border-radius:999px!important;padding:2px 16px 3px!important;transform:rotate(-1.5deg)}
+#pfHud{position:fixed;left:8px;top:calc(env(safe-area-inset-top,0px) + 92px);z-index:60;display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:6px 9px;border:2px solid var(--ink);border-radius:12px;background:rgba(255,255,255,.88);color:var(--ink);font-family:var(--disp);font-size:11px;line-height:1.25;text-align:left;max-width:200px;box-shadow:0 2px 0 var(--ink)}
+#pfHud b{font-size:15px;color:#2E9E3E}#pfHud b.meh{color:#E08A00}#pfHud b.bad{color:#E0245E}#pfHud i{font-style:normal;opacity:.55;font-size:10px}.pfpre{font-family:var(--disp);font-size:12px;white-space:pre-wrap;text-align:left}
 </style>
 </head>
 <body>
@@ -64502,7 +64504,8 @@ function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS
 /* </swapface> */
 /* <whatsnew> */
 // ---- a one-time card per device listing what's new since the last version this phone saw (localStorage r42wn)
-const WHATSNEW=[[105,'Changes to the town now stay put. A bug was quietly resetting the town layout every time the app opened: your Edit town changes, the fishing dock, the museum and finished projects. Finished projects come back on the map. The map also opens faster at the start of each visit.'],
+const WHATSNEW=[[106,'When you both change the room or the town at the same time, both of your changes now stick (before, one phone could undo the other). New: a speed readout in Debug that shows how smooth the game is running; tap it to copy the numbers.'],
+  [105,'Changes to the town now stay put. A bug was quietly resetting the town layout every time the app opened: your Edit town changes, the fishing dock, the museum and finished projects. Finished projects come back on the map. The map also opens faster at the start of each visit.'],
   [104,'The map opens much faster, from home and from inside shops, and tapping Explore again while it opens no longer closes it.'],
   [103,'Visitors: only neighbours you’ve already met come knocking now, and they talk in speech bubbles over their head. Your pet walks over to say hi; tap them to chat, and they wave goodbye when they go.'],
   [101,'The garden grows with your bond: a new planter every three bond levels, up to eight. New seeds: potatoes, and a pumpkin vine that grows a pumpkin pouf.'],
@@ -64520,6 +64523,37 @@ const WHATSNEW=[[105,'Changes to the town now stay put. A bug was quietly resett
 function whatsNew(){let seen=0;try{seen=+localStorage.getItem('r42wn')||0}catch(_){}try{localStorage.setItem('r42wn',String(APP_V))}catch(_){}if(!seen||seen>=APP_V)return;const L=WHATSNEW.filter(q=>q[0]>seen);if(!L.length)return;
   showReward('What’s new','emo-star',`<ul class="wnl">${L.map(q=>`<li>${esc(q[1])}</li>`).join('')}</ul>`,{ok:'Let’s see!'})}
 /* </whatsnew> */
+/* <perfhud> */
+// ---- speed readout (v106): Debug > Speed readout. A small overlay with the live frame rate, the worst frame, draw calls and resolution,
+// and measured times for app load, the last map open and the last trip indoors. Tap it to copy everything as text (for the chat).
+// Per device (localStorage r42perf). Measurements: showMap and travelTo are wrapped; a rAF loop watches for the map to land / travel to end.
+const PF={on:false,fr:[],last:0,worst:[],hitch:[],load:null,map:null,mapSync:null,mapT0:0,mapWait:false,trav:null,travT0:0,travTo:'',travWait:false,log:[],el:null};
+try{PF.on=localStorage.r42perf==='1'}catch(_){}
+function pfNote(k,ms,what){const v=Math.round(ms);PF.log.unshift(`${k} ${v} ms${what?' ('+what+')':''}`);PF.log.length=Math.min(PF.log.length,8);return v}
+{const sm=showMap;showMap=function(){const t=performance.now(),wasOpen=!!(tm&&tm.open);const r=sm.apply(this,arguments);if(!wasOpen){PF.mapSync=Math.round(performance.now()-t);if(!PF.mapWait){PF.mapT0=PF.tapT||t;PF.mapWait=true}}PF.tapT=0;return r}}
+$('#dkExplore').addEventListener('click',()=>{PF.tapT=performance.now()},true);
+{const tt=travelTo;travelTo=function(dest){const was=traveling;const r=tt.apply(this,arguments);if(!was&&traveling){PF.travT0=performance.now();PF.travTo=dest;PF.travWait=true}return r}}
+function pfTick(now){requestAnimationFrame(pfTick);const dt=PF.last?now-PF.last:16;PF.last=now;
+  if(PF.load==null&&typeof ready!=='undefined'&&ready)PF.load=pfNote('app ready',now);
+  if(PF.mapWait&&tm&&tm.open&&!$('#tmPop').classList.contains('gen')){PF.mapWait=false;PF.map=pfNote('map open',now-PF.mapT0,(PF.mapSync!=null?PF.mapSync+' ms blocked':''))}
+  if(PF.mapWait&&!(tm&&tm.open))PF.mapWait=false;
+  if(PF.travWait&&!traveling){PF.travWait=false;PF.trav=pfNote('trip',now-PF.travT0,PF.travTo==='home'?'home':((SHOPS[PF.travTo]||{}).n||PF.travTo))}
+  if(!PF.on||document.hidden)return;
+  PF.fr.push(dt);if(PF.fr.length>60)PF.fr.shift();PF.worst.push([now,dt]);PF.worst=PF.worst.filter(q=>now-q[0]<5000);if(dt>100)PF.hitch.push(now);PF.hitch=PF.hitch.filter(t=>now-t<60000);
+  if(!PF.el||now-(PF.drawT||0)<250)return;PF.drawT=now;const avg=PF.fr.reduce((a,b)=>a+b,0)/PF.fr.length,fps=Math.round(1000/Math.max(1,avg)),w=Math.round(Math.max(...PF.worst.map(q=>q[1])));
+  const inMap=!!(tm&&tm.open),R=inMap?tm.R:renderer,dr=R&&R.drawn,pr=R&&R.pixelRatio;
+  PF.el.innerHTML=`<b class="${fps<30?'bad':fps<50?'meh':''}">${fps} fps</b><span>worst ${w} ms · ${PF.hitch.length} hitches/min</span><span>${inMap?'map':away?(away.def.n||'shop'):'room'} · ${dr??'?'} drawn · ${pr?pr.toFixed(2)+'x':''}</span>`+
+    (PF.log.length?`<span>${PF.log.slice(0,3).map(esc).join('<br>')}</span>`:'')+`<i>tap to copy</i>`}
+requestAnimationFrame(pfTick);
+function pfText(){const avg=PF.fr.length?PF.fr.reduce((a,b)=>a+b,0)/PF.fr.length:0,R=tm&&tm.open?tm.R:renderer;
+  return[`Room for Two v${APP_V} speed readout`,`${innerWidth}x${innerHeight} @${devicePixelRatio}x, ${navigator.hardwareConcurrency||'?'} cores`,
+    `${Math.round(1000/Math.max(1,avg))} fps, worst ${Math.round(Math.max(0,...PF.worst.map(q=>q[1])))} ms (last 5 s), ${PF.hitch.length} hitches over 100 ms in the last minute`,
+    `${tm&&tm.open?'map':away?'shop '+away.key:'room'}: ${R&&R.drawn} drawn at ${R&&R.pixelRatio}x`,...PF.log].join('\n')}
+function pfShow(on){PF.on=on;try{localStorage.r42perf=on?'1':'0'}catch(_){}if(on&&!PF.el){PF.el=document.createElement('button');PF.el.id='pfHud';PF.el.setAttribute('aria-label','Speed readout, tap to copy');document.body.appendChild(PF.el);
+    PF.el.onclick=e=>{e.stopPropagation();const t=pfText();(navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Speed readout copied',true),()=>{try{showReward('Speed readout','emo-star',`<pre class="pfpre">${esc(t)}</pre>`)}catch(_){}})}}
+  if(PF.el)PF.el.hidden=!on}
+if(PF.on)setTimeout(()=>pfShow(true),0);
+/* </perfhud> */
 /* <bugs> */
 Object.assign(COLS,{bugs:{n:'Bugs',d:'Little things that fly and crawl around town. What you find depends on the season, the time and the weather.',ic:'b_monarch'}});
 LIKES.posy&&LIKES.posy.love.push('t:bugs');LIKES.crumb&&LIKES.crumb.like.push('i:b_snail','i:b_pill');LIKES.cactus&&LIKES.cactus.like.push('i:b_mantis');
@@ -66712,6 +66746,7 @@ else if(openTab==='scrap')renderScrap(body);else if(openTab==='bag')renderBag(bo
   else if(openTab==='steps')renderSteps(body);
   else if(openTab==='debug'){const p=state.pet,st=stageOf(p.xp),s=petStats();
     body.innerHTML=`<h2>Debug</h2>
+    <button class="gel ${PF.on?'pink':'sun'}" id="dbgPerf" style="width:100%;margin:4px 0 8px">Speed readout: ${PF.on?'on':'off'}</button>
     <div class="dbg-info" id="dbgInfo"></div>
     <details class="dbg-sec" data-sec="Pet stage"${dbgOpen==="Pet stage"?" open":""}><summary>Pet stage (xp ${p.xp})</summary><div class="dbg-in">
     <p class="hint">Bond ${bondOf(p.xp).lv} (${esc(bondOf(p.xp).n)}), ${p.xp} care moments</p>
@@ -66765,7 +66800,7 @@ else if(openTab==='scrap')renderScrap(body);else if(openTab==='bag')renderBag(bo
       else if(k==='home'){pet.pos.set(0,0,0);pet.mode='idle';pet.timer=3}else if(k==='color'){state.pet.color=(state.pet.color+1)%6;buildPet();saveSoon();updHUD()}});
     body.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{state.btn=Math.max(0,(state.btn|0)+ +b.dataset.h);saveSoon();updHUD();renderSheet()});body.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{earnG(+b.dataset.g);saveSoon();updHUD();renderSheet()});body.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{state.tix=(state.tix|0)+ +b.dataset.t;saveSoon();updHUD();renderSheet()});
     $('#dbgNote').onclick=()=>{state.feed.unshift({t:Date.now(),by:'debug-partner',k:'note',text:['miss u! fed the little guy','rearranged the couch, hope u like it','goodnight 💤'][Math.floor(Math.random()*3)]});saveSoon();updHUD();toast('Fake note added. Check Inbox.')};
-    $('#dbgVisit').onclick=()=>{state.visits['debug-partner']=Date.now()-3*3.6e6;saveSoon();updHUD();toast('Fake partner visit 3h ago.')};
+    $('#dbgPerf').onclick=()=>{pfShow(!PF.on);renderSheet()};$('#dbgVisit').onclick=()=>{state.visits['debug-partner']=Date.now()-3*3.6e6;saveSoon();updHUD();toast('Fake partner visit 3h ago.')};
     $('#dbgClear').onclick=()=>{state.items=[];select(null);syncScene();saveSoon();toast('Furniture cleared.')};
     $('#dbgTdAll').onclick=()=>{tdEnsure();state.td.list.forEach(e=>{if(state.td.done.includes(e.k))return;state.td.prog[e.k]={[pid()]:e.n};tdComplete(e)});saveSoon();updHUD()};
     $('#dbgTdDay').onclick=()=>{tdDayShift++;tdUI();toast('Pretending it is '+tdDay())};
@@ -66929,7 +66964,17 @@ function mPet(l,r,b){l=l||{};r=r||{};b=b||{};const o=mFields(l,r,b),chg=x=>JSON.
   if(JSON.stringify(l.tr)!==JSON.stringify(b.tr)&&JSON.stringify(r.tr)!==JSON.stringify(b.tr))o.tr=mMaxMap(l.tr,r.tr);
   return o}
 const mCur=(l,r,b)=>b==null?Math.max(+l||0,+r||0):Math.max(0,mNum(l,r,b));
-const MERGE={btn:mCur,glim:mCur,tix:mCur,hearts:(l,r,b)=>Math.max(0,mNum(l,r,b)),tokens:(l,r,b)=>Math.max(0,mNum(l,r,b)),inv:mCounts,fown:mCounts,
+// three-way merges for things both of you edit at once (v106; before, the phone that wrote last won the whole list):
+// furniture by id (each side's additions, moves and removals all survive), tiles square by square, the town layout entry by entry
+function mById(l,r,b){l=Array.isArray(l)?l:[];r=Array.isArray(r)?r:[];b=Array.isArray(b)?b:[];const J=x=>JSON.stringify(x),B=new Map(b.map(x=>[x&&x.id,J(x)])),R=new Map(r.map(x=>[x&&x.id,x])),o=[];
+  l.forEach(x=>{const id=x&&x.id,bj=B.get(id),lj=J(x);if(bj!==undefined&&!R.has(id)){if(lj===bj)return;o.push(x);return}const rx=R.get(id);if(rx&&bj!==undefined&&lj===bj&&J(rx)!==bj){o.push(rx);return}o.push(x)});
+  const L=new Set(l.map(x=>x&&x.id));r.forEach(x=>{const id=x&&x.id;if(!L.has(id)&&!B.has(id))o.push(x)});return o}
+function mArr3(l,r,b){if(!Array.isArray(l)||!Array.isArray(r)||!Array.isArray(b)||l.length!==r.length||l.length!==b.length)return l;return l.map((v,i)=>v===b[i]&&r[i]!==b[i]?r[i]:v)}
+function mList3(l,r,b){l=Array.isArray(l)?l:[];r=Array.isArray(r)?r:[];b=Array.isArray(b)?b:[];const J=x=>JSON.stringify(x),Bs=new Set(b.map(J)),Rs=new Set(r.map(J)),Ls=new Set(l.map(J));
+  return l.filter(x=>{const j=J(x);return!(Bs.has(j)&&!Rs.has(j))}).concat(r.filter(x=>{const j=J(x);return!Bs.has(j)&&!Ls.has(j)}))}
+function mLayout(l,r,b){if(!l||!r||typeof l!=='object'||typeof r!=='object')return l;b=b&&typeof b==='object'?b:{};if((+l.v||0)!==(+r.v||0)&&(+b.v||0)!==(+r.v||0)&&(+b.v||0)===(+l.v||0))return r;
+  const o=mFields(l,r,b);['d','r','c'].forEach(k=>{if(Array.isArray(l[k])||Array.isArray(r[k]))o[k]=mList3(l[k],r[k],b[k])});if(l.b||r.b)o.b=mFields(l.b,r.b,b.b);return o}
+const MERGE={items:mById,tf:mArr3,tw:mArr3,btn:mCur,glim:mCur,tix:mCur,hearts:(l,r,b)=>Math.max(0,mNum(l,r,b)),tokens:(l,r,b)=>Math.max(0,mNum(l,r,b)),inv:mCounts,fown:mCounts,
   journal:mLog(80),inbox:mLog(60),feed:mLog(50),toys:mSet,wear:mSet,capsdex:mSet,town:mSet,downs:mSet,jrT:mMax,ibT:mMax,
   visits:mMaxMap,names:(l,r)=>Object.assign({},r,l),
   kf:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{}){const a=l[k],c=o[k];o[k]=!c?a:{p:Math.max(a.p,c.p),s:Math.max(a.s,c.s),d:a.d>c.d?a.d:c.d,m:Math.min(a.m||Infinity,c.m||Infinity)===Infinity?0:Math.min(a.m||Infinity,c.m||Infinity),c:Math.max(a.c|0,c.c|0),dp:Math.max(a.dp|0,c.dp|0),ms:[...new Set([...(a.ms||[]),...(c.ms||[])])]}}return o},
@@ -66957,7 +67002,7 @@ const MERGE={btn:mCur,glim:mCur,tix:mCur,hearts:(l,r,b)=>Math.max(0,mNum(l,r,b))
   tfound:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{})if(!o[k]||(l[k].t||0)<(o[k].t||0))o[k]=l[k];return o},
   cbook:(l,r)=>Object.assign({},r||{},l||{}),
   parcels:(l,r)=>{const m=new Map();[...(l||[]),...(r||[])].forEach(p=>{const q=m.get(p.id);m.set(p.id,q?Object.assign({},q,{open:[...new Set([...(q.open||[]),...(p.open||[])])]}):p)});return[...m.values()].sort((a,b)=>b.t-a.t).slice(0,30)},
-  pet:mPet,fwish:mFields,daily:mFields,td:mFields,arc:mFields,tmap:mFields,nmaps:mFields,wmap:mFields,kr:mMaxMap,minV:mMax,cv:mMax};
+  pet:mPet,fwish:mFields,daily:mFields,td:mFields,arc:mFields,tmap:mFields,nmaps:mFields,wmap:mLayout,kr:mMaxMap,minV:mMax,cv:mMax};
 // merge the normalized remote R into the local state L; returns the keys that changed locally
 // kr holds when each key last changed (stamped on write); a remote copy of a key older than the one in our base is a stale write
 // (e.g. a device still running old code saving its whole copy) and is ignored.
@@ -67050,7 +67095,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=105;
+const APP_V=106;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

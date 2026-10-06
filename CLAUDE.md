@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v105** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v105'` in `sw.js`; bump both for anything
+**Current build: v106** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v106'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -40,7 +40,8 @@ anything the game uses. `tools/writing/holidays.md` is the holiday design doc.
   tools/dev/town/sweep.js` (every event x hours: where everyone is, crews, cards; the map at every zoom and a pinch; inside every
   building with a keeper close-up; every menu page; conversations; `PART=12345` runs parts, the whole thing takes ~15 min, run parts 1-2
   and 4-5 together and 3 on its own) and `tools/dev/town/sweep2.js` (care, Decorate, Arrange paths/circles, every arcade game, gacha,
-  wardrobe, studio). Both must end with `errors 0`. Test every data shape a change touches (v76's bug only hit events held at houses).
+  wardrobe, studio). Both must end with `errors 0`. Then `persist.js` (save, reload, diff every field; must report 0 differences) and `merge.js` (two phones change
+  everything at once; must report nothing lost) whenever a change touches saved state. Test every data shape a change touches (v76's bug only hit events held at houses).
 - Test headless in solo mode with `tools/dev/town/run.js` (see its README; Playwright goes in `.claude/pw`). It injects a
   `__T` eval hook at serve time, so nothing test-only ever lands in index.html (still check `grep -c __T index.html` is 0).
   Never point tests at the real Firebase room. The tools use the laptop's RTX 3060 (ANGLE on D3D11) since Oct 5 2026: the app is ready in ~2.4 s. `R42_GL=soft` forces software GL (SwiftShader), which is many times slower and makes timings meaningless.
@@ -1031,3 +1032,20 @@ Beau tapped Explore, nothing happened for a while, he tapped again and the map o
   map first open ~0.85 s, reopen ~40 ms. Most of the "software GL is slow" numbers in older sections were SwiftShader.
 - Gotcha in test code: `ev()` returns JSON text, so `await ev('x')===true` is never true (compare with `'true'`, or parse it). A wait
   loop written that way just runs out its timer; several timing tests in the v105 work did that and reported ~200 s "startups".
+
+
+## Saves survive reloads and two phones at once; speed readout (v106)
+- `tools/dev/town/persist.js`: fills the save through the game's own code (runs sweep3, then gifts, keepsakes, firsts, memories,
+  treasures, fish, wishlist, project money, museum, garden, a design, friendship, journal, Footprints, town layout edits...), saves,
+  reloads, opens the map, and diffs every field of `state` (pet stats, wish, revisions are ignored; `PERSIST_QUICK=1` skips sweep3).
+  First run: clean apart from empty bag slots, which `normalize` drops on purpose.
+- `tools/dev/town/merge.js`: two "phones" start from one save, each makes different changes as a different person, `mergeInto` combines
+  them. It found that furniture, painted tiles and the town's decorations/paths/circles kept only one phone's version when both changed.
+  New rules before `MERGE`: `mById` (furniture by id: each side's adds, moves and removals survive; a piece one side stored and the other
+  moved stays stored; both moved = ours), `mArr3` (tiles square by square; a room-size change keeps ours), `mList3` + `mLayout` (wmap:
+  decoration/path/circle entries as sets against the base, buildings per key, a newer layout version wins). Add a merge rule for any new
+  shared list both phones can edit.
+- **Speed readout** (`/* <perfhud> */` after the whatsnew block): Debug's first button toggles it (per device, `localStorage.r42perf`).
+  Overlay `#pfHud`: fps over the last 60 frames, worst frame in 5 s, frames over 100 ms per minute, renderer `drawn` and `pixelRatio`
+  (map or room), and the last timings: app ready, map open (Explore tap to the live map, plus how long `showMap` blocked), trips
+  (`travelTo` to arrival). `showMap`/`travelTo` are wrapped. Tap = copy `pfText()` (clipboard, else a card) for Garrett to paste.
