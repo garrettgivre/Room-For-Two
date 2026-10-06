@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v119** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v119'` in `sw.js`; bump both for anything
+**Current build: v120** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v120'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1225,3 +1225,21 @@ Agents: screens (360x640 / 430x932 / 820x1180), two-player (two fake phones via 
   is see-through; Drop's text says tickets; Reef Pinball's `SUB` swaps "MISSION ABORTED".
 - Screens: sheets may be 70% tall on short screens; the keeper panel hides under the shop catalogue (`body:has(.sheet.kshop)`); the keeper
   bubble keeps clear of the top edge; game intro cards keep Play visible (sticky); bigger two-do swap buttons.
+
+
+## Playtest round four (v120): words in sentences, readability
+Agents: readability and taps, generated text, retest of v119 (the fresh first week report came later).
+- **Names in sentences** (helpers at the end of `/* <loop-fixes> */`): `nmLow(name)` lowercases only the first letter, and keeps
+  acronyms (UFO, TV, LED), names with a full stop (Dr. Patch) and resident names/possessives; `aOf(name,adj)` adds a/an/some (plurals
+  "some fairy lights", "an LED strip bed", possessives like "Prickles’ old compass" get none); `capF`, `capSent` (capitalise sentence starts
+  and a lone "i"). Every `${x.n.toLowerCase()}` in a template now goes through them; use them for any new line that names an item.
+- **Makeover rooms have names**: `MK_ROOMS` (three short nouns per resident, e.g. Bunbun's "tea room") via `mkRoomN(k,i)` /
+  `mkRoomNq(q)`. Request titles (`MK_REQ.t`) are headlines and must not be spliced into sentences; Journal, Footprints, the check-in
+  letter, the bar title and close-up actions use the room name.
+- Gift reactions, memory `{f}` lines ("a {f}" picks its own article), bond Journal entries (title in quotes), trick names in quotes,
+  seeds, headway "does", the visit/visitor/event templates, `jrMonth` keeps capitals, Inbox letters (`resCompose`: comma openers become
+  "!", then `capSent`), holiday letters (the host only writes when it has its own line, otherwise the Mayor posts the holiday text),
+  the Mayor's own birthday note.
+- Quitting pinball pays out like Stack/Says (`closeGame` wrapper); game intro cards fit 640px tall screens; the keeper bubble avoids
+  the close-up panel; readability CSS (gel shine under labels, `.rcx`/`.grab` hit areas, 40px chips/back buttons, aria-labels on the
+  note box, sound sliders and name box).
