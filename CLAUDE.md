@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v121** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v121'` in `sw.js`; bump both for anything
+**Current build: v122** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v122'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1250,3 +1250,24 @@ Agents: readability and taps, generated text, retest of v119 (the fresh first we
   fishing or photo mode is open; a blank name asks again a day later; Footprints quote two-do and arcade titles.
   Open from that report (design, ask Garrett): buttons pile up with little to spend on (~300 a day), and fishing, bugs, the museum,
   the garden, projects, makeovers and resident chats are never nudged by the daily list or wishes.
+
+## Playtest round five (v122)
+Agents: retest of v120/v121 text, Beau's decorating side with real taps, two weeks in town, a long-session stability run.
+- **Makeover blocker**: the theme-bonus flag was stored as `room.tw=1`, overwriting the room's wall tiles, so "See it again" threw inside
+  `mkStart` (left half in the sandbox) and the resident's house never finished loading (`tileMode`). The flag is `room.twOk` now;
+  `mkStart`/`tileMode` guard non-array tiles and a `normalize` wrapper drops bad `tw` values. Never reuse `tf`/`tw`/`items` as flags.
+- Makeovers: Later saves the design as `state.mk.req.draft` and `mkStart` restores it; floors of the house are named with the room
+  name; the reward card has a Later link; the makeover bar is slimmer while the sheet is open, with a tick on done rows.
+- Designs editor scrolls (`.sheet-body:has(.dzed)`); the name card waits while painting, styling or in a sandbox.
+- Town: `twPath` clamps taps past the town edge into the grid and guards its parent walk (a tap on the countryside used to freeze
+  for seconds and throw "Invalid array length"); guests outside an event spread round the doorstep (golden-angle slots facing out);
+  a friend only visits when the host isn't off visiting too; Pixel is a Game Night guest; storms count as rain for the garden and
+  Nimbus; map taps wait while a conversation is open; your own reply choices use your name, not the resident's nickname for you.
+- Text: `nmPlural` judges the head noun before a preposition and knows words that only look plural; `NM_MASS` words take "some";
+  generic possessives ("Captain's bunk") get an article; resident names inside item names ("Pixel shades") are lowercased; the treat
+  card's "Place it" matches the escaped apostrophe; noticeboard thanks fill `{me}`; with no name set, `{me}` reads "friend";
+  holiday letters don't repeat the greeting; Journal event lines go through `capSent`; letters from Prickles and the twins don't
+  end "back to work"; days of the week are capitalised; the Inbox trims to 150.
+Known, not fixed: residents visiting friends don't walk there on the map (`twPlan` has no 'visit' case); a boss can show behind the
+counter while also elsewhere when their assistant is away; noticeboard favours repeat within about a week; new furniture can land
+under the Decorate sheet; moving the door can land on a window.
