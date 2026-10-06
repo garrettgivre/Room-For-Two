@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v102** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v102'` in `sw.js`; bump both for anything
+**Current build: v103** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v103'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 83 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -987,3 +987,12 @@ same i → per-person max, else the larger i; done and pend unioned.
   weighted up in `cvSysLine` when they're relevant (a bug or fish found in the last 3 days, a recent museum donation, money in the
   current project, having designs). `season` = autumn lines; `season_winter`/`season_spring`/`season_summer` (v102, block
   `/* <season-talk> */`, sources `.claude/season/<group>.js`, brief `tools/dev/town/SEASON_BRIEF.md`) are picked by `seasonNow()`.
+
+## Visitors, fixed up (v103)
+- Only residents you've met knock (`visMet(k)`: `kf` has `m`, chats `c` or points `p`). No toast and no reward card: they talk through the
+  shop speech bubble `#kbub`, which now also runs at home for the visitor (`updVisitor` calls `kbTick`; `visSay(lines)` queues lines,
+  tints the tag with `RES[k][1]`). Flow: a knock and a greeting (`memPick`/level `hi`/KBIB hi; never map `out` openers, they're about
+  being outdoors), the pet walks over and waves (`visPetMeet`); tapping the chat badge: first a comment on a placed piece (mentions who
+  picked it) and a snack for the pet (once, +2 friendship, `td('visitor')`), then up to one more line (level topics, gossip, topics), then
+  a goodbye bubble (`visLeave`) and they shrink out through the door. Unvisited after 4 min, or 75 s after the last chat, they say bye.
+  The makeover host (`mkHost`, `visitor.mk`) skips all of this.

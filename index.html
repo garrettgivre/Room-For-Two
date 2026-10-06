@@ -35926,24 +35926,53 @@ function openParcel(p){const it=ITEMS.find(i=>i.id===p.item);(p.open=p.open||[])
   showReward('A parcel for you!','tab-mail',`<p>Parcel tips their cap: “Delivery from ${esc(who(p.by))}!”</p><p><b>${esc(it?it.n:'A surprise')}</b></p>${p.note?`<p class="lifestory">“${esc(p.note)}”</p>`:''}`,{ok:'Thank you!'})}
 // ---- visitors at home: now and then someone free knocks with a little something and a comment about your room
 let visitor=null,visitT=0;
+// Visitors (v103): only neighbours you've already met knock. They talk in speech bubbles over their head (the shop bubble #kbub, which
+// also runs at home for them): a hello at the door, then tap them for a chat (a comment on your room and a snack for the pet once, then a
+// line or two more), then a goodbye and they go. Untouched visits end with a goodbye after a few minutes.
+function visMet(k){const f=(state.kf||{})[k];return!!(f&&(f.m||(f.c|0)>0||(f.p|0)>0))}
 function visitorTick(){if(away||visitor||sandbox||ARR.on||(tm&&tm.open)||!state||!ready||stageOf(state.pet.xp)===0||openTab||kmode||traveling||!$('#game').hidden)return;const now=Date.now();
   if(now-visitT<20*6e4||Math.random()>.12)return;visitT=now;let last=+localStorage.r42visit||0;if(now-last<2.5*36e5&&!dbgVisit)return;
-  const free=Object.keys(RESIDENTS).filter(k=>resHere(k)&&KBIB[k]&&resWhere(k)==='home');if(!free.length)return;
+  const free=Object.keys(RESIDENTS).filter(k=>resHere(k)&&KBIB[k]&&resWhere(k)==='home'&&visMet(k));if(!free.length)return;
   const best=free.sort((a,b)=>kfOf(b).p-kfOf(a).p).slice(0,8);spawnVisitor(pick1(best))}
 let dbgVisit=false;
-function spawnVisitor(k){try{localStorage.r42visit=Date.now()}catch(_){}const K=KEEPERS[k]();kPolish(K,k);K.g.scale.setScalar(1.22);const f=doorFront(),c=new THREE.Vector3(0,0,0);
+const visTxt=x=>typeof x==='string'?x:x&&x.t||'';
+const visFill=(k,t)=>kFill(String(t)).replace(/\{me\}/g,(kfLevel(kfOf(k).p)>=4&&TALK[k]&&TALK[k].nick)||(state.names&&state.names[myId])||'you');
+function visSay(lines){const V=visitor;if(!V||away)return;lines=lines.map(l=>visFill(V.k,visTxt(l))).filter(Boolean);if(!lines.length)return;
+  KB.q=lines.slice(1);kbShow(lines[0],V.K);const el=$('#kbub');el.style.setProperty('--kc',(RES[V.k]||[])[1]||'#FF3D9A');el.classList.toggle('more',KB.q.length>0)}
+const visBusy=()=>kbT>0&&visitor&&KB.K===visitor.K&&!$('#kbub').hidden;
+function spawnVisitor(k){if(!visMet(k)&&!dbgVisit)return;try{localStorage.r42visit=Date.now()}catch(_){}const K=KEEPERS[k]();K.kind=k;kPolish(K,k);K.g.scale.setScalar(1.22);const f=doorFront(),c=new THREE.Vector3(0,0,0);
   const p=f.clone().add(c.clone().sub(f).normalize().multiplyScalar(1.1));K.g.position.set(p.x,0,p.z);K.g.rotation.y=Math.atan2(c.x-p.x,c.z-p.z)*.4;scene.add(K.g);
-  visitor={K,k,t:0,act:'greet',a:0,leaving:0};doorTarget=1;setTimeout(()=>{doorTarget=0},1600);toast(`${RESIDENTS[k].n} stopped by! Tap them to say hi.`,true);
-  let b=$('#visBadge');if(!b){b=document.createElement('button');b.id='visBadge';b.className='kbdg';b.innerHTML=KSVG.chat;document.body.appendChild(b)}b.hidden=false;b.onclick=e=>{e.stopPropagation();visitorChat()}}
-function updVisitor(dt,t){const V=visitor;if(!V)return;V.t+=dt;V.a+=dt;const act=V.leaving?'greet':V.a<2?'greet':'idle';try{V.K.upd(dt,t,act,Math.min(1,V.a/2),false)}catch(_){}
-  if(V.leaving){V.leaving+=dt;const s=Math.max(.001,1.22*(1-V.leaving/0.6));V.K.g.scale.setScalar(s);if(V.leaving>.6){scene.remove(V.K.g);visitor=null;const b=$('#visBadge');if(b)b.hidden=true;return}}
-  if(V.t>240&&!V.leaving&&!V.mk)V.leaving=.001;
-  const b=$('#visBadge');if(b&&!away&&!V.mk){const v=new THREE.Vector3();V.K.g.getWorldPosition(v);v.y+=2;v.project(camera);b.hidden=v.z>1||!!openTab||kmode!=null;b.style.left=((v.x+1)/2*innerWidth)+'px';b.style.top=((1-v.y)/2*innerHeight)+'px'}}
-function visitorChat(){const V=visitor;if(!V||V.leaving)return;const k=V.k,R=RESIDENTS[k],B=KBIB[k],own=state.items.length?CATMAP[pick1(state.items).k]:null,L=LIKES[k];
-  const food=ITEMS.filter(i=>i.k==='food'&&i.p>0&&L.love.concat(L.like).includes('f:'+i.cat)),it=food.length?pick1(food):ITEMS.find(i=>i.id==='cookie');state.inv[it.id]=(state.inv[it.id]|0)+1;
-  kfAdd(k,2);td('visitor');if(Math.random()<.6)jrEvent('visitor',{s:R.n});saveSoon();
-  const hi=kFill(pick1(B.hi.d||B.hi.m||['Hello!'])),cm=own?pick1([`I love your ${own.n.toLowerCase()}.`,`Is that a new ${own.n.toLowerCase()}? Very you.`,`Your ${own.n.toLowerCase()} makes the whole room.`]):'Your room is so cozy.';
-  showReward(`${R.n} came to visit`,'tab-room',`<p>“${esc(hi)}”</p><p>“${esc(cm)} I brought ${esc(state.pet.name)} a ${esc(it.n.toLowerCase())}.”</p>`,{ok:'Come again!',fn:()=>{if(visitor)visitor.leaving=.001}})}
+  visitor={K,k,t:0,act:'greet',a:0,leaving:0,n:0,gave:0,last:0};doorTarget=1;setTimeout(()=>{doorTarget=0},1600);
+  let b=$('#visBadge');if(!b){b=document.createElement('button');b.id='visBadge';b.className='kbdg';b.innerHTML=KSVG.chat;b.setAttribute('aria-label','Say hi');document.body.appendChild(b)}b.hidden=true;b.onclick=e=>{e.stopPropagation();visitorChat()}}
+// the pet comes over to meet the visitor (if it's free), and waves
+function visPetMeet(){const V=visitor;if(!V||!pet.rig||styling()||toyPlay||!['idle','walk'].includes(pet.mode))return;const v=V.K.g.position,c=new THREE.Vector3(0,0,0),d=c.clone().sub(v);if(d.length()<.01)return;
+  const p=v.clone().add(d.normalize().multiplyScalar(1.15));petGo(p,()=>{pet.waveT=1.8;pet.happyT=1.2;pet.hop=.6;pet.timer=4;try{emote('💗')}catch(_){}})}
+function visLeave(line){const V=visitor;if(!V||V.leaving||V.bye)return;V.bye=1;const T=TALK[V.k]||{};
+  if(line===false){V.leaving=.001;return}visSay([line||cvLvPick(V.k,T,'bye',.7)||(T.bye&&T.bye.length&&pick1(T.bye))||'See you around!'])}
+function updVisitor(dt,t){const V=visitor;if(!V)return;V.t+=dt;V.a+=dt;const act=V.leaving?'greet':V.a<2?'greet':'idle';try{V.K.upd(dt,t,act,Math.min(1,V.a/2),!!(visBusy()&&KB.n<KB.txt.length))}catch(_){}
+  if(kbT>0&&KB.K===V.K)kbTick(dt);
+  if(V.leaving){V.leaving+=dt;doorTarget=1;const s=Math.max(.001,1.22*(1-V.leaving/0.6));V.K.g.scale.setScalar(s);if(V.leaving>.6){scene.remove(V.K.g);if(KB.K===V.K){$('#kbub').hidden=true;kbT=0;KB.q=[]}visitor=null;doorTarget=0;const b=$('#visBadge');if(b)b.hidden=true;return}}
+  if(V.mk)return;
+  // a hello at the door once they're in
+  if(!V.hi&&V.a>1.3&&!openTab&&!kmode){V.hi=1;const T=TALK[V.k]||{},B=KBIB[V.k]||{hi:{}};
+    visSay([pick1(['Knock knock! Mind if I come in for a minute?','I was passing and your door looked friendly.','Hello in there! I brought something.','Just popping by. Tap me if you’ve got a minute.']),memPick(V.k)||cvLvPick(V.k,T,'hi',.8)||pick1(B.hi.d||B.hi.m||['Hello!'])]);
+    try{emote('❗')}catch(_){}visPetMeet()}
+  // goodbyes: the goodbye bubble has finished, or nobody came to say hi, or the chat went quiet
+  if(V.bye&&!V.leaving&&!visBusy())V.leaving=.001;
+  if(!V.bye&&!visBusy()&&(V.t>240&&!V.n||V.n&&V.t-V.last>75))visLeave(V.n?null:pick1(['Looks like it’s a busy day. I’ll come back another time!','I’ll let you be. Say hi to {n} for me!']));
+  const b=$('#visBadge');if(b&&!away){const v=new THREE.Vector3();V.K.g.getWorldPosition(v);v.y+=2;v.project(camera);b.hidden=v.z>1||!!openTab||kmode!=null||visBusy()||!!V.bye||V.n>=3||!V.hi;b.style.left=((v.x+1)/2*innerWidth)+'px';b.style.top=((1-v.y)/2*innerHeight)+'px'}}
+function visitorChat(){const V=visitor;if(!V||V.leaving||V.bye||V.mk)return;if(visBusy()){kbNext();return}const k=V.k,R=RESIDENTS[k],T=TALK[k]||{},B=KBIB[k]||{},f=kfOf(k);V.n++;V.last=V.t;
+  if(!f.m)f.m=Date.now();
+  if(!V.gave){V.gave=1;const placed=state.items.filter(i=>CATMAP[i.k]),pc=placed.length?pick1(placed):null,own=pc?CATMAP[pc.k]:null,L=LIKES[k]||{love:[],like:[]};
+    const food=ITEMS.filter(i=>i.k==='food'&&i.p>0&&L.love.concat(L.like).includes('f:'+i.cat)),it=food.length?pick1(food):ITEMS.find(i=>i.id==='cookie');state.inv[it.id]=(state.inv[it.id]|0)+1;
+    f.c=(f.c|0)+1;kfAdd(k,2);td('visitor');if(Math.random()<.6)jrEvent('visitor',{s:R.n});saveSoon();
+    const by=pc&&pc.by&&pc.by!==myId&&typeof who==='function'?who(pc.by):'';
+    const cm=own?pick1([`I love your ${own.n.toLowerCase()}.`,`Is that a new ${own.n.toLowerCase()}? Very you.`,`Your ${own.n.toLowerCase()} makes the whole room.`,...(by?[`${by} picked the ${own.n.toLowerCase()}, didn’t they? I can tell.`]:[])]):'Your room is so cozy. It needs a few more things in it, though!';
+    visSay([cm,`I brought {n} a ${it.n.toLowerCase()}. Don’t let them have it all at once.`]);
+    setTimeout(()=>{try{emote('😋');petAct('clap')}catch(_){}},1800);toast(`${it.n} added to your Bag`,true);return}
+  if(V.n>=3){visLeave();return}
+  const top=cvLvPick(k,T,'topics',.6)||(T.gossip&&T.gossip.length&&Math.random()<.35&&pick1(T.gossip))||(T.topics&&T.topics.length&&pick1(T.topics))||pick1(B.mood||B.pet||['It’s nice in here.']);
+  visSay([visTxt(top)]);try{emote('💗')}catch(_){}}
 // ---- house furniture given as gifts appears in the resident's house, on free floor spots
 function houseDecoLayout(id,base,P){const D=(state&&state.hdeco&&state.hdeco[id])||[];if(!D.length)return[];const taken=base.filter(q=>q.g).map(q=>q.g),out=[],L=P.levels[0];
   const cells=[];for(let j=0;j<P.D;j++)for(let i=0;i<P.W;i++){if(!L.grid[j]||L.grid[j][i]==='.'||L.grid[j][i]==='#')continue;cells.push([i+.5,j+.5])}
@@ -64462,7 +64491,8 @@ function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS
 /* </swapface> */
 /* <whatsnew> */
 // ---- a one-time card per device listing what's new since the last version this phone saw (localStorage r42wn)
-const WHATSNEW=[[101,'The garden grows with your bond: a new planter every three bond levels, up to eight. New seeds: potatoes, and a pumpkin vine that grows a pumpkin pouf.'],
+const WHATSNEW=[[103,'Visitors: only neighbours you’ve already met come knocking now, and they talk in speech bubbles over their head. Your pet walks over to say hi; tap them to chat, and they wave goodbye when they go.'],
+  [101,'The garden grows with your bond: a new planter every three bond levels, up to eight. New seeds: potatoes, and a pumpkin vine that grows a pumpkin pouf.'],
   [100,'Town projects: the Mayor proposes something for the town (a Ferris wheel first) and the two of you chip in buttons. When it’s paid for, it goes up on the map. Neighbours, Project.'],
   [99,'The Little Museum: donate one of each fish, bug and find, and Dewey writes a card for it. Tap the museum on the map.'],
   [98,'Bug catching: butterflies, bees, beetles and fireflies around flowers, trees, water and lamps. Tap one, then tap when the ring turns green. Posy loves them.'],
@@ -67005,7 +67035,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=102;
+const APP_V=103;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
