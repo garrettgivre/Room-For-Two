@@ -1515,7 +1515,7 @@ class WebGLRenderer{
   _geo(g){const gl=this.gl;let e=this._vao.get(g);if(e&&e.v===g.version)return e;
     if(e&&g.dyn&&e.nv===g.pos.length){(g.dyn===2?[[0,g.pos]]:[[0,g.pos],[1,g.nrm],[3,g.nrm]]).forEach(([i,d])=>{gl.bindBuffer(gl.ARRAY_BUFFER,e.bufs[i]);gl.bufferSubData(gl.ARRAY_BUFFER,0,d)});e.v=g.version;return e}
     if(e){gl.deleteVertexArray(e.vao);e.bufs.forEach(b=>gl.deleteBuffer(b))}
-    const vao=gl.createVertexArray();gl.bindVertexArray(vao);const bufs=[];[[g.pos,3],[g.nrm,3],[g.uv,2],[g.dyn?g.nrm:smoothNormals(g),3]].forEach(([d,n],i)=>{const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,d,g.dyn?gl.DYNAMIC_DRAW:gl.STATIC_DRAW);gl.enableVertexAttribArray(i);gl.vertexAttribPointer(i,n,gl.FLOAT,false,0,0);bufs.push(b)});
+    const vao=gl.createVertexArray();gl.bindVertexArray(vao);const bufs=[];[[g.pos,3],[g.nrm,3],[g.uv,2],[g.dyn?g.nrm:(g._sn&&g._sn.length===g.nrm.length?g._sn:(g._sn=smoothNormals(g))),3]].forEach(([d,n],i)=>{const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,d,g.dyn?gl.DYNAMIC_DRAW:gl.STATIC_DRAW);gl.enableVertexAttribArray(i);gl.vertexAttribPointer(i,n,gl.FLOAT,false,0,0);bufs.push(b)});
     let cb=null;if(g.col){cb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,cb);gl.bufferData(gl.ARRAY_BUFFER,g.col,gl.STATIC_DRAW);gl.enableVertexAttribArray(4);gl.vertexAttribPointer(4,3,gl.FLOAT,false,0,0)}
     const ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,g.idx,gl.STATIC_DRAW);bufs.push(ib);if(cb)bufs.push(cb);gl.bindVertexArray(null);
     e={vao,bufs,n:g.idx.length,type:g.idx instanceof Uint32Array?gl.UNSIGNED_INT:gl.UNSIGNED_SHORT,v:g.version,nv:g.pos.length};this._vao.set(g,e);return e}
@@ -36151,10 +36151,12 @@ function twResDrop(r){twSpotFree(r);if(r.dot)r.dot.remove();if(r.full)tm.world.r
 function twPin(k){const b=document.createElement('button'),R=RESIDENTS[k];b.className='tmr';b.style.setProperty('--c',(RES[k]||['','#fff'])[1]);b.innerHTML=lifeFace(swapOn()&&SWAP_AS[k]||k)+'<i class="dots">···</i>';b.setAttribute('aria-label',R.n);b.title=R.n;
   b.onclick=e=>{e.stopPropagation();twTalk(k)};$('#tmLab').appendChild(b);return b}
 function twDot(k){const c=parseInt(((RES[k]||[])[1]||'#FFFFFF').slice(1),16),g=G(),b=ol(sp(g,.13,M(c,{roughness:.5}),0,.16,0,1,1.15,1),.012);sp(g,.03,M(0x3B1273),-.045,.2,.11).outline=0;sp(g,.03,M(0x3B1273),.045,.2,.11).outline=0;g.userData.twk=k;return g}
+// building a resident's full model costs a lot on a phone: at most one per frame, none just as the map opens (they show as pins meanwhile)
+const twFB={t:-1,n:0};function twFullOk(){if(twFB.t!==tm.t){twFB.t=tm.t;twFB.n=0}if(performance.now()-(tm.openT||0)<400||twFB.n>=1)return false;twFB.n++;return true}
 function twFull(r){if(r.full)return r.full;try{const K=KEEPERS[r.k]();kPolish(K,r.k);bakeKeeper(K,r.k);const L=G();L.add(K.g);K.g.scale.setScalar(TW_RES_SCALE);L.userData.twk=r.k;K.g.traverse(o=>o.userData.twk=r.k);tm.world.add(L);r.full={K,g:L};try{swapMask(K.g,r.k)}catch(_){}}catch(e){console.warn('tw full',e)}return r.full}
 const _twV=new THREE.Vector3();
 function twResTick(dt,t){const cam=tm.tgt,close=tmFit()*tm.zoom<16;tw.sortT=(tw.sortT||0)-dt;if(tw.sortT<=0||!tw.near||tw.near.length!==tw.res.size){tw.sortT=.3;tw.near=[...tw.res.values()].sort((a,b)=>Math.hypot(a.x-cam.x,a.z-cam.z)-Math.hypot(b.x-cam.x,b.z-cam.z))}const near=tw.near;
-  near.forEach((r,i)=>{if(!r.dot)return;const full=close&&i<TW_FULL&&Math.hypot(r.x-cam.x,r.z-cam.z)<12;r.t+=dt;const talking=tw.card&&tw.card.k===r.k;let mv=false;
+  near.forEach((r,i)=>{if(!r.dot)return;const full=close&&i<TW_FULL&&Math.hypot(r.x-cam.x,r.z-cam.z)<12&&(!!r.full||twFullOk());r.t+=dt;const talking=tw.card&&tw.card.k===r.k;let mv=false;
     if(r.chat){}else if(!talking){if(r.path&&r.path.length){const [tx,tz]=r.path[0],dx=tx-r.x,dz=tz-r.z,d=Math.hypot(dx,dz),st=TW_RSPEED*dt;if(d<=st){r.x=tx;r.z=tz;r.path.shift()}else{r.x+=dx/d*st;r.z+=dz/d*st;r.ry=Math.atan2(dx,dz)}mv=true}
       else{r.wait-=dt;if(r.wait<0){const P=r.plan;let to=null;if(P.mode==='go'){const d=twDoor(P.to);if(d&&Math.hypot(d.x-r.x,d.z-r.z)<.3){r.out=1;r.inPt=d.in;tmDoorOpen(P.to,1800)}else if(d)to=[d.x,d.z]}
         else if(P.mode==='mingle'){r.wait=3+Math.random()*4}else if(P.mode==='stroll'){const d=twDoor(P.near);to=twRandomRoad(null,d||{x:r.x,z:r.z})}else if(P.mode==='stall'){r.wait=4+Math.random()*4;r.ry=P.ry}else if(r.atSpot){twSpotFree(r)}else if(r.spot){r.atSpot=1;if(r.spot.sit){r.x=r.spot.x;r.z=r.spot.z}r.ry=r.spot.ry;r.wait=r.spot.sit?14+Math.random()*22:r.spot.mkt?6+Math.random()*8:4+Math.random()*6}
@@ -65513,7 +65515,8 @@ function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS
 /* </swapface> */
 /* <whatsnew> */
 // ---- a one-time card per device listing what's new since the last version this phone saw (localStorage r42wn)
-const WHATSNEW=[[110,'Walking around town should be noticeably smoother, especially on phones.'],
+const WHATSNEW=[[111,'Stepping outside is quicker: neighbours’ full models now appear one at a time instead of all at once. The speed readout also notes how long the game takes to come back after you switch apps.'],
+  [110,'Walking around town should be noticeably smoother, especially on phones.'],
   [109,'Makeovers: some requests now come with a theme to try for a bonus, and residents write back a few days later asking for one more thing. Town events: stalls and Hook-a-duck on the plaza during festivals and big holidays, the Pumpkin Parade round the ring road, and fireworks on Bubblework Night.'],
   [108,'Neighbours have birthday parties now: an evening at their house with their closest friends, cake and decorations, and you’re welcome to drop in. They also visit each other’s houses, and friendships shift from week to week. Ask them about it.'],
   [107,'Your pet can learn tricks! Teach them from the pet page (a few tries a day each), and watch for them when it’s happy. It also has opinions now: it misses its favourite spot if you put it away, gets excited about pieces it loves, and each head picks up its person’s habits. Bond milestones change what it does, like bringing you little finds.'],
@@ -65546,7 +65549,9 @@ function pfNote(k,ms,what){const v=Math.round(ms);PF.log.unshift(`${k} ${v} ms${
 {const sm=showMap;showMap=function(){const t=performance.now(),wasOpen=!!(tm&&tm.open);const r=sm.apply(this,arguments);if(!wasOpen){PF.mapSync=Math.round(performance.now()-t);if(!PF.mapWait){PF.mapT0=PF.tapT||t;PF.mapWait=true}}PF.tapT=0;return r}}
 $('#dkExplore').addEventListener('click',()=>{PF.tapT=performance.now()},true);
 {const tt=travelTo;travelTo=function(dest){const was=traveling;const r=tt.apply(this,arguments);if(!was&&traveling){PF.travT0=performance.now();PF.travTo=dest;PF.travWait=true}return r}}
+addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){PF.backT=performance.now();PF.backMax=0;PF.last=0}});
 function pfTick(now){requestAnimationFrame(pfTick);const dt=PF.last?now-PF.last:16;PF.last=now;
+  if(PF.backT){if(now-PF.backT<4000){PF.backMax=Math.max(PF.backMax,dt);if(dt<40&&now-PF.backT>600){pfNote('back to the app',now-PF.backT,'slowest frame '+Math.round(PF.backMax)+' ms');PF.backT=0}return}pfNote('back to the app',now-PF.backT,'still settling');PF.backT=0}
   if(PF.load==null&&typeof ready!=='undefined'&&ready)PF.load=pfNote('app ready',now);
   if(PF.mapWait&&tm&&tm.open&&!$('#tmPop').classList.contains('gen')){PF.mapWait=false;PF.map=pfNote('map open',now-PF.mapT0,(PF.mapSync!=null?PF.mapSync+' ms blocked':''))}
   if(PF.mapWait&&!(tm&&tm.open))PF.mapWait=false;
@@ -68324,7 +68329,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=110;
+const APP_V=111;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

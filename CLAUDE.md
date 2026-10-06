@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v110** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v110'` in `sw.js`; bump both for anything
+**Current build: v111** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v111'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1119,3 +1119,10 @@ walking toward the arcade (`.claude/town/t_walkperf.js`, `t_passes.js`): render 
 - Renderer flags: `outlineFar` (skip outlines on meshes whose bounding sphere is that far from the camera; the map sets
   max(16, 2.4 x camera distance)) and `shadowMinR` (skip shadow casters smaller than that; the map sets .1, which halves its shadow draws).
 - Still to look at: hitches in the arcade (15 a minute in Mochi Drop), app start (7 s on the phone).
+
+- v111 (Garrett's v110 readout: walking 23 -> 46 fps; opening the map blocked 606 ms; multi-second "worst" frames): residents' full
+  models are built at most one per frame and none in the first 0.4 s after the map opens (`twFullOk`; they stay pins until theirs is
+  ready); outline normals are kept on the geometry (`g._sn`) so a WebGL context restore only re-uploads. The readout logs "back to the
+  app" (visible again until frames settle) and leaves those frames out of the fps/worst/hitch numbers; copying the readout means leaving
+  the app, which polluted them. Suspect: returning after a while reloads the whole page (`glReload`/`canvasWiped`), which looks like
+  "app ready" plus a trip in the readout.
