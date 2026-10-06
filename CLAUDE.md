@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v123** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v123'` in `sw.js`; bump both for anything
+**Current build: v124** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v124'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1278,3 +1278,28 @@ under the Decorate sheet; moving the door can land on a window.
   `gpuSweep(R,roots)` every 45 s disposes buffers of geometries no longer in that renderer's scene (main when the map is closed, the
   arcade renderer when no game is open, the map renderer when closed). Before, they waited for garbage collection (the long-session
   run saw ~19k VAOs and ~97k buffers after 15 loops).
+
+
+## Playtest round six (v124), end of the overnight session (Oct 6 2026)
+Agents: arcade (every game with real input), the pet and the room, a visual audit at 360x640 / 430x932, a v122-v123 retest
+(stopped early when Garrett woke up; not finished).
+- Arcade: × pays out through `gmEnd` in every game with a score (catch, pop, drop added); pinball stars 10k/50k/200k (reef
+  12k/60k/250k) and mastery step 60000 (was 300000); both pinball intros cut to a few lines; Drop's results card lists the prizes
+  (`gm.s.won`, filled in `grant`) and drops "reached level"; "an Echo Buddy"; Pixel's ticket-counter line; a keeper close-up hides
+  the other keepers (`kmode.hid`) so Joy no longer blocks Pixel's face.
+- Pet: grown-up wishes (the `smartAge` path in `wishTick`, which is always taken now) skip anything already on the daily list and can
+  ask for "something new for the room"; at night an idle pet goes back to bed every ~80 s (`RD.bedT`), and the room-day code uses
+  `townHour()` throughout; trick animations: Roly-poly = jiggle, Ta-da = shrug (the grown form can't tumble, `stretch` showed a sleepy
+  emote); habits count only real fills of real needs (`r.gain`, `PL_NEEDV`); `navNearest` searches 15 cells so a pet dropped on a big
+  bed lands beside it; "See Dr. Patch" only travels when he's home; the name card waits for 12 s without touches, and never shows over
+  a close-up, photo mode, the capsule machine or a visitor.
+- Visual: the Wardrobe's shop bar is in the flow (not sticky) and styling sheets drop into the hidden dock's space; studio price coins
+  are 14 px (`.scard img.cur`); falling leaves draw under the map's buttons (`.tm-seafx` z auto); the menu wheel hint hides on short
+  screens; the map's buttons hide while fishing; catalogue price stickers are round sun-yellow coins (`.price`), not pink hearts.
+Still open from round six (not done): map district labels collide when zoomed out; routine toasts cover the pet wheel/page; Decorate
+and the design editor are cramped at 360x640; empty Bag tabs squeeze their text into one column; game intro cards overlap the top bar
+at 360; letters instead of faces for most residents in "Who's around" and the Inbox; the pet is bigger than the starter pet bed;
+some hats hide in the antenna tufts; photo mode doesn't frame the pet; new furniture can land on the pet bed or under the sheet.
+**Disk**: the laptop's C: drive filled up overnight (60 MB free at worst; 5.6 GB after an agent shrank its screenshots). Test
+screenshots in `.claude/town/out/` (~1 GB) and session temp in `%LOCALAPPDATA%/Temp/claude` (~3 GB) are safe for Garrett to clear;
+playtest agents should save small JPEGs and check `df -h /c` first.
