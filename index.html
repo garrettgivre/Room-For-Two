@@ -1001,6 +1001,7 @@ body.styling .storechip{opacity:0}
 .trk{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}.trkc{font-family:var(--disp);font-size:14px;padding:7px 12px;border:3px solid var(--ink);border-radius:999px;background:#FFF3B0;color:var(--ink);box-shadow:0 3px 0 var(--ink)}
 .trkc:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}.trkl{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:3px solid var(--ink);border-radius:16px;background:#fff;margin:4px 0 8px}
 .trkl b{font-family:var(--disp);font-size:15px;display:block}.trkd{display:flex;gap:4px;margin-top:5px}.trkd i{width:12px;height:12px;border-radius:50%;border:2px solid var(--ink);background:#fff}.trkd i.on{background:var(--pink)}.trkl .gel{white-space:nowrap;font-size:13px;padding:8px 12px}
+.mkl li.ok+li{}.mkfu{display:block;color:#C2185B}.mkfu.ok{color:#2E9E3E}
 </style>
 </head>
 <body>
@@ -65510,7 +65511,8 @@ function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS
 /* </swapface> */
 /* <whatsnew> */
 // ---- a one-time card per device listing what's new since the last version this phone saw (localStorage r42wn)
-const WHATSNEW=[[108,'Neighbours have birthday parties now: an evening at their house with their closest friends, cake and decorations, and you’re welcome to drop in. They also visit each other’s houses, and friendships shift from week to week. Ask them about it.'],
+const WHATSNEW=[[109,'Makeovers: some requests now come with a theme to try for a bonus, and residents write back a few days later asking for one more thing. Town events: stalls and Hook-a-duck on the plaza during festivals and big holidays, the Pumpkin Parade round the ring road, and fireworks on Bubblework Night.'],
+  [108,'Neighbours have birthday parties now: an evening at their house with their closest friends, cake and decorations, and you’re welcome to drop in. They also visit each other’s houses, and friendships shift from week to week. Ask them about it.'],
   [107,'Your pet can learn tricks! Teach them from the pet page (a few tries a day each), and watch for them when it’s happy. It also has opinions now: it misses its favourite spot if you put it away, gets excited about pieces it loves, and each head picks up its person’s habits. Bond milestones change what it does, like bringing you little finds.'],
   [106,'When you both change the room or the town at the same time, both of your changes now stick (before, one phone could undo the other). New: a speed readout in Debug that shows how smooth the game is running; tap it to copy the numbers.'],
   [105,'Changes to the town now stay put. A bug was quietly resetting the town layout every time the app opened: your Edit town changes, the fishing dock, the museum and finished projects. Finished projects come back on the map. The map also opens faster at the start of each visit.'],
@@ -68137,6 +68139,89 @@ function socialLine(k){try{const S=(TALK[k]&&TALK[k].sys)||{},pk=a=>a&&a.length?
 {const tl=typeof townLifeTick==='function'?townLifeTick:null;if(tl)townLifeTick=function(){const r=tl.apply(this,arguments);try{const ks=partyKeys();if(ks.length){const day=lifeDay(),A=state.acts||(state.acts={});if(A.partynote!==day){A.partynote=day;const nm=ks.map(k=>RESIDENTS[k].n).join(' and '),hn=(HOUSE_DEF[houseOf(ks[0])]||{}).n||'their house';
   resPost('mayor',`A birthday party for ${nm} tonight, five to eight, at ${hn}. Bring a present, and an appetite. I’ve been asked not to give a speech. I’ll see.`);saveSoon()}}}catch(e){console.warn('party note',e)}return r}}
 /* </social> */
+/* <mk-deep> */
+// ---- makeovers, deeper (v109): theme twists on requests, and residents checking back on rooms you made.
+// Twist: half of new requests carry an optional theme (state.mk.req.tw), shown as a bonus line on the checklist; meeting it pays a
+// glimmer and they notice. Stars are unchanged. Check-ins: 3 days after a room is finished its resident writes (seeded per room + key +
+// request, so both phones agree) asking for one kind of piece it lacks (room.fu {fn,t,done}); add it with Rearrange and they thank you
+// (+buttons, +friendship, the room goes up to 3 stars). One open check-in at a time.
+const MK_TW={small:{t:'Cozy and small: 6 to 8 pieces',ok:(d)=>d.length>=6&&d.length<=8},
+  oneset:{t:'Mostly one set (4 in 5 pieces)',ok:d=>{if(d.length<4)return false;const n={};d.forEach(x=>{if(x.set)n[x.set]=(n[x.set]||0)+1});return Math.max(0,...Object.values(n))>=d.length*.8}},
+  plants:{t:'Bring the outside in: 3 or more plants',ok:d=>d.filter(x=>x.fn==='plant').length>=3},
+  bright:{t:'Bright and warm: 3 or more lights',ok:d=>d.filter(x=>x.fn==='light').length>=3},
+  soft:{t:'Soft underfoot: 2 rugs and a seat',ok:d=>d.filter(x=>x.fn==='rug').length>=2&&d.some(x=>x.fn==='seat')}};
+{const mt=mkTick;mkTick=function(){const r=mt.apply(this,arguments);try{const M=mkState();if(M.req&&!('tw' in M.req)){const R=jrRand('mktw|'+(roomCode||'solo')+'|'+(M.n|0)),ks=Object.keys(MK_TW);M.req.tw=R()<.5?ks[Math.floor(R()*ks.length)]:'';saveSoon()}
+  mkFollowTick()}catch(e){console.warn('mk twist',e)}return r}}
+{const mr=mkReq;mkReq=function(){const q=mr();if(q){const M=mkState();if(M.req&&M.req.tw)q.tw=M.req.tw}return q}}
+{const mc=mkCheck;mkCheck=function(q,items){const C=mc(q,items);try{const T=q&&q.tw&&MK_TW[q.tw];if(T){const defs=items.map(i=>CATMAP[i.k]).filter(Boolean);C.tw={t:T.t,ok:T.ok(defs)};C.rows.push({t:'Bonus: '+T.t,ok:C.tw.ok,bonus:1})}}catch(e){console.warn('mk check',e)}return C}}
+{const mf=mkFinish;mkFinish=function(){let tw=null,k=null,i=null;try{if(sandbox&&sandbox.mk&&!sandbox.mk.view){const q=mkReq();if(q&&q.tw){const C=mkCheck(q,state.items);if(C.n>=2)tw=C.tw;k=q.k;i=q.i}}}catch(_){}
+  const r=mf.apply(this,arguments);try{if(tw&&k&&!sandbox){const R=mkRoom(k,i);if(R&&tw.ok){R.tw=1;earnG(1);setTimeout(()=>toast(`${RESIDENTS[k].n} noticed the theme. +1 glimmer`,true),900);saveSoon()}}}catch(e){console.warn('mk twist pay',e)}return r}}
+// check-ins
+const MK_FU={seat:'somewhere to sit and put my feet up',bed:'somewhere to nap',surface:'somewhere to put my tea down',storage:'somewhere to keep my bits and bobs',light:'a lamp to read by in the evenings',
+  plant:'a plant, something alive to talk to',rug:'a rug, my toes get cold',deco:'one little ornament to look at',wall:'something on the walls',fun:'something fun to do on a rainy day'};
+function mkOpenFollow(){for(const r of mkAllRooms()){const R=mkRoom(r.k,r.i);if(R&&R.fu&&!R.fu.done)return Object.assign({k:r.k,i:r.i},R.fu)}return null}
+function mkFollowTick(){if(!state||sandbox||mkOpenFollow())return;const now=Date.now();
+  for(const r of mkAllRooms()){const R=mkRoom(r.k,r.i);if(!R||R.fu||now-(R.at||0)<3*864e5||!RESIDENTS[r.k])continue;
+    const fns=new Set((R.items||[]).map(it=>(CATMAP[it.k]||{}).fn)),miss=Object.keys(MK_FU).filter(f=>!fns.has(f));if(!miss.length){R.fu={fn:'',t:now,done:1};continue}
+    const rnd=jrRand('mkfu|'+(roomCode||'solo')+'|'+r.k+'|'+r.i),fn=miss[Math.floor(rnd()*miss.length)],q=MK_REQ[r.k][r.i];R.fu={fn,t:now,done:0};
+    resPost(r.k,`I’ve been living in my ${q.t.toLowerCase().replace(/^an? /,'')} for a few days now and I love it. One thing I keep wishing for: ${MK_FU[fn]}. Could you pop by and add one? Only if you have time.`);saveSoon();return}}
+// a rearrange that adds what they asked for completes it
+{const mca=mkCancel;mkCancel=function(){let ctx=null;try{const m=sandbox&&sandbox.mk;if(m&&m.view&&m.edit){const R=mkRoom(m.k,m.i);if(R&&R.fu&&!R.fu.done)ctx={k:m.k,i:m.i,fn:R.fu.fn,has:state.items.some(it=>(CATMAP[it.k]||{}).fn===R.fu.fn)}}}catch(_){}
+  const r=mca.apply(this,arguments);try{if(ctx&&ctx.has){const R=mkRoom(ctx.k,ctx.i);if(R&&R.fu&&!R.fu.done){R.fu.done=1;const was=R.stars|0;R.stars=3;R.at=Math.max(R.at|0,Date.now());const N=RESIDENTS[ctx.k].n,h=12*BTN;state.btn=(state.btn|0)+h;kfAdd(ctx.k,3);
+    logEvent(`added what ${N} asked for to their ${MK_REQ[ctx.k][ctx.i].t.toLowerCase()}`);setTimeout(()=>{try{resPost(ctx.k,`You came back and added it! It’s perfect now. Thank you, really. I keep standing in the doorway just to look at it.`)}catch(_){}},3000);
+    setTimeout(()=>showReward(`${N} is so happy`,'tab-decorate',`<p class="mkstars">${'<i class="on"></i>'.repeat(3)}</p><p>Just what they asked for. ${was<3?'The room is a three-star room now.':''}</p><p class="rwsub">+${h} buttons · friendship with ${esc(N)}</p>`),600);saveSoon();updHUD()}}}catch(e){console.warn('mk follow',e)}return r}}
+// Decorate's home page and the house chips mention an open check-in
+{const mdh=mkDecoHtml;mkDecoHtml=function(){let h=mdh();try{const F=mkOpenFollow();if(F&&!sandbox){const q=MK_REQ[F.k][F.i];h=`<button type="button" class="dnews mkreq" id="mkFu"><span class="mkf">${lifeFace(F.k)}</span><span><b>${esc(RESIDENTS[F.k].n)} would love ${esc(MK_FU[F.fn])}</b><small>In the ${esc(q.t.toLowerCase().replace(/^an? /,''))} you made. Open it and tap Rearrange.</small></span></button>`+h}}catch(e){console.warn('mk follow html',e)}return h}}
+{const mdb=mkDecoBind;mkDecoBind=function(root){mdb(root);const b=root.querySelector('#mkFu');if(b)b.onclick=()=>{const F=mkOpenFollow();if(F)mkStart(F.k,true,F.i)}}}
+// while rearranging a room with an open check-in, the bar says what they asked for
+{const mb=mkBar;mkBar=function(){mb.apply(this,arguments);try{const m=sandbox&&sandbox.mk;if(m&&m.view){const R=mkRoom(m.k,m.i);if(R&&R.fu&&!R.fu.done){const b=$('#mkbar'),sm=b.querySelector('.mkt small');if(sm){const has=state.items.some(it=>(CATMAP[it.k]||{}).fn===R.fu.fn);sm.insertAdjacentHTML('afterend',`<small class="mkfu${has?' ok':''}">${has?'Done: ':'They asked for '}${esc(MK_FU[R.fu.fn])}</small>`)}}}}catch(e){console.warn('mk bar',e)}}}
+setInterval(()=>{try{const m=sandbox&&sandbox.mk;if(m&&m.view&&m.edit){const R=mkRoom(m.k,m.i);if(R&&R.fu&&!R.fu.done){const has=state.items.some(it=>(CATMAP[it.k]||{}).fn===R.fu.fn),b=$('#mkbar');if(b._fu!==has){b._fu=has;mkBar()}}}}catch(_){}},900);
+/* </mk-deep> */
+/* <town-events> */
+// ---- town events you can see (v110): festival stalls on the plaza, the Pumpkin Parade, fireworks.
+// Stalls: during a festival week or a big holiday (EVF_HOLS), 10:00-21:00, a few stalls, a food truck, string lights and a duck pond
+// go up near the plaza (tm.festG, not saved, cells blocked via tm.festCells). The duck pond is Hook-a-duck: tap it, the pet walks over,
+// Bubble Pop opens, and the first play each festival gives a keepsake ribbon. Parade: the Pumpkin Parade week (and Swap-Face Night),
+// 18:00-19:00, the event's guests march round the ring road (the biggest cobble circle). Fireworks: EVF_FIRE nights 20:00-24:00 on the
+// map sky (#tmSky, drawn after tmSkyDraw), with a pop now and then.
+const EVF_HOLS=['jar','bubblework','firstbrick','swapface','longtable','twoheart','longlight'],EVF_FIRE=['jar','bubblework','firstbrick'];
+function evfOn(){const F=festOn(),H=holOn(),h=townHour();if(h<10||h>=21)return null;if(F)return{k:'f-'+F.k,n:F.n};if(H&&EVF_HOLS.includes(H.k))return{k:'h-'+H.k,n:H.n};return null}
+function evfSpots(){const m=tmM(),G_=twGrid();if(!m||!G_)return[];const W=G_.W,road=G_.road,blk=G_.block,sea=tm.seaCells||new Set(),R=jrRand((roomCode||'solo')+'|fest|'+lifeDay()),out=[],taken=new Set();
+  const cand=[];for(let j=1;j<G_.D-1;j++)for(let i=1;i<W-1;i++){const c=j*W+i;if(road[c]||blk[c]||sea.has(c))continue;const [x,z]=twPos(i,j),d=Math.hypot(x,z);if(d<3.5||d>12)continue;if(road[c-1]||road[c+1]||road[c-W]||road[c+W])cand.push([i,j,Math.atan2(z,x)])}
+  ['duckpond','stall','foodtruck','stall','stringlights','stall'].forEach((k,n)=>{const D=TM_DECOR[k];if(!D)return;const [w,d]=D.sz||[1,1],want=n/6*Math.PI*2-Math.PI;
+    const C=cand.slice().sort((a,b)=>Math.abs(((a[2]-want+9.42)%6.283)-3.14)-Math.abs(((b[2]-want+9.42)%6.283)-3.14)).slice(0,30);
+    for(const [i,j] of C){let ok=true;for(let a=0;a<w&&ok;a++)for(let b=0;b<d&&ok;b++){const c=(j+b)*W+i+a;if(i+a>=W||j+b>=G_.D||blk[c]||road[c]||taken.has(c)||sea.has(c))ok=false}
+      if(!ok||out.some(q=>Math.abs(q[1]-i)+Math.abs(q[2]-j)<3))continue;for(let a=0;a<w;a++)for(let b=0;b<d;b++)taken.add((j+b)*W+i+a);out.push([k,i,j]);break}});return{out,taken}}
+function tmFestDecor(){if(!tm||!tm.world||tmMk()!=='world')return;const E=evfOn(),key=E?E.k+'|'+lifeDay():'';if(tm.festKey===key)return;tm.festKey=key;
+  if(tm.festG){tm.world.remove(tm.festG);tm.festG=null}tm.festCells=new Set();if(!E){if(tw)tw.gkey='';return}
+  const S=evfSpots(),g=G(),gm=G();g.add(gm);S.out.forEach(([k,i,j])=>{try{const D=TM_DECOR[k],[w,d]=D.sz||[1,1],o=tmLod(()=>D.b())(),[x,z]=twPos(i,j);o.position.set(x+(w-1)/2,0,z+(d-1)/2);o.rotation.y=Math.atan2(-x,-z);if(w!==d)o.rotation.y=Math.round(o.rotation.y/(Math.PI/2))*(Math.PI/2);
+    o.userData.evf=k;let an=false;o.traverse(c=>{if(c.userData.anim)an=true});(an||k==='duckpond'?g:gm).add(o)}catch(e){console.warn('fest decor',k,e)}});
+  try{bakeStatic(gm)}catch(_){}S.taken.forEach(c=>tm.festCells.add(c));tm.festG=g;tm.world.add(g);if(tw)tw.gkey=''}
+// the walk grid treats festival cells as blocked (like the seasonal ones)
+{const tg=twGrid;twGrid=function(){const G_=tg.apply(this,arguments);try{if(G_&&tm&&tm.festCells&&tm.festCells.size&&G_._fest!==tm.festKey){tm.festCells.forEach(c=>{G_.block[c]=1});G_._fest=tm.festKey}}catch(_){}return G_}}
+{const to=tmOpen;tmOpen=function(){const r=to.apply(this,arguments);try{tmFestDecor()}catch(e){console.warn('fest',e)}return r}}
+setInterval(()=>{try{if(tm&&tm.open)tmFestDecor()}catch(_){}},60000);
+// Hook-a-duck
+function evfDuck(){const E=evfOn();if(!E)return;const A=state.acts||(state.acts={}),key='evf:'+E.k+':'+lifeDay().slice(0,4);
+  if(!A[key]){A[key]=lifeDay();keepAdd({k:'ribbon',n:`${E.n} ribbon`,d:`Hooked a duck at the ${E.n} stall on the plaza.`});setTimeout(()=>toast(`A ${E.n} ribbon for your keepsakes!`,true),400);saveSoon()}
+  try{closeMap()}catch(_){}setTimeout(()=>{try{openGame('pop')}catch(e){console.warn('duck game',e)}},350)}
+{const tt=twTap;twTap=function(cx,cy){try{if(tm.festG&&tm.festG.visible!==false){tmCell(cx,cy);const hs=tm.ray.intersectObjects([tm.festG],true);for(const h of hs){let o=h.object;while(o&&o!==tm.world&&!o.userData.evf)o=o.parent;
+  if(o&&o.userData.evf==='duckpond'){const p=o.position,P=tw.pet,a=Math.atan2(P.x-p.x,P.z-p.z);twWalk(p.x+Math.sin(a)*1.4,p.z+Math.cos(a)*1.4,()=>{P.ry=Math.atan2(p.x-P.x,p.z-P.z);evfDuck()});return}
+  if(o&&o.userData.evf){toast(o.userData.evf==='foodtruck'?'Festival snacks! The queue is mostly the twins.':'A festival stall. Everyone’s out today.',true);return}}}}catch(e){console.warn('fest tap',e)}return tt.apply(this,arguments)}}
+// the Pumpkin Parade: the guests march round the ring road, the Mayor in front
+function paradeOn(){const F=festOn(),H=holOn(),h=townHour();return h>=18&&h<19&&((F&&F.k==='spooky')||(H&&H.k==='swapface'))}
+function paradeRing(){const m=tmM(),C=(m&&m.c||[]).filter(c=>c[4]==='cobble'&&c[3]>0).sort((a,b)=>b[2]-a[2])[0];if(!C)return{x:0,z:0,r:8};const [x,z]=twPos(C[0],C[1]);return{x:x-.5,z:z-.5,r:C[2]}}
+{const rt=twResTick;twResTick=function(dt,t){const out=rt.apply(this,arguments);try{if(!paradeOn())return out;const E=eventNow();if(!E)return out;const who_=['mayor',...E.guests.filter(k=>k!=='mayor')],Rg=paradeRing();
+  who_.forEach((k,n)=>{const r=tw.res.get(k);if(!r||r.out||r.chat)return;const a=t*.08-n*.32,tx=Rg.x+Math.cos(a)*Rg.r,tz=Rg.z+Math.sin(a)*Rg.r;r.wait=0;r.spot=null;r.atSpot=0;
+    if(!r.path||!r.path.length||Math.hypot(r.path[r.path.length-1][0]-tx,r.path[r.path.length-1][1]-tz)>2)r.path=Math.hypot(r.x-tx,r.z-tz)>3?(twPath(r.x,r.z,tx,tz)||[[tx,tz]]):[[tx,tz]]})}catch(e){console.warn('parade',e)}return out}}
+// fireworks over the map on the big nights
+const FW={p:[],t:0,last:0};
+function fwOn(){const H=holOn(),h=townHour();return!!H&&EVF_FIRE.includes(H.k)&&h>=20}
+{const sd=tmSkyDraw;tmSkyDraw=function(){sd.apply(this,arguments);try{if(!fwOn()&&!FW.p.length)return;const cv=$('#tmSky');if(!cv)return;const x=cv.getContext('2d'),W=cv.width,H=cv.height,now=performance.now(),dt=Math.min(.05,(now-(FW.last||now))/1000);FW.last=now;
+  if(fwOn()&&(FW.t-=dt)<=0){FW.t=.5+Math.random()*1.1;const cx=W*(.15+Math.random()*.7),cy=H*(.08+Math.random()*.28),hue=[330,90,195,48,28,270][Math.random()*6|0],n=46+(Math.random()*30|0),sp=W*(.12+Math.random()*.08);
+    for(let i=0;i<n;i++){const a=i/n*Math.PI*2+Math.random()*.1,v=sp*(.6+Math.random()*.4);FW.p.push({x:cx,y:cy,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:1,h:hue+(Math.random()*20-10)})}if(Math.random()<.6)try{SFX.pop()}catch(_){}}
+  x.save();FW.p.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=H*.12*dt;p.vx*=.985;p.vy*=.985;p.l-=dt*.7;if(p.l<=0)return;const r=Math.max(1.5,W*.0065*(.5+.5*p.l));x.globalAlpha=Math.max(0,p.l)*.35;x.fillStyle=`hsl(${p.h},100%,60%)`;x.beginPath();x.arc(p.x,p.y,r*2.2,0,6.283);x.fill();x.globalAlpha=Math.max(0,p.l);x.fillStyle=`hsl(${p.h},100%,${62+14*p.l}%)`;x.beginPath();x.arc(p.x,p.y,r,0,6.283);x.fill()});x.restore();FW.p=FW.p.filter(p=>p.l>0)}catch(e){console.warn('fireworks',e)}}}
+/* </town-events> */
 function mergeInto(L,R){if(!syncBase)return{};const B=syncBase,ch={},Bkr=B.kr?JSON.parse(B.kr)||{}:{},Rkr=R.kr||{};new Set([...Object.keys(L),...Object.keys(R)]).forEach(k=>{if(k==='rev')return;
     const lj=JSON.stringify(L[k]),rj=JSON.stringify(R[k]),bj=B[k];if(rj===lj||rj===bj)return;if(k!=='kr'&&(+Rkr[k]||0)<(+Bkr[k]||0))return;
     if(lj===bj){L[k]=R[k]===undefined?undefined:JSON.parse(rj);ch[k]=1;return}
@@ -68226,7 +68311,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=108;
+const APP_V=109;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

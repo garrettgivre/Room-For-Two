@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v108** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v108'` in `sw.js`; bump both for anything
+**Current build: v109** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v109'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1086,3 +1086,22 @@ visit_guest, visit_host, closer, apart; sources `.claude/social/<group>.js`, bri
   map conversations (`cvSysLine` wrapper, 18%).
 - What residents say first in a close-up: `socialLine(k)` (party, visiting, hosting a visitor, or a drift line 22%) before the usual
   greeting in `kOpen`.
+
+
+## Makeovers deeper; town events you can see (v109)
+Blocks `/* <mk-deep> */` and `/* <town-events> */` after the social block (wrappers on mkTick, mkReq, mkCheck, mkFinish, mkCancel,
+mkDecoHtml, mkDecoBind, mkBar; twGrid, tmOpen, twTap, twResTick, tmSkyDraw).
+- **Theme twists** (`MK_TW`: small, oneset, plants, bright, soft): half of new requests get `state.mk.req.tw` (seeded by room + count).
+  `mkCheck` appends a "Bonus:" row after the stars are worked out (stars unchanged); met at finish = `room.tw=1` and +1 glimmer.
+- **Check-ins**: 3 days after a room's `at`, `mkFollowTick` (from mkTick) picks one kind of piece the room lacks (`MK_FU`, seeded per
+  room + resident + request) as `room.fu {fn,t,done}` and the resident writes; one open at a time (`mkOpenFollow`). Decorate's home page
+  shows it (`#mkFu` opens the room); the bar says what they asked for; a Rearrange that adds that kind completes it (`mkCancel` wrapper:
+  +12 buttons x BTN, +3 friendship, stars 3, `at` bumped so the merge keeps it, a thank-you letter).
+- **Festival stalls** (`evfOn`: a festival week or `EVF_HOLS` holiday, 10:00-21:00): `tmFestDecor` builds `tm.festG` (duck pond, stalls,
+  food truck, string lights) in free cells 3.5-12 from the plaza (`evfSpots`, seeded per room + day), not saved, cells blocked in the walk
+  grid (`twGrid` wrapper, `tm.festCells`). Tapping the duck pond walks there and opens Bubble Pop (`evfDuck`; first play each festival =
+  a keepsake ribbon, `acts['evf:...']`). Debug: `dbgFest`.
+- **Pumpkin Parade** (`paradeOn`: spooky festival week or Swap-Face Night, 18:00-19:00): the `twResTick` wrapper keeps the event's guests
+  (the Mayor first) walking the biggest cobble circle (`paradeRing`), spaced out; they join as they finish what they were doing.
+- **Fireworks** (`fwOn`: `EVF_FIRE` holidays from 20:00): bursts drawn on `#tmSky` after `tmSkyDraw` (`FW` particles, a soft glow and a
+  bright core per spark; `SFX.pop`).
