@@ -35434,7 +35434,7 @@ canvas.addEventListener('pointerdown',e=>{if(!ready)return;try{canvas.setPointer
     gest={type:'orbit',yaw0:cam.yaw,pitch0:cam.pitch};return}
   if(brush){const th=paintHit(e.clientX,e.clientY);if(th){gest={type:'paint'};startStroke(th,e.clientX,e.clientY)}else gest={type:'orbit',yaw0:cam.yaw,pitch0:cam.pitch};return}
   const h=pick(e.clientX,e.clientY);
-  if(h&&h.id&&openTab!=='decorate')gest={type:'orbit',yaw0:cam.yaw,pitch0:cam.pitch,liveItem:true};
+  if(h&&h.id&&openTab!=='decorate')gest={type:'orbit',yaw0:cam.yaw,pitch0:cam.pitch,liveItem:h.id};
   else if(h&&h.id){select(h.id);gest={type:'item',id:h.id,started:false}}
   else if(h&&h.pet){const G0=gest={type:'pet',head:h.head};if(!styling()&&openTab!=='decorate')setTimeout(()=>{const p=ptrs.get(e.pointerId);if(gest===G0&&gest.type==='pet'&&p&&ptrs.size===1&&Math.hypot(p.x-p.sx,p.y-p.sy)<9&&petPickUp()){gest.type='hold';petHoldMove(p.x,p.y)}},380)}
   else gest={type:'orbit',yaw0:cam.yaw,pitch0:cam.pitch};
@@ -35455,7 +35455,7 @@ canvas.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(!p||!
 function endPtr(e){const p=ptrs.get(e.pointerId);if(!p)return;ptrs.delete(e.pointerId);if(!gest)return;
   const tap=Math.hypot(p.x-p.sx,p.y-p.sy)<8&&performance.now()-p.t<350;
   if(gest.type==='orbit'&&tap&&gest.town){townTap(gest.town);gest=ptrs.size?{type:'none'}:null;return}
-  if(gest.type==='orbit'&&tap){select(null);if(gest.liveItem&&!liveHinted){liveHinted=true;toast('Open Decorate to move furniture.')}emptyTap()}
+  if(gest.type==='orbit'&&tap){select(null);if(gest.liveItem&&!openTab&&!wheelOn()&&!kmode&&petUseItem(gest.liveItem)){}else{if(gest.liveItem&&!liveHinted){liveHinted=true;toast('Open Decorate to move furniture.')}emptyTap()}}
   if(gest.type==='pet'&&tap){petTouch(gest.head);if(!styling()&&openTab!=='decorate')setFollow(true)}
   if(gest.type==='hold')petDrop();
   if(gest.type==='item'&&gest.started)finishDrag();
@@ -66955,6 +66955,7 @@ const WHATSNEW=[[119,'For the two of you: notes to each other are kept safe, you
   [126,'A yard of your own! Save up 3,000 buttons and Bolt at Hammer & Hue will build one behind your house. Decorate it with your own furniture, step outside with Mochi, and make it bigger later.'],
   [127,'Furniture reacts now: seats and beds squish when Mochi sits and spring back after, things wobble when they’re used, and Mochi naps under a blanket that rises with its breathing. Getting up leaves the bed rumpled, and then Mochi makes it.'],
   [128,'About 150 pieces from 13 sets now have their own moving parts when Mochi uses them: fridge doors open, pillows dent, teapots pour, the campfire flares, screens flicker, and the toy chest pops open. More sets are on the way.'],
+  [129,'Tap any piece of furniture and Mochi will go and use it, so you can watch the fridge open, the bed get rumpled or the campfire flare whenever you like.'],
   [118,'Friendships go deeper: every neighbour has five more heart-to-hearts, sends a letter (and a gift) when you become best friends, and remembers what you talked about lately. More fixes from playtesting: town projects always appear on the map (the bouncy castle comes first now), the Journal keeps months, not days, taps on the noticeboard, museum and well work, and the back button closes photos and fishing.'],
   [117,'Fixes from playtesting: finished makeovers now pay out properly (they hadn’t been!), events at the library, Town Hall and weather station pay too, party guests spread out, Today’s list sits right under the bond bar, and your pet’s Journal has a page summing up the month so far. Plus a gentler welcome back, fewer day-one strangers, and lots of small things.'],
   [116,'Polish: keepsake letters read properly in the Bag, scrolling tab rows show there’s more, the plaza tiles are brighter, civic buildings have bigger name signs, and messages no longer pop over your pet while you dress it.'],
@@ -70183,6 +70184,12 @@ function ilTick(dt,t){dt=Math.min(dt,.05);const objs=roomObjs();try{const uid_=p
     else if(B.st==='make'){const p=Math.min(1,B.t/1.6);g.children.forEach((q,i)=>{q.position.x*=1-dt*2;q.position.z*=1-dt*2});g.scale.set(1+p*.9,Math.max(.05,1-p*.95),1+p*.2);if(p>=1){ilDrop(g);IL.bl.delete(id)}}}}
 {const up=updatePet;updatePet=function(dt,t){const r=up.apply(this,arguments);try{ilTick(dt,t)}catch(e){console.warn('item life',e)}return r}}
 {const tt=travelTo;travelTo=function(){try{for(const [id,B] of IL.bl)ilDrop(B.g);IL.bl.clear();for(const [id] of IL.sp){const o=roomObjs().get(id);if(o&&o.userData.ilB){const B=o.userData.ilB;o.scale.set(B.sx,B.sy,B.sz);o.rotation.x=B.rx}}IL.sp.clear()}catch(_){}return tt.apply(this,arguments)}}
+// ---- tap a piece of furniture and the pet goes to use it (v129); a piece it can't use gets a curious look
+function petUseItem(id){try{if(sandbox&&!sandbox.yard)return false;if(away&&away.key!=='yard')return false;if(styling()||toyPlay||pet.mode==='held'||!pet.rig)return false;
+  const o=roomObjs().get(id),it=roomItem(id);if(!o||!it)return false;const d=defOf(it.k),u=d&&useOf(d);
+  if(!u){emote('❓');try{petAct('curious')}catch(_){}toast(`${PN()} has a look at the ${nmLow(d?d.n:'thing')}.`);return true}
+  if(pet.use)endUse(false);if(pet.mode==='perch')leaveSeatNow();pet.mode='idle';pet.act=null;
+  const ok=goUse({o,it,d,u});if(!ok){emote('💕');try{petAct('curious')}catch(_){}toast(`${PN()} admires the ${nmLow(d.n)}.`)}else{try{emote('❗')}catch(_){}if(!localStorage.r42useTip){try{localStorage.r42useTip='1'}catch(_){}toast(`Tap any piece of furniture and ${PN()} will go and use it. Open Decorate to move things.`,true)}}return true}catch(e){console.warn('use item',e);return false}}
 /* </loop-fixes> */
 /* <anim-sets> */
 // per-piece animations (v128+): one Object.assign(BUILD,...) per set from .claude/anim/<set>.js (brief tools/dev/town/ANIM_BRIEF.md)
@@ -72070,7 +72077,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><p class="coachgo">Start by tapping ${nm} to say hello.</p><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=128;
+const APP_V=129;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

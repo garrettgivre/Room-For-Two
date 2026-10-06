@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v128** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v128'` in `sw.js`; bump both for anything
+**Current build: v129** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v129'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1361,3 +1361,7 @@ end of `/* <loop-fixes> */`, `IL`.
   fridges/cupboards open (their bodies are shallower shells with a door), pet beds (USE_ITEM 'nap') run `use` while the pet naps
   (`ilTick`). Some parts are found by child index in the original builder: if one of those builders changes, re-check with
   `.claude/anim/dump.js`. Cost: ~3 more meshes per piece (183 pieces: 2,076 → 2,616 meshes). ~75 sets still to do.
+- v129: tapping a piece of furniture outside Decorate makes the pet go and use it (`petUseItem(id)`: the room's pointer code now stores
+  the hit item id in `gest.liveItem`; ends a current use or seat, then `goUse`; pieces with no use get a curious look; a wall piece it
+  can't reach gets an admiring look; one-time tip `localStorage.r42useTip`). Home and the yard only. Garrett couldn't get the pet to use
+  things to see the v128 animations: before this, only the pet's own choices used furniture.
