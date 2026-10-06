@@ -3,7 +3,7 @@
 // Run before releases that touch saved state:  node tools/dev/town/run.js tools/dev/town/persist.js
 // Background: v75-v104 lost the whole town layout on every load (a version number cut by |0); nothing on screen showed it.
 const path=require('path');
-const VOLATILE=/^(rev|kr|visits|jrT|cv|minV|ibT|pet\.(s\..*|hunger|fun|energy|clean|affection|t|mood|auto\..*|last.*)|wish(\..*)?|td\.(prog.*|nudge.*)|weather.*)$/;
+const VOLATILE=/^(rev|kr|visits|jrT|cv|minV|ibT|pet\.(s\..*|hunger|fun|energy|clean|affection|t|mood|auto\..*|last.*)|wish(\..*)?|td\.(prog.*|nudge.*)|weather.*|rmem..*.said)$/;
 module.exports=async({ev,pg,wait,log})=>{const errs=[];pg.on('pageerror',e=>errs.push(e.message));
  const J=async c=>{let r=await ev(c);try{r=JSON.parse(r)}catch(_){}if(typeof r==='string'){try{r=JSON.parse(r)}catch(_){}}return r};
  const ready=async()=>{for(let i=0;i<300;i++){if(await ev('typeof ready!=="undefined"&&ready&&tm&&!tm.pending&&!ARR.on')==='true')return;await wait(300)}};

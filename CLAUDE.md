@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v107** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v107'` in `sw.js`; bump both for anything
+**Current build: v108** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v108'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1068,3 +1068,21 @@ Block `/* <pet-deep> */` just before `mergeInto` (it needs `MERGE`, defined just
 - **Bond milestones** (`BOND_PERKS`, shown on the bond-up card with any trick unlocked at that level): bond 4+ a daily find (`pdFindTick`,
   60% of days, seeded per room + day, `acts.pfind`, a common shore/trail treasure via `treasureGet`), bond 10+ a weekly letter keepsake
   (`pdLetterTick`, `pmem.letterW`).
+
+
+## Neighbours' lives (v108)
+Block `/* <social> */` after pet-deep; lines in `/* <social-talk> */` after the season talk (`TALK[k].sys` party_host, party_guest,
+visit_guest, visit_host, closer, apart; sources `.claude/social/<group>.js`, brief `tools/dev/town/SOCIAL_BRIEF.md`; facts in the bible).
+- **Birthday parties** (`partyKeys(day)`, `partyNow(h)`): 17:00-20:00 on a resident's `bdayOf` at their house, guests = housemates plus
+  up to 5 residents with `rFeel(guest, host) >= 1`; it's an ordinary event (`eventCalc` wrapper, `E.bday`/`E.bdays`), so the map,
+  noticeboard, `shopCrew` guests and `eventArrive` rewards all work. The Mayor's Inbox note on the day mentions it (`townLifeTick`
+  wrapper, `acts.partynote`). Decorations: `partyDecor` (bunting on the back wall, gift pile and balloon arch in the most open cells,
+  spacing relaxed because houses are full) through the `houseDecoLayout` wrapper. Debug: `dbgEvent='bday-<key>'`.
+- **Visits**: `friendVisitOf(k,h)` (12% of 2-hour slots 10:00-21:00, seeded per room + day + slot, a friend with `rFeel >= 1` who is home
+  then; `fvGuard` stops resWhere recursing) is folded into `shopVisitOf`, which returns the house key, so `resWhere` says 'visit', the map
+  walks them there, and the `shopCrew` wrapper adds them as guests (only while a resident of the house is home).
+- **Shifting friendships**: `rDrift(a,b)` (+1 for 10% of pairs, -1 for 5%, per room + week, symmetric) is added inside a `rFeel` wrapper,
+  so street chats, party guest lists and visits all follow it. `socDrifts(k)`; residents mention it (`closer`/`apart`) in close-ups and
+  map conversations (`cvSysLine` wrapper, 18%).
+- What residents say first in a close-up: `socialLine(k)` (party, visiting, hosting a visitor, or a drift line 22%) before the usual
+  greeting in `kOpen`.

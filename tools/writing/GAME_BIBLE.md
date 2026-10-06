@@ -2000,6 +2000,36 @@ lit first.
 - Playhouse Hill: Bolt built the flowering arch (Posy did the flowers) and the wooden edge of the ice rink; Fold lettered the rink's sign. There are several snowmen in winter: one by the plaza wears Bolt's spare hard hat with two level coal eyes (Sketch checked), Pom's has an afro, the twins' has Crumb's pebble eyes; Boing's has a spring inside and "went boing once". In winter Tock and Sketch have cocoa at four (cider in autumn); Bunbun makes square marshmallows for Pixel's cocoa. Nimbus leaves an umbrella at the Paper Post gate and Fold leaves a paper crane on Nimbus's. A bird nests on the Toy Box sign in spring.
 - Lantern Meadow: the Mayor practises part two of his speech on the plaza snowman (its carrot nose is from Posy's garden), gives the cherry blossom a short speech, and keeps an egg basket on the guest-book desk in spring (nobody takes an egg, everyone signs). Dewey records firefly flash patterns in its blank book (Lumi checks the spelling). Lumi helped light the plaza evergreen and sleeps through summer noons under Prickles' sunhat (he doesn't know). Nimbus keeps the sky overcast for the ice rink, gives the third mug of winter cocoa to whoever knocks, and showers the splash fountain at night. Posy painted the birdhouses to match the flowers (the robins chose the pink one). Prickles keeps a snowball under the porch for Scone; he and Posy watch the fireflies holding hands. Echo's horn rings a little sharp in the cold; sled runners hiss in F; its records warp in the heat and it plays the wobble.
 
+### Birthday parties, visits, shifting friendships (v108)
+Birthdays come from `bdayOf` (the Mayor's is First Brick Day, 14 Sept; Scone and Crumb share one). Parties are 5-8 pm at the house.
+- **Sugarloaf:** Bunbun puts the kettle on for guests ("the kettle has opinions"). Pip wraps presents four times (the early wraps get jam
+  on them), hides his lid drip behind a napkin when visiting, and Bunbun packs him a lunch for visits; Bunbun's saying: friends are like
+  jam, leave them alone a bit and they set. Cushy gives cushions as presents, covers a sleeping visitor with a blanket, likes the window
+  where the light lands at four. Dusty puts a bow on every chair at its party; its home smells of clean laundry. The twins make Tutti's
+  party banner, one letter upside down. Tutti wheels the cart to a friend's; a scoop saved for someone goes soft. Crumb found Scone "the
+  fastest rock" for their birthday; Crumb wraps a pebble in a napkin as a present and leaves one on a friend's step when they drift.
+  Dr. Patch brings a heart plaster as a party gift and promises not to check pulses when visiting.
+- **Bubble Bay:** Fizz serves his birthday cake in the claw tub; his hair eats his party hat; he brings a small bubble machine to parties
+  (it escapes). Loofah's party hands out warm towels and Fizz gives a speech about Loofah. Stitch is handed four scarves on their
+  birthday and measures each; Bobbin checks Stitch's middle knot. Pom's party has a mood-board wall that includes the player; Blush bakes
+  Pom's cake in four named colours. Pom does Blush's balloons; Blush's cake is apricot and plum; she brings a tin of paint called "a good
+  year". Gloss writes her own party into the book and tidies the coat pile at others'. Bobbin makes the bunting at its party. Beacon's
+  party has tin mugs of cocoa and Bunbun's burnt cookies; Bobbin knits Beacon a scarf with a deliberate dropped stitch; Beacon keeps a tin
+  mug with the good handle for a friend and leaves the window light on for every visit.
+- **Playhouse Hill:** Boing's birthday cake bounced and fell; Joy hides Boing's present near the sofa; Boing gives Joy a trophy "for
+  turning a year older". It is 406 steps from the Clockwork Cottage to a friend's; Sketch labels the cake "CAKE" with the slice count;
+  Sketch's birthday cake is 31 cm across (its birthday is 31 May). Fold's paper hard hat for Bolt is number seven; Bolt builds a table
+  halfway through his own party and fixes loose boards at friends' houses. Pixel's cake has 21 layers; it rates parties out of ten and
+  likes standing in corners. Parcel reads all 40 birthday cards aloud; Fold writes the banner, Parcel stamps it; Fold folds a lime paper
+  lantern for each party guest. Cobble brings a smooth stone as a birthday gift and sits on the wall at his own party.
+- **Lantern Meadow:** the Mayor gives three speeches at his party (the first cut to eleven minutes), cuts the gate ribbon twice for the
+  photographs, keeps everyone's birthdays in green ink, and calls a visit "a meeting of two" and takes minutes. Dewey closes the reading
+  room on its birthday (23 Jan) and keeps a card for each friend in a drawer. Lumi's party (6 July) serves hot milk with cinnamon; the
+  porch light goes up a notch for guests; Lumi gives a lantern that lights itself at dusk. Nimbus's party is 30 Dec ("mostly cheerful,
+  light chance of a sneeze"); Nimbus gives a small barometer. Posy (28 April) puts a seedling by every plate and Prickles is in charge of
+  her cake; swapped seedlings mean two residents are friends now. Posy organises Prickles' party (17 Feb) against his wishes. Echo (15 Oct)
+  writes each of you a tune and plays one song at a party, no encore.
+
 ## Open questions (undecided; ask Garrett before writing as fact)
 1. **Is there a sea?** Bubble Bay, the pier, the beach, the harbour, boats, gulls and Beacon's lighthouse are all over the lore, and Prickles dreams of the sea; the v60 map is countryside with
    ponds. Options: the bay is just off the map's edge; or add a shore to the south-east.
