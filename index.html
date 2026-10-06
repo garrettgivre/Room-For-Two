@@ -998,6 +998,9 @@ body.styling .storechip{opacity:0}
 .kbub .kn{background:color-mix(in oklab,var(--kc,#FF8A1C) 40%,#FFFFFF)!important;border:2px solid #fff!important;color:#2E2A5C!important;text-shadow:none!important;border-radius:999px!important;padding:2px 16px 3px!important;transform:rotate(-1.5deg)}
 #pfHud{position:fixed;left:8px;top:calc(env(safe-area-inset-top,0px) + 92px);z-index:60;display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:6px 9px;border:2px solid var(--ink);border-radius:12px;background:rgba(255,255,255,.88);color:var(--ink);font-family:var(--disp);font-size:11px;line-height:1.25;text-align:left;max-width:200px;box-shadow:0 2px 0 var(--ink)}
 #pfHud b{font-size:15px;color:#2E9E3E}#pfHud b.meh{color:#E08A00}#pfHud b.bad{color:#E0245E}#pfHud i{font-style:normal;opacity:.55;font-size:10px}.pfpre{font-family:var(--disp);font-size:12px;white-space:pre-wrap;text-align:left}
+.trk{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}.trkc{font-family:var(--disp);font-size:14px;padding:7px 12px;border:3px solid var(--ink);border-radius:999px;background:#FFF3B0;color:var(--ink);box-shadow:0 3px 0 var(--ink)}
+.trkc:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}.trkl{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:3px solid var(--ink);border-radius:16px;background:#fff;margin:4px 0 8px}
+.trkl b{font-family:var(--disp);font-size:15px;display:block}.trkd{display:flex;gap:4px;margin-top:5px}.trkd i{width:12px;height:12px;border-radius:50%;border:2px solid var(--ink);background:#fff}.trkd i.on{background:var(--pink)}.trkl .gel{white-space:nowrap;font-size:13px;padding:8px 12px}
 </style>
 </head>
 <body>
@@ -64504,7 +64507,8 @@ function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS
 /* </swapface> */
 /* <whatsnew> */
 // ---- a one-time card per device listing what's new since the last version this phone saw (localStorage r42wn)
-const WHATSNEW=[[106,'When you both change the room or the town at the same time, both of your changes now stick (before, one phone could undo the other). New: a speed readout in Debug that shows how smooth the game is running; tap it to copy the numbers.'],
+const WHATSNEW=[[107,'Your pet can learn tricks! Teach them from the pet page (a few tries a day each), and watch for them when it’s happy. It also has opinions now: it misses its favourite spot if you put it away, gets excited about pieces it loves, and each head picks up its person’s habits. Bond milestones change what it does, like bringing you little finds.'],
+  [106,'When you both change the room or the town at the same time, both of your changes now stick (before, one phone could undo the other). New: a speed readout in Debug that shows how smooth the game is running; tap it to copy the numbers.'],
   [105,'Changes to the town now stay put. A bug was quietly resetting the town layout every time the app opened: your Edit town changes, the fishing dock, the museum and finished projects. Finished projects come back on the map. The map also opens faster at the start of each visit.'],
   [104,'The map opens much faster, from home and from inside shops, and tapping Explore again while it opens no longer closes it.'],
   [103,'Visitors: only neighbours you’ve already met come knocking now, and they talk in speech bubbles over their head. Your pet walks over to say hi; tap them to chat, and they wave goodbye when they go.'],
@@ -66729,12 +66733,12 @@ function renderSheet(){const body=$('#sheetBody');
     body.innerHTML=`<div class="pet-head"><input id="pname" maxlength="16" value="${esc(p.name)}" aria-label="Pet name"><span class="stage">Bond ${B.lv}</span></div>
     <div class="bondbar"><b>${esc(B.n)}</b><span><i style="width:${Math.round(B.cur/B.need*100)}%"></i></span></div><p class="xp bondxp">${B.left} more care ${B.left===1?'moment':'moments'} until your bond grows${B.lv%2?' and a new room set':''}.</p>${petMoodHtml()}`+
     (`    <div class="stats rings">${NEEDS.map(([k,n,c,ic])=>`<div class="sr" style="--c:${c}"><span>${ringSvg(Math.min(100,s[k])/100,56,8)}<img src="assets/icons/${ic}.webp" alt=""></span>${n}<small>${tier(k,s[k])}</small></div>`).join('')}</div>
-    <div class="actions">${Object.entries(ACTS).map(([k,a])=>`<button class="gel ${a.cls}" data-act="${k}"><img class="bi" src="assets/icons/act-${k}.webp" alt="">${a.label}</button>`).join('')}</div>${todayHtml()}${selfCareRow()}
+    <div class="actions">${Object.entries(ACTS).map(([k,a])=>`<button class="gel ${a.cls}" data-act="${k}"><img class="bi" src="assets/icons/act-${k}.webp" alt="">${a.label}</button>`).join('')}</div>${todayHtml()}${selfCareRow()}${trickHtml()}
 ${tgHtml()}<div class="row-label">A head for each of you</div>${headRow()}${partnerId()?`<button class="gel lilac surpb" id="goSurp">Leave a surprise for ${esc(who(partnerId()))}</button>`:''}
     <div class="row-label">About ${esc(p.name)}</div>${P?`<p class="pers"><b>${P.n}</b> ${P.d}</p>`:''}${petLifeHtml()}${traitRow()}<div class="spirit"><span>Spirit</span><b>${tier('spirit',sp)}</b><div class="bar"><i style="width:${sp|0}%;--c:#A6E22E"></i></div></div><button class="gel sun surpb" id="goBag">Open the Bag · ${bag} ${bag===1?'thing':'things'}</button>${bigMomentsHtml()}`)+
     (st?`<div class="row-label">Style</div><div class="actions"><button class="gel" id="goWard">Wardrobe</button><button class="gel" id="goGlam">Glow Up Studio</button></div>`:'');
     body.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>doAct(b.dataset.act));
-    bindToday(body);body.querySelectorAll('[data-sn]').forEach(b=>b.onclick=()=>openDecoNeed(b.dataset.sn));
+    bindToday(body);trickBind(body);body.querySelectorAll('[data-sn]').forEach(b=>b.onclick=()=>openDecoNeed(b.dataset.sn));
     body.querySelectorAll('[data-hn]').forEach(inp=>inp.onchange=()=>{const n=headNames().slice(),v=inp.value.trim().slice(0,10);if(!v)return;n[+inp.dataset.hn]=v;state.pet.heads=n;logEvent(`named the ${inp.dataset.hn==='1'?'right':'left'} head ${v}`);saveSoon()})
     {const a=$('#goWard'),b=$('#goGlam');if(a)a.onclick=()=>setTab('wardrobe');if(b)b.onclick=()=>{setTab(null);travelTo('glam')}}
     {const gs=$('#goSurp');if(gs)gs.onclick=()=>{petView='surp';renderSheet()}}{const gb=$('#goBag');if(gb)gb.onclick=()=>setTab('bag')}body.querySelectorAll('[data-tg]').forEach(b=>b.onclick=()=>tgStart(b.dataset.tg));{const gp=$('#goPatch');if(gp)gp.onclick=()=>{setTab(null);const h='h_'+houseOf('patch');if(SHOPS[h])travelTo(h);else showMap()}}
@@ -67006,6 +67010,87 @@ const MERGE={items:mById,tf:mArr3,tw:mArr3,btn:mCur,glim:mCur,tix:mCur,hearts:(l
 // merge the normalized remote R into the local state L; returns the keys that changed locally
 // kr holds when each key last changed (stamped on write); a remote copy of a key older than the one in our base is a stale write
 // (e.g. a device still running old code saving its whole copy) and is ignored.
+/* <pet-deep> */
+// ---- the pet, deeper (v107). Tricks you both teach it, opinions about the room, heads that pick up their person's ways, and bond
+// milestones that change what it does. Hooks wrap existing functions (spawn, wishPick, bondUp, td), like the pet-life block.
+// Tricks: unlocked by bond level, taught with Practice on the pet page (3 tries a day per phone), learned after TRICK_N practices in all.
+// state.tricks {k:{by:{pid:practices},t:learned at}} (merge: per person max, earliest learned time).
+const TRICKS=[['twirl','Twirl','twirl',1],['highfive','High five','clap',2],['spinjump','Spin jump','spinjump',3],['peekaboo','Peekaboo','peekaboo',4],['hula','Hula','hula',5],
+  ['balance','Balancing act','balance',6],['roll','Roly-poly','tumble',7],['bigdance','Big dance','dance',8],['bonk','Head bonk','headbonk',10],['tada','Ta-da!','stretch',12]];
+const TRICK_N=5,TRICK_DAY=3;
+const trickRec=k=>{const T=state.tricks||(state.tricks={});return T[k]||(T[k]={by:{},t:0})};
+const trickP=k=>{const R=(state.tricks||{})[k];return R?Object.values(R.by||{}).reduce((a,v)=>a+(v|0),0):0};
+const trickKnown=k=>{const R=(state.tricks||{})[k];return!!(R&&R.t)};
+const trickLv=()=>bondOf(state.pet.xp).lv;
+function trickNext(){return TRICKS.find(q=>!trickKnown(q[0])&&trickLv()>=q[3])||null}
+function trickSoon(){return TRICKS.find(q=>!trickKnown(q[0])&&trickLv()<q[3])||null}
+function trickTries(){let o={};try{o=JSON.parse(localStorage.r42trk||'{}')}catch(_){}return o.d===lifeDay()?o.n|0:0}
+function trickTry(){try{localStorage.r42trk=JSON.stringify({d:lifeDay(),n:trickTries()+1})}catch(_){}}
+function trickDo(k,quiet){const q=TRICKS.find(x=>x[0]===k);if(!q||!pet.rig||away)return false;if(!petAct(q[2]))return false;if(!quiet)setTimeout(()=>emote('✨'),350);return true}
+function trickPractice(){const q=trickNext();if(!q||sandbox)return;if(trickTries()>=TRICK_DAY){toast(`${PN()} has practised enough for today. Try again tomorrow.`,true);return}
+  if(away){toast('Practise at home, where there’s room to wobble.',true);return}trickTry();const R=trickRec(q[0]),me=pid();R.by[me]=(R.by[me]|0)+1;const p=trickP(q[0]);
+  petAct(q[2]);td('trick');
+  if(p>=TRICK_N){R.t=Date.now();const top=Object.entries(R.by).sort((a,b)=>b[1]-a[1])[0][0],hi=headOfPerson(top),hn=headNames(),by=hi>=0?hn[hi]:PN();
+    setTimeout(()=>{emote('🎉');showReward('New trick!','emo-star',`<p>${esc(PN())} learned <b>${esc(q[1])}</b>!</p><p>${esc(who(top))} taught it the most, and ${esc(by)} is very proud of that.</p><p class="rwsub">Tap it on the pet page any time, and watch for it when ${esc(PN())} is happy.</p>`)},1300);
+    jrAdd(`We learned ${q[1].toLowerCase()}! ${hn[0]} got it first. ${hn[1]} says that's not true.`,'','trick',0,q[1]);logEvent(`taught ${PN()} ${q[1].toLowerCase()}`);firstOf('trick_'+q[0],`${PN()} learned ${q[1].toLowerCase()} (taught most by ${who(top)}).`)}
+  else{const ok=p>=TRICK_N-1?'Nearly!':p>=TRICK_N/2?'Getting there.':'A wobbly first try.';setTimeout(()=>{emote(p>=TRICK_N/2?'⭐':'❓');toast(`${q[1]}: ${ok}`,true)},1100)}
+  saveSoon();renderSheet()}
+function trickHtml(){const known=TRICKS.filter(q=>trickKnown(q[0])),q=trickNext(),soon=trickSoon(),left=TRICK_DAY-trickTries();
+  let h=`<div class="row-label">Tricks</div>`;
+  if(known.length)h+=`<div class="trk">${known.map(x=>`<button class="trkc" data-trk="${x[0]}">${esc(x[1])}</button>`).join('')}</div>`;
+  if(q){const p=Math.min(TRICK_N,trickP(q[0]));h+=`<div class="trkl"><div><b>Learning: ${esc(q[1])}</b><span class="trkd">${Array.from({length:TRICK_N},(_,i)=>`<i class="${i<p?'on':''}"></i>`).join('')}</span></div>
+    <button class="gel ${left>0?'pink':''}" id="trkGo"${left>0?'':' disabled'}>${left>0?`Practise (${left} left today)`:'Tired out for today'}</button></div>`}
+  else if(soon)h+=`<p class="hint">${known.length?'Next trick':'Tricks start'} at bond level ${soon[3]}: ${esc(soon[1].toLowerCase())}.</p>`;
+  else h+=`<p class="hint">${esc(PN())} knows every trick there is. Show-off.</p>`;
+  return h}
+function trickBind(body){body.querySelectorAll('[data-trk]').forEach(b=>b.onclick=()=>{setTab(null);setTimeout(()=>trickDo(b.dataset.trk),350)});const g=body.querySelector('#trkGo');if(g)g.onclick=()=>{setTab(null);setTimeout(trickPractice,350)}}
+// shows off a trick now and then when it's happy and idle at home
+setInterval(()=>{try{if(document.visibilityState!=='visible'||!state||away||!pet.rig||styling()||toyPlay||kmode||ARR.on||pet.mode!=='idle'||openTab)return;const K=TRICKS.filter(q=>trickKnown(q[0]));if(!K.length)return;
+  const s=petStats(),avg=(s.hunger+s.fun+s.energy+s.clean)/4;if(avg<70||Math.random()>.06)return;trickDo(pick1(K)[0])}catch(e){console.warn('trick',e)}},9000);
+// ---- opinions about the room
+// its favourite spot (pet-life's plSpot, remembered in pmem.spot) put away: it misses it, until that piece (or another like it) is back
+function pdSpotTick(){const M=state.pmem||(state.pmem={});if(!M.spot)return;const it=state.items.find(i=>i.id===M.spot);if(it){M.spotK=it.k;if(M.miss){M.miss=0;saveSoon()}return}
+  const again=M.spotK&&state.items.find(i=>i.k===M.spotK);if(again){M.spot=again.id;if(M.miss){M.miss=0;const n=(CATMAP[again.k]||{}).n||'it';jrAdd(`The ${n.toLowerCase()} is back! We sat on it straight away, to be sure.`,'','spot',0,n);if(!away&&pet.rig){setTimeout(()=>{petAct('spinjump');emote('🎉')},800)}}saveSoon();return}
+  if(!M.miss&&M.spotK){M.miss=Date.now();const n=(CATMAP[M.spotK]||{}).n||'favourite spot';jrAdd(`Someone put away the ${n.toLowerCase()}. ${headNames()[1]} keeps checking where it used to be.`,'','spot',0,n);saveSoon()}}
+{const pm=petMood;petMood=function(){const r=pm();if(r&&r.k!=='rain')return r;const M=state&&state.pmem;if(M&&M.miss&&M.spotK&&!state.items.some(i=>i.id===M.spot)){const n=((CATMAP[M.spotK]||{}).n||'favourite spot').toLowerCase();
+  return{k:'spot',n:`Missing its ${n}`,t:`${PN()} keeps looking at where the ${n} used to be. Putting it back would help.`}}return r}}
+setInterval(()=>{try{if(document.visibilityState!=='visible'||!state||sandbox)return;pdSpotTick();
+  const m=petMood();if(m&&m.k==='spot'&&!away&&pet.rig&&pet.mode==='idle'&&!openTab&&Math.random()<.15)petAct(Math.random()<.5?'slump':'shrug')}catch(e){console.warn('spot',e)}},8000);
+// new pieces from a set it loves get a bigger welcome
+function pdLovedSets(){const L=state.pet.likes||{},n={};state.items.forEach(i=>{const d=CATMAP[i.k];if(d&&d.set&&L[i.id])n[d.set]=(n[d.set]||0)+L[i.id]});return Object.entries(n).sort((a,b)=>b[1]-a[1]).slice(0,2).filter(q=>q[1]>=4).map(q=>q[0])}
+{const sp=spawn;spawn=function(k){const r=sp.apply(this,arguments);try{if(r&&!sandbox&&!away){const d=CATMAP[k];state.pmem=state.pmem||{};state.pmem.placeT=Date.now();
+  if(d&&pdLovedSets().includes(d.set)&&pet.rig){setTimeout(()=>{petAct('spinjump');[0,1].forEach(i=>setTimeout(()=>emote('',{head:i,icon:'stat-happy'}),i*220))},900);if(Math.random()<.5)jrAdd(`A new ${d.n.toLowerCase()}! It matches our favourite things. We approve.`,'','newfav',0,d.n)}}}catch(e){console.warn('new piece',e)}return r}}
+// and now and then it wishes for something new (when nothing's been added for a few days)
+WISH_T.newpiece={ev:'place',ic:'tab-decorate',go:'decorate',txt:()=>'something new for the room'};
+{const wp=wishPick;wishPick=function(){try{const M=state.pmem||{},t=M.placeT||state.born||0;if(t&&Date.now()-t>3*864e5&&Math.random()<.35)return'newpiece'}catch(_){}return wp()}}
+// ---- each head picks up its person's ways: now and then it shows what its person does most with it
+const PD_HEADIC={feed:'emo-yum',bath:'stat-clean',play:'emo-ball',nap:'emo-sleepy',pat:'stat-happy',home:'emo-star',trip:'tab-room',games:'emo-music'};
+const PD_HEADACT={feed:'sniffair',bath:'jiggle',play:'hula',nap:'yawn',pat:'nuzzle',home:'lookaround',trip:'curious',games:'clap'};
+setInterval(()=>{try{if(document.visibilityState!=='visible'||!state||away||!pet.rig||styling()||toyPlay||kmode||ARR.on||pet.mode!=='idle'||openTab||Math.random()>.07)return;
+  const i=Math.random()<.5?0:1,H=headInfo(i);if(!H.id||H.n<6||!H.top)return;pet.myH=i;pet.myHT=1.4;emote('',{head:i,icon:PD_HEADIC[H.top]||'stat-happy'});if(Math.random()<.5)setTimeout(()=>petAct(PD_HEADACT[H.top]||'curious'),600);
+  const A=state.acts||(state.acts={}),key='headway:'+i;if(A[key]!==lifeDay()&&Math.random()<.25){A[key]=lifeDay();jrAdd(`${H.nm} did the thing ${H.me?'you':who(H.id)} always ${({feed:'do at snack time',bath:'do at bath time',play:'do when we play',nap:'do at bedtime',pat:'do with pats',home:'do while decorating',trip:'do on trips into town',games:'do in the arcade'})[H.top]||'do'}. ${headNames()[1-i]} pretended not to notice.`,'','headway',0,'');saveSoon()}}catch(e){console.warn('head ways',e)}},11000);
+// ---- bond milestones that change what it does
+const BOND_PERKS=[[1,'It learns its first trick (see the pet page).'],[4,'It starts bringing you little things it finds.'],[6,'It shows off its tricks more when it’s happy.'],[10,'It writes you a letter every week.']];
+function bondPerksAt(lv){return BOND_PERKS.filter(q=>q[0]===lv).map(q=>q[1])}
+{const bu=bondUp;bondUp=function(B){const r=bu.apply(this,arguments);try{const P=bondPerksAt(B.lv),T=TRICKS.filter(q=>q[3]===B.lv);const lines=P.concat(T.map(q=>`A new trick to teach: ${q[1].toLowerCase()}.`));
+  if(lines.length)setTimeout(()=>showReward(`${PN()} is growing up a little`,'tab-pet',lines.map(l=>`<p>${esc(l)}</p>`).join('')),400)}catch(e){console.warn('perks',e)}return r}}
+// bond 4+: a little find, once a day for the two of you (the first phone to see it gets it)
+function pdFindTick(){if(!state||sandbox||away||!pet.rig||ARR.on||openTab||styling()||toyPlay||kmode||trickLv()<4||pet.mode!=='idle')return;const A=state.acts||(state.acts={}),day=lifeDay();if(A.pfind===day)return;
+  const R=jrRand((roomCode||'solo')+'|pfind|'+day);if(R()>.6){A.pfind=day;saveSoon();return}
+  const pool=TREASURES.filter(t=>(t.col==='shore'||t.col==='trail')&&!t.fish&&!t.bug&&(t.r||1)<=2),it=pool.length?pool[Math.floor(R()*pool.length)]:null;if(!it)return;A.pfind=day;
+  petGreet();setTimeout(()=>{treasureGet(it.id,true);emote('❗');showReward(`${PN()} found something`,'emo-star',`<p>${esc(PN())} wandered over with a <b>${esc(it.n.toLowerCase())}</b> and dropped it at your feet. ${esc(headNames()[0])} looks pleased. ${esc(headNames()[1])} wants it back a bit.</p><p class="rwsub">In your Bag, under Treasures</p>`);jrAdd(`We found a ${it.n.toLowerCase()} and gave it away. Mostly on purpose.`,'','pfind',0,it.n);saveSoon()},3200)}
+setInterval(()=>{try{if(document.visibilityState==='visible')pdFindTick()}catch(e){console.warn('pet find',e)}},20000);
+// bond 10+: a weekly letter (a keepsake, plus a note in the Journal), written from what happened that week
+function pdLetterTick(){if(!state||sandbox||trickLv()<10)return;const wk=Math.floor((Date.now()/864e5+3)/7),M=state.pmem||(state.pmem={});if(M.letterW===wk)return;M.letterW=wk;
+  const hn=headNames(),J=(state.journal||[]).filter(j=>Date.now()-(j.t||0)<7*864e5),known=TRICKS.filter(q=>trickKnown(q[0])),sp=plSpot(),ppl=headPeople().filter(Boolean).map(who);
+  const bits=[`Dear ${ppl.length>1?ppl.join(' and '):'you'},`,J.length>12?`It was a busy week. We counted ${J.length} things worth writing down.`:J.length?'It was a quiet week, which is also nice.':'We missed you this week. The room was very quiet.',
+    sp?`The ${CATMAP[sp.k].n.toLowerCase()} is still the best spot in the room.`:'',known.length?`We are practising ${known[known.length-1][1].toLowerCase()} in secret. It is getting very good.`:'',
+    `${hn[0]} wants more snacks. ${hn[1]} wants more of you.`,`Love, ${hn[0]} and ${hn[1]}`].filter(Boolean);
+  keepAdd({k:'letter',n:`A letter from ${PN()}`,d:bits.join(' ')});jrAdd(`We wrote a letter. It's in the Bag, with the keepsakes.`,'','letter',0,'');toast(`${PN()} wrote you a letter. It's in the Bag.`,true);saveSoon()}
+setInterval(()=>{try{if(document.visibilityState==='visible')pdLetterTick()}catch(e){console.warn('pet letter',e)}},60000);
+Object.assign(MERGE,{tricks:(l,r,b)=>{l=l||{};r=r||{};const o={};new Set([...Object.keys(l),...Object.keys(r)]).forEach(k=>{const A=l[k]||{},B=r[k]||{},by=Object.assign({},A.by||{});Object.entries(B.by||{}).forEach(([p,n])=>{by[p]=Math.max(by[p]|0,n|0)});
+  const t=[A.t,B.t].filter(x=>+x>0);o[k]={by,t:t.length?Math.min(...t):0}});return o}});
+/* </pet-deep> */
 function mergeInto(L,R){if(!syncBase)return{};const B=syncBase,ch={},Bkr=B.kr?JSON.parse(B.kr)||{}:{},Rkr=R.kr||{};new Set([...Object.keys(L),...Object.keys(R)]).forEach(k=>{if(k==='rev')return;
     const lj=JSON.stringify(L[k]),rj=JSON.stringify(R[k]),bj=B[k];if(rj===lj||rj===bj)return;if(k!=='kr'&&(+Rkr[k]||0)<(+Bkr[k]||0))return;
     if(lj===bj){L[k]=R[k]===undefined?undefined:JSON.parse(rj);ch[k]=1;return}
@@ -67031,7 +67116,7 @@ function adoptRemote(){buildHist.length=0;updUndoBtns();state=normalize(JSON.par
 function tryRemote(){if(sandbox||!remote||writing||dragging)return;if((remote.rev||0)<=Math.max(state.rev||0,syncBaseRev))return;if(!syncBase){if(!dirty)adoptRemote();return}
   // take the other side's changes in (keeping any unsaved ones of ours); if part of their write was stale, write ours back
   try{const R=normalize(JSON.parse(JSON.stringify(remote)));afterMerge(mergeInto(state,R));snapBase(R);if(localChanged())saveSoon()}catch(e){console.warn('merge',e)}}
-function normalize(s){const oldPal=!!s&&!(s.pv>=2),curMig=!!s&&s.btn==null;try{if(s&&Array.isArray(s.designs))designRegister(s.designs.filter(d=>!(s.dzDel||[]).includes(d&&d.id)))}catch(e){console.warn('designs',e)}const d=defaultState();s=Object.assign({},d,s||{});{const ob=v=>v&&typeof v==='object'&&!Array.isArray(v);['gifts','disc','acts','seeds','hdeco','tfound','cbook','firsts','pmem','fbest','rmem','museum'].forEach(k=>{if(!ob(s[k]))s[k]={}});['garden','parcels','evseen','keeps','designs','dzDel'].forEach(k=>{if(!Array.isArray(s[k]))s[k]=[]})}s.items=Array.isArray(s.items)?s.items.map(i=>i&&typeof i.k==='string'&&i.k.startsWith('win_')?Object.assign(i,{k:winKeyFix(i.k)}):i).filter(i=>i&&CATMAP[i.k]&&typeof i.id==='string').slice(0,80):[];
+function normalize(s){const oldPal=!!s&&!(s.pv>=2),curMig=!!s&&s.btn==null;try{if(s&&Array.isArray(s.designs))designRegister(s.designs.filter(d=>!(s.dzDel||[]).includes(d&&d.id)))}catch(e){console.warn('designs',e)}const d=defaultState();s=Object.assign({},d,s||{});{const ob=v=>v&&typeof v==='object'&&!Array.isArray(v);['gifts','disc','acts','seeds','hdeco','tfound','cbook','firsts','pmem','fbest','rmem','museum','tricks'].forEach(k=>{if(!ob(s[k]))s[k]={}});['garden','parcels','evseen','keeps','designs','dzDel'].forEach(k=>{if(!Array.isArray(s[k]))s[k]=[]})}s.items=Array.isArray(s.items)?s.items.map(i=>i&&typeof i.k==='string'&&i.k.startsWith('win_')?Object.assign(i,{k:winKeyFix(i.k)}):i).filter(i=>i&&CATMAP[i.k]&&typeof i.id==='string').slice(0,80):[];
   s.inv=s.inv&&typeof s.inv==='object'?Object.fromEntries(Object.entries(s.inv).filter(([k,v])=>ITEMMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):Object.assign({},d.inv);
   s.toys=Array.isArray(s.toys)?s.toys.filter(k=>ITEMMAP[k]&&ITEMMAP[k].k==='toy'):d.toys.slice();s.daily=s.daily&&typeof s.daily==='object'?s.daily:{};
   s.pet=Object.assign({},d.pet,s.pet||{});if(s.pet.look&&typeof s.pet.look!=='object')delete s.pet.look;if(s.pet.heads&&!(Array.isArray(s.pet.heads)&&s.pet.heads.length===2))delete s.pet.heads;else if(s.pet.heads)s.pet.heads=s.pet.heads.map(x=>String(x||'').slice(0,10));s.tokens=s.tokens==null?3:Math.max(0,Math.min(999,+s.tokens|0));s.capsdex=Array.isArray(s.capsdex)?s.capsdex.filter(k=>typeof k==='string').slice(0,64):[];s.ceil=s.ceil==null?1:clamp(+s.ceil||0,0,1);s.wish=s.wish&&typeof s.wish==='object'&&(!s.wish.k||WISH_T[s.wish.k])?s.wish:{};s.wear=[...new Set(Array.isArray(s.wear)?s.wear.filter(id=>wearDef(id)):[])];s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
@@ -67095,7 +67180,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=106;
+const APP_V=107;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

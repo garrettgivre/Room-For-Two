@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v106** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v106'` in `sw.js`; bump both for anything
+**Current build: v107** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v107'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1049,3 +1049,22 @@ Beau tapped Explore, nothing happened for a while, he tapped again and the map o
   Overlay `#pfHud`: fps over the last 60 frames, worst frame in 5 s, frames over 100 ms per minute, renderer `drawn` and `pixelRatio`
   (map or room), and the last timings: app ready, map open (Explore tap to the live map, plus how long `showMap` blocked), trips
   (`travelTo` to arrival). `showMap`/`travelTo` are wrapped. Tap = copy `pfText()` (clipboard, else a card) for Garrett to paste.
+
+
+## The pet, deeper (v107)
+Block `/* <pet-deep> */` just before `mergeInto` (it needs `MERGE`, defined just above). Hooks wrap `spawn`, `wishPick`, `bondUp`,
+`petMood` (reassigning function declarations, as in pet-life).
+- **Tricks** (`TRICKS` [key, name, ACTS_ANIM, bond level]; ten, from bond 1 to 12): `state.tricks` {k:{by:{pid:practices},t:learned}}
+  (normalised as an object field; `MERGE.tricks` = per person max, earliest t). Pet page section `trickHtml`/`trickBind` after the
+  looks-after-itself row: learned tricks as chips (tap = `trickDo`), the next one with dots and Practise (`trickPractice`, 3 a day per
+  phone in `localStorage.r42trk`, learned at `TRICK_N` 5 practices in all; reward card, Journal, scrapbook first naming who taught it most,
+  `td('trick')`). Happy idle pets show off a learned trick (6% per 9 s).
+- **Opinions**: favourite spot put away (`pmem.spot`/`spotK`, `pdSpotTick`) = mood "Missing its <piece>" (`petMood` wrapper), slumps and
+  shrugs, Journal line; the same kind of piece placed again brings it back with a cheer. Pieces from its two most-liked sets
+  (`pdLovedSets`) get a spin jump and hearts. `WISH_T.newpiece` ("something new for the room", event `place`) when nothing has been
+  placed for 3 days (`pmem.placeT`).
+- **Heads like their person**: every ~11 s (7%) a head with 6+ care moments from its person shows that person's top care
+  (`PD_HEADIC`/`PD_HEADACT` by `headInfo().top`), sometimes a Journal line (once a day per head, `acts['headway:i']`).
+- **Bond milestones** (`BOND_PERKS`, shown on the bond-up card with any trick unlocked at that level): bond 4+ a daily find (`pdFindTick`,
+  60% of days, seeded per room + day, `acts.pfind`, a common shore/trail treasure via `treasureGet`), bond 10+ a weekly letter keepsake
+  (`pdLetterTick`, `pmem.letterW`).

@@ -27,6 +27,7 @@ module.exports=async({ev,pg,wait,log})=>{
     add(s,'town path',()=>{tmMOf('world').r.push([6+o*3,43,'gravel'])},M=>M.wmap.r.some(q=>q[0]===6+o*3&&q[1]===43));
     add(s,'friendship',()=>kfAdd(o?'jam':'baker',3),M=>(M.kf[o?'jam':'baker']||{}).p>=3);
     add(s,'gift memory',()=>memRec(o?'book':'posy','visit',{}),M=>!!((M.rmem||{})[o?'book':'posy']||{}).visit);
+    add(s,'trick practice',()=>{const R=trickRec('twirl');R.by[who]=(R.by[who]|0)+2},M=>(((M.tricks||{}).twirl||{}).by||{})[who]>=2);
     add(s,'spent buttons',()=>{state.btn-=o?100:10},M=>true);
   };side('A','pa');side('B','pb');
   const run=(s,who)=>{state=clone(base);myId=who;const res=[];ops[s].forEach(([n,f])=>{try{f()}catch(e){res.push(n+' threw '+e.message)}});return{st:clone(state),res}};
