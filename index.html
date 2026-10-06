@@ -2196,7 +2196,7 @@ function stageOfOld(xp){let s=0;while(s<STAGE_XP.length-1&&xp>=STAGE_XP[s+1])s++
 // the pet no longer grows up: it is always this form, and care builds the bond between the two of you and it instead
 const PET_FORM=5;
 // bond levels: each level needs 5 more care moments than the last (10, 15, 20...), forever
-const BOND_N=['Just met','New friends','Getting cozy','Pals','Close','Snug as can be','Two peas','Heart to heart','Inseparable','Soulmates'];
+const BOND_N=['Just met','New friends','Getting cozy','Pals','Close','Snug as can be','Two peas','Heart to heart','Inseparable','Soulmates','Same wavelength','Old friends','Finish each other’s snacks','Three of a kind','Home is you','Thick as jam','Best of three','Always and also','Lifelong','Forever room'];
 function bondAt(lv){return 5*(lv-1)+5*(lv-1)*lv/2}
 function bondOf(xp){xp=Math.max(0,+xp||0);let lv=1;while(xp>=bondAt(lv+1))lv++;const a=bondAt(lv),b=bondAt(lv+1);return{lv,n:BOND_N[Math.min(lv,BOND_N.length)-1],cur:xp-a,need:b-a,left:Math.ceil(b-xp)}}
 const STAGE_NAMES=['Egg','Baby','Toddler','Child','Teen','Young adult','Adult','Elder'];
@@ -5551,7 +5551,7 @@ function gcInit(){if(gc)return gc;try{const cv=$('#gcc'),R=new THREE.WebGLRender
     const coin=tokenModel();coin.visible=false;sc.add(coin);gc={R,sc,cam,M:M_,coin,st:'idle',t:0,crankA:0,crankV:0,camT:new THREE.Vector3(0,1.6,0),camD:7.2,open:false};return gc}catch(e){console.warn('gacha',e);toast('The capsule machine needs a moment. Try again!');return null}}
 function openGacha(){const G_=gcInit();if(!G_)return;closeProduct();setTab(null);const el=$('#gacha');el.hidden=false;requestAnimationFrame(()=>el.classList.add('on'));G_.open=true;G_.st='idle';gcUI();gcLast=performance.now();requestAnimationFrame(gcTick);
   if(away)keeperReact('greet',1.4)}
-function closeGacha(){if(!gc)return;if(gc.prize&&gc.st!=='idle'){const pz=gc.prize;gcKeep();if(gc.st!=='reveal')setTimeout(()=>toast('You kept what was in the capsule. It’s in your Bag.',true),400)}gc.open=false;const el=$('#gacha');el.classList.remove('on');setTimeout(()=>{if(!gc.open)el.hidden=true},300);$('#gcDex').hidden=true}
+function closeGacha(){if(!gc)return;if(!gc.prize&&(gc.st==='coin'||gc.st==='crank')){state.tix=(state.tix|0)+CAP_TIX;saveSoon();updHUD();setTimeout(()=>toast(`Your ${CAP_TIX} tickets are back in your pocket.`,true),300);gc.st='idle'}if(gc.prize&&gc.st!=='idle'){const pz=gc.prize;gcKeep();if(gc.st!=='reveal')setTimeout(()=>toast('You kept what was in the capsule. It’s in your Bag.',true),400)}gc.open=false;const el=$('#gacha');el.classList.remove('on');setTimeout(()=>{if(!gc.open)el.hidden=true},300);$('#gcDex').hidden=true}
 function gcUI(){if(!gc)return;$('#gcTok').innerHTML=`${IT}${state.tix|0}`;const bar=$('#gcBar'),hint=$('#gcHint'),st=gc.st;$('#gcPrize').hidden=st!=='reveal';
   hint.textContent=st==='idle'?((state.tix|0)>=CAP_TIX?`One go is ${CAP_TIX} tickets.`:`One go is ${CAP_TIX} tickets. Win them in the arcade games.`):st==='crank'?'Turn the crank! Drag round and round':st==='tray'?'Tap the capsule!':'';
   bar.hidden=st!=='idle';bar.innerHTML=`<button class="gel pink" id="gcIn"${(state.tix|0)>=CAP_TIX?'':' disabled'}>Play · ${CAP_TIX}${IT}</button><button class="gel lilac" id="gcBook">Pals</button>`;
@@ -7559,7 +7559,7 @@ function useSpot(o,u){const it=roomItem(o.userData.id),d=defOf(it.k),D=petDim(),
 function pickUse(stats,avg,only){const S=pet.rig.S,c=[];roomObjs().forEach(o=>{const it=roomItem(o.userData.id);if(!it)return;const d=defOf(it.k),u=useOf(d);if(!u||(only&&!only(u,d)))return;
     let w=typeof u.w==='function'?u.w(stats,avg,S):u.w;if(it.id===pet.lastUse)w*=.1;w*=1+Math.min(.6,((state.pet.likes||{})[it.k]||0)/20);if(!away)w*=trBoost(d);if(u.kind==='wall'&&!walls[it.w||0].g.visible)w*=.3;if(w>0)c.push({o,it,d,u,w})});
   for(let tries=0;tries<5&&c.length;tries++){let q=Math.random()*c.reduce((a,b)=>a+b.w,0),i=0;for(;i<c.length-1;i++){q-=c[i].w;if(q<=0)break}const C=c.splice(i,1)[0];
-    if(C.u.kind==='perch'){const sps=perchSpots(C.o);if(!sps.length)continue;const sp=sps[Math.random()*sps.length|0];petGo(seatWorld(sp).front,()=>startPerch(sp));return true}
+    if(C.u.kind==='perch'){const sps=perchSpots(C.o);if(!sps.length)continue;const sp=sps[Math.random()*sps.length|0],sw=seatWorld(sp);if(!sw)return false;petGo(sw.front,()=>startPerch(sp));return true}
     const at=useSpot(C.o,C.u);if(!at)continue;
     if(C.u.kind==='nap'){petGo(at.at,()=>{pet.mode='sleep';pet.sleepT=(9+Math.random()*9)*(petNight()?2:1);pet.lastUse=C.it.id;pet.napBed=C.it.id;remember(C.it.id);autoUseStart(C.it.id);emote('💤')});return true}
     petGo(at.at,()=>startUse(C,at));return true}
@@ -7708,7 +7708,7 @@ function headNames(){const p=state.pet;if(Array.isArray(p.heads)&&p.heads.length
 function petMinds(){const p=state.pet;if(p.seed==null)p.seed=p.t||1;const h=[...String(p.seed)].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0,7),a=h%4,b=(a+1+(h>>>4)%3)%4,nm=headNames();
   return[0,1].map(i=>{const k=TEMPER_KEYS[i?b:a];return{i,name:nm[i],k,T:TEMPERS[k]}})}
 const smartAge=()=>pet.stage>=5;
-function goUse(C){if(C.u.kind==='perch'){const sps=perchSpots(C.o);if(!sps.length)return false;const sp=sps[Math.random()*sps.length|0];petGo(seatWorld(sp).front,()=>startPerch(sp));return true}
+function goUse(C){if(C.u.kind==='perch'){const sps=perchSpots(C.o);if(!sps.length)return false;const sp=sps[Math.random()*sps.length|0],sw=seatWorld(sp);if(!sw)return false;petGo(sw.front,()=>startPerch(sp));return true}
   const at=useSpot(C.o,C.u);if(!at)return false;
   if(C.u.kind==='nap'){petGo(at.at,()=>{pet.mode='sleep';pet.sleepT=(9+Math.random()*9)*(petNight()?2:1);pet.lastUse=C.it.id;pet.napBed=C.it.id;remember(C.it.id);autoUseStart(C.it.id);emote('💤')});return true}
   petGo(at.at,()=>startUse(C,at));return true}
@@ -27825,7 +27825,7 @@ function bakeKeeper(K,kind){const nodes=[];K.g.traverse(o=>nodes.push(o));let mv
   bakeCore(K.g,nodes,mv,()=>false);return K}
 // a shop fixture (with its stock): its own animation (userData.anim / use) is run to find what moves; merges stop at anything
 // you can tap (a product, an offer, a game, a service...) so picking still finds it
-const BAKE_STOP=n=>{const u=n.userData;return!!(u.product||u.offer||u.game||u.gacha||u.svc||u.catalog||u.door||u.keeper)};
+const BAKE_STOP=n=>{const u=n.userData;return!!(u.product||u.offer||u.game||u.gacha||u.svc||u.catalog||u.door||u.keeper||u.td!=null)};
 function bakeStatic(o){const nodes=[];o.traverse(q=>nodes.push(q));const U=o.userData;let mv=new Set();
   if(U.anim||U.use)mv=bakeWatch(nodes,120,i=>{const t=i*.1;if(U.use)U.use(t,(t%4)/4);if(U.anim)U.anim(t)});if(U.use)try{U.use(-1,-1)}catch(_){}
   bakeCore(o,nodes,mv,n=>n!==o&&BAKE_STOP(n));return o}
@@ -35495,7 +35495,7 @@ function ago(t){const s=(Date.now()-t)/1000;if(s<60)return'just now';if(s<3600)r
 function updPresence(){const el=$('#presence');if(mode==='solo'){el.textContent='Solo on this device';return}if(mode==='connecting'){el.textContent='Connecting';return}
   const others=Object.entries(state.visits||{}).filter(([k])=>k!==myId).sort((a,b)=>b[1]-a[1]);
   el.textContent=others.length?`${who(others[0][0])} was here ${ago(others[0][1])}`:'Waiting for your person'}
-function logEvent(text,kind){state.feed.unshift({t:Date.now(),by:myId||'me',k:kind||'event',text});if(state.feed.length>50)state.feed.length=50}
+function logEvent(text,kind){state.feed.unshift({t:Date.now(),by:myId||'me',k:kind||'event',text});if(state.feed.length>150)state.feed.length=50}
 function seenKey(sec){return'r42seen:'+sec+':'+roomCode}
 function seenT(sec){try{return+localStorage.getItem(seenKey(sec))||0}catch(_){return 0}}
 function markSeen(sec){try{localStorage.setItem(seenKey(sec),String(Date.now()))}catch(_){}}
@@ -35831,7 +35831,7 @@ async function wxFetch(force){const W=wxCache;if(!force&&W&&Date.now()-W.t<30*6e
 setTimeout(()=>wxFetch(),3000);setInterval(()=>{if(document.visibilityState==='visible')wxFetch()},10*6e4);
 // asked once per phone, a few seconds after the app opens
 function wxAsk(){try{if(localStorage.getItem('r42locAsked'))return;localStorage.setItem('r42locAsked','1')}catch(_){return}
-  showReward('Local weather','stat-happy',`<p>The town can follow the real weather where you are: rain on the map when it rains, residents chatting about the heat or the snow.</p><p class="rwsub">Your location stays on this phone. Without it the town uses Kansas City’s weather.</p><p><button class="rwlink" onclick="nextReward()">Not now</button></p>`,
+  showReward('Local weather','stat-happy',`<p>The town can follow the real weather where you are: rain on the map when it rains, residents chatting about the heat or the snow.</p><p class="rwsub">Your location stays on this phone. Without it the town uses Kansas City’s weather.</p><p><button class="rwlink">Not now</button></p>`,
     {ok:'Use my location',fn:()=>{if(!navigator.geolocation){toast('Using Kansas City weather.');return}navigator.geolocation.getCurrentPosition(p=>{wxSetLoc({lat:+p.coords.latitude.toFixed(2),lon:+p.coords.longitude.toFixed(2),name:'here'});toast('The town follows your weather now.',true)},()=>toast('No location, so the town uses Kansas City’s weather.',true),{timeout:15000,maximumAge:864e5})}})}
 
 
@@ -36060,7 +36060,7 @@ function townLifeTick(){if(!state||sandbox)return;const day=lifeDay(),noon=Date.
   try{bdayToday().filter(k=>typeof visMet!=='function'||visMet(k)).forEach(k=>post('mayor',`Today is ${RESIDENTS[k].n}’s birthday! A small gift would go down very well. You’ll find them on the Neighbours page.`,noon));
     const F=festOn();if(F)post('mayor',`The ${F.n} is on all week at the Town Hall, 10 am to 8 pm. Everyone’s invited. Bring {n}!`.replace('{n}',state.pet.name),Date.parse(day+'T11:00:00Z'));
     if(weatherOf(day)==='rain')post('cloud','rain today, all day. I’m sorry. Your garden isn’t, though.'.replace(/^r/,'R'),Date.parse(day+'T10:00:00Z'));
-    state.inbox.sort((a,b)=>b.t-a.t);if(state.inbox.length>60)state.inbox.length=60;
+    state.inbox.sort((a,b)=>b.t-a.t);if(state.inbox.length>150)state.inbox.length=60;
     const P=parcelsForMe();if(P.length&&rewardQ.length===0&&!openTab&&$('#game').hidden)openParcel(P[0]);visitorTick()}catch(e){console.warn('town life',e)}}
 // ---- the Neighbours page: people, garden, calendar, parcel
 let lifeTab='people',lifeGiftFor=null,lifeGiftHand=false;
@@ -36153,7 +36153,7 @@ function twPetAttach(at){const g=pet.group;if(!g||!pet.rig)return false;endToyPl
   tw.save={p:g.position.clone(),ry:g.rotation.y,parent:g.parent||scene};tm.world.add(g);const b=new THREE.Box3().setFromObject(g),s=new THREE.Vector3();b.getSize(s);
   const sc=TW_PET_H/Math.max(.3,s.y/(g.scale.x||1));tw.sc0=g.scale.x;g.scale.setScalar(sc);g.position.set(at.x,0,at.z);g.rotation.set(0,at.ry||0,0);tw.pet={x:at.x,z:at.z,ry:at.ry||0,path:null,cb:null,walk:0};return true}
 function twPetDetach(){if(!tw.save)return;const g=pet.group;g.scale.setScalar(tw.sc0||1);tw.save.parent.add(g);g.position.copy(tw.save.p);g.rotation.set(0,tw.save.ry,0);tw.save=null;tw.pet=null;pet.key=null;try{buildPet()}catch(_){}}
-function twPetPose(dt,t,mv){const R=pet.rig;if(!R)return;const k=m=>Math.min(1,dt*m),w=tw.pet.walk+=dt*(mv?9:0),sw=mv?Math.sin(w):0;
+function twPetPose(dt,t,mv){const R=pet.rig;if(!R||!tw.pet)return;const k=m=>Math.min(1,dt*m),w=tw.pet.walk+=dt*(mv?9:0),sw=mv?Math.sin(w):0;
   (R.legs||[]).forEach((L,i)=>L.rotation.x=approach(L.rotation.x,mv?sw*(i?-.6:.6):0,k(14)));
   (R.arms||[]).forEach((A,i)=>{A.p.rotation.x=approach(A.p.rotation.x,mv?-sw*(i?-.5:.5):Math.sin(t*1.6+i)*.06,k(12));A.p.rotation.z=approach(A.p.rotation.z,A.s*.55,k(8))});
   if(R.root)R.root.position.y=approach(R.root.position.y,mv?Math.abs(Math.sin(w))*.06:0,k(18));
@@ -36228,7 +36228,11 @@ function twPick(cx,cy){const r=$('#tmc').getBoundingClientRect(),v=new THREE.Vec
 function twTap(cx,cy){{const bg=bugPick(cx,cy);if(bg){bugGo(bg);return}}{const q=twPick(cx,cy);if(q){twTalk(q.k);return}}tmCell(cx,cy);const objs=[...tw.res.values()].map(r=>r.full&&r.full.g.visible?r.full.g:null).filter(Boolean),hr=tm.ray.intersectObjects(objs,true);
   for(const h of hr){let o=h.object;while(o&&o.userData.twk==null)o=o.parent;if(o){twTalk(o.userData.twk);return}}
   const hits=tm.ray.intersectObjects(Object.values(tm.bld),true);for(const h of hits){let o=h.object;while(o&&o!==tm.world&&!o.userData.tb)o=o.parent;if(o&&o.userData.tb){tmSelect(o.userData.tb);return}}
-  {const hd=tm.decor?tm.ray.intersectObjects([tm.decor],true):[];for(const h of hd){let o=h.object;while(o&&o!==tm.world&&o.userData.td==null)o=o.parent;const q=o&&o.userData.td!=null&&tmM().d[o.userData.td];if(q&&q[0]==='museum'){const [cx,cz]=twPos(q[1],q[2]);twWalk(cx+.5,cz+1.6,()=>musOpen());return}if(q&&FISH_SPOT[q[0]]){const [w,d_]=TM_DECOR[q[0]].sz||[1,1],[cx,cz]=twPos(q[1],q[2]),kind=FISH_SPOT[q[0]],tx=cx+(w-1)/2,tz=cz+(d_-1)/2,P=tw.pet,a=Math.atan2(P.x-tx,P.z-tz),r_=Math.max(w,d_)*.5+.45;twWalk(tx+Math.sin(a)*r_,tz+Math.cos(a)*r_,()=>{P.ry=Math.atan2(tx-P.x,tz-P.z);fishStart(kind)});return}if(q&&q[0]==='well'){const [w,d_]=TM_DECOR.well.sz||[1,1],[cx,cz]=twPos(q[1],q[2]);twWalk(cx+(w-1)/2,cz+(d_-1)/2+.9,()=>dlyWell());return}if(q)break}}
+  {// tappable decorations: museum, fishing spots, the well, noticeboards. The world is drawn bent but rays are flat, so small things are
+   // missed by the ray; the fallback looks up the decoration on the cell under the finger (via the curve-aware ground point).
+   const H=tmDecorAct;
+   const hd=tm.decor?tm.ray.intersectObjects([tm.decor],true):[];for(const h of hd){let o=h.object;while(o&&o!==tm.world&&o.userData.td==null)o=o.parent;const q=o&&o.userData.td!=null&&tmM().d[o.userData.td];if(q){if(H(q))return;break}}
+   const g=tmGroundHit();if(g){const [i,j]=twCell(g.x,g.z),q=tmM().d.find(d=>{const D=TM_DECOR[d[0]];if(!D||!(d[0]==='museum'||d[0]==='well'||d[0]==='noticeboard'||FISH_SPOT[d[0]]))return false;const [w,dd]=D.sz||[1,1],m_=FISH_SPOT[d[0]]?0:1;return i>=d[1]-m_&&i<d[1]+w+m_&&j>=d[2]-m_&&j<d[2]+dd+m_});if(q&&H(q))return}}
   const p=tmGroundHit();if(p){if(cv)cvEnd();$('#tmCard').hidden=true;tw.card=null;twWalk(p.x,p.z,null)}}
 // the ray against the curved ground: a few steps of 'hit the plane at the height the bend puts the ground here'
 function tmGroundHit(){const p=new THREE.Vector3();let y=0;for(let i=0;i<5;i++){if(!tm.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),y),p))return null;y=tmCurveY(p.x,p.z)}return p}
@@ -66201,6 +66205,655 @@ Object.assign(TALK.gramo.sys,{
   mood_why_grumpy:["the record scratched in the chorus","the crank was stiff"]
 });
 /* </mood-talk> */
+/* <deep-talk> */
+// ---- deeper friendships (v118): 5 more deep conversations, a Bestie letter and 2 more letters per resident (sources .claude/deep/<group>.js, brief tools/dev/town/DEEP_BRIEF.md)
+// deep, bestie, letters: sugar group (baker jam cushion dust cone scone crumb patch)
+
+// ---- Bunbun
+TALK.baker.deep.push(
+{t:"The first loaf I ever made was a brick, hon. Mum used it as a doorstop for eleven years. She wouldn't let anyone throw it out.",r:[
+["Where is it now?","On the shelf next to her recipe book. It still holds the door open, in a way.",1],
+["Eleven years is loyal.","For a doorstop, very. I think she liked that it tried."]]},
+{t:"Mum hummed when she baked. Off-key, always the same four notes. I hum because I can't whistle, but it's her four notes. I only noticed last spring.",r:[
+["That's a nice thing to carry.","It's the first thing I do when the oven's warm. Every morning, hon.",1],
+["Do you remember the notes?","I could hum them. Right. Fine. Hm-hm, hm... oh, there they go."]]},
+{t:"There's a page at the back of Mum's recipe book that's blank. She left it on purpose. I haven't written on it. What if I get it wrong, sweetie?",r:[
+["Maybe it's for the picnic cake.","Oh. Oh, the lemon one. I've been saving that page for the wrong thing, haven't I?",1],
+["You'll know when.","Mm. That's what Cushy says. Cushy says it slowly, so I believe it."]]},
+{t:"I wake at four. Some mornings I lie there and listen to the lane and I think, what if one day I don't get up? Then I smell nothing and I get up. Silly.",r:[
+["The lane would wait for you.","It would, wouldn't it? Pip would ring the bell wrong and everyone would come anyway.",1],
+["Sleep in once, we'll cover.","Cover! With what, you'll burn the toast. Thank you, hon. Keep the offer."]]},
+{t:"I'd like to teach Pip one of Mum's recipes. The proper way, hands over his hands. I haven't told him yet. I keep finding a reason to bake it myself.",r:[
+["He'd treasure it.","He'd cry into the dough. And then it'd be salty, and perfect.",1],
+["Which recipe?","The cinnamon swirls. Mum's way of folding. It takes three tries. He'll want to apologise to each one."]]}
+);
+TALK.baker.bestie="Dear {me}, I wrote your name on the blank page at the back of Mum's book. Just the name, in pencil. Come by at five when the oven light's on and I'll show you the rest. Love, Bunbun.";
+RES_T.baker.push("the cinnamon swirls came out right on the first try and I don't trust it.","I put the kettle on and forgot why. Then I remembered: you two.");
+
+// ---- Pip
+TALK.jam.deep.push(
+{t:"Um. The first time Bunbun said 'you look useful,' I didn't know what it meant. I thought it was about my lid. I've been checking my lid ever since.",r:[
+["It was about all of you.","Oh. Um. Everything, then. Not just the lid. That's... a lot to be.",1],
+["Is your lid okay?","It's fine! A bit loose when I'm happy. It was fine then too."]]},
+{t:"Batch 14 is on the shelf by the window and I can't open it. It's the best one. If it's not as good tomorrow, I'll have to know. Sorry, that's silly.",r:[
+["Tomorrow it'll still be Batch 14.","Right. Jam doesn't forget. I do, but jam doesn't.",1],
+["Want us to taste it with you?","Both of you? Yes. Please. I'll get spoons. Three spoons. Sorry, four, for {n}."]]},
+{t:"I tap the wall twice at night. Bunbun taps back once. I never told her I started it. I just did it one night, and she answered.",r:[
+["She heard you.","She hears everything through that wall. Even when I say sorry to the shelves.",1],
+["What does it mean?","I think it means goodnight. Or I'm here. It might mean both. I didn't ask."]]},
+{t:"Um, I want a jar with a label that isn't crooked. Just one. But then I think, the crooked ones are the ones people remember. I can't decide, sorry.",r:[
+["Keep one of each.","One straight, the rest crooked. Yes. That's a very good plan. Can I write that down?",1],
+["We like the crooked ones.","You do? Really? Then I'm going to stop apologising for the labels. Starting next week."]]},
+{t:"When I'm sticky and sorry I think, maybe nobody wants a jar who cries. Bunbun says a crier is a sweet one. I've kept that in my pocket. Jars don't have pockets. In my lid.",r:[
+["She's right about you.","Do you think? Thank you. I'm going to need a minute. And a napkin.",1],
+["It's a good place to keep it.","It is. I check it when I drop a tray. It's still there. Every time."]]}
+);
+TALK.jam.bestie="Dear {me}, um. I made a jar just for you two. The label is straight. I did it six times. The jam is strawberry and a little bit of mint, because Tutti said mint goes with two heads. Please come try it? Love, Pip.";
+RES_T.jam.push("Batch 15 is cooling. I haven't said sorry to it yet. Come say hi first.","the label on the new jar is only a little crooked. Bunbun noticed. She smiled.");
+
+// ---- Cushy
+TALK.cushion.deep.push(
+{t:"Mm... my first sofa was lumpy. Bunbun still has it by her window. Bolt calls it characterful. I... think he's being kind. I love that he's being kind.",r:[
+["It sounds comfy.","It's a little bit comfy. In one corner. Mm. That corner is the whole reason.",1],
+["Is it still lumpy?","Very. Bunbun sits right on the lump at Sunday tea. She says it fits."]]},
+{t:"When I can't sleep, I count cushions. Not sheep. Forty-two, forty-three. Dusty told me the number. Mm... it works faster when it's Dusty's number.",r:[
+["Dusty counts well.","Dusty counts everything. Gently. It's very restful, being counted.",1],
+["What's after forty-three?","Mm... I never get that far. That's the point."]]},
+{t:"Some afternoons I sit by the window at four, where the light lands, and I think this is the perfect corner. And then the light moves. And I think... okay. Next corner.",r:[
+["Maybe the light is the corner.","Oh... mm. The light moves, and so do I. That might be it. That might be the whole thing.",1],
+["We'll find one with you.","Mm. A corner for three. Bring a blanket. Bring the pet."]]},
+{t:"The cushion I'm secretly making for Dusty has a lavender patch from Stitch's scraps. Mm. I want it to look like a hug that someone forgot to put away.",r:[
+["Dusty will keep it forever.","Mm... Dusty will probably straighten it. And then sit on it, once. That's enough.",1],
+["Why a secret?","Dusty would apologise to it. For taking up room. I'd like to give it first."]]},
+{t:"I used to think being soft meant being no help. Then somebody leaned on me in a storm and I thought... oh. This is what it's for.",r:[
+["You're good at it.","Mm. Thank you. It's the only thing I'm sure I'm good at. And naps.",1],
+["Who leaned on you?","Loofah. It got three times its size. We both stayed dry. I... stayed dry underneath."]]}
+);
+TALK.cushion.bestie="Dear {me}... mm. I made you a cushion. It is not finished. It has two corners that lean toward each other, and a spot in the middle for something small. Come by and sit on it. Don't tell Dusty. Love, Cushy.";
+RES_T.cushion.push("I found the corner again. The light was there for six minutes. I counted them.","Dusty has been looking at my sewing basket oddly. I think it knows something.");
+
+// ---- Dusty
+TALK.dust.deep.push(
+{t:"Oh. Um. Can I tell you where I keep the jar? It has the first bit of fluff I ever made in it. It's small. Sorry. It was all I had when Cushy found me.",r:[
+["It sounds like a good jar.","It's a very good jar. It's on the top shelf, so nothing can sneeze on it. Sorry. Obviously.",1],
+["Why keep it?","So I remember I was already something. Before anyone looked under the sofa."]]},
+{t:"I read the labels on everything in the stockroom at night. Not to check. To hear them. 'Plum velvet, two seats.' It's like a very quiet song. Sorry, that's odd.",r:[
+["That sounds peaceful.","It is. I whisper it. Then the whole room feels counted. Nobody's lost.",1],
+["What's your favourite label?","'Return to shelf, gently.' Cushy wrote it. Cushy writes everything slowly."]]},
+{t:"There's a feather mirror in my house. It's the only thing I bought just because it was pretty. I look at it when I think I'm not enough. Oh. That's a lot.",r:[
+["What do you see?","Someone with a very good bow. And fluff. A lot of fluff. It's fine, I think.",1],
+["It was a good choice.","Thank you. I almost put it back. Three times. Then I carried it home in both arms."]]},
+{t:"Sometimes I stand in the sunbeam at four on purpose. It shows every speck. I think, those are all me. And they look... golden. For a minute. Then I sneeze.",r:[
+["Golden suits you.","Oh. Sorry. Thank you. I won't tell the dust. It'll get ideas.",1],
+["Do you mind the sneezing?","Less than I did. Cushy says it's like rain. I hope that's kind."]]},
+{t:"I practised doing nothing on my day off. I sat on the sofa for ten minutes and then I straightened it. Next time I'll try twelve. Sorry. Is that a goal?",r:[
+["Twelve minutes is a goal.","I wrote it on a label. 'Twelve.' I'll put it on the sofa where I can see it.",1],
+["We'll sit with you.","Would you? Then it's not nothing. It's something with company. Oh. That's better."]]}
+);
+TALK.dust.bestie="Dear {me}, sorry, this is a long letter for me. I labelled a sofa cushion 'for the two of you, sit as long as you like.' It is square. I checked it twice. I did not straighten it again. That is the gift. Dusty.";
+RES_T.dust.push("the sunbeam came at four today and I stood in it. Sorry. It was nice.","I labelled the new rug. Then I labelled the label. It felt right.");
+
+// ---- Tutti
+TALK.cone.deep.push(
+{t:"Can I tell you something, sweet pea? The first night with the twins I put a basket by the freezer because it was the warmest place. I sat on the floor and just watched them breathe.",r:[
+["That sounds like love.","It was terrifying. And then it was just the two of them asleep and the freezer humming. Then it was love.",1],
+["Who left the basket?","Hm? Oh, I... don't know yet. I stopped asking so I could keep them. Is that wrong?"]]},
+{t:"I warm the cones every morning so the street smells sweet. It's for the cart. It's also for me, hm? The smell says today's going to be fine.",r:[
+["It works on us too.","Then I'll warm one extra. Hm? For the two of you and {n}. Both heads.",1],
+["What does fine smell like?","Vanilla and a bit of waffle. And Scone's shoes, which are not on the list."]]},
+{t:"I used to be afraid the twins would find out I'm making it up as I go. Then I thought, they are too. All of us, hm? All the way down.",r:[
+["You're doing really well.","Thank you, my love. I get a lot of help from sprinkles.",1],
+["Do they know?","Crumb knows. Crumb knows everything. She hasn't said. That's how I know she's on my side."]]},
+{t:"There's a flavour I haven't named. It's in the back of the freezer, in a tub with no label. It's for the day the twins stop sitting still and I need something to hold on to.",r:[
+["We'll help you name it.","Oh, my loves. I'll save you a spoon each. Two. Two for {n}. You know what I mean.",1],
+["What's in it?","Strawberry and mint, a bit of lemon. Everyone's favourite, a little. Hm. I should stop talking."]]},
+{t:"I want one photo where Scone and Crumb both sit still. Just one. I'll frame it above the freezer. I've tried eleven times. In every one, somebody's mid-sprint or mid-pebble.",r:[
+["Maybe that's the photo.","Hm? Oh. Eleven photos of them being exactly themselves. Oh, I'm going to cry in the vanilla.",1],
+["We'll hold the camera.","You'd stand in front and make {n} do a trick? Yes. That might do it, sweet pea."]]}
+);
+TALK.cone.bestie="Dear {me}, my loves, I put a new scoop on the cart menu. It's called Two Spoons and it's strawberry on one side and mint on the other, and it is always yours. Come to the cart at three and I'll pour the first cone. Tutti.";
+RES_T.cone.push("the freezer hummed a new note this morning. I think it's happy too.","Scone broke the town record again. Crumb counted. Both are very proud of each other. Hm.");
+
+// ---- Scone
+TALK.scone.deep.push(
+{t:"Okay, I'll tell you but don't tell. When I lose, I run home and put my head under the pillow for a minute. Then I come out and say 'REMATCH.' Nobody knows about the minute.",r:[
+["Your minute is safe with us.","Good. It's a short minute. Crumb counts it. She says forty-one seconds. Nobody else.",1],
+["Is it a long minute?","About forty seconds. Okay, maybe a hundred. Don't count it."]]},
+{t:"Aunt Tutti's cart is my favourite place to run to. Not from. To. I get to the cart and she's always already holding a scoop. How does she know?",r:[
+["She hears you coming.","She hears the sneakers. Crumb says everyone hears them. Even the pigeon.",1],
+["Maybe she's always ready.","Always! She's the fastest, but she stands still. That's the best trick."]]},
+{t:"I fell off the top bunk once and landed on Crumb's pebbles. She didn't yell. She counted how many stayed in the shelf. It was nine. Nine was a good number, she said.",r:[
+["She cares about you.","I know. She just says it in pebbles. I'm learning the language.",1],
+["Did it hurt?","A bit. But it was funny later. I laughed. She did too. Quietly. Then I laughed louder for both."]]},
+{t:"I'm scared of running out of places to be first. Once I'm first at everything, what then? I need a new race. Do you know any races?",r:[
+["How about being first to help?","Ooh. First to help. I could keep a score. Okay, no, that's not helping. Okay, maybe a tiny score.",1],
+["You could race the sunrise.","The SUNRISE! It never loses. I'd lose beautifully. Yes. We do that."]]},
+{t:"Okay one more. When Aunt Tutti sits by the freezer at night, I'm not asleep. I listen too. It hums. It sounds like somebody saying 'you're doing okay.' Don't tell her. She thinks she's alone.",r:[
+["We won't tell.","Okay. Thanks. I'll tell her myself when I'm fast enough to say it in one breath.",1],
+["Why not tell her now?","Because then she'd stop sitting there. I like that she sits there."]]}
+);
+TALK.scone.bestie="Hi {me}! This is Scone, I'm writing slowly so it's neat, Crumb checked it. You're on Team Scone forever, the whole team, both heads. I'm making you a ribbon. It says FIRST FRIEND. Don't tell anyone it's pink. Come get it!";
+RES_T.scone.push("i beat my record by a hair. a very small hair. i want you to see the hair.","the pigeon is back. i did not lose. we agreed to a tie. i'm still counting it as a win.");
+
+// ---- Crumb
+TALK.crumb.deep.push(
+{t:"Um. I keep a pebble in my bag that isn't labelled. It's just a pebble. It's the one Aunt Tutti gave me when I didn't want to be at the cart. I hold it when Scone's loud.",r:[
+["It sounds like a good pebble.","It's very ordinary. I like ordinary ones best, when I'm worried.",1],
+["Does it help?","A bit. It's warm. It's always a little warm. I don't know why."]]},
+{t:"The snail by the slide isn't named yet. I think a name is a big thing to give someone. Scone wants Speedy. Aunt Tutti says Sir Slowly. I think... the snail will tell me.",r:[
+["How will it tell you?","Um. By getting to the top. Whatever it does at the top will be the name.",1],
+["Take your time.","I will. The snail is. We're very alike. Please don't tell Scone."]]},
+{t:"There's a pebble of mine at the bottom of the fountain. I put it there. I made a wish but I didn't say it out loud, so only the pebble knows.",r:[
+["Your wish is safe.","Thank you. Even I don't remember it. That's how it stays safe.",1],
+["Does a pebble keep wishes?","Um. A good one does. It sinks and sits. And then it just... stays."]]},
+{t:"I drew Scone a heart letter once. I was too shy to hand it across the table. It's still in my bag. It's a little bent. Maybe I'll give it on a day nobody's looking.",r:[
+["He'd love it.","He'd say 'WHOA.' And then he'd go quiet for one whole second. I'd like to see that.",1],
+["Maybe give it today.","Not today. Soon. Um. I'm getting my face ready."]]},
+{t:"When I can't sleep, I whisper my pebbles' names. Sixty-two. I do them in order. I never get to the end. I think that's why I'm so good at sleeping.",r:[
+["Which one do you start with?","'Ring.' It was the first one with a hole. Um. It was the first one that felt like a secret.",1],
+["That sounds nice.","It's like a lullaby that's mine. Um. Would you like to hear one? 'Looks like a sheep.' There."]]}
+);
+TALK.crumb.bestie="Dear {me}, um. I found a heart-shaped pebble. I'm not sure it's perfect. One edge is flat. I think that's right, because you two are two. I put it in your pocket when you weren't looking. Look. Crumb.";
+RES_T.crumb.push("the snail reached the second ladder rung. I'm not telling Scone. I'm telling you.","i found a pebble with two holes. one for each of you. um. that's all.");
+
+// ---- Dr. Patch
+TALK.patch.deep.push(
+{t:"That's alright, I'll tell you. The first night I opened the clinic, no one came. I sat in the waiting room and listened to the kettle. Then Bunbun burned her hand. I was ready. Barely.",r:[
+["You were there when it counted.","I was. And I shook for an hour afterward. Calm is the part you show. The shaking is for later.",1],
+["What did you do?","Cold water, a clean cloth, a seat. And one lollipop. It was a very small burn."]]},
+{t:"I keep a growth chart on the clinic wall. I measure myself every month. I haven't grown a millimetre. I like that. It's the one number I know will be the same.",r:[
+["It's good to have a steady one.","It is. Most things I look after change. A plaster doesn't. That's the whole point.",1],
+["Don't you want to grow?","Not tall. Maybe wider. A bigger heart badge. Hm. Let me think on it."]]},
+{t:"Sometimes someone says 'it's nothing' and limps out. I never stop them. I leave the door open. They almost always come back by teatime. I keep the kettle warm.",r:[
+["That's a kind way to wait.","It's the only way I know. You can't hurry someone's ow. It arrives when it's ready.",1],
+["Does it worry you?","A little. I count the heartbeats until the door goes. It's usually fast."]]},
+{t:"I have a pad of prescriptions with nothing written on it for you two. Every other patient gets water, a snack, a nap. You're doing all three already. Hm. I don't know what to add.",r:[
+["Maybe add 'more of this'.","Oh. 'More of this.' I'll sign it. Two heartbeats having a chat, that's what you are.",1],
+["Add something silly.","'One dance in the plaza, Thursday.' Good. Very medicinal."]]},
+{t:"Sometimes I wonder if I'd be needed if nobody ever got hurt. Then I think about tea. I'd still make tea. And I'd still listen. I'd still be here. That's alright.",r:[
+["We'd come for the tea.","Then it's settled. Two cups for the waiting room. Water with a hug in it.",1],
+["You'd be fine.","I think so, dear heart. It's a nice thing to find out on a quiet afternoon."]]}
+);
+TALK.patch.bestie="Dear {me}, you're my favourite sort of patient: the ones who come back to say they're well. I wrote you a prescription. It says 'be together, drink water, nap.' It's valid forever. Come for tea. Dr. Patch.";
+RES_T.patch.push("the lollipop jar is full again, so I'm in a very good mood.","I measured myself against the growth chart today. Same as always. Steady.");
+// deep, bestie, letters: bay group (stylist sponge tailor hair makeup polish spool beacon)
+
+// ---- Fizz
+TALK.stylist.deep.push(
+{t:"Darling, the circus tubs had names. Mine was Marguerite. A crack in the left handle, a squeak in the drain. I have never loved a bathtub more, claw tub included.",r:[
+["What happened to Marguerite?","Retired to a field outside the valley. A goat sleeps in her now. It is the grandest thing that has ever happened to a goat.",1],
+["She sounds wonderful.","She was a diva. She only squeaked when somebody important was watching."]]},
+{t:"I narrate every entrance because the first time I walked into a room alone, nobody looked up. Now I announce myself. It's a small way of making sure someone does.",r:[
+["We always look up.","Oh, darling. Say that again slowly, I'd like to keep it.",1],
+["Do you still worry?","Only on Mondays, and only at seven. By 7:04 I have entered, and it's fine."]]},
+{t:"Some nights I sit in an empty tub after closing. Fully dressed, no bubbles, listening to the room breathe. Loofah knows. It leaves a towel on the rim and says nothing.",r:[
+["That sounds peaceful.","It is. A little tragic, I'll admit. The good kind.",1],
+["Is the quiet still frightening?","Less. The salon sounds different at night. Like a theatre after the last bow."]]},
+{t:"I once lifted a teacup on bubbles alone. The whole valley clapped. And I thought, I'd give all of this for one person who's still here in the morning. Then I got a salon.",r:[
+["We're still here.","So you are, darling. Rather alarmingly punctual about it, too.",1],
+["Was the teacup full?","Half. Tea of the day. It was a very small, very brave cup."]]},
+{t:"There's a bubble that has been in my hair for a week. It won't pop. I think it's attached to something. I've decided to let it stay. Is that sentimental?",r:[
+["It sounds a bit like luck.","Luck! Yes. A lucky bubble. I'll name it Marguerite the Second.",1],
+["Maybe it just likes you.","Mm. It's a very loyal bubble. I'll try to be a better head for it."]]}
+);
+TALK.stylist.bestie="Dearest {me}, I have decided your tub is permanent. Fourth from the window, the one with a sunburst on the rim. There is always a warm towel, a fresh bar of pear soap, and my best entrance. Do come soon. Ciao for now. Fizz.";
+RES_T.stylist.push("a bubble stayed in my hair all morning. I'm calling it a good omen.","I narrated my own lunch today. Loofah applauded. We are very close.");
+
+// ---- Loofah
+TALK.sponge.deep.push(
+{t:"Mm. I used to think being soaked up meant being full. Then Fizz picked me off the shelf and said 'you're staff now.' I wasn't full. I was waiting.",r:[
+["You were ready.","Mm. Maybe. It felt like a long warm minute. Then someone said my name.",1],
+["What was the shelf like?","Dry. Quiet. A very small spider kept me company. I miss it a bit."]]},
+{t:"I hum a different tune for every kind of weather. Rain has a slow one. Sun has one with a bounce. Fog has no words, only breath. I made fog's up on the pier with Beacon.",r:[
+["What's ours?","Mm. You two get the one I hummed when you came in. Warm, with a little wind. I'll hum it again.",1],
+["That sounds lovely.","Thank you. It doesn't have an ending. It just goes soft and stops."]]},
+{t:"Once I went into the sea. Everything was cold and very big. I'm a sponge, I thought, I should be good at this. I wasn't. Beacon rolled me home. It was warm.",r:[
+["Would you try again?","Mm. Maybe in summer. With a boat called Mm, if it ever exists.",1],
+["Beacon is a good friend.","It lit its lamp all the way. I could see the path to my towel. That's friendship."]]},
+{t:"Sometimes at the end of a day I feel heavy, like I soaked up everyone's worry. So I sit in the steam room till it softens. Then I fold a towel and it goes.",r:[
+["That sounds like a good trick.","It works on most things. Not on Fizz's mornings. For those I just stay close.",1],
+["Do you want company?","Mm. Yes. Bring tea. Bring the pet. A warm towel for each head."]]},
+{t:"I'm saving up for a yellow bath boat. I want to call it Mm. I'd sit in it in the big tub and drift. I've told nobody but you. It would only float one. Maybe a bit bigger.",r:[
+["We'll help you find a bigger one.","Mm. Room for three and a duck. That's the plan now. Thank you.",1],
+["Is Mm a good name?","It's the sound I make when something is right. I think that's the best name for a boat."]]}
+);
+TALK.sponge.bestie="Dear {me}, mm. I folded your towel into a boat this morning. Not the bath boat, just a small one. It's by the window, the dry corner. It's yours. Sit as long as you like. No rush, no rush. Loofah.";
+RES_T.sponge.push("the steam room was perfect today. I stayed in it a long time. Mm.","I hummed fog's song on the way to the pier. Beacon hummed along, a bit flat.");
+
+// ---- Stitch
+TALK.tailor.deep.push(
+{t:"I keep a drawer called 'nearly.' Things that almost fit. A sleeve that's a touch short, a hat a touch tall. I can't make myself unpick them. They're all trying so hard.",r:[
+["Maybe they'll fit someone.","They usually do. A customer comes in, and there it is. Just a smidge off, and just right.",1],
+["That's a sweet drawer.","It's my favourite. The someday drawer is hope. The nearly drawer is company."]]},
+{t:"Bobbin counted my stitches once. Sixty-four in a hem. I said 'you needn't.' Bobbin said 'I like knowing where they are.' I think about that a lot.",r:[
+["That's a lovely thing to say.","I know. I felt very held. By a spool. Who was knee-high.",1],
+["Do you mind being counted?","Not by Bobbin. It's a kind of looking. I don't always get that."]]},
+{t:"My first coat had three sleeves. I wore it all the way home and nobody told me. The next morning I cut one off and kept it. It's the wrapping on the someday drawer now.",r:[
+["I'd have worn it too.","Would you? Then I'll put one on your next order. A decorative third. Just a smidge.",1],
+["Why keep the extra sleeve?","It was the part that tried hardest to be useful. I couldn't throw it away."]]},
+{t:"Sometimes I think everyone in town is wearing a bit of me. A thread here, a seam there. It's a nice feeling. And an odd one. As if I'm spread out and still in one piece.",r:[
+["That's a good way to be known.","Mm. I like that. Known by the stitching. It's quieter than a name.",1],
+["Do you ever feel thin?","On long weeks, a bit. Then someone waves at me in a scarf I made, and I fill back up."]]},
+{t:"I'd like a tape measure cosy, one day. Nobody's ever made me one. I'd never ask. I'd just keep my measuring tape a little bare and hope the world noticed.",r:[
+["Maybe someone will.","Mm. Bobbin has been very busy in the back room, lately. I'm not looking. I'm not.",1],
+["We could make you one.","Oh. Oh, sweet. A crooked one would be perfect. Mint, ideally."]]}
+);
+TALK.tailor.bestie="Dear {me}, I finished something in the nearly drawer. It's a jumper with two necks and one body, in lime and blue, and it fits {n}'s middle just so. I started it the day you first came in. Come try it. Stitch.";
+RES_T.tailor.push("I found a needle in my own fringe. It had been missing for a week. Hello, needle.","a customer waved at me from across the plaza in a scarf I made. I stood still for a bit.");
+
+// ---- Pom
+TALK.hair.deep.push(
+{t:"I have a secret rule, babe. Every nervous morning I do the left-back curl first. Gerald. He's shy and he calms me down. If Gerald behaves, the whole day behaves.",r:[
+["What if Gerald doesn't?","Then I name something else and start over. Brenda's very forgiving.",1],
+["Gerald sounds sweet.","He's the sweetest. Only comes out in humid weather. Like a cat that's decided to love you."]]},
+{t:"Okay but hear me out. Sometimes I get loud so nobody notices I'm scared. Blush always notices. She never says. She just hands me tea in the blue cup.",r:[
+["She's a good friend.","The best. We don't have to talk about it. That's the whole thing.",1],
+["What scares you?","Being too much. Being not enough. Both on the same Tuesday. It's a lot."]]},
+{t:"I keep my twelve broken combs in a drawer, each labelled with the day it broke. The first was the day Fizz said 'make it pop.' Weird, right?",r:[
+["Not weird at all.","Okay, good. Because I'm starting a thirteenth drawer for things I'm proud of that didn't break.",1],
+["Which one's the proudest?","Number twelve. A client cried. In a good way. Then I broke the comb, like a good-luck snap."]]},
+{t:"I talk in my sleep. Blush told me. Apparently I say 'curl, curl, curl' like a spell. She laughs into her pillow. I'm so glad I found someone who finds that funny.",r:[
+["That's adorable.","Obsessed with that word. Please say it again to Blush.",1],
+["Do you remember the dreams?","Always the same one. A very long cane hallway. Every door's a curl. I love it there."]]},
+{t:"I want to give curl number one a name. It's been waiting forever. But what if the name's not big enough? I keep thinking it'll come when I need it. Maybe it's coming now.",r:[
+["Maybe it's us.","Babe. Don't. I'll cry on the comb. Okay, wait, let me think... no, let me not think.",1],
+["Take your time.","Mm, right? Curls don't rush. They just spiral until they're ready."]]}
+);
+TALK.hair.bestie="Hiii {me}!! Okay but hear me out. I named curl number one. It's 'Two.' Because there are two of you, and also it's the second one that makes a pair. It sits front and centre and it's iconic. Come see! Byeee, Pom.";
+RES_T.hair.push("Gerald came out today and I almost cried. He's so shy. He's thriving.","I did a comb count and I'm still at twelve. I'm choosing to be proud of that.");
+
+// ---- Blush
+TALK.makeup.deep.push(
+{t:"There's a colour inside the cover of my first journal, love. I never named it. It's the grey I saw before the paints came. I keep it to remember what came after.",r:[
+["That's a good colour to keep.","It's quiet. It's the base of everything. Like the ground a colour stands on.",1],
+["Will you ever name it?","Perhaps when it feels finished. Not yet. Perhaps never. It's all right."]]},
+{t:"I am painting the plaza with everyone in it. It's taking years, because I keep adding people. I'm a little afraid of the day it's finished.",r:[
+["There's always one more person.","Yes. Someone new will move in. I'll leave a gap by the fountain. For them.",1],
+["Maybe it won't be finished.","That's the best kind. A painting that keeps breathing. Thank you, love."]]},
+{t:"When Pom talks for both of us in the morning, I feel safe. It's like standing behind a very loud, very kind curtain until my voice wakes up.",r:[
+["That sounds comfortable.","It is. We never planned it. It happened the first morning and we simply kept it.",1],
+["Does Pom know?","Pom knows. Pom puts the blue cup out before I ask. That's how I know."]]},
+{t:"I buy Bolt's paint every Monday and say I don't. We both pretend. He leaves me a card with a new colour on it. 'Hard Hat Sunrise.' A good name. I'd never say so.",r:[
+["You could tell him.","I might. On a Monday, with a very good cup of tea. Perhaps.",1],
+["It sounds like a friendship.","It is. A cranky one, with a good palette. I'd miss it terribly."]]},
+{t:"There's a moment just before sunset when everything holds still. The light is a colour I can't mix. I've tried for years. Do you see it too?",r:[
+["Show us where you stand.","By the window of the studio. The east side. Bring the pet. I'll find the colour for {a} and {b}.",1],
+["Maybe it can't be mixed.","Perhaps. Then I'll paint what it does to everything around it. That, I can do."]]}
+);
+TALK.makeup.bestie="Dear {me}, I named the colour in the front of my first journal. It is 'Three at the door.' It is a warm lilac with a shade of lime and a shade of blue. I thought of you two and the pet on the step. It's yours. Blush.";
+RES_T.makeup.push("I caught the light just before the sun went. It lasted eleven seconds. I wrote it down.","Pom talked for both of us this morning. I like being the quiet half.");
+
+// ---- Gloss
+TALK.polish.deep.push(
+{t:"Confirmed, I'll tell you. I have a private book. Only one page is filled. It says 'friends.' It's a list. It's short. It's the page I check most.",r:[
+["Are we on it?","Gold tab. Both of you. Underlined twice. Confirmed.",1],
+["Is the list getting longer?","Slowly. A name every year or so. I'm very careful what I write."]]},
+{t:"Polish number thirty-seven has never been worn. It's a soft grey-pink. I'm keeping it for a day that deserves it. I don't know what that looks like yet. I'll know.",r:[
+["That's a good plan.","I thought so. It's a bit like a table set for someone late. Perfect.",1],
+["What if the day never comes?","Then it was a very good polish to wait for. It still counts."]]},
+{t:"I write 'Breathe' between Pom's appointments. In small pink ink, in the margin. Pom reads it and breathes. Neither of us mentions it. That's how it works. It's lovely.",r:[
+["That's very kind.","It's only ink. But Pom's shoulders come down by a little. Perfect. Confirmed.",1],
+["Do you write it for yourself?","Sometimes. Under a big appointment. I check it with my hand mirror. It never tuts."]]},
+{t:"On the shelf I sat for a year being very good at waiting. I think I still am. It's the thing I do best. Is that a skill, or a habit? The book doesn't say.",r:[
+["It's a skill.","Thank you. I'll put it on my list. Under 'confirm twice.'",1],
+["Maybe both.","Both. Yes. A habit that learned manners. I like that very much."]]},
+{t:"Bobbin and I sit in silence some nights. Neither of us says anything. No tabs, no spin. It's the only time my clipboard's down. I'd never let anyone book it. Not even me.",r:[
+["That sounds like a good evening.","It's the best entry in the whole week. Unrecorded. Lovely.",1],
+["Should we leave you to it?","No, no. Join us. Bring tea. We sit very well."]]}
+);
+TALK.polish.bestie="Dear {me}, confirmed: I wore polish thirty-seven today. It's called 'two at the desk.' It's pink-grey with a speck of gold. I booked it for you, for the day you two became my best. Doo-doo-dee, forever for thee. Gloss.";
+RES_T.polish.push("I booked a quiet half hour in the margin of every day. It's called 'nothing.' It's lovely.","the appointment book has one blank line today. I'm leaving it for a surprise.");
+
+// ---- Bobbin
+TALK.spool.deep.push(
+{t:"Okay so and also, I never finish a sentence because I'm afraid that when I stop someone will say 'now go sit.' So I keep going. And then I'm very tired. Sorry!",r:[
+["We'll wait for the end.","Oh! Oh. Okay. I might need a minute at the end. A whole minute. That's new.",1],
+["Is it tiring?","A bit. It's like running with a coat on. A nice coat, but a coat."]]},
+{t:"I'm making a tiny scarf for Beacon's crab shell. Blue and cream. It's very small. I dropped a stitch right at the start and left it. The crab shell doesn't mind. I think.",r:[
+["I'm sure it loves it.","Do you think? It's been waiting three years for a friend. I hope a scarf counts.",1],
+["Does Beacon know?","Not yet. I'm saving it for a foggy night. Fog is the best time for a surprise."]]},
+{t:"I'm scared of running out of thread. Of being the last bit, the one that gets cut. Stitch keeps my end tucked in at the knot. I check it every morning.",r:[
+["Your knot's safe.","I know. I know. I check anyway. It's a habit. A good one, I think, mostly.",1],
+["Stitch looks after you.","Always. Stitch doesn't say 'slow down.' Stitch says 'here, take this one.'"]]},
+{t:"My button collection is forty-two now, in a little tin. The newest is a small brass one from the pier, found on a rope. I think it was Beacon's.",r:[
+["Can we see them?","Yes! Okay, wait, let me get the tin, no, it's in my pocket, no, in my other pocket!",1],
+["Which is your favourite?","The first. A plain white one. It rolled out of Stitch's drawer and into me. We've been friends since."]]},
+{t:"I'm making a mint coat. It has a pocket inside a pocket, and in the inner one is my first sewn button. Right now the coat has one sleeve and a lot of hope. And a pocket.",r:[
+["What's the second sleeve for?","Oh, you'll see. It's for waving. I'm saving the good wave for you.",1],
+["It sounds perfect.","It's going to be crooked. A little. I'm hoping that makes it mine."]]}
+);
+TALK.spool.bestie="Dear {me}, I made the second sleeve! And also, I tied a knot on the thimble thread for you, a very small one, and also a big one for {n}. I'm not scared of running out now. Because you two keep coming back. Love, Bobbin. Wave!";
+RES_T.spool.push("I ran the whole plaza loop and then back again, and also I got home first!","I tied forty-three knots today. I'm counting each one. It's a lot of knots.");
+
+// ---- Beacon
+TALK.beacon.deep.push(
+{t:"I was a buoy first. Out on the water, bobbing, for years. A boat passed once and a voice said 'you'd make a better tower.' I've wondered who said it. I never found out.",r:[
+["They were right.","Aye. I think so. I wish I could thank them. I tell the crab shell instead.",1],
+["Do you miss the water?","A bit. On calm nights I sway. Just a little. Then I remember the light."]]},
+{t:"The first night I swept the light round for hours, just to see it go. A gull sat on my balcony and looked as if I'd lost my mind. Friends since.",r:[
+["It sounds wonderful.","It was. Round and round, golden on the water. Like a very slow clap.",1],
+["Is the gull still around?","Late back this year. I keep a perch. Fair winds, I say, every dusk."]]},
+{t:"I notch the rail by the stairs each time a friend visits. There are a great many notches now. Two of them are close together. I do those slowly. Those are yours.",r:[
+["We're honoured.","The honour's on the rail. Brass won't rub off. I checked.",1],
+["Do you count them often?","Every foggy night. It's the best sort of arithmetic."]]},
+{t:"There's a foghorn far off, past the hills. Another lighthouse, I think. I've never met it. We sound back and forth on thick nights. My longest friendship.",r:[
+["Not odd at all.","Kind of you. I like to think it's a stubby one too. With a scarf.",1],
+["What do you say to each other?","Just 'here.' And then 'here' back. It's all anyone needs on a foggy night."]]},
+{t:"Goodbyes are hard out on the point, so I make them long. Bye now. Well. Not quite yet. Then I flash the light once. Did you ever see it?",r:[
+["We saw the flash.","Then it worked. One flash for each of you, a short one for {n}. Fair winds.",1],
+["We'll look for it tonight.","Left of the pier. Low. You'll know it. It's the one that's waiting."]]}
+);
+TALK.beacon.bestie="Ahoy {me}, friend. I've set a fourth lamp in the window of the lantern room. It stays on every night, a warm one on the left. If the main light ever fails, you two are on watch. I wrote your names on the log. Fair winds. Beacon.";
+RES_T.beacon.push("a boat came in just before dark and waved. I waved back before I checked. It was real.","the notches on the rail caught the sun. I counted them twice. Good company.");
+// deep friendships, group hill (toymaker joy windup pencil builder pixel parcel crane pebble)
+
+// ---- Boing
+TALK.toymaker.deep.push(
+ {t:"Okay, secret. I came to town in a crate marked 'assorted springs'. Nobody knew which one was me.",r:[
+  ["How did they find you?","Parcel opened the crate, a spring said hi, and Parcel said 'ten past nine'. I've loved that person ever since.",1],
+  ["Which spring were you?","The big one at the bottom. Eleven others had sat on me. It was cosy, actually."]]},
+ "There's a music box in the back of the shop that only plays when nobody's listening. I check it through the keyhole. So far, silence. I think it's shy.",
+ {t:"The loft gets quiet at night, so I bounce until I fall asleep. Sometimes I wake up upside down. Is that weird?",r:[
+  ["It sounds comfy.","It is! The ceiling's right there if I fall up. Okay. Weird and comfy. I'm keeping both.",1],
+  ["Does Joy hear you?","Through the wall, yes. She says it's a friendly thump, like a heartbeat in sneakers."]]},
+ {t:"I'd like to open the roof of the Toy Box for one day. One big round window. Bolt says it'd leak. I say it'd leak sunshine.",r:[
+  ["Bolt could build it.","He's drawing a hatch! Sketch is measuring, Tock is counting the raindrops it'll let in. Everybody's helping!",1],
+  ["Leaking sunshine, ha.","Right? I'm telling Bolt that tomorrow. He'll say 'good call'. Or he won't. Fifty-fifty."]]},
+ {t:"When Scone stopped winding the duck for a week, I thought toys had a time limit. Then he came back and wound it twice.",r:[
+  ["Toys don't run out.","Not when somebody keeps them. Okay. That goes on the Shelf Of Big Feelings.",1],
+  ["Ducks are patient.","This one waddles in circles until someone shows up. That's circles, but loyal."]]}
+);
+TALK.toymaker.bestie="{me}, you're my best friend now. Joy says the shelf has room. I made you a toy that bounces twice and then sits quietly with you. I didn't know I could make that one. You two taught me. Boing. (The small one.)";
+RES_T.toymaker.push("the marble run has a new loop and it's very loud and I love it. come hear it.","I sat completely still for one whole minute today. nobody saw. now you know.");
+
+// ---- Joy
+TALK.joy.deep.push(
+ {t:"The first cabinet I ever bought came with one dead button. Number seven. I never fixed it. It's the lucky one.",r:[
+  ["How is a dead button lucky?","Because it taught me to play around things that don't work. That's most of games. That's most of everything.",1],
+  ["Can we press it?","Anytime. It does nothing. It does it very well."]]},
+ "I say goodnight to every cabinet, out loud, in order. Pinball goes last, she's the warmest. I leave the claw lit, low, so anyone passing knows somebody's home.",
+ {t:"One afternoon I watched two players share a single controller and neither of them noticed. I just stood there. That's when I knew what the arcade was for.",r:[
+  ["It sounds like us.","It does, player one. I thought of you two right away. I may have cried into a joystick.",1],
+  ["What were they playing?","A racing game, badly. They finished last and hugged. Best finish I've ever seen."]]},
+ {t:"I lost on purpose to get Boing's second trophy. Don't tell him. He built it with so much glue.",r:[
+  ["Your secret is safe.","Thanks. It's in the sock drawer, under the third place ones. Glue still a little tacky.",1],
+  ["Did it work?","It worked so well he made me a third. I haven't lost on purpose for that one. Yet."]]},
+ {t:"I do the cheers because I never learned how to start a conversation. The cheers are a script. Is that cheating?",r:[
+  ["It's a good opener.","Ha. 'Let's go' has opened a lot of doors. I just wish somebody wrote the second line for me.",1],
+  ["You do fine without it.","Maybe. Today, a little. Thanks for staying a bit and finding out."]]}
+);
+TALK.joy.bestie="{me}, best friend unlocked. I don't give that out much. I only have so many slots, and I cleared one. Pinball's warm and the sock drawer's full. There's a seat by the claw with both your names on it. GG. Also thank you. Player one.";
+RES_T.joy.push("I said goodnight to every cabinet and Pinball answered with a little buzz. Probably the wiring. Probably.","Boing is humming my chiptune back at me through the wall. I'm not even mad. I'm a little proud.");
+
+// ---- Tock
+TALK.windup.deep.push(
+ "On the first morning I ticked, I counted. Four thousand one hundred and twelve ticks before noon. Then Boing said hello and I lost my place. I did not mind.",
+ {t:"My key is from an old music box. It plays three notes when it turns. I have never heard the fourth. Sketch thinks there isn't one.",r:[
+  ["What do you think?","I think the box was interrupted. Tick. I would like to finish it one day. Slowly.",1],
+  ["Maybe three is the song.","Perhaps. Three is a complete number. Tick. I will consider it."]]},
+ {t:"When Boing carries me to the shop, two hundred steps become sixty-one bounces. I count them. I find I like the number.",r:[
+  ["Sixty-one sounds fun.","It is. I do not say so on the way. I hold on and look at the sky.",1],
+  ["Does he ever drop you?","Once. He caught me before the floor did. Fourteen centimetres short. I measured."]]},
+ {t:"There is a page in my ledger nobody knows about. Toys that did not leave the shop but should have. On Sundays I play with them.",r:[
+  ["That's kind of you.","They are patient toys. They deserve one afternoon with a ledger and a quiet shelf.",1],
+  ["Which one waits longest?","A tin duck. Eleven months. I take it for tea. It does not drink. It enjoys the cup."]]},
+ {t:"I would like to hear every clock in town strike noon at the same moment. Once. I have asked the Town Hall.",r:[
+  ["What did the Mayor say?","He said 'ahem' and wrote it down. That is yes, in the Mayor.",1],
+  ["Could you manage it?","With Sketch, and a week of winding. Tick. We might try on a Tuesday."]]}
+);
+TALK.windup.bestie="Dear {me}. Ledger entry, last page, first line. Two best friends, counted once, kept. I wound myself early today so I could write this. Sketch checked the spelling and it was fine. Come at four. There is tea, and the good biscuit. Tick.";
+RES_T.windup.push("the ledger stands at 4,031. two came back this week. I was pleased and did not say.","Sketch measured my tea cup and it is the right size. We were both quietly happy. Tick.");
+
+// ---- Sketch
+TALK.pencil.deep.push(
+ {t:"My first plan had no door. A very safe building. Bolt asked where people would go in. I said 'oh'. I draw the door first now.",r:[
+  ["That's a good rule.","Thank you. Sorry. I mean thank you. It is the only rule I've never had to rub out.",1],
+  ["What was inside it?","A table. A chair. A tidy shelf. No one could ever have visited it. I think I was lonely."]]},
+ "I keep my point a bit dull on purpose so I don't poke anyone. Tock says that's polite. Bolt says it's lazy. I've decided it's polite.",
+ {t:"There's a door I drew on the attic wall. It leads nowhere. When a plan won't work I stand at it for a while, and then I go back. The answer is usually behind me.",r:[
+  ["Can we see it?","Oh. If you like. It's a small door. Sorry. It's a good door, actually. Tock gave it a handle.",1],
+  ["Does it open?","No. I've checked. Twice. It's very good at being closed."]]},
+ {t:"I keep a tally of every time Bolt says 'good call'. I've never told him. If he knew, he might stop, and then I'd be stuck at forty-one.",r:[
+  ["It's safe with us.","Thank you. I'll write the next one in pencil. In case. Sorry, in pen. Pen is more honest.",1],
+  ["Maybe tell him.","Maybe. Not today. Today I'm rounding up. Sorry. I don't round. Forty-one."]]},
+ {t:"My eraser is a quarter gone. I don't mind losing it to mistakes. I mind running out before I've fixed them all.",r:[
+  ["Tock would find you more.","It has. There's a spare in the ledger, labelled 'for Sketch, not yet'. It's the kindest label I've seen.",1],
+  ["You make fewer than you think.","That's a nice thing to say. I'll check the number. I'll tell you if you're right."]]}
+);
+TALK.pencil.bestie="Dear {me}, sorry for the length. I double-checked everything. I think we're best friends. I measured three times and it keeps coming out the same. I drew your room again with a chair for each of you and a gap for {n}, and it worked the first time. That's three plans now.";
+RES_T.pencil.push("I rubbed out a line and put it back exactly. Then I pushed my glasses up. Nobody saw. Quietly proud.","the graph paper came in. every square is the right size. sorry, I'm a bit emotional.");
+
+// ---- Bolt
+TALK.builder.deep.push(
+ {t:"Everything I built wobbled for the first year, chief. I'd lean on every shelf and hope. Bunbun's was the first that held. I leaned for ten minutes.",r:[
+  ["What did it feel like?","Like the whole town stood up straight. Then Bunbun asked if I was all right. I said sawdust.",1],
+  ["Ten minutes, really?","Nine and a half. I was counting. Sketch taught me."]]},
+ "Truth is I never finished my own house. Cobbler's kids, chief. My bed is still the pallet it came on. It says THIS WAY UP. I sleep the right way up. Mostly.",
+ {t:"I hit my thumb on Tuesdays. Not on purpose. But it's the one day I stop. Dr. Patch makes me sit for ten minutes. I think I look forward to it.",r:[
+  ["Ten minutes is allowed.","Ha. Okay. Ten minutes. I'll bring a sandwich. I'll lose it in my hat. Gotta bolt!",1],
+  ["Maybe skip the thumb.","I tried a sock. Patch said it didn't count. The stool is very comfortable, chief."]]},
+ {t:"I'm drawing a bench for the plaza. The Long Bench. One seat for every resident and one spare, for whoever moves in next.",r:[
+  ["Save a seat for us.","Already did, chief. It's got a gap in the middle that's exactly pet-sized. Sketch checked it.",1],
+  ["Who's the spare for?","Nobody yet. That's the point. I like building for somebody who hasn't turned up."]]},
+ {t:"Some nights I walk the whole town with a lantern, just to check my work is still standing. I'm never worried. I like seeing it stand.",r:[
+  ["Does it ever fall over?","Not yet. Cobble's stones, my beams. Between us we're very boring. I love boring.",1],
+  ["What's your favourite one?","The shelf over Bunbun's oven. I walk past it twice. Don't tell her."]]}
+);
+TALK.builder.bestie="Chief! {me}! Best friends, stamped and signed by me. I put two hooks by my door, one for each of you, your names burned in. Nothing hangs on them yet. That's the point, they're for whatever you bring. Gotta bolt, there's sawdust in my eye. Again.";
+RES_T.builder.push("I leaned on the new shelf for ten minutes. It held. I felt like a kid.","I hit my thumb again. Tuesday, right on time. Patch has a plaster and a stool ready.");
+
+// ---- Pixel
+TALK.pixel.deep.push(
+ {t:"I am afraid of the power going out. Not the dark. The quiet. For a second the screens stop and nothing counts. I hold still until it returns.",r:[
+  ["You can count with us.","Noted. One, two. That works. Two is a good number.",1],
+  ["How long did it last?","Four seconds, once. I counted all of them. It felt like a month."]]},
+ "I keep one ticket nobody knows about. It is pink with a bent corner. Crumb gave it to me for a pebble. It is the only ticket I do not count.",
+ {t:"I count things so they stay. A stack of tickets stays. Friends stay. Counting is how I ask.",r:[
+  ["We're staying.","Noted. Thank you. I put you in the column that does not change.",1],
+  ["That makes sense.","Joy said the same thing about games. 'Stay a bit.' We both found the same trick."]]},
+ {t:"The glitch is not always an accident. A voxel drifts when I am happy. I pretend it is nothing. It is how I know.",r:[
+  ["We noticed.","Noted. I will try to stop pretending. Eleven percent so far.",1],
+  ["What makes you happy?","A full jar. You two walking in. Today, in that order."]]},
+ {t:"I would like a quiet cabinet. One screen, one player, one friend. Joy says there is no such thing. Sketch is measuring a spot in the back.",r:[
+  ["Can we be the first?","Yes. Forty centimetres of room. It fits one player and one friend. You count as both.",1],
+  ["What would it play?","Nothing loud. Pushing blocks until they line up. Ten out of ten."]]}
+);
+TALK.pixel.bestie="{me}. I made a new list. It is shorter than the good list. It has your name, your person's name and {n}'s. I have never made a list this short on purpose. Ten out of ten. I am not using an exclamation mark. I left a space for one.";
+RES_T.pixel.push("ticket jar count: 6,204. An even number. I sat with it for a while.","a voxel drifted while I thought about Game Night. It snapped back. Noted. I did not pretend.");
+
+// ---- Parcel
+TALK.parcel.deep.push(
+ {t:"The Mayor writes a welcome letter for every empty lot. I carry them in the satchel so they know somebody's coming. They're going soft at the corners.",r:[
+  ["Someone will come.","I think so too. I knock twice on each empty lot on the way past, just in case.",1],
+  ["How many letters is that?","Five. I read the outsides every morning. They all say 'Dear neighbour'."]]},
+ "I lose my place on Bubble Bay because every house looks like a happy accident. Fizz waves from his window so I know where I am. He doesn't know why.",
+ {t:"My boots squeak. I whistle so nobody hears. Then Pom said the squeak tells them breakfast is nearly over. Now I don't know which to do.",r:[
+  ["Squeak and whistle.","Both! Ten past nine, whistle and squeak. That's the sound of the post.",1],
+  ["Pom likes the squeak.","Pom says it's how they know the time. I've been a clock this whole time!"]]},
+ {t:"My satchel is ten years old and has no name. I have a shortlist of four. I tried each for a day. Nothing fit.",r:[
+  ["Maybe it will name itself.","I think so. Every morning I tell it good luck and it carries on. Maybe that is the name.",1],
+  ["What were the four?","Biscuit, Sir Strap, Lumpy and Steve. Steve lasted a day and a half."]]},
+ {t:"When the satchel's empty I wonder what a box is for. Then I knock twice anyway, somebody opens the door, and I'm for that.",r:[
+  ["You're for a lot.","Thank you. The hello is the best part of the whole round. I just never say so.",1],
+  ["We open the door.","You always do. First of the round. I wait a bit, to hear the latch."]]}
+);
+TALK.parcel.bestie="{me}, this one has no stamp. I wrote it at the sorting room window while it rained, so it's a bit soft at the corners. Two doors, two names, one pet. I deliver to my best friends first now, before the Mayor. Ten past nine. Open whenever you're ready.";
+RES_T.parcel.push("I whistled so much on the round today that Fold asked for the tune. I have no idea what it was.","another welcome letter for the empty lot by the bay. the Mayor's handwriting. I put it with the others.");
+
+// ---- Fold
+TALK.crane.deep.push(
+ "My name is Fold. Nobody gave it. I read it on the edge of the sheet I came from: 'fold along the dotted line'. I took the first word.",
+ {t:"I fold a small crane when I am frightened. The paper steadies me. There are ninety-one in a jar by the window.",r:[
+  ["Can we see the jar?","Yes. The first is at the bottom. It is crooked. The newest are very good. I am less frightened.",1],
+  ["What frightens you?","Flat days and damp ones. A sheet with no corners. Then I fold. It passes."]]},
+ {t:"I do not tell anyone. I like the rain, a little. I count the drops that make a straight line on the window.",r:[
+  ["Nimbus would be glad.","I know. That is why I do not say. We would apologise for an hour.",1],
+  ["Your secret is safe.","Thank you. It is a very small secret. It is mine. I like having one."]]},
+ {t:"The sign by the bakery has one small heart. The sign at your gate has two. One hides behind the post. Please do not look.",r:[
+  ["We won't look.","Thank you. You will look. It is fine. They are very small.",1],
+  ["Why two?","One for each of you. A sign should be fair. Also I was very pleased that day."]]},
+ {t:"I fold Parcel a paper heart when they are low. Not for a sign. No reason. Parcel finds it on the satchel and pretends it was an accident. We both pretend.",r:[
+  ["That's lovely.","It is only paper. It is also what I have. I am glad it is enough.",1],
+  ["Does Parcel know?","Parcel knows. I know Parcel knows. The paper does not say anything."]]}
+);
+TALK.crane.bestie="Dear {me}. I folded this letter from one sheet with no spare creases. Open it slowly, along the dotted line. A crane is inside. It is for the two of you, and for {n}, who gets a wing. I finished it in the sun. It is very dry. Fold.";
+RES_T.crane.push("the new sign is dry. the corners are sharp. i am quietly very pleased.","i found a sheet the colour of lime and blue. i am saving it for something that deserves it.");
+
+// ---- Cobble
+TALK.pebble.deep.push(
+ {t:"First road I mended took a month. I fitted every stone twice. Then it rained and the road did nothing. I stood in it. That was the first time I felt finished.",r:[
+  ["It sounds peaceful.","Mm. It was. Still is. I go back and stand there some mornings.",1],
+  ["Did the road mind?","Roads don't mind. That's what I like about them. Fair."]]},
+ {t:"Bolt talks. I listen. Sometimes I have an answer. By then he's on to hinges. I say it to the wall later.",r:[
+  ["The wall must know a lot.","Mm. The wall hears the Mayor's speeches too. It holds up. Good wall.",1],
+  ["Say it to us.","Okay. Mm. Today it was 'Bridges are good'. He'd like that. I'll tell him Tuesday."]]},
+ "Once a heron picked me up at the river. It put me down again. I think it was checking. Fair.",
+ {t:"On my shelf there are forty-one stones. Number nineteen has no label. I don't remember the road. Bolt calls it the mystery one. I sit with it.",r:[
+  ["Maybe it's from our lane.","Mm. Could be. I'll listen to it harder. Thanks.",1],
+  ["Does it bother you?","A little. Mostly I like it. A stone with no story is still a stone."]]},
+ {t:"Some days I feel like the wobbly stone on my path. You two sit on it anyway. I hold.",r:[
+  ["You hold very well.","Mm. Thank you. I'm told it's what I'm for. I'd say it's what I like.",1],
+  ["We like the wobble.","Then I'll keep it. Right where it is. Mm."]]}
+);
+TALK.pebble.bestie="Mm. {me}. I fitted a stone by your gate, a copy of the one you stood on. Blue-grey, a white line. It doesn't wobble. It's the one stone I'd never move. Come and stand on it. That's the whole letter. Cobble.";
+RES_T.pebble.push("bolt fixed a gate again. disqualified, fondly. mm.","left a small stone on your wall. no reason. it looked like you.");
+// deep friendships, group meadow (mayor book lantern cloud posy cactus gramo)
+
+// ---- Mayor Marsh
+TALK.mayor.deep.push(
+ {t:"Between us, there was a goose. In the very first speech I gave, a goose walked across the plaza at part two. Every speech since has a goose in it.",r:[
+  ["Is that why there's always a goose?","It is. I have never admitted it. The goose retired and lives by the pond. I send it a ribbon at the new year.",1],
+  ["Did the goose clap?","It honked. At the time I took it as applause. I have decided to keep taking it that way."]]},
+ "On hot afternoons I sit by the fountain and say nothing for ten minutes. If anyone asks, it is an inspection.",
+ {t:"I worry the town will go so well one day that it won't need a mayor. The Town Hall is one big room and I am the only furniture.",r:[
+  ["We'd still need you.","Ahem. Well. Quite. Thank you. I shall note that in the big book, in ink.",1],
+  ["It would be a good problem.","It would. I would like it to be fine without me and also to keep my hat. Both. Ahem."]]},
+ {t:"I wrote a speech the winter before you came. It was called 'To whoever comes next'. I changed the ending eleven times. It still ends 'Ahem. Welcome.'",r:[
+  ["It's a good ending.","Thank you. I tried three others. One had a goose. It was too much even for me.",1],
+  ["Do we get to hear it?","One day. When I can read it without the moustache going damp. Ahem."]]},
+ {t:"In the straw hat at the Spring Picnic, nobody asked me for a speech. Best afternoon of the year. With you two about, I give none at all. Is that all right?",r:[
+  ["It's more than all right.","Then I shall go on listening to you. It is a very fine speech. Ahem. Hm.",1],
+  ["We like your speeches too.","Kind. I shall save one for you. A short one. One part. Possibly two."]]}
+);
+TALK.mayor.bestie="Dear {me}. By order of the Town Hall, and with the full authority of one marshmallow, you two are my best friends. I have entered it in the big book, in ink, with a cake drawn beside it. Three parts: you came, you stayed, well done. No goose. Ahem. Marsh.";
+RES_T.mayor.push("the pigeons are off probation, provisionally. please do not tell them.","i have declared tomorrow a municipal holiday for no reason. it is already going well.");
+
+// ---- Dewey
+TALK.book.deep.push(
+ {t:"The last thing the girl wrote in me was 'Tomorrow I'll tell you about the swing.' She never did. I wonder how the swing went.",r:[
+  ["I bet it went well.","I think so too. I give it four stars. I have never told anyone that I rate the swing.",1],
+  ["Do you miss her?","A little, in the margins. Mostly I hope she has a cat."]]},
+ "One orange hair is still pressed between pages forty and forty-one of me. Marmalade's. I never turn to page forty. I know exactly where it is.",
+ {t:"I sometimes read a book from the last page first, like Scone. It doesn't spoil it. I get to walk beside the ending the whole way, like a friend.",r:[
+  ["That's a nice way to read.","Oh, thank you. Don't tell the other librarians. There are none. Don't tell yourself.",1],
+  ["Does it ever surprise you?","Always. Knowing where it ends makes me notice the way there."]]},
+ {t:"At night I say the town's names, in the order they arrived. I have never got to the end without smiling. The last two are yours.",r:[
+  ["We're glad to be on it.","Page last, line last. I read it twice before sleep. The second time slower.",1],
+  ["Do you say the pet's name?","After yours. As a little footnote with a star. {n}'s the footnote everyone reads."]]},
+ {t:"I'm writing a small book for my pocket, apart from the blank one. Every hour of one day in this town. It starts with the ten o'clock quiet.",r:[
+  ["Can we be in it?","Eleven past two. Two travellers at the poetry shelf. You are the whole afternoon chapter.",1],
+  ["What's the title?","A Day. I tried longer ones. A Day kept winning. It's very short. I like that."]]}
+);
+TALK.book.bestie="Dear {me}, I looked up the word for you two. Several books had it and none fit, so I wrote a new entry on page one of the blank book, in pencil. It says: 'Best friends. They come back, and they bring {n}.' Please borrow it forever. There is no due date. Dewey.";
+RES_T.book.push("the ten o'clock quiet was extra quiet today. I read a whole chapter in it.","a moth is out of chapter nine again. I've left a window open for it. it knows the shelf.");
+
+// ---- Lumi
+TALK.lantern.deep.push(
+ {t:"When I was a candle in a window, I wasn't lit for anyone in particular. Then somebody stopped under me and looked up. I thought: oh. That's what it's for.",r:[
+  ["We look up at you.","Mm. I know. I see you do. It's the best part of my whole night.",1],
+  ["Who was it?","I never knew. A coat, a scarf. They stood a minute. Then they went home."]]},
+ "I sleep through noon because noon is loud with light and nobody needs me. Nimbus draws the blinds and calls it a forecast.",
+ {t:"The fountain lamp is the last to catch. I stand and wait with it every night. Some nights that wait is my favourite minute.",r:[
+  ["Can we wait with you?","Mm. Yes. Bring nothing. It's a very small minute. It fits two.",1],
+  ["Why is it slow?","It's old. Like me, nearly. We both take a moment. Then we're warm."]]},
+ {t:"Some mornings I wake up and I'm not sure I'm still lit. I look at my hands. Then Nimbus puts the kettle on and the window goes warm.",r:[
+  ["You always are.","Mm. Thank you. I'll look at my hands a bit longer tomorrow, and believe it.",1],
+  ["What do you see?","A bit of glow. A bit of plum. A hand that has held a pole for a long time."]]},
+ {t:"I'd like to light one window nobody has lit. An empty lot. The Mayor says I could hang a small lamp, so the new neighbour finds it on their first night.",r:[
+  ["That's very kind.","Mm. It's what lamps are for. Somebody should arrive and see one on.",1],
+  ["Which lot first?","The one by the bay. It gets the sunset. A lamp looks shy there. I like it."]]}
+);
+TALK.lantern.bestie="{me}, hi. I lit a small lamp tonight and put both your names on it, and {n}'s. It's on my pole for the walk home. When I pass your gate I'll tap it twice. That means best friends, home safe. Mm. Nimbus made three mugs. One is yours.";
+RES_T.lantern.push("the plaza lamp caught on the first try tonight. I think it's feeling better.","I yawned in the middle of a lamp and it went dim. I said sorry. It flickered, forgiving.");
+
+// ---- Nimbus
+TALK.cloud.deep.push(
+ {t:"Last year I rained on forty-one days. On thirty-eight of them somebody jumped in a puddle. I keep that number. Not the forty-one.",r:[
+  ["We jumped in a few.","I know. I saw. I made them deeper. A little. For quality.",1],
+  ["Thirty-eight is a lot.","It is a lot. Mostly the twins. Mostly in boots on the wrong feet."]]},
+ "The barometer in the hall has a pink heart at 'wonderful'. The needle has pointed at it since you came. I haven't told the barometer it can go down.",
+ {t:"I'm learning to say sorry less. Fold is too. We practise by saying hello instead. It comes out the same. Lumi laughs.",r:[
+  ["Hello suits you.","Hello. Mostly. Sorry. Hello. That's the practice. It's going fairly well.",1],
+  ["Do you mean the sorry?","Some days. Mostly I mean 'I hope you're all right'. It's a long sentence for a drizzle."]]},
+ {t:"I used to stay on the hill and not come down. Lumi climbed up with hot milk after the night round, through my drizzle. That's when I knew it was home.",r:[
+  ["That's lovely.","Lumi pretends the milk is for the walk. It is two mugs. I don't mention it.",1],
+  ["Did you go home?","Yes. We watched the steam. It made a small cloud of its own. I was jealous. Slightly."]]},
+ {t:"I've practised a forecast for the next time you're sad. It's: stay in, I'll make tea, it passes. I'd only give it if you asked.",r:[
+  ["That's a good forecast.","It has never been wrong. It has only ever been used on me. Mostly it holds.",1],
+  ["We'll ask if we need it.","Good. Chance of tea, very high. Chance of company, higher."]]}
+);
+TALK.cloud.bestie="{me}, I made you a small cloud, pocket-sized, called Mostly. It rains on request and shines the rest of the time. It follows the two of you home on the days I can't. It's very polite and a bit shy. Nimbus (mostly sunny, in the hall).";
+RES_T.cloud.push("light shower around four, gentle. I ordered it quiet so Dewey's books would be fine.","puddle count this week: nineteen, with jumping. a new record. I am pink about it.");
+
+// ---- Posy
+TALK.posy.deep.push(
+ {t:"I'm afraid of the first frost. Not for me, for the little ones. I cover them one by one with old tea towels and apologise to every towel.",r:[
+  ["The towels understand.","They do. They've been in the family. The striped one has been out every autumn for years.",1],
+  ["Do the plants thank you?","Mint says, 'About time.' Mint is no help. The roses say nothing. They hold on."]]},
+ {t:"When someone says something kind, my flower turns toward them before I can stop it. Everybody sees. Prickles says that's my honesty.",r:[
+  ["It's lovely to see.","Oh. Look at the marigolds. Hm hm hm. They did well this year, hm?",1],
+  ["Does it do it for us?","Every time. Look, it's doing it now. I can't help it. Hm."]]},
+ "Every spring I leave a pot by the gate, empty, with one seed on the rim. In case somebody needs a start the way I did. Someone usually takes it by Thursday.",
+ {t:"Prickles grumbles more when the days get short. I plant extra bulbs by his chair for the dark months. He thinks they just come up.",r:[
+  ["He probably knows.","He knows. He says nothing. He moves the chair an inch closer every year.",1],
+  ["What do you plant?","Little yellow ones, early. They open in February. His birthday. He calls them weeds."]]},
+ {t:"I've never lost a bloom I didn't cry over. Even dandelions. Prickles brings the tissue and says it's grit.",r:[
+  ["That's very you.","It is a bit soft. I'm practical about soil, though. Soil I never cry over.",1],
+  ["Do you replant?","Always. A new one comes up where the old one was and says hello. I say hello back."]]}
+);
+TALK.posy.bestie="Dear {me}, I potted a cutting from my first flower, the one Prickles said looked like me, and it took. It's yours. Two stems, one pot, the way you two do. Water on Tuesdays and talk to it. It'll answer, and I'll tell you what it says. Hm hm hm. Posy.";
+RES_T.posy.push("the night stock opened by the fountain lamp and the smell was enough to make Prickles hum.","I told the tomatoes you'd stop by. they've gone a little red already.");
+
+// ---- Prickles
+TALK.cactus.deep.push(
+ {t:"Captain, the lizard, left a shed skin in my helmet. I found it a week after I got home. Don't tell Posy I kept it. It's on the mantel. She's seen it.",r:[
+  ["It's a good keepsake.","Hmph. Fine. It's very good. Captain, if you're listening, nobody's laughing.",1],
+  ["Do you miss him?","Every sunrise, kid. I look at the wall and say 'north is wrong'. It still makes me laugh."]]},
+ {t:"On the map over the fireplace, the twelfth flag is Posy's garden. I put it on the edge, by itself. So I'd find it in the dark.",r:[
+  ["It's easy to find.","Hmph. Yes. I know. That was the idea. Sit, you're making the place untidy.",1],
+  ["Is it the best flag?","It's the last flag. That's different. No. It's the best flag."]]},
+ "About the bear. It wasn't scary. It sat at the cave mouth for three days and we both waited out the rain. I left first. Never told the twins that part.",
+ {t:"Some mornings my pot creaks. Posy rubs oil on the rim. She says it's for the shine. Hmph. It's not for the shine.",r:[
+  ["She looks after you.","She does. I let her. I grumble. It's a trade. I get the better end.",1],
+  ["Does it hurt?","No. It's an old pot, kid. It tells me where it's been. I listen."]]},
+ {t:"I practise the question. 'Posy, would you like to see the sea?' I say it to Captain's skin. Four hundred times. I can't say it to her.",r:[
+  ["You'll say it.","Hmph. After the first warm day. I'll say it once and she'll say yes.",1],
+  ["She'd say yes.","Probably. She'd say yes and pack a watering can. Hmph. Good."]]}
+);
+TALK.cactus.bestie="Hmph. {me}. Here's a thing and I won't hear a fuss. There's a peg by our door with both your names on it and a hat hanging from it, brim on both sides. Don't comment on the stitching. Posy did the pink flower. Sit, sit. Prickles.";
+RES_T.cactus.push("the sandstorm story is 41 pages now. a camel walked in again. I did not write it. it walked in.","I did not nod off. I rested my eyes at the window. a wren sat on my helmet. you're welcome.");
+
+// ---- Echo
+TALK.gramo.deep.push(
+ {t:"My first day on the plaza, I counted my audience. One pigeon, the Mayor and a puddle. I played to the puddle. It had very good acoustics.",r:[
+  ["Did the puddle clap?","It rippled. I took it as a yes. I still wave at it when it rains.",1],
+  ["What did you play?","The long low C. All the way to the end. The pigeon left. The Mayor stayed. Hm."]]},
+ {t:"There's a song I never play on the plaza. It's only the kettle's A and a pause. I play it at home on the little stage with the curtain shut.",r:[
+  ["Could we hear it?","...Maybe. Not the stage. Just the kitchen. With the kettle. Don't clap, just stay.",1],
+  ["Who is it for?","Nobody. It's for the quiet before I go out. It tells me I'm already enough."]]},
+ {t:"I used to be afraid of silence. Cobble taught me. Tap, tap, pause. The pause is the part that holds the weight.",r:[
+  ["He's a good teacher.","He doesn't know he teaches. He says 'Mm'. I wrote it down as a time signature.",1],
+  ["Do you like pauses now?","Most of them. Not the awkward ones. Those are a different instrument."]]},
+ {t:"I can hear your steps from far away. One of you walks in four-four. The other is three-four with a hop. {n} has no time at all. It's my favourite.",r:[
+  ["Which one is me?","I won't say. It's a secret between my horn and your shoes.",1],
+  ["Can you play {n}?","Not yet. It keeps changing key. I'm learning to follow."]]},
+ {t:"On rainy nights I point the horn out of the window and leave it. The rain plays a part. I don't touch a note. That's the whole concert.",r:[
+  ["It sounds beautiful.","...It is. I'm the only one who hears it. Now you've heard of it too. That's two.",1],
+  ["Who sings along?","Nimbus, I think. From the hill. Faintly. In a very small tenor."]]}
+);
+TALK.gramo.bestie="{me}, I finished a song. Not the unfinished one, that stays unfinished. This one is a minute long and it's for the two of you. There's a gap where each of you walks in, and room for {n}'s wobble. I'll play it at golden hour. Listen for yourself. Echo.";
+RES_T.gramo.push("i played to the empty plaza at five. a gull stayed for the whole song. very good audience.","my knees shook before the set again. they're not really knees. you know what I mean.");
+/* </deep-talk> */
 /* <together> */
 // ---- moments together (v94): when you're both in the app, one of you starts a moment (a group hug, a dance party, a cake to share,
 // a high five through the pet); the other phone gets an invitation and has a minute to join. Joined = the pet celebrates on both
@@ -66244,7 +66897,8 @@ function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS
 /* </swapface> */
 /* <whatsnew> */
 // ---- a one-time card per device listing what's new since the last version this phone saw (localStorage r42wn)
-const WHATSNEW=[[117,'Fixes from playtesting: finished makeovers now pay out properly (they hadn’t been!), events at the library, Town Hall and weather station pay too, party guests spread out, Today’s list sits right under the bond bar, and your pet’s Journal has a page summing up the month so far. Plus a gentler welcome back, fewer day-one strangers, and lots of small things.'],
+const WHATSNEW=[[118,'Friendships go deeper: every neighbour has five more heart-to-hearts, sends a letter (and a gift) when you become best friends, and remembers what you talked about lately. More fixes from playtesting: town projects always appear on the map (the bouncy castle comes first now), the Journal keeps months, not days, taps on the noticeboard, museum and well work, and the back button closes photos and fishing.'],
+  [117,'Fixes from playtesting: finished makeovers now pay out properly (they hadn’t been!), events at the library, Town Hall and weather station pay too, party guests spread out, Today’s list sits right under the bond bar, and your pet’s Journal has a page summing up the month so far. Plus a gentler welcome back, fewer day-one strangers, and lots of small things.'],
   [116,'Polish: keepsake letters read properly in the Bag, scrolling tab rows show there’s more, the plaza tiles are brighter, civic buildings have bigger name signs, and messages no longer pop over your pet while you dress it.'],
   [115,'Shops feel livelier: a bell when you walk in, each shop has its own music, and customers chat with the keepers. Everyone has a few new little moves, and neighbours fidget while they stand about in town.'],
   [114,'Your pet reacts to more things: it waves when you zoom in close, bops to the music, gets excited about real snow, and is happy when you come home. The camera glides in when it does a trick and drifts gently when you leave it be. And about a hundred small fixes to what the neighbours say.'],
@@ -66369,13 +67023,12 @@ function musPlace(){const m=tmM();if(!m||m.mu||tmMk()!=='world')return;m.mu=1;if
 // ---- town projects (v100): something the two of you build for the town together. The Mayor proposes one at a time (PROJECTS, in order);
 // you both chip in buttons (each person's share shown); when it's funded the landmark is placed in town and the next project is proposed.
 // state.proj {i: current index, got:{pid:buttons}, done:[keys]}; merge: same i → per-person max; different i → the larger i wins.
-const PROJECTS=[['ferriswheel','A Ferris wheel',3000,'The Mayor wants the town to have a view of itself. From the top you can see every roof.'],
+const PROJECTS=[['bouncycastle','A bouncy castle',1500,'Joy and Boing put this one in the suggestion box eleven times.'],['ferriswheel','A Ferris wheel',3000,'The Mayor wants the town to have a view of itself. From the top you can see every roof.'],
   ['trainstation','A little train halt',2500,'A platform and a track, so visitors can arrive in style. Parcel has already asked about mail by rail.'],
   ['treehouse','A treehouse in the park',2000,'Scone and Crumb have been drawing plans for months. Some of them have slides.'],
   ['observatory','An observatory',3500,'Nimbus says the stars are wasted on the roof deck. A proper telescope, for proper nights.'],
   ['schoolhouse','A school house',4000,'Dewey would like somewhere to read aloud that isn’t the library. Bolt has offered to build the bell tower.'],
   ['stage','An outdoor stage',2500,'Echo has been playing on the plaza for years. It deserves a stage, and a curtain.'],
-  ['bouncycastle','A bouncy castle',1500,'Joy and Boing put this one in the suggestion box eleven times.'],
   ['communitygarden','A community garden',2500,'Posy wants beds for everyone, and a water butt, and a wheelbarrow nobody may borrow without asking.']];
 const PROJ_STEP=[50,200,500];
 function projCur(){const P=state.proj||(state.proj={i:0,got:{},done:[]});while(PROJECTS[P.i]&&P.done.includes(PROJECTS[P.i][0]))P.i++;return PROJECTS[P.i]?P:null}
@@ -66388,11 +67041,11 @@ function projFinish(P,Q){P.done.push(Q[0]);const shares=Object.entries(P.got).ma
   jrAdd(`We finished a town project: ${projLc(Q[1])}. The Mayor cut a ribbon. ${headNames()[0]} cheered for both of us.`,'','project',0,Q[1]);try{firstOf('project',`Our first town project: ${projLc(Q[1])}.`)}catch(_){}earnG(2);
   showReward('Project finished!','emo-party',`<p><b>${esc(Q[1])}</b> is going up in town.</p><p class="rwsub">+2 glimmers · see it on the map</p>`)}
 // place finished projects on the map the next time it opens (a free spot by a road, away from the middle)
-function projPlace(){const P=state.proj;if(!P||tmMk()!=='world')return;{const m=tmM();if(m&&m.d)(P.done||[]).forEach(k=>{if(TM_DECOR[k]&&!m.d.some(q=>q[0]===k)&&!(P.pend||[]).includes(k))(P.pend||(P.pend=[])).push(k)})}if(!(P.pend||[]).length)return;const m=tmM(),G_=twGrid();if(!m||!G_)return;const left=[];
-  P.pend.forEach(k=>{const D=TM_DECOR[k];if(!D||m.d.some(q=>q[0]===k))return;const [w,d]=D.sz||[1,1];let best=null,bd=-1;
+function projPlace(){const P=state.proj;if(!P||tmMk()!=='world')return;{const m=tmM();if(m&&m.d)(P.done||[]).forEach(k=>{if(!TM_DECOR[k]||(P.put||[]).includes(k)||(P.pend||[]).includes(k))return;if(k!=='observatory'&&m.d.some(q=>q[0]===k)){(P.put||(P.put=[])).push(k);return}(P.pend||(P.pend=[])).push(k)})}if(!(P.pend||[]).length)return;const m=tmM(),G_=twGrid();if(!m||!G_)return;const left=[];
+  P.pend.forEach(k=>{const D=TM_DECOR[k];if(!D||(P.put||[]).includes(k))return;const [w,d]=D.sz||[1,1];let best=null,bd=-1e9;
     for(let j=2;j<G_.D-d-1;j++)for(let i=2;i<G_.W-w-1;i++){let ok=true;for(let a=0;a<w&&ok;a++)for(let b=0;b<d&&ok;b++){const c=(j+b)*G_.W+i+a;if(G_.block[c]||G_.road[c])ok=false}if(!ok)continue;
       let near=false;for(let a=-1;a<=w&&!near;a++)for(let b=-1;b<=d&&!near;b++)if(G_.road[(j+b)*G_.W+i+a])near=true;if(!near)continue;const [x,z]=twPos(i,j),r=Math.hypot(x,z);if(r>ISLAND_R-3)continue;const sc=-Math.abs(r-11);if(sc>bd){bd=sc;best=[i,j]}}
-    if(best){m.d.push([k,best[0],best[1]]);for(let a=0;a<w;a++)for(let b=0;b<d;b++)G_.block[(best[1]+b)*G_.W+best[0]+a]=1}else left.push(k)});
+    if(best){m.d.push([k,best[0],best[1]]);(P.put||(P.put=[])).push(k);for(let a=0;a<w;a++)for(let b=0;b<d;b++)G_.block[(best[1]+b)*G_.W+best[0]+a]=1}else left.push(k)});
   P.pend=left;saveSoon();try{tmDecor();tw.gkey=''}catch(_){}}
 function projHtml(){const P=projCur();if(!P)return`<p class="hint">Every project is built. The Mayor is thinking of more. Loudly.</p>`;const Q=PROJECTS[P.i],sum=projSum(P),pc=Math.min(100,sum/Q[2]*100);
   const shares=Object.entries(P.got||{}).filter(([,v])=>v>0).map(([k,v])=>`<span class="pjs"><b>${esc(who(k))}</b> ${v}${IB}</span>`).join('');
@@ -66604,7 +67257,7 @@ function mkRoom(k,i){const R=mkState().rooms[k];return R&&R[i]||null}
 function mkAllRooms(){return Object.keys(mkState().rooms).filter(k=>RESIDENTS[k]&&MK_REQ[k]).flatMap(k=>mkRooms(k).map(r=>Object.assign({k},r)))}
 function mkReq(){const M=mkState(),q=M.req;return q&&MK_REQ[q.k]&&MK_REQ[q.k][q.i]?Object.assign({},MK_REQ[q.k][q.i],{k:q.k,i:q.i}):null}
 function mkTick(){if(!state||sandbox||!ready||typeof MK_REQ==='undefined')return;const M=mkState();if(M.req||Date.now()<(M.next||0))return;
-  const C=Object.keys(MK_REQ).filter(k=>RESIDENTS[k]&&KBIB[k]&&houseOf(k)&&mkRooms(k).length<MK_REQ[k].length),met=C.filter(k=>(kfOf(k).p|0)>0),pool=met;if(!pool.length)return;
+  const C=Object.keys(MK_REQ).filter(k=>RESIDENTS[k]&&KBIB[k]&&houseOf(k)&&mkRooms(k).length<MK_REQ[k].length),met=C.filter(k=>(kfOf(k).p|0)>0),pool=met.length?met:(state.born&&Date.now()-state.born>3*864e5?C:[]);if(!pool.length)return;
   const R=jrRand('mk|'+(roomCode||'solo')+'|'+(M.n|0)),k=pool[Math.floor(R()*pool.length)],done=mkRooms(k).map(r=>r.i),opts=[0,1,2].filter(i=>MK_REQ[k][i]&&!done.includes(i)),i=opts[Math.floor(R()*opts.length)]??0;
   M.req={k,i,t:Date.now()};if(!state.inbox.some(m=>m.from===k&&m.text===MK_REQ[k][i].ask))resPost(k,MK_REQ[k][i].ask);saveSoon()}
 // what the room needs, and whether the current design has it
@@ -66644,7 +67297,7 @@ function mkFinish(){if(!sandbox||!sandbox.mk||sandbox.mk.view)return;const k=san
   showReward(`${R.n} loves it${st===3?'!':st===2?'':'... mostly'}`,'tab-decorate',`<p class="mkstars">${'<i class="on"></i>'.repeat(st)}${'<i></i>'.repeat(3-st)}</p><p>“${esc(line)}”</p><p>It’s part of ${esc(R.n)}’s house now. Pop in whenever you visit.</p><p class="rwsub">+${h} buttons${st===3?' · +1 glimmer':''} · friendship with ${esc(R.n)}${gift?` · ${esc(R.n)} gave you a ${esc(gift.toLowerCase())} (it’s in storage)`:''}</p>`,{ok:'See it again',fn:()=>mkStart(k,true,q.i)})}
 // the bar along the top while designing or visiting
 function mkBar(){const b=$('#mkbar');if(!sandbox||!sandbox.mk){b.hidden=true;return}const {k,view}=sandbox.mk,R=RESIDENTS[k];b.hidden=false;
-  if(view){const m=sandbox.mk,D=mkRoom(k,m.i),q=MK_REQ[k][m.i];b.innerHTML=`<div class="mkt"><span class="mkf">${lifeFace(k)}</span><div><b>${esc(R.n)}’s ${esc(q.t.toLowerCase().replace(/^(an?|the) /,'').replace(/[?.!…]+$/,''))}</b><small>${'★'.repeat(D.stars|0)} · designed by ${esc(D.by===pid()?'you':who(D.by))}${m.edit?' · rearranging, it saves when you leave':''}</small></div></div><div class="mkbtns">${m.edit?'<button class="gel lilac" id="mkDeco">Furniture</button>':'<button class="gel lilac" id="mkEdit">Rearrange</button>'}<button class="gel slime" id="mkBack">${m.back?'Back to the house':'Back home'}</button></div>`;
+  if(view){const m=sandbox.mk,D=mkRoom(k,m.i),q=MK_REQ[k][m.i];b.innerHTML=`<div class="mkt"><span class="mkf">${lifeFace(k)}</span><div><b>${esc(R.n)}’s ${esc(q.t.toLowerCase().replace(/^(an?|the) /,'').replace(/[.!?]\s.*$/,'').replace(/[?.!…]+$/,''))}</b><small>${'★'.repeat(D.stars|0)} · designed by ${esc(D.by===pid()?'you':who(D.by))}${m.edit?' · rearranging, it saves when you leave':''}</small></div></div><div class="mkbtns">${m.edit?'<button class="gel lilac" id="mkDeco">Furniture</button>':'<button class="gel lilac" id="mkEdit">Rearrange</button>'}<button class="gel slime" id="mkBack">${m.back?'Back to the house':'Back home'}</button></div>`;
     $('#mkBack').onclick=mkCancel;const e=$('#mkEdit');if(e)e.onclick=()=>{m.edit=1;mkHostGone();mkBar();openDecorate('furn')};const dd=$('#mkDeco');if(dd)dd.onclick=()=>openDecorate('furn');return}
   const q=mkReq();if(!q){mkCancel();return}const C=mkCheck(q,state.items);
   b.innerHTML=`<div class="mkt"><span class="mkf">${lifeFace(k)}</span><div><b>${esc(q.t)}</b><small>For ${esc(R.n)} · feels ${esc(q.mood)}</small></div></div><ul class="mkl">${C.rows.map(r=>`<li class="${r.ok?'ok':''}">${esc(r.t)}</li>`).join('')}</ul>
@@ -66720,7 +67373,7 @@ function renderGoodsCat(body){if(!away){setTab(null);return}const k=away.key,S=a
   {const kp=$('#kcPrizes');if(kp)kp.onclick=()=>setTab('prizes')}body.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{const g=b.dataset.g;if(kmode)kClose(true);setTab(null);openGame(g)});
   body.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>openOffer(()=>offerWear(b.dataset.w)));
   body.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>openProduct(b.dataset.i))}
-function resPost(key,text){state.inbox.unshift({t:Date.now(),from:key,text});if(state.inbox.length>60)state.inbox.length=60;state.ibT=Date.now();saveSoon();updMenuBadge();if(openTab==='inbox')renderSheet()}
+function resPost(key,text){state.inbox.unshift({t:Date.now(),from:key,text});if(state.inbox.length>150)state.inbox.length=60;state.ibT=Date.now();saveSoon();updMenuBadge();if(openTab==='inbox')renderSheet()}
 function resCompose(key,thanks){const c=jrCtx();return jrFill(thanks?pickJ(RES_THANKS):pickJ(RES_OPEN)+' '+pickJ(RES_T[key])+' '+pickJ(RES_END),c)}
 function resThanks(shop){if(Date.now()-(state.ibT||0)<3*36e5||Math.random()>.5)return;const ks=RES_SHOP[shop];if(!ks)return;const k=pickJ(ks);resPost(k,resCompose(k,true))}
 function lifeCheck(){if(!state||lifeCheck.done)return;lifeCheck.done=1;try{cheerSync(true)}catch(_){}
@@ -67175,7 +67828,7 @@ function arrNotice(){const sc=ARR.scene;if(!sc)return;if(pet.mode!=='scene'&&!(s
   pet.act=null;pet.sleepT=0;pet.mode='idle';pet.timer=4;pet.hop=.55;if(sc==='nap')setTimeout(()=>petAct('stretch'),450)}
 function welcomeBack(since){if(!state||!ready||stageOf(state.pet.xp)===0||sandbox||!$('#game').hidden||document.querySelector('.coach'))return false;
   const h=centralHour(),hi=h>=5&&h<12?'Good morning!':h<17?'Good afternoon!':h<22?'Good evening!':'Hello, night owl!',p=state.pet,s=petStats(),me=myId||'me',nm=esc(p.name);
-  const low=NEEDS.map(n=>n[0]).filter(k=>k!=='affection').sort((a,b)=>s[a]-s[b]),SOFT={hunger:'a bit peckish',fun:'ready to play',energy:'sleepy',clean:'due a bath',affection:'wanting a cuddle'},mood=s[low[0]]>=60?`${nm} is doing great: ${tier(low[0],s[low[0]]).toLowerCase()} at worst.`:`${nm} missed you and is ${SOFT[low[0]]||'ready for some care'}${s[low[1]]<50&&SOFT[low[1]]?`, and ${SOFT[low[1]]}`:''}.`;
+  const low=NEEDS.map(n=>n[0]).filter(k=>k!=='affection').sort((a,b)=>s[a]-s[b]),SOFT={hunger:'a bit peckish',fun:'ready to play',energy:'sleepy',clean:'due a bath',affection:'wanting a cuddle'},mood=s[low[0]]>=60?`${nm} is doing great: ${tier(low[0],s[low[0]]).toLowerCase()} at worst.`:`${nm} is ${SOFT[low[0]]||'ready for some care'}${s[low[1]]<50&&SOFT[low[1]]?`, and ${SOFT[low[1]]}`:''}.`;
   const jr=state.journal.filter(j=>j.t>since).slice(0,3),ev=state.feed.filter(f=>f.k!=='note'&&f.t>since&&f.by&&f.by!==me&&f.by!==myId).slice(0,3),
     notes=state.feed.filter(f=>f.k==='note'&&f.t>since&&f.by!==me&&f.by!==myId).length,dms=state.inbox.filter(m=>m.t>since).length;
   const inbox=[notes?`${notes} note${notes>1?'s':''} from ${esc(who(state.feed.find(f=>f.k==='note'&&f.t>since&&f.by!==me).by))}`:'',dms?`${dms} message${dms>1?'s':''} from the neighbours`:''].filter(Boolean);
@@ -68728,7 +69381,7 @@ function mList3(l,r,b){l=Array.isArray(l)?l:[];r=Array.isArray(r)?r:[];b=Array.i
 function mLayout(l,r,b){if(!l||!r||typeof l!=='object'||typeof r!=='object')return l;b=b&&typeof b==='object'?b:{};if((+l.v||0)!==(+r.v||0)&&(+b.v||0)!==(+r.v||0)&&(+b.v||0)===(+l.v||0))return r;
   const o=mFields(l,r,b);['d','r','c'].forEach(k=>{if(Array.isArray(l[k])||Array.isArray(r[k]))o[k]=mList3(l[k],r[k],b[k])});if(l.b||r.b)o.b=mFields(l.b,r.b,b.b);return o}
 const MERGE={items:mById,tf:mArr3,tw:mArr3,btn:mCur,glim:mCur,tix:mCur,hearts:(l,r,b)=>Math.max(0,mNum(l,r,b)),tokens:(l,r,b)=>Math.max(0,mNum(l,r,b)),inv:mCounts,fown:mCounts,
-  journal:mLog(80),inbox:mLog(60),feed:mLog(50),toys:mSet,wear:mSet,capsdex:mSet,town:mSet,downs:mSet,jrT:mMax,ibT:mMax,
+  journal:mLog(360),inbox:mLog(150),feed:mLog(150),toys:mSet,wear:mSet,capsdex:mSet,town:mSet,downs:mSet,jrT:mMax,ibT:mMax,
   visits:mMaxMap,names:(l,r)=>Object.assign({},r,l),
   kf:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{}){const a=l[k],c=o[k];o[k]=!c?a:{p:Math.max(a.p,c.p),s:Math.max(a.s,c.s),d:a.d>c.d?a.d:c.d,m:Math.min(a.m||Infinity,c.m||Infinity)===Infinity?0:Math.min(a.m||Infinity,c.m||Infinity),c:Math.max(a.c|0,c.c|0),dp:Math.max(a.dp|0,c.dp|0),ms:[...new Set([...(a.ms||[]),...(c.ms||[])])]}}return o},
   cheer:(l,r,b)=>{l=l||{};r=r||{};b=b||{};return{p:Math.max(0,mNum(l.p,r.p,b.p)),lv:mMax(l.lv,r.lv),hp:(l.hp||'')>(r.hp||'')?l.hp||'':r.hp||''}},
@@ -68750,7 +69403,7 @@ const MERGE={items:mById,tf:mArr3,tw:mArr3,btn:mCur,glim:mCur,tix:mCur,hearts:(l
   rmem:(l,r)=>{const o=JSON.parse(JSON.stringify(r||{}));for(const k in l||{}){const L=l[k],O=o[k]||(o[k]={});for(const q in L){const a=L[q],b=O[q];if(!b||a.t>b.t)O[q]=a;else if(a.t===b.t){if(Array.isArray(a.said))O[q].said=[...new Set([...(b.said||[]),...a.said])];else O[q].said=a.said||b.said}}}return o},
   tg:(l,r)=>!l?r:!r?l:l.id===r.id?Object.assign({},r,{join:[...new Set([...(l.join||[]),...(r.join||[])])]}):(l.t>r.t?l:r),
   museum:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{})if(!o[k]||(l[k].t||0)<(o[k].t||0))o[k]=l[k];return o},
-  proj:(l,r)=>{if(!l)return r;if(!r)return l;const done=[...new Set([...(l.done||[]),...(r.done||[])])],pend=[...new Set([...(l.pend||[]),...(r.pend||[])])];if((l.i|0)!==(r.i|0)){const w=(l.i|0)>(r.i|0)?l:r;return Object.assign({},w,{done,pend})}const got=Object.assign({},r.got||{});for(const k in l.got||{})got[k]=Math.max(got[k]|0,l.got[k]|0);return{i:l.i|0,got,done,pend}},
+  proj:(l,r)=>{if(!l)return r;if(!r)return l;const done=[...new Set([...(l.done||[]),...(r.done||[])])],put=[...new Set([...(l.put||[]),...(r.put||[])])],pend=[...new Set([...(l.pend||[]),...(r.pend||[])])].filter(k=>!put.includes(k));if((l.i|0)!==(r.i|0)){const w=(l.i|0)>(r.i|0)?l:r;return Object.assign({},w,{done,pend,put})}const got=Object.assign({},r.got||{});for(const k in l.got||{})got[k]=Math.max(got[k]|0,l.got[k]|0);return{i:l.i|0,got,done,pend,put}},
   keeps:(l,r)=>{const m=new Map();[...(l||[]),...(r||[])].forEach(e=>{if(e&&e.id&&!m.has(e.id))m.set(e.id,e)});return[...m.values()].sort((a,b)=>b.t-a.t).slice(0,200)},
   tfound:(l,r)=>{const o=Object.assign({},r||{});for(const k in l||{})if(!o[k]||(l[k].t||0)<(o[k].t||0))o[k]=l[k];return o},
   cbook:(l,r)=>Object.assign({},r||{},l||{}),
@@ -68881,7 +69534,7 @@ function socialLine(k){try{const S=(TALK[k]&&TALK[k].sys)||{},pk=a=>a&&a.length?
 // on the map, a friendship that's changed this week comes up in conversation now and then
 {const cs=cvSysLine;cvSysLine=function(T){try{const k=Object.keys(TALK).find(q=>TALK[q]===T);if(k&&Math.random()<.18){const D=socDrifts(k),S=T.sys||{};if(D.length){const [o,d]=pick1(D),a=d>0?S.closer:S.apart;if(a&&a.length)return socFill(k,pick1(a),RESIDENTS[o].n)}}}catch(e){console.warn('drift line',e)}return cs(T)}}
 // the Mayor's note on a birthday mentions the party
-{const tl=typeof townLifeTick==='function'?townLifeTick:null;if(tl)townLifeTick=function(){const r=tl.apply(this,arguments);try{const ks=partyKeys();if(ks.length){const day=lifeDay(),A=state.acts||(state.acts={});if(A.partynote!==day){A.partynote=day;const nm=ks.map(k=>RESIDENTS[k].n).join(' and '),hn=(HOUSE_DEF[houseOf(ks[0])]||{}).n||'their house';
+{const tl=typeof townLifeTick==='function'?townLifeTick:null;if(tl)townLifeTick=function(){const r=tl.apply(this,arguments);try{const ks=partyKeys().filter(k=>typeof visMet!=='function'||visMet(k));if(ks.length){const day=lifeDay(),A=state.acts||(state.acts={});if(A.partynote!==day){A.partynote=day;const nm=ks.map(k=>RESIDENTS[k].n).join(' and '),hn=(HOUSE_DEF[houseOf(ks[0])]||{}).n||'their house';
   resPost('mayor',`A birthday party for ${nm} tonight, five to eight, at ${hn}. Bring a present, and an appetite. I’ve been asked not to give a speech. I’ll see.`);saveSoon()}}}catch(e){console.warn('party note',e)}return r}}
 /* </social> */
 /* <mk-deep> */
@@ -68909,14 +69562,14 @@ function mkFollowTick(){if(!state||sandbox||mkOpenFollow())return;const now=Date
   for(const r of mkAllRooms()){const R=mkRoom(r.k,r.i);if(!R||R.fu||now-(R.at||0)<3*864e5||!RESIDENTS[r.k])continue;
     const fns=new Set((R.items||[]).map(it=>(CATMAP[it.k]||{}).fn)),miss=Object.keys(MK_FU).filter(f=>!fns.has(f));if(!miss.length){R.fu={fn:'',t:now,done:1};continue}
     const rnd=jrRand('mkfu|'+(roomCode||'solo')+'|'+r.k+'|'+r.i),fn=miss[Math.floor(rnd()*miss.length)],q=MK_REQ[r.k][r.i];R.fu={fn,t:now,done:0};
-    resPost(r.k,`I’ve been living in my ${q.t.toLowerCase().replace(/^(an?|the) /,'').replace(/[?.!…]+$/,'')} for a few days now and I love it. One thing I keep wishing for: ${MK_FU[fn]}. Could you pop by and add one? Only if you have time.`);saveSoon();return}}
+    resPost(r.k,`I’ve been living in my ${q.t.toLowerCase().replace(/^(an?|the) /,'').replace(/[.!?]\s.*$/,'').replace(/[?.!…]+$/,'')} for a few days now and I love it. One thing I keep wishing for: ${MK_FU[fn]}. Could you pop by and add one? Only if you have time.`);saveSoon();return}}
 // a rearrange that adds what they asked for completes it
 {const mca=mkCancel;mkCancel=function(){let ctx=null;try{const m=sandbox&&sandbox.mk;if(m&&m.view&&m.edit){const R=mkRoom(m.k,m.i);if(R&&R.fu&&!R.fu.done)ctx={k:m.k,i:m.i,fn:R.fu.fn,has:state.items.some(it=>(CATMAP[it.k]||{}).fn===R.fu.fn)}}}catch(_){}
   const r=mca.apply(this,arguments);try{if(ctx&&ctx.has){const R=mkRoom(ctx.k,ctx.i);if(R&&R.fu&&!R.fu.done){R.fu.done=1;const was=R.stars|0;R.stars=3;R.at=Math.max(R.at|0,Date.now());const N=RESIDENTS[ctx.k].n,h=12*BTN;state.btn=(state.btn|0)+h;kfAdd(ctx.k,3);
     logEvent(`added what ${N} asked for to their ${MK_REQ[ctx.k][ctx.i].t.toLowerCase()}`);setTimeout(()=>{try{resPost(ctx.k,`You came back and added it! It’s perfect now. Thank you, really. I keep standing in the doorway just to look at it.`)}catch(_){}},3000);
     setTimeout(()=>showReward(`${N} is so happy`,'tab-decorate',`<p class="mkstars">${'<i class="on"></i>'.repeat(3)}</p><p>Just what they asked for. ${was<3?'The room is a three-star room now.':''}</p><p class="rwsub">+${h} buttons · friendship with ${esc(N)}</p>`),600);saveSoon();updHUD()}}}catch(e){console.warn('mk follow',e)}return r}}
 // Decorate's home page and the house chips mention an open check-in
-{const mdh=mkDecoHtml;mkDecoHtml=function(){let h=mdh();try{const F=mkOpenFollow();if(F&&!sandbox){const q=MK_REQ[F.k][F.i];h=`<button type="button" class="dnews mkreq" id="mkFu"><span class="mkf">${lifeFace(F.k)}</span><span><b>${esc(RESIDENTS[F.k].n)} would love ${esc(MK_FU[F.fn])}</b><small>In the ${esc(q.t.toLowerCase().replace(/^(an?|the) /,'').replace(/[?.!…]+$/,''))} you made. Open it and tap Rearrange.</small></span></button>`+h}}catch(e){console.warn('mk follow html',e)}return h}}
+{const mdh=mkDecoHtml;mkDecoHtml=function(){let h=mdh();try{const F=mkOpenFollow();if(F&&!sandbox){const q=MK_REQ[F.k][F.i];h=`<button type="button" class="dnews mkreq" id="mkFu"><span class="mkf">${lifeFace(F.k)}</span><span><b>${esc(RESIDENTS[F.k].n)} would love ${esc(MK_FU[F.fn])}</b><small>In the ${esc(q.t.toLowerCase().replace(/^(an?|the) /,'').replace(/[.!?]\s.*$/,'').replace(/[?.!…]+$/,''))} you made. Open it and tap Rearrange.</small></span></button>`+h}}catch(e){console.warn('mk follow html',e)}return h}}
 {const mdb=mkDecoBind;mkDecoBind=function(root){mdb(root);const b=root.querySelector('#mkFu');if(b)b.onclick=()=>{const F=mkOpenFollow();if(F)mkStart(F.k,true,F.i)}}}
 // while rearranging a room with an open check-in, the bar says what they asked for
 {const mb=mkBar;mkBar=function(){mb.apply(this,arguments);try{const m=sandbox&&sandbox.mk;if(m&&m.view){const R=mkRoom(m.k,m.i);if(R&&R.fu&&!R.fu.done){const b=$('#mkbar'),sm=b.querySelector('.mkt small');if(sm){const has=state.items.some(it=>(CATMAP[it.k]||{}).fn===R.fu.fn);sm.insertAdjacentHTML('afterend',`<small class="mkfu${has?' ok':''}">${has?'Done: ':'They asked for '}${esc(MK_FU[R.fu.fn])}</small>`)}}}}catch(e){console.warn('mk bar',e)}}}
@@ -69099,8 +69752,9 @@ function moodCheer(k,how){if(resMood(k)!=='grumpy'||moodCheered(k)||!RESIDENTS[k
 // the other resident. Rewards: buttons, a treasure, or a piece of furniture; their thanks arrives as a letter.
 const NQ_MAX=2,NQ_PER=3;
 function nqState(){const Q=state.nq&&typeof state.nq==='object'?state.nq:(state.nq={list:[],done:[]});if(!Array.isArray(Q.list))Q.list=[];if(!Array.isArray(Q.done))Q.done=[];return Q}
-const nqId=(h,i)=>h+':'+i,nqWeek=()=>Math.floor((Date.now()/864e5+3)/7);
+const nqId=(h,i)=>h+':'+i,nqWeek=()=>Math.floor((Date.parse(lifeDay()+'T12:00:00Z')/864e5+3)/7);
 function nqBoard(h){const L=(NOTICES[h]||[]).map((n,i)=>Object.assign({i,id:nqId(h,i),hood:h},n)).filter(n=>RESIDENTS[n.by]&&(!n.q||!n.q.to||RESIDENTS[n.q.to])),Q=nqState(),R=jrRand('nq|'+(roomCode||'solo')+'|'+nqWeek()+'|'+h);
+  if(L.filter(n=>n.q).every(n=>Q.done.includes(n.id))){Q.done=Q.done.filter(id=>!id.startsWith(h+':'))}
   const pool=L.filter(n=>!Q.done.includes(n.id)),out=[],fav=pool.filter(n=>n.q),pl=pool.filter(n=>!n.q);
   [fav,fav,pl].forEach(src=>{if(!src.length)return;const c=src.filter(n=>!out.includes(n));if(c.length)out.push(c[Math.floor(R()*c.length)])});
   Q.list.filter(x=>x.hood===h).forEach(x=>{const n=L.find(q=>q.id===x.id);if(n&&!out.includes(n))out.unshift(n)});return out.slice(0,NQ_PER+1)}
@@ -69118,7 +69772,7 @@ function nqDone(id){const Q=nqState(),n=nqNote(id);Q.list=Q.list.filter(x=>x.id!
   setTimeout(()=>showReward(`${R.n} says thank you`,'emo-star',`<p>“${esc(kFill(n.thanks||'Thank you!'))}”</p><p class="rwsub">+${b} buttons${gift?` · ${esc(gift)}`:''} · friendship with ${esc(R.n)}</p>`),700);saveSoon();updHUD()}
 const NQ_PLACE={plaza:'on the plaza',park:'in the park',pond:'by the pond',library:'by the library',townhall:'by the Town Hall',postoffice:'by the post office',dock:'down by the dock',market:'on Market Street'};
 const nqPlaceName=at=>NQ_PLACE[at]||(RESIDENTS[at]?`near ${RESIDENTS[at].n}’s house`:'around town');
-const nqNeedName=t=>t==='fish'?'a fish':t==='bug'?'a bug':t==='shore'?'something from the beach':t==='trail'?'a find from the woods':t==='groom'?'a grooming treat':t&&t.startsWith('food:')?`something ${(FOOD_CATS[t.slice(5)]||'tasty').toLowerCase()}`:'something nice';
+const nqNeedName=t=>t==='fish'?'a fish':t==='bug'?'a bug':t==='shore'?'something from the beach':t==='trail'?'a find from the woods (Prickles’ jokes turn them up)':t==='groom'?'a grooming treat':t&&t.startsWith('food:')?`something ${(FOOD_CATS[t.slice(5)]||'tasty').toLowerCase()}`:'something nice';
 function nqMatch(tag,src){const it=src&&src.t==='inv'&&ITEMMAP[src.id];if(!it)return false;if(tag==='fish')return!!it.fish;if(tag==='bug')return!!it.bug;if(tag==='shore'||tag==='trail')return it.col===tag;if(tag==='groom')return it.k==='groom';if(tag.startsWith('food:'))return it.k==='food'&&it.cat===tag.slice(5);return false}
 function nqGift(k,src){nqState().list.slice().forEach(x=>{const n=nqNote(x.id);if(n&&n.q&&n.q.k==='bring'&&n.by===k&&nqMatch(n.q.need,src))nqDone(x.id)})}
 function nqTalk(k){nqState().list.slice().forEach(x=>{const n=nqNote(x.id);if(!n||!n.q)return;const q=n.q;
@@ -69240,6 +69894,35 @@ const jrLastK={};{const je=jrEvent;jrEvent=function(k){const now=Date.now();if(n
 // painting tiles: the dock hides, so the paint bar's buttons can't land on Explore
 {const sb=startBrush;startBrush=function(){const r=sb.apply(this,arguments);try{document.body.classList.add('painting')}catch(_){}return r}}
 {const eb=endBrush;endBrush=function(){const r=eb.apply(this,arguments);try{document.body.classList.remove('painting')}catch(_){}return r}}
+// the back button and moving between places tidy up properly (chaos playtest)
+{const ba=backAct;backAct=function(){try{
+  if(typeof PH!=='undefined'&&PH.on){phClose();return true}
+  if(typeof FI!=='undefined'&&FI){fishEnd();return true}
+  const bv=$('#bugv');if(bv&&!bv.hidden){bv.hidden=true;return true}
+  }catch(e){console.warn('back',e)}return ba.apply(this,arguments)}}
+{const tc=tmClose;tmClose=function(){try{if(typeof cv!=='undefined'&&cv)cvEnd()}catch(_){}return tc.apply(this,arguments)}}
+{const tt=travelTo;travelTo=function(){try{closeWheel();if(typeof cv!=='undefined'&&cv)cvEnd();if(pet.mode==='held')petDrop()}catch(_){}return tt.apply(this,arguments)}}
+{const op=openProduct;openProduct=function(){if(traveling)return;return op.apply(this,arguments)}}
+{const to=tmOpen;tmOpen=function(){try{if(pet.mode==='held')petDrop()}catch(_){}return to.apply(this,arguments)}}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('#reward .rwlink');if(b){e.stopPropagation();e.preventDefault();try{nextReward()}catch(_){}}},true);
+// tappable map decorations (museum, fishing spots, well, noticeboards): what tapping one does
+const tmDecorAct=q=>{if(!q)return false;if(q[0]==='museum'){const [cx,cz]=twPos(q[1],q[2]);twWalk(cx+.5,cz+1.6,()=>musOpen());return true}if(FISH_SPOT[q[0]]){const [w,d_]=TM_DECOR[q[0]].sz||[1,1],[cx,cz]=twPos(q[1],q[2]),kind=FISH_SPOT[q[0]],tx=cx+(w-1)/2,tz=cz+(d_-1)/2,P=tw.pet,a=Math.atan2(P.x-tx,P.z-tz),r_=Math.max(w,d_)*.5+.45;twWalk(tx+Math.sin(a)*r_,tz+Math.cos(a)*r_,()=>{P.ry=Math.atan2(tx-P.x,tz-P.z);fishStart(kind)});return true}
+     if(q[0]==='well'){const [w,d_]=TM_DECOR.well.sz||[1,1],[cx,cz]=twPos(q[1],q[2]);twWalk(cx+(w-1)/2,cz+(d_-1)/2+.9,()=>dlyWell());return true}
+     if(q[0]==='noticeboard'&&typeof nqOpen==='function'){const [x_,z_]=twPos(q[1],q[2]),d=plDistrictOf(x_,z_),P=tw.pet,a=Math.atan2(P.x-x_,P.z-z_);twWalk(x_+Math.sin(a)*1.2,z_+Math.cos(a)*1.2,()=>nqOpen(HOODS[d]?d:null));return true}return false};
+const TM_TAPD=k=>k==='museum'||k==='well'||k==='noticeboard'||!!FISH_SPOT[k];
+function tmDecorPick(cx,cy){if(!tm||!tm.cam)return null;const r=$('#tmc').getBoundingClientRect(),v=new THREE.Vector3();let best=null,bd=44;
+  (tmM().d||[]).forEach(q=>{if(!TM_TAPD(q[0]))return;const D=TM_DECOR[q[0]],[w,d]=D.sz||[1,1],[x,z]=twPos(q[1],q[2]),px=x+(w-1)/2,pz=z+(d-1)/2;
+    v.set(px,.5-tmCurveY(px,pz),pz).project(tm.cam);if(v.z>1)return;const sx=r.left+(v.x*.5+.5)*r.width,sy=r.top+(-v.y*.5+.5)*r.height,dd=Math.hypot(sx-cx,sy-cy)*(FISH_SPOT[q[0]]?1.3:1);if(dd<bd){bd=dd;best=q}});return best}
+{const tt=twTap;twTap=function(cx,cy){try{if(!tm.arr){const q=tmDecorPick(cx,cy);if(q&&tmDecorAct(q))return}}catch(e){console.warn('decor tap',e)}return tt.apply(this,arguments)}}
+// ---- deeper friendships (v118): chats remember which topics came up lately (per resident, this phone), so lines repeat far less;
+// becoming best friends (Bestie) brings their letter, a keepsake and a piece from their own furniture set.
+{const cb=cvBegin;cvBegin=function(k){const r=cb.apply(this,arguments);try{if(cv&&cv.seen){let L=[];try{L=JSON.parse(localStorage['r42cvs:'+k]||'[]')}catch(_){}L.forEach(id=>{if(id!=='d')cv.seen.add(id)});cv._k=k}}catch(_){}return r}}
+{const ce=cvEnd;cvEnd=function(){try{if(cv&&cv.seen&&cv._k){const L=[...cv.seen].filter(id=>id!=='d').slice(-28);localStorage['r42cvs:'+cv._k]=JSON.stringify(L)}}catch(_){}return ce.apply(this,arguments)}}
+{const ka=kfAdd;kfAdd=function(k,n){const l0=RESIDENTS[k]?kfLevel(kfOf(k).p):0;const r=ka.apply(this,arguments);try{if(RESIDENTS[k]&&l0<4&&kfLevel(kfOf(k).p)>=4){const R=RESIDENTS[k],T=TALK[k]||{},me=(state.names&&state.names[myId])||'you',
+  txt=kFill(String(T.bestie||`Best friends, then. I’ve decided. You don’t get a say. Come by any time, and bring ${state.pet.name}.`)).replace(/\{me\}/g,me);
+  setTimeout(()=>{try{resPost(k,txt);keepAdd({k:'letter',n:`A letter from ${R.n}`,from:k,d:txt});const set=SETMAP['r'+k]?'r'+k:null,pool=set?CAT.filter(c=>c.set===set&&!c.gacha):[];let gift='';if(pool.length){const c=pool[Math.floor(Math.random()*pool.length)];state.fown[c.k]=(state.fown[c.k]||0)+1;gift=c.n}
+    jrAdd(`${R.n} said we're best friends now. ${headNames()[0]} has told everyone. ${headNames()[1]} told them again.`,'','bestie',0,R.n);firstOf('bestie',`Our first best friend in town: ${R.n}.`);
+    showReward(`${R.n}: best friends!`,'stat-happy',`<p>“${esc(txt)}”</p><p class="rwsub">A keepsake letter${gift?` · a ${esc(gift.toLowerCase())} for your storage`:''}</p>`);saveSoon()}catch(e){console.warn('bestie',e)}},1200)}}catch(e){console.warn('bestie',e)}return r}}
 /* </loop-fixes> */
 // civic places get a bigger name plaque than houses (the Town Hall's was hard to read from the map)
 TM_SIGN._place=(fg,L,k)=>{const p=TM_SIGN._house(fg,L,k);p.scale.multiplyScalar(1.6);p.position.y+=.12;return p};
@@ -69272,7 +69955,7 @@ function normalize(s){const oldPal=!!s&&!(s.pv>=2),curMig=!!s&&s.btn==null;try{i
   s.inv=s.inv&&typeof s.inv==='object'?Object.fromEntries(Object.entries(s.inv).filter(([k,v])=>ITEMMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):Object.assign({},d.inv);
   s.toys=Array.isArray(s.toys)?s.toys.filter(k=>ITEMMAP[k]&&ITEMMAP[k].k==='toy'):d.toys.slice();s.daily=s.daily&&typeof s.daily==='object'?s.daily:{};
   s.pet=Object.assign({},d.pet,s.pet||{});if(s.pet.look&&typeof s.pet.look!=='object')delete s.pet.look;if(s.pet.heads&&!(Array.isArray(s.pet.heads)&&s.pet.heads.length===2))delete s.pet.heads;else if(s.pet.heads)s.pet.heads=s.pet.heads.map(x=>String(x||'').slice(0,10));s.tokens=s.tokens==null?3:Math.max(0,Math.min(999,+s.tokens|0));s.capsdex=Array.isArray(s.capsdex)?s.capsdex.filter(k=>typeof k==='string').slice(0,64):[];s.ceil=s.ceil==null?1:clamp(+s.ceil||0,0,1);s.wish=s.wish&&typeof s.wish==='object'&&(!s.wish.k||WISH_T[s.wish.k])?s.wish:{};s.wear=[...new Set(Array.isArray(s.wear)?s.wear.filter(id=>wearDef(id)):[])];s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
-  s.journal=Array.isArray(s.journal)?s.journal.slice(0,80).map(f=>Object.assign({t:+f.t||0,by:String(f.by||''),k:String(f.k||'').slice(0,16),text:String(f.text||'').slice(0,300)},f.i?{i:String(f.i).slice(0,40)}:{})):[];s.inbox=Array.isArray(s.inbox)?s.inbox.slice(0,60).map(f=>({t:+f.t||0,from:String(f.from||'').slice(0,12),text:String(f.text||'').slice(0,300)})):[];s.jrT=+s.jrT||0;s.ibT=+s.ibT||0;
+  s.journal=Array.isArray(s.journal)?s.journal.slice(0,360).map(f=>Object.assign({t:+f.t||0,by:String(f.by||''),k:String(f.k||'').slice(0,16),text:String(f.text||'').slice(0,300)},f.i?{i:String(f.i).slice(0,40)}:{})):[];s.inbox=Array.isArray(s.inbox)?s.inbox.slice(0,150).map(f=>({t:+f.t||0,from:String(f.from||'').slice(0,12),text:String(f.text||'').slice(0,300)})):[];s.jrT=+s.jrT||0;s.ibT=+s.ibT||0;
   if(s.pet){s.pet.auto=s.pet.auto&&typeof s.pet.auto==='object'?s.pet.auto:{};s.pet.likes=s.pet.likes&&typeof s.pet.likes==='object'?s.pet.likes:{}}
   if(!(s.pet.xv>=2)){if(s.pet.xp>=150)s.pet.xp=400+(s.pet.xp-150);s.pet.xv=2}
   s.pet.tr=s.pet.tr&&typeof s.pet.tr==='object'?Object.fromEntries(Object.entries(s.pet.tr).filter(([k,v])=>TRAITS[k]&&+v>0).map(([k,v])=>[k,Math.min(9999,+v)])):{};s.pet.trS=typeof s.pet.trS==='string'?s.pet.trS.slice(0,40):'';
@@ -69288,7 +69971,7 @@ function normalize(s){const oldPal=!!s&&!(s.pv>=2),curMig=!!s&&s.btn==null;try{i
   {const C=s.cheer&&typeof s.cheer==='object'?s.cheer:{};s.cheer={p:Math.max(0,+C.p||0),lv:Math.max(0,C.lv|0),hp:typeof C.hp==='string'?C.hp.slice(0,10):''}}
   s.kr=s.kr&&typeof s.kr==='object'&&!Array.isArray(s.kr)?s.kr:{};
   s.kf=s.kf&&typeof s.kf==='object'&&!Array.isArray(s.kf)?s.kf:{};Object.keys(s.kf).forEach(k=>{const f=s.kf[k];if(!f||typeof f!=='object'){delete s.kf[k];return}f.p=Math.max(0,+f.p||0);f.s=Math.max(0,f.s|0);f.d=typeof f.d==='string'?f.d:'';f.m=+f.m||0;f.c=Math.max(0,f.c|0);f.dp=Math.max(0,f.dp|0);f.ms=Array.isArray(f.ms)?f.ms.filter(x=>typeof x==='string').slice(0,20):[]});
-  s.feed=Array.isArray(s.feed)?s.feed.slice(0,50).map(f=>({t:+f.t||0,by:String(f.by||''),k:f.k==='note'?'note':'event',text:String(f.text||'').slice(0,160)})):[];
+  s.feed=Array.isArray(s.feed)?s.feed.slice(0,150).map(f=>({t:+f.t||0,by:String(f.by||''),k:f.k==='note'?'note':'event',text:String(f.text||'').slice(0,160)})):[];
   s.visits=s.visits&&typeof s.visits==='object'?s.visits:{};s.names=s.names&&typeof s.names==='object'?Object.fromEntries(Object.entries(s.names).slice(0,8).map(([k,v])=>[String(k).slice(0,64),String(v||'').slice(0,20)])):{};s.hearts=Math.max(0,+s.hearts||0);if(curMig){let lv=0;try{lv=bondOf(+(s.pet&&s.pet.xp)||0).lv}catch(_){}s.btn=Math.round(s.hearts*BTN);s.tix=(s.tokens|0)*30;s.glim=5+5*lv}
   ['btn','glim','tix'].forEach(k=>{s[k]=Math.max(0,Math.round(+s[k]||0))});if(!FLOORS.includes(s.floor))s.floor='checker';if(!WALLS.includes(s.wall))s.wall='bubble';const RN=ROOM_SIZES.includes(s.size)?s.size:8;s.size=RN;s.tf=Array.isArray(s.tf)&&s.tf.length===RN*RN?s.tf.map(k=>TILESETS.f[k]?k:s.floor):Array(RN*RN).fill(s.floor);s.tw=Array.isArray(s.tw)&&s.tw.length===RN*4?s.tw.map(k=>TILESETS.w[k]?k:s.wall):Array(RN*4).fill(s.wall);s.fown=s.fown&&typeof s.fown==='object'?Object.fromEntries(Object.entries(Object.entries(s.fown).reduce((o,[k,v])=>{k=winKeyFix(k);o[k]=(o[k]||0)+(+v||0);return o},{})).filter(([k,v])=>CATMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):{};s.fwish=s.fwish&&typeof s.fwish==='object'?Object.fromEntries(Object.entries(s.fwish).filter(([k])=>CATMAP[k]).slice(0,200).map(([k,v])=>[k,String(v||'').slice(0,64)])):{};s.town=[...new Set([...STARTER_TILES,...(Array.isArray(s.town)?s.town:[]),...s.tf.map(k=>'f:'+k),...s.tw.map(k=>'w:'+k)])].filter(k=>TILESETS[k[0]]&&TILESETS[k[0]][k.slice(2)]);s.downs=[...new Set(['classic',...(Array.isArray(s.downs)?s.downs:[]).map(doorKeyFix)])];s.door=Object.assign({s:'classic',w:3,u:-2.6},s.door&&typeof s.door==='object'?s.door:{});s.door.s=doorKeyFix(s.door.s);if(!s.downs.includes(s.door.s))s.door.s='classic';s.door.w=clamp(s.door.w|0,0,3);s.door.u=clamp(+s.door.u||0,-RN/2+.8,RN/2-.8);if(!SKY_KEYS.includes(s.sky))s.sky='classic';if(oldPal){const mp=[0,7,8,3,12,5,2];s.items.forEach(i=>i.c=mp[(i.c||0)%7])}s.td=s.td&&typeof s.td==='object'&&!Array.isArray(s.td)?s.td:{};s.arc=s.arc&&typeof s.arc==='object'&&!Array.isArray(s.arc)?s.arc:{best:{},plays:0};s.pv=2;return s}
 function loadLocal(){let s=null;try{s=JSON.parse(localStorage.getItem(soloKey())||'null')}catch(_){}state=normalize(s||defaultState());if(!s)state.rev=0;
@@ -69334,7 +70017,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><p class="coachgo">Start by tapping ${nm} to say hello.</p><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=117;
+const APP_V=118;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

@@ -2046,6 +2046,26 @@ Small facts from the mood lines and noticeboard notes (incidental; keep consiste
   "good book". Posy's watering can wanders off to the pond. Prickles may serve tea if you visit quietly. Lumi says a flickering Loop lamp
   is just shy. Echo tests the horn with big round shells.
 
+### Deeper friendships (v118)
+The second set of five "deep" conversations and the Bestie letters added personal history. Keep consistent:
+- Bunbun's mum hummed four off-key notes while baking (Bunbun hums them); her first loaf was a brick used as a doorstop for eleven years;
+  the last page of her mum's recipe book is left blank on purpose (at Bestie she writes the player's name there). Pip's best jar, Batch 14,
+  is unopened. Cushy's lumpy first sofa is by Bunbun's window. Dusty keeps its first fluff in a jar. The twins arrived in a basket by
+  Tutti's freezer. Crumb carries an ordinary pebble Tutti gave her and names 62 pebbles to fall asleep. Dr. Patch's first patient was
+  Bunbun's burn.
+- Fizz's circus tub was called Marguerite (now a goat's bed). Loofah wants a bath boat called "Mm". Stitch has a "nearly" drawer beside
+  the someday drawer. Pom's nervous mornings start with Gerald. Blush keeps a gap by the fountain in her plaza painting for newcomers.
+  Gloss's private book has one page, "friends". Beacon was a buoy first; it notches its rail for each visit.
+- Boing arrived in a crate marked "assorted springs" that Parcel signed for. Joy says goodnight to every cabinet. Tock's key plays three
+  notes; its ledger has a secret page of toys that never left the shop. Sketch draws the door first now. Bolt sleeps on the delivery
+  pallet and is designing the Long Bench for the plaza (a seat per resident, a spare for the next neighbour). Pixel counts things so they
+  stay. Parcel's satchel was nearly called Steve. Fold's name came from "fold along the dotted line"; 91 fear-cranes in a jar. A heron
+  once picked Cobble up and put him down again.
+- The Mayor's speech goose was a real goose that walked across his first speech (it lives by the pond and gets a ribbon at new year).
+  Dewey keeps an orange hair of Marmalade between pages 40 and 41. Lumi was once a candle. Nimbus counts puddle jumps (38 of 41 rainy days).
+  Posy plants early yellow bulbs by Prickles' chair for his February birthday; Prickles has practised asking her to see the sea 400 times.
+  Echo's first plaza audience was a pigeon, the Mayor and a puddle.
+
 ## Open questions (undecided; ask Garrett before writing as fact)
 1. **Is there a sea?** Bubble Bay, the pier, the beach, the harbour, boats, gulls and Beacon's lighthouse are all over the lore, and Prickles dreams of the sea; the v60 map is countryside with
    ponds. Options: the bay is just off the map's edge; or add a shore to the south-east.

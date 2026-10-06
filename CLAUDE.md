@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v117** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v117'` in `sw.js`; bump both for anything
+**Current build: v118** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v118'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1190,3 +1190,24 @@ Subagents can't write report files, so their reports come back as their final me
 - Journal: `/* <journal-month> */` "<Month>, so far" page at the top of the diary (`jrMonth`).
 Not changed (design): assistants are home 7-13 only; the town is quiet at midday; favour thanks text vs reward type; visit/deliver favours
 finish on any close-up with that resident.
+
+
+## Playtest round two (v118)
+Agents: screens, long-term (6 simulated weeks), retest of v117, chaos. Fixed:
+- **Map decoration taps never worked well**: the world is drawn bent but rays are flat, so small decorations were missed, and `bakeStatic`
+  had merged their meshes away from the `userData.td` node (now `td` is in `BAKE_STOP`). Tappable decorations (museum, well, noticeboards,
+  fishing spots) go through `tmDecorAct(q)`, tried first by `tmDecorPick` (screen-space distance to each one's projected position, like
+  resident taps), then the ray, then the cell under the curve-aware ground point.
+- Projects: placed ones are tracked in `state.proj.put` (merge unions it; the default town already had an observatory decoration, so the
+  project one never appeared); the spot search starts at -1e9 (the 8th never found a spot); the bouncy castle (1,500) is first.
+- Journal/Footprints/Inbox keep 360/150/150 (the saved copy was 80/50/60, about nine days of diary). Bond titles go to level 20.
+- Noticeboards: a hood whose favours are all done starts over; weeks follow the US Central day; "woods finds" hint at Prickles' jokes.
+  Makeover requests from anyone after 3 days if you've met nobody.
+- Deeper friendships (`/* <deep-talk> */`, brief `tools/dev/town/DEEP_BRIEF.md`): 10 deep conversations per resident (was 5), a `bestie`
+  letter (sent with a keepsake and a piece from their set when friendship reaches Bestie, `kfAdd` wrapper), 5 letters each in `RES_T`.
+  Map chats remember the last ~28 topic ids per resident on this phone (`localStorage['r42cvs:'+k]`), so lines repeat far less.
+- Chaos: leaving the capsule machine mid-crank refunds the tickets; `backAct` closes photo mode, fishing and the bug ring first; closing the
+  map or travelling ends a conversation (`cvEnd`), closes the wheels and drops a held pet; no product card while travelling.
+- Retest: weather "Not now" (inline onclick can't reach the game's functions; a delegated listener on `#reward .rwlink`); welcome card said
+  "missed you" twice; party notes only for residents you've met; two-sentence makeover titles cut to the first phrase; `goUse` guards a
+  vanished seat; `twPetPose` guards a closed map.
