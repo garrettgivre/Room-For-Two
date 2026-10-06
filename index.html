@@ -1015,6 +1015,11 @@ body.styling .storechip{opacity:0}
 .jr-month{margin:6px 0 12px}.jr-month b{font-family:var(--disp);font-size:16px;display:block;margin-bottom:4px}.jr-month p{margin:0;line-height:1.45}.jr-month .jrsign{text-align:right;margin-top:6px;opacity:.75;font-family:var(--disp)}
 .coachgo{margin:10px 0 8px;font-family:var(--disp);font-size:15px;text-align:center}.rwlink{background:none;border:0;font-family:var(--disp);font-size:14px;color:var(--ink);opacity:.7;text-decoration:underline;cursor:pointer;margin-top:4px}
 body.painting #dock{opacity:0;pointer-events:none;transition:opacity .2s}body.painting #dock *{pointer-events:none}
+/* small screens and the shop catalogue (v119) */
+@media (max-height:720px){.sheet{max-height:70%}}
+body:has(.sheet.kshop:not([hidden])) #kpanel{visibility:hidden}
+.tdsw{width:34px;height:34px;right:-10px;bottom:-12px}
+.gm-card button.gel{position:sticky;bottom:-18px;z-index:1}
 </style>
 </head>
 <body>
@@ -27792,7 +27797,7 @@ function kbPlace(snap){const el=$('#kbub'),K=KB.K;if(!K||!K.head)return;const bw
   const obs=[];['header.top .brand','header.top .jar','#storebar','#dock','#floorchip','#shopcard','#kpanel'].forEach(q=>{const e=document.querySelector(q);if(e&&!e.hidden){const r=e.getBoundingClientRect();if(r.width&&r.height)obs.push(r)}});if(openTab)obs.push($('#sheet').getBoundingClientRect());
   const ov=(ax,ay,aw,ah,r)=>Math.max(0,Math.min(ax+aw,r.right)-Math.max(ax,r.left))*Math.max(0,Math.min(ay+ah,r.bottom)-Math.max(ay,r.top));
   const C=[['t',hx-bw/2,y0-g-bh,0],['r',x1+g,hy-bh*.6,50],['l',x0-g-bw,hy-bh*.6,50],['b',hx-bw/2,y1+g,140]];let best=null;
-  C.forEach(([sd,x,y,pen])=>{if(sd==='t'||sd==='b')x=clamp(x,m,W-m-bw);else y=clamp(y,m,H-m-bh);if(sd==='t'&&y<m)y=m;let p=pen+(sd===KB.side?-25:0);
+  C.forEach(([sd,x,y,pen])=>{if(sd==='t'||sd==='b')x=clamp(x,m,W-m-bw);else y=clamp(y,m,H-m-bh);if(sd==='t'&&y<m+18)y=m+18;let p=pen+(sd===KB.side?-25:0);
     if(x<m||x+bw>W-m||y<m||y+bh>H-m)p+=5000;const ksh=kmode&&kmode.view==='shop';p+=ov(x,y,bw,bh,{left:x0,right:x1,top:y0,bottom:y1})*(ksh?.012:.08);obs.forEach(r=>p+=ov(x,y,bw,bh,r)*(ksh?.3:.05));if(!best||p<best.p)best={sd,x,y,p}});
   if(!best)return;if(best.sd!==KB.side){KB.side=best.sd;el.dataset.side=best.sd;snap=true}
   const k=snap?1:.25;KB.x+=(best.x-KB.x)*k;KB.y+=(best.y-KB.y)*k;el.style.left=Math.round(KB.x)+'px';el.style.top=Math.round(KB.y)+'px';
@@ -35495,7 +35500,7 @@ function ago(t){const s=(Date.now()-t)/1000;if(s<60)return'just now';if(s<3600)r
 function updPresence(){const el=$('#presence');if(mode==='solo'){el.textContent='Solo on this device';return}if(mode==='connecting'){el.textContent='Connecting';return}
   const others=Object.entries(state.visits||{}).filter(([k])=>k!==myId).sort((a,b)=>b[1]-a[1]);
   el.textContent=others.length?`${who(others[0][0])} was here ${ago(others[0][1])}`:'Waiting for your person'}
-function logEvent(text,kind){state.feed.unshift({t:Date.now(),by:myId||'me',k:kind||'event',text});if(state.feed.length>150)state.feed.length=50}
+function logEvent(text,kind){state.feed.unshift({t:Date.now(),by:myId||'me',k:kind||'event',text});if(state.feed.length>150){const notes=state.feed.filter(f=>f.k==='note').slice(0,40),ev=state.feed.filter(f=>f.k!=='note').slice(0,100);state.feed=notes.concat(ev).sort((a,b)=>b.t-a.t)}}
 function seenKey(sec){return'r42seen:'+sec+':'+roomCode}
 function seenT(sec){try{return+localStorage.getItem(seenKey(sec))||0}catch(_){return 0}}
 function markSeen(sec){try{localStorage.setItem(seenKey(sec),String(Date.now()))}catch(_){}}
@@ -61603,7 +61608,7 @@ function phDownload(p){const u=URL.createObjectURL(p.blob),l=document.createElem
 // ---- fishing on the town map (v92): tap a pond, a stream, the waterfall or the dock; the pet walks over and casts. A top-down look at
 // the water: a shadow swims up, nibbles (don't tap yet), then bites (the bobber goes under and a "!" pops up): tap within FISH_WIN.
 const FISH_SPOT={pond:'pond',lilypond:'pond',duckpond:'pond',waterfall:'river',stream:'river',streamx:'river',streamne:'river',streamnw:'river',streamse:'river',streamsw:'river',archbridge:'river',footbridge:'river',dock:'sea',beacon:'sea'};
-const FISH_WIN=.62;
+const FISH_WIN=.9;
 Object.assign(COLS,{fresh:{n:'Ponds and rivers',d:'Fish from the town’s ponds and streams. What bites depends on the season, the time and the weather.',ic:'f_koi'},sea:{n:'The sea',d:'Fish from the dock by the boardwalk. Some only come out at night, or in fog.',ic:'f_mackerel'}});
 LIKES.beacon&&LIKES.beacon.love.push('t:sea');LIKES.cactus&&LIKES.cactus.like.push('i:f_boot');LIKES.cloud&&LIKES.cloud.love.push('i:f_frog');LIKES.sponge&&LIKES.sponge.like.push('t:fresh');
 function fishAvail(w){const W=typeof wxNow==='function'?wxNow():null,mo=+lifeDay().slice(5,7),h=townHour(),inH=([a,b])=>a<b?h>=a&&h<b:h>=a||h<b;
@@ -61626,7 +61631,7 @@ function fishTick(now){const f=FI;if(!f)return;const dt=Math.min(.25,(now-f.last
   if(f.ph==='cast'){if(f.t>.6){f.ph='wait';f.t=0;f.wt=1.5+Math.random()*3.5;$('#fishh').textContent='Wait for it…';f.rip.push({x:bob[0],y:bob[1],t:0})}}
   else if(f.ph==='wait'){if(f.t>f.wt){if(!f.F){f.ph='flee';f.t=0;$('#fishh').textContent='Nothing’s biting here right now.';}else{f.ph='swim';f.t=0;const a=Math.random()*6.28;f.sx=cx+Math.cos(a)*R*.9;f.sy=cy+Math.sin(a)*R*.9}}}
   else if(f.ph==='swim'){const k=Math.min(1,f.t/2.2);f.px=f.sx+(bob[0]-f.sx)*k*.86;f.py=f.sy+(bob[1]-f.sy)*k*.86;if(k>=1){f.ph='nibble';f.t=0;f.nib=0}}
-  else if(f.ph==='nibble'){const per=.9;dip=f.t%per<.12?4:0;if(f.t%per<.02&&f.t>.05){f.rip.push({x:bob[0],y:bob[1],t:0});try{sTone({f:900,d:.05,v:.08,type:'sine'})}catch(_){}}if(f.t>per*f.nibN+.2){f.ph='bite';f.t=0;f.rip.push({x:bob[0],y:bob[1],t:0},{x:bob[0],y:bob[1],t:-.15});try{sNoise({f:700,q:1,d:.25,v:.35,ft:'lowpass'})}catch(_){}}}
+  else if(f.ph==='nibble'){const per=.9;dip=f.t%per<.12?4:0;if(f.t%per<.02&&f.t>.05){f.rip.push({x:bob[0],y:bob[1],t:0});try{sTone({f:900,d:.05,v:.08,type:'sine'})}catch(_){}}if(f.t>per*f.nibN+.2){f.ph='bite';f.t=0;try{$('#fishh').textContent='Tap now!'}catch(_){}f.rip.push({x:bob[0],y:bob[1],t:0},{x:bob[0],y:bob[1],t:-.15});try{sNoise({f:700,q:1,d:.25,v:.35,ft:'lowpass'})}catch(_){}}}
   else if(f.ph==='bite'){dip=14;if(f.t>FISH_WIN){f.ph='flee';f.t=0;$('#fishh').textContent='It got away! Tap faster when it bites.'}}
   else if(f.ph==='flee'){if(f.t>1.6){f.F=fishRoll(f.w);f.ph='cast';f.t=0;f.nibN=1+Math.floor(Math.random()*3);$('#fishh').textContent='Casting again…'}}
   // the shadow
@@ -66897,7 +66902,8 @@ function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS
 /* </swapface> */
 /* <whatsnew> */
 // ---- a one-time card per device listing what's new since the last version this phone saw (localStorage r42wn)
-const WHATSNEW=[[118,'Friendships go deeper: every neighbour has five more heart-to-hearts, sends a letter (and a gift) when you become best friends, and remembers what you talked about lately. More fixes from playtesting: town projects always appear on the map (the bouncy castle comes first now), the Journal keeps months, not days, taps on the noticeboard, museum and well work, and the back button closes photos and fishing.'],
+const WHATSNEW=[[119,'For the two of you: notes to each other are kept safe, you both get the glimmer when you’re here together, and the game asks what your pet should call you. Games: fishing tells you when to tap, bug catching is fairer, pinball stars are reachable, and quitting Stack or Says keeps your score. Plus better layouts on small phones.'],
+  [118,'Friendships go deeper: every neighbour has five more heart-to-hearts, sends a letter (and a gift) when you become best friends, and remembers what you talked about lately. More fixes from playtesting: town projects always appear on the map (the bouncy castle comes first now), the Journal keeps months, not days, taps on the noticeboard, museum and well work, and the back button closes photos and fishing.'],
   [117,'Fixes from playtesting: finished makeovers now pay out properly (they hadn’t been!), events at the library, Town Hall and weather station pay too, party guests spread out, Today’s list sits right under the bond bar, and your pet’s Journal has a page summing up the month so far. Plus a gentler welcome back, fewer day-one strangers, and lots of small things.'],
   [116,'Polish: keepsake letters read properly in the Bag, scrolling tab rows show there’s more, the plaza tiles are brighter, civic buildings have bigger name signs, and messages no longer pop over your pet while you dress it.'],
   [115,'Shops feel livelier: a bell when you walk in, each shop has its own music, and customers chat with the keepers. Everyone has a few new little moves, and neighbours fidget while they stand about in town.'],
@@ -66982,10 +66988,10 @@ function bugPick(cx,cy){const r=$('#tmc').getBoundingClientRect(),v=new THREE.Ve
 function bugGo(b){const P=tw.pet,a=Math.atan2(P.x-b.x,P.z-b.z);twWalk(b.x+Math.sin(a)*.7,b.z+Math.cos(a)*.7,()=>{P.ry=Math.atan2(b.x-P.x,b.z-P.z);if(BG.list.includes(b))bugCatch(b)})}
 // the catch: a ring closes on the bug; tap when it's in the green
 function bugCatch(b){let el=$('#bugv');if(!el){el=document.createElement('div');el.id='bugv';el.className='fishv';el.innerHTML='<canvas id="bugc"></canvas><p id="bugh"></p>';document.body.appendChild(el)}el.hidden=false;
-  const S={t:0,b,done:false,sp:b.B.r<=3?1.5:1.1};$('#bugh').textContent=`Shh. ${b.B.n}. Tap when the ring turns green.`;let last=performance.now();
+  const S={t:0,b,done:false,sp:b.B.r<=3?1.2:.95};$('#bugh').textContent=`Shh. ${b.B.n}. Tap when the ring turns green.`;let last=performance.now();
   const tick=now=>{if(S.done)return;const dt=Math.min(.1,(now-last)/1000);last=now;S.t+=dt*S.sp;const cv=$('#bugc'),W=cv.clientWidth|0,H=cv.clientHeight|0;if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}
-    const x=cv.getContext('2d'),cx=W/2,cy=H*.46,R0=Math.min(W,H)*.36,k=(S.t%2.2)/2.2,R=R0*(1-k)+12,ok=R<R0*.3&&R>R0*.12;x.clearRect(0,0,W,H);
-    x.fillStyle='rgba(255,255,255,.9)';x.beginPath();x.arc(cx,cy,R0*.2,0,7);x.fill();x.strokeStyle='#A6E22E';x.lineWidth=R0*.1;x.globalAlpha=.4;x.beginPath();x.arc(cx,cy,R0*.21,0,7);x.stroke();x.globalAlpha=1;
+    const x=cv.getContext('2d'),cx=W/2,cy=H*.46,R0=Math.min(W,H)*.36,k=(S.t%2.2)/2.2,R=R0*(1-k)+12,ok=R<R0*.36&&R>R0*.08;x.clearRect(0,0,W,H);
+    x.fillStyle='rgba(255,255,255,.45)';x.beginPath();x.arc(cx,cy,R0*.2,0,7);x.fill();x.strokeStyle='#A6E22E';x.lineWidth=R0*.1;x.globalAlpha=.4;x.beginPath();x.arc(cx,cy,R0*.21,0,7);x.stroke();x.globalAlpha=1;
     x.strokeStyle=ok?'#A6E22E':'#FF3D9A';x.lineWidth=8;x.beginPath();x.arc(cx,cy,R,0,7);x.stroke();x.font=`${Math.round(R0*.18)}px "R42 Bubble",sans-serif`;x.textAlign='center';x.lineWidth=6;x.strokeStyle='#3B1273';x.strokeText(b.B.n,cx,cy+R0*1.2);x.fillStyle='#FFFFFF';x.fillText(b.B.n,cx,cy+R0*1.2);
     S.ok=ok;if(S.t>6.6){S.done=true;el.hidden=true;bugFlee(b,'It got bored and flew off.');return}requestAnimationFrame(tick)};
   el.onpointerdown=e=>{if(S.done)return;S.done=true;el.hidden=true;if(S.ok)bugGot(b);else bugFlee(b,'Too early! It got away.')};requestAnimationFrame(tick)}
@@ -67738,7 +67744,7 @@ function petDeliver(){if(!state||!ready||sandbox||ARR.on||away||!pet.rig||openTa
 let togetherShown='';
 function togetherCheck(){if(!state||!ready||sandbox)return;if(ARR.on){setTimeout(()=>{try{togetherCheck()}catch(_){}},4000);return}const o=partnerId();if(!o)return;const t=(state.visits||{})[o]||0,now=Date.now();
   if(now-t>150e3)return;const key=tdDay()+'|'+Math.floor(now/(3*36e5));if(togetherShown===key)return;togetherShown=key;
-  {const A_=state.acts||(state.acts={}),tk='tog';if(!A_[tk]||A_[tk].d!==key){A_[tk]={d:key};earnG(1);saveSoon();updHUD();toast(`${who(o)} is here too! +1 glimmer`,true)}else toast(`${who(o)} is here too!`,true)}if(!away&&pet.rig&&!styling()){pet.happyT=2.5;pet.hop=.8;try{petAct('dance')}catch(_){}emote('',{head:0,icon:'emo-party'});setTimeout(()=>emote('',{head:1,icon:'emo-party'}),400)}
+  {const A_=state.acts||(state.acts={}),tk='tog:'+pid();if(!A_[tk]||A_[tk].d!==key){A_[tk]={d:key};earnG(1);saveSoon();updHUD();toast(`${who(o)} is here too! +1 glimmer`,true)}else toast(`${who(o)} is here too!`,true)}if(!away&&pet.rig&&!styling()){pet.happyT=2.5;pet.hop=.8;try{petAct('dance')}catch(_){}emote('',{head:0,icon:'emo-party'});setTimeout(()=>emote('',{head:1,icon:'emo-party'}),400)}
   if(Math.random()<.5)jrAdd(`${headNames()[0]} and ${headNames()[1]} noticed you were both here at the same time. They did a little dance about it.`,'','together',0,'')}
 setInterval(()=>{if(document.visibilityState!=='visible'||!state||!ready||sandbox)return;state.visits=state.visits||{};state.visits[pid()]=Date.now();saveSoon();setTimeout(togetherCheck,1500)},120e3);
 setInterval(()=>{if(document.visibilityState==='visible'){try{petDeliver()}catch(e){console.warn('deliver',e)}}},20e3);
@@ -68076,7 +68082,7 @@ const GAMES={
       gMult(x,g,g.mult,g.mult>=4?1:(g.chain-[0,0,3,6,10][g.mult])/([3,3,3,4,1][g.mult]),g.last>=0?`${g.chain} ${BNAME[g.last]}`:'same color',g.last>=0?BCOL[g.last]:'#B07BFF')},
     art(x,w,h,pi){const g={w,h,t:1,b:[[.2,.3,0],[.5,.22,2],[.78,.34,1],[.64,.56,3],[.3,.58,4]].map(([a,b,c],i)=>({x:w*a,y:h*b,r:h*(.1+i%2*.03),c,kind:i===3?'gold':'',p:0,born:0,ph:i})),amb:[],ps:h*.6,petX:w*.22,gy:h-4,mult:1,chain:0,last:-1,fx:[],pt:[],lv:1};
       if(pi){const sv=gpOn;this.draw(Object.assign(g,{ps:0}),x);x.drawImage(pi,w*.22-h*.3,h*.38,h*.6,h*.6)}else this.draw(g,x)}},
-  stack:{n:'Jelly Stack',c:'#7BC62A',bg:['#CDEBFF','#F3FFE0'],xp:350,stars:[200,500,900],titles:['Wobbly Builder','Jelly Stacker','Tower Tot','Sky Scraper','Jelly Architect','Tower Legend'],
+  stack:{n:'Jelly Stack',c:'#7BC62A',bg:['#CDEBFF','#F3FFE0'],xp:350,stars:[140,450,900],titles:['Wobbly Builder','Jelly Stacker','Tower Tot','Sky Scraper','Jelly Architect','Tower Legend'],
     how:'Tap to drop each jelly. Anything hanging over the edge slips off. Perfect drops score big, and three perfects in a row make the jelly grow back.',
     legend:[['block','10 × level'],['perfect','+25 × streak']],
     init(g){g.bh=Math.max(28,Math.min(40,g.h*.052));const w0=Math.min(g.w*.5,250);g.w0=w0;g.bl=[{x:(g.w-w0)/2,w:w0,c:0,j:1}];g.cur={x:0,w:w0,d:1,c:1};g.sp=g.w*.38;g.cam=0;g.fall=[];g.end=0;g.streak=0;g.ps=Math.min(105,g.w*.26);g.cheerT=0;g.sadT=0;
@@ -68115,8 +68121,8 @@ const GAMES={
   // rendered through the game renderer with the real pet in it; its front plane lines up with the physics (pixels), so the
   // 2D effects drawn on top still match. Kept generic so boards can each carry their own theme later.
   drop:{n:'{pet} Drop',c:'#4FA8FF',bg:['#3A1470','#1E0838'],xp:320,stars:[90,170,260],titles:['Drop Newbie','Plinker','Bounce Buddy','Gumdrop Guru','Drop Pro','Plop Legend'],
-    get how(){const S=this.stage(),gid=this.giftId();return`Today’s board: ${S.n}. It’s a tall one: your pet falls a long way, bouncing off the shopkeepers, and the prizes get better the further down it goes. Every prize is real: snacks and treats go to your pantry, tokens to the capsule machine. Move with the arrows and press GO! to drop. Your pet swings on the claw, so time it: drop it hanging straight for a steady fall. Come to rest in a prize pocket to win it${gid?`, and today there’s a ${wearDef(gid).n} up for grabs`:''}! Five drops a game.`},
-    legend:[['small','a snack'],['mid','a treat or token'],['big','a fancy treat'],['gift','win it!']],lvAt:[0,60,140,240,360,500],
+    get how(){const S=this.stage(),gid=this.giftId();return`Today’s board: ${S.n}. It’s a tall one: your pet falls a long way, bouncing off the shopkeepers, and the prizes get better the further down it goes. Every prize is real: snacks and treats go in your Bag, and some pills pay tickets. Move with the arrows and press GO! to drop. Your pet swings on the claw, so time it: drop it hanging straight for a steady fall. Come to rest in a prize pocket to win it${gid?`, and today there’s a ${wearDef(gid).n} up for grabs`:''}! Five drops a game.`},
+    legend:[['small','a snack'],['mid','a treat or tickets'],['big','a fancy treat'],['gift','win it!']],lvAt:[0,60,140,240,360,500],
     lvSub:['','Faster platforms!','Prizes worth more!','Bumpers wake up!','Wild board!'],
     PV:{small:10,mid:25,big:50,gift:60},
     // boards in board units: u across (0..1), v down (0..1); plats are ledges [a,b] (p = a prize on it, mv = moving), bump = bumpers, pegs = gumdrops
@@ -68389,7 +68395,7 @@ const GAMES={
   // Table units: x 0..1 across, y 0..TH down. Circle-vs-segment physics in sub-steps; flippers are moving capsules that add
   // their own speed to the hit. Pop bumpers are planets, slingshots are rocket fins, S-P-A-C-E rollovers raise the multiplier,
   // three moon drop targets, a black hole saucer that holds the ball and spits it out, a plunger lane, three balls, ball save.
-  pinball:{n:'{pet} Pinball',c:'#7B4BD6',bg:['#140A3A','#2A1459'],xp:300000,stars:[100000,350000,900000],titles:['Space Cadet','Moon Walker','Orbit Ace','Star Pilot','Comet Captain','Galaxy Legend'],
+  pinball:{n:'{pet} Pinball',c:'#7B4BD6',bg:['#140A3A','#2A1459'],xp:300000,stars:[25000,100000,350000],titles:['Space Cadet','Moon Walker','Orbit Ace','Star Pilot','Comet Captain','Galaxy Legend'],
     how:'Your pet curls up into a ball! Tap left or right to flip, tap or hold to launch. Every launch starts a MISSION: hit the shots under the bouncing arrows before time runs out to get promoted, from Cadet all the way to Star Legend. Between balls, the black hole starts the next one. Launch into the blinking lane for a SKILL SHOT, spell S-P-A-C-E to raise the multiplier, drop all three moons (twice) to light MULTIBALL at the black hole, then shoot it again for the JACKPOT. Finish every mission for SUPERNOVA. Your bonus counts up when a ball drains.',
     legend:[['hole','missions'],['moon','multiball'],['bumper','jackpot'],['lane','×2 ×3...']],
     // missions: k = the switch that counts (c times), or seq = shots in order
@@ -68750,7 +68756,7 @@ const GAMES={
 // the second table: an under-the-sea reef. Same rules as the space table (it inherits them), but the tide changes gravity,
 // a third flipper guards the left lane, a whirlpool pulls the ball in, and the props are reef things.
 GAMES.pinball2=(()=>{const P=GAMES.pinball;return Object.assign(Object.create(P),{
-  n:'{pet} Reef Pinball',c:'#1FA6B8',bg:['#053A5E','#0B7A94'],xp:300000,stars:[120000,400000,1000000],titles:['Tide Pooler','Snorkeler','Reef Ranger','Deep Diver','Sea Captain','Ocean Legend'],
+  n:'{pet} Reef Pinball',c:'#1FA6B8',bg:['#053A5E','#0B7A94'],xp:300000,stars:[40000,140000,450000],titles:['Tide Pooler','Snorkeler','Reef Ranger','Deep Diver','Sea Captain','Ocean Legend'],
   how:'Your pet curls up into a ball and dives in! The TIDE rolls in and out: at high tide you float, at low tide you drop fast. Tap the left side for the left flippers (there are two on that side now!) and the right side for the right one. Every launch starts a MISSION: hit the shots under the bouncing arrows before time runs out to rank up from Minnow to Reef Legend. The whirlpool pulls you in, then starts the next one. Spell C-O-R-A-L for a multiplier, clear the pearls twice to light MULTIBALL, then shoot the whirlpool for the JACKPOT. Finish every mission for the TSUNAMI.',
   legend:[['hole','whirlpool'],['moon','pearls'],['bumper','jellyfish'],['lane','×2 ×3...']],
   MS:[{n:'Jellyfish Jam',goal:'Hit 8 jellyfish',k:'bump',c:8},{n:'Lighthouse Keeper',goal:'Hit the lighthouse 3 times',k:'sat',c:3},{n:'Urchin Ride',goal:'10 slingshot kicks',k:'sling',c:10},
@@ -68758,7 +68764,7 @@ GAMES.pinball2=(()=>{const P=GAMES.pinball;return Object.assign(Object.create(P)
     {n:'Sea Patrol',goal:'Periscope, lighthouse, whirlpool',seq:['radar','sat','hole']},{n:'Pearl Hunt',goal:'Collect 6 pearls',k:'moon',c:6},{n:'Jellyfish Bloom',goal:'Hit 25 jellyfish',k:'bump',c:25}],
   RANKS:['Minnow','Guppy','Clownfish','Seahorse','Sea Turtle','Dolphin','Manta Ray','Orca','Reef Legend'],
   WORD:'CORAL',FP:[[.3,1.99],[.7,1.99],[.045,1.36]],FD:[1,-1,1],ART:'',
-  SUB:[['LOST IN SPACE','WASHED ASHORE'],['ORBITAL EDITION','REEF EDITION'],['BLAST OFF!','SPLASH DOWN!'],['LAND ON THE MOON TWICE','CLEAR THE PEARLS TWICE'],['SPELL S-P-A-C-E','SPELL C-O-R-A-L'],
+  SUB:[['MISSION ABORTED','TIDE TURNED'],['LOST IN SPACE','WASHED ASHORE'],['ORBITAL EDITION','REEF EDITION'],['BLAST OFF!','SPLASH DOWN!'],['LAND ON THE MOON TWICE','CLEAR THE PEARLS TWICE'],['SPELL S-P-A-C-E','SPELL C-O-R-A-L'],
     ['HIT THE ATOM 3 TIMES','HIT THE CLAM 3 TIMES'],['MOON LANDING','PEARL DIVE'],['LANDING ','DIVE '],['RADAR LOCK: HOLE x2','PERISCOPE: WHIRLPOOL x2'],['UPLINK! BALL SAVE','BEACON! BALL SAVE'],
     ['BLACK HOLE','WHIRLPOOL'],['Black hole','Whirlpool'],['ATOM SMASH','CLAM SLAM'],['Atom smash','Clam slam'],['ATOM ','CLAM '],['SUPERNOVA','TSUNAMI'],['Supernova','Tsunami'],['SPACE','CORAL']],
   _bg:null,_B:null,_pt:null,_petS:null,
@@ -69883,7 +69889,7 @@ function jrMonth(){const J=state.journal||[],now=new Date(),y=now.getFullYear(),
 /* <loop-fixes> */
 // ---- playtest fixes to the daily loop (v117)
 // a "together" item only when both of you have played in the last 30 hours (otherwise the treat was out of reach on days one of you skipped)
-{const ok=tdOk;tdOk=function(k){if(!ok(k))return false;try{const t=TD_T[k];if(t&&t.both){const P=headPeople().filter(Boolean),V=state.visits||{};if(P.length<2||P.some(p=>!(Date.now()-(+V[p]||0)<30*36e5)))return false}}catch(_){}return true}}
+
 // the pet doesn't wish for something already on today's list
 {const wp=wishPick;wishPick=function(){let k=wp();try{const T=state.td,evs=new Set(((T&&T.list)||[]).map(e=>TD_T[e.k]&&TD_T[e.k].ev).filter(Boolean));for(let i=0;i<4&&k&&WISH_T[k]&&evs.has(WISH_T[k].ev);i++)k=wp()}catch(_){}return k}}
 // the same kind of Journal note at most once every 45 seconds (tapping care over and over wrote the same line four times)
@@ -69904,7 +69910,7 @@ const jrLastK={};{const je=jrEvent;jrEvent=function(k){const now=Date.now();if(n
 {const tt=travelTo;travelTo=function(){try{closeWheel();if(typeof cv!=='undefined'&&cv)cvEnd();if(pet.mode==='held')petDrop()}catch(_){}return tt.apply(this,arguments)}}
 {const op=openProduct;openProduct=function(){if(traveling)return;return op.apply(this,arguments)}}
 {const to=tmOpen;tmOpen=function(){try{if(pet.mode==='held')petDrop()}catch(_){}return to.apply(this,arguments)}}
-document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('#reward .rwlink');if(b){e.stopPropagation();e.preventDefault();try{nextReward()}catch(_){}}},true);
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('#reward .rwlink');if(b){e.stopPropagation();e.preventDefault();try{const q=rewardQ[0];if(q&&q.o)q.o.fn=null;$('#rwOk').click()}catch(_){}}},true);
 // tappable map decorations (museum, fishing spots, well, noticeboards): what tapping one does
 const tmDecorAct=q=>{if(!q)return false;if(q[0]==='museum'){const [cx,cz]=twPos(q[1],q[2]);twWalk(cx+.5,cz+1.6,()=>musOpen());return true}if(FISH_SPOT[q[0]]){const [w,d_]=TM_DECOR[q[0]].sz||[1,1],[cx,cz]=twPos(q[1],q[2]),kind=FISH_SPOT[q[0]],tx=cx+(w-1)/2,tz=cz+(d_-1)/2,P=tw.pet,a=Math.atan2(P.x-tx,P.z-tz),r_=Math.max(w,d_)*.5+.45;twWalk(tx+Math.sin(a)*r_,tz+Math.cos(a)*r_,()=>{P.ry=Math.atan2(tx-P.x,tz-P.z);fishStart(kind)});return true}
      if(q[0]==='well'){const [w,d_]=TM_DECOR.well.sz||[1,1],[cx,cz]=twPos(q[1],q[2]);twWalk(cx+(w-1)/2,cz+(d_-1)/2+.9,()=>dlyWell());return true}
@@ -69923,6 +69929,17 @@ function tmDecorPick(cx,cy){if(!tm||!tm.cam)return null;const r=$('#tmc').getBou
   setTimeout(()=>{try{resPost(k,txt);keepAdd({k:'letter',n:`A letter from ${R.n}`,from:k,d:txt});const set=SETMAP['r'+k]?'r'+k:null,pool=set?CAT.filter(c=>c.set===set&&!c.gacha):[];let gift='';if(pool.length){const c=pool[Math.floor(Math.random()*pool.length)];state.fown[c.k]=(state.fown[c.k]||0)+1;gift=c.n}
     jrAdd(`${R.n} said we're best friends now. ${headNames()[0]} has told everyone. ${headNames()[1]} told them again.`,'','bestie',0,R.n);firstOf('bestie',`Our first best friend in town: ${R.n}.`);
     showReward(`${R.n}: best friends!`,'stat-happy',`<p>“${esc(txt)}”</p><p class="rwsub">A keepsake letter${gift?` · a ${esc(gift.toLowerCase())} for your storage`:''}</p>`);saveSoon()}catch(e){console.warn('bestie',e)}},1200)}}catch(e){console.warn('bestie',e)}return r}}
+{const tc=tdCount;tdCount=function(e){const v=tc(e);try{const t=TD_T[e.k];if(t&&t.both&&v>=1){const o=partnerId(),last=o&&(state.visits||{})[o];if(!o||!last||Date.now()-last>30*36e5)return Math.max(v,e.n||2)}}catch(_){}return v}}
+// 2. two-dos merge per item and per person (both of you working on one before a sync lost one person's progress)
+MERGE.td=(l,r,b)=>{if(!l||!r)return l||r;if(l.day!==r.day)return String(l.day)>String(r.day)?l:r;const o=mFields(l,r,b),P={};[l.prog||{},r.prog||{}].forEach(pr=>{for(const k in pr){P[k]=P[k]||{};for(const p in pr[k])P[k][p]=Math.max(P[k][p]|0,+pr[k][p]||0)}});o.prog=P;
+  o.done=[...new Set([...(l.done||[]),...(r.done||[])])];o.swap=Object.assign({},r.swap||{},l.swap||{});o.gift=Math.max(+l.gift||0,+r.gift||0);return o};
+// 5. a name, once: so your person sees "Garrett" and "Beau" instead of "Your person"
+function askName(){try{if(!state||sandbox||(state.names&&state.names[myId])||localStorage.r42nameAsked)return;localStorage.r42nameAsked='1'}catch(_){return}
+  showReward(`What should ${PN()} call you?`,'tab-pet',`<p>Your person sees this name on notes, surprises and in the Journal.</p><input id="nmAsk" maxlength="20" placeholder="Your name" style="width:100%;font:inherit;padding:10px 12px;border:3px solid var(--ink);border-radius:14px;margin-top:6px">`,
+    {ok:'That’s me',fn:()=>{const v=(($('#nmAsk')||{}).value||'').trim().slice(0,20);if(v){state.names=state.names||{};state.names[myId]=v;saveSoon();updHUD();toast(`Hi, ${v}!`,true)}}})}
+setInterval(()=>{try{if(ready&&!ARR.on&&!document.querySelector('.coach')&&$('#reward').hidden&&!openTab&&$('#game').hidden&&!(typeof tm!=='undefined'&&tm&&tm.open))askName()}catch(_){}},15000);
+{const cg=closeGame;closeGame=function(){try{if(gm&&gm.play&&gm.s&&(gm.s.score|0)>0&&(gm.k==='stack'||gm.k==='says')){gmEnd();return}}catch(e){console.warn('game end',e)}return cg.apply(this,arguments)}}
+$('#gmX').onclick=()=>closeGame();
 /* </loop-fixes> */
 // civic places get a bigger name plaque than houses (the Town Hall's was hard to read from the map)
 TM_SIGN._place=(fg,L,k)=>{const p=TM_SIGN._house(fg,L,k);p.scale.multiplyScalar(1.6);p.position.y+=.12;return p};
@@ -70017,7 +70034,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><p class="coachgo">Start by tapping ${nm} to say hello.</p><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=118;
+const APP_V=119;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

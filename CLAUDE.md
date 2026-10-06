@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v118** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v118'` in `sw.js`; bump both for anything
+**Current build: v119** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v119'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1211,3 +1211,17 @@ Agents: screens, long-term (6 simulated weeks), retest of v117, chaos. Fixed:
 - Retest: weather "Not now" (inline onclick can't reach the game's functions; a delegated listener on `#reward .rwlink`); welcome card said
   "missed you" twice; party notes only for residents you've met; two-sentence makeover titles cut to the first phrase; `goUse` guards a
   vanished seat; `twPetPose` guards a closed map.
+
+
+## Playtest round three (v119)
+Agents: screens (360x640 / 430x932 / 820x1180), two-player (two fake phones via `mergeInto`), minigames played with real input.
+- Two of you: notes are never trimmed with the event log (`logEvent` keeps 40 notes + 100 events); `MERGE.td` merges two-do progress per
+  item and per person (`mFields` dropped one person's counts); the together glimmer is per person (`acts['tog:'+pid]`); the v117 `tdOk`
+  visit check is gone (it made the two phones' lists differ) and instead a "both of you" item counts as done with one person when the other
+  hasn't played for 30 h (`tdCount` wrapper); `askName()` asks once what the pet should call you (`localStorage.r42nameAsked`).
+- Games: "Not now" on the weather card closes it (`rewardQ[0].o.fn=null` then `#rwOk`); × in Stack/Says ends the round through `gmEnd`
+  (they only end on a mistake, so quitting forfeited everything); pinball stars 25k/100k/350k and reef 40k/140k/450k (were set for a strong
+  bot); Stack's first star 140; fishing says "Tap now!" at the bite, `FISH_WIN` .9; the bug ring is green longer and slower, and its target
+  is see-through; Drop's text says tickets; Reef Pinball's `SUB` swaps "MISSION ABORTED".
+- Screens: sheets may be 70% tall on short screens; the keeper panel hides under the shop catalogue (`body:has(.sheet.kshop)`); the keeper
+  bubble keeps clear of the top edge; game intro cards keep Play visible (sticky); bigger two-do swap buttons.
