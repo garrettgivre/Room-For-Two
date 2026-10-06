@@ -35333,7 +35333,7 @@ function updCam(){
   if(sty!==document.body.classList.contains('styling')){document.body.classList.toggle('styling',sty);requestAnimationFrame(fitSheet)}
   cam.sk=(cam.sk||0)+((sty?1:0)-(cam.sk||0))*.07;cam.sz=cam.sz||1;if(!camFollow&&cam.dist<9)cam.dist+=(9-cam.dist)*.08;
   const km=kmode&&away&&kmode.K&&kmode.K.head?kmode:null;cam.kk=(cam.kk||0)+((km?1:0)-(cam.kk||0))*.08;
-  let tx=away&&away.cc?away.cc[0]:0,tz=away&&away.cc?away.cc[1]:0,ty=.8;if(sty||camFollow){tx=pp.x;tz=pp.z;ty=Math.max(.8,(pet.head||1.4)*(sty?.5:.45))}else if(fp){tx=pp.x*.75;tz=pp.z*.75}
+  let tx=away&&away.cc?away.cc[0]:0,tz=away&&away.cc?away.cc[1]:0,ty=.8;if(sty||camFollow){tx=pp.x;tz=pp.z;ty=Math.max(.8,(pet.head||1.4)*(sty?.5:.45))}else if(fp){tx=pp.x*.75;tz=pp.z*.75}else if(typeof camFocusUntil!=='undefined'&&camFocusUntil>performance.now()&&!away){tx=pp.x*.85;tz=pp.z*.85;ty=Math.max(.8,(pet.head||1.4)*.45)}
   if(km){km.K.head.getWorldPosition(_kh);tx=_kh.x;tz=_kh.z;ty=km.y0+km.hk*(km.view==='shop'?.64:.7)}
   const k=camSnap>0?.16:sty?.1:km?.12:.06;camSnap=Math.max(0,camSnap-dt);cam.target.x+=(tx-cam.target.x)*k;cam.target.z+=(tz-cam.target.z)*k;cam.target.y+=(ty-cam.target.y)*k;
   // close-up distance: the whole pet fits in the space left above the sheet
@@ -36943,7 +36943,7 @@ TALK.builder={
       ["You're a good friend.","That means a lot. I'll try to say less and nod more. Like Cobble. Mm. See? Practising."]]},
     "The best thing I ever built was the shelf over Bunbun's oven. She keeps her mum's recipe book on it. She cried. I said it was sawdust in her eye.",
     {t:"My dream, chief? A house I built for somebody, with somebody still living in it in a hundred years. Do you think that's silly?",r:[
-      ["It's a beautiful dream.","Thanks, chief. Build it right and it lasts. That's the whole trick. Of houses and friends.",1],
+      ["It's a beautiful dream.","Thanks, chief. Build it right and it lasts. Houses, anyway. I'm hoping friends too.",1],
       ["Our house could be one.","Your house? I'd be honoured. I'll come tap the beams every year. To make sure they're happy."]]}
   ],
   bye:[
@@ -37117,7 +37117,7 @@ TALK.cloud={
     {t:"Oh, it's sunny where you were? Really sunny?",r:[
       ["Very sunny.","Wonderful! That's the best news all week. I'll write it down. 'Sunny, reported by friends.'",1],
       ["A bit cloudy, sorry.","No, don't apologise. That's my job. Cloudy is fine. Cloudy is mostly nice from the inside."]]},
-    "Windy today. I'm holding on to my umbrella with both puffs. If I float off, tell Lumi I said goodnight.",
+    "Windy today. I'm hugging my umbrella so it can't leave without me. If I drift off, tell Lumi I said goodnight.",
     "Light drizzle this way. Sorry. I took the worst of it myself. You should be mostly dry.",
     "Hello! Clear skies. I checked twice. Then I checked a third time, because twice felt rushed.",
     "Grey today. Soft grey, like a good jumper. I think I'm wearing it well.",
@@ -38139,7 +38139,7 @@ TALK.hair={
       ["Just one?","Just one. One rebel curl. Like a little secret on top."],
       ["Ask Blush first.","Smart. She'd notice anyway. She notices everything that's a colour."]]},
     {t:"What does {n} do when the antennae get messy?",r:[
-      ["Shakes them out.","Natural styling! Iconic. Honestly the best technique.",1],
+      ["Shakes them out.","Natural styling! Iconic. The best technique.",1],
       ["Doesn't notice.","Effortless. The best kind of messy. I could never."],
       ["We fix them.","Aww, you two are stylists! Honorary Glow Up staff. I'll make badges."]]},
     {t:"Which of my curls should I name after you two?",r:[
@@ -38795,7 +38795,7 @@ TALK.mayor={
     {t:"The bake sale is at mine on Saturday, for the town fund. Tutti brings ice cream. I bring remarks.",r:[
       ["What's the fund for?",{t:"For the ribbon. One day I shall cut a ribbon so grand the scissors must be fetched from Bolt's workshop on a cart.",r:[
         ["What would it open?","I do not know yet! Something we all built together, perhaps. The ribbon came first. The rest will follow.",1],
-        ["We'll chip in some hearts.","Dear resident. I am... ahem. I shall enter that in the ledger in my very best hand.",1],
+        ["We'll chip in some buttons.","Dear resident. I am... ahem. I shall enter that in the ledger in my very best hand.",1],
         ["A bigger cart, maybe?","Bolt is already sketching one. It has a little horn. I asked for the horn."]]}],
       ["Do you bake?","I am a marshmallow. I keep a respectful distance from ovens. I learned that early, and warmly."]]},
     {t:"I own seven identical top hats. People ask why. They are for the days of the week.",r:[
@@ -39415,7 +39415,7 @@ TALK.pencil={
     "Bolt keeps his pencil in his hat. It's one of mine. He doesn't know. I'm quietly pleased.",
     "Tock sleeps sitting up so its key doesn't bend. I put a cushion behind it. It's exactly the right size.",
     "Cushy has never once sat in a chair the way I drew it. Cushy sits in chairs like a puddle sits in a dip.",
-    "Fold made me a paper ruler for my birthday. It's not accurate at all. It's my favourite ruler.",
+    "Fold made me a paper ruler for my birthday. It's wildly inaccurate and it's my favourite ruler.",
     "Boing asked me to measure the Toy Box ceiling so he could stretch exactly to it. I told him a smaller number. Sorry. For his head.",
     "Stitch and I measured the town hall steps together. Mayor Marsh gave a speech about it. Three parts. We were part two.",
     "Pixel counted the screws at the shop. Nine thousand. I found one more in Bolt's hat. Pixel nodded. That's a lot, for Pixel.",
@@ -39450,7 +39450,7 @@ TALK.pixel={
     "Low battery. Socially. Back tomorrow at full bars.",
     "Not now. Slight glitch. Give me a minute to put myself back together. Literally.",
     "Heading to the arcade. Shift starts at one. It's twelve fifty-eight.",
-    "Sorry. Quiet mode. It's not you. It's the volume of everything."
+    "Sorry. Quiet mode. Nothing you did. Everything is just very loud."
   ],
   out:[
     "Hi. Outdoors. Brighter than a screen. Not by much.",
@@ -41101,7 +41101,7 @@ Object.assign(TALK.beacon,{
     n:[
       "You're up late. So am I. That's my whole job. Nice to have company for it.",
       "Night watch. Just me, the beam and the sea. And you two now. Cocoa?",
-      "Middle of the night. Lumi flashed goodnight from the hill an hour ago. I flashed back. Two long, one short."
+      "Middle of the night. Lumi flashed goodnight from the hill an hour ago. I sent back my one long one."
     ]
   },
   hol:{
@@ -41191,7 +41191,7 @@ Object.assign(TALK.beacon,{
     ],
     summer:[
       "Summer Fair! Busiest my pier gets all year. Boats in from everywhere. I've waved till my arm's gone wobbly.",
-      "I run the ring toss at the Fair. Rope rings, of course. Very fair. Mostly."
+      "I lend Joy the rope rings for the ring toss at the Fair. Very fair. Mostly."
     ],
     spooky:[
       "Pumpkin Parade week. I put a pumpkin up in the lamp room. Gives the beam an orange glow. The boats seem to like it.",
@@ -41941,7 +41941,7 @@ Object.assign(TALK.cloud,{
   },
   tod:{
     m:[
-      "Good morning! Forecast first: mild, light breeze, a seventy percent chance of nice things. Hello.",
+      "Morning! I've been up the hill since six. Mild, light breeze, a seventy percent chance of nice things. Hello.",
       {t:"I've just come down from the hill. Sunrise was at six-forty. Mostly gold, with a lilac edge. Do you get up early?",r:[
         ["Not usually.","That's all right. I'll keep telling you how it was. Then you'll get the sunrise anyway, second-hand.",1],
         ["Sometimes, to see it.","Then come up the hill with me one morning! I'll bring two umbrellas. Just in case. Always."]]},
@@ -41955,7 +41955,7 @@ Object.assign(TALK.cloud,{
       "Midday sun's at its highest. I'm at my thinnest. I'll fluff up again by teatime."
     ],
     e:[
-      "Evening! Sunset at seven-twelve, I'd say. I go a bit pink at sunset. That's not a mood. It's light.",
+      "Evening! Sunset at seven-twelve, I'd say. I go a bit pink at sunset. That's only the light.",
       {t:"I'm on my way to the hill to see the sunset. It's mostly the same. I go anyway. Come along?",r:[
         ["We'd love to.","Oh, wonderful. Three of us and {n}. I'll say good evening to the weather vane. It points at me.",1],
         ["Tell us how it was after.","I will! Probably 'orange, then pink, then me'. I'm always in the last bit. Sorry."]]},
@@ -42303,7 +42303,7 @@ Object.assign(TALK.cone,{
     spring:[
       "Spring Picnic week, my loves! Bunbun's dream come true. I'm doing dessert and nobody's fighting. Well, Bunbun and I are, a little.",
       {t:"I made a strawberry-and-mint scoop just for the Picnic. Like my hairdo. Want to try it, sweet pea?",r:[
-        ["Yes please!","Here! It's you two's first scoop of spring. That's lucky, hm?",1],
+        ["Yes please!","Here! It's your first scoop of spring. That's lucky, hm?",1],
         ["Will {n} like mint?","{a} will. {b} will make a face, and then ask for more."]]}
     ],
     summer:[
@@ -43231,7 +43231,7 @@ Object.assign(TALK.gramo,{
   },
   tod:{
     m:[
-      "Morning... I'm not really a morning song. More of a slow intro. Give me till three.",
+      "Morning... the first note comes out late before three. It's like toast. Give it time.",
       {t:"Early... I'm out because the bakery's warm and smells like a waltz. Do you smell it?",r:[
         ["Like a waltz. Yes.","One-two-three, one-two-three... there's a cinnamon roll in the third beat. I'm sure.",1],
         ["It smells like bread.","Bread is a waltz... trust me. Slow, warm, and it rises."]]},
@@ -43240,7 +43240,7 @@ Object.assign(TALK.gramo,{
     d:[
       "Afternoon... nearly three. Nearly time. I'm walking to the plaza very slowly so my knees calm down.",
       {t:"I'm about to start my set. Is there anything you'd like? I take requests from the first ones who ask.",r:[
-        ["Our song. You know it.","I do... I've never mixed them up. Yours first. Then Beau's. Then yours again, quietly.",1],
+        ["Our song. You know it.","I do... I've never mixed them up. Yours first. Then the other tune. Then yours again, quietly.",1],
         ["Something with a bounce.","A bounce! For {n}. Watch the left head. {a} always starts first."]]},
       "Midday... the plaza's empty and I'm practising. Nobody's listening. That's when I'm bravest."
     ],
@@ -43421,7 +43421,7 @@ Object.assign(TALK.hair,{
         ["It's just grey, Pom.","THANK you. Grey! Don't tell her I said it. She'll name you next."]]}
     ],
     rain:[
-      "Rain! The curls are drinking it up. I'm about forty percent bigger than this morning. Iconic, honestly a lot.",
+      "Rain! The curls are drinking it up. I'm about forty percent bigger than this morning. Iconic. Also a lot.",
       "I brought an umbrella. It's for the afro, not for me. I'm fine getting wet. The afro has a schedule.",
       {t:"Okay but hear me out: rain hats for antennae. Tiny ones. For {a} and {b}.",r:[
         ["We need those.","RIGHT? Two little brims. Different colours. Mood board. Tonight.",1],
@@ -43496,7 +43496,7 @@ Object.assign(TALK.hair,{
   },
   hol:{
     jar:[
-      "Fresh Jar Day! My keep-doing: naming every new curl. I'm at forty-four. Forty-four is a lot of names.",
+      "Fresh Jar Day! My keep-doing: naming every new curl. I'm at forty-three. Forty-three is a lot of names.",
       "I poured my jar out and then wanted to read it. Blush held my hand till the paper dissolved. Growth!"
     ],
     shadow:[
@@ -43534,7 +43534,7 @@ Object.assign(TALK.hair,{
     ],
     firstbrick:[
       "First Brick Day. I touched the brick and then fluffed my afro for luck too. Double luck.",
-      "The Mayor's birthday! I trimmed his moustache this morning. He gave a speech about it."
+      "The Mayor's not-birthday! I trimmed his moustache this morning. He gave a speech about it."
     ],
     tooldown:[
       "Tools Down. I put my comb in a drawer and did NOTHING. For a whole hour. Then I named a cloud.",
@@ -43973,7 +43973,7 @@ Object.assign(TALK.joy,{
 Object.assign(TALK.lantern,{
   wx:{
     sun:[
-      "Mm, bright. I'm walking on the shady side. My glow looks silly in sunshine. Like a candle at lunch.",
+      "Mm, bright. I've put my cap on to keep my glow in. It does nothing. I wear it anyway.",
       {t:"Sunny... I should be asleep. I came out for hot milk and the sun found me. Do you mind if I yawn?",r:[
         ["Yawn away.","Thank you... hhhaaah. There. My light went all low and then came back. That's me awake.",1],
         ["Go back to bed, Lumi!","I will... after this milk. The day's very nice. I'm just not built for it."]]},
@@ -44640,7 +44640,7 @@ Object.assign(TALK.mayor,{
       "Pumpkins on every step, and nothing scary anywhere. That is the rule. I wrote it. I am proud of that one."
     ],
     lights:[
-      "The Festival of Lights! Lumi lights every lamp at once and I say, 'Let there be lamps.' Ahem. My favourite line.",
+      "The Festival of Lights! My favourite line comes with it: 'Let there be lamps.' Lumi lights every one at once. Ahem.",
       {t:"I keep the speech short this week. Then I stand and look at the lamps. Would you stand with me?",r:[
         ["We'd love to.","Then we shall stand. No speech. Ahem. Only lamps. It is the best part of my year.",1],
         ["Say the line again!","'Let there be lamps.' Ahem. Thank you. I could say it all week. Lumi might mind."]]},
@@ -45130,7 +45130,7 @@ Object.assign(TALK.pebble,{
       "Fog. Beacon's horn going. I tap the mallet when it booms. Keeps me company."
     ],
     wind:[
-      {t:"Windy. Stones don't mind. My hat does. I'm holding it on with my mind. Is it working?",r:[
+      {t:"Windy. Stones don't mind. My hat does. I've asked it nicely to stay put. Is it working?",r:[
         ["It seems to be.","Mm. Good. Years of practice. Mostly it's the moss. The moss holds on.",1],
         ["Your hat's half off.","Mm. So it is. Thank you. There. Both hands now. My mind's tired."]]},
       "Wind took the leaves off the lane. Saved me a job. I said thank you. To the wind. It didn't stop.",
@@ -45167,7 +45167,7 @@ Object.assign(TALK.pebble,{
       "Midday. Bolt's next door talking about a bridge. I've said mm three times. He's very happy."
     ],
     e:[
-      "Evening. Lumi's hour. Stones still warm from the day. Good for bare feet. Try it.",
+      "Evening. Lumi's hour. Mm. Take your shoes off by the wall. Try it.",
       {t:"I sit on the bench outside mine in the evening. There's a dent exactly my size. Want to try it?",r:[
         ["Is it comfy?","For me. You'll fit one cheek. Mm. Try anyway. It's warm.",1],
         ["It's your spot.","Mm. It is. Kind of you. Sit next to it, then. We'll both have a good view."]]},
@@ -45411,7 +45411,7 @@ Object.assign(TALK.pencil,{
     ],
     e:[
       "Evening. Bolt's gone home. I've got the shop. I'm in charge. Please don't tell me that.",
-      "Lumi's lighting the lamps. Spaced exactly right. I checked once. Then I trusted Lumi.",
+      "The lamps are on. I looked at the gaps between them on the way home. Still right. I'll stop looking now.",
       "Evening. Tock winds down about now. I'll be home to turn the key. Two turns. Gently."
     ],
     n:[
@@ -45485,7 +45485,7 @@ Object.assign(TALK.pencil,{
     roomday:[
       "Happy Room Day! Sorry, is that right? {n} said it was today. I double-checked. It is. Happy Room Day.",
       {t:"Room Day. I drew you a plan of your room. As it is now. A year on. Want to see?",r:[
-        ["We'd love to.","Here. Your sofa, your rug, a gap for {n}. Both of you. Drawn in. It's not a draft. It's finished.",1],
+        ["We'd love to.","Here. Your sofa, your rug, a gap for {n}. Both of you. Drawn in. No draft this time. It's finished.",1],
         ["Did you put us in?","Yes. Sorry. Both of you. Next to each other. That's how I always draw you. I didn't even think about it."]]},
       "Happy Room Day. A year is three hundred and sixty-five days. Every one of them counted. In a good way."
     ]
@@ -45757,7 +45757,7 @@ Object.assign(TALK.polish,{
   },
   tod:{
     m:[
-      "Good morning, lovely. Studio opens at seven. You're five minutes early. My favourite kind of person.",
+      "Good morning, lovely. I'm not on till one, so this is my own time. And you're five minutes early. My favourite kind of person.",
       "Morning. I'm off home soon, my shift's the late one. I always walk the long way past Bunbun's.",
       "Early, early. My book's open, my cap's clicked, my hand mirror says hello."
     ],
@@ -45873,7 +45873,7 @@ Object.assign(TALK.polish,{
 Object.assign(TALK.posy,{
   wx:{
     sun:[
-      "Hello! Sunny! Hm hm hm. The tulips have all turned to face the same way. Very obedient today.",
+      "Hello! Sunny! The tulips have all turned to face the same way. Very obedient today.",
       {t:"Lovely sun. I've got my hat on, and so has the sunflower. Has your seedling had its sunbeam today?",r:[
         ["It's on the windowsill.","Oh, good. Turn it a little each day, so it doesn't lean. They lean towards what they love.",1],
         ["We forgot, sorry!","That's all right. Tell it you're sorry. Then give it the sunny spot. They forgive fast."]]},
@@ -45881,9 +45881,9 @@ Object.assign(TALK.posy,{
       "Prickles is in his one good hour of sun by the gate. Don't wake him. Shh. Well, you can say hello."
     ],
     cloud:[
-      "Grey morning. Good for planting. The little ones don't get scorched on their first day out.",
+      "Grey morning. Overcast suits the seedlings. They don't get scorched on their first day out.",
       {t:"Cloudy. Nimbus floated over the park and said sorry to the roses. The roses didn't mind. Do you mind clouds?",r:[
-        ["Clouds are cosy.","They are! Like a blanket over the garden. Everything rests a bit. Hm hm hm.",1],
+        ["Clouds are cosy.","They are! Like a blanket over the garden. Everything rests a bit.",1],
         ["We like sun better.","Fair. The sunflowers agree with you. Very loudly. They've all gone sulky today."]]},
       "Overcast. Perfect for moving the seedlings. Nobody gets a shock. Not even me."
     ],
@@ -45912,7 +45912,7 @@ Object.assign(TALK.posy,{
       {t:"Fog. The garden looks like a dream of itself. I keep walking into sunflowers. Say hello to this one?",r:[
         ["Hello, sunflower.","She says hello. She's a bit damp. She's still smiling. Look at her.",1],
         ["We can't even see it!","It's just there. Big. Yellow. A bit shy today. Feel the leaf? There she is."]]},
-      "Fog is good for ferns. They love a damp day. They're all stretching. Hm hm hm.",
+      "Fog is good for ferns. They love a damp day. They're all stretching.",
       "Misty morning. I can hear the snails before I see them. Well. I imagine I can. They're very slow."
     ],
     wind:[
@@ -45943,7 +45943,7 @@ Object.assign(TALK.posy,{
       {t:"I'm doing my morning walk round the park, saying good morning to every bed. Want to join in?",r:[
         ["Good morning, roses!","Lovely! They heard you. Now the peonies. Then the herbs. It takes till lunch. Prickles brings tea.",1],
         ["Do they say it back?","In their way. A little lift of the leaves. You have to be patient to see it."]]},
-      "Morning. Dew on everything. The grass is sparkling. Hm hm hm. I love mornings. Every one of them."
+      "Morning. Dew on everything. The grass is sparkling. I love mornings. Every one of them."
     ],
     d:[
       "Afternoon. The bees are busy. I'm keeping out of their way. They've got a schedule and I respect it.",
@@ -45971,7 +45971,7 @@ Object.assign(TALK.posy,{
     jar:[
       "Fresh Jar Day! I wrote 'keep giving seedlings away'. Even though it makes me a bit sad each time. That's how I know it's good.",
       {t:"The old wishes go in the fountain. Then the fountain water goes on my beds. So the flowers drink our wishes. Isn't that nice?",r:[
-        ["That's lovely, Posy.","Hm hm hm. I think so. The roses always come up extra pink after Fresh Jar Day.",1],
+        ["That's lovely, Posy.","I think so. The roses always come up extra pink after Fresh Jar Day.",1],
         ["Do they taste of ink?","A little! The tulips don't mind. They're very easy-going."]]},
       "Prickles wrote 'keep telling the sandstorm one'. I said fine. He said it was for me. I went pink."
     ],
@@ -45985,14 +45985,14 @@ Object.assign(TALK.posy,{
     twoheart:[
       "Two-Heart Day. I gave Prickles a sweet. He gave me a flower from my own garden. He said he found it. He picked it.",
       {t:"My unsigned note went to Pixel. It's a pressed flower. Do you think Pixel will give it a score?",r:[
-        ["A ten, surely.","Hm hm hm. I hope so. A ten for a daisy. It's a very good daisy.",1],
+        ["A ten, surely.","I hope so. A ten for a daisy. It's a very good daisy.",1],
         ["Pixel will be confused.","Probably! It'll still be on Pixel's desk next year. Pixel keeps everything."]]},
       "Bunbun's two-lobed buns. I put a tiny edible flower on each lobe. Bunbun asked me to. I was very honoured."
     ],
     sprout:[
       "Sprout Swap! My day! I've laid the blanket in the park. Seeds on one side, cuttings on the other, bulbs in the middle.",
       {t:"You have to give away the plant you're proudest of. Mine's a sunflower I grew from a seed Prickles brought back from the Great Dry. I'm... giving it.",r:[
-        ["That's very brave.","It is. Thank you. Somebody will love it. It'll stand in their window and face the sun. Hm. Hm hm.",1],
+        ["That's very brave.","It is. Thank you. Somebody will love it. It'll stand in their window and face the sun.",1],
         ["Keep a cutting!","Oh, I did. A tiny one. Shh. That's allowed. I made the rules. Gently."]]},
       {t:"Prickles brought a cactus nobody can identify. Again. What do you think it is?",r:[
         ["A brand new kind.","That's what he says! He's named it after me. Every year. Every year a new Posy. I keep them all.",1],
@@ -46010,28 +46010,28 @@ Object.assign(TALK.posy,{
     puddle:[
       "Puddle Parade! Nimbus rains the main street. I put my boots on early. Yellow ones. My best ones.",
       {t:"I always jump in the puddle by the flower bed. Then the splash waters the tulips. Clever, isn't it?",r:[
-        ["Very clever, Posy.","Hm hm hm. Two jobs at once. Well. One job and one splash. Same thing on Puddle Parade.",1],
+        ["Very clever, Posy.","Two jobs at once. Well. One job and one splash. Same thing on Puddle Parade.",1],
         ["Does Nimbus mind?","Nimbus says it's the best use of rain all year. Then apologises for saying so."]]},
       "Loofah's warm towels at the end. I wrap mine round my pot. Prickles wraps his round me. Then we walk home."
     ],
     longlight:[
       "Longest Light. No lamps. I bring a jar with a firefly lantern in it. Paper fireflies. Fold made them.",
       {t:"The night jasmine's out. Lumi's night off. I've put a little pot of it in the ring of lights. For Lumi. Too much?",r:[
-        ["Just right.","Hm hm hm. Lumi will smell it before seeing it. That's the plan. Shh.",1],
+        ["Just right.","Lumi will smell it before seeing it. That's the plan. Shh.",1],
         ["Lumi will love it.","I hope so. Lumi lights the lamp by our gate early for me. This is my thank-you."]]},
       "Watching the sky go lilac. The evening primroses opened right on cue. Even the plants came to watch."
     ],
     bubblework:[
       "Bubblework Night! End of the Summer Fair. I wished on a bubble for one more rainy week. The garden needs it.",
       {t:"Prickles fell asleep against me before the bubbles even started. Should I wake him?",r:[
-        ["Wake him for the best bit.","Yes. A little nudge at the big one. He'll pretend he was resting his eyes. Hm hm hm.",1],
+        ["Wake him for the best bit.","Yes. A little nudge at the big one. He'll pretend he was resting his eyes.",1],
         ["Let him sleep.","You're right. I'll tell him about it tomorrow. He'll say he saw it all. He'll be right, in a way."]]},
       "Bubbles over the bay. Some drifted over the park. One landed on a rose and stayed there for a whole minute."
     ],
     lostfound:[
       "Lost & Found Day. I found my old trowel on the pier! I said it was a stranger's. I took it home. I'm a fibber.",
       {t:"My story for it: it wanted to plant something by the sea. Too sweet?",r:[
-        ["Sweet is good.","Hm hm hm. Beacon nodded. Beacon's going to let me plant sea pinks by the pier. Isn't that funny?",1],
+        ["Sweet is good.","Beacon nodded. Beacon's going to let me plant sea pinks by the pier. Isn't that funny?",1],
         ["Did it plant anything?","A bit of samphire, Beacon says. On the rocks. I'll check. I'll take the trowel."]]},
       "There's always a lost glove on the pier. Gardening glove. Every year. Never a pair. I'm making a collection."
     ],
@@ -46073,7 +46073,7 @@ Object.assign(TALK.posy,{
     wrap:[
       "Wrapping Eve, in the Festival of Lights. I wrapped Prickles's present in a cabbage leaf. Then another. Very bad.",
       {t:"Do you think a seed packet counts as wrapping paper? It's very small.",r:[
-        ["It's brilliantly bad.","Hm hm hm. It's a scarf, in a seed packet. Folded forty times. Bobbin will laugh.",1],
+        ["It's brilliantly bad.","It's a scarf, in a seed packet. Folded forty times. Bobbin will laugh.",1],
         ["It's too small!","That's the point! It doesn't fit. Half the scarf's hanging out. Terrible. Perfect."]]},
       "Bobbin judged. Bobbin wrapped one in a flowerpot, upside down. I wanted to plant it."
     ],
@@ -46082,7 +46082,7 @@ Object.assign(TALK.posy,{
         ["Thank you, Posy!","I've got a pot for you. A rose. It's called 'Two Doors'. Well. I've just named it that. Hm hm hm.",1],
         ["{n} sniffed them all?","{a} sniffed the roses and {b} sniffed the herbs. Then they sat by your gate. I understood."]]},
       "Happy Room Day! How's your seedling? It's an anniversary for it too, in a way. It knows. Say hello to it today.",
-      "Your room's been growing a whole year. Like a garden. A bit messy, very full, very loved. Hm hm hm."
+      "Your room's been growing a whole year. Like a garden. A bit messy, very full, very loved."
     ]
   },
   fest:{
@@ -46345,7 +46345,7 @@ Object.assign(TALK.sponge,{
       "Big storm. I've filled every tub. If the power goes, warm water stays warm a long time. No rush."
     ],
     snow:[
-      "Mm. Snow. Cold tiles everywhere. I'm walking on the very tips of my flip-flops.",
+      "Mm. Snow. Cold tiles everywhere. My flip-flops squeak on them. It's the loudest I get.",
       {t:"I don't like cold. But a hot bath after snow is the best thing there is. Have you had one today?",r:[
         ["Not yet. Tonight.","Mm. Good. Put the towel on the radiator first. Then it's ready when you are.",1],
         ["Can we come to the salon?","Mm, yes. I'll fill the corner tub. By the window. You can watch it snow."]]},
@@ -46390,7 +46390,7 @@ Object.assign(TALK.sponge,{
     ],
     d:[
       "Mm. Afternoon. My shift's started. Fizz has done three entrances already. I've done one. Very quietly.",
-      {t:"Bunbun brings buns to the bath hall on slow afternoons. We eat them in the steam. Have you tried a bun in steam?",r:[
+      {t:"Slow afternoons, a bun in the steam. Bunbun sends them down. Have you tried a bun in steam?",r:[
         ["Never. Sounds lovely.","Mm. It goes all soft. Like a cloud you can eat. Come by at three.",1],
         ["Doesn't it get soggy?","Mm. A little. That's the good bit."]]},
       "Mm. The afternoon tubs are filling. Listen. That's the best sound I know."
@@ -47176,7 +47176,7 @@ Object.assign(TALK.toymaker,{
         ["Nap.","Nap. A toy that naps? A toy that... makes YOU nap? For Cushy! Wait, Cushy doesn't need help."]]}
     ],
     e:[
-      "Evening! Shop's shut, Joy's home, the Game Night table's out. I can hear the dice from the porch!",
+      "Evening! Tock's minding the shop, Joy's home, the Game Night table's out. I can hear the dice from the porch!",
       "Evening evening! Lamps on! Lumi's lighting them and I'm bouncing next to each one. Lumi doesn't mind. I think.",
       "Okay, evening means testing the noisy toys before bedtime. Tock says no. Tock means 'not too noisy'."
     ],
@@ -47201,7 +47201,7 @@ Object.assign(TALK.toymaker,{
       "Bunbun's two-lobe buns! One lobe for each half! I ate both halves! Of four buns!"
     ],
     sprout:[
-      "Sprout Swap! I brought a pot with a spring in it. It's not a plant. It's a toy plant. Posy laughed and took it!",
+      "Sprout Swap! I brought a pot with a spring in it. A toy plant! Posy laughed and took it!",
       "I swapped for a bean that grows up, up, up! Like me! We're going to have a race!"
     ],
     topsy:[
@@ -47360,7 +47360,7 @@ Object.assign(TALK.windup,{
     ],
     e:[
       "Evening. Boing has gone home. I mind the shop until morning. The quiet is very well behaved.",
-      "Good evening. Lumi lights forty-two lamps on this side of town. I watch for the forty-second.",
+      "Good evening. Tick. Lamps on. Forty-two by my count. The forty-second always catches a little late.",
       "Evening. Sketch brings me supper at six. It is five fifty-eight. I will wait by the door."
     ],
     n:[
@@ -47596,7 +47596,7 @@ Object.assign(TALK.baker,{
             ["Go and check, it's fine.","See, you know me. Back in a tick. That counts as six and a half."]]},1],
           ["Never. You're a stander.","I'm a stander! I'm telling Dr. Patch that. It's a medical term now."]]},
         {t:"You two make this shop feel like a kitchen at home. People slow down when you're in.",r:[
-          ["That's your doing.","Oh, hush. I bring the buns. You bring the slow. It takes both.",1],
+          ["That's your doing.","Go on with you. I bring the buns. You bring the slow. It takes both.",1],
           ["Really?","Really. Bolt sat for three whole minutes last time you were in. Three. I nearly fetched the Mayor."]]},
         {t:"The spring picnic. I've stopped calling it a dream and started calling it a plan. Will you help me with it?",r:[
           ["We're in.","Then you're on blankets. And lemonade. And keeping Joy away from the lemon cake.",1],
@@ -48700,7 +48700,7 @@ Object.assign(TALK.cloud,{
     ],
     season:[
       "A season of you two. Three months. The weather's changed three times since you came. You've stayed exactly the same kind of nice.",
-      "Three months. I made a little chart. Your visits and the sunny days. They match. I'm not saying it's science. It's a bit science."
+      "Three months. I made a little chart. Your visits and the sunny days. They match. I checked it twice and I'm still smiling."
     ],
     year:[
       {t:"A year. A whole year of weather with you in it. I'd like to give you something. It's from the book. Will you take it?",r:[
@@ -48991,7 +48991,7 @@ Object.assign(TALK.crane,{
           ["We know it's you.","Hm. Then you are new and already too clever. I will be more careful. The wind will be more careful."]]},
         {t:"May I fold something for {n}? It will be small. A hat, perhaps. Or a boat. They are often the same thing.",r:[
           ["A hat, please.","Here. A boat hat. It sits on one head. Which head? Ah. {a} has taken it. {b} is pretending not to mind.",1],
-          ["A boat.","A boat. For the windowsill. It will never meet water. It will be content. Most of my boats are."]]},
+          ["A boat.","A small boat. For your windowsill. It will never meet water, and it will be content. Most of my boats are."]]},
         {t:"Rain is difficult for me. I am mostly creases. If you see me under an awning, I am not hiding. I am waiting politely.",r:[
           ["We'll wait with you.","Thank you. That is a kind thing. Standing still in the dry with someone. I will remember it.",1],
           ["Does it hurt?","No. It softens. Then the creases forget themselves for a while. I do not like to be forgotten by my own creases."]]}
@@ -49092,7 +49092,7 @@ Object.assign(TALK.crane,{
     ],
     bye:[
       ["Goodbye. Mind the puddles. I will be thinking about them.","Good day. Check your pocket later. Or do not. The wind is unpredictable.","Farewell. I hope the weather is kind to you. I hope it is kind to me."],
-      ["Goodbye, you two. Give {n} my regards. And the boat, if it is still afloat.","Until next time. I will have something folded. Small. It is always small.","Goodbye. Parcel will be by tomorrow. Loudly. I apologise in advance."],
+      ["Goodbye, you two. Give {n} my regards. And the boat, if it is still afloat.","Until then. Something small will be folded. It is always small.","Goodbye. Parcel will be by tomorrow. Loudly. I apologise in advance."],
       ["Goodbye, my friends. Stay dry. I say that to everyone. I mean it most to you.","Farewell. I folded a little extra today. You will find it. The wind is busy for you.","Goodbye. Mind the corners on your way home. They are very sharp on your lane. I painted them."],
       ["Goodbye. Thank you for the quiet. It was a good shape.","Until tomorrow. I will sit by the window and fold until the light goes. I will think of you at the last crease.","Farewell, you two. Your corner is waiting. So am I, in a small way."],
       ["Goodbye, good corner. The light goes with you.","Until next time, good corner. I will fold you something slowly. Very slowly. You will know why.","Farewell, good corner. And {n}. And {a}. And {b}. One crease for each. Pressed twice."]
@@ -49855,7 +49855,7 @@ Object.assign(TALK.gramo,{
       ],
       [ // 2 Friend
         {t:"Can I tell you about my knees? They shake every day before three. Every day. Even now. I've stopped being embarrassed. Mostly.",r:[
-          ["What helps?","Seeing a face that's listening. Lately it's often one of yours. That's not pressure. It's just... true.",1],
+          ["What helps?","Seeing a face that's listening. Lately it's often one of yours. No pressure. It's only true.",1],
           ["We'd never notice.","You wouldn't... the horn hides it. But I'd notice you not noticing. That's the kind part."]]},
         {t:"Lumi and I have a secret. Well... I do. I slow down when Lumi's late with the lamps. I think Lumi hurries when I'm early.",r:[
           ["Does Lumi know?","Lumi taps the pole on the beat. Lumi knows something. We've never said. It's a song nobody wrote down.",1],
@@ -50726,7 +50726,7 @@ Object.assign(TALK.lantern,{
           ["Were they kind?","Very. They'd stop by the window and say 'still going?' I'd flicker. It meant yes. It still means yes.",1],
           ["Do you miss it?","I miss being one light for one person. Now I'm lots of lights for everyone. It's better. I just think of it at noon."]]},
         {t:"I've been keeping an eye on the small star over your house. It's settled. It doesn't twinkle nervously any more. I think it likes you.",r:[
-          ["Should we name it?","Mm. I already call it 'theirs'. Is that all right? It's not much of a name. It's a good word, though.",1],
+          ["Should we name it?","Mm. I already call it 'theirs'. Is that all right? It's a small name. I like the word.",1],
           ["Thank you for watching it.","It's no trouble. It's on my way home. Everything nice is on my way home now."]]},
         {t:"What I'm scared of, mm. Not the dark any more. A night I forget a lamp. And someone walks home under the dark one.",r:[
           ["You've never forgotten.","No. I go back and count. Every night. Forty-two. Then I go home. It's a long way round.",1],
@@ -51304,7 +51304,7 @@ Object.assign(TALK.parcel,{
       [ // 1 Regular
         {t:"Can I tell you my favourite part of the round? It's not the letters. Okay, it's the letters. But also the gates.",r:[
           ["Which gate is best?","Cobble's. It doesn't creak because Cobble oiled it in the dark. Nobody saw. I heard it not creaking.",1],
-          ["Tell us about the gates.","Every gate has a click. Bunbun's goes 'tock'. Pixel's goes 'beep', somehow. Yours goes 'tick-tack'. Very friendly."]]},
+          ["Tell us about the gates.","Every gate has a sound. Bunbun's goes 'tock'. Pixel's goes 'beep', somehow. Yours squeaks in G, Echo says. Very friendly."]]},
         {t:"Fold left a paper heart on my satchel again this morning. That's because I told Fold the bakery sign was lovely. Want to know how many hearts I've got?",r:[
           ["How many?","Two hundred and six. In a jar on the windowsill. Some are pink, some are white. One is very small. That one was the first.",1],
           ["Say more nice things!","Oh, I do! On purpose now. Fold knows. Fold pretends not to. The hearts keep coming. It's our system."]]},
@@ -51338,7 +51338,7 @@ Object.assign(TALK.parcel,{
         {t:"How are things at the two-door house? Still sending each other notes? Sorry, that's nosy. I only read outsides. But I see a lot of outsides.",r:[
           ["We still do.","Oh, good. Your notes have the best outsides on the round. Little hearts in the corners. I can't help seeing.",1],
           ["Less than we used to.","That's alright. Notes come and go like weather. When it rains, they come back. Mine always do."],
-          ["We should send more.","Yes! Please! Send them through me. I'll knock twice for every single one."]]},
+          ["We should send more.","Yes, please. Route every note through me. I'll knock twice for every single one."]]},
         {t:"Can I ask a worry? There's a letter in the sorting office with a name I can't read. Smudged. It's been three days.",r:[
           ["Ask Dewey to help.","Dewey! Of course. Dewey can read anything. Even my handwriting. I'll go after the round. You're good at this.",1],
           ["Read it to us.",{t:"Here. It says... 'To the one who, at the' and then a smudge. 'Hill.'",r:[
@@ -51511,7 +51511,7 @@ Object.assign(TALK.patch,{
         {t:"You two come by when nothing's wrong. Do you know how rare that is? Most visits start with 'ow'.",r:[
           ["We just like you.","That's alright. That's very alright. I'll put that in my notes. 'Visit: social.'",1],
           ["Is that alright?","It's better than alright. It means I'm a neighbour and not just a doctor."]]},
-        {t:"My week: Tuesdays, Bolt's thumb. Wednesdays, Story hour at Dewey's, I listen from the back. Fridays, Joy's wrists.",r:[
+        {t:"My week: Tuesdays, Bolt's thumb. Wednesdays, Story hour at Dewey's, I listen from the back. Saturdays, Joy's wrists.",r:[
           ["Busy Fridays!","After Game Night, yes. She holds the wrist up like a trophy. I wrap it like one.",1],
           ["Story hour?","I sit by the door. Dewey reads, I rest my eyes. Dewey says I'm the best listener. I don't correct it."]]},
         {t:"A mild opinion. Hot water bottles are underrated. I prescribe them freely. Do you two have one?",r:[
@@ -51843,7 +51843,7 @@ Object.assign(TALK.pebble,{
     ],
     year:[
       {t:"Mm. A year. Same lane. Same stones. Still flat. Still you. Good year.",r:[
-        ["Thank you, Cobble.","Mm. ...Mm. Don't. I'll go pink. Stones don't. I might.",1],
+        ["Thank you, Cobble.","Mm. ...Mm. Don't. I'll go the colour of a brick. Fondly.",1],
         ["Another year?","Mm. Lots. That's how roads work. Year on year. You'll see."]]},
       "One year. I put a stone in my pocket for it. Next to the first one. Mm. They get on."
     ],
@@ -51958,7 +51958,7 @@ Object.assign(TALK.pencil,{
           ["That's so Bolt.","It is. Loud on the outside. Very careful on the inside. Like a good wall."]]},
         {t:"I'm a bit worried. Cushy wants a chair with 'a gap for a nap'. I don't know the measurement for a nap.",r:[
           ["Measure Cushy napping.","That's... yes. Very simple. Very correct. I'll bring a tape. And a blanket. For Cushy, not the tape.",1],
-          ["As big as Cushy wants.","Oh. That's not a number. But it's an answer. Cushy-sized. I'll write 'C' on the plan. Cushy will know."]]},
+          ["As big as Cushy wants.","Oh. Not a number, but an answer. Cushy-sized. I'll write 'C' on the plan. Cushy will know."]]},
         {t:"Fold left a little paper square on my blueprint today. Folded once. Just once. I've been staring at it all morning.",r:[
           ["What do you think it means?","A square folded once is two rectangles. Two halves of one thing. I think it's about me and Tock. Or nothing.",1],
           ["Fold likes you.","Oh. Do you think so? Sorry. That's a silly question. I'll keep the square flat in my ruler box."]]},
@@ -54094,7 +54094,7 @@ Object.assign(TALK.windup,{
           ["You two are friends.","Yes. I think so. We have never said so. We have only agreed. Agreeing is how quiet people say it.",1],
           ["Was Joy pleased?","She did not know. Some of the best work is never seen. Like the back of a clock."]]},
         {t:"Boing has asked me to be louder at the shop. 'Just once, Tock. Shout a price.' I have been practising. May I try?",r:[
-          ["Go on, shout.","Four hearts. ...That was my loudest. Boing applauded. Two customers did not look up. I consider it a success.",1],
+          ["Go on, shout.","Four buttons. ...That was my loudest. Boing applauded. Two customers did not look up. I consider it a success.",1],
           ["Stay quiet. It suits you.","Thank you. I will tell Boing you said so. He will be disappointed for nine seconds. Then he will forget."]]}
       ],
       [ // 3 Good friend
@@ -55261,7 +55261,7 @@ RCHAT.p['baker|joy']=[
       ["joy","Thanks! Can I have two? Storm rules. Double points."],["baker","Storm rules? Is that a real rule, sweetie?"],
       ["joy","It is now!"],["baker","Then I'll make one up too. Bakery rules. Dry your feet first."]]},
   {l:[["baker","Joy. Eleven tickets in my jar now. One for every cookie."],["joy","Fair's fair, Bunbun. I always pay."],
-      ["baker","I could trade them in at the arcade, couldn't I? For a prize?"],["joy","Eleven tickets... that gets you a rubber duck. Or a sticker."],
+      ["baker","I could trade them in at the arcade, couldn't I? For a prize?"],["joy","Eleven tickets... that gets you a strawberry pencil. Or two tiny erasers."],
       ["baker","I'll keep the tickets, sweetie. They're better than a duck."],["joy","Bunbun. That's the nicest thing anyone's ever said about my tickets."]],
    j:{by:"baker",t:"{me}, hon, which is better, a rubber duck or eleven tickets in a jar?",r:[
      ["Keep the tickets, Bunbun.","baker",[["baker","There, sweetie. They stay on my shelf. Next to my mum's book."],["joy","Next to the book? Okay, now I'm gonna cry. Lag mood."]]],
@@ -56086,7 +56086,7 @@ RCHAT.p['sponge|spool']=[
      ["Can I see the crab?",0,[['spool',"Shh, it's shy! Under plank one hundred and twelve!"],['sponge',"Mm. Slowly, or it goes in."]]]]}}
 ];
 RCHAT.p['beacon|parcel']=[
-  {l:[['beacon',"Ahoy, Parcel! One box, one satchel. All present."],['parcel',"Evening, Beacon! Last post's done. Half four, give or take a hedge."],['beacon',"You're my last ship in. I don't put the kettle on till I've counted you."],['parcel',"You'd be thirsty some days!"],['beacon',"Some days I am. Worth it."]]},
+  {l:[['beacon',"Ahoy, Parcel! One box, one satchel. All present."],['parcel',"Evening, Beacon! Last post's done. Half four, give or take a hedge."],['beacon',"You're my last ship in. I don't pour the cocoa till I've counted you."],['parcel',"You'd be thirsty some days!"],['beacon',"Some days I am. Worth it."]]},
   {w:'rain',l:[['parcel',"Soggy! Sorry. Everything's soggy. I lost my place on the Bay twice."],['beacon',"Come in under the lamp room, friend. Dry off by the beam."],['parcel',"Your postcard's a bit runny. It says 'Dear' and then a blue cloud."],['beacon',"Best kind. I'll guess the rest. It'll be from a boat."],['parcel',"...Yes. Probably a boat. Definitely a boat."]],
    j:{by:'beacon',t:"{me}, would you hold the door? Parcel's dripping on my ropes.",r:[
      ["Shake off first, Parcel.",'beacon',[['beacon',"Good sense. Shake, friend, like a gull."],['parcel',"Fair! Shaking! A bit of cardboard came off, that's fine."]]],
@@ -56793,14 +56793,14 @@ RCHAT.p['book|pixel']=[
 ];
 RCHAT.p['mayor|pebble']=[
   {l:[['mayor',"Ahem! Good morning, my little road fellow!"],['pebble',"Cobble."],['mayor',"Quite, quite. Cobble. I have news! New stone for the lanes. Very soon."],
-      ['pebble',"Mm. Six years soon."],['mayor',"A three-part plan! Part one concerns a goose."],['pebble',"Mm."]],
+      ['pebble',"Mm. Six years soon."],['mayor',"A three-part plan! Part three concerns a goose."],['pebble',"Mm."]],
    j:{by:'mayor',t:"Dear resident {me}! Tell our road fellow the new stone is nearly here!",r:[
      ["It's nearly here!",'mayor',[['mayor',"There! A citizen speaks! I shall declare a holiday."],['pebble',"Mm. Seven years, then."]]],
      ["Six years is a long time.",'pebble',[['pebble',"Mm. Thanks."],['mayor',"Oh. Well. Ahem. Quite. Yes. Paperwork."]]],
      ["The road looks good anyway.",0,[['pebble',"Mm. It does."],['mayor',"Ahem! Exactly! The road is a credit to the town! And to me."]]]]}},
   {w:'rain',l:[['mayor',"Rain! Dreadful! Cobble, my dear fellow, you'll catch a chill."],['pebble',"Work's done. I like it."],
       ['mayor',"Ahem. I was going to practise my speech on your wall, but it's very wet."],['pebble',"Mm. Wall likes the rain too."],
-      ['mayor',"Tomorrow, then. Part two concerns the goose again."],['pebble',"...Mm."]]},
+      ['mayor',"Tomorrow, then. Part three concerns the goose again."],['pebble',"...Mm."]]},
   {l:[['mayor',"Ahem. Cobble. I opened your bench again yesterday."],['pebble',"It was open."],['mayor',"Re-opened it! A ribbon! A speech! Applause from two pigeons!"],
       ['pebble',"Third time. Same bench."],['mayor',"And the same speech, which I am told is a classic."],['pebble',"Mm. Told by you."]],
    j:{by:'pebble',t:"{me}. Mm. One bench. Three ribbons. Is that a lot?",r:[
@@ -57040,7 +57040,7 @@ RCHAT.p['pixel|toymaker']=[
 ];
 RCHAT.p['crane|mayor']=[
   {l:[['mayor',"Ahem! Fold, my dear! I need a banner! In three parts!"],['crane',"Yes. Three parts. One for each part of the speech."],
-      ['mayor',"Splendid! And part two must have a goose on it."],['crane',"A goose. I will fold one. It may lean left. For warmth."],['mayor',"Leaning left! Like the Town Hall sign! Marvellous!"]],
+      ['mayor',"Splendid! And part three must have a goose on it."],['crane',"A goose. I will fold one. It may lean left. For warmth."],['mayor',"Leaning left! Like the Town Hall sign! Marvellous!"]],
    j:{by:'mayor',t:"Dear resident {me}! Should my banner say 'Grand' or 'Very Grand'?",r:[
      ["Very Grand!",'mayor',[['mayor',"Very Grand it is! I'll declare a holiday for the adjective!"],['crane',"Very well. I will need a longer sheet."]]],
      ["Just 'Grand' is grand.",'crane',[['crane',"Thank you. Fewer letters, better curls."],['mayor',"Oh. Well. Ahem. Quite. 'Grand.' Understated. Like me."]]],
@@ -58489,7 +58489,7 @@ Object.assign(TALK.baker,{
     mystery:["Oh! {n}'s a new colour, sweetie. Blush has been at it again. It suits the tummy.",
       "Look at {n}, hon. Like a raspberry tart today. Is that Blush's mystery colour?",
       "Is that Blush's colour of the day on {n}? It's the shade of a good crust. I'd know."],
-    arcade:["Joy pays me in tickets for the cookies, sweetie. One rubber duck every twenty. I've got eleven ducks.",
+    arcade:["Joy pays me in tickets for the cookies, sweetie. One rubber duck every twenty. There's a row of them by my mum's book.",
       "Spent your tickets yet, hon? The prize counter has a little whisk I've had my eye on for Pip.",
       "Pixel counted my tickets out loud once. My ears went pink."],
     money:["Buttons go in the jar by the till, sweetie. Glimmers you keep. Those are for something special.",
@@ -58504,7 +58504,7 @@ Object.assign(TALK.baker,{
     meeting:["Town meeting tonight, hon. I'll be at the back with a tin of biscuits. The Mayor gets peckish by part two.",
       "Monday meeting, sweetie. If you go, take a snack. Part three is a long one."],
     stars:["Stargazing at the weather station tonight. I'm sending hot buns up for the roof deck, sweetie.",
-      "Nimbus says clear skies tonight, hon. I'll be asleep by nine. Wave at a star for me."],
+      "Nimbus says clear skies tonight, hon. I'll be asleep by eight. Wave at a star for me."],
     music:["Music night at Echo's, sweetie. I'm up at four, so I don't go. Echo still gets its roll, though.",
       "Echo's playing tonight, hon. If it plays the strawberry song, that one's partly mine."],
     games:["Game Night at Boing and Joy's tonight. I've packed bounce buns. Joy will steal two, sweetie.",
@@ -58682,7 +58682,7 @@ Object.assign(TALK.cone,{
   },
   ev:{
     tea:["Sunday tea at Bunbun's, hm? I'm busy. The queue round the fountain's three deep at three.",
-      "Tea at Bunbun's today, my loves. Tell her her crumb was lovely last week. Don't say I said."],
+      "Tea at Bunbun's today, my loves. Tell her the crumb was lovely last week. Don't say I said."],
     story:["Story hour today! The twins are off to Dewey's. Scone's promised not to read the ending. Hm.",
       "Crumb's packed her backpack for story hour. Five pebbles and a cushion. The cushion's for Dewey."],
     meeting:["Town meeting tonight, sweet pea. I'll bring a tub for after. The Mayor's always peckish by part three.",
@@ -59082,7 +59082,7 @@ RCHAT.p['gramo|tailor']=[
 ];
 RCHAT.p['hair|joy']=[
   {l:[['joy',"Pom! Tournament Saturday! I need the gold tips! Let's go!"],['hair',"Okay hear me out: gold tips and lightning bolts. Combo move."],['joy',"Combo move! You get it!"],['hair',"Obsessed. Book it with Gloss. She'll sigh at me."]]},
-  {l:[['hair',"Joy! I've got two hundred tickets. What's at the prize counter?"],['joy',"Two hundred! Player one's rich! Rubber ducks, or save for the gold comb."],['hair',"A gold comb?! For Brenda!"],['joy',"Brenda gets the comb! Five hundred tickets. Let's go!"]]}
+  {l:[['hair',"Joy! I've got two hundred tickets. What's at the prize counter?"],['joy',"Two hundred! Player one's rich! Rubber ducks, or save for the gold comb."],['hair',"A gold comb?! For Brenda!"],['joy',"Brenda gets the comb! Three hundred tickets. Let's go!"]]}
 ];
 RCHAT.p['hair|mayor']=[
   {l:[['mayor',"Ahem. Dear Pom. Could the studio do something for my moustache before the Summer Fair?"],['hair',"Okay, obsessed. A little curl at each end?"],['mayor',"A curl! Most distinguished. In three parts, perhaps?"],['hair',"Three curls. Iconic. Byeee."]]},
@@ -59214,7 +59214,7 @@ RCHAT.p['pixel|sponge']=[
 ];
 RCHAT.p['pixel|spool']=[
   {l:[['spool',"Pixel! Joy sent me for tickets and also I counted them and also I lost count!"],['pixel',"Four hundred and twelve."],['spool',"How do you know?"],['pixel',"I watched you drop eight."]]},
-  {l:[['spool',"Pixel! What's the rarest thing at the prize counter?"],['pixel',"The gold comb. Pom has asked about it three times."],['spool',"Three times! How many tickets?"],['pixel',"Five hundred. Pom has two hundred. It's a long game."]]}
+  {l:[['spool',"Pixel! What's the rarest thing at the prize counter?"],['pixel',"The gold comb. Pom has asked about it three times."],['spool',"Three times! How many tickets?"],['pixel',"Three hundred. Pom has two hundred. It's a long game."]]}
 ];
 RCHAT.p['pixel|tailor']=[
   {l:[['tailor',"Pixel, sweet, you've a loose voxel. Shall I stitch it?"],['pixel',"No. It comes back on its own."],['tailor',"Oh. That's handy."],['pixel',"It's a glitch. I prefer not to discuss it."]]},
@@ -59326,7 +59326,7 @@ Object.assign(TALK.hair,{
     basket:["Bunbun's basket! I got a lemon slice. Brenda had crumbs in her all day.","Okay, day-old is basically vintage. Iconic.","Go before ten! The good ones go fast!"],
     joke:["I told Prickles a joke today. He gave it a two. A TWO. I'm framing it.","Okay, all my jokes are about combs. He hates combs. I'm learning.","Tell him one about curls! He'll hate it! It'll be iconic!"],
     mystery:["Okay, {n}'s colours?! Blush did a mystery one! I'm obsessed!","That colour on {n} needs matching antennae. Hear me out. Come in sometime.","Blush says mystery colours are never a mistake. Well, rarely. This one is definitely not the rare one!"],
-    arcade:["Two hundred tickets and counting! The gold comb's five hundred! It's for Brenda!","Joy pays me in tickets for her tournament tips. Basically I'm paid in prizes.","Pixel watches me at the prize counter. It knows I'll be back."],
+    arcade:["Two hundred tickets and counting! The gold comb's three hundred! It's for Brenda!","Joy pays me in tickets for her tournament tips. Basically I'm paid in prizes.","Pixel watches me at the prize counter. It knows I'll be back."],
     money:["Buttons! I keep mine in pocket six. Pocket six is buttons.","A glimmer! I've never had one. I'd spend it on a curling iron as big as a lamp post.","I'm terrible with buttons. Gloss books me a budget. In pencil."]
   },
   ev:{
@@ -59585,8 +59585,8 @@ RCHAT.p['cactus|pencil']=[
       ['cactus',"Two out of ten."],['pencil',"Oh. That's double what Bolt got."],['cactus',"Bolt's was about nails. Nails are not funny."]]}
 ];
 RCHAT.p['cactus|windup']=[
-  {l:[['windup',"Good morning, Prickles. You walk from your gate to the bench in two hundred and nine steps."],['cactus',"Posy's orders."],
-      ['windup',"Yesterday it was two hundred and twelve."],['cactus',"There was a lizard. I stopped to look at it."],['windup',"Noted. Lizard, one."]]},
+  {l:[['windup',"Good morning, Prickles. You walk from your gate to the bench in forty steps."],['cactus',"Posy's orders."],
+      ['windup',"Yesterday it was forty-three."],['cactus',"There was a lizard. I stopped to look at it."],['windup',"Noted. Lizard, one."]]},
   {w:'rain',l:[['cactus',"Rain. Hmph. Soggy soil."],['windup',"Rain. My key squeaks in it."],['cactus',"On the boat it rained eleven days straight."],
       ['windup',"Eleven. Tick. Did you count them?"],['cactus',"Every one. Nothing else to do."],['windup',"Then we have something in common."]]}
 ];
@@ -60195,24 +60195,24 @@ Object.assign(TALK.pencil,{
       "Treasures wash up on the boardwalk every day. Sorry. I tried to plan where. The sea doesn't follow plans.",
       "An empty bottle. Sorry. I'd put a plan in it. A small one. In case someone out there needs a shelf."],
     well:["You made a wish? Sorry. I write my wishes down first. So they're clear.",
-      "Ten buttons a wish. Sorry. I counted them three times before I dropped them in.",
+      "Ten buttons a wish. I counted them three times before I dropped them in.",
       "The well's wall is perfectly round. Sorry. I checked. Somebody built it very carefully, long ago."],
-    parcel:["The Mayor's parcel came. Sorry. The ribbon is forty-one centimetres. Last month's was forty.",
-      "The Mayor's letter. Part two had a goose in it. Sorry. I don't understand the goose.",
-      "Parcel brought the Mayor's monthly parcel. Sorry. I put it with the others. Labelled by month."],
-    basket:["Bunbun's day-old basket. Sorry. I always take a muffin. It reminds me of the pantry.",
+    parcel:["The Mayor's parcel came. The ribbon is forty-one centimetres. Last month's was forty.",
+      "The Mayor's letter. Part three had a goose in it. Sorry. I don't understand the goose.",
+      "Parcel brought the Mayor's monthly parcel. I put it with the others. Labelled by month."],
+    basket:["Bunbun's day-old basket. I always take a muffin. It reminds me of the pantry.",
       "One free bake a day. Sorry. I counted the basket. Fourteen this morning. Thirteen after me.",
       "Pip asked if the basket label was straight. Sorry. Two degrees off. I said very good."],
     joke:["I told Prickles a joke. Sorry. It was about a ruler. Two out of ten.",
-      "Prickles rates jokes. Sorry. Nobody's had a ten. I've done the maths. Somebody has to, eventually.",
+      "Prickles rates jokes. Nobody's had a ten. I've done the maths. Somebody has to, eventually.",
       "Bolt told Prickles a nail pun. One out of ten. I didn't laugh either. Sorry, Bolt."],
     mystery:["{n}'s colours have changed. Sorry. I liked the old ones. I like these too. Sorry.",
       "A mystery colour on {n}. Sorry. Is it the same on both heads? It is. Good.",
       "Blush gave {n} a mystery colour. Sorry. I'd have drawn a plan for it. She never uses plans."],
-    arcade:["Tickets. Sorry. I'm saving for the graph paper pad on the prize counter. Two hundred more.",
+    arcade:["Tickets. I'm saving for the graph paper pad on the prize counter. Thirty more.",
       "The prize counter shelf slopes two millimetres. Sorry. I told Pixel. It said fix it.",
-      "Seventh on Pixel's board. Sorry. I spend my tickets carefully. Usually on paper."],
-    money:["Buttons. Sorry. I like that they're round and all the same size. Nearly.",
+      "Seventh on Pixel's board. I spend my tickets carefully. Usually on paper."],
+    money:["Buttons. I like that they're round and all the same size. Nearly.",
       "I've never had a glimmer. Sorry. I don't think I'd spend it. I'd measure it.",
       "I keep my buttons in a graph-paper envelope. Sorry. A square for each one."]
   },
@@ -60414,7 +60414,7 @@ Object.assign(TALK.crane,{
       "Thursday. I do not go. I hear Echo's last song from my window. It has no words. It does not need any."],
     games:["Game Night. I will fold the losing cards into cranes. There are always enough.",
       "Friday. Game Night. I lose quietly. The cranes are the point."],
-    market:["The Mayor's bake sale. I painted his banner. Three parts. A goose in part two.",
+    market:["The Mayor's bake sale. I painted his banner. Three parts. A goose in part three.",
       "Saturday. Bake sale. I help Parcel carry. I carry the light things. Napkins, mostly."],
     sunmkt:["The Sunday market. My stall has pinwheels and paper frogs. Press the frog gently.",
       "Market morning. I will letter Tock's tally board. Its elevens look like fences."]
@@ -60531,7 +60531,7 @@ RCHAT.p['book|makeup']=[
 ];
 RCHAT.p['book|polish']=[
   {l:[["polish","Dewey! I made you a little returns calendar. Colour-tabbed. Have a look."],["book","Oh. That's very tidy. Red for overdue?"],["polish","Red for overdue, pink for due today. Gold for the Mayor's book. Confirmed. Twice."],["book","Gold. That's generous for nine years overdue. Shh. I like it."]]},
-  {l:[["book","Gloss. Do you read, at the front desk? When it's quiet?"],["polish","Oh, never quiet. Pom is always late. I read the appointment book."],["book","That's not a book. That's a list."],["polish","It's a very lovely list. It has a beginning, a middle, and Pom arriving at the end."],["book","Hm. Come in on a Wednesday. I'll find you one with an ending."]]}
+  {l:[["book","Gloss. Do you read, at the front desk? When it's quiet?"],["polish","Oh, never quiet. Pom is always late. I read the appointment book."],["book","An appointment book is a list. Lists don't have endings."],["polish","It's a very lovely list. It has a beginning, a middle, and Pom arriving at the end."],["book","Hm. Come in on a Wednesday. I'll find you one with an ending."]]}
 ];
 RCHAT.p['book|posy']=[
   {l:[["posy","Dewey, I've brought your tomato a friend. Basil. They'll get on."],["book","Oh. The tomato. It came up in my lavender box. I never planted it."],["posy","Hm hm. Some seeds just pick a place. It's happy there, look at it."],["book","It's confused. It thinks it's lavender. It's started to smell faintly purple."],["posy","Let it. It'll grow out of it. Or into it. Bye, tomato."]]},
@@ -60546,7 +60546,7 @@ RCHAT.p['builder|lantern']=[
   {l:[["lantern","Bolt. The lamp post on the hill. You leaned your ladder on it."],["builder","Sure did! Sturdy post! Great post!"],["lantern","It's leaning now. Like you. Only it can't stand back up."],["builder","Ha! I'll straighten it Tuesday."],["lantern","Mm. Not Tuesday. You'll do your thumb on Tuesday. Wednesday's fine."]]}
 ];
 RCHAT.p['builder|mayor']=[
-  {l:[["mayor","Ahem! Bolt, dear resident. The new ribbon scissors for the Summer Fair. Progress?"],["builder","Four feet so far, chief! Need a second handle so two of us can squeeze."],["mayor","Two handles. Two cutters. A shared triumph. I may weep."],["builder","Only if you give 'em back this time. The last pair took eleven weeks."],["mayor","A ceremonial loan. Some loans are simply longer. Like speeches."]]},
+  {l:[["mayor","Ahem! Bolt, dear resident. The new ribbon scissors for the Summer Fair. Progress?"],["builder","Four feet so far, chief! Need a second handle so two of us can squeeze."],["mayor","Two handles. Two cutters. A shared triumph. I may weep."],["builder","Only if you give 'em back this time. The last pair stayed a whole month."],["mayor","A ceremonial loan. Some loans are simply longer. Like speeches."]]},
   {l:[["builder","Mayor! You're sticky. Hot one today, huh?"],["mayor","A little sticky. I've apologised to three handrails and a gate."],["builder","I could build you a shade over the balcony. Easy job. Couple of beams."],["mayor","A canopy! For the speeches! It would need opening, naturally. With a ribbon."],["builder","Course it would. I'll bring the scissors. And I'm taking them home after."]]}
 ];
 RCHAT.p['builder|posy']=[
@@ -60836,7 +60836,7 @@ RCHAT.p['posy|windup']=[
 
 Object.assign(TALK.mayor,{
   sys:{
-    treasure:["Ahem! I hear you've been combing the boardwalk, dear resident. Should anything historic wash up, the Town Hall has a shelf.","Treasures on the boardwalk! I may declare a Beachcombing Week. There'd be a ribbon across the sand, naturally.","Beacon tells me you found sea glass. Green? I shall have it mentioned at the next meeting. Part two, after the goose."],
+    treasure:["Ahem! I hear you've been combing the boardwalk, dear resident. Should anything historic wash up, the Town Hall has a shelf.","Treasures on the boardwalk! I may declare a Beachcombing Week. There'd be a ribbon across the sand, naturally.","Beacon tells me you found sea glass. Green? I shall have it mentioned at the next meeting. Part two, before the goose."],
     well:["Ahem. A little bird says you made a wish at the well. I never ask what. I do hope it involved bunting.","The wishing well! I opened it myself, with a short speech. The well was very patient.","Ten buttons a wish, dear resident. The finest value in town. I've wished for a larger ribbon four times."],
     parcel:["Ahem! The monthly parcel has gone out! Fifty-three doors! Did yours have three parts? Mine always do.","You'll have had my letter by now. Part one, the news. Part two, a gentle reminder. Part three, a joke. It concerns a goose.","The first of the month! My favourite first. Parcel carries the letters and I carry the responsibility."],
     basket:["Bunbun's day-old basket! One free bake a day. I've declared it a civic treasure. Unofficially. She went pink.","I took a day-old bun from the basket once. Then I put a button in it anyway. A mayor must set an example.","Nobody goes hungry on her lane, she says. I shall have it carved over the Snack Shack door. In gold."],
@@ -60862,7 +60862,7 @@ Object.assign(TALK.book,{
     well:["You made a wish at the well. Don't tell me what. Wishes are like endings. Best kept until they happen.","The well's older than the library. I have a page on it. It says 'damp'. That's the whole page.","Ten buttons a wish. A book costs nothing here, and it comes true every time you open it. Shh. I'm only saying."],
     parcel:["The Mayor's monthly letter came. Three parts. I read the goose part twice. Don't tell him.","First of the month. The Mayor's parcel. Mine had a bookmark in it. He knows I can't refuse a bookmark.","Shh. The Mayor's letter. Part two mentioned overdue books 'in general'. I underlined it and sent it back."],
     basket:["Bunbun's day-old basket. I take a roll on Tuesdays. Day-old bread is like a second edition. Better, sometimes.","Have you tried the basket? Don't eat over a book, that's all I'll say. Crumbs remember.","Shh. I left a bookmark in the basket for whoever takes the last bun. Nobody's mentioned it yet."],
-    joke:["You've been telling Prickles jokes. He gave mine a three. I've been reading joke books to improve. They're terrible.","Prickles rates jokes. I rate books. We're both very harsh and very fair. Mostly harsh.","Oh, you'll like this one. 'Why are libraries tall? Lots of stories.' Prickles gave it a four. I'm taking it."],
+    joke:["You've been telling Prickles jokes. He gave mine a three. I've been reading joke books to improve. They're terrible.","Prickles rates jokes. I rate books. We're both very harsh and very fair. Mostly harsh.","'Why are libraries tall? Lots of stories.' Prickles gave it a four. I'm taking it."],
     mystery:["{n}'s a new colour. Blush again? It's like a dust jacket. I keep wanting to see what's underneath.","Shh. {n} looks different today. A mystery colour. I won't spoil it by guessing what it's called.","Oh. {n}'s gone a sort of 'library at dusk'. Blush would say something fancier. I like mine."],
     arcade:["Tickets from the arcade. I've seen them used as bookmarks. I don't love it. I don't hate it.","The prize counter. Rubber ducks and noisy things. I've never been in. The jingle reaches the stacks.","Shh. If you're saving tickets, keep them flat. In a book. Not that book. A spare one."],
     money:["Buttons. I keep mine in a jar marked 'fines'. It's nearly empty. Nobody pays fines here. Least of all the Mayor.","Glimmers are rare. Like a first edition, or a quiet Friday. Don't spend one on anything you'd lend out.","Shh. Library cards are free. I'm only mentioning it. Buttons can't buy a better chapter."]
@@ -60904,7 +60904,7 @@ Object.assign(TALK.cloud,{
   sys:{
     treasure:["You've been on the boardwalk! Chance of treasure after a storm: high. I'd tell you which nights. Ask me.","Sea glass! It goes cloudy in the sea, like me. Then someone picks it up and it's precious. I think about that.","Mostly shells after a calm night, mostly bottles after a rough one. I keep a column for it in my book."],
     well:["You made a wish at the well! I won't ask. Chance of it coming true: better than you'd think.","The well's water tastes like rain. I'd know. Some of it probably was me, once. Sorry if it was.","I wished for a dry Summer Fair last year. It drizzled. I apologised to the well. It took it well."],
-    parcel:["The Mayor's letter came. It says 'sunny all month'. He didn't check with me. Again.","First of the month! The parcel's here. Parcel was a bit damp. That was me. Sorry.","Mostly lovely, the Mayor's letter. Part two predicted the weather. Wrongly. I've drafted a correction."],
+    parcel:["The Mayor's letter came. It says 'sunny all month'. He didn't check with me. Again.","First of the month! The parcel's here. Parcel was a bit damp. That was me. Sorry.","Mostly lovely, the Mayor's letter. Part one predicted the weather. Wrongly. I've drafted a correction."],
     basket:["Bunbun's basket! I forecast it every morning. Chance of a cinnamon roll: high. I'm rarely wrong.","Day-old bread lasts longer if you keep it away from me. I'm a bit damp. Sorry.","The basket's my favourite thing at the Snack Shack. It's like a forecast that always comes true."],
     joke:["You've been telling Prickles jokes. Has he mentioned me? He thinks I rain on his patio on purpose. I don't.","I told Prickles a joke once. About drizzle. He gave it a one. Then he went inside. It was raining, to be fair.","Chance of Prickles laughing at a joke: low. Chance of him smiling where you can't see: mostly good."],
     mystery:["Oh! {n}'s a new colour! Like a sunrise from the hill. Partly. A bit pinker.","{n}, you look lovely. Blush's mystery colour, I think. Chance of you getting compliments today: very high.","Mystery colour! It suits {n}. I'd forecast it staying till tomorrow, then something new."],
@@ -60953,7 +60953,7 @@ Object.assign(TALK.cactus,{
     joke:["One joke a day, youngster. That's the rule. Make it count. I've heard them all. Twice.","Hmph. Got a joke? Go on. Nothing about cacti. Nothing about old. And nothing about geese.","The twins told me one about a pot. Gave it a one. Then I laughed on the way home. Don't tell them.","Tell a good one and you'll get something from the trail jar. A good one. Not a Pip one."],
     mystery:["Hmph. {n} has gone a funny colour. Blush's doing? Looks like a sunset over the Great Dry. Fine. It's fine.","What's that colour on {n}? Hmph. In my day we had one colour. Brown. It was enough. ...Suits it, though.","Mystery colour, eh, {n}? Looks good with a hat. Every colour does. Get a hat."],
     arcade:["Tickets. Hmph. That arcade jingle carries all the way to the Meadow. Every day. Every single day.","I went to the arcade once. Won forty tickets on the claw. Got Posy a seed packet. Never going back. Noise.","Prize counter. Hmph. In my day the prize was getting home. Fine. Get the rubber duck."],
-    money:["Buttons. Hmph. I paid for a camel once with a button and a story. Mostly the story.","Glimmers go in my trail jar. For a trip. Somewhere warm. Don't ask where, kid. Don't tell Posy.","Save your buttons, youngster. Spend them on a hat. Or a kettle. Those are the only two things that matter."]
+    money:["Buttons. Hmph. I paid for a boat ride once with a button and a story. Mostly the story.","Glimmers go in my trail jar. For a trip. Somewhere warm. Don't ask where, kid. Don't tell Posy.","Save your buttons, youngster. Spend them on a hat. Or a kettle. Those are the only two things that matter."]
   },
   ev:{
     tea:["Sunday tea at Bunbun's. Burnt biscuits and a sofa. I tell the sandstorm one. I don't fall asleep. Posy says I do.","Tea at three. Cushy will listen to the whole story. Cushy's a genius. Don't tell anyone I said genius."],
@@ -60974,7 +60974,7 @@ Object.assign(TALK.gramo,{
     basket:["Bunbun's basket... I take a roll at four. Or she brings it. The record skips. I let it.","Day-old bread... soft like a second verse. Everything's better the second time round.","The basket at the Snack Shack... Pip hums when he fills it. Forty-five beats. I've counted."],
     joke:["Prickles hears jokes now? Mm... he doesn't hear my music. Perhaps I'll try a joke instead.","I told Prickles a joke once... about a record. He gave it a two. I've played it slower since.","If Prickles laughs... it's very quiet. Like the bit before the first note."],
     mystery:["Oh... {n}'s a new colour. It sounds different. Brighter... a major key.","A mystery colour on {n}... Blush calls it something, I'm sure. I'd call it 'the first warm evening'.","{n}... you look like a song I haven't written yet. Hold still... no, keep moving. That's the tune."],
-    arcade:["The arcade jingle... it drowns the plaza music at four. Every day. Mm. I play louder. Then I feel bad.","Tickets... the prize counter has a little kazoo. Forty tickets. I don't approve. I want it.","Mm... the arcade's music goes beep. Mine goes... well. You've heard mine. You stopped to listen."],
+    arcade:["The arcade jingle... it drowns the plaza music at four. Every day. Mm. I play louder. Then I feel bad.","Tickets... the prize counter has a little whistle. Twenty tickets. I don't approve. I want it.","Mm... the arcade's music goes beep. Mine goes... well. You've heard mine. You stopped to listen."],
     money:["People drop buttons in my bucket on the plaza. I don't ask. I play an extra bar when they do.","A glimmer in the bucket once... I played until the lamps came on. For one person.","Buttons... I keep them in a record sleeve. They make a lovely rattle in the chorus."]
   },
   ev:{
@@ -61740,7 +61740,7 @@ Object.assign(TALK.sponge,{mem:{
   ],
   visit:[
     "Mm... you came to the hut. I put the kettle on before you knocked. I heard you on the boards.",
-    "After you visited I sat on the bench for two a long while. It was still warm. Mm.",
+    "After you visited I sat on the bench a long while. It was still warm. Mm.",
     "Come again. The towel by the stove is yours. I've told everyone else it's damp."
   ],
   room:[
@@ -63514,20 +63514,20 @@ Object.assign(TALK.pencil.sys,{
   bugs:["Sorry. I caught a butterfly. Its wings were the same on both sides. Exactly. I let it go after I checked.",
     "Bug catching. Sorry. I drew a plan of where the beetles are. They moved. I'm on draft four.",
     "Posy buys bugs. Sorry. I sold her a ladybird. Seven spots. Double-checked."],
-  museum:["The Little Museum. Sorry. The display cases are all one size. Dewey asked me to measure them. I was very happy.",
+  museum:["The Little Museum. The display cases are all one size. Dewey asked me to measure them. I was very happy.",
     "Dewey writes a card for every donation. Sorry. The margins are even. I measured one. Just one. Okay, four.",
     "Have you donated anything? Sorry. There's an empty case with a card that just says yet. I like that card."],
   project:["The Ferris wheel. Sorry. I checked the plans. Sixteen cars. Two each, for thirty-two of us. Somebody planned that well.",
     "The school house. Sorry. Bolt has offered to build the bell tower. I've offered to measure it. Twice.",
     "You're funding the Mayor's projects. Sorry. I keep a graph of it. The line only goes up. My favourite kind of line."],
-  designs:["You made a pixel design. Sorry. A square for everything. That's how I feel about graph paper.",
+  designs:["You made a pixel design. A square for everything. That's how I feel about graph paper.",
     "Sorry. Could I see your floor design? Does it match at the edges? It tiles? It tiles. Good.",
     "Blush put your design on {n}. Sorry. It curves round both heads. I couldn't have drawn that. She can."],
-  season:["Autumn. Sorry. The scarecrow by the fields leans four degrees. I didn't fix it. It looked comfortable.",
+  season:["Autumn. The scarecrow by the fields leans four degrees. I didn't fix it. It looked comfortable.",
     "Sorry. Leaves keep landing on my plans. I've started drawing round them.",
     "Cider. Sorry. Tock poured mine exactly to the line. It was a very good cider."],
   fishing:["I measured my fish. Sorry. Twenty-one centimetres. Beacon measured it too. Twenty-one. We were both pleased.",
-    "The new dock. Sorry. It's level. I checked. Bolt says he built it. I checked that too. He did.",
+    "The new dock. It's level. I checked. Bolt says he built it. I checked that too. He did.",
     "Fishing. Sorry. I don't like it when they get away. I've decided they've gone off to measure something."]
 });
 Object.assign(TALK.builder.sys,{
@@ -63676,7 +63676,7 @@ Object.assign(TALK.book.sys,{
   ],
   museum:[
     "The museum. Shh, it's quiet in there too. I write a card for every donation. The cards are the best part. Don't tell the fish.",
-    "Oh, you'll like this one. The museum cards are filed by the day you gave them. So the museum is also a diary of you two. Mostly fins.",
+    "The museum cards are filed by the day you gave them. So the museum is also a diary of you two. Mostly fins.",
     "Fish come in wet. I knew they would. I keep a towel on the desk now and I don't look at it. It's going quite well.",
     "Someone left a damp boot at the museum. I filed it under B. Then again under D, for damp. It's in two drawers now. It doesn't seem to mind."
   ],
@@ -63700,7 +63700,7 @@ Object.assign(TALK.book.sys,{
   fishing:[
     "Fishing. Please dry your hands before the reading room. I've asked so often that Fold painted it over the door. Small letters.",
     "The new dock. I walked to the end of it reading and stopped just in time. Beacon clapped. I prefer not to discuss it.",
-    "Oh, you'll like this one. A catfish tastes with its whole skin. I've never looked at the pond the same way since."
+    "A catfish tastes with its whole skin. I've never looked at the pond the same way since."
   ]
 });
 Object.assign(TALK.lantern.sys,{
@@ -63828,7 +63828,7 @@ Object.assign(TALK.cactus.sys,{
   designs:[
     "Drawing your own floors now, kid? Draw a map on one. A proper map. North at the top. Nobody ever does that.",
     "Blush put one of your patterns on {n}. Hmph. Bold. I like a bold pattern on an expedition member. Easier to find in a sandstorm.",
-    "Make me a framed picture and I'd hang it facing the room. Not the wall. The wall's for the other kind. Ask the wind-up cactus."
+    "Make me a framed picture and I'll hang it facing the room. Posy will say it belongs by the window. I'll let her think so."
   ],
   season:[
     "Autumn. Cold mornings. Hmph. Pot's chilly. Posy knitted it a cosy from Bobbin's pattern. Don't say anything.",
@@ -64196,7 +64196,7 @@ Object.assign(TALK.pencil.sys,{
   season_spring:["Spring. Sorry. The tulips by the Town Hall are in straight rows. Somebody planted them carefully. I'd like to thank them.",
     "Rain again. Sorry. My shavings go soggy. Tock waits with me under the flowering arch until it stops.",
     "Petals keep landing on my plans. Sorry. I've started drawing them in. Tock says they improve the margins."],
-  season_summer:["Summer. Sorry. At noon my shadow is shorter than I am. I measured. I find that very odd.",
+  season_summer:["Summer. At noon my shadow is shorter than I am. I measured. I find that very odd.",
     "The garden umbrellas on the plaza are evenly spaced. Sorry. Almost. One's out by a hand. I think about it a lot.",
     "Shaved ice. Sorry. I got lemon. Tock got lemon. We didn't plan it. We just both like lemon."]
 });
@@ -64284,19 +64284,19 @@ Object.assign(TALK.book.sys,{
   season_winter:[
     "Winter. Shh. Snow makes the whole town quiet, like the ten o'clock quiet but all day. I didn't arrange it. I'd like to think I helped.",
     "Please knock the snow off your boots before the reading room. Snow is only slow damp. It took me years to see through it.",
-    "Oh, you'll like this one. A snowflake has six arms, always. I caught one on my cover to check. It melted. Damp, but true.",
+    "A snowflake has six arms, always. I caught one on my cover to check. It melted. Damp, but true.",
     "Cocoa goes on a saucer, well away from the atlas. That's the rule. The marshmallow is optional. Please don't tell the Mayor I said so."
   ],
   season_spring:[
     "Spring. Posy marks my pages with blossom. Readers find a pressed flower halfway through and go quiet. The right kind of quiet.",
     "Spring showers. Shh. I read by the window and keep the books well back. Nimbus waves from outside. Kindly. From outside.",
-    "Oh, you'll like this one. A bird took a bookmark off my step for its nest. The lost bookmark basket has a rival now.",
+    "A bird took a bookmark off my step for its nest. The lost bookmark basket has a rival now.",
     "Petals blow in whenever the door opens. I don't sweep them out. They land between pages, and later someone finds a bit of spring."
   ],
   season_summer:[
     "Summer. Long days, long reading. I stay by the window until the light gives up. It doesn't, in summer. I give up first.",
     "Please don't read by the splash fountain. I tried. Page forty-one has a ripple in it now. Shh. It's on the shelf with the others.",
-    "Oh, you'll like this one. Each kind of firefly flashes its own pattern. I've been writing them in the blank book. Lumi checks the spelling.",
+    "Each kind of firefly flashes its own pattern. I've been writing them in the blank book. Lumi checks the spelling.",
     "Shaved ice drips onto everything. I eat it on the step, outside, with the door shut. The books asked. Well. I asked for them."
   ]
 });
@@ -64569,7 +64569,7 @@ visit_host:[
 "Oh, sorry about the fingerprints! {o} said it's fine. {o} is very kind.",
 "{o} is here and I haven't dropped a single thing yet. Please don't say it out loud!"],
 closer:[
-"{o} and me have been talking a lot lately! About recipes, mostly. Um, and weather. It's nice!",
+"{o} and I have been talking a lot lately! About recipes, mostly. Um, and weather. It's nice!",
 "I think {o} likes my jam now! They said it was good! Twice! I wrote it down.",
 "Bunbun says friends are like jam, you leave them alone for a bit and they come together. I think {o} is set."],
 apart:[
@@ -65421,14 +65421,14 @@ Object.assign(TALK.posy.sys,{
 party_host:[
 "Oh, you came, {me}! Come through the garden. I put a seedling by every plate. They are yours to keep.",
 "It is my party, and Prickles is in charge of the cake, so nobody panic. Twenty-eighth of April suits a pot.",
-"Thank you for coming. I told the tulips, and they looked quite pleased. Hum, hum. Have some lemonade.",
+"Thank you for coming. I told the tulips, and they looked quite pleased. Hm hm. Have some lemonade.",
 "Spring was very good to us this year. Sit anywhere, {me}. The bench by the foxgloves is the nicest."
 ],
 party_guest:[
 "Hello, {me}! I brought {o} a little pot with something growing in it. I am not saying what. A surprise.",
 "{o} has done a lovely job. Nothing is wilting, even the guests. I checked in the doorway.",
 "I will hand out a few cuttings before I go, if {o} does not mind. A party is a good time to plant a friend.",
-"Hum, hum. Oh, sorry. I hum when a party is going well. Take it as a review of {o}'s."
+"Hm hm. Oh, sorry. I hum when a party is going well. Take it as a review of {o}'s."
 ],
 visit_guest:[
 "Oh, hello, {me}! I am visiting {o}. I brought a seedling for the sill. It is already settling in.",
@@ -66236,7 +66236,8 @@ function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS
 /* </swapface> */
 /* <whatsnew> */
 // ---- a one-time card per device listing what's new since the last version this phone saw (localStorage r42wn)
-const WHATSNEW=[[113,'Neighbours have moods now: good days, grumpy days, and a chat or a gift cheers them up. Each neighbourhood has a noticeboard (Neighbours > Noticeboard, or tap one in town) with notes and small optional favours. Your pet goes to bed by itself at night and has breakfast in the morning, and the lamps glow a little warmer in the evening.'],
+const WHATSNEW=[[114,'Your pet reacts to more things: it waves when you zoom in close, bops to the music, gets excited about real snow, and is happy when you come home. The camera glides in when it does a trick and drifts gently when you leave it be. And about a hundred small fixes to what the neighbours say.'],
+  [113,'Neighbours have moods now: good days, grumpy days, and a chat or a gift cheers them up. Each neighbourhood has a noticeboard (Neighbours > Noticeboard, or tap one in town) with notes and small optional favours. Your pet goes to bed by itself at night and has breakfast in the morning, and the lamps glow a little warmer in the evening.'],
   [112,'The app opens about twice as fast: your room comes first, and the town finishes setting itself up in the background.'],
   [111,'Stepping outside is quicker: neighbours’ full models now appear one at a time instead of all at once. The speed readout also notes how long the game takes to come back after you switch apps.'],
   [110,'Walking around town should be noticeably smoother, especially on phones.'],
@@ -69137,6 +69138,26 @@ function nqOpen(hood){nqHood=hood&&HOODS[hood]?hood:null;lifeTab='notice';try{cl
   if(q&&q[0]==='noticeboard'){const [x_,z_]=twPos(q[1],q[2]),d=plDistrictOf(x_,z_);const P=tw.pet,a=Math.atan2(P.x-x_,P.z-z_);twWalk(x_+Math.sin(a)*1.2,z_+Math.cos(a)*1.2,()=>nqOpen(HOODS[d]?d:null));return}break}}}catch(e){console.warn('nq tap',e)}return tt.apply(this,arguments)}}
 Object.assign(MERGE,{nq:(l,r,b)=>{l=l||{};r=r||{};const done=[...new Set([...(l.done||[]),...(r.done||[])])],L=new Map();[...(r.list||[]),...(l.list||[])].forEach(x=>{if(x&&!done.includes(x.id)){const o=L.get(x.id);L.set(x.id,o&&(o.step|0)>(x.step|0)?o:x)}});return{list:[...L.values()].slice(0,NQ_MAX+1),done}}});
 /* </noticeboard> */
+/* <pet-cam> */
+// ---- pet reactions and camera niceties (v114).
+// Reactions: waves when the camera is right up close; bops along to the music; real snow = excited, real heat = a flop; curious when
+// Decorate opens; a happy hop when you come home from town; a dizzy wobble after being dropped.
+// Camera: a short glide to frame the pet when it does a trick (camFocusUntil, read in updCam); after 25 s untouched in the room the camera
+// drifts gently side to side (yaw only, stops at the next touch).
+let camFocusUntil=0,pcWave=-1e9,pcMusic=-1e9,pcWx='';
+const pcIdle=()=>!!state&&!away&&!!pet.rig&&!styling()&&!toyPlay&&!kmode&&!(typeof ARR!=='undefined'&&ARR.on)&&['idle','walk'].includes(pet.mode)&&!(typeof tm!=='undefined'&&tm&&tm.open);
+{const td_=trickDo;trickDo=function(k,quiet){const r=td_.apply(this,arguments);if(r)camFocusUntil=performance.now()+3200;return r}}
+setInterval(()=>{try{if(document.visibilityState!=='visible'||!pcIdle())return;const now=performance.now();
+  if(camFollow&&cam.dist<7&&now-pcWave>30000&&!openTab){pcWave=now;pet.waveT=1.6;pet.happyT=1;emote('💗');return}
+  if(SND.on&&(SND.set.m||0)>.05&&!openTab&&now-pcMusic>45000&&Math.random()<.08){pcMusic=now;petAct(Math.random()<.5?'hula':'dance');setTimeout(()=>emote('🎵'),300);return}
+  const W=typeof wxNow==='function'&&wxNow(),wk=W?(W.kind==='snow'?'snow':W.hot?'hot':''):'';if(wk&&pcWx!==wk+lifeDay()){pcWx=wk+lifeDay();if(wk==='snow'){petAct('spinjump');setTimeout(()=>emote('❗'),300);if(Math.random()<.6)jrAdd(`It's snowing! ${headNames()[0]} pressed both of our faces to the window.`,'','snow',0,'')}else{petAct('slump');setTimeout(()=>emote('😪'),300)}}}catch(e){console.warn('pet react',e)}},3000);
+{const od=openDecorate;if(typeof od==='function')openDecorate=function(){const r=od.apply(this,arguments);try{if(pet.rig&&!away&&pet.mode==='idle'&&Math.random()<.6)setTimeout(()=>{petAct('curious');emote('❓')},500)}catch(_){}return r}}
+{const tt=travelTo;travelTo=function(dest,then,focus){const from=away?away.key:'home';const r=tt.apply(this,arguments);try{if(dest==='home'&&from!=='home')setTimeout(()=>{if(!away&&pet.rig&&['idle','walk'].includes(pet.mode)){pet.hop=1;pet.happyT=1.4;emote('💗')}},2400)}catch(_){}return r}}
+{const pd=petDrop;petDrop=function(){const r=pd.apply(this,arguments);try{if(Math.random()<.5)setTimeout(()=>{if(pet.mode==='idle'){petAct('jiggle');emote('❓')}},900)}catch(_){}return r}}
+// idle drift
+let pcDrift=0;
+{const uc=updCam;updCam=function(){try{const now=performance.now(),idle=now-(typeof tmLastIn!=='undefined'?tmLastIn:0)>25000&&!away&&!openTab&&!styling()&&!camFollow&&!kmode;if(idle){const d=Math.sin(now/9000)*.00008;cam.yaw+=d;pcDrift+=d}}catch(_){}return uc.apply(this,arguments)}}
+/* </pet-cam> */
 function mergeInto(L,R){if(!syncBase)return{};const B=syncBase,ch={},Bkr=B.kr?JSON.parse(B.kr)||{}:{},Rkr=R.kr||{};new Set([...Object.keys(L),...Object.keys(R)]).forEach(k=>{if(k==='rev')return;
     const lj=JSON.stringify(L[k]),rj=JSON.stringify(R[k]),bj=B[k];if(rj===lj||rj===bj)return;if(k!=='kr'&&(+Rkr[k]||0)<(+Bkr[k]||0))return;
     if(lj===bj){L[k]=R[k]===undefined?undefined:JSON.parse(rj);ch[k]=1;return}
@@ -69228,7 +69249,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=113;
+const APP_V=114;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
