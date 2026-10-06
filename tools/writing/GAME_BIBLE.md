@@ -2030,6 +2030,22 @@ Birthdays come from `bdayOf` (the Mayor's is First Brick Day, 14 Sept; Scone and
   her cake; swapped seedlings mean two residents are friends now. Posy organises Prickles' party (17 Feb) against his wishes. Echo (15 Oct)
   writes each of you a tune and plays one song at a party, no encore.
 
+### Moods and noticeboards (v113)
+Small facts from the mood lines and noticeboard notes (incidental; keep consistent if they come up again):
+- Bunbun's mixer ate her favourite wooden spoon; she burns her tongue on the first bite of a batch. Pip can tell when someone has tasted
+  the raspberry jam through the lid (it has a dent); Cushy is too shy to tell Pip his jam is the best in town. Tutti runs a two-scoops
+  Thursday; the twins are not allowed to slide down Tutti's freezer; Scone drew the Mayor a plaza with a bigger slide; Crumb has a pebble
+  with a hole right through it. Dusty hides under Cushy's sofa. Dr. Patch drinks its tea cold when distracted.
+- Stitch does free hems on Tuesdays, exactly forty stitches. Blush is working on colours called "sea at four o'clock" and "toast at the
+  window". Fizz runs an hourly bubble bath. Beacon keeps a lost-and-found box of single gloves by the dock (one is Beacon's). Gloss once
+  booked two people into the same hour.
+- Joy holds the claw-machine high score and runs capsule night on the party floor. Tock is better at noon than at breakfast. Sketch's
+  "good call" tally for Bolt stands at 42. Parcel always knocks twice, maybe three times. Fold once received a letter addressed only with a
+  drawing of a crane. Cobble packs a pebble sandwich in a lunch tin.
+- Dewey's town almanac has a page with a coffee ring and a very good sentence; Dewey once found a hundred-year-old margin note reading
+  "good book". Posy's watering can wanders off to the pond. Prickles may serve tea if you visit quietly. Lumi says a flickering Loop lamp
+  is just shy. Echo tests the horn with big round shells.
+
 ## Open questions (undecided; ask Garrett before writing as fact)
 1. **Is there a sea?** Bubble Bay, the pier, the beach, the harbour, boats, gulls and Beacon's lighthouse are all over the lore, and Prickles dreams of the sea; the v60 map is countryside with
    ponds. Options: the bay is just off the map's edge; or add a shore to the south-east.

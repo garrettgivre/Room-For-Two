@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v112** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v112'` in `sw.js`; bump both for anything
+**Current build: v113** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v113'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1132,3 +1132,20 @@ walking toward the arcade (`.claude/town/t_walkperf.js`, `t_passes.js`): render 
   `tmPumpIdle` builds one building per idle callback, then `tmFreshQuiet` runs the merge and the draw + snapshot as two separate steps,
   each only after 1.2 s without a touch and not during the arrival sequence. Laptop: ready 4.2 -> 1.9 s; worst room hitch while it builds
   ~0.5 s (the merge). Opening the map before it's done works (tmTick pumps one building a frame; a toast says the town is waking up).
+
+
+## Room day/night, moods, noticeboards, more Journal lines (v113)
+- `/* <room-day> */`: bedtime (21:30-5:00, once per night per device, `RD`, localStorage `r42rd`): yawn, then `rdUse('energy', rdBed)` sends
+  the pet to its best bed (goUse with a candidate like needPick's), floor sleep if none; `startPerch` treats any bed as a nap while
+  `rdSleepy()`. Woken at night (`petTouch` wrapper) it goes back to bed after a minute. Morning (first open 6-11): wake, stretch, breakfast
+  at a serving piece (`NEED_OVR[k].e`). `rdEve()` eases the ceiling light target to .82 between 19:00-21:00 (back 6:00-8:00), so lamps read on.
+- `/* <moods> */`: `resMood(k)` seeded per room + day ('' / good ~20% / grumpy ~14%); lines in `/* <mood-talk> */` (TALK sys mood_*).
+  Openers in close-ups (`socialLine` wrapper) and map chats (`cvSysLine` wrapper); a chat (`cvBegin`/`kOpen` wrappers) or a gift
+  (`giveGift` wrapper) cheers a grumpy one (`acts['cheer:k']`, +1 friendship, a cheered line next); `lifeWhere` appends the mood.
+- `/* <noticeboard> */` (+ data `/* <notice-data> */`, `NOTICES` per hood: 6 notes + 8 favours each; brief NOTICE_BRIEF.md): 3 a week
+  per hood (seeded per room + week), Neighbours > Noticeboard (`nqHtml`, tabs now a 3x2 grid) or tap a map `noticeboard` (opens that
+  district's notes). `state.nq` {list, done} (max 2 on the go; MERGE.nq unions done). bring = `giveGift` with a matching item (`nqMatch`
+  tags fish/bug/shore/trail/groom/food:cat); find = a bobbing marker `#nqMark` at a road cell near the place (`nqSpot`), walk over it, then
+  talk to them; visit = talk to `to` then back; deliver = talk to `to`. `nqDone`: buttons, maybe a treasure or a piece of furniture, a
+  thank-you letter, friendship.
+- `/* <journal-more> */`: 4 more lines for every JR_T and JR_AWAY key (120).

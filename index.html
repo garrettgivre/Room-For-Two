@@ -671,7 +671,7 @@ body.kmode .mkhouse,body.mapopen .mkhouse,body.sheet-open .mkhouse,body.gaming .
 .traits{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .trait{display:flex;align-items:center;gap:8px;padding:8px;background:#fff;border:2.5px solid var(--ink);border-left:9px solid var(--c);border-radius:15px 12px 16px 12px;box-shadow:0 3px 0 var(--ink)}
 .trait img{width:34px;height:34px;flex:none}.trait b{display:block;font-family:var(--disp);font-weight:400;font-size:14px}.trait small{display:block;font-size:11px;line-height:1.25;color:#6B4E95}
-.lifetabs{display:flex;gap:4px;margin:6px 0 10px;padding:3px;background:#F6EEFF;border:3px solid var(--ink);border-radius:16px}.lifetabs button{flex:1;border:0;background:none;font-family:var(--disp);font-size:13px;color:var(--ink);padding:7px 4px;border-radius:12px;cursor:pointer}.lifetabs button.on{background:var(--sun)}
+.lifetabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:6px 0 10px;padding:3px;background:#F6EEFF;border:3px solid var(--ink);border-radius:16px}.lifetabs button{flex:1;border:0;background:none;font-family:var(--disp);font-size:13px;color:var(--ink);padding:7px 4px;border-radius:12px;cursor:pointer}.lifetabs button.on{background:var(--sun)}
 .lifewx{display:inline-flex;align-items:center;gap:4px;font-family:var(--disp);font-size:13px;padding:3px 10px 3px 6px;border:2.5px solid var(--ink);border-radius:14px;background:#fff}
 .lifeface img{width:40px;height:40px;object-fit:contain}.lifeface b{font-family:var(--disp);font-size:20px}
 .lifep .tdt small+small{margin-top:1px}.lifewish{margin:2px 0 8px}
@@ -1002,6 +1002,12 @@ body.styling .storechip{opacity:0}
 .trkc:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}.trkl{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:3px solid var(--ink);border-radius:16px;background:#fff;margin:4px 0 8px}
 .trkl b{font-family:var(--disp);font-size:15px;display:block}.trkd{display:flex;gap:4px;margin-top:5px}.trkd i{width:12px;height:12px;border-radius:50%;border:2px solid var(--ink);background:#fff}.trkd i.on{background:var(--pink)}.trkl .gel{white-space:nowrap;font-size:13px;padding:8px 12px}
 .mkl li.ok+li{}.mkfu{display:block;color:#C2185B}.mkfu.ok{color:#2E9E3E}
+.nqb{display:grid;gap:8px;margin:4px 0 10px}.nqn{position:relative;padding:12px 14px 10px;border:3px solid var(--ink);border-radius:6px 16px 10px 14px;background:#FFFBE8;box-shadow:0 3px 0 var(--ink);transform:rotate(-.6deg)}
+.nqn:nth-child(2n){transform:rotate(.7deg);background:#F2FBFF}.nqn:before{content:'';position:absolute;top:-8px;left:50%;width:16px;height:16px;border-radius:50%;background:var(--cc);border:2px solid var(--ink);transform:translateX(-50%)}
+.nqn p{margin:0 0 4px;font-size:14px;line-height:1.35}.nqn small{display:block;text-align:right;opacity:.7}.nqn .nqh{margin-top:8px;width:100%;font-size:13px;padding:7px}.nqs{margin-top:6px;font-size:12.5px;color:#C2185B;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.nqx{font-family:var(--disp);font-size:11px;border:2px solid var(--ink);border-radius:999px;background:#fff;padding:2px 8px;color:var(--ink)}
+.nqm{position:absolute;left:0;top:0;pointer-events:none;z-index:3}.nqm i{display:block;width:22px;height:22px;border-radius:50%;background:var(--pink);border:3px solid #fff;box-shadow:0 0 0 2px var(--ink),0 0 14px #FF3D9A;animation:nqb 1.1s ease-in-out infinite}
+@keyframes nqb{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 </style>
 </head>
 <body>
@@ -7399,7 +7405,7 @@ function perchSpots(o){const d=defOf(o.userData.k),P=d&&d.perch;if(!P)return[];c
 function seatWorld(sp){const o=roomObjs().get(sp.id);if(!o||!defOf(o.userData.k).perch)return null;const c=toWorld(o,sp.x,sp.z),f=toWorld(o,sp.ax,sp.az);
   return{x:c.x,z:c.z,y:sp.y,h:o.rotation.y,front:f,ha:Math.atan2(c.x-f.x,c.z-f.z),o}}
 function startPerch(sp){const w=seatWorld(sp);if(!w)return;remember(sp.id);autoUseStart(sp.id);const st=petStats(),avg=(st.hunger+st.fun+st.energy+st.clean)/4;pet.mode='perch';pet.seat=sp;pet.lastUse=sp.id;pet.seatK=0;pet.seatDir=1;pet.act=null;pet.fidget=3;
-  sp.nap=sp.kind==='bed'&&st.energy<45;sp.bounce=sp.kind==='bed'&&!sp.nap&&st.energy>65&&avg>70&&Math.random()<.25;sp.lounge=sp.kind==='bed'&&!sp.nap&&!sp.bounce;pet.perchT=sp.nap?16+Math.random()*10:sp.bounce?5+Math.random()*3:sp.lounge?10+Math.random()*8:sp.kind==='ride'?7+Math.random()*4:(st.energy<40?16:9)+Math.random()*10;
+  sp.nap=sp.kind==='bed'&&(st.energy<45||rdSleepy());sp.bounce=sp.kind==='bed'&&!sp.nap&&st.energy>65&&avg>70&&Math.random()<.25;sp.lounge=sp.kind==='bed'&&!sp.nap&&!sp.bounce;pet.perchT=sp.nap?16+Math.random()*10:sp.bounce?5+Math.random()*3:sp.lounge?10+Math.random()*8:sp.kind==='ride'?7+Math.random()*4:(st.energy<40?16:9)+Math.random()*10;
   if(sp.nap&&petNight())pet.perchT*=2.2;if(sp.bounce&&avg>50)setTimeout(()=>emote('🎉'),900)}
 function leaveSeatNow(){const w=pet.seat&&seatWorld(pet.seat);if(w){pet.pos.copy(w.front);rockPart(w.o,0)}pet.seat=null;pet.seatY=0;pet.seatK=0;pet.hop=Math.max(pet.hop,.45)}
 function rockPart(o,a){const p=o&&o.children[0];if(p&&defOf(o.userData.k).perch.kind==='ride')p.rotation.x=a}
@@ -35284,7 +35290,7 @@ function avgColor(img){const c=mkCanvas(1,1),x=c.getContext('2d');x.drawImage(im
 const _lv=new THREE.Vector3();
 function updLighting(t){LIT.time=t;
   // ceiling light dimmer (state.ceil 0..1, home only): the ceiling light and the sky fill fade, lamps get brighter
-  {const L=SKY_LIGHT.daydream,cl=LIT.ceil=approach(LIT.ceil??1,away?1:(state.ceil??1),.06);sun.intensity=L.si*(.04+.96*cl);ambient.intensity=.18*(.3+.7*cl);LIT.envInt=L.env*(.2+.8*cl);LIT.specInt=L.spec*(.45+.55*cl);LIT.lamp=L.lamp*(1+(1-cl)*.8);LIT.bloom=L.bloom*(1+(1-cl)*.6);updBounce()}
+  {const L=SKY_LIGHT.daydream,cl=LIT.ceil=approach(LIT.ceil??1,away?1:(state.ceil??1)*rdEve(),.06);sun.intensity=L.si*(.04+.96*cl);ambient.intensity=.18*(.3+.7*cl);LIT.envInt=L.env*(.2+.8*cl);LIT.specInt=L.spec*(.45+.55*cl);LIT.lamp=L.lamp*(1+(1-cl)*.8);LIT.bloom=L.bloom*(1+(1-cl)*.6);updBounce()}
   LIT.wallVis=walls.map(w=>w.g.visible?1:0);const pts=[],ao=[];
   roomObjs().forEach(o=>{const it=roomItem(o.userData.id);if(!it)return;const d=defOf(it.k),e=o.userData.ext;
     if(o.userData.glow&&pts.length<8){_lv.copy(o.userData.glow.off);o.localToWorld(_lv);const g=o.userData.glow.color,k=2.6*LIT.lamp*(o.userData.flick??1);pts.push({pos:[_lv.x,_lv.y,_lv.z],color:[g[0]*k,g[1]*k,g[2]*k],range:4.2})}
@@ -35531,6 +35537,39 @@ const JR_AWAY={
   night:['Curled up and dreamed about {f}. I won’t say which head dreamed louder.','Couldn’t sleep, so we counted the stars on the ceiling. There are none. We counted them anyway.','Everything was quiet, so I tiptoed past the {i}. Very sneaky. Very pointless.'],
   hungry:['My tummy made a noise. {a} blamed {b}.'],
   miss:['It was quiet without you two. I talked to the {i} so it wouldn’t feel left out.','I kept an eye on the door. You two always come back, but I like to check.']};
+/* <journal-more> */
+// ---- more Journal lines (v113; source .claude/journal/more.js, brief tools/dev/town/JOURNAL_BRIEF.md)
+JR_T.self_hunger.push('The {i} was right there and I was hungry, so that was that. {b} wants it noted that {a} ate faster.','{a} said we should wait for you. {b} said the {i} was open. We did not wait.','Had a small meal at the {i}. A medium meal, if I am honest with the journal.','My tummy and I went to the {i} together. We agreed on everything.');
+JR_T.self_energy.push('{b} fell asleep on the {i} halfway through a sentence. {a} finished it.','The {i} was warm and I had nowhere to be. Sorted.','We meant to rest our eyes at the {i}. Four eyes, one nap.','Found a good dent in the {i} and fit myself into it. It fit back.');
+JR_T.self_clean.push('Washed up at the {i}. {a} did the front, {b} did the back, nobody did the middle.','Got a bit grubby, so I tidied myself at the {i}. I smell like a clean towel now.','The {i} and I had a quiet wash. {b} sang. {a} asked it to stop.','I checked myself in the {i}, found one smudge, and dealt with it.');
+JR_T.self_fun.push('Played with the {i} on my own. It is a good listener.','{b} invented a game with the {i}. {a} is still learning the rules.','Spent the whole afternoon on the {i}. I regret nothing and I lost track of time.','The {i} is more fun when nobody is watching. I think it knows that.');
+JR_T.self_affection.push('Leaned on the {i} for a bit. It does not hug back, but it stays.','{a} missed you, so {b} fetched the {i}. Teamwork.','Sat with the {i} and waited. The door stayed shut but the {i} was nice about it.','I gave the {i} a pat. It seemed to need one. Maybe I did.');
+JR_T.feed.push('{p} fed me {i}. I said thank you with my whole body, which mostly means wiggling.','{i} again, please. {a} is asking. {b} is asking more quietly.','I ate the {i} slowly so there would be more of it. There was not more of it.','{p} put down {i} and I could not tell which head got there first. We both say me.');
+JR_T.bath.push('{p} gave me a bath with {i}. I came out so shiny that {a} checked on {b} to be sure.','Bubbles on my head, bubbles on my other head. {i} is good stuff.','I got a bath. {a} said it was fine. {b} stood in the water for ages.','Smell check: {i}. Passed. I smelled my own arm eleven times.');
+JR_T.play.push('{p} played {i} with me and I only cheated a little.','{i} time. {b} took it seriously. {a} took it sideways.','We played {i} until I lay flat on the floor. Best floor.','I asked for {i} with my eyes and {p} understood. Eyes are great.');
+JR_T.nap.push('{p} tucked us in and the room went soft at the edges.','{a} fell asleep first. {b} stayed up to guard the blanket, then also fell asleep.','I napped so well that I woke up not knowing which head I was. It sorted itself out.','Dreamed about {f} again. {p} was in the dream, holding the plate.');
+JR_T.warm.push('It is warm in here and somebody keeps checking on me. I can tell by the footsteps.','I can feel a hand on my shell sometimes. I am saving up things to say when I hatch.','Something knocked softly. I knocked back. We are getting along.','Warm, quiet, and a little bit exciting. I could do this for a long time.');
+JR_T.wish.push('I wished for it and {p} made it happen. I did a small spin and then a bigger one.','{a} wished. {b} pretended not to be wishing too. {p} granted it anyway.','A wish came true today. I am keeping the feeling in my pocket, which I do not have.','{p} listened. That is most of what a wish is, I think.');
+JR_T.gift.push('Someone left a gift for us. I carried it around the room before I opened it.','There was a present today, and it was ours. {a} wanted to open it. {b} wanted to keep it closed. We opened it.','A gift! I do not know who thought of it but I like them a lot.','I unwrapped the gift very slowly. The paper is now my favourite thing too.');
+JR_T.capsule.push('{p} turned the crank and a capsule rolled out. I stared at it until it opened.','We got a capsule prize. {a} wanted to shake it. {b} said no. It got shaken.','The capsule clicked open and {p} laughed. So did I, a second later.','{p} let me pick the capsule colour. I picked the one that looked like it was smiling.');
+JR_T.gift_town.push('We gave {s} a present and {s} held it with both hands. I felt tall.','{s} said thank you three times. I counted. {a} counted four.','The present was a {i}. {s} turned it over like it was made of glass.','{b} wanted to wrap it ourselves. The paper is a little crooked and {s} liked that.');
+JR_T.visitor.push('{s} stopped by and we sat in a row looking at the room. It was very good company.','{s} noticed things in the room I had not noticed. I am going to look at it again.','Our visitor was {s}. {a} stayed close. {b} showed off the whole floor.','{s} waved at the door on the way out. I waved back for a long time after.');
+JR_T.event.push('{s} was loud and bright and I stood near the snacks the whole time. Good plan.','Went out to {s}. {a} talked to everyone. {b} talked to one person for an hour.','Everyone from the town was at {s}. I saw seven people I knew and one hat I did not.','{s} was lovely. I fell asleep on the way home and got carried a little.');
+JR_T.visit.push('At {s}, {p} and I sat where we were told to sit. It was a very good chair.','We walked over to {s}. I looked at everything in their house and touched almost none of it.','{s} gave us a tour of one room, then a second tour of the same room.','The {s} house smells different from ours. Not worse. Just theirs.');
+JR_T.shop.push('We went to {s} and I pressed my nose to everything glass.','{s} had a lot of new things. {a} wanted all of them. {b} wanted one and was right.','{p} carried the bag home from {s}. I carried nothing and felt useful anyway.','At {s} I stood very still so nothing would fall. Something fell. It was not me.');
+JR_T.useby.push('The {i} {p} chose has a good shape for leaning on. {h} leaned on it first.','{h} sat at the {i} like it was a throne. {p} made a throne without meaning to.','I like the {i}. I like it more because {p} picked it. {h} agrees, very loudly.','{h} keeps checking the {i}, as if {p} might come back and move it. Nobody would.');
+JR_T.bond.push('Something changed today. I cannot say what. I am just a little more yours.','{a} and {b} both went quiet at the same time, which almost never happens. We are closer now.','We are {i}. I wrote it down so I can find it later.','Today felt like a step. Not a big one. The kind you take without thinking and then look back at.');
+JR_T.cheer.push('The town is {t} now. I walked past three people and all three smiled.','Somebody hung up new lights outside. The town is {t} and I think it is partly us.','Everything outside seems a bit louder, in a good way. Officially {t}.','{a} says the town got {t} on its own. {b} says it was us. We will not settle it.');
+JR_T.happy.push('Fed, clean, played with, loved. I made a list in my head and it was all ticks.','Nothing special happened and that was the special part.','My heads agree. That is rare enough that I am writing it here.','The whole room felt soft today. I rolled across it twice to be sure.');
+JR_T.makeover.push('We worked on {i} for {s}. I sat in the middle of it and {s} said that was the right spot.','{s} got a new room. {a} placed a chair, then moved it, then moved it back.','Helped with {i}. {b} had very strong feelings about the rug.','{s} walked into the finished room and went quiet. A good quiet. I know the difference.');
+JR_T.use.push('The {i} has a spot that is mine. I found it again today.','{b} napped by the {i} and I kept watch. I think I fell asleep too.','Poked the {i} to see if it had changed. It had not. I like that about it.','We spent a while at the {i}. {a} stared. {b} hummed.');
+JR_AWAY.am.push('The light came in low and the {i} had a stripe on it. I stood in the stripe.','{a} woke first and waited for {b}. It took a while. It was fine.','Did a quiet lap of the room before anything was awake. I won the lap.','Morning. I yawned and one head finished the other head\'s yawn.');
+JR_AWAY.day.push('The room was very still, so I made some noise on purpose. A little one.','Tried to sit exactly in the middle of the floor. The middle moves. I checked.','{b} stared at the {i} for a long while. I did not ask.','Spent the afternoon being a pet. I think I did a decent job of it.');
+JR_AWAY.eve.push('The room got orange and then it got blue. I watched it do both.','{a} wanted to wait up. {b} wanted to sit by the {i}. We did a bit of each.','Heard a sound at the door. It was the wind. I checked twice.','Nudged the {i} an inch to the left. It looks better. Probably.');
+JR_AWAY.night.push('Lights low. I rested my chin on the floor and listened to the house hum.','{b} snored a little. {a} told me later that I did, not {b}. We argue about this.','Woke up once, saw that everything was still there, and went back to {f}.','The {i} looked different in the dark. Bigger. Friendlier, though.');
+JR_AWAY.hungry.push('{b} suggested we think about {f} to pass the time. It did not pass the time.','I walked past the bowl, then back, then past it again. Just checking.','Rumble. {a} says it was {b}. {b} says it was thunder.','There is a hole in the middle of me shaped like a snack.');
+JR_AWAY.miss.push('I sat where you usually sit. It stayed warm for a while and then it did not.','{a} said you would be back soon. {b} said that an hour ago too.','I told the {i} about our week so you would not miss anything. It listened well.','Waiting is easier when I count things. There are a lot of things in this room.');
+/* </journal-more> */
 function jrEvent(k,x){if(!state||!state.journal)return;const pool=JR_T[k];if(!pool||(stageOf(state.pet.xp)===0&&k!=='hatch'&&k!=='warm'))return;jrAdd(jrFill(pickJ(pool),jrCtx(x)),k.startsWith('self_')?'':myId||'me',k,0,x&&(x.i||x.s||x.st)||'')}
 function jrUse(id){const it=state.items.find(i=>i.id===id);if(!it)return;const c=CATMAP[it.k];if(!c||c.fn==='window'||/^win_/.test(c.k)||stageOf(state.pet.xp)===0)return;
   const now=Date.now();if(now-(jrUse.t||0)<25*6e4||Math.random()>.35)return;jrUse.t=now;const TT=traitsOf(),hb=it.by?headOfPerson(it.by):-1,pool=hb>=0&&Math.random()<.35?JR_T.useby:TT.length&&Math.random()<.4?TRAITS[TT[Math.random()*TT.length|0]].jr:JR_T.use;jrAdd(jrFill(pickJ(pool),jrCtx({i:c.n.toLowerCase(),h:headNames()[hb>=0?hb:0]})),pool===JR_T.useby?it.by:'','use',0,c.n.toLowerCase())}
@@ -36021,7 +36060,7 @@ function lifeWhere(k){const R=RESIDENTS[k],E=eventNow();if(evGuest(k,E))return`a
   if(w==='shop')return'working at '+(SHOPS[R.shop]?SHOPS[R.shop].n:'the shop');if(w==='place'){const P=placeOf(k);return'working at the '+SHOPS['p_'+P.id].n}if(w==='market')return'at the Sunday market';if(w==='visit')return'popped into '+SHOPS[shopVisitOf(k)].n;if(w==='out')return R.away||'out';return'at home'}
 function lifeFace(k){const t=thumbs['fig_'+k];if(!t){queueThumbs(['fig_'+k]);clearTimeout(lifeFace.t);lifeFace.t=setTimeout(()=>{if(openTab==='town'&&!lifeGiftFor)renderSheet()},1800)}return t?`<img src="${t}" alt="">`:`<b>${esc(RESIDENTS[k].n[0])}</b>`}
 function renderTown(body){const day=lifeDay(),W=WEATHER[weatherOf(day)],F=festOn();
-  const tabs=[['people','People'],['project','Project'],['garden','Garden'],['calendar','Calendar'],['parcel','Parcels']].map(([k,n])=>`<button class="${lifeTab===k?'on':''}" data-lt="${k}">${n}</button>`).join('');
+  const tabs=[['people','People'],['project','Project'],['garden','Garden'],['calendar','Calendar'],['parcel','Parcels'],['notice','Noticeboard']].map(([k,n])=>`<button class="${lifeTab===k?'on':''}" data-lt="${k}">${n}</button>`).join('');
   let html=`${pgHead('town',{right:`<span class="lifewx">${LIFE_IC[W.ic].replace('width="30" height="30"','width="22" height="22"')} ${esc(W.n)}</span>`,sub:F?`The ${esc(F.n)} is on at the Town Hall!`:'Everyone in town, what they love, and what’s on.'})}<div class="lifetabs">${tabs}</div>`;
   if(lifeTab==='people'){const W2=lifeWish(),bd=bdayToday(),E=eventNow();
     if(lifeGiftFor)html+=lifeGiftHtml(lifeGiftFor,!lifeGiftHand);
@@ -36045,12 +36084,13 @@ function renderTown(body){const day=lifeDay(),W=WEATHER[weatherOf(day)],F=festOn
         bs.map(([k])=>`<div class="tdc" style="--cc:#FF6FB5"><span class="tdi">${lifeFace(k)}</span><div class="tdt"><b>${esc(RESIDENTS[k].n)}’s birthday</b><small>${i?i===1?'Tomorrow':dayName(d):'Today!'} A gift counts extra.</small></div></div>`).join('')).join('')}</div>
       <div class="row-label">Festivals</div><div class="tdlist">${F2.map(f=>`<div class="tdc" style="--cc:#9B4DF2"><span class="tdi">${LIFE_IC.fest}</span><div class="tdt"><b>${esc(f.n)}</b><small>${f.from.replace('-','/')} to ${f.to.replace('-','/')} at the Town Hall · a ${esc(SETMAP[f.set]?SETMAP[f.set].n:'')} keepsake</small></div></div>`).join('')}</div>`}
   else if(lifeTab==='project'){html+=projHtml()}
+  else if(lifeTab==='notice'){html+=nqHtml()}
   else if(lifeTab==='parcel'){const me=myId||'me',sent=(state.parcels||[]).filter(p=>p.by===me||p.by===myId).slice(0,5),goods=ITEMS.filter(i=>i.p>0&&(i.k==='food'||i.k==='groom'));
     html+=`<p class="hint">Parcel will deliver a wrapped treat to your person. It costs the item’s price plus 10 buttons for wrapping, and they unwrap it on their phone.</p>
       <label class="lifenote">Note <input id="pcNote" maxlength="120" placeholder="Thinking of you"></label><div class="lifegoods">${goods.map(i=>`<button class="gel silver" data-pc="${i.id}">${esc(i.n)} <small>${itemPrice(i)+BTN}${IB}</small></button>`).join('')}</div>
       ${sent.length?`<div class="row-label">Sent</div><ul class="lifelist">${sent.map(p=>`<li>${esc((ITEMS.find(i=>i.id===p.item)||{}).n||'')} · ${p.open&&p.open.length?'unwrapped':'on its way'} · ${ago(p.t)}</li>`).join('')}</ul>`:''}`}
   body.innerHTML=html;
-  body.querySelectorAll('[data-pj]').forEach(b=>b.onclick=()=>projGive(+b.dataset.pj));body.querySelectorAll('[data-lt]').forEach(b=>b.onclick=()=>{lifeTab=b.dataset.lt;lifeGiftFor=null;renderSheet()});
+  nqBind(body);body.querySelectorAll('[data-pj]').forEach(b=>b.onclick=()=>projGive(+b.dataset.pj));body.querySelectorAll('[data-lt]').forEach(b=>b.onclick=()=>{lifeTab=b.dataset.lt;lifeGiftFor=null;renderSheet()});
   body.querySelectorAll('[data-lgo]').forEach(b=>b.onclick=()=>{setTab(null);travelTo(b.dataset.lgo)});
   body.querySelectorAll('[data-lgift]').forEach(b=>b.onclick=()=>{lifeGiftFor=b.dataset.lgift;renderSheet();setTimeout(()=>{const g=$('#lifeGift');if(g)g.scrollIntoView({behavior:'smooth',block:'center'})},60)});
   body.querySelectorAll('[data-gsrc]').forEach(b=>b.onclick=()=>{const [t,id]=b.dataset.gsrc.split('|'),k=lifeGiftFor,hand=lifeGiftHand,r=giveGift(k,{t,id},hand?'hand':'mail');lifeGiftFor=null;lifeGiftHand=false;
@@ -65477,6 +65517,682 @@ apart:[
 "{o} and I have drifted a bar or two apart... The song is not over. I know how it goes."
 ]});
 /* </social-talk> */
+/* <mood-talk> */
+// ---- residents' mood lines (v113; source .claude/mood/all.js, brief tools/dev/town/MOOD_BRIEF.md)
+// Resident moods: good days, grumpy days, cheered up. Brief: tools/dev/town/MOOD_BRIEF.md
+Object.assign(TALK.baker.sys,{
+  mood_good:[
+    "Sweetie! The bread rose twice as high today. I stood there and clapped at it.",
+    "Hon, the first loaf came out the exact shade of gold I've been chasing for years.",
+    "I woke at four and the kitchen was already warm. Some days the oven just likes me.",
+    "Pip didn't drop a single tray this morning. I'm going to frame the quiet."
+  ],
+  mood_grumpy:[
+    "Oh, hon, I'm a bit cross. The mixer ate my favourite spoon and spat out the handle.",
+    "Sweetie, the milk came short again and I've been counting eggs in my head all morning.",
+    "My ears are floury and my cake sank in the middle. Don't mind me, I'll be soft by lunch.",
+    "I burned my tongue on the first bite, hon. Again. You'd think I'd learn."
+  ],
+  mood_cheered:[
+    "Oh, you two. I feel like a warm roll again. Come here, I've saved you the first bite.",
+    "There. The grumps have gone and left a little room for pie. Thank you, sweetie.",
+    "Hon, I was crumbly and now I'm fluffy. That's your doing."
+  ],
+  mood_why_good:["the bread rose beautifully","the first loaf came out golden"],
+  mood_why_grumpy:["the mixer ate her spoon","a cake sank in the middle"]
+});
+Object.assign(TALK.jam.sys,{
+  mood_good:[
+    "Sorry! I mean, hello! Today's jam set on the first try. I checked it three times and it still set!",
+    "Um, Bunbun said my lid looked extra shiny today. I think I'm still glowing. Sorry, that's a lot.",
+    "I got to take the very first customer this morning! They said thank you and everything.",
+    "Bunbun let me hold the whisk. I held it very carefully. Sorry, I'm just happy!"
+  ],
+  mood_grumpy:[
+    "Oh, um, sorry. I dropped a tray. Again. I'm trying not to count.",
+    "The sugar caught and went a bit dark, and I'm still sorry about it. Even to the pan.",
+    "Sorry, I'm not very good company. Somebody said 'good enough' about my tarts and it stuck.",
+    "My twine bow came undone twice and I said sorry to it both times. It didn't help."
+  ],
+  mood_cheered:[
+    "Oh, um, thank you. I feel less sticky inside now. Sorry, that sounded odd. Thank you!",
+    "That helped a lot. I'm going to tell Bunbun you were kind. If that's alright. Sorry!",
+    "I stopped being sorry for a whole minute. That's a record, I think."
+  ],
+  mood_why_good:["the jam set first try","got to greet the first customer"],
+  mood_why_grumpy:["dropped a tray again","the sugar went too dark"]
+});
+Object.assign(TALK.cushion.sys,{
+  mood_good:[
+    "Mm... I found the corner of the sofa where the light lands at four. I've been in it since three.",
+    "It rained all morning, so I did nothing, slowly. Mm. Best day I've had in a while.",
+    "Slept very well. Dreamed of a sofa that went round the fountain. I'd like to go back.",
+    "Someone left a warm blanket on my stock pile. I haven't asked who. Mm. I just stayed."
+  ],
+  mood_grumpy:[
+    "Mm... a hard chair got delivered to the shop by mistake. I can feel it sitting there.",
+    "An alarm clock went off next door at six. I heard all of it. Mm. All of it.",
+    "I didn't get my nap. I'm awake and I'm not sure I like it.",
+    "The seam on my left corner is itching. I know, I know. Mm. It'll settle."
+  ],
+  mood_cheered:[
+    "Mm... that's better. I'm fluffy again. You two are good for that.",
+    "Thank you. I feel like I've just been turned over to the cool side of the pillow.",
+    "Mm. Stay a bit. The grumps are gone and there's room on this end."
+  ],
+  mood_why_good:["found the four o'clock corner","a slow rainy morning"],
+  mood_why_grumpy:["a hard chair arrived by mistake","an alarm clock next door"]
+});
+Object.assign(TALK.dust.sys,{
+  mood_good:[
+    "Oh! Hello. Um, a sunbeam came through at four and nobody saw me in it. It was lovely.",
+    "I got a cushion perfectly square today. All four corners. I checked twice. Sorry, I'm showing off.",
+    "Cushy said thank you for the duster. Out loud. I'm still a bit fluffy about it.",
+    "Oh, sorry, I'm smiling. The shop is so tidy. It looks like nobody did it, which is the best way."
+  ],
+  mood_grumpy:[
+    "Oh... sorry. A customer sneezed on my favourite shelf. I'm not cross. Mostly I'm fluffed.",
+    "I sat on the lamp by accident and I'm still apologising to it. It's not helping.",
+    "The sunbeam came early and everyone could see me. Sorry. I'm hiding behind a chair.",
+    "I swept the same corner four times and it got dusty again. I know, I know. I'm sorry."
+  ],
+  mood_cheered:[
+    "Oh... thank you. I feel a bit less rumpled. You were very kind about it.",
+    "That helped. Sorry, that sounds small. It wasn't small. Thank you.",
+    "I've come out from behind the chair. Look at that. You did that."
+  ],
+  mood_why_good:["a sunbeam and nobody noticed","got a cushion perfectly square"],
+  mood_why_grumpy:["someone sneezed on a shelf","the sunbeam showed it up"]
+});
+Object.assign(TALK.cone.sys,{
+  mood_good:[
+    "Sweet pea! Both twins went down for a nap at the same time. Both! I danced in the freezer.",
+    "The mint scoop didn't melt once today. I take that as a sign, hm?",
+    "My loves, there's a queue already and it's only ten! Free sprinkles for everybody!",
+    "Scone laughed so hard across the plaza I heard it from the stall. Best sound there is."
+  ],
+  mood_grumpy:[
+    "Oh, my loves, I dropped a whole cone. Whole! And the pigeons were so pleased about it.",
+    "The twins are up and down and up, and I've done three things at once and finished none, hm?",
+    "The freezer door stuck, sweet pea, and the mint went soft. I'm a bit drippy myself.",
+    "Someone said sprinkles cost extra. I haven't stopped being cross since."
+  ],
+  mood_cheered:[
+    "Oh, sweet pea, that did me good. I'm back to my usual two scoops.",
+    "There we are, my loves. The drips have stopped. Have a sprinkle, they're free.",
+    "You two know just how to turn a cone the right way up, hm?"
+  ],
+  mood_why_good:["both twins napped at once","the mint scoop held firm"],
+  mood_why_grumpy:["dropped a whole cone","the freezer door stuck"]
+});
+Object.assign(TALK.scone.sys,{
+  mood_good:[
+    "I WON! Against a pigeon! Fair and square, nobody helped! Watch this, I'll do it again!",
+    "Pip gave me TWO jam tarts! Two! I ate one fast and one slow so it counted double!",
+    "I jumped off the swing from the very top and landed on my feet! Ask Crumb! She saw!",
+    "Boing gave me a wind-up toy and it went straight! Straight! Nobody else's does!"
+  ],
+  mood_grumpy:[
+    "I came SECOND. To a pigeon. Again! It didn't even try! Don't look at me!",
+    "Mum said walk, don't run, all the way here. I had to WALK. It took forever!",
+    "I scraped my knee. Dr. Patch put a heart on it and I'm fine. I'm just cross about it.",
+    "Everyone made me wait. Waiting is the worst part of anything. It's the worst."
+  ],
+  mood_cheered:[
+    "Okay! I feel better. A bit. A lot. Watch this, I'll prove it!",
+    "That was nice! Don't tell Crumb I said so. Okay, you can tell her.",
+    "I'm done being cross! Race you to the slide! No wait, you can win this one."
+  ],
+  mood_why_good:["beat a pigeon in a race","landed the swing jump"],
+  mood_why_grumpy:["came second to a pigeon","had to walk, not run"]
+});
+Object.assign(TALK.crumb.sys,{
+  mood_good:[
+    "Um... I found a pebble with a hole in it. Right through. Do you want to look through it?",
+    "The snail by the slide moved. Almost a whole hand. I think he's pleased too.",
+    "Um, Scone shared his tart. Without being asked. I'm drawing round it.",
+    "It was quiet at the park this morning. Just us and the pigeons. It was nice."
+  ],
+  mood_grumpy:[
+    "Um... somebody picked up my best pebble and put it back in the wrong place.",
+    "It was very loud at the slide and I wanted it not to be. Um. Sorry.",
+    "My bow keeps slipping. I fixed it four times. It's still on the side I don't like.",
+    "I lost a drawing in the wind. It was a good one. Um. I'm not sure where it went."
+  ],
+  mood_cheered:[
+    "Um... that helped. Thank you. Do you want to see my pocket pebbles?",
+    "I feel less small inside now. Is that a thing? Um. It is for me.",
+    "Thank you for staying. I think I'll go and draw something. Maybe you."
+  ],
+  mood_why_good:["found a pebble with a hole","the snail moved a hand"],
+  mood_why_grumpy:["her best pebble got moved","lost a drawing in the wind"]
+});
+Object.assign(TALK.patch.sys,{
+  mood_good:[
+    "That's alright. Today's a good one. Three patients said 'ow' out loud and all three felt better.",
+    "I slept the full eight hours. I'd prescribe it to myself if I weren't already doing it.",
+    "A warm cup of tea at the right temperature. I'd call that a small win. A nice one.",
+    "Everyone drank their water today. I checked. That's alright. That's very alright."
+  ],
+  mood_grumpy:[
+    "That's alright. I'm a little peeled at one corner today. It happens.",
+    "Three people said 'it's nothing' and it was something. I'm a bit tired from it.",
+    "My tea went cold while I was writing a note. That's alright. I'll have it cold.",
+    "I haven't napped. I'd tell anyone else to. That's alright, I'm working on it."
+  ],
+  mood_cheered:[
+    "That's alright now. You did a good job. I feel closer to flat and smooth again.",
+    "I'd write you a prescription for that, if it were allowed. Water, a snack, and you.",
+    "Thank you. I feel a bit less peeled. That's the right amount."
+  ],
+  mood_why_good:["everyone drank their water","slept a full eight hours"],
+  mood_why_grumpy:["a corner is a bit peeled","said 'it's nothing' too often"]
+});
+Object.assign(TALK.stylist.sys,{
+  mood_good:[
+    "Darling! My hair is the size of a small cloud today. Divine! The air is perfectly wet.",
+    "Ciao! Three compliments before breakfast. I've decided to be fabulous about all of them.",
+    "Loofah warmed my towel and I'd like it on record that I wept a little. Divine.",
+    "A client cried at their new look. Happy tears! I'm still glowing. Darling, look at me glow."
+  ],
+  mood_grumpy:[
+    "Darling, it's dry. Dry! My hair has gone to a tragic little puff. I'm in mourning.",
+    "The radiator in the back has come on again. Winter is such a rude guest.",
+    "Someone rushed me. In my own shop! Tragic. I need a very long bath and a moment.",
+    "A bubble popped right on my nose this morning. Adieu, dignity. Back soon."
+  ],
+  mood_cheered:[
+    "Darling, you've done it! My bubbles are coming back, I can feel them. Divine!",
+    "Oh, you two are a tonic. I'm positively fizzing again. Ciao, grumps!",
+    "A compliment and a laugh, and my hair is up two inches. You're good for me, darling."
+  ],
+  mood_why_good:["the air is perfectly humid","three compliments before breakfast"],
+  mood_why_grumpy:["the air is far too dry","a bubble popped on his nose"]
+});
+Object.assign(TALK.sponge.sys,{
+  mood_good:[
+    "Mm. The first bath of the morning was exactly warm enough. No rush, no rush, I'm still smiling.",
+    "Fizz had a good day, so the whole shop did. Mm. I hummed a rainy tune.",
+    "Folded every towel while it was still warm. Mm. A little thing. It was lovely.",
+    "A calm morning. Nobody called the shop busy, not once. I'm very pleased."
+  ],
+  mood_grumpy:[
+    "Mm. Somebody said the shop was busy. Loudly. I'm still wringing it out.",
+    "The tiles were cold this morning. Mm. I don't hold it against them. Much.",
+    "I was rushed twice before nine. No rush, I said. They rushed anyway.",
+    "Mm. A towel came out of the dryer cold. It was sad. I'm a bit sad with it."
+  ],
+  mood_cheered:[
+    "Mm. That's softer now. Thank you. I feel warm all the way through.",
+    "No rush, no rush. Just thank you. I'm feeling fluffier already.",
+    "Mm, you wrung the worry right out. Stay a minute, there's a nice warm spot."
+  ],
+  mood_why_good:["the first bath was just warm","every towel folded warm"],
+  mood_why_grumpy:["someone said the shop was busy","cold tiles this morning"]
+});
+Object.assign(TALK.tailor.sys,{
+  mood_good:[
+    "Oh, sweet. A seam lined up just so today. Stripes meeting at the corner. Just a smidge of perfect.",
+    "Bobbin hummed along with me all morning. Mm. I think we were in tune.",
+    "Finished a hem without a single loose thread. I'm treating myself to a very small sit.",
+    "A customer said their coat felt like a hug. I'm still turning that one over. Gently."
+  ],
+  mood_grumpy:[
+    "Oh dear. A moth got into the wool again. I've counted the holes twice. It's rude.",
+    "A thread came loose on my own band. Nobody sews mine. I know. It's fine. It's a bit not fine.",
+    "My stripes didn't match at the seam. Just a smidge off. I can't stop seeing it.",
+    "I've been unpicking since seven and got nowhere. Sorry, I'm scattered today."
+  ],
+  mood_cheered:[
+    "Oh, sweet. That's tidier now. You mended something I couldn't reach.",
+    "Thank you. I feel stitched back together. Just a smidge more, and I'll be right.",
+    "That helped. I'm going to pull a very good thread through it. Thank you."
+  ],
+  mood_why_good:["the stripes met at the seam","finished a hem, no loose threads"],
+  mood_why_grumpy:["a moth got into the wool","the stripes were a smidge off"]
+});
+Object.assign(TALK.hair.sys,{
+  mood_good:[
+    "Hiii! Okay but hear me out: my curls did the thing today. All of them. Iconic. I'm obsessed.",
+    "Someone came in with flat antennae and left with a bounce. I'm still buzzing. Obsessed!",
+    "I got to every pocket on my belt in order. Fourteen out of fourteen. Hiii!",
+    "A trend landed in the shop before it hit the street. I'm calling it early. Iconic."
+  ],
+  mood_grumpy:[
+    "Okay but hear me out, the comb vanished. It was in my hand. Then it wasn't. Not iconic.",
+    "Everything's flat today. My curls, my plans, even the humidity. Sorry, I'm a lot, even flatter.",
+    "I have a nervous appointment at ten. I always do. It's worse today.",
+    "A client said boring. About their own hair. I'm taking it personally."
+  ],
+  mood_cheered:[
+    "Okay but that worked. I'm bouncing again. Obsessed with you two!",
+    "Hiii, I'm back! The curls are up and so am I. Iconic of you.",
+    "That's the lift I needed. Byeee to the flat mood. Thank you!"
+  ],
+  mood_why_good:["every curl behaved today","an antennae makeover that popped"],
+  mood_why_grumpy:["lost their favourite comb","a flat, nervous morning"]
+});
+Object.assign(TALK.makeup.sys,{
+  mood_good:[
+    "Love, I found a new colour this morning. I'm calling it 'toast at the window'. It's perfect.",
+    "The sunset behind the studio was apricot and then something shyer. I watched all of it.",
+    "A quiet morning, love. The kind where Pom talks for both of us and I just listen.",
+    "Something I painted today looked back at me. In a good way. I'm still looking."
+  ],
+  mood_grumpy:[
+    "Love, a customer asked for pink and orange together with no reason. I'm still blinking.",
+    "I haven't said a word since breakfast. The words aren't coming. They'll arrive eventually.",
+    "The sky today is the colour of a wet sock. I'm trying to be fair to it.",
+    "I mixed a colour I loved and then used it all up. It's gone. Like a day off."
+  ],
+  mood_cheered:[
+    "Love, you've brought the colour back. A soft peach, I think. 'Kind afternoon'.",
+    "Thank you. I feel a shade lighter. Not a worse shade, a nicer one.",
+    "Stay, love. The studio's quiet and it suits us. I'll find something to say."
+  ],
+  mood_why_good:["found a colour called toast","an apricot-then-shy sunset"],
+  mood_why_grumpy:["pink and orange with no reason","the sky is a wet sock"]
+});
+Object.assign(TALK.polish.sys,{
+  mood_good:[
+    "Lovely! Every appointment booked, tabs colour-coded, and the cap clicked shut on the first try. Perfect.",
+    "I arrived five minutes early today. Confirmed. Twice. It feels wonderful.",
+    "Doo-doo-dee, the book is full. Not one smudge. Lovely.",
+    "Bobbin brought me a new tab sticker. Teal. Confirmed, I'm thrilled."
+  ],
+  mood_grumpy:[
+    "Hm. Somebody asked to be squeezed in. Just squeezed in. I'm still shaking out the page.",
+    "Two people booked the same hour. Double booked! Confirmed, it's not my fault. Twice.",
+    "A smudge on the book. A tiny one. I'm not looking at it. I am, a bit.",
+    "My cap won't click shut. It clicks half. That's not a click. That's a rumour."
+  ],
+  mood_cheered:[
+    "Lovely. That's sorted now. Perfect. Confirmed, I feel much better. Twice.",
+    "Thank you. The book looks tidy again. I can see straight lines.",
+    "Doo-doo-dee. That helped. I'm back to colour-coding my day."
+  ],
+  mood_why_good:["a full, smudge-free appointment book","arrived five minutes early"],
+  mood_why_grumpy:["a double booking","someone wanted squeezing in"]
+});
+Object.assign(TALK.spool.sys,{
+  mood_good:[
+    "And also, I ran three errands before nine and got every one right, and also Stitch hummed!",
+    "A new button! A big one! I've been rolling past it all day, and also it's mint!",
+    "There was a birthday streamer in the shop and it was very happy thread, and also I helped!",
+    "Small job, done, next small job, done, and also nobody told me to wait!"
+  ],
+  mood_grumpy:[
+    "Somebody said wait. And I did. And it took forever. And also my thread got tangled!",
+    "A cat sat by the door and I went the long way round, and also I'm cross about it!",
+    "It's laundry day and I'm part of it, and also I'm wound up wrong!",
+    "Everything's tangled today, and also the knot is the kind that gets worse when I look!"
+  ],
+  mood_cheered:[
+    "That's better, and also thank you, and also I'm unwound now!",
+    "Okay, I'm smooth again, and also I'm going to run an errand for you. Anything!",
+    "You untangled me, and also I feel light. Light as a spool with no thread."
+  ],
+  mood_why_good:["three errands, all done right","found a big mint button"],
+  mood_why_grumpy:["told to wait, and waited","a cat by the door"]
+});
+Object.assign(TALK.beacon.sys,{
+  mood_good:[
+    "Ahoy, friend. Somebody sounded their foghorn back across the water last night. Faint, but there.",
+    "Red sky this morning and I was told it was a good sign. I believe that today.",
+    "A tin mug of cocoa, a clear horizon, and you at the door. Fair winds all round.",
+    "Something small washed up this morning. A button. It was shiny. I've adopted it."
+  ],
+  mood_grumpy:[
+    "Ahoy, friend. Fog came in thick, and it hides my light. I'm feeling a bit dim.",
+    "Nobody came by the harbour all morning. It's a long stretch of nothing. Mm.",
+    "The cocoa went cold on the railing. I know, it's a small sorrow. It's a cold one.",
+    "Something I'd adopted got collected by its owner. I'm glad. I'm glad. I'm a little less glad."
+  ],
+  mood_cheered:[
+    "Ahoy, friend. That cleared the fog. I can see the water again.",
+    "Fair winds to you both. My lamp's turning properly now.",
+    "Thank you. Stay a while. Well. Not quite yet. Alright. Now. You can go."
+  ],
+  mood_why_good:["a foghorn answered from far off","a shiny button washed up"],
+  mood_why_grumpy:["fog hid its light all morning","the cocoa went cold"]
+});
+Object.assign(TALK.toymaker.sys,{
+  mood_good:[
+    "BOING! The new prototype went straight on the first try! Straight! I did a lap!",
+    "Okay okay okay, I found Rollo! He was in the other pocket. The other other pocket!",
+    "I got all the colours in one toy! The best colour is all of them, and now it's true!",
+    "Joy beat my score and I'm so happy for her I forgot to be cross about it!"
+  ],
+  mood_grumpy:[
+    "Okay okay, the glue dried wrong. WRONG! I looked away for one second!",
+    "I bonked my head on the low ceiling at the workshop. Again. BOING. Ow.",
+    "Somebody told me to wait. Wait! I'm still bouncing off it.",
+    "A prototype bit me. Gently. But it was a mean sort of gently."
+  ],
+  mood_cheered:[
+    "Okay okay okay, I feel springy again! You two did that! BOING!",
+    "Hey hey! That fixed me. I'm already thinking about my next toy!",
+    "I was all droopy and now I'm a spring again. Look at me go!"
+  ],
+  mood_why_good:["the prototype went straight","found Rollo in a pocket"],
+  mood_why_grumpy:["the glue dried wrong","bonked on the low ceiling"]
+});
+Object.assign(TALK.joy.sys,{
+  mood_good:[
+    "Player one! New high score on the claw machine. I'm in a very good mood. Let's go!",
+    "GG, a kid beat my pinball score and their whole face lit up. Best loss ever.",
+    "Boing built a new marble run and it's co-op. Co-op! Two players, one ball. Perfect.",
+    "Full house at the arcade all morning. Nobody sulked when they lost. Bonus level day!"
+  ],
+  mood_grumpy:[
+    "Lag mood. The cabinet in the corner is lagging and so am I. GG, that's all I've got.",
+    "A sore loser kicked the claw machine. It's fine. I'm just a bit bruised.",
+    "I've lost five games in a row and none of them were on purpose. Respawn me, please.",
+    "The leaderboard got wiped by a power flicker. Everything's gone. Everything!"
+  ],
+  mood_cheered:[
+    "Okay, respawned! You two are my favourite co-op team. Let's go!",
+    "That fixed my lag. I'm back at full speed. GG, friends.",
+    "Player one, player two, and a very cheered-up Joy. Ready when you are."
+  ],
+  mood_why_good:["a new claw machine record","a kid beat her pinball score"],
+  mood_why_grumpy:["lost five games in a row","the leaderboard got wiped"]
+});
+Object.assign(TALK.windup.sys,{
+  mood_good:[
+    "Tick. Four shelves counted, and every label matched. Four. A good morning.",
+    "I found two matching pairs in the wrong bin. Now they're in the right one. Tick. Satisfying.",
+    "Wound my spring exactly right. Not too tight. Tick. It's the little things.",
+    "The shelf count came out even. That's rare. I let myself enjoy it."
+  ],
+  mood_grumpy:[
+    "Tick. There was an unlabelled box in the workshop. I haven't recovered.",
+    "Somebody put a wind-up fish in the bin for cars. Three, actually. Three of them.",
+    "My spring is a little too loose. It's a very small amount. I can feel it.",
+    "The count is off by one. I've counted four times. It's still off by one. Tick."
+  ],
+  mood_cheered:[
+    "Tick. That's better. Thank you. I feel evenly wound again.",
+    "Thank you. That put the day back in its proper bin.",
+    "Tick. A kind thing, exactly the right size. I'll note it."
+  ],
+  mood_why_good:["every shelf label matched","wound its spring just right"],
+  mood_why_grumpy:["an unlabelled box turned up","the count was off by one"]
+});
+Object.assign(TALK.pencil.sys,{
+  mood_good:[
+    "Double-checked. Everything on the plan lined up the first time. Ten out of ten. Sorry. I'm pleased.",
+    "Bolt said 'good call' this morning. That's forty-two. I wrote it down. Sorry, I'm smiling.",
+    "I found a fresh pad of graph paper. A square for everything. It's a good day.",
+    "Measured twice and cut once. It fit. Sorry, I'm still a little amazed."
+  ],
+  mood_grumpy:[
+    "Sorry. Somebody put a square table where a round one was meant. I'm still adding it up.",
+    "My point's gone blunt. I sharpened it twice. It's still a bit wrong.",
+    "I checked the plan three times. I was right. Nobody asked. I'm sorry, that's a mood.",
+    "Sorry, I'm off. The measurements came out a centimetre out and I don't know why."
+  ],
+  mood_cheered:[
+    "Sorry, that's helped. Double-checked. I feel sharpened again. Thank you.",
+    "I'll adjust the plan. Today's plan: you two were kind. Good. Noted.",
+    "Thank you. The numbers feel normal now. A lovely thing to say. Sorry. Thank you."
+  ],
+  mood_why_good:["the plan worked first time","a fresh pad of graph paper"],
+  mood_why_grumpy:["a square table, not a round one","its point went blunt"]
+});
+Object.assign(TALK.builder.sys,{
+  mood_good:[
+    "Chief! The level sat dead flat on the first try. Not a bubble out of place. Let's nail it!",
+    "Fresh paint smell all morning. I'd bottle it. I'm the happiest man in the toolbox.",
+    "Sketch said the plan was good and I didn't change a thing. A first, I think.",
+    "Tapped the new fence with my mallet and it sounded happy. They always do, but this one sang."
+  ],
+  mood_grumpy:[
+    "Gotta say, chief, a table wobbled on me. All four legs. All four! I'm still shaking.",
+    "Someone painted beige on a perfectly good wall. Beige! I'm not over it.",
+    "I talked right over somebody this morning. All loud and no listening. I know it.",
+    "The mallet's gone missing. She'll turn up. She always does. Rough morning anyway."
+  ],
+  mood_cheered:[
+    "Chief, that helped. I'm back to level. Let's nail the rest of the day.",
+    "Thanks, you two. My mallet's feeling better. So am I. She says hi.",
+    "That's the right nail in the right place. Bolt thanks you."
+  ],
+  mood_why_good:["the level sat dead flat","that fresh paint smell"],
+  mood_why_grumpy:["a wobbly table, all four legs","someone painted a wall beige"]
+});
+Object.assign(TALK.pixel.sys,{
+  mood_good:[
+    "Noted. A round number of tickets today. Fifty. Ten out of ten.",
+    "The leaderboard is clean. GG. I looked at it twice.",
+    "Two people played at once. Two is a good number. Good day.",
+    "A quiet game, played quietly. Nine out of ten. I'd give it ten if it were longer."
+  ],
+  mood_grumpy:[
+    "The ticket stacks are uneven. Four on one side, three on the other. Noted.",
+    "Lag. A small one. It's lasted all morning. Two out of ten.",
+    "Someone asked me to show off. I don't like that. Minus two.",
+    "The leaderboard had a smudge. I fixed it. It came back. Noted."
+  ],
+  mood_cheered:[
+    "Noted. That helped. Seven out of ten. Going up.",
+    "GG. I feel straight again. Thank you.",
+    "That was kind. Ten out of ten. I counted twice."
+  ],
+  mood_why_good:["a round number of tickets","a clean leaderboard"],
+  mood_why_grumpy:["uneven ticket stacks","lag since the morning"]
+});
+Object.assign(TALK.parcel.sys,{
+  mood_good:[
+    "Good morning! Every parcel on the route delivered by ten past nine, and a dry street the whole way!",
+    "Somebody left a hand-drawn heart on their door, so I knew which house was which, and I did a little hop!",
+    "Bunbun saved me a warm roll, still hot at noon, and the route went perfectly after that!",
+    "The stamps tasted of cherry again today. I'm almost sure. Almost! It's a good day!"
+  ],
+  mood_grumpy:[
+    "It rained on Maker's Lane at twenty to ten and a parcel got damp, so I took the long way, and I'm cross about it.",
+    "There was a house I couldn't find until half past eleven, and I hate that, and now I'm behind.",
+    "My cardboard went soft at one corner. Wet cardboard is the worst. Don't mind me.",
+    "Somebody said 'no rush' and I rushed anyway and dropped something. A small something. It bounced."
+  ],
+  mood_cheered:[
+    "That helped! I'm back on schedule, more or less, and a little less soggy!",
+    "Thank you! I feel as crisp as a fresh label. Route's looking up!",
+    "Delivered. That's what that felt like. A kind thing, on time. Thank you!"
+  ],
+  mood_why_good:["every parcel delivered by ten past nine","a hand-drawn heart on a door"],
+  mood_why_grumpy:["rain on Maker's Lane","a house it couldn't find"]
+});
+Object.assign(TALK.crane.sys,{
+  mood_good:[
+    "A fresh sheet of paper came this morning. The corner was perfect. I held it for a while.",
+    "I made a very small crane and it stood up by itself. I am pleased. Quietly.",
+    "The sign I painted dried with every letter curling the right way. It is a good day.",
+    "The sun is warm. Summer is close. I folded a wing without a single wrong crease."
+  ],
+  mood_grumpy:[
+    "There is damp in the air. Damp is hard on paper. I am sorry. I am not good company.",
+    "A corner of mine is dog-eared. I will say no more about it.",
+    "Someone unfolded a thing I made. I know they were curious. I am still sorry about it.",
+    "It rained during my painting. I apologise to the rain. It did not apologise to me."
+  ],
+  mood_cheered:[
+    "Thank you. I feel smoother. A kind word is a good crease.",
+    "I am better now. The day has been folded back into shape. Thank you.",
+    "That was a clean fold. I will remember it. Thank you."
+  ],
+  mood_why_good:["a perfect corner on fresh paper","a letter curled just right"],
+  mood_why_grumpy:["damp in the air","a corner got dog-eared"]
+});
+Object.assign(TALK.pebble.sys,{
+  mood_good:[
+    "Mm. Fixed the last wobbly stone on the lane. It sits flat. Fair day.",
+    "Rained after the work was done. I stood in it. Mm. Good.",
+    "Sat on a wall I mended. It held. Mm. That's all I wanted.",
+    "Bunbun's roll was warm on the wall again. I found it. Don't tell her I know."
+  ],
+  mood_grumpy:[
+    "Mm. Somebody ran on the fresh cobbles. Before they set. I'm thinking about it still.",
+    "A stone I laid yesterday has a wobble. Don't know why. Fair. I'll redo it.",
+    "Rained on the work, not after it. Mm. Wrong order.",
+    "Slept in a draught. Moss is stiff. Not much to say. Just that."
+  ],
+  mood_cheered:[
+    "Mm. Better. Thanks. That's a good one to have around.",
+    "Fair. That helped. I'll go back to the stones.",
+    "Mm. You stayed. That was enough."
+  ],
+  mood_why_good:["the last wobbly stone is flat","sat on a wall it mended"],
+  mood_why_grumpy:["someone ran on wet cobbles","a stone he laid has a wobble"]
+});
+Object.assign(TALK.mayor.sys,{
+  mood_good:[
+    "Ahem! Dear resident, today I remembered every birthday in the week, in order, without notes!",
+    "I cut a ribbon this morning. A small ribbon, but the scissors were new. A splendid start.",
+    "My speech had three parts and a goose, and nobody left. I consider it a triumph.",
+    "A breeze came through the Town Hall and I did not stick to my chair. A fine day, dear resident."
+  ],
+  mood_grumpy:[
+    "Ahem. It is hot, dear resident, and I'm sticking to everything. Including my own hat.",
+    "My speech lost its goose halfway through. I deflated a little. I'm still deflated.",
+    "A ribbon tore before the cutting. Before! I feel it was a poor omen.",
+    "I forgot a birthday this morning. One! The shame, dear resident. The shame."
+  ],
+  mood_cheered:[
+    "Ahem! Dear resident, you have restored my fluff. A most excellent turn of events.",
+    "Splendid. I feel positively toasted golden again. Thank you, both of you.",
+    "I shall mention this in my next speech. Part three. Possibly with the goose."
+  ],
+  mood_why_good:["remembered every birthday this week","a breeze in the Town Hall"],
+  mood_why_grumpy:["too hot and sticky","the goose fell out of his speech"]
+});
+Object.assign(TALK.book.sys,{
+  mood_good:[
+    "Oh, you'll like this. I found a margin note from a hundred years ago. It said 'good book'. I agree.",
+    "The ten o'clock quiet was perfect today. I read one page and sighed twice.",
+    "A reader came back and said the book was just right for them. Oh. My pages are warm.",
+    "A rainy afternoon, a pot of tea, and a chapter I'd forgotten I'd loved. Good."
+  ],
+  mood_grumpy:[
+    "Oh... somebody dog-eared a page. Gently, I suppose. I felt it all the same.",
+    "My tea went cold before the chapter ended. I'm slightly curled at one corner.",
+    "Someone shouted in the library. Shush. I did the shushing. It didn't shush.",
+    "I can't find my place. I've lost it. One fact further than I meant, and now it's gone."
+  ],
+  mood_cheered:[
+    "Oh, that's better. My pages have settled. Thank you, you two.",
+    "I'm going to read you a very short thing, to say thanks. It's only a line.",
+    "Oh. Shush now. Let me enjoy that for a minute."
+  ],
+  mood_why_good:["found a hundred-year-old margin note","a perfect ten o'clock quiet"],
+  mood_why_grumpy:["someone dog-eared a page","the tea went cold mid-chapter"]
+});
+Object.assign(TALK.lantern.sys,{
+  mood_good:[
+    "Mm. The sky turned lilac right on time. I was there for all of it. Lovely.",
+    "A porch light was left on for me. I didn't ask. I simply glowed.",
+    "Hot milk with honey. I ate the skin. It was a very good day for it.",
+    "Somebody thanked a lamp today. Out loud. I'm still warm from it."
+  ],
+  mood_grumpy:[
+    "Mm... it's very bright out. Noon is much too much. I'm a bit faded.",
+    "A bulb burned out on the lane. I replaced it. It was a long walk. Mm.",
+    "There was wind. I do not like wind. I have a very thin frame.",
+    "Somebody rushed me. I'm always on time. I don't understand it."
+  ],
+  mood_cheered:[
+    "Mm. That's softer. I'm glowing properly again. Thank you.",
+    "Stay a little. It's nearly evening. Mm. I'm all warm now.",
+    "Thank you. I feel lit from inside the right amount."
+  ],
+  mood_why_good:["the sky turned lilac on time","a porch light left on"],
+  mood_why_grumpy:["noon is far too bright","a bulb burned out on the lane"]
+});
+Object.assign(TALK.cloud.sys,{
+  mood_good:[
+    "Forecast: very good, mostly. A clear sunrise at 6:41, mostly gold. I watched it from the hill.",
+    "Chance of a rainbow: likely. Not my doing. I never take credit. Today I'm happy about it.",
+    "Somebody jumped in a puddle. Properly. Both feet. I'm drizzling with joy, sorry.",
+    "My barometer behaved all day. Mostly. It's a good barometer."
+  ],
+  mood_grumpy:[
+    "Forecast: gloomy, likely, and it's me. I rained on the picnic. Sorry. Sorry.",
+    "The barometer is stuck at a wrong number. I can't forecast. I feel very small.",
+    "Chance of cheering up: low to moderate. A bit grey today. I'm sorry for the drizzle.",
+    "I missed the sunrise. By a minute. It had gone pink and then gone. That's gold being shy."
+  ],
+  mood_cheered:[
+    "Forecast: improving, likely. Thank you. I feel lighter. Mostly fluffy.",
+    "The grey is lifting. Mostly. Thank you for staying under my umbrella.",
+    "Chance of a good afternoon: high. I think that's you."
+  ],
+  mood_why_good:["a mostly gold sunrise at 6:41","someone jumped in a puddle"],
+  mood_why_grumpy:["rained on a picnic, sorry","the barometer is stuck"]
+});
+Object.assign(TALK.posy.sys,{
+  mood_good:[
+    "Hm hm hm. The seedlings came up when I told them to. All six! I'm so proud of them.",
+    "Today was the first warm morning. I hummed to the marigolds and they hummed back. Sort of.",
+    "Prickles stayed in the garden an hour past lunch. I didn't say a word. It was lovely.",
+    "Good rain overnight. Everything's drinking. Look at those tulips, they're showing off."
+  ],
+  mood_grumpy:[
+    "Oh, someone stepped on my tulips. Not on purpose. I'm sure. The tulips aren't sure.",
+    "I pulled a weed to see how it would feel and it was a flower. I'm cross at me.",
+    "It's been dry. Hm. Everything's thirsty and I'm carrying too many cans.",
+    "Prickles told a sandstorm story and I couldn't laugh. I wanted to. I'm sorry."
+  ],
+  mood_cheered:[
+    "Oh, thank you. I feel watered. Just like that. Look, the marigolds perked up too.",
+    "Hm hm hm. That's better. The petals are up again.",
+    "That was kind. I'll tell the sunflowers. They'll want to hear it."
+  ],
+  mood_why_good:["the seedlings came up on cue","good rain overnight"],
+  mood_why_grumpy:["someone stepped on the tulips","pulled a weed that was a flower"]
+});
+Object.assign(TALK.cactus.sys,{
+  mood_good:[
+    "Hmph. The sun hit the window seat at four. A whole hour. Best hour of the week, kid.",
+    "Posy laughed at my story. The sandstorm one. The funny part I always get wrong. Hmph.",
+    "Found my helmet exactly where I left it. First time in a month. Hmph. A good day.",
+    "I walked gate to bench, bench to gate, and my not-knees held. Hmph. Fair enough."
+  ],
+  mood_grumpy:[
+    "Hmph. Somebody said I looked old. Weathered! That's the word. I'm cross about it.",
+    "The soil's soggy. Soggy! In my own pot. I'm not talking about it, kid.",
+    "Rain at four. Right at four. Hmph. The one hour. Gone.",
+    "Can't find my helmet. It's on my head. I know that. I'm still cross."
+  ],
+  mood_cheered:[
+    "Hmph. Well. That was decent of you. I feel less prickly. A bit.",
+    "Sit, sit. You can stay. I'll even tell you the lizard one. Captain.",
+    "Hmph. Alright. You win. I'm cheered up. Don't tell Posy."
+  ],
+  mood_why_good:["a full hour of four o'clock sun","Posy laughed at his story"],
+  mood_why_grumpy:["someone said he looked old","rain ate the sunny hour"]
+});
+Object.assign(TALK.gramo.sys,{
+  mood_good:[
+    "Oh... the golden hour was perfect today. My horn went pink right on cue. I played to nobody and it was lovely...",
+    "A tune walked into my horn this morning and stayed. It's the best sort of visitor...",
+    "Somebody hummed my song back to me. Wrong note, right feeling. I'm still turning it over...",
+    "A quiet audience at the plaza. Not a cough. Mm. I could have played all night..."
+  ],
+  mood_grumpy:[
+    "Oh... the record scratched. Right in the chorus. I skipped over it. It still hurt...",
+    "My crank is stiff today. I turned it twice and nothing came out but a sigh...",
+    "The plaza was loud and the horn turned to the wall. I'm a little shy tonight...",
+    "I lost the tune. It was mine and then it wasn't. I'm still listening for it..."
+  ],
+  mood_cheered:[
+    "Oh... that helped. I think the tune's coming back. Listen... there it is.",
+    "Thank you, sweet thing. My horn's turned round again. I'll play you something small...",
+    "Mm... that's a nice note to have in the day. I'll keep it..."
+  ],
+  mood_why_good:["the golden hour was perfect","a tune moved into its horn"],
+  mood_why_grumpy:["the record scratched in the chorus","the crank was stiff"]
+});
+/* </mood-talk> */
 /* <together> */
 // ---- moments together (v94): when you're both in the app, one of you starts a moment (a group hug, a dance party, a cake to share,
 // a high five through the pet); the other phone gets an invitation and has a minute to join. Joined = the pet celebrates on both
@@ -65520,7 +66236,8 @@ function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS
 /* </swapface> */
 /* <whatsnew> */
 // ---- a one-time card per device listing what's new since the last version this phone saw (localStorage r42wn)
-const WHATSNEW=[[112,'The app opens about twice as fast: your room comes first, and the town finishes setting itself up in the background.'],
+const WHATSNEW=[[113,'Neighbours have moods now: good days, grumpy days, and a chat or a gift cheers them up. Each neighbourhood has a noticeboard (Neighbours > Noticeboard, or tap one in town) with notes and small optional favours. Your pet goes to bed by itself at night and has breakfast in the morning, and the lamps glow a little warmer in the evening.'],
+  [112,'The app opens about twice as fast: your room comes first, and the town finishes setting itself up in the background.'],
   [111,'Stepping outside is quicker: neighbours’ full models now appear one at a time instead of all at once. The speed readout also notes how long the game takes to come back after you switch apps.'],
   [110,'Walking around town should be noticeably smoother, especially on phones.'],
   [109,'Makeovers: some requests now come with a theme to try for a bonus, and residents write back a few days later asking for one more thing. Town events: stalls and Hook-a-duck on the plaza during festivals and big holidays, the Pumpkin Parade round the ring road, and fireworks on Bubblework Night.'],
@@ -68246,6 +68963,180 @@ function tmFreeze(on){if(!tm)return;const mark=o=>{let st=!o.userData.anim;for(c
 {const sd=tmSeasonDecor;tmSeasonDecor=function(){const r=sd.apply(this,arguments);try{if(tm&&tm.seaG&&tm.mergedG&&!tm.arr)tmFreeze(true)}catch(_){}return r}}
 {const fd=tmFestDecor;tmFestDecor=function(){const r=fd.apply(this,arguments);try{if(tm&&tm.festG&&tm.mergedG&&!tm.arr)tmFreeze(true)}catch(_){}return r}}
 /* </tm-freeze> */
+/* <room-day> */
+// ---- the room's day and night (v113). Bedtime around 21:30: a yawn, then the pet takes itself to bed (its bed or pet bed, else the
+// floor). Morning (the first open between 6 and 11): it wakes, stretches and goes for breakfast at a bowl or table if there is one. Woken
+// in the night, it goes back to bed after a minute. Evenings: the ceiling light eases down a touch so lamps read as "on" (rdEve, used in
+// updLighting). Per device (localStorage r42rd); Journal lines now and then.
+const RD={night:'',morn:'',woke:0};try{Object.assign(RD,JSON.parse(localStorage.r42rd||'{}'))}catch(_){}
+const rdSave=()=>{try{localStorage.r42rd=JSON.stringify({night:RD.night,morn:RD.morn})}catch(_){}};
+function rdSleepy(){try{const h=centralHour();return h>=21.5||h<6}catch(_){return false}}
+function rdEve(){const h=typeof centralHour==='function'?centralHour():12;const r=h<6?1:h<8?1-(h-6)/2:h<19?0:h<21?(h-19)/2:1;return 1-.18*r}
+function rdIdle(){return!!state&&!away&&!sandbox&&!!pet.rig&&!styling()&&!toyPlay&&!kmode&&!(typeof ARR!=='undefined'&&ARR.on)&&!openTab&&['idle','walk'].includes(pet.mode)&&!(typeof tm!=='undefined'&&tm&&tm.open)}
+function rdUse(k,pref){const c=[];roomObjs().forEach(o=>{const it=roomItem(o.userData.id);if(!it)return;const d=defOf(it.k),u=useOf(d);if(!u||!needHas(d,k))return;const N=needsOf(d);c.push({o,it,d,u,w:(N[k]||10)*(pref&&pref(d,u)?4:1)})});if(!c.length)return false;c.sort((a,b)=>b.w-a.w);try{return goUse(c[0])}catch(_){return false}}
+function rdNightKey(){const h=centralHour(),d=lifeDay();return h>=12?d:new Date(Date.parse(d+'T12:00:00Z')-864e5).toISOString().slice(0,10)}
+const rdBed=(d,u)=>!!(d&&d.perch&&d.perch.kind==='bed')||!!(u&&u.kind==='nap');
+function rdBedtime(){emote('😪');petAct('yawn');setTimeout(()=>{if(!rdIdle()&&pet.mode!=='idle')return;if(!rdUse('energy',rdBed)){pet.mode='sleep';pet.sleepT=90;emote('💤')}},2600)}
+function rdTick(){if(!rdIdle())return;const h=centralHour(),night=h>=21.5||h<5,day=lifeDay();
+  if(night&&RD.night!==rdNightKey()){RD.night=rdNightKey();rdSave();rdBedtime();if(Math.random()<.5)jrAdd(pick1([`Bedtime. ${headNames()[0]} picked the side by the wall. ${headNames()[1]} picked the side by the wall too.`,`We said goodnight to the room, one thing at a time. It took a while.`,`Lights low, blanket up. ${headNames()[1]} was asleep before ${headNames()[0]} finished yawning.`]),'','bedtime',0,'');return}
+  if(night&&RD.night===rdNightKey()&&pet.mode==='idle'&&RD.woke&&Date.now()-RD.woke>60000){RD.woke=0;rdBedtime();return}
+  if(!night&&h>=6&&h<11&&RD.morn!==day){RD.morn=day;rdSave();if(pet.mode==='sleep')pet.sleepT=.2;setTimeout(()=>{petAct('stretch');setTimeout(()=>{emote('😋');rdUse('hunger',d=>{const N=NEED_OVR&&NEED_OVR[d.k];return!!(N&&N.e)})},2200)},900);
+    if(Math.random()<.5)jrAdd(pick1([`Good morning! Stretch first, then breakfast. That's the rule. ${headNames()[0]} made the rule.`,`Up and about. The room looked different in the morning light. Better, ${headNames()[1]} says.`,`We woke up hungry. Both of us. Every morning, somehow.`]),'','morning',0,'')}}
+setInterval(()=>{try{if(document.visibilityState==='visible')rdTick()}catch(e){console.warn('room day',e)}},8000);
+// waking it at night (a tap or a pick-up) starts the back-to-bed timer
+{const pt=petTouch;petTouch=function(){const was=pet.mode==='sleep';const r=pt.apply(this,arguments);try{const h=centralHour();if(was&&pet.mode!=='sleep'&&(h>=21.5||h<5))RD.woke=Date.now()}catch(_){}return r}}
+/* </room-day> */
+/* <notice-data> */
+// ---- noticeboard notes (v113; source .claude/notice/all.js, brief tools/dev/town/NOTICE_BRIEF.md)
+const NOTICES={
+sugar:[
+{by:'baker',t:"Day-old loaves are in the basket by the door again. Take what you need. I made too many. I always make too many."},
+{by:'jam',t:"Notice to whoever keeps tasting the raspberry through the lid: it is sealed. I can tell. The lid has a dent."},
+{by:'cone',t:"Scone and Crumb are NOT allowed to use my freezer as a slide. Thank you. Also, two scoops for the price of one on Thursdays."},
+{by:'dust',t:"I am not lost. I am under the sofa. Please do not look."},
+{by:'patch',t:"Reminder that a scraped knee gets better faster with a kind word than with a plaster. I will still bring the plaster."},
+{by:'scone',t:"WANTED: one more person for hide and seek. Crumb counts too slowly. Crumb knows what Crumb did."},
+{by:'cushion',t:"A sock has been living on my left corner since Tuesday. It seems happy. Should I be worried or flattered?",q:{k:'find',at:'baker'},thanks:"That is the sock! Not mine, but I am glad it has somewhere to go. Here is a little something.",reward:'buttons'},
+{by:'baker',t:"I need something sweet and a little unusual for tomorrow's tart. Bring me one and I will bake you one back.",q:{k:'bring',need:'food:sweets'},thanks:"Oh, that is perfect. Smell that. Take this, and come by for a slice when it is out.",reward:'furniture'},
+{by:'jam',t:"The jam shelf wants fruit. Real, juicy, slightly embarrassing fruit. Bring some and I will owe you a jar.",q:{k:'bring',need:'food:fruit'},thanks:"Look at the colour of that! I will be sticky for a week. Here, for your trouble.",reward:'buttons'},
+{by:'cone',t:"Lost my little wooden tasting spoon near the plaza. It has a chip in the handle and a lot of sentimental value.",q:{k:'find',at:'plaza'},thanks:"My spoon! I thought the pigeons had it. You are the best, {me}. A scoop is on me.",reward:'treasure'},
+{by:'patch',t:"Could someone look in on Dusty? I have not seen it out of the cupboard in days. Probably fine. Probably.",q:{k:'visit',to:'dust'},thanks:"Fine, and a bit sneezy. Thank you for checking. I will leave a tissue box at the door.",reward:'buttons'},
+{by:'scone',t:"Please take this drawing to Mayor Marsh. It is a picture of the plaza with a bigger slide in it. It is important.",q:{k:'deliver',to:'mayor'},thanks:"The Mayor said it was a very serious drawing! Crumb is jealous. Here is my best pebble.",reward:'treasure'},
+{by:'dust',t:"I found a button I do not own. If it is yours, it is behind the armchair at Cushy's. I will not be going back for it.",q:{k:'find',at:'cushion'},thanks:"You went in there? Brave. It is yours now, honestly, I just wanted it out of my sight.",reward:'buttons'},
+{by:'cushion',t:"Pip says my corners are the best in town. Could someone tell Pip I said the jam is too? I am too shy.",q:{k:'visit',to:'jam'},thanks:"Pip went pink as a strawberry! Thank you for carrying that. Here is a cushiony thank you.",reward:'furniture'}
+],
+bay:[
+{by:'stylist',t:"The bubble bath is HOURLY now. Not because anyone asked. Because I can."},
+{by:'sponge',t:"If you have found a towel that squeaks, it is mine. If it does not squeak, it is not mine, but you may keep it."},
+{by:'tailor',t:"Free hem, any size, any person, any Tuesday. I count the stitches so you do not have to. There are always forty."},
+{by:'hair',t:"Everyone: a haircut is a feeling, not a rule. Come in when you feel it. Bring a snack for the afro."},
+{by:'makeup',t:"The colour of the week is 'sea at four o'clock'. It does not exist yet. I am working on it."},
+{by:'beacon',t:"The light is on from dusk to dawn. If you are lost, walk toward the big stubby thing. That is me."},
+{by:'polish',t:"Lost: one tiny bottle cap, glitter pink, last seen near the Glow Up desk. Reward: a manicure.",q:{k:'find',at:'polish'},thanks:"The cap! Gorgeous, thank you. Hold still, I am doing your nails.",reward:'buttons'},
+{by:'spool',t:"I am out of mint thread and a bit stuck. Anything small and shiny from the shore might do for a button.",q:{k:'bring',need:'shore'},thanks:"A real sea find. Lovely. I will sew it onto something that deserves it.",reward:'treasure'},
+{by:'stylist',t:"The Fizz Bath Special needs one more ingredient: something fresh from the water. Surprise me. Do not surprise the drain.",q:{k:'bring',need:'fish'},thanks:"It is wet and it is wonderful! Take this. Mind the bubbles, they bite.",reward:'furniture'},
+{by:'sponge',t:"Could you check on Beacon? The big light has looked a bit sleepy lately. I would go, but I am soaking.",q:{k:'visit',to:'beacon'},thanks:"Beacon says it was only yawning. Thank you for going. Here is a dry thing for your trouble.",reward:'buttons'},
+{by:'makeup',t:"A note for Pom: the afro and the beret should never again sit next to each other in a photograph. Please deliver. Gently.",q:{k:'deliver',to:'hair'},thanks:"Pom laughed for a full minute. I think that means yes. Here, a pretty thank you.",reward:'treasure'},
+{by:'beacon',t:"The lost and found box by the dock is full of single gloves. One of them is mine, in a manner of speaking.",q:{k:'find',at:'dock'},thanks:"That glove. I told you. Thank you. Please take something shiny from the box.",reward:'buttons'},
+{by:'hair',t:"My comb has run away from home. Last seen heading toward the plaza fountain. It is gold and very dramatic.",q:{k:'find',at:'plaza'},thanks:"My comb! It looks guilty. Thank you, {me}. Sit down, I will do something wonderful for {n}.",reward:'furniture'},
+{by:'tailor',t:"Could you drop this packet of buttons at Gloss's desk? There are exactly forty. Nobody is allowed to count them.",q:{k:'deliver',to:'polish'},thanks:"Gloss counted them. There were forty-one. I am not sure what to do with that. Thanks anyway.",reward:'buttons'}
+],
+hill:[
+{by:'toymaker',t:"BOING. That is the whole announcement. The ball pit is open. BOING."},
+{by:'joy',t:"New high score on the claw machine: mine. Beat it and I will clap very loudly, then cry a little."},
+{by:'windup',t:"Do not wind me at breakfast. Wind me at noon. I am a better toy at noon."},
+{by:'pencil',t:"If a line looks straight, it is not. Come and measure it with me. I brought a second ruler, just in case."},
+{by:'parcel',t:"Rule of the post: a parcel is a small promise. Please be home when I knock. I will knock twice. Maybe three times."},
+{by:'crane',t:"I folded forty paper hats overnight. Take one. If it fits, it was meant to be."},
+{by:'toymaker',t:"A spring has gone missing from the toy workshop. It is small, silver and probably still boinging somewhere. Check the park.",q:{k:'find',at:'park'},thanks:"There it is, still wobbling! Thank you, {me}. BOING. Take this prize.",reward:'treasure'},
+{by:'joy',t:"Capsule night needs a crowd. Could someone tell Pixel the party floor is open? Pixel will not read the sign.",q:{k:'visit',to:'pixel'},thanks:"Pixel came running, one corner at a time. Thanks for the nudge. Here are some of my tickets.",reward:'buttons'},
+{by:'pencil',t:"Seeking a tiny stone for a paperweight. Exactly one centimetre across, no more. I did the sums.",q:{k:'bring',need:'trail'},thanks:"This is exactly right, to the grain. I am deeply pleased. Take this, it is my second-best eraser.",reward:'treasure'},
+{by:'windup',t:"I need something to sip. Sweet, fizzy, preferably cold. My gears do not like warm.",q:{k:'bring',need:'food:drinks'},thanks:"Ahh. That is much better. Click click. Thank you, {me}.",reward:'buttons'},
+{by:'pebble',t:"Dropped my lunch tin near the library path. It has a pebble sandwich in it. Do not judge. Please bring it back.",q:{k:'find',at:'library'},thanks:"My tin! The sandwich is still there. Very good. Thank you. Slow and steady.",reward:'furniture'},
+{by:'parcel',t:"A letter for Fold, but the address is only a drawing of a crane. Could you carry it? I do not trust my own sorting today.",q:{k:'deliver',to:'crane'},thanks:"A paper crane for a paper crane. Fold got a bit misty. I saw. Here is a small something from the post.",reward:'buttons'},
+{by:'builder',t:"Please tell Tock the new gear arrived. Bolt would go, but Bolt is holding the ladder up. The ladder is very heavy.",q:{k:'visit',to:'windup'},thanks:"Tock was thrilled. Bolt is thrilled. The ladder is thrilled. Thank you for walking over.",reward:'treasure'},
+{by:'crane',t:"Looking for something long and bendy to fold into a bigger crane. A ribbon or a comb-tie might do.",q:{k:'bring',need:'groom'},thanks:"Oh, that is lovely and flexible. It will make a grand wing. Thank you, {me}. Please take this.",reward:'furniture'}
+],
+meadow:[
+{by:'mayor',t:"Town meeting on Monday, snacks included, opinions optional. Please do not bring the same opinion as last time."},
+{by:'book',t:"Library reminder: a bookmark is not a nap. If a book looks sleepy, it is. Please be quiet near it."},
+{by:'lantern',t:"The lamps on the Loop are lit at sunset. If one flickers, it is probably shy. Say hello and it will settle."},
+{by:'cloud',t:"Forecast: a bit of me, around three. Bring an umbrella or a good mood. Either works."},
+{by:'posy',t:"The tulips are up. Please do not pick them. Ask them first. They sometimes say yes."},
+{by:'cactus',t:"Someone has been leaving flowers on my doorstep. I did not ask for flowers. I will be keeping them in a vase."},
+{by:'book',t:"A page has fallen out of the town almanac. It is probably near the library. It has a coffee ring on it, and a very good sentence.",q:{k:'find',at:'library'},thanks:"The page! And the sentence is still on it. Thank you, {me}. Here is a bookmark. Do not nap on it.",reward:'treasure'},
+{by:'posy',t:"My watering can has wandered off again. Last seen near the pond, being very thoughtful. Please fetch it.",q:{k:'find',at:'pond'},thanks:"There you are, can! Thank you, {me}. Here, some seeds. Plant them somewhere kind.",reward:'furniture'},
+{by:'cactus',t:"Bring me something to chew on while I stay cranky. A crunchy veggie, ideally. Do not tell anyone I asked.",q:{k:'bring',need:'food:veggies'},thanks:"Hm. Good crunch. Fine. You may stay on the porch. Take this and go.",reward:'buttons'},
+{by:'mayor',t:"I wrote a letter about the new fountain. Could you take it to Dewey? I want the grammar checked. Gently, please.",q:{k:'deliver',to:'book'},thanks:"Dewey found three commas and one big idea. Thank you for carrying it. Here is a little civic gratitude.",reward:'buttons'},
+{by:'lantern',t:"Could you see how Nimbus is doing? The rain has been small and sad lately. I would visit, but I have lamps to light.",q:{k:'visit',to:'cloud'},thanks:"Nimbus perked up. A little sunny patch, even. Thank you for caring, {me}.",reward:'treasure'},
+{by:'cloud',t:"I would like a bug friend. Small, harmless, preferably one who enjoys drizzle. Bring one to meet me?",q:{k:'bring',need:'bug'},thanks:"Oh, hello, little one! It likes the drizzle. Thank you, {me}. Take this, I have too many raindrops.",reward:'furniture'},
+{by:'gramo',t:"I need a shell to hold up to my horn, to test the tone. A big, round one, please.",q:{k:'bring',need:'shore'},thanks:"Listen. Listen to that. A perfect note. Thank you, {me}. A little song for you, and a little something too.",reward:'buttons'},
+{by:'posy',t:"Prickles says no one visits. Prickles also says do not visit. Could you visit, quietly?",q:{k:'visit',to:'cactus'},thanks:"Prickles gave you tea? Gave you TEA? You are a miracle worker. Thank you, {me}.",reward:'buttons'}
+]
+};
+/* </notice-data> */
+/* <moods> */
+// ---- residents' moods (v113): seeded per room + day + resident, the same on both phones. Most days ordinary; ~20% good, ~14% a bit
+// grumpy. Lines in TALK[k].sys mood_good / mood_grumpy / mood_cheered / mood_why_good / mood_why_grumpy (block /* <mood-talk> */).
+// A chat (a map conversation or a close-up) or a gift on a grumpy day cheers them up (acts['cheer:'+k] = day; +1 friendship; their next
+// opener is a cheered line). The People list and map cards say how they are.
+function resMood(k){if(!RESIDENTS[k])return'';const r=jrRand('mood|'+(roomCode||'solo')+'|'+lifeDay()+'|'+k)();return r<.14?'grumpy':r>.8?'good':''}
+const moodCheered=k=>(state.acts||{})['cheer:'+k]===lifeDay();
+function moodWhy(k){const m=resMood(k),S=(TALK[k]&&TALK[k].sys)||{},L=m==='good'?S.mood_why_good:m==='grumpy'?S.mood_why_grumpy:null;if(!L||!L.length)return'';return L[Math.floor(jrRand('moodwhy|'+lifeDay()+'|'+k)()*L.length)]}
+function moodLabel(k){const m=resMood(k);if(!m)return'';if(m==='grumpy'&&moodCheered(k))return'cheered up';return m==='good'?'in a good mood':'a bit grumpy'}
+function moodLine(k){const m=resMood(k),S=(TALK[k]&&TALK[k].sys)||{},pk=a=>a&&a.length?pick1(a):null;if(!m)return null;
+  if(m==='grumpy'){const A=state.acts||(state.acts={});if(moodCheered(k)){if(A['cheersaid:'+k]===lifeDay())return null;A['cheersaid:'+k]=lifeDay();return pk(S.mood_cheered)}return pk(S.mood_grumpy)}
+  return Math.random()<.6?pk(S.mood_good):null}
+function moodCheer(k,how){if(resMood(k)!=='grumpy'||moodCheered(k)||!RESIDENTS[k])return;const A=state.acts||(state.acts={});A['cheer:'+k]=lifeDay();kfAdd(k,1);saveSoon();
+  setTimeout(()=>toast(`${RESIDENTS[k].n} cheered up${how?' ('+how+')':''}.`,true),600)}
+{const sl=socialLine;socialLine=function(k){const r=sl(k);if(r)return r;try{const m=moodLine(k);if(m&&Math.random()<.75)return socFill(k,m,'')}catch(e){console.warn('mood line',e)}return null}}
+{const cs=cvSysLine;cvSysLine=function(T){try{const k=Object.keys(TALK).find(q=>TALK[q]===T);if(k&&resMood(k)){const m=moodLine(k);if(m&&(resMood(k)==='grumpy'||Math.random()<.45))return socFill(k,m,'')}}catch(e){console.warn('mood cv',e)}return cs(T)}}
+{const cb=cvBegin;cvBegin=function(k){const r=cb.apply(this,arguments);try{if(resMood(k)==='grumpy'&&!moodCheered(k))setTimeout(()=>moodCheer(k,'a chat helps'),2500);nqTalk(k)}catch(e){console.warn('mood begin',e)}return r}}
+{const ko=kOpen;kOpen=function(K){const r=ko.apply(this,arguments);try{const k=K&&K.kind;if(k&&RESIDENTS[k]){if(resMood(k)==='grumpy'&&!moodCheered(k))setTimeout(()=>moodCheer(k,'a chat helps'),3000);nqTalk(k)}}catch(e){console.warn('mood open',e)}return r}}
+{const gg=giveGift;giveGift=function(k,src,how){const r=gg.apply(this,arguments);try{if(RESIDENTS[k]){if(resMood(k)==='grumpy')moodCheer(k,'your gift helped');nqGift(k,src)}}catch(e){console.warn('mood gift',e)}return r}}
+{const lw=lifeWhere;lifeWhere=function(k){const r=lw.apply(this,arguments);try{const m=moodLabel(k);if(m)return r+' · '+m}catch(_){}return r}}
+/* </moods> */
+/* <noticeboard> */
+// ---- noticeboards (v113): each neighbourhood's board shows 3 notes a week (seeded per room + week + hood), some just notes, some optional
+// favours. Neighbours page > Noticeboard, or tap a noticeboard on the map. At most 2 favours on the go (state.nq {list:[{id,hood,i,step,t}],
+// done:[ids]}; merge: union of done, list by id). Favours finish naturally: bring = give them a matching gift; find = walk over the lost
+// thing (a marker on the map near the place) and talk to them; visit = talk to the other resident, then back to them; deliver = talk to
+// the other resident. Rewards: buttons, a treasure, or a piece of furniture; their thanks arrives as a letter.
+const NQ_MAX=2,NQ_PER=3;
+function nqState(){const Q=state.nq&&typeof state.nq==='object'?state.nq:(state.nq={list:[],done:[]});if(!Array.isArray(Q.list))Q.list=[];if(!Array.isArray(Q.done))Q.done=[];return Q}
+const nqId=(h,i)=>h+':'+i,nqWeek=()=>Math.floor((Date.now()/864e5+3)/7);
+function nqBoard(h){const L=(NOTICES[h]||[]).map((n,i)=>Object.assign({i,id:nqId(h,i),hood:h},n)).filter(n=>RESIDENTS[n.by]&&(!n.q||!n.q.to||RESIDENTS[n.q.to])),Q=nqState(),R=jrRand('nq|'+(roomCode||'solo')+'|'+nqWeek()+'|'+h);
+  const pool=L.filter(n=>!Q.done.includes(n.id)),out=[],fav=pool.filter(n=>n.q),pl=pool.filter(n=>!n.q);
+  [fav,fav,pl].forEach(src=>{if(!src.length)return;const c=src.filter(n=>!out.includes(n));if(c.length)out.push(c[Math.floor(R()*c.length)])});
+  Q.list.filter(x=>x.hood===h).forEach(x=>{const n=L.find(q=>q.id===x.id);if(n&&!out.includes(n))out.unshift(n)});return out.slice(0,NQ_PER+1)}
+function nqActive(id){return nqState().list.find(x=>x.id===id)}
+function nqNote(id){const [h,i]=id.split(':');const n=(NOTICES[h]||[])[+i];return n?Object.assign({id,hood:h,i:+i},n):null}
+function nqTake(id){const Q=nqState();if(nqActive(id)||Q.done.includes(id))return;if(Q.list.length>=NQ_MAX){toast(`You’re already helping with ${NQ_MAX}. Finish one first.`,true);return}const n=nqNote(id);if(!n||!n.q)return;
+  Q.list.push({id,hood:n.hood,step:0,t:Date.now()});saveSoon();const R=RESIDENTS[n.by];toast(n.q.k==='find'?`Look for it ${nqPlaceName(n.q.at)}. It’s marked on the map.`:n.q.k==='bring'?`Bring ${R.n} ${nqNeedName(n.q.need)}.`:n.q.k==='deliver'?`Take it to ${RESIDENTS[n.q.to].n}.`:`Go and see ${RESIDENTS[n.q.to].n}, then tell ${R.n}.`,true);try{tw.gkey&&0}catch(_){}renderSheet()}
+function nqDrop(id){const Q=nqState();Q.list=Q.list.filter(x=>x.id!==id);saveSoon();renderSheet()}
+function nqDone(id){const Q=nqState(),n=nqNote(id);Q.list=Q.list.filter(x=>x.id!==id);if(!Q.done.includes(id))Q.done.push(id);if(!n)return;const R=RESIDENTS[n.by];let gift='';
+  if(n.reward==='treasure'){const pool=TREASURES.filter(t=>(t.col==='shore'||t.col==='trail')&&!t.fish&&!t.bug),t=pool[Math.floor(Math.random()*pool.length)];if(t){treasureGet(t.id,true);gift=t.n.toLowerCase()}}
+  else if(n.reward==='furniture'){const pool=CAT.filter(c=>!c.gacha&&c.p>0&&c.p<=4&&!c.k.startsWith('win_')),c=pool[Math.floor(Math.random()*pool.length)];if(c){state.fown[c.k]=(state.fown[c.k]||0)+1;gift=c.n.toLowerCase()}}
+  const b=(n.reward==='buttons'?15:6)*BTN;state.btn=(state.btn|0)+b;kfAdd(n.by,3);logEvent(`helped ${R.n} with a note from the noticeboard`);
+  try{resPost(n.by,kFill(String(n.thanks||'Thank you!')).replace(/\{me\}/g,(state.names&&state.names[myId])||'you'))}catch(_){}
+  if(Math.random()<.6)jrAdd(`We helped ${R.n} with a note off the noticeboard. ${headNames()[0]} would like a badge for it.`,'','notice',0,R.n);try{firstOf('notice',`Our first noticeboard favour, for ${R.n}.`)}catch(_){}
+  setTimeout(()=>showReward(`${R.n} says thank you`,'emo-star',`<p>“${esc(kFill(n.thanks||'Thank you!'))}”</p><p class="rwsub">+${b} buttons${gift?` · ${esc(gift)}`:''} · friendship with ${esc(R.n)}</p>`),700);saveSoon();updHUD()}
+const NQ_PLACE={plaza:'on the plaza',park:'in the park',pond:'by the pond',library:'by the library',townhall:'by the Town Hall',postoffice:'by the post office',dock:'down by the dock',market:'on Market Street'};
+const nqPlaceName=at=>NQ_PLACE[at]||(RESIDENTS[at]?`near ${RESIDENTS[at].n}’s house`:'around town');
+const nqNeedName=t=>t==='fish'?'a fish':t==='bug'?'a bug':t==='shore'?'something from the beach':t==='trail'?'a find from the woods':t==='groom'?'a grooming treat':t&&t.startsWith('food:')?`something ${(FOOD_CATS[t.slice(5)]||'tasty').toLowerCase()}`:'something nice';
+function nqMatch(tag,src){const it=src&&src.t==='inv'&&ITEMMAP[src.id];if(!it)return false;if(tag==='fish')return!!it.fish;if(tag==='bug')return!!it.bug;if(tag==='shore'||tag==='trail')return it.col===tag;if(tag==='groom')return it.k==='groom';if(tag.startsWith('food:'))return it.k==='food'&&it.cat===tag.slice(5);return false}
+function nqGift(k,src){nqState().list.slice().forEach(x=>{const n=nqNote(x.id);if(n&&n.q&&n.q.k==='bring'&&n.by===k&&nqMatch(n.q.need,src))nqDone(x.id)})}
+function nqTalk(k){nqState().list.slice().forEach(x=>{const n=nqNote(x.id);if(!n||!n.q)return;const q=n.q;
+  if(q.k==='deliver'&&q.to===k){toast(`You gave ${RESIDENTS[k].n} the note from ${RESIDENTS[n.by].n}.`,true);nqDone(x.id)}
+  else if(q.k==='visit'){if(x.step===0&&q.to===k){x.step=1;saveSoon();toast(`${RESIDENTS[k].n} says hi back. Go and tell ${RESIDENTS[n.by].n}.`,true)}else if(x.step===1&&n.by===k)nqDone(x.id)}
+  else if(q.k==='find'&&x.step===1&&n.by===k)nqDone(x.id)})}
+// where a lost thing turns up (a road cell near the place, seeded per favour)
+function nqSpot(x){if(x.spot)return x.spot;const n=nqNote(x.id);if(!n||!n.q||n.q.k!=='find'||typeof twGrid!=='function'||!tm||!tm.world)return null;const at=n.q.at,m=tmM();let c=null;
+  const dec=re=>{const q=(m.d||[]).find(d=>re.test(d[0]));if(!q)return null;const [x_,z_]=twPos(q[1],q[2]);return[x_,z_]};
+  try{if(at==='plaza')c=[0,0];else if(at==='park')c=dec(/^park|pergola|bigslide/);else if(at==='pond')c=dec(/pond/);else if(at==='dock')c=dec(/^dock$/)||dec(/boardwalk|pier/);else if(at==='market')c=dec(/^mkt_/);
+    else if(['library','townhall','postoffice'].includes(at)){const d=twDoor('p_'+at);if(d)c=[d.x,d.z]}else if(RESIDENTS[at]){const d=twDoor('h_'+houseOf(at));if(d)c=[d.x,d.z]}}catch(_){}
+  if(!c)c=[0,0];const G_=twGrid(),R=jrRand('nqspot|'+x.id+'|'+x.t);let best=null;for(let t=0;t<200&&!best;t++){const a=R()*6.283,r=1.2+R()*2.6,px=c[0]+Math.cos(a)*r,pz=c[1]+Math.sin(a)*r,[i,j]=twCell?twCell(px,pz):[-1,-1];
+    if(i>=0&&G_.road[j*G_.W+i]&&!G_.block[j*G_.W+i])best=[px,pz]}
+  x.spot=best||[c[0]+1,c[1]+1];return x.spot}
+function nqMapTick(){if(!tm||!tm.open||!tw||!tw.pet)return;const Q=nqState();let el=$('#nqMark');const x=Q.list.find(q=>{const n=nqNote(q.id);return n&&n.q&&n.q.k==='find'&&q.step===0});
+  if(!x){if(el)el.hidden=true;return}const sp=nqSpot(x);if(!sp)return;if(!el){el=document.createElement('div');el.id='nqMark';el.className='nqm';el.innerHTML='<i></i>';$('#tmLab').appendChild(el)}
+  const v=new THREE.Vector3(sp[0],.35-tmCurveY(sp[0],sp[1]),sp[1]).project(tm.cam),[W_,H_]=tmSize();el.hidden=v.z>1;el.style.transform=`translate(${(v.x*.5+.5)*W_}px,${(-v.y*.5+.5)*H_}px) translate(-50%,-100%)`;
+  if(Math.hypot(tw.pet.x-sp[0],tw.pet.z-sp[1])<.75){x.step=1;saveSoon();el.hidden=true;const n=nqNote(x.id);try{tw.pet&&(tw.pet.hop=1)}catch(_){}toast(`Found it! Take it back to ${RESIDENTS[n.by].n}.`,true)}}
+setInterval(()=>{try{nqMapTick()}catch(e){console.warn('nq map',e)}},120);
+// the page (Neighbours > Noticeboard), optionally one neighbourhood
+let nqHood=null;
+function nqHtml(){const hs=nqHood?[nqHood]:Object.keys(HOODS),Q=nqState();let h=`<p class="hint">Notes pinned up around town. Help if you fancy it; nothing here is urgent.${Q.list.length?` You’re helping with ${Q.list.length} of ${NQ_MAX}.`:''}</p>`;
+  if(nqHood)h+=`<button class="gel silver" data-nqall="1" style="margin:4px 0 8px">See every noticeboard</button>`;
+  hs.forEach(hd=>{const B=nqBoard(hd);h+=`<div class="row-label">${esc(HOODS[hd].n)}</div><div class="nqb">${B.map(n=>{const R=RESIDENTS[n.by],act=nqActive(n.id),q=n.q;
+    const st=!q?'':act?(q.k==='find'?(act.step?`Found! Take it to ${R.n}`:`Look ${nqPlaceName(q.at)} (marked on the map)`):q.k==='visit'?(act.step?`Tell ${R.n} what ${RESIDENTS[q.to].n} said`:`Go and see ${RESIDENTS[q.to].n}`):q.k==='deliver'?`Take it to ${RESIDENTS[q.to].n}`:`Bring ${R.n} ${nqNeedName(q.need)}`):'';
+    return`<div class="nqn" style="--cc:${(RES[n.by]||['','#FFB3D9'])[1]}"><p>${esc(kFill(n.t))}</p><small>${esc(R.n)}</small>${q?(act?`<div class="nqs">${esc(st)} <button class="nqx" data-nqd="${n.id}">Let it go</button></div>`:`<button class="gel pink nqh" data-nqt="${n.id}">I’ll help</button>`):''}</div>`}).join('')||'<p class="hint">Nothing pinned up this week.</p>'}</div>`});return h}
+function nqBind(body){body.querySelectorAll('[data-nqt]').forEach(b=>b.onclick=()=>nqTake(b.dataset.nqt));body.querySelectorAll('[data-nqd]').forEach(b=>b.onclick=()=>nqDrop(b.dataset.nqd));const a=body.querySelector('[data-nqall]');if(a)a.onclick=()=>{nqHood=null;renderSheet()}}
+function nqOpen(hood){nqHood=hood&&HOODS[hood]?hood:null;lifeTab='notice';try{closeMap()}catch(_){}setTimeout(()=>setTab('town'),280)}
+// tapping a noticeboard on the map opens its neighbourhood's notes
+{const tt=twTap;twTap=function(cx,cy){try{if(tm.decor){tmCell(cx,cy);const hs=tm.ray.intersectObjects([tm.decor],true);for(const h of hs){let o=h.object;while(o&&o!==tm.world&&o.userData.td==null)o=o.parent;const q=o&&o.userData.td!=null&&tmM().d[o.userData.td];
+  if(q&&q[0]==='noticeboard'){const [x_,z_]=twPos(q[1],q[2]),d=plDistrictOf(x_,z_);const P=tw.pet,a=Math.atan2(P.x-x_,P.z-z_);twWalk(x_+Math.sin(a)*1.2,z_+Math.cos(a)*1.2,()=>nqOpen(HOODS[d]?d:null));return}break}}}catch(e){console.warn('nq tap',e)}return tt.apply(this,arguments)}}
+Object.assign(MERGE,{nq:(l,r,b)=>{l=l||{};r=r||{};const done=[...new Set([...(l.done||[]),...(r.done||[])])],L=new Map();[...(r.list||[]),...(l.list||[])].forEach(x=>{if(x&&!done.includes(x.id)){const o=L.get(x.id);L.set(x.id,o&&(o.step|0)>(x.step|0)?o:x)}});return{list:[...L.values()].slice(0,NQ_MAX+1),done}}});
+/* </noticeboard> */
 function mergeInto(L,R){if(!syncBase)return{};const B=syncBase,ch={},Bkr=B.kr?JSON.parse(B.kr)||{}:{},Rkr=R.kr||{};new Set([...Object.keys(L),...Object.keys(R)]).forEach(k=>{if(k==='rev')return;
     const lj=JSON.stringify(L[k]),rj=JSON.stringify(R[k]),bj=B[k];if(rj===lj||rj===bj)return;if(k!=='kr'&&(+Rkr[k]||0)<(+Bkr[k]||0))return;
     if(lj===bj){L[k]=R[k]===undefined?undefined:JSON.parse(rj);ch[k]=1;return}
@@ -68271,7 +69162,7 @@ function adoptRemote(){buildHist.length=0;updUndoBtns();state=normalize(JSON.par
 function tryRemote(){if(sandbox||!remote||writing||dragging)return;if((remote.rev||0)<=Math.max(state.rev||0,syncBaseRev))return;if(!syncBase){if(!dirty)adoptRemote();return}
   // take the other side's changes in (keeping any unsaved ones of ours); if part of their write was stale, write ours back
   try{const R=normalize(JSON.parse(JSON.stringify(remote)));afterMerge(mergeInto(state,R));snapBase(R);if(localChanged())saveSoon()}catch(e){console.warn('merge',e)}}
-function normalize(s){const oldPal=!!s&&!(s.pv>=2),curMig=!!s&&s.btn==null;try{if(s&&Array.isArray(s.designs))designRegister(s.designs.filter(d=>!(s.dzDel||[]).includes(d&&d.id)))}catch(e){console.warn('designs',e)}const d=defaultState();s=Object.assign({},d,s||{});{const ob=v=>v&&typeof v==='object'&&!Array.isArray(v);['gifts','disc','acts','seeds','hdeco','tfound','cbook','firsts','pmem','fbest','rmem','museum','tricks'].forEach(k=>{if(!ob(s[k]))s[k]={}});['garden','parcels','evseen','keeps','designs','dzDel'].forEach(k=>{if(!Array.isArray(s[k]))s[k]=[]})}s.items=Array.isArray(s.items)?s.items.map(i=>i&&typeof i.k==='string'&&i.k.startsWith('win_')?Object.assign(i,{k:winKeyFix(i.k)}):i).filter(i=>i&&CATMAP[i.k]&&typeof i.id==='string').slice(0,80):[];
+function normalize(s){const oldPal=!!s&&!(s.pv>=2),curMig=!!s&&s.btn==null;try{if(s&&Array.isArray(s.designs))designRegister(s.designs.filter(d=>!(s.dzDel||[]).includes(d&&d.id)))}catch(e){console.warn('designs',e)}const d=defaultState();s=Object.assign({},d,s||{});{const ob=v=>v&&typeof v==='object'&&!Array.isArray(v);['gifts','disc','acts','seeds','hdeco','tfound','cbook','firsts','pmem','fbest','rmem','museum','tricks','nq'].forEach(k=>{if(!ob(s[k]))s[k]={}});['garden','parcels','evseen','keeps','designs','dzDel'].forEach(k=>{if(!Array.isArray(s[k]))s[k]=[]})}s.items=Array.isArray(s.items)?s.items.map(i=>i&&typeof i.k==='string'&&i.k.startsWith('win_')?Object.assign(i,{k:winKeyFix(i.k)}):i).filter(i=>i&&CATMAP[i.k]&&typeof i.id==='string').slice(0,80):[];
   s.inv=s.inv&&typeof s.inv==='object'?Object.fromEntries(Object.entries(s.inv).filter(([k,v])=>ITEMMAP[k]&&v>0).map(([k,v])=>[k,Math.min(99,v|0)])):Object.assign({},d.inv);
   s.toys=Array.isArray(s.toys)?s.toys.filter(k=>ITEMMAP[k]&&ITEMMAP[k].k==='toy'):d.toys.slice();s.daily=s.daily&&typeof s.daily==='object'?s.daily:{};
   s.pet=Object.assign({},d.pet,s.pet||{});if(s.pet.look&&typeof s.pet.look!=='object')delete s.pet.look;if(s.pet.heads&&!(Array.isArray(s.pet.heads)&&s.pet.heads.length===2))delete s.pet.heads;else if(s.pet.heads)s.pet.heads=s.pet.heads.map(x=>String(x||'').slice(0,10));s.tokens=s.tokens==null?3:Math.max(0,Math.min(999,+s.tokens|0));s.capsdex=Array.isArray(s.capsdex)?s.capsdex.filter(k=>typeof k==='string').slice(0,64):[];s.ceil=s.ceil==null?1:clamp(+s.ceil||0,0,1);s.wish=s.wish&&typeof s.wish==='object'&&(!s.wish.k||WISH_T[s.wish.k])?s.wish:{};s.wear=[...new Set(Array.isArray(s.wear)?s.wear.filter(id=>wearDef(id)):[])];s.pet.s=Object.assign({},d.pet.s,s.pet.s||{});if(!PERSONALITIES[s.pet.pers])s.pet.pers=stageOf(+s.pet.xp||0)>0?PERS_KEYS[[...String(s.pet.name||'')].reduce((a,c)=>a+c.charCodeAt(0),0)%PERS_KEYS.length]:null;s.pet.name=String(s.pet.name||'Mochi').slice(0,16);s.pet.xp=Math.max(0,+s.pet.xp||0);s.pet.color=Math.abs(+s.pet.color||0)%6;s.pet.t=+s.pet.t||Date.now();
@@ -68337,7 +69228,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=112;
+const APP_V=113;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
