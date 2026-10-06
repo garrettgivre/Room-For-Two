@@ -1,5 +1,6 @@
 // Generic headless test: serves the app in solo mode with a __T eval hook (plus optional injected files), runs a test module.
 // Usage: node .claude/town/run.js <test.js> [inject1.js,inject2.js]
+// Uses the real GPU (ANGLE on Direct3D 11; the laptop's RTX 3060). R42_GL=soft forces software GL (SwiftShader, much slower).
 // test.js: module.exports=async({pg,ev,shot,wait,log})=>{...}; ev(code) evals inside the app's closure.
 const http=require('http'),fs=require('fs'),path=require('path');
 const {chromium}=(()=>{for(const p of [path.join(__dirname,'..','pw','node_modules','playwright'),path.join(__dirname,'..','..','..','.claude','pw','node_modules','playwright'),'playwright']){try{return require(p)}catch(_){}}throw new Error('Install Playwright: cd .claude/pw && npm i playwright')})();
@@ -12,7 +13,7 @@ const srv=http.createServer((q,r)=>{const p=decodeURIComponent(q.url.split('?')[
   if(p==='/'||p.endsWith('/index.html')){let h=fs.readFileSync(process.env.R42_INDEX||path.join(ROOT,'index.html'),'utf8');h=h.replace('const clock=',()=>extra+'\n;window.__T={f:c=>eval(c)};const clock=');r.writeHead(200,{'Content-Type':'text/html'});return r.end(h)}
   const f=path.join(ROOT,p);fs.readFile(f,(e,b)=>{if(e){r.writeHead(404);return r.end()}r.writeHead(200,{'Content-Type':MIME[path.extname(f)]||'application/octet-stream'});r.end(b)})});
 let errs=[];srv.listen(0,'127.0.0.1',async()=>{const port=srv.address().port;let br;
-  try{br=await chromium.launch({args:['--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
+  try{br=await chromium.launch({args:process.env.R42_GL==='soft'?['--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']:['--use-angle=d3d11','--enable-gpu','--ignore-gpu-blocklist']});
     const pg=await br.newPage({viewport:{width:430,height:860}});errs=[];
     pg.on('console',m=>{if(m.type()==='error'||m.type()==='warning'){const t=m.text();if(!/404/.test(t))errs.push(m.type()+': '+t)}});pg.on('pageerror',e=>errs.push('pageerror: '+e.message));
     await pg.addInitScript(()=>{try{localStorage.r42coach='1'}catch(_){}});

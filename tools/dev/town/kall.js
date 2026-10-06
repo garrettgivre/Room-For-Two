@@ -9,7 +9,7 @@ const srv=http.createServer((q,r)=>{const p=decodeURIComponent(q.url.split('?')[
   if(p.endsWith('/sw.js')){r.writeHead(404);return r.end()}
   if(p==='/'||p.endsWith('/index.html')){let h=fs.readFileSync(path.join(ROOT,'index.html'),'utf8');h=h.replace('const clock=',()=>';window.__T={f:c=>eval(c)};const clock=');r.writeHead(200,{'Content-Type':'text/html'});return r.end(h)}
   fs.readFile(path.join(ROOT,p),(e,b)=>{if(e){r.writeHead(404);return r.end()}r.writeHead(200,{'Content-Type':MIME[path.extname(p)]||'application/octet-stream'});r.end(b)})});
-srv.listen(0,'127.0.0.1',async()=>{const port=srv.address().port;const br=await chromium.launch({args:['--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
+srv.listen(0,'127.0.0.1',async()=>{const port=srv.address().port;const br=await chromium.launch({args:process.env.R42_GL==='soft'?['--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']:['--use-angle=d3d11','--enable-gpu','--ignore-gpu-blocklist']});
   try{const pg=await br.newPage({viewport:{width:480,height:600}});pg.on('pageerror',e=>console.log('pageerror',e.message));
     await pg.addInitScript(()=>{try{localStorage.r42coach='1'}catch(_){}});await pg.goto(`http://127.0.0.1:${port}/index.html`);
     await pg.waitForFunction(()=>window.__T&&__T.f('!!state'),null,{timeout:90000});await pg.waitForTimeout(1500);await pg.evaluate(([z,l])=>{window.ZOOM=z;window.LIFT=l},[ZOOM,LIFT]);

@@ -2,7 +2,7 @@
 // fishing, neighbours' chats and conversations, and checks that every choice button is actually visible (opacity, size, on screen).
 // Run before each release with sweep.js and sweep2.js:  node tools/dev/town/run.js tools/dev/town/sweep3.js
 module.exports=async({ev,pg,wait,log})=>{const errs=[];pg.on('pageerror',e=>errs.push('pageerror: '+e.message));
- for(let i=0;i<120;i++){if(await ev('ready&&!ARR.on')===true)break;await wait(1000)}await wait(1000);
+ for(let i=0;i<120;i++){if(await ev('ready&&!ARR.on')==='true')break;await wait(1000)}await wait(1000);
  const R=async(name,code)=>{const r=await ev(code);if(typeof r==='string'&&r.startsWith('ERR'))errs.push(name+': '+r.split('\n').slice(0,3).join(' | '));else if(typeof r==='string'&&/INVISIBLE|MISSING/.test(r))errs.push(name+': '+r);return r};
  await ev(`window.__vis=sel=>{const B=[...document.querySelectorAll(sel)];B.forEach(b=>{try{b.getAnimations().forEach(a=>a.finish())}catch(_){}});if(!B.length)return'MISSING '+sel;const bad=B.filter(b=>{const cs=getComputedStyle(b),r=b.getBoundingClientRect();let op=1;for(let e=b;e;e=e.parentElement)op*=+getComputedStyle(e).opacity;return op<.3||cs.visibility==='hidden'||r.width<8||r.height<8});return bad.length?'INVISIBLE '+bad.length+'/'+B.length+' '+sel+' '+(()=>{const b=bad[0],r=b.getBoundingClientRect();let op=1;for(let e=b;e;e=e.parentElement)op*=+getComputedStyle(e).opacity;return Math.round(r.width)+'x'+Math.round(r.height)+' op'+op.toFixed(2)+' '+getComputedStyle(b).visibility})():'ok '+B.length};
    localStorage.setItem('r42locAsked','1');rewardQ.length=0;$('#reward').hidden=true;state.btn=5000;state.tix=3000;state.glim=50;1`);

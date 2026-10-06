@@ -43,7 +43,7 @@ anything the game uses. `tools/writing/holidays.md` is the holiday design doc.
   wardrobe, studio). Both must end with `errors 0`. Test every data shape a change touches (v76's bug only hit events held at houses).
 - Test headless in solo mode with `tools/dev/town/run.js` (see its README; Playwright goes in `.claude/pw`). It injects a
   `__T` eval hook at serve time, so nothing test-only ever lands in index.html (still check `grep -c __T index.html` is 0).
-  Never point tests at the real Firebase room. Software GL is slow (building the town takes ~10 s there; phones are much faster).
+  Never point tests at the real Firebase room. The tools use the laptop's RTX 3060 (ANGLE on D3D11) since Oct 5 2026: the app is ready in ~2.4 s. `R42_GL=soft` forces software GL (SwiftShader), which is many times slower and makes timings meaningless.
 - Some features live between marker comments in index.html, e.g. `/* <townsfolk> */`, `/* <townsfolk-talk> */`,
   `/* <town-life> */`, `/* <town-walk> */`, `/* <house-plans> */`, `/* <house-models> */`. They were generated from files in
   the gitignored `.claude/town/` (integrate.py etc.), which a new session won't have: **edit the code in index.html directly now**.
@@ -69,7 +69,7 @@ anything the game uses. `tools/writing/holidays.md` is the holiday design doc.
 - **Run `tools/dev/town/sweep.js`, `sweep2.js` and `sweep3.js` before every release** (sweep3 clicks through every dialogue card, the Bag, prizes, designs, photos, fishing, chats and conversations, and fails on buttons that are on screen but invisible). v76 shipped a crash that only hit events held at houses;
   the sweeps would have caught it. Test every data shape a change touches, not just the first one that comes to mind.
 - Search-and-replace across index.html is dangerous: it once rewrote a helper's own definition. Assert counts, read the result.
-- The laptop's headless software GL now stalls for seconds at random in every version; judge performance by draw counts
+- Judge performance by draw counts
   (`tm.R.drawn`) and JS time, compare versions with `R42_INDEX`, and ask Garrett how it feels on his phone.
 - Garrett liked: the round plaza, Market Street up to the Town Hall, the grid paths with tidy corners ("less blobby"), the night glow.
   He asked for edge-hold scrolling on the map (done in v77; ask if he wants it in the room too).
@@ -1023,3 +1023,11 @@ Beau tapped Explore, nothing happened for a while, he tapped again and the map o
   `renderer.disposeGeometry(g)` frees the old merged town batches' GPU buffers in `tmUnmerge`; `tmDecor` marks the merge dirty when a
   merged world exists (otherwise the old merged copy lingered and decorations drew twice); residents' pin portraits are drawn in idle
   time after load. `tmWarmAll` (draw everything once to upload it) exists but isn't called: on software GL it made startup minutes long.
+
+
+## Tests run on the laptop's GPU (Oct 5 2026)
+- `tools/dev/town/run.js` and the preview tools (kview, kall, sview, wview, xview, dview) launch Chromium with `--use-angle=d3d11
+  --enable-gpu` (the NVIDIA RTX 3060); `R42_GL=soft` brings back SwiftShader. On the GPU: app ready ~2.4 s (minutes on SwiftShader),
+  map first open ~0.85 s, reopen ~40 ms. Most of the "software GL is slow" numbers in older sections were SwiftShader.
+- Gotcha in test code: `ev()` returns JSON text, so `await ev('x')===true` is never true (compare with `'true'`, or parse it). A wait
+  loop written that way just runs out its timer; several timing tests in the v105 work did that and reported ~200 s "startups".

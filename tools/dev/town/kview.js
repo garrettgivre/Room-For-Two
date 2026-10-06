@@ -16,7 +16,7 @@ const srv=http.createServer((q,r)=>{const p=decodeURIComponent(q.url.split('?')[
     h=h.replace('const clock=',()=>inj+'\n;window.__T={f:c=>eval(c)};const clock=');r.writeHead(200,{'Content-Type':'text/html','Cache-Control':'no-store'});return r.end(h)}
   const f=path.join(ROOT,p);fs.readFile(f,(e,b)=>{if(e){r.writeHead(404);return r.end()}r.writeHead(200,{'Content-Type':MIME[path.extname(f)]||'application/octet-stream','Cache-Control':'no-store'});r.end(b)})});
 srv.listen(0,'127.0.0.1',async()=>{const port=srv.address().port;let br;
-  try{br=await chromium.launch({args:['--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
+  try{br=await chromium.launch({args:process.env.R42_GL==='soft'?['--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']:['--use-angle=d3d11','--enable-gpu','--ignore-gpu-blocklist']});
     const pg=await br.newPage({viewport:{width:720,height:900}});const errs=[];
     pg.on('console',m=>{if(m.type()==='error'||m.type()==='warning')errs.push(m.type()+': '+m.text())});pg.on('pageerror',e=>errs.push('pageerror: '+e.message));
     await pg.addInitScript(()=>{try{localStorage.r42coach='1'}catch(_){}});
