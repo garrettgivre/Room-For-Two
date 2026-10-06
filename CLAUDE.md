@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v111** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v111'` in `sw.js`; bump both for anything
+**Current build: v112** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v112'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1126,3 +1126,9 @@ walking toward the arcade (`.claude/town/t_walkperf.js`, `t_passes.js`): render 
   app" (visible again until frames settle) and leaves those frames out of the fps/worst/hitch numbers; copying the readout means leaving
   the app, which polluted them. Suspect: returning after a while reloads the whole page (`glReload`/`canvasWiped`), which looks like
   "app ready" plus a trip in the readout.
+
+- v112 (phone start 8.2 s, half of it building the town behind the loader): `finishLoad` no longer waits for `preloadTown` (kept,
+  unused). The idle warm-up builds the town after the room is up: `tmFresh` syncs only home + 1 building when nothing is merged yet,
+  `tmPumpIdle` builds one building per idle callback, then `tmFreshQuiet` runs the merge and the draw + snapshot as two separate steps,
+  each only after 1.2 s without a touch and not during the arrival sequence. Laptop: ready 4.2 -> 1.9 s; worst room hitch while it builds
+  ~0.5 s (the merge). Opening the map before it's done works (tmTick pumps one building a frame; a toast says the town is waking up).

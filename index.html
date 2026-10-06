@@ -30972,7 +30972,12 @@ tmShop=tmLod(tmShop);tmHome=tmLod(tmHome);tmDecor=tmLod(tmDecor);tmIsland=tmLod(
 function tmPump(n){if(!tm||!tm.pending)return false;let built=0;tm.pending=false;for(const k of tmPlaces()){if(tm.bld[k])continue;if(built>=n){tm.pending=true;break}built++;
     tm.signs=tm.signs.filter(q=>q.k!==k);try{tm.bld[k]=k==='home'?tmHome():tmShop(k);tmPad(tm.bld[k],k);tm.world.add(tm.bld[k]);tmPlace(k);tm.bld[k].traverse(o=>{if(o.userData.anim)tm.anims.push(o)})}catch(e){console.warn('town '+k,e);delete tm.bld[k]}}
   if(built){tmAO();tm.snapOk=0;tm.mergeDirty=true;if(!tm.pending&&tm.syncKeyP)tm.syncKey=tm.syncKeyP}return built>0}
-function tmPumpIdle(){if(!tm||!tm.pending||tm.open)return;tmPump(2);if(tm.pending)(window.requestIdleCallback?requestIdleCallback(tmPumpIdle,{timeout:800}):setTimeout(tmPumpIdle,200));else try{tmFresh()}catch(_){}}
+function tmPumpIdle(){if(!tm||!tm.pending||tm.open)return;tmPump(1);if(tm.pending)(window.requestIdleCallback?requestIdleCallback(tmPumpIdle,{timeout:800}):setTimeout(tmPumpIdle,200));else tmFreshQuiet()}
+// the town's last steps (merge, then a draw and snapshot) are the heavy ones: run each in its own quiet moment (no touch for 1.2 s)
+let tmLastIn=0;addEventListener('pointerdown',()=>{tmLastIn=performance.now()},true);
+function tmFreshQuiet(step){if(!tm||tm.open)return;const go=()=>{if(!tm||tm.open)return;if(performance.now()-tmLastIn<1200||(typeof ARR!=='undefined'&&ARR.on&&!openTab)){setTimeout(()=>tmFreshQuiet(step),700);return}
+  try{if(!step){if(tm.mergeDirty&&!tm.pending&&!tm.arr){tmMergeWorld()}setTimeout(()=>tmFreshQuiet(1),120);return}tmFresh()}catch(e){console.warn('town fresh',e)}};
+  window.requestIdleCallback?requestIdleCallback(go,{timeout:1500}):setTimeout(go,300)}
 const tmLogo=function(k){return k==='home'?ico('tab-room'):SHOPS[k]&&(SHOPS[k].house||SHOPS[k].place)?(thumbs['fig_'+SHOPS[k].owner]||(queueThumbs(['fig_'+SHOPS[k].owner]),clearTimeout(tmLogo.t),tmLogo.t=setTimeout(()=>{if(tm&&tm.open)tmLabels()},1800),ico('tab-room'))):`assets/logos/${k}-nt.webp`};
 /* <house-models> */
 TM_BODY.h_beacon=function(g,o){const {hw,hd,dz}=o,J=(c,q)=>{const m=M(c,Object.assign({roughness:.65},q));m.detail=3;return m},
@@ -35025,7 +35030,7 @@ function sheetGenie(open,t){const sh=$('#sheet'),btn=$(t==='pet'?'#dkPet':'#dkMe
 function tmClose(){if(!tm||!tm.open)return;twEnd();tm.open=false;document.body.classList.remove('mapopen');const el=$('#town3');try{tmDraw(0);tmSnapNow()}catch(_){}tmGenie(false);el.classList.remove('on');setTimeout(()=>{if(!tm.open)el.hidden=true},1500);$('#tmCard').hidden=true;clock.getDelta()}
 function tmFit(){const a=tm.cam.aspect,t=Math.tan((tmMk()==='world'?30:tm.cam.fov)*Math.PI/360),r=Math.hypot(TM_W,TM_D)/2;return r/(t*Math.min(1,a*1.12)*1.05)}
 function tmSnapNow(){const c=$('#tmc'),s=tm.snap||(tm.snap=document.createElement('canvas'));if(s.width!==c.width||s.height!==c.height){s.width=c.width;s.height=c.height}const x=s.getContext('2d');x.clearRect(0,0,s.width,s.height);x.drawImage(c,0,0)}
-function tmFresh(){if(!tm||tm.open)return;if(tmSyncNeeded())tmSync(false,6);if(tm.pending){tmPumpIdle()}tmArrange(false);tm.focus=null;tm.tgt.set(0,0,0);tmDraw(0);tmSnapNow();tm.snapOk=1}
+function tmFresh(){if(!tm||tm.open)return;if(tmSyncNeeded())tmSync(false,tm.mergedG?6:1);if(tm.pending){tmPumpIdle()}tmArrange(false);tm.focus=null;tm.tgt.set(0,0,0);tmDraw(0);tmSnapNow();tm.snapOk=1}
 let tmSz=null;addEventListener('resize',()=>{tmSz=null});
 function tmSize(){if(tmSz&&performance.now()-tmSz.t<1000&&tmSz.v[0])return tmSz.v;const pp=$('#tmPop'),v=[pp.clientWidth||innerWidth,pp.clientHeight||innerHeight];tmSz={t:performance.now(),v};return v}
 // Time of day on the map follows US Central time (and the debug sky slider), like the room's sky:
@@ -35141,7 +35146,7 @@ function tmTick(ts){if(!tm||!tm.open)return;requestAnimationFrame(tmTick);const 
   cv.addEventListener('wheel',e=>{if(!tm)return;e.preventDefault();tm.zoomTo=null;tm.zoom=clamp(tm.zoom*(e.deltaY>0?1.1:.9),.02,1.4)},{passive:false});
   $('#tmBack').onclick=()=>{$('#tmCard').hidden=true;tm.focus=null};$('#tmX').onclick=()=>{if(!tmJustOpened())closeMap()};$('#town3').addEventListener('pointerdown',e=>{if(e.target===e.currentTarget&&!tm.arr&&!tmJustOpened()&&!$('#tmPop').classList.contains('gen'))closeMap()});$('#tmArr').onclick=()=>tmArrange(true);$('#tmWheelBtn').onclick=e=>{e.stopPropagation();tmWheelOpen(true)}}
 
-function showMap(){if(tmOpen())return;const m=$('#map'),here=away?away.key:'home';$('#mapHome').hidden=!away;$('#mapTitle').textContent=away?'Where next?':'Where to?';m.querySelectorAll('[data-go]').forEach(b=>b.classList.toggle('here',b.dataset.go===here));m.hidden=false;requestAnimationFrame(()=>m.classList.add('on'))}
+function showMap(){if(typeof tm!=='undefined'&&(!tm||!tm.mergedG))toast('The town is still waking up. One moment!',true);if(tmOpen())return;const m=$('#map'),here=away?away.key:'home';$('#mapHome').hidden=!away;$('#mapTitle').textContent=away?'Where next?':'Where to?';m.querySelectorAll('[data-go]').forEach(b=>b.classList.toggle('here',b.dataset.go===here));m.hidden=false;requestAnimationFrame(()=>m.classList.add('on'))}
 // a tap on × or back that arrives right after the map opened was queued while it loaded: ignore it
 const tmJustOpened=()=>tm&&tm.open&&performance.now()-(tm.openT||0)<700;
 function closeMap(){tmClose();const m=$('#map');m.classList.remove('on');setTimeout(()=>{m.hidden=true},250);if(!traveling)doorTarget=0}
@@ -65515,7 +65520,8 @@ function swapMask(g,k){if(!swapOn()||!g||g.userData.swapM)return;const t=SWAP_AS
 /* </swapface> */
 /* <whatsnew> */
 // ---- a one-time card per device listing what's new since the last version this phone saw (localStorage r42wn)
-const WHATSNEW=[[111,'Stepping outside is quicker: neighbours’ full models now appear one at a time instead of all at once. The speed readout also notes how long the game takes to come back after you switch apps.'],
+const WHATSNEW=[[112,'The app opens about twice as fast: your room comes first, and the town finishes setting itself up in the background.'],
+  [111,'Stepping outside is quicker: neighbours’ full models now appear one at a time instead of all at once. The speed readout also notes how long the game takes to come back after you switch apps.'],
   [110,'Walking around town should be noticeably smoother, especially on phones.'],
   [109,'Makeovers: some requests now come with a theme to try for a bonus, and residents write back a few days later asking for one more thing. Town events: stalls and Hook-a-duck on the plaza during festivals and big holidays, the Pumpkin Parade round the ring road, and fireworks on Bubblework Night.'],
   [108,'Neighbours have birthday parties now: an evening at their house with their closest friends, cake and decorations, and you’re welcome to drop in. They also visit each other’s houses, and friendships shift from week to week. Ask them about it.'],
@@ -68319,7 +68325,9 @@ async function preloadTown(){const bar=$('#loadBar'),fill=$('#loadFill'),sub=doc
   try{if(!tmInit())return;bar.hidden=false;if(sub)sub.textContent='Building the town';tmNormCur();tmSync(false,2);const total=tmPlaces().length;let t0=performance.now();
     while(tm.pending&&performance.now()-t0<20000){tmPump(2);fill.style.width=Math.round(Object.keys(tm.bld).length/total*92)+'%';await fr()}
     try{tmSeasonDecor()}catch(e){console.warn('season decor',e)}tmDraw(0);tmSnapNow();tm.snapOk=1;fill.style.width='100%';await fr()}catch(e){console.warn('preload',e)}}
-function finishLoad(){if(loadedOnce)return;loadedOnce=true;preloadTown().then(finishLoad2)}
+// v112: the room opens straight away; the town is built afterwards in idle moments, one building at a time (the warm-up below and
+// tmPumpIdle). preloadTown (build it all behind the loader) is kept but unused: it was over half of an 8 s phone start.
+function finishLoad(){if(loadedOnce)return;loadedOnce=true;finishLoad2()}
 function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);ready=true;bootDone=true;$('#loader').classList.add('gone');updHUD();
   // keepers' moving parts are worked out once per kind; do it for the townsfolk in quiet moments so the map never hitches on them
   {const ks=Object.keys(RESIDENTS).filter(k=>KEEPERS[k]&&!BAKE_MOVING[k]);const step=()=>{const k=ks.shift();if(!k)return;try{const K=KEEPERS[k]();kPolish(K,k);bakeKeeper(K,k)}catch(_){}(window.requestIdleCallback?requestIdleCallback(step,{timeout:3000}):setTimeout(step,400))};setTimeout(step,6000)}
@@ -68329,7 +68337,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=111;
+const APP_V=112;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
