@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v141** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v141'` in `sw.js`; bump both for anything
+**Current build: v142** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v142'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 141 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1480,3 +1480,22 @@ it skips data files that don't parse). Plus `/* <bugs141> */`.
 - v141 bug batch: new furniture lands in a clear spot visible above the Decorate sheet (`spawn`); photo mode follows the pet; empty Bag
   tabs span the grid; a shop with nobody in (both staff elsewhere) shows nobody, with an honesty-jar note (`shopStaff` used to put the
   boss behind the counter while they were somewhere else).
+- v142 (from two playtests, reports in `.claude/play/social/report.md` and `.claude/play/socread/report.md`):
+  - **Line picking** (`socLine(k,path,o,opt)`, `socPool`): reactions written for one player line are `{t,to:N}` and only follow `m.<move>.you[N]`
+    (`socYou` returns [index,text]; `socTry`/`socDo`/`kSocDo`/`socResolve` pass it as `si`); lines that already name `{o}`'s resident are skipped;
+    `t.*` greetings are filtered by `townHour()` (`SOC_TOD`); `opt.re`/`nre` prefer or avoid (big-swing lines by occasion), `opt.avoid` (no jab twice
+    in an argument). `socFillO` fills the Mayor as "the Mayor" (vocative "Mayor Marsh").
+  - **Balance**: three kind moves a day per resident count (each move once fully, a second time at .35); gossip about a pair once a day; the
+    "took a side" swing once a week per pair; passive changes (`kfDelta(...,{quiet:1})`) never mark someone as met, and `socAct` ripples only
+    reach residents you've met (`visMet` counts p>0, not negative); at Rival or worse kind moves get the suspicious line and +2 at most;
+    apologies at Enemy or worse are grudging (+6); every apology has at least a 15% chance; mood can't make a brush-off or mock "land".
+  - **Merge**: `MERGE.kf` measures each phone's change against the base faded to that phone's own `ft` (no double-counted fading); `bl`
+    (bestie letter sent) and `iv` (house invite sent) are kept as max, so those letters go out once; houses stay open to someone who invited you
+    down to Rival.
+  - Arguments only between pairs actually at odds (min feeling <= -21); bad-standing openers only use sour opinions/gossip; recent openers are
+    remembered per phone (`localStorage['r42soo:'+k]`); "Friend" capitalised at a line start (`capF0` in `CV_FILL`/`visFill`); no snipe at a first
+    meeting or after their question; shop thanks only from staff who like you; mailed gifts refused by an Enemy say so in the letter.
+  - The line data itself was polished by an agent (789 paired reactions, 269 rewrites, 178 new lines; originals in `.claude/soc/polish/orig/`).
+  - **Furniture QA** (`/* <furn-qa> */` after `/* </anim-sets> */`, fixes from `.claude/qa/{orig,res,more}.js` merged by `.claude/qa/integ.py [groups]`,
+    brief `tools/dev/town/FURNQA_BRIEF.md`): the resident sets are done (`.claude/qa/res_report.md`): seat heights, Scone's bunk (top bunk), flat
+    pet beds lift the sleeper (`CATMAP[k].qrNapLift`, a `lieSide` wrapper), low cuddle cushions use `ACTS_ANIM.qr_cuddleLow`.
