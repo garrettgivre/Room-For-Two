@@ -990,7 +990,7 @@ body.styling .storechip{opacity:0}
 .cvbox .cvch button:hover,.cvbox .cvch button:active,.dlybox .cvch button:hover,.dlybox .cvch button:active{background:rgba(255,255,255,.55)!important}
 .cvbox .cvch button:hover:before,.cvbox .cvch button:active:before,.dlybox .cvch button:hover:before,.dlybox .cvch button:active:before,.cvbox .cvch button:first-child:before,.dlybox .cvch button:first-child:before{opacity:1}
 .cvbox .cvch:hover button:first-child:not(:hover):before,.dlybox .cvch:hover button:first-child:not(:hover):before{opacity:.25}
-.cvbox .tmc-x,.dlybox .tmc-x{top:18px!important;right:10px!important;transform:scale(.8)}
+.cvbox .tmc-x,.dlybox .tmc-x{top:18px!important;right:10px!important;transform:scale(.8);z-index:6}
 .dlybox .cvch button{animation:none!important;opacity:1!important}.dlybox{bottom:calc(118px + env(safe-area-inset-bottom))}body.mapopen .dlybox{bottom:calc(18px + env(safe-area-inset-bottom))}
 /* shopkeepers' bubbles: same colours, a rounder box */
 .kbub{background:color-mix(in oklab,var(--kc,#FF8A1C) 18%,#FBFCFF)!important;border:3px solid color-mix(in oklab,var(--kc,#FF8A1C) 40%,#FFFFFF)!important;border-radius:26px!important;box-shadow:0 4px 0 rgba(59,18,115,.16)!important;padding:13px 18px 12px!important;color:#2E2A5C;font-family:var(--disp)}
@@ -73461,6 +73461,7 @@ const WHATSNEW=[[119,'For the two of you: notes to each other are kept safe, you
   [136,'The town is built while the game loads, so the map opens instantly, and the colourful bar shows the real progress. Map labels no longer pile up, pop-ups keep clear of the pet wheel and pages, neighbours show their faces everywhere, the starter pet bed is roomier, and hats tuck the antennae under them.'],
   [137,'Opening the map while Mochi is in bed: Mochi gets up first instead of lying across town giant-sized.'],
   [138,'The sky on the map no longer turns the wrong way: the sun, moon, stars and clouds stay put when you rotate.'],
+  [139,'The × on a conversation or a small dialogue card closes it again.'],
   [118,'Friendships go deeper: every neighbour has five more heart-to-hearts, sends a letter (and a gift) when you become best friends, and remembers what you talked about lately. More fixes from playtesting: town projects always appear on the map (the bouncy castle comes first now), the Journal keeps months, not days, taps on the noticeboard, museum and well work, and the back button closes photos and fishing.'],
   [117,'Fixes from playtesting: finished makeovers now pay out properly (they hadn’t been!), events at the library, Town Hall and weather station pay too, party guests spread out, Today’s list sits right under the bond bar, and your pet’s Journal has a page summing up the month so far. Plus a gentler welcome back, fewer day-one strangers, and lots of small things.'],
   [116,'Polish: keepsake letters read properly in the Bag, scrolling tab rows show there’s more, the plaza tiles are brighter, civic buildings have bigger name signs, and messages no longer pop over your pet while you dress it.'],
@@ -82448,7 +82449,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><p class="coachgo">Start by tapping ${nm} to say hello.</p><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=138;
+const APP_V=139;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
