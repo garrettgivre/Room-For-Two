@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v142** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v142'` in `sw.js`; bump both for anything
+**Current build: v143** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v143'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 141 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1499,3 +1499,12 @@ it skips data files that don't parse). Plus `/* <bugs141> */`.
   - **Furniture QA** (`/* <furn-qa> */` after `/* </anim-sets> */`, fixes from `.claude/qa/{orig,res,more}.js` merged by `.claude/qa/integ.py [groups]`,
     brief `tools/dev/town/FURNQA_BRIEF.md`): the resident sets are done (`.claude/qa/res_report.md`): seat heights, Scone's bunk (top bunk), flat
     pet beds lift the sleeper (`CATMAP[k].qrNapLift`, a `lieSide` wrapper), low cuddle cushions use `ACTS_ANIM.qr_cuddleLow`.
+- v143: **Furniture QA done** for all sets (`.claude/qa/{orig,res,more}_report.md`; ~150 fixes in `/* <furn-qa> */`, order orig, res, more matters:
+  orig wraps `seatWorld`/`startPerch`/`updatePet` for per-piece `qoAct` (climb on and play an anim) and `qoFlip`, `lieSide` for `qoNapLift`; res adds
+  `qrNapLift` and `ACTS_ANIM.qr_cuddleLow`; more scales 15 small pet beds and wraps `updatePet` (`qmNapYaw`) and `useSpot`). Known, not fixed: pet beds
+  smaller than the curled pet, showers/swings/wheels used standing (the grown pet doesn't fit), the space egg chair.
+  **Yard fixes** (`/* <yard-fixes> */`, playtest `.claude/play/yard/report.md`): Bolt's "Build a yard" action read a `kind` argument kPanel never
+  passes (no one could buy a yard!); `MERGE.yard` merges `items` by id (`mById`) and `yardDone` keeps item ids; sandbox "Keep this room" keeps only
+  owned pieces and returns removed ones to storage; `pick` falls back to the yard's objects (tap-to-use outside); your own yard isn't a "house visit";
+  yard edits started outside end outside; Decorate in the yard edits the yard; travel is blocked during a yard edit; painted yard tiles show as
+  1-cell rugs in `yardPlan` and survive a size change; gate visitors avoid furniture; back on a Decorate sub-page returns to its front page.

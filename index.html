@@ -41732,7 +41732,7 @@ function travelTo(dest,then,focus){if(traveling)return;const here=away?away.key:
   const tv=$('#travel');$('#tvText').textContent=dest==='home'?'Heading home…':`Off to ${SHOPS[dest].n}…`;$('#tvIcon').src=ico(dest==='home'?'tab-room':SHOPS[dest].icon);tv.hidden=false;requestAnimationFrame(()=>tv.classList.add('on'));
   setTimeout(()=>{if(away){scene.remove(away.root);away=null}setRoomSize(dest==='home'?state.size:SHOPS[dest].plan?planSize(SHOPS[dest].plan):8);if(dest!=='home')away=buildShop(dest);{const PL=!!(away&&away.plan);slab.visible=trim.visible=!PL;LIT.room.half=PL?0:HALF;if(PL){away.cutKey='';updPlan();planFrame()}updFloorChip()}itemRoot.visible=!away;tilesDirty=true;syncTiles();doorKey='';syncDoor();navKey='';
     endToyPlay(true);endUse(false);pet.act=null;pet.seat=null;pet.seatY=0;pet.path=null;pet.target=null;pet.mode='idle';pet.timer=2.5;const f=doorFront();pet.pos.copy(f);petFree();pet.heading=Math.PI/2;
-    doorOpen=doorTarget=1;cam.target.set(0,.8,0);cam.panT.set(0,0,0);cam.pan.set(0,0,0);updCenterPill();updStoreBar();if(away)td('visit:'+dest);if(away&&away.def.house){td('visit:house');if(Math.random()<.6)jrEvent('visit',{s:away.def.n});eventArrive()}else if(away&&away.def.place)eventArrive();
+    doorOpen=doorTarget=1;cam.target.set(0,.8,0);cam.panT.set(0,0,0);cam.pan.set(0,0,0);updCenterPill();updStoreBar();if(away)td('visit:'+dest);if(away&&away.def.house&&!away.def.yard){td('visit:house');if(Math.random()<.6)jrEvent('visit',{s:away.def.n});eventArrive()}else if(away&&away.def.place)eventArrive();
     setTimeout(()=>{tv.classList.remove('on');setTimeout(()=>{tv.hidden=true},400);if(pet.stage>0)petGo(f.clone().add(new THREE.Vector3(1.3,0,-.4)));setTimeout(()=>{doorTarget=0},1100);
       if(away){keeperReact('greet',2.4);setTimeout(()=>away&&away.keeper&&keeperSay(pick1(away.keeper.lines.hi)),500);if(!focus)setTimeout(()=>toast(away?(away.keepers.length>1?`Tap ${away.keepers.map(K=>KBIB[K.kind]?KBIB[K.kind].n:K.n).join(' or ')} to chat${away.def.house||away.def.place?'':' or book'}.`:away.keeper&&KBIB[away.keeper.kind]?(away.def.house||away.def.place?`Tap ${KBIB[away.keeper.kind].n} to chat.`:`Tap ${KBIB[away.keeper.kind].n} to chat or shop. Or tap anything on display.`):''):''),4300);if(focus)setTimeout(()=>typeof focus==='function'?openOffer(focus):openProduct(focus),1400)}
       traveling=false;then&&then()},250)},650)}
@@ -42020,9 +42020,9 @@ $('#bTurn').onclick=()=>{const it=itemById(selId);if(!it)return;const U=beginBui
 /* spawn from tray */
 function visibleWall(){let best=0,bd=-1e9;walls.forEach((w,i)=>{if(!w.g.visible)return;const d=WALLDEF[i];const v=(camera.position.x-d.c[0])*d.n[0]+(camera.position.z-d.c[1])*d.n[1];if(v>bd){bd=v;best=i}});return best}
 function spawn(k){const d=CATMAP[k];if(!(state.fown[k]>0)){goBuy(k);return null}
-  if(state.items.length>=80){toast('Your room is full. Store something first.');return null}
+  if(state.items.length>=80){toast(sandbox&&sandbox.yard?'The yard is full. Store something first.':'Your room is full. Store something first.',true);return null}
   state.fown[k]--;if(!state.fown[k])delete state.fown[k];const it={id:uid(),k,c:d.dc||0,by:pid()};
-  if(d.wall){it.w=visibleWall();it.u=(Math.random()-.5)*2;it.y=d.y}else{it.x=(Math.random()-.5)*1.5;it.z=(Math.random()-.5)*1.5;it.r=0;try{const fx=Math.sin(cam.yaw)*HALF*.3,fz=Math.cos(cam.yaw)*HALF*.3,rad=Math.max(.4,Math.max(d.w||1,d.d||1)*.5),v=new THREE.Vector3();let best=null;const shT=(()=>{const sh=openTab&&document.querySelector('.sheet');if(!sh||sh.hidden)return 1e9;const r=sh.getBoundingClientRect();return r.height>20?r.top:1e9})(),seen=q=>{if(shT>=1e9)return true;const P=new THREE.Vector3(q.x,.45,q.z).project(camera),y=(-P.y*.5+.5)*innerHeight,x=(P.x*.5+.5)*innerWidth;return y<shT-24&&y>90&&x>20&&x<innerWidth-20};for(let pass=0;pass<2&&!best;pass++)for(let r=0;r<HALF*1.4&&!best;r+=.5)for(let a=0;a<12&&!best;a++){const an=a/12*Math.PI*2;v.set(fx+Math.cos(an)*r,0,fz+Math.sin(an)*r);if(Math.abs(v.x)<HALF-rad&&Math.abs(v.z)<HALF-rad&&spotClear(v,rad)&&(pass||seen(v)))best=v.clone()}if(best){it.x=best.x;it.z=best.z}}catch(_){}}
+  if(d.wall){it.w=visibleWall();it.u=(Math.random()-.5)*2;it.y=d.y}else{it.x=(Math.random()-.5)*1.5;it.z=(Math.random()-.5)*1.5;it.r=0;try{const fx=Math.sin(cam.yaw)*HALF*.3,fz=Math.cos(cam.yaw)*HALF*.3,rad=Math.max(.4,Math.max(d.w||1,d.d||1)*.5),v=new THREE.Vector3();let best=null;const shT=(()=>{const sh=openTab&&document.querySelector('.sheet');if(!sh||sh.hidden)return 1e9;const r=sh.getBoundingClientRect();return r.height>20?r.top:1e9})(),seen=q=>{if(shT>=1e9)return true;const P=new THREE.Vector3(q.x,.45,q.z).project(camera),y=(-P.y*.5+.5)*innerHeight,x=(P.x*.5+.5)*innerWidth;return y<shT-90&&y>90&&x>20&&x<innerWidth-20};for(let pass=0;pass<2&&!best;pass++)for(let r=0;r<HALF*1.4&&!best;r+=.5)for(let a=0;a<12&&!best;a++){const an=a/12*Math.PI*2;v.set(fx+Math.cos(an)*r,0,fz+Math.sin(an)*r);if(Math.abs(v.x)<HALF-rad&&Math.abs(v.z)<HALF-rad&&spotClear(v,rad)&&(pass||seen(v)))best=v.clone()}if(best){it.x=best.x;it.z=best.z}}catch(_){}}
   state.items.push(it);syncScene();clampPlaced(it);select(it.id);updHUD();td('place');needKeys(d).forEach(k=>wishHit('need:'+k));return it}
 
 /* ================= EMOTES / HUD ================= */
@@ -73485,6 +73485,7 @@ const WHATSNEW=[[119,'For the two of you: notes to each other are kept safe, you
   [140,'The yard comes alive: Mochi looks after itself out there (food bowls, beds, seats), the lawn follows the real weather and season (puddles, snow, fallen leaves, petals, fireflies on summer nights), it gets dark at night so lanterns glow, neighbours you know stop by the gate to say hi, and Mochi sometimes wishes to go out and play.'],
   [141,'Neighbours have feelings now, good and bad. Friendship runs from Bestie all the way down to Nemesis. In a chat, tap Social to compliment, joke, tease, insult or apologise (the choices are coloured by how they will land), and some replies are a bit mean. Neighbours remember, gossip about what you did, take sides, fall out with each other and make up, and you learn who likes whom by listening. Bad feelings fade over about two weeks; a gift and a sorry help.'],
   [142,'Neighbours, tuned after a night of playtesting: replies answer what you actually said (jokes get their own punchline back), friends no longer have screaming rows, enemies stay suspicious of sudden niceness, greetings match the time of day, and kindness has a daily limit so it means something. Also: about forty pieces of resident furniture fixed so Mochi sits on seats instead of sinking into them, sleeps on the top bunk, and hugs low cushions properly.'],
+  [143,'Every piece of furniture got checked with Mochi actually using it: about 150 fixes so seats, beds, mats and toys fit (no more sinking into chairs or sleeping through tents, and the trampoline gets bounced on). The yard: Bolt now offers to build it (the button was missing!), both of your changes to the yard are kept, painted paths show outside, tapping yard furniture works, and decorating the yard brings you back out to it. Keeping a sandbox room now only keeps pieces you own.'],
   [118,'Friendships go deeper: every neighbour has five more heart-to-hearts, sends a letter (and a gift) when you become best friends, and remembers what you talked about lately. More fixes from playtesting: town projects always appear on the map (the bouncy castle comes first now), the Journal keeps months, not days, taps on the noticeboard, museum and well work, and the back button closes photos and fishing.'],
   [117,'Fixes from playtesting: finished makeovers now pay out properly (they hadn’t been!), events at the library, Town Hall and weather station pay too, party guests spread out, Today’s list sits right under the bond bar, and your pet’s Journal has a page summing up the month so far. Plus a gentler welcome back, fewer day-one strangers, and lots of small things.'],
   [116,'Polish: keepsake letters read properly in the Bag, scrolling tab rows show there’s more, the plaza tiles are brighter, civic buildings have bigger name signs, and messages no longer pop over your pet while you dress it.'],
@@ -76634,7 +76635,7 @@ function yardItems(){const Y=yardS(),P=yardPlan(),n=YARD_SZ[Y.lv|0]||8,C=PLAN_CS
     else Object.assign(q,{x:clamp((+it.x||0)*sx,-hw+.3,hw-.3),z:clamp((+it.z||0)*sz,-hd+.3,hd-.3),r:it.r||0,y:it.y||0});out.push(q)});return out}
 SHOPS.yard={n:'Your yard',house:1,yard:1,hid:null,res:[],owner:null,kind:'home',door:'classic',icon:'tab-room',color:'#A6E22E',blurb:'Your own little yard.',tf:()=>[],tw:()=>[],kgs:[],lines:[],layout:()=>yardItems()};
 Object.defineProperty(SHOPS.yard,'plan',{get:yardPlan,enumerable:true});
-MERGE.yard=(l,r,b)=>{l=l||{};r=r||{};const n=(+l.at||0)>=(+r.at||0)?l:r;return Object.assign({},n,{lv:Math.max(l.lv|0,r.lv|0)})};
+MERGE.yard=(l,r,b)=>{l=l||{};r=r||{};b=b||{};const n=(+l.at||0)>=(+r.at||0)?l:r;return Object.assign({},n,{lv:Math.max(l.lv|0,r.lv|0),items:mById(l.items,r.items,b.items)})};
 {const n0=normalize;normalize=function(){const s_=n0.apply(this,arguments);try{if(s_){const Y=s_.yard&&typeof s_.yard==='object'?s_.yard:{};s_.yard={lv:clamp(Y.lv|0,0,3),items:Array.isArray(Y.items)?Y.items.filter(i=>i&&CATMAP[i.k]):[],tf:Array.isArray(Y.tf)?Y.tf:null,tw:Array.isArray(Y.tw)?Y.tw:null,at:+Y.at||0,by:Y.by||''}}}catch(e){console.warn('yard norm',e)}return s_}}
 if(state&&!state.yard)state.yard={lv:0,items:[],tf:null,tw:null,at:0,by:''};
 {const tt=travelTo;travelTo=function(dest){if(dest==='yard'&&!(yardS().lv>0)){toast('You don’t have a yard yet. Bolt at Hammer & Hue can build one.',true);return}return tt.apply(this,arguments)}}
@@ -76656,7 +76657,7 @@ function yardEdit(){const Y=yardS();if(!(Y.lv>0))return;if(away){travelTo('home'
 function yardBar(){const b=$('#mkbar');if(!b)return;if(!sandbox||!sandbox.yard){return}b.hidden=false;
   b.innerHTML=`<div class="mkt"><div><b>Your yard</b><small>Use your own furniture and paint the lawn. It saves when you tap Done.</small></div></div><div class="mkbtns"><button class="gel lilac" id="ydDeco">Furniture</button><button class="gel slime" id="ydDone">Done</button></div>`;
   $('#ydDeco').onclick=()=>openDecorate('furn');$('#ydDone').onclick=yardDone}
-function yardDone(){if(!sandbox||!sandbox.yard)return;const S=sandbox,design={items:state.items.map(({k,x,z,r,c,w,u,y})=>({id:uid(),k,x,z,r,c,w,u,y})),tf:state.tf.slice(),tw:state.tw.slice()};
+function yardDone(){if(!sandbox||!sandbox.yard)return;const S=sandbox,design={items:state.items.map(({id,k,x,z,r,c,w,u,y})=>({id:id||uid(),k,x,z,r,c,w,u,y})),tf:state.tf.slice(),tw:state.tw.slice()};
   const before={},after={};((S.saved.yard&&S.saved.yard.items)||[]).forEach(i=>before[i.k]=(before[i.k]|0)+1);design.items.forEach(i=>after[i.k]=(after[i.k]|0)+1);
   select(null);if(brush)endBrush();setTab(null);state=S.saved;sandbox=null;dirty=false;document.body.classList.remove('mkmode');$('#mkbar').hidden=true;
   const F=state.fown||(state.fown={});new Set([...Object.keys(before),...Object.keys(after)]).forEach(k=>{const dl=(after[k]|0)-(before[k]|0);F[k]=Math.max(0,(F[k]|0)-dl);if(!F[k])delete F[k]});
@@ -76665,7 +76666,7 @@ function yardDone(){if(!sandbox||!sandbox.yard)return;const S=sandbox,design={it
 {const mb=mkBar;mkBar=function(){if(sandbox&&sandbox.yard){yardBar();return}return mb.apply(this,arguments)}}
 {const ba=backAct;backAct=function(){try{if(sandbox&&sandbox.yard&&!openTab){yardDone();return true}}catch(_){}return ba.apply(this,arguments)}}
 // Bolt (and Sketch) build it; Decorate's home page and the yard itself have the way in
-{const ka=kActs;kActs=function(kind){const A=ka.apply(this,arguments);try{if((kind==='builder'||kind==='pencil')&&yardS().lv<3)A.push(['yard',yardS().lv?'Make the yard bigger':'Build a yard',yardS().lv?`${YARD_COST[yardS().lv+1].toLocaleString()} buttons`:'Your own lawn, 3,000 buttons','#E6F8D2','tab-room'])}catch(_){}return A}}
+{const ka=kActs;kActs=function(kind){const A=ka.apply(this,arguments);try{kind=kind||(kmode&&kmode.kind);if((kind==='builder'||kind==='pencil')&&yardS().lv<3)A.push(['yard',yardS().lv?'Make the yard bigger':'Build a yard',yardS().lv?`${YARD_COST[yardS().lv+1].toLocaleString()} buttons`:'Your own lawn, 3,000 buttons','#E6F8D2','tab-room'])}catch(_){}return A}}
 {const kc=kAct;kAct=function(a){if(a==='yard'){kClose(true);yardBuy();return}return kc.apply(this,arguments)}}
 function yardCardHtml(){let h='';try{if(!sandbox&&!(away&&!away.def.yard)){const Y=yardS();h=Y.lv>0?`<div class="ydcard"><div><b>Your yard</b><small>${(Y.items||[]).length?`${Y.items.length} thing${Y.items.length>1?'s':''} out there`:'Empty lawn, waiting for you'}</small></div><button class="gel slime" data-yd="go">Go outside</button><button class="gel lilac" data-yd="edit">Decorate it</button></div>`
   :`<div class="ydcard off"><div><b>A yard of your own</b><small>Save up 3,000 buttons and Bolt at Hammer &amp; Hue will build one.</small></div><button class="gel lilac" data-yd="bolt">Ask Bolt</button></div>`}}catch(e){console.warn('yard card',e)}return h}
@@ -76723,9 +76724,9 @@ function petUseItem(id){try{if(sandbox&&!sandbox.yard)return false;if(away&&away
 // ---- leaving the sandbox can keep the room you made there (v132): Bolt asks; keeping copies the furniture, floors, walls, door and
 // room size into your real room (the pieces stay placed; tile sets and the door style you used are unlocked)
 {const s0=setSandbox;setSandbox=function(on){try{if(!on&&sandbox&&!sandbox.mk&&!sandbox.yard&&!sandbox.ask){const S=sandbox.saved,ch=JSON.stringify([state.items.map(i=>[i.k,i.x,i.z,i.r,i.c,i.w,i.u]),state.tf,state.tw,state.size,state.door])!==JSON.stringify([S.items.map(i=>[i.k,i.x,i.z,i.r,i.c,i.w,i.u]),S.tf,S.tw,S.size,S.door]);
-  if(ch){sandbox.ask=1;setTab(null);dlySay('builder','Nice work in there! Want me to leave your room like this when the sandbox closes? Everything you placed stays where it is.',[['Keep this room',()=>{const R=JSON.parse(JSON.stringify({items:state.items,tf:state.tf,tw:state.tw,size:state.size,door:state.door}));s0.call(this,false);
+  if(ch){sandbox.ask=1;setTab(null);dlySay('builder','Nice work in there! Want me to leave your room like this when the sandbox closes? Everything you placed stays where it is.',[['Keep this room',()=>{const R=JSON.parse(JSON.stringify({items:state.items,tf:state.tf,tw:state.tw,size:state.size,door:state.door}));s0.call(this,false);let left=0;{const S0=state,cnt=x=>{const c={};(x||[]).forEach(i=>{c[i.k]=(c[i.k]|0)+1});return c},oldP=cnt(S0.items),own={};Object.keys(Object.assign({},S0.fown||{},oldP)).forEach(k=>own[k]=((S0.fown||{})[k]|0)+(oldP[k]|0));const use={},keep=[];R.items.forEach(i=>{use[i.k]=(use[i.k]|0)+1;if(use[i.k]<=(own[i.k]|0))keep.push(i);else left++});R.items=keep;const nf={},kc=cnt(keep);Object.keys(own).forEach(k=>{const v=own[k]-(kc[k]|0);if(v>0)nf[k]=v});state.fown=nf}
       state.items=R.items;state.tf=R.tf;state.tw=R.tw;state.size=R.size;state.door=R.door;if(R.door&&R.door.s&&!(state.downs||[]).includes(R.door.s))(state.downs=state.downs||[]).push(R.door.s);
-      const T=new Set(state.town||[]);R.tf.forEach(k=>k&&T.add('f:'+k));R.tw.forEach(k=>k&&T.add('w:'+k));state.town=[...T];try{setRoomSize(R.size)}catch(_){}buildHist.length=0;updUndoBtns();syncScene();try{syncDoor()}catch(_){}updHUD();saveSoon();toast('Kept! This is your room now.',true)}],
+      const T=new Set(state.town||[]);R.tf.forEach(k=>k&&T.add('f:'+k));R.tw.forEach(k=>k&&T.add('w:'+k));state.town=[...T];try{setRoomSize(R.size)}catch(_){}buildHist.length=0;updUndoBtns();syncScene();try{syncDoor()}catch(_){}updHUD();saveSoon();toast(left?`Kept! ${left} piece${left>1?'s':''} you don’t own yet went back to the shop.`:'Kept! This is your room now.',true)}],
     ['Put my old room back',()=>s0.call(this,false)]]);return}}}catch(e){console.warn('sandbox keep',e)}return s0.apply(this,arguments)}}
 // ---- Decorate, friendlier (v132): quick kind chips and "In your room" on the front page, owned pieces first with the rest folded
 // away, a lower sheet so more of the room shows, no routine pop-ups while decorating, and pieces that pop in with a little burst.
@@ -83095,6 +83096,31 @@ window.SOC_TAGS_RAW=[
 {const tt=travelTo;travelTo=function(dest,then){const th=then;then=function(){try{const S=SHOPS[dest];if(S&&!S.house&&!S.place&&!S.yard&&away&&away.key===dest&&!(away.keepers&&away.keepers.length)&&!away.keeper)
       setTimeout(()=>toast(`Nobody’s minding ${S.n} right now. Tap anything on the shelves to buy it; there’s an honesty jar.`,true),1200)}catch(_){}if(th)return th.apply(this,arguments)};return tt.call(this,dest,then,...[].slice.call(arguments,2))}}
 /* </bugs141> */
+/* <yard-fixes> */
+// tapping a piece in the yard makes the pet use it (pick only looked at the home room)
+{const pk=pick;pick=function(x,y){const r=pk.apply(this,arguments);if(r||!(away&&away.key==='yard')||sandbox)return r;try{setRay(x,y);const hits=ray.intersectObjects([...away.objs.values()],true);
+  const inv=new Map([...away.objs.entries()].map(([id,o])=>[o,id]));for(const h of hits){if(!visDeep(h.object))continue;let o=h.object;while(o&&!inv.has(o))o=o.parent;if(o)return{id:inv.get(o)}}}catch(_){}return null}}
+// the yard edit started outside ends outside; Decorate from the yard means the yard; no wandering off mid-edit
+{const ye=yardEdit;yardEdit=function(){const fromYard=!!(away&&away.key==='yard');const r=ye.apply(this,arguments);try{if(sandbox&&sandbox.yard)sandbox.back=fromYard?1:0;else if(fromYard)yardEdit.back=1}catch(_){}return r}}
+{const yd=yardDone;yardDone=function(){const back=!!((sandbox&&sandbox.back)||yardEdit.back);yardEdit.back=0;const r=yd.apply(this,arguments);try{if(back&&!sandbox)setTimeout(()=>travelTo('yard'),300)}catch(_){}return r}}
+{const od=openDecorate;openDecorate=function(v){if(away&&away.key==='yard'&&!sandbox){yardEdit();return}return od.apply(this,arguments)}}
+{const tt=travelTo;travelTo=function(dest){if(sandbox&&sandbox.yard){toast('Finish decorating the yard first: tap Done.',true);return}return tt.apply(this,arguments)}}
+// a resized yard keeps its painted lawn (old tiles copied into the middle of the new grid)
+{const ye=yardEdit;yardEdit=function(){const Y=yardS(),n=YARD_SZ[Y.lv|0];try{if(n&&Array.isArray(Y.tf)&&Y.tf.length&&Y.tf.length!==n*n){const m=Math.round(Math.sqrt(Y.tf.length)),off=Math.floor((n-m)/2),T=Array(n*n).fill(tileMode(Y.tf)||'s_camp');
+      for(let z=0;z<m;z++)for(let x=0;x<m;x++){const q=(z+off)*n+(x+off);if(q>=0&&q<n*n)T[q]=Y.tf[z*m+x]}Y.tf=T}}catch(_){}return ye.apply(this,arguments)}}
+// the live yard shows painted tiles: cells that differ from the main lawn become 1-cell rugs of their tile set
+{const yp=yardPlan;yardPlan=function(){const P=yp.apply(this,arguments);try{const Y=yardS(),n=YARD_SZ[Y.lv|0],tf=Y.tf;if(Array.isArray(tf)&&tf.length===n*n){const L=P.levels[0],base=L.rooms.y.f,W=P.W,D=P.D,R=[];
+      for(let j=0;j<D;j++)for(let i=0;i<W;i++){const cnt={};for(let z=Math.floor(j*n/D);z<Math.ceil((j+1)*n/D);z++)for(let x=Math.floor(i*n/W);x<Math.ceil((i+1)*n/W);x++){const t=tf[z*n+x];if(t)cnt[t]=(cnt[t]|0)+1}
+        let best=base,bc=0;for(const t in cnt)if(cnt[t]>bc){bc=cnt[t];best=t}if(best!==base&&TILESETS.f[best])R.push([i,j,i,j,best])}
+      if(R.length)L.rugs=R}}catch(_){}return P}}
+// gate visitors stand clear of furniture by the gate
+{const ns=ydNbSpawn;ydNbSpawn=function(k){const r=ns.apply(this,arguments);try{const V=YL.nb;if(V&&away){const objs=[...away.objs.values()],p=V.K.g.position;for(let t=0;t<10;t++){if(objs.every(o=>Math.hypot(o.position.x-p.x,o.position.z-p.z)>.95))break;p.z+=(t%2?-1:1)*(t+1)*.45;p.x+=.12}}}catch(_){}return r}}
+// the yard edit reads like the yard
+{const rd=renderDeco;renderDeco=function(){const r=rd.apply(this,arguments);try{if(sandbox&&sandbox.yard){const b=document.querySelector('.sheet-body');if(b){b.querySelectorAll('.row-label,h3,small,b').forEach(e=>{if(/In your room/.test(e.textContent))e.textContent=e.textContent.replace('In your room','In your yard')})}
+      document.querySelectorAll('[data-view="door"]').forEach(e=>e.hidden=true)}}catch(_){}return r}}
+// back on a Decorate sub-page goes to its front page
+{const ba=backAct;backAct=function(){try{if(openTab==='decorate'&&decoPage&&!brush){decoPage=null;decoAll=0;renderDeco(true);return true}}catch(_){}return ba.apply(this,arguments)}}
+/* </yard-fixes> */
 /* </loop-fixes> */
 /* <anim-sets> */
 // per-piece animations (v128+): one Object.assign(BUILD,...) per set from .claude/anim/<set>.js (brief tools/dev/town/ANIM_BRIEF.md)
@@ -88711,6 +88737,116 @@ try{Object.assign(BUILD,(()=>{
 /* </anim-sets> */
 /* <furn-qa> */
 try{
+/* qa orig: furniture quality pass for the original 37 sets (the pet using each piece). Inserted after the anim-sets block. */
+// ---- helpers (qao = qa orig) ----
+// Wrap a builder: every node whose rotation about `axis` changes by more than thr while in use gets that change scaled by f
+// (a fridge door swinging into the pet opens wider; f<0 turns a closing lid into an opening one).
+function qaoDoor(key,f,axis,thr){axis=axis||'y';thr=thr||.2;const b=BUILD[key];if(!b)return;BUILD[key]=function(c){const g=b.apply(this,arguments);try{const U=g.userData.use;if(!U)return g;
+  const nodes=[];g.traverse(n=>nodes.push([n,n.rotation[axis]]));U(1.2,.4);const mv=nodes.filter(([n,r])=>Math.abs(n.rotation[axis]-r)>thr);U(-1,-1);
+  if(mv.length)g.userData.use=(t,p)=>{U(t,p);if(p<0)return;mv.forEach(([n,r])=>{n.rotation[axis]=r+(n.rotation[axis]-r)*f})}}catch(e){console.warn('qa door '+key,e)}return g}}
+function qaoPerch(key,o){const d=CATMAP[key];if(d&&d.perch)Object.assign(d.perch,o)}
+// change how a piece is used without changing what it does for the pet's needs (needsOf caches the needs first)
+function qaoUse(key,patch){const d=CATMAP[key];if(!d)return;needsOf(d);USE_ITEM[key]=Object.assign({},useOf(d),patch)}
+// turn a stand-at piece into one the pet climbs onto: a perch spot, then an optional animation played while it's up there
+function qaoOn(key,perch,act,flip){const d=CATMAP[key];if(!d)return;needsOf(d);const u=useOf(d);d.perch=perch;if(act)d.qoAct=act;if(flip)d.qoFlip=1;USE_ITEM[key]={kind:'perch',w:u&&typeof u.w==='number'?u.w:.8}}
+// hidden effect meshes (steam puffs, ripples) built at full size made the piece's box huge, so the pet stood a metre away:
+// shrink them while hidden (their use() sizes them when shown)
+function qaoHidTiny(key){const b=BUILD[key];if(!b)return;BUILD[key]=function(c){const g=b.apply(this,arguments);try{g.traverse(n=>{if(n.isMesh&&!n.visible)n.scale.setScalar(.001)})}catch(e){console.warn('qa hid '+key,e)}return g}}
+// perch hooks: qoAct plays a standing animation while on the piece (trampoline bounce, treadmill run, splashing in the pool);
+// qoFlip makes the pet face into the piece (the treadmill's console) instead of out
+try{const sw0=seatWorld;seatWorld=function(sp){const w=sw0.apply(this,arguments);try{if(w&&w.o){const d=defOf(w.o.userData.k);if(d&&d.qoFlip)w.h+=Math.PI}}catch(_){}return w}}catch(e){console.warn('qa seatWorld',e)}
+try{const sp0=startPerch;startPerch=function(sp){const r=sp0.apply(this,arguments);try{if(pet.mode==='perch'&&pet.seat===sp){const it=roomItem(sp.id),d=it&&defOf(it.k);
+  if(d&&d.qoAct&&ACTS_ANIM[d.qoAct]){sp.nap=false;sp.lounge=false;sp.bounce=false;sp.qoAct=d.qoAct;pet.perchT=Math.min(pet.perchT,8+Math.random()*4)}}}catch(e){console.warn('qa perch act',e)}return r}}catch(e){console.warn('qa startPerch',e)}
+// (started once the pet has landed on the piece: an act set while it's still hopping on gets cleared by the walk check)
+try{const up0=updatePet;updatePet=function(dt,t){const r=up0.apply(this,arguments);try{const sp=pet.seat;if(pet.mode==='perch'&&sp&&sp.qoAct&&!pet.act&&pet.seatK>=1&&pet.seatDir>0&&pet.perchT>.6)pet.act={k:sp.qoAct,t:0,d:pet.perchT}}catch(_){}return r}}catch(e){console.warn('qa updatePet',e)}
+// flat pet beds: the curled-up pet sank into them; lift it onto the top (qoNapLift, in units)
+try{const ls0=lieSide;lieSide=function(e,S,t,inBed){const A=ls0.apply(this,arguments);try{if(inBed&&A){const it=roomItem(inBed),d=it&&defOf(it.k);if(d&&d.qoNapLift)A.y=(A.y||0)+d.qoNapLift*e}}catch(_){}return A}}catch(e){console.warn('qa lieSide',e)}
+// a lean-down cuddle for low plushes (the res group defines qr_cuddleLow; same pose here if it isn't there)
+try{if(!ACTS_ANIM.qr_cuddleLow)ACTS_ANIM.qr_cuddleLow={d:5,f:(p,t)=>{const k=bell(p,.12,.88),b=Math.sin(t*1.7);return{rx:.5*k,y:-.05*k,rz:b*.04*k,
+  arms:[0,1].map(i=>({rz:(i?1:-1)*(.62+b*.05),rx:-.62,w:k})),heads:[0,1].map(i=>({rz:(i?-1:1)*(.3+b*.06),rx:.32,w:k})),lid:.8*k,mouth:.15*k}}}}catch(e){console.warn('qa cuddleLow',e)}
+// low plushes and pillows (under ~0.9 tall): the standing hug wrapped its arms round the air above them
+for(const k of ['beeplush','bkworm','c9sun','bonehug','cafecuppouf','cactusplush','frberryhug','mvpophug','trmonkey','splamb','wkmugplush','lintbunny']){try{qaoUse(k,{anim:'qr_cuddleLow',dist:0})}catch(e){console.warn('qa '+k,e)}}
+// lamps whose shade hangs out to one side: the pet could stand right under the shade (heads in it); use them from the front
+for(const k of ['cane','canelamp','arc','bulb','arclamp','vinelamp','starmobile']){try{qaoUse(k,{front:1})}catch(e){console.warn('qa '+k,e)}}
+
+// ---- space ----
+try{qaoPerch('bean',{bz:-.25,y:.62})}catch(e){console.warn('qa bean',e)}          // sat on the front lip of the bag, hovering above it
+try{qaoDoor('fridge',1.62)}catch(e){console.warn('qa fridge',e)}                 // the door swung into the pet's side
+
+// ---- candy ----  (cane: front only, above)
+// ---- calm, play ----
+try{qaoPerch('horse',{z:-.16})}catch(e){console.warn('qa horse',e)}           // the horse's neck went through the pet's tummy
+// ---- books ----
+try{qaoPerch('readchair',{z:.18})}catch(e){console.warn('qa readchair',e)}    // back sunk into the wingback
+try{qaoUse('bkwash',{front:1})}catch(e){console.warn('qa bkwash',e)}           // washed at the side or back of the washstand
+// ---- bath ----
+try{qaoPerch('bathstool',{y:.6})}catch(e){console.warn('qa bathstool',e)}      // sank 0.15 into the fluffy seat
+// ---- cafe ----
+try{qaoDoor('retrofridge',1.6)}catch(e){console.warn('qa retrofridge',e)}
+// ---- fort ----
+try{qaoPerch('beanbag',{y:.45})}catch(e){console.warn('qa beanbag',e)}         // sank to the knees
+try{qaoPerch('fortbed',{y:.48})}catch(e){console.warn('qa fortbed',e)}         // lay 0.17 above the cushions
+// ---- petpal / snow: pet houses too small for the grown pet (it slept through the canvas / the igloo's dome); it dozes in the doorway
+for(const k of ['teepee','iglobed']){try{qaoUse(k,{kind:'stand',front:1,anim:'doze',d:10,dist:0,emo:['💤'],w:.5})}catch(e){console.warn('qa '+k,e)}}
+// ---- date ----
+try{qaoUse('candles',{anim:'u_warm'})}catch(e){console.warn('qa candles',e)}   // snuggled lit candles; warms its hands instead
+// ---- groovy ----
+try{qaoPerch('pitsofa',{y:.63})}catch(e){console.warn('qa pitsofa',e)}         // sank 0.24 into the seat cushion
+// ---- zen ----
+for(const k of ['zentable','bonsai','sandgarden','fountain','koibowl']){try{qaoHidTiny(k)}catch(e){console.warn('qa '+k,e)}}
+// ---- sea ----
+try{qaoPerch('hammock',{y:.54})}catch(e){console.warn('qa hammock',e)}          // lay on air above the netting
+try{qaoDoor('clambed',-3,'x',.05)}catch(e){console.warn('qa clambed',e)}       // the lid closed onto the sleeping pet; it opens wider now
+// ---- studio ----
+try{qaoPerch('studiostool',{y:.7})}catch(e){console.warn('qa studiostool',e)}
+// ---- stars ----
+try{qaoPerch('planetchair',{y:.8})}catch(e){console.warn('qa planetchair',e)}  // sat half inside the planet
+// ---- games ----
+try{qaoDoor('cartfridge',1.6)}catch(e){console.warn('qa cartfridge',e)}
+// ---- monster ----
+try{qaoPerch('patchcouch',{y:.66})}catch(e){console.warn('qa patchcouch',e)}   // hovered 0.13 above the seat
+try{qaoDoor('mon_fridge',1.6)}catch(e){console.warn('qa mon_fridge',e)}
+// ---- spring ----
+try{qaoPerch('bunnychair',{z:.13})}catch(e){console.warn('qa bunnychair',e)}
+try{qaoUse('lemonade',{front:1})}catch(e){console.warn('qa lemonade',e)}
+// ---- dino, carnival ----
+try{qaoPerch('dinorocker',{z:-.16})}catch(e){console.warn('qa dinorocker',e)}
+try{qaoPerch('carousel',{z:-.2})}catch(e){console.warn('qa carousel',e)}       // the pole ran through the rider
+try{qaoOn('ballpit',{y:.36,z:0,fe:.8},null)}catch(e){console.warn('qa ballpit',e)}   // dived at it from outside; it sits in the balls now
+// ---- gym ----
+try{qaoOn('trampoline',{y:.29,z:0,fe:.72},'u_bounce')}catch(e){console.warn('qa trampoline',e)}  // bounced on the floor beside it
+try{qaoOn('treadmill',{y:.16,z:.12,fe:.7},'u_run',1)}catch(e){console.warn('qa treadmill',e)}   // ran on the floor beside it
+try{qaoOn('balanceball',{y:.78,z:0,fe:.45},null)}catch(e){console.warn('qa balanceball',e)}
+// ---- tree, fruity, roadtrip, nursery, washday ----
+try{qaoPerch('hutbed',{y:.58})}catch(e){console.warn('qa hutbed',e)}
+try{qaoOn('kiddiepool',{y:.08,z:0,fe:1.02},'u_splash')}catch(e){console.warn('qa kiddiepool',e)}  // splashed from outside the pool
+try{qaoPerch('melonbed',{y:.6})}catch(e){console.warn('qa melonbed',e)}
+try{qaoPerch('crescentbed',{y:.6})}catch(e){console.warn('qa crescentbed',e)}
+try{qaoPerch('cribbed',{y:.57})}catch(e){console.warn('qa cribbed',e)}
+try{qaoUse('playmat',{kind:'stand',front:1,anim:'u_pat',d:4.5,dist:0})}catch(e){console.warn('qa playmat',e)}  // stood inside the toy arches
+try{qaoPerch('hamperbed',{y:.56})}catch(e){console.warn('qa hamperbed',e)}
+// beds hovering a little above the mattress
+try{qaoPerch('nimbusbed',{y:.57})}catch(e){console.warn('qa nimbusbed',e)}
+try{qaoPerch('crustybed',{y:.68})}catch(e){console.warn('qa crustybed',e)}
+try{qaoPerch('cushbed',{y:.4})}catch(e){console.warn('qa cushbed',e)}
+// flat pet beds the curled pet sank through
+try{CATMAP.bookbed.qoNapLift=.3;CATMAP.padbed.qoNapLift=.32;CATMAP.drumbed.qoNapLift=.5}catch(e){console.warn('qa nap lifts',e)}
+// ---- lagoon ----
+try{qaoDoor('oysterbed',-4,'x',.05)}catch(e){console.warn('qa oysterbed',e)}   // the top shell closed onto the sleeping pet
+// narrow beds: lying on the side spot (x -0.35) the pet's body hung 0.25 over the edge (through the fort's curtain, off the hammock);
+// the grown pet lying down is ~1.2 wide, so beds under ~1.9 wide get the middle spot only
+for(const [k,x] of [['favourbed',0],['nimbusbed',0],['fortbed',0],['hammock',0],['hutbed',0],['melonbed',0],['crescentbed',0],['cribbed',0],
+  ['hamperbed',0],['cushbed',.16],['sleepbag',.07],['sleighbed',0],['giantclam',0],['bunkbed',0],['cloudbed',0]]){try{qaoPerch(k,{x:[x]})}catch(e){console.warn('qa '+k,e)}}
+// ---- movie ----
+// cushbed: the remote's click set its button's scale.y to 1 / 0.35 outright, but the button is a unit shape scaled to 0.01, so after
+// the first frame of the bake simulation it stood as a 2-unit pink pole through the floor beside the bed (always visible). Keep the
+// click relative to the button's own size.
+try{const b=BUILD.cushbed;BUILD.cushbed=function(c){const g=b.apply(this,arguments);try{const U=g.userData.use;if(U){const s=[];g.traverse(n=>s.push([n,n.scale.y]));U(1.1,.3);
+  const fix=s.filter(([n,y])=>y<.1&&n.scale.y>y*5);U(-1,-1);fix.forEach(([n,y])=>{n.scale.y=y});
+  if(fix.length)g.userData.use=(t,p)=>{U(t,p);fix.forEach(([n,y])=>{n.scale.y=y*Math.min(1,n.scale.y)})}}}catch(e){console.warn('qa cushbed btn',e)}return g}}catch(e){console.warn('qa cushbed',e)}
+
+}catch(e){console.warn("furn qa orig",e)}
+try{
 // QA fixes for the 32 resident sets (res group). Inserted after /* </anim-sets> */.
 // sc_bunk (Scone's bunk): the pet lay in the lower bunk, but the lower bunk is only ~.66 tall under the top bunk, so its body and
 // heads poked up through the top mattress. It sleeps on the top bunk now (mattress top ~1.38).
@@ -88733,6 +88869,71 @@ try{ACTS_ANIM.qr_cuddleLow={d:5,f:(p,t)=>{const k=bell(p,.12,.88),b=Math.sin(t*1
   for(const k of ['rshug','rb_loaf','ghsunset','dferaser','qspillow','bcseal','pplettercush']){try{const d=CATMAP[k];needsOf(d);const u=USE_ITEM[k]||useOf(d);USE_ITEM[k]=Object.assign({},u,{anim:'qr_cuddleLow',dist:0})}catch(e){console.warn('qa '+k,e)}}}catch(e){console.warn('qa cuddleLow',e)}
 
 }catch(e){console.warn("furn qa res",e)}
+try{
+// QA fixes for the need sets, theme sets and civic place sets (more group). Inserted after /* </anim-sets> */, after res.js
+// (it reuses res.js's lieSide wrapper via CATMAP[k].qrNapLift and its ACTS_ANIM.qr_cuddleLow).
+
+// Seats and beds where the pet sank too deep (its bottom 0.12-0.24 below the seat or mattress top, measured with the pet using it):
+// raised so it settles a few cm into the cushion like the rest.
+{const R={spafoot:.1,sbswing:.12,mnbench:.09,mlstool:.08,clcushion:.06,clnook:.08,cp_boat:.09,bo_peacock:.12,lsstool:.07,spahood:.08,wxbench:.06,cp_barrel:.05,sb_throne:.05,
+  spabench:.1,sbbed:.1,hv_bed:.1,kcbed:.07,pdbed:.07,lscot:.08};
+ for(const k in R){try{const P=CATMAP[k].perch;P.y=+(P.y+R[k]).toFixed(3)}catch(e){console.warn('qa '+k,e)}}}
+// Umbrella canopy bed: the umbrella overhangs the back, so the bed looked deep and the pet lay with its heads in the cloud
+// headboard. It lies where it does in the other beds (headboard line set by hand).
+// Chunky knit armchair: the pet sat with half its back inside the thick knit backrest; it sits further forward.
+try{CATMAP.pdbed.perch.hb=-.5}catch(e){console.warn('qa pdbed',e)}
+try{CATMAP.kcchair.perch.z=.18}catch(e){console.warn('qa kcchair',e)}
+
+// Pieces with a clear front (desks, dressers, cabinets, a lectern, a vanity, a counter): the pet could walk round and use them
+// from the side or the back (it played on the triple-screen desk from behind its monitors, rummaged in the dresser from the back).
+// They're used from the front now. A few also stood with the face pushed into the piece: they stand back a little.
+{const F={nbdesk:0,mlcounter:0,lsbench:0,lsbulbs:0,wxbook:0,kcdresser:.08,pdcubby:0,sparobe:.1,spavanity:0,spasteam:0,bhbasin:0,bhswing:0,
+  nbrack:.1,mncupboard:.15,sb_chest:.12,wxsnack:.15};
+ for(const k in F){try{const u=USE_ITEM[k];if(!u)throw 'no USE_ITEM';USE_ITEM[k]=Object.assign({},u,{front:1,dist:+((u.dist||0)+F[k]).toFixed(3)})}catch(e){console.warn('qa '+k,e)}}}
+
+// Umbrella table: the canopy made the table look wide, so the pet stood ~0.8 away and nibbled at the air. It steps up to the table.
+try{USE_ITEM.mdtable=Object.assign({},USE_ITEM.mdtable,{dist:-.35})}catch(e){console.warn('qa mdtable',e)}
+
+// Things you use by standing ON them: the light-up dance pad (it danced beside the pad), the splashy puddle (it bounced at the
+// edge) and the leaf pile (it splashed about next to it). The pet stands on them now: [local x, local z, which way it faces].
+{const ON={nbpad:[0,.1,-1],pdsplash:[0,0,1],hv_leaves:[-.22,.12,1]};
+ try{const us=useSpot;useSpot=function(o,u){try{const it=roomItem(o.userData.id),d=it&&defOf(it.k),q=d&&u&&u.kind==='stand'&&ON[d.k];
+     if(q){const v=toWorld(o,q[0],q[1]);if(inRoom(v,petDim().w*.4))return{at:v,face:toWorld(o,q[0],q[1]+q[2]*2)}}}catch(_){}return us.apply(this,arguments)}}catch(e){console.warn('qa standOn',e)}}
+
+// Low cuddle things (the knitted pumpkin and the basket of plush fruit, both about knee high): the stand-up hug wrapped its arms
+// round the air above them. They use res.js's lean-down cuddle, standing right up against them.
+for(const k of ['hv_knitpump','mdhug']){try{if(!ACTS_ANIM.qr_cuddleLow)break;const u=USE_ITEM[k]||useOf(CATMAP[k]);USE_ITEM[k]=Object.assign({},u,{anim:'qr_cuddleLow',dist:0})}catch(e){console.warn('qa '+k,e)}}
+
+// Pet beds: most were 0.8-1.2 across, so the grown pet (about 1.4 long lying down) hung off them with its heads on the floor, or
+// lay through the bookends and the cart sides. Scaled up like the starter pet bed (1.72 across since v136) to about 1.4-1.5.
+{const S={subed:1.3,spabed:1.45,mlpetbed:1.38,nbpetbed:1.38,alpetbed:1.38,sdpetbed:1.45,cp_buoy:1.32,sb_petbed:1.45,kcmitten:1.28,
+  pdhat:1.28,bhpet:1.24,thbed:1.16,clbed:1.24,fccart:1.3,mdcart:1.4};
+ for(const k in S){try{const b=BUILD[k];if(!b)throw 'no BUILD';BUILD[k]=function(c){const g=b.apply(this,arguments);try{if(g&&g.scale&&c!=='kit')g.scale.multiplyScalar(S[k])}catch(_){}return g}}catch(e){console.warn('qa '+k,e)}}}
+
+// Flat-topped pet beds (a cushion on a frame, a petal cushion, the bookends' mattress, the towel-roll bed) and the two cart beds
+// (the parcel trolley, the market cart, mattress tops 0.28 and 0.45 up): the curled-up pet lay on the floor right through them.
+// res.js's lieSide wrapper lifts the sleeping pet by CATMAP[k].qrNapLift onto the top.
+{const L={sb_petbed:.24,bhpet:.25,clbed:.24,spabed:.12,mdcart:.22,fccart:.41};
+ for(const k in L){try{CATMAP[k].qrNapLift=L[k]}catch(e){console.warn('qa '+k,e)}}}
+
+// Two pet beds have tall ends: the bookends bed and the parcel trolley (its handle). The pet lay along them, through a bookend /
+// the handle. On these the sleeping pet turns to lie across the bed (CATMAP[k].qmNapYaw = its heading relative to the bed).
+try{CATMAP.clbed.qmNapYaw=-Math.PI/2;CATMAP.fccart.qmNapYaw=-Math.PI/2;
+  const up=updatePet;updatePet=function(dt){try{if(pet.mode==='sleep'&&pet.napBed){const it=roomItem(pet.napBed),d=it&&defOf(it.k);
+      if(d&&d.qmNapYaw!=null){const o=roomObjs().get(it.id);if(o){const h=o.rotation.y+d.qmNapYaw;let dh=h-pet.heading;dh=Math.atan2(Math.sin(dh),Math.cos(dh));pet.heading+=dh*Math.min(1,(dt||0)*10)}}}}catch(_){}
+    return up.apply(this,arguments)}}catch(e){console.warn('qa nap turn',e)}
+
+// Swings used standing (rattan egg swing, blossom swing): the egg hangs at the back of its stand, so the pet swayed about 1.2 away
+// from it, holding nothing. It steps up to the egg / the seat. (Sitting in them doesn't work: the egg is 0.86 wide and hangs with
+// its cushion 1.0 up, the grown pet is ~1.26 wide.)
+try{USE_ITEM.bo_swing=Object.assign({},USE_ITEM.bo_swing,{front:1,dist:-.4})}catch(e){console.warn('qa bo_swing',e)}
+try{USE_ITEM.bhswing=Object.assign({},USE_ITEM.bhswing,{front:1,dist:-.12})}catch(e){console.warn('qa bhswing',e)}
+// Cotton candy cart and the town bell: the umbrella / the bell's roof made them look deep, so the pet stirred and booped from too
+// far away. It stands up to the cart's counter and the bell's rope.
+try{USE_ITEM.mnfloss=Object.assign({},USE_ITEM.mnfloss,{dist:-.25})}catch(e){console.warn('qa mnfloss',e)}
+try{USE_ITEM.thbell=Object.assign({},USE_ITEM.thbell,{dist:-.12})}catch(e){console.warn('qa thbell',e)}
+
+}catch(e){console.warn("furn qa more",e)}
 /* </furn-qa> */
 // the starter pet bed is roomier, so the curled-up pet fits inside it (v136)
 {const pb=BUILD.petbed;if(pb)BUILD.petbed=function(c){const g=pb.apply(this,arguments);try{if(g&&g.scale&&c!=='kit')g.scale.multiplyScalar(1.3)}catch(_){}return g}}
@@ -88829,7 +89030,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><p class="coachgo">Start by tapping ${nm} to say hello.</p><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=142;
+const APP_V=143;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
