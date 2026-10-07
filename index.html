@@ -1096,7 +1096,7 @@ body.sheet-open .toast,body:has(#petwheel:not([hidden])) .toast,body:has(#menuwh
 .sbar{display:inline-flex;align-items:center;gap:7px;vertical-align:middle}.sbar i{position:relative;display:block;width:92px;height:10px;border-radius:6px;background:#EEE8F7;box-shadow:inset 0 0 0 2px #3B1273;overflow:hidden}
 .sbar i:after{content:'';position:absolute;left:50%;top:1px;bottom:1px;width:2px;margin-left:-1px;background:#3B1273;opacity:.5}
 .sbar i b{position:absolute;top:2px;bottom:2px}.sbar i b.pos{left:50%;background:linear-gradient(90deg,#FF8CC4,#FF3D9A)}.sbar i b.neg{right:50%;background:linear-gradient(270deg,#9C97B8,#5C5878)}
-.sbar small{font-family:var(--disp);font-size:12px;color:#3B1273}.sbar.sm i{width:70px;height:8px}.cvname .sbar{margin-left:auto;margin-right:44px}.cvname .sbar i{width:58px}
+.sbar small{font-family:var(--disp);font-size:12px;color:#3B1273}.sbar.sm i{width:70px;height:8px}.cvname .sbar{margin-left:auto;margin-right:44px}.cvname .rcwith{margin-right:40px}.cvname .sbar i{width:58px}
 .sknow{display:block;color:#5B4A8A;font-size:12px;margin-top:2px}
 .cvbox .cvch button.sk,.dlybox .cvch button.sk{color:#3F7A0C!important}.cvbox .cvch button.sk:before{border-left-color:#7CC417!important;opacity:.8}
 .cvbox .cvch button.sm,.dlybox .cvch button.sm{color:#C25400!important}.cvbox .cvch button.sm:before{border-left-color:#FF8A1C!important;opacity:.8}
@@ -42311,7 +42311,7 @@ function houseInvite(k,l0,l1){const R=RESIDENTS[k],h=houseOf(k);if(!R||!R.shop||
   const H=HOUSES[h],mates=H.res.filter(r=>r!==k).map(r=>RESIDENTS[r].n),when=R.boss?'in the evenings':'in the mornings';
   resPost(k,`You’re invited! Come over to my place on ${HOODS[H.hood].n} any time. I’m home ${when}${mates.length?`, and so is ${mates.join(' & ')}`:''}. Just knock!`)}
 const kTod=()=>{const h=centralHour();return h<5?'n':h<11?'m':h<17?'d':h<21?'e':'n'};
-function capF0(t){return String(t).replace(/^friend/,'Friend')}
+function capF0(t){return String(t).replace(/(^|[.!?…]\s+)friend\b/g,'$1Friend')}
 function kFill(t){const hn=headNames();return String(t).replace(/\{n\}/g,state.pet.name).replace(/\{a\}/g,hn[0]).replace(/\{b\}/g,hn[1])}
 const kLine=t=>typeof t==='string'?{t}:t;
 const KSVG={chat:'<svg viewBox="0 0 24 24" fill="#fff" stroke="#3B1273" stroke-width="2.2" stroke-linejoin="round"><path d="M4 5h16v10H10l-4 4v-4H4z"/><circle cx="9" cy="10" r="1" fill="#3B1273"/><circle cx="12.5" cy="10" r="1" fill="#3B1273"/><circle cx="16" cy="10" r="1" fill="#3B1273"/></svg>',
@@ -42731,7 +42731,7 @@ function twPlan(k){const R=RESIDENTS[k],h=townHour(),w=resWhere(k),hm=houseOf(k)
   const at_=(x,hh)=>x==='shop'?R.shop:x==='place'?(placeOf(k)?'p_'+placeOf(k).id:null):x==='home'?home:x==='visit'?(()=>{try{const v=shopVisitOf(k,hh??h);return v&&SHOPS[v]?v:null}catch(_){return null}})():null;
   if(w!=='event'&&soon==='event'){const E=eventNow(h+.2);if(E)return{mode:'go',to:evAt(E),from:at_(w)||home}}
   if(w!==soon&&at_(w)&&at_(soon,h+.2)&&at_(w)!==at_(soon,h+.2))return{mode:'go',from:at_(w),to:at_(soon,h+.2)};
-  if(w==='home'&&home){const r=jrRand('stroll|'+lifeDay()+'|'+Math.floor(h)+'|'+k)();if(r<.22)return{mode:'stroll',near:home}}
+  if(w==='home'&&home&&!(h>=23||h<6)&&!((k==='scone'||k==='crumb')&&h>=21)){const r=jrRand('stroll|'+lifeDay()+'|'+Math.floor(h)+'|'+k)();if(r<.22)return{mode:'stroll',near:home}}
   if(w==='event'){const E=eventNow();if(E)return{mode:'mingle',at:evAt(E)}}
   return null}
 // a market vendor's stall (its decoration on the map): where to stand and which way to face (out of the stall)
@@ -73488,6 +73488,7 @@ const WHATSNEW=[[119,'For the two of you: notes to each other are kept safe, you
   [142,'Neighbours, tuned after a night of playtesting: replies answer what you actually said (jokes get their own punchline back), friends no longer have screaming rows, enemies stay suspicious of sudden niceness, greetings match the time of day, and kindness has a daily limit so it means something. Also: about forty pieces of resident furniture fixed so Mochi sits on seats instead of sinking into them, sleeps on the top bunk, and hugs low cushions properly.'],
   [143,'Every piece of furniture got checked with Mochi actually using it: about 150 fixes so seats, beds, mats and toys fit (no more sinking into chairs or sleeping through tents, and the trampoline gets bounced on). The yard: Bolt now offers to build it (the button was missing!), both of your changes to the yard are kept, painted paths show outside, tapping yard furniture works, and decorating the yard brings you back out to it. Keeping a sandbox room now only keeps pieces you own.'],
   [144,'Small things from playtesting: late at night the game says good night instead of good afternoon, and Mochi stays asleep in bed when you open the app at night. The daily treat is a snack, care thing or toy again (it was handing out fish and bugs). Care pays buttons in full once per need each day, so shop prices matter more, and big catalogues show your buttons. Neighbours you are on bad terms with stop writing sweet letters. The Journal repeats itself less.'],
+  [145,'Town fixes: neighbours who can’t stand you no longer thank you warmly for favours or welcome you to their birthday party, arguments happen where you can actually see them, neighbours don’t stroll about at 3 am, and written chats no longer say good morning in the afternoon.'],
   [118,'Friendships go deeper: every neighbour has five more heart-to-hearts, sends a letter (and a gift) when you become best friends, and remembers what you talked about lately. More fixes from playtesting: town projects always appear on the map (the bouncy castle comes first now), the Journal keeps months, not days, taps on the noticeboard, museum and well work, and the back button closes photos and fishing.'],
   [117,'Fixes from playtesting: finished makeovers now pay out properly (they hadn’t been!), events at the library, Town Hall and weather station pay too, party guests spread out, Today’s list sits right under the bond bar, and your pet’s Journal has a page summing up the month so far. Plus a gentler welcome back, fewer day-one strangers, and lots of small things.'],
   [116,'Polish: keepsake letters read properly in the Bag, scrolling tab rows show there’s more, the plaza tiles are brighter, civic buildings have bigger name signs, and messages no longer pop over your pet while you dress it.'],
@@ -76102,7 +76103,7 @@ Object.assign(MERGE,{tricks:(l,r,b)=>{l=l||{};r=r||{};const o={};new Set([...Obj
 function partyKeys(day){const md=(day||lifeDay()).slice(5),ks=Object.keys(RESIDENTS).filter(k=>resHere(k)&&houseOf(k)&&SHOPS['h_'+houseOf(k)]&&bdayOf(k)===md);if(!ks.length)return[];const h=houseOf(ks[0]);return ks.filter(k=>houseOf(k)===h)}
 function partyNow(h){h=h??townHour();let ks;if(dbgEvent&&String(dbgEvent).startsWith('bday-'))ks=[dbgEvent.slice(5)];else{if(h<17||h>=20)return null;ks=partyKeys()}if(!ks.length||!houseOf(ks[0]))return null;
   const hid=houseOf(ks[0]),ex=HOUSES[hid].res,g=Object.keys(RESIDENTS).filter(f=>!ex.includes(f)&&resHere(f)&&KBIB[f]&&ks.some(k=>rFeel(f,k)>=1)).sort((a,b)=>Math.max(...ks.map(k=>rFeel(b,k)))-Math.max(...ks.map(k=>rFeel(a,k)))).slice(0,5);
-  const nm=ks.map(k=>RESIDENTS[k].n);return{k:'bday-'+ks[0],n:`${nm.join(' and ')}’s birthday party`,house:hid,guests:[...ex,...g],h:[17,20],bday:ks[0],bdays:ks,t:'Cake, games and a lot of singing. Bring a present.'}}
+  const nm=ks.map(k=>RESIDENTS[k].n);return{k:'bday-'+ks[0],n:`${nm.length>1?nm.join(' and ')+'’s':socPos(nm[0])} birthday party`,house:hid,guests:[...ex,...g],h:[17,20],bday:ks[0],bdays:ks,t:'Cake, games and a lot of singing. Bring a present.'}}
 {const ec=eventCalc;eventCalc=function(h){try{const P=partyNow(h);if(P)return P}catch(e){console.warn('party',e)}return ec(h)}}
 {const hd=houseDecoLayout;houseDecoLayout=function(id,base,P){let out=hd(id,base,P);try{const E=eventNow();if(E&&E.bday&&E.house===id)out=out.concat(partyDecor(id,base.concat(out),P))}catch(e){console.warn('party decor',e)}return out}}
 // party pieces go in even a full house: bunting high on the back wall, then the cake table and presents in the most open spots
@@ -76945,7 +76946,7 @@ rFeel=function(a,b,W){const X=RRELWX[a]&&RRELWX[a][b];if(X&&W){const ks=[W.kind,
 // what you did to someone's feelings about someone else (gossip): stored once, replayed by socSim on both phones
 function socSev(a,b,d){const S=state.sev||(state.sev=[]);S.push({id:uid(),t:Date.now(),a,b,d:Math.round(d)});if(S.length>200)S.splice(0,S.length-200);socSimC=null;saveSoon()}
 // ---- what you know about who likes whom (shared between your phones)
-const socRelS=p=>p>=61?'best':p>=21?'pos':p<=-61?'nem':p<=-21?'neg':'';
+const socRelS=p=>p>=60?'best':p>=21?'pos':p<=-60?'nem':p<=-21?'neg':'';
 const SOC_RELN={best:'Best friends with',pos:'Gets on with',neg:'At odds with',nem:'Nemesis of'};
 function socKnow(a,b,s,quiet){if(!RESIDENTS[a]||!RESIDENTS[b]||a===b)return;s=s||socRelS(rRel(a,b));if(!s)return;const K=state.know||(state.know={}),q=a+'>'+b,old=K[q];if(old&&old.s===s){old.t=Date.now();return}
   K[q]={s,t:Date.now()};saveSoon();if(!quiet&&Date.now()-(socKnow.lt||0)>25e3&&(socKnow.lt=Date.now()))setTimeout(()=>toast(`Learned: ${RESIDENTS[a].n} ${s==='best'?'is best friends with':s==='pos'?'gets on well with':s==='nem'?'considers '+RESIDENTS[b].n+' a nemesis':'is at odds with'}${s==='nem'?'':' '+RESIDENTS[b].n}.`),1600)}
@@ -77078,7 +77079,7 @@ function socOpener(k){const f=kfMig(kfOf(k)),i=socTierI(kfP(k)),T=SOC_T[i][0],no
 // ---- joining a street chat: siding against someone's rival or nemesis wins them over; siding with their nemesis in front of them is a big swing
 {const mr=memRec;memRec=function(k,kind,v){const r=mr.apply(this,arguments);try{if(kind==='sided'&&v&&v.o&&RESIDENTS[k]&&RESIDENTS[v.o]){const s=k,o=v.o;socKnow(s,o);socKnow(o,s);
       const A_=state.acts||(state.acts={}),wk='sidesw:'+[s,o].sort().join('|'),w_='w'+Math.floor(Date.now()/(7*SOC_DAY));if((rRel(s,o)<=-41||rRel(o,s)<=-41)&&A_[wk]!==w_){A_[wk]=w_;kfDelta(s,25,{swing:1});kfDelta(o,-30,{swing:1});socSev(o,s,-6);const S=RESIDENTS[s].n,O=RESIDENTS[o].n;
-        setTimeout(()=>socSwing(o,false,`You took ${socPos(S)} side`,`${S} counts you as ${aOf(socTierOf(s)[1])} now. ${O} saw it all, and sees you as ${aOf(socTierOf(o)[1])}.`),400)}}}catch(e){console.warn('social side',e)}return r}}
+        setTimeout(()=>socSwing(o,false,`You took ${socPos(S)} side`,`${S} won’t forget that. ${O} saw it all, and won’t forget it either.`),400)}}}catch(e){console.warn('social side',e)}return r}}
 // listening in reveals how the two feel about each other; an argument between pairs at odds (paced: about two a day on this phone)
 {const ro=rcOpen;rcOpen=function(n,join){try{socKnow(n.r.k,n.o.k);socKnow(n.o.k,n.r.k)}catch(_){}return ro.apply(this,arguments)}}
 function socArgueOK(){const L=socLoc(),d=lifeDay();if(L.ad!==d){L.ad=d;L.an=0}return L.an<2}
@@ -83141,6 +83142,30 @@ setInterval(()=>{try{if(!state||sandbox||away||openTab||ARR.on)return;const A=st
   const Y=yardS();if(!(Y.lv>0))toast(`${(state.btn|0).toLocaleString()} buttons saved! Bolt at Hammer & Hue can build you a yard.`,true);
   else if(typeof projCur==='function'&&projCur())toast(`${(state.btn|0).toLocaleString()} buttons saved. The Mayor's town project could use some (Neighbours › Project).`,true)}catch(_){}},60e3);
 /* </shop-fixes144> */
+/* <town-fixes145> */
+// street chats: "Friend" capitalised; time-of-day and weekday words in written scenes must match now
+{const rf=rcFill;rcFill=function(){return capF0(rf.apply(this,arguments))}}
+const SOC_WD=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+function socTimeFit(t){t=String(t||'');if(!socTodOK(t))return false;const wd=SOC_WD.find(d=>new RegExp('\\b'+d+'\\b').test(t));if(wd){const today=SOC_WD[new Date(lifeDay()+'T12:00:00Z').getUTCDay()];if(wd!==today)return false}return true}
+// arguments only start where you could see them (the daily budget isn't spent off screen); written scenes that name the wrong time are skipped
+{const rs=rcScene;rcScene=function(a,b){let near=true;try{const p=tw.pet,A=tw.res.get(a),B=tw.res.get(b);if(p&&A&&B)near=Math.hypot((A.x+B.x)/2-p.x,(A.z+B.z)/2-p.z)<10}catch(_){}
+  const L0=socLoc().an;let r=null;for(let n=0;n<3;n++){r=rs.apply(this,arguments);if(!r||!r.l||!r.l.length)break;if(r.argue&&!near){const L=socLoc();L.an=L0;socLocSet(L);continue}if(r.pair&&!socTimeFit(r.l[0][1]))continue;if(r.mend&&!near)continue;break}return r}}
+// after an argument, nobody cheerfully notices you listening
+{const ra=rcAfter;rcAfter=function(){try{if(rc&&rc.sc&&rc.sc.argue&&!rc.caught)rc.caught=1}catch(_){}return ra.apply(this,arguments)}}
+// siding in a stranger's argument isn't a huge swing; the card doesn't name tiers awkwardly
+{const mr=memRec;memRec=function(k,kind,v){if(kind==='sided'&&v&&v.o&&!(visMet(k)||visMet(v.o))){try{socKnow(k,v.o);socKnow(v.o,k);kfDelta(k,4,{quiet:1});kfDelta(v.o,-4,{quiet:1})}catch(_){}
+    const A=state.acts||(state.acts={}),wk='sidesw:'+[k,v.o].sort().join('|');const was=A[wk];A[wk]='w'+Math.floor(Date.now()/(7*SOC_DAY));const r=mr.apply(this,arguments);A[wk]=was;return r}return mr.apply(this,arguments)}}
+// too busy to talk: on bad terms they brush you off in their cold voice, not the friendly busy lines
+{const cb=cvBusy;cvBusy=function(k,r){const b=cb.apply(this,arguments);try{if(b&&RESIDENTS[k]&&visMet(k)&&socTierI(kfP(k))>=7&&!SOCX.brush)SOCX.brush=k}catch(_){}return b}}
+// favours: a brush-off doesn't count as delivering or visiting; residents at Rival or worse don't take your help; thanks match the standing
+{const nt=nqTalk;nqTalk=function(k){try{if((cv&&cv.k===k&&cv.brushed)||kfP(k)<=-41)return}catch(_){}return nt.apply(this,arguments)}}
+{const nd=nqDone;nqDone=function(id){let by=null;try{const n=nqNote(id);by=n&&n.by}catch(_){}const i0=(state.inbox||[]).length,r=nd.apply(this,arguments);
+  try{if(by&&RESIDENTS[by]&&kfP(by)<=-21){const m=(state.inbox||[]).find(q=>q.from===by);if(m&&(state.inbox||[]).length>i0)m.text=pick1(['Fine. Thanks, I suppose. Don’t make it a habit.','It’s done. Thank you. That changes nothing.','Hm. Thank you. Noted. Separately noted.'])}}catch(_){}return r}}
+// a party thrown by someone who can't stand you: you can come, but nobody's glad; Enemies and Nemeses keep the door shut
+{const ea=eventArrive;eventArrive=function(){try{const E=eventNow();if(E&&away&&away.key===evAt(E)){const hs=evHosts(E).filter(h=>RESIDENTS[h]);const bad=hs.find(h=>kfP(h)<=-41);
+      if(bad){const key=E.k+'|'+lifeDay(),S=state.evseen||(state.evseen=[]);if(!S.includes(key)){S.push(key);saveSoon();setTimeout(()=>toast(`${RESIDENTS[bad].n} spots you from across the room. The guests go quiet.`,true),1400)}return}}}catch(_){}return ea.apply(this,arguments)}}
+{const hv=houseVisit;houseVisit=function(id){const r=hv.apply(this,arguments);try{const H=HOUSES[id];if(r&&r.ok&&H&&!sandbox){const bad=H.res.find(k=>kfP(k)<=-61&&['home','event'].includes(resWhere(k)));if(bad)return{ok:0,why:`${RESIDENTS[bad].n} doesn’t want you in the house. Not even today.`}}}catch(_){}return r}}
+/* </town-fixes145> */
 /* </loop-fixes> */
 /* <anim-sets> */
 // per-piece animations (v128+): one Object.assign(BUILD,...) per set from .claude/anim/<set>.js (brief tools/dev/town/ANIM_BRIEF.md)
@@ -89050,7 +89075,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><p class="coachgo">Start by tapping ${nm} to say hello.</p><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=144;
+const APP_V=145;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

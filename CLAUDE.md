@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v144** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v144'` in `sw.js`; bump both for anything
+**Current build: v145** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v145'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 141 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1517,3 +1517,10 @@ it skips data files that don't parse). Plus `/* <bugs141> */`.
   residents; possessives via `socPos`; "or book" only at Glow Up; Decorate resets to its front page after a makeover; tier toasts for Cool/Sour.
   Open from these playtests (design calls for Garrett): Today lists often need town/decorating (hard for a pet-only player), bond theme gift
   completing the "whole room set" big moment, tickets have few sinks, makeovers are a big friendship lever.
+- v145 (town playtest, `.claude/play/town/report.md`; block `/* <town-fixes145> */`): favours don't complete through a brush-off or with
+  residents at Rival or worse, curt thanks at Sour or worse; a party host at Rival or worse gives no welcome reward (cold toast), Enemy/Nemesis
+  keep their door shut even during their own party; arguments and mends only start near the pet (the daily budget isn't spent off screen);
+  no "caught you listening" after an argument; siding in strangers' arguments is +4/-4; at Sour or worse the "too busy" line is their cold
+  brush-off; written pair scenes that name another time of day or weekday are skipped (`socTimeFit`); no strolls 23:00-6:00 (kids not after
+  21:00); `socRelS` best/nemesis at +-60 (canon). `capF0` had a backspace instead of `\b` since v142 (never matched); **`tools/dev/town/syn.js`
+  now reports control characters** and exits non-zero.
