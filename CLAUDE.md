@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v139** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v139'` in `sw.js`; bump both for anything
+**Current build: v140** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v140'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1424,3 +1424,18 @@ end of `/* <loop-fixes> */`, `IL`.
   with the curved horizon when panning/zooming (on purpose).
 - v139: the × on the map conversation box and on `dlySay`'s card was under the name tag (`.cvname`), so taps never reached it;
   `.cvbox .tmc-x,.dlybox .tmc-x` has `z-index:6`. Check with `document.elementFromPoint` when a button "does nothing".
+
+## Yard life (v140)
+Block `/* <yard-life> */` at the end of `/* <loop-fixes> */` (source `.claude/yard/yardlife.js`, gitignored).
+- Autonomy in the yard: `needPick`, `autoFill` and `autoUseStart` now also run when `away.key==='yard'` (`autoFill` reads the item with
+  `roomItem(id)` there); `needMissing` stays home-only. The shop chooser (`pickUse`/`smartPick`) already worked in any place.
+- Light: `updLighting` uses `yardLight()` as the "ceiling" level in the yard (night ~.2, rain/storm darker), so lanterns take over at night.
+- Ground (`ydGround`, rebuilt when weather/season/yard change; group `YL.g` added straight to `scene`, cleared on leaving): snow cover +
+  drifts (snowing, or winter and cold), puddles (rain/storm), fallen leaves (autumn), petals (spring); `bakeStatic`-merged, no outlines.
+- Falling things (`ydFx` on a 2D canvas `#ydFx`, its own rAF loop `ydLoop` while in the yard): rain, storm (lightning flash), snow,
+  leaves, petals, fog haze, fireflies on summer nights, butterflies on summer days (`ydMode`).
+- Neighbours at the gate (`ydNbTick`): after 35 s in the yard, every ~20 s a 35% chance (6 min apart) a met resident who is out or home
+  (8:00-21:00) pops in by the gate, says a hello (level `hi` / map `out` opener) and a line about the yard (`YD_SAY`), +1 friendship once a
+  day (`acts['yfence:'+k]`), sometimes a Journal line, then says bye and shrinks out. Uses the shop bubble (`keeperSay`).
+- `WISH_T.yard` (ev `visit:yard`, at most once a day, `acts.ywish`, via a `wishTick` wrapper; `wishGo` travels there). Arriving: a hop
+  and a dash across the lawn. Not done: the yard on the town map (the home plot is 2x2 and the cottage fills it).

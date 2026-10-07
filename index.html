@@ -7798,7 +7798,7 @@ const petNight=()=>{const h=townHour();return h>=22||h<7},petMorning=()=>{const 
 function bagFood(){const P=persOf(),have=ITEMS.filter(i=>i.k==='food'&&(i.p===0||(state.inv[i.id]||0)>0));if(!have.length)return null;
   const paid=have.filter(i=>i.p>0),pool=paid.length?paid:have,fav=P&&pool.filter(i=>i.cat===P.fav),starving=petStats().hunger<40,big=(a,b)=>MEALS[b.size][1]-MEALS[a.size][1];return(!starving&&fav&&fav.length?fav:pool).sort((a,b)=>starving?big(a,b)||((P&&b.cat===P.fav)-(P&&a.cat===P.fav)):big(a,b))[0]}
 let autoJrT=0;
-function autoFill(id){if(away||!state||stageOf(state.pet.xp)===0)return null;const it=state.items.find(i=>i.id===id);if(!it)return null;const d=CATMAP[it.k],N=needsOf(d),st=petStats(),p=state.pet,A=p.auto||(p.auto={}),now=Date.now(),gain={};let food=null;
+function autoFill(id){if((away&&away.key!=='yard')||!state||stageOf(state.pet.xp)===0)return null;const it=away?roomItem(id):state.items.find(i=>i.id===id);if(!it)return null;const d=CATMAP[it.k],N=needsOf(d),st=petStats(),p=state.pet,A=p.auto||(p.auto={}),now=Date.now(),gain={};let food=null;
   for(const k in N){if(k==='e')continue;const v=N[k];if(!v)continue;if(v<0){gain[k]=v;continue}if(st[k]>=90||now-(A[k]||0)<AUTO_GAP)continue;gain[k]=v}
   const canEat=N.e&&st.hunger<75&&now-(A.hunger||0)>=AUTO_GAP;if(canEat){food=bagFood();if(food)gain.hunger=(gain.hunger||0)+MEALS[food.size][1]}
   const pos=Object.keys(gain).filter(k=>gain[k]>0);if(!pos.length)return{empty:!!canEat&&!food};
@@ -7809,14 +7809,14 @@ function autoFill(id){if(away||!state||stageOf(state.pet.xp)===0)return null;con
   const main=pos.sort((a,b)=>gain[b]-gain[a])[0];setTimeout(()=>emote('',{icon:NEED_IC[main],ms:1400}),200);if(fav)setTimeout(()=>emote('💗'),1500);
   if(Date.now()-autoJrT>20*60e3&&Math.random()<.45){autoJrT=Date.now();jrEvent('self_'+main,{i:(food&&main==='hunger'?food.n:d.n).toLowerCase()})}
   if(openTab==='pet')renderSheet();return{gain,food}}
-function autoUseStart(id){if(away)return;setTimeout(()=>{const r=autoFill(id);if(r&&r.empty){emote('',{icon:'stat-full',ms:1400});setTimeout(()=>emote('❓'),700);if(!needMissing.bag||Date.now()-needMissing.bag>30*60e3){needMissing.bag=Date.now();toast(`${PN()}’s bowl is empty. Snacks in your bag get served there.`)}}},1200)}
+function autoUseStart(id){if(away&&away.key!=='yard')return;setTimeout(()=>{const r=autoFill(id);if(r&&r.empty){emote('',{icon:'stat-full',ms:1400});setTimeout(()=>emote('❓'),700);if(!needMissing.bag||Date.now()-needMissing.bag>30*60e3){needMissing.bag=Date.now();toast(`${PN()}’s bowl is empty. Snacks in your bag get served there.`)}}},1200)}
 // The needs-first chooser: if a need is low, pick something that fills it (weighted by how much it helps and how much the pet likes it)
-function needPick(stats){if(away||pet.stage<1||!pet.rig||styling()||toyPlay)return false;const night=petNight(),th=k=>k==='energy'&&night?70:NEED_TH[k][0],L=state.pet.likes||{};
+function needPick(stats){if((away&&away.key!=='yard')||pet.stage<1||!pet.rig||styling()||toyPlay)return false;const night=petNight(),th=k=>k==='energy'&&night?70:NEED_TH[k][0],L=state.pet.likes||{};
   const low=NEEDS.map(n=>n[0]).filter(k=>stats[k]<th(k)).sort((a,b)=>stats[a]/th(a)-stats[b]/th(b));
   for(const k of low){const urgent=stats[k]<NEED_TH[k][1]||(k==='energy'&&night);if(!urgent&&Math.random()>.55)continue;const c=[];
     roomObjs().forEach(o=>{const it=roomItem(o.userData.id);if(!it)return;const d=defOf(it.k),u=useOf(d);if(!u||!needHas(d,k))return;const N=needsOf(d);
       c.push({o,it,d,u,w:(N[k]||(k==='hunger'?30:10))*(it.id===pet.lastUse?.5:1)*(1+Math.min(.8,(L[it.k]||0)/15))})});
-    if(!c.length){needMissing(k,urgent);continue}
+    if(!c.length){if(!away)needMissing(k,urgent);continue}
     let q=Math.random()*c.reduce((a,b)=>a+b.w,0),i=0;for(;i<c.length-1;i++){q-=c[i].w;if(q<=0)break}const C=c[i];
     if(goUse(C)){pet.timer=1;pet.needGo=k;emote('',{icon:NEED_IC[k],ms:1500});return true}}
   return false}
@@ -41842,7 +41842,7 @@ function avgColor(img){const c=mkCanvas(1,1),x=c.getContext('2d');x.drawImage(im
 const _lv=new THREE.Vector3();
 function updLighting(t){LIT.time=t;
   // ceiling light dimmer (state.ceil 0..1, home only): the ceiling light and the sky fill fade, lamps get brighter
-  {const L=SKY_LIGHT.daydream,cl=LIT.ceil=approach(LIT.ceil??1,away?1:(state.ceil??1)*rdEve(),.06);sun.intensity=L.si*(.04+.96*cl);ambient.intensity=.18*(.3+.7*cl);LIT.envInt=L.env*(.2+.8*cl);LIT.specInt=L.spec*(.45+.55*cl);LIT.lamp=L.lamp*(1+(1-cl)*.8);LIT.bloom=L.bloom*(1+(1-cl)*.6);updBounce()}
+  {const L=SKY_LIGHT.daydream,cl=LIT.ceil=approach(LIT.ceil??1,away?(away.key==='yard'&&typeof yardLight==='function'?yardLight():1):(state.ceil??1)*rdEve(),.06);sun.intensity=L.si*(.04+.96*cl);ambient.intensity=.18*(.3+.7*cl);LIT.envInt=L.env*(.2+.8*cl);LIT.specInt=L.spec*(.45+.55*cl);LIT.lamp=L.lamp*(1+(1-cl)*.8);LIT.bloom=L.bloom*(1+(1-cl)*.6);updBounce()}
   LIT.wallVis=walls.map(w=>w.g.visible?1:0);const pts=[],ao=[];
   roomObjs().forEach(o=>{const it=roomItem(o.userData.id);if(!it)return;const d=defOf(it.k),e=o.userData.ext;
     if(o.userData.glow&&pts.length<8){_lv.copy(o.userData.glow.off);o.localToWorld(_lv);const g=o.userData.glow.color,k=2.6*LIT.lamp*(o.userData.flick??1);pts.push({pos:[_lv.x,_lv.y,_lv.z],color:[g[0]*k,g[1]*k,g[2]*k],range:4.2})}
@@ -73462,6 +73462,7 @@ const WHATSNEW=[[119,'For the two of you: notes to each other are kept safe, you
   [137,'Opening the map while Mochi is in bed: Mochi gets up first instead of lying across town giant-sized.'],
   [138,'The sky on the map no longer turns the wrong way: the sun, moon, stars and clouds stay put when you rotate.'],
   [139,'The × on a conversation or a small dialogue card closes it again.'],
+  [140,'The yard comes alive: Mochi looks after itself out there (food bowls, beds, seats), the lawn follows the real weather and season (puddles, snow, fallen leaves, petals, fireflies on summer nights), it gets dark at night so lanterns glow, neighbours you know stop by the gate to say hi, and Mochi sometimes wishes to go out and play.'],
   [118,'Friendships go deeper: every neighbour has five more heart-to-hearts, sends a letter (and a gift) when you become best friends, and remembers what you talked about lately. More fixes from playtesting: town projects always appear on the map (the bouncy castle comes first now), the Journal keeps months, not days, taps on the noticeboard, museum and well work, and the back button closes photos and fishing.'],
   [117,'Fixes from playtesting: finished makeovers now pay out properly (they hadn’t been!), events at the library, Town Hall and weather station pay too, party guests spread out, Today’s list sits right under the bond bar, and your pet’s Journal has a page summing up the month so far. Plus a gentler welcome back, fewer day-one strangers, and lots of small things.'],
   [116,'Polish: keepsake letters read properly in the Bag, scrolling tab rows show there’s more, the plaza tiles are brighter, civic buildings have bigger name signs, and messages no longer pop over your pet while you dress it.'],
@@ -74108,7 +74109,8 @@ const WISH_T={
   tmeet:{ev:'chat',ic:'tab-room',go:'map',town:'meet',txt:(n,k,W)=>{W=W||(state&&state.wish);const R=W&&RESIDENTS[W.res];return R?`to meet ${R.n}`:'to meet a neighbour'}},
   tgift:{ev:'gift',ic:'tab-room',go:'map',town:'gift',txt:()=>'to give a neighbour a present'},
   tgarden:{ev:'plant',ic:'tab-room',go:'map',town:'garden',txt:()=>'to plant something in the garden'},
-  tmuseum:{ev:'museum',ic:'tab-room',go:'map',town:'museum',txt:()=>'to take a find to the museum'}};
+  tmuseum:{ev:'museum',ic:'tab-room',go:'map',town:'museum',txt:()=>'to take a find to the museum'},
+  yard:{ev:'visit:yard',ic:'tab-room',go:'map',txt:()=>'to play outside in the yard'}};
 const WISH_HOURS=4,WISH_GAP=[25,45];
 function wishPick(){const st=petStats(),P=persOf(),c=['pats','look','trip','trip','friend'];if(st.hunger<60)c.push('snack','snack');if(P&&st.hunger<90)c.push('fav');if(st.clean<60)c.push('bath','bath');
   if(st.fun<65)c.push('play','play');if(st.energy<40)c.push('nap','nap');const ok=c.filter(k=>!WISH_T[k].ok||WISH_T[k].ok());return ok[Math.random()*ok.length|0]}
@@ -76740,6 +76742,101 @@ function tmDeclutter(){const lab=$('#tmLab');if(!lab)return;const [W,H]=tmSize()
 // ---- hats sit properly (v136): a head wearing a hat tucks its antenna tuft under it (like hair under a hat), so the hat reads
 {const dp=dressPet;dressPet=function(R,S,L){const r=dp.apply(this,arguments);try{const wp=new THREE.Vector3(),hp=new THREE.Vector3(),hats=[R.acc&&R.acc.hatL,R.acc&&R.acc.hatR].filter(Boolean);
   (R.tufts||[]).forEach(F=>{const root=F.chain&&F.chain[0];if(!root)return;let hid=false;if(hats.length){root.updateMatrixWorld(true);root.getWorldPosition(wp);hats.forEach(h=>{h.updateMatrixWorld(true);h.getWorldPosition(hp);if(Math.hypot(hp.x-wp.x,hp.z-wp.z)<(R.sockSize&&R.sockSize.hatL||.3)*1.6)hid=true})}root.visible=!hid})}catch(e){console.warn('hat tufts',e)}return r}}
+/* <yard-life> */
+// ---- yard life (v140): the pet looks after itself out there, the lawn follows the real weather and the season, it gets dark at night
+// (lanterns glow), rain/snow/leaves/petals/fireflies fall over it, neighbours stop by the gate, and the pet sometimes wishes to go out.
+const YL={g:null,key:'',cv:null,run:false,parts:[],mode:'',flash:0,nb:null,nbLast:0,nbCheck:0,inAt:0};
+function yardOn(){return!!(away&&away.key==='yard'&&!sandbox)}
+function ydWx(){let k='sun';try{k=weatherOf(lifeDay())||'sun'}catch(_){}const W=typeof wxNow==='function'&&wxNow();return{k,cold:!!(W&&W.cold),hot:!!(W&&W.hot)}}
+function ydNight(){const h=typeof townHour==='function'?townHour():12;return h<5.5?1:h<7.5?1-(h-5.5)/2:h<18.5?0:h<20.5?(h-18.5)/2:1}
+// how bright the yard is (read by updLighting as the "ceiling" level, so lamps and lanterns take over at night)
+function yardLight(){const n=ydNight(),k=ydWx().k;let v=1-.8*n;if(k==='rain')v*=.8;else if(k==='storm')v*=.66;else if(k==='fog'||k==='cloud')v*=.9;else if(k==='snow')v*=.94;return v}
+function ydBox(){const P=yardPlan(),C=PLAN_CS;return{hw:P.W*C/2,hd:P.D*C/2,P}}
+function ydClear(){if(YL.g){scene.remove(YL.g);YL.g.traverse(o=>{if(o.isMesh)try{renderer.disposeGeometry&&renderer.disposeGeometry(o.geometry)}catch(_){}})}YL.g=null;YL.key=''}
+let ydSnowTex=null;
+// what lies on the lawn: snow cover and drifts, puddles after rain, fallen leaves in autumn, petals in spring
+function ydGround(){const w=ydWx(),s=seasonNow(),Y=yardS(),snow=w.k==='snow'||(s==='winter'&&w.cold),wet=w.k==='rain'||w.k==='storm',
+    key=[snow?'snow':wet?'wet':'dry',s,Y.lv,Y.at,(Y.items||[]).length].join('|');if(YL.g&&YL.key===key)return;ydClear();YL.key=key;
+  const {hw,hd}=ydBox(),g=new THREE.Group(),R=jrRand('yd|'+lifeDay()+'|'+key),objs=[...((away&&away.objs)||new Map()).values()];
+  const clear=(x,z,r)=>objs.every(o=>Math.hypot(o.position.x-x,o.position.z-z)>r+.55)&&Math.hypot(x+hw,z)>1.1;
+  const spot=r=>{for(let i=0;i<40;i++){const x=(R()*2-1)*(hw-.45),z=(R()*2-1)*(hd-.45);if(clear(x,z,r))return[x,z]}return null};
+  const mesh=(geo,m,x,y,z)=>{const o=new THREE.Mesh(geo,m);o.position.set(x,y,z);o.outline=0;o.castShadow=false;o.receiveShadow=true;g.add(o);return o};
+  if(snow){if(!ydSnowTex)ydSnowTex=ctex(256,256,(x,W,H)=>{x.fillStyle='#F6F9FF';x.fillRect(0,0,W,H);for(let i=0;i<900;i++){x.fillStyle=Math.random()<.5?'rgba(200,215,240,.35)':'rgba(255,255,255,.9)';x.beginPath();x.arc(Math.random()*W,Math.random()*H,.6+Math.random()*1.8,0,7);x.fill()}});
+    const m=new THREE.MeshStandardMaterial({color:0xFFFFFF,map:ydSnowTex,roughness:.85});const p=mesh(new THREE.PlaneGeometry(hw*2-.08,hd*2-.08),m,0,.012,0);p.rotation.x=-Math.PI/2;
+    const dm=new THREE.MeshStandardMaterial({color:0xF7FAFF,roughness:.8});for(let i=0;i<7;i++){const q=spot(.3);if(!q)continue;const d=mesh(new THREE.SphereGeometry(.3,14,8),dm,q[0],-.02,q[1]);d.scale.set(1+R()*.8,.28+R()*.18,.8+R()*.6);d.rotation.y=R()*3}}
+  else{if(wet){const pm=new THREE.MeshStandardMaterial({color:0x8FC4E8,roughness:.04,metalness:.25});const geo=new THREE.CylinderGeometry(.3,.3,.012,22);
+      for(let i=0;i<5;i++){const q=spot(.45);if(!q)continue;for(let j=0;j<3;j++){const d=mesh(geo,pm,q[0]+(R()-.5)*.35,.016+j*.0005,q[1]+(R()-.5)*.3);d.scale.set(.6+R()*.8,1,.5+R()*.6)}}}
+    if(s==='autumn'||s==='spring'){const cols=s==='autumn'?[0xF28C28,0xD9482B,0xF2C230,0xA8642E]:[0xFFC4DE,0xFFFFFF,0xFF9FC8,0xFFE3F0],ms=cols.map(c=>new THREE.MeshStandardMaterial({color:c,roughness:.75})),
+        geo=s==='autumn'?leafGeo(.26,.17):new THREE.CylinderGeometry(.065,.065,.006,10),n=s==='autumn'?(w.k==='wind'?130:90):70;
+      for(let i=0;i<n;i++){const x=(R()*2-1)*(hw-.2),z=(R()*2-1)*(hd-.2);if(Math.hypot(x+hw,z)<.9)continue;const d=mesh(geo,ms[i%ms.length],x,.018+R()*.006,z);
+        if(s==='autumn'){d.rotation.x=-Math.PI/2+(R()-.5)*.4;d.rotation.z=R()*6.3}else d.scale.set(1,1,.6+R()*.5)}}}
+  try{bakeStatic(g)}catch(_){}g.traverse(o=>{if(o.isMesh){o.outline=0;o.castShadow=false}});YL.g=g;scene.add(g)}
+// falling things on a flat canvas over the yard (drawn at 1x; cheap)
+function ydMode(){const w=ydWx(),s=seasonNow(),n=ydNight();if(w.k==='storm')return'storm';if(w.k==='rain')return'rain';if(w.k==='snow')return'snow';if(w.k==='fog')return'fog';
+  if(s==='summer')return n>.5?'flies':'butter';if(s==='autumn')return'leaves';if(s==='spring')return'petals';return''}
+function ydFxCanvas(){if(YL.cv)return YL.cv;const c=document.createElement('canvas');c.id='ydFx';c.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:3';document.body.appendChild(c);YL.cv=c;return c}
+function ydSpawn(m,W,H,top){const r=Math.random;
+  if(m==='rain'||m==='storm')return{x:r()*W*1.2,y:top?-r()*40:r()*H,v:700+r()*300,l:12+r()*10};
+  if(m==='snow')return{x:r()*W,y:top?-10:r()*H,v:30+r()*40,s:1.5+r()*2.5,p:r()*6};
+  if(m==='leaves'||m==='petals')return{x:r()*W,y:top?-20:r()*H,v:28+r()*30,s:m==='leaves'?5+r()*4:3+r()*2,p:r()*6,a:r()*6,c:m==='leaves'?['#F28C28','#D9482B','#F2C230','#C2702E'][r()*4|0]:['#FFC4DE','#FFFFFF','#FF9FC8'][r()*3|0]};
+  if(m==='flies')return{x:r()*W,y:H*.25+r()*H*.6,p:r()*6,q:r()*6};
+  if(m==='butter')return{x:r()*W,y:H*.3+r()*H*.4,p:r()*6,c:['#FFD21F','#FF9FC8','#9BD8FF'][r()*3|0],vx:(r()<.5?-1:1)*(20+r()*20)};
+  return{}}
+function ydFx(dt,t){const c=ydFxCanvas(),on=yardOn()&&!(typeof tm!=='undefined'&&tm&&tm.open)&&!traveling,W=innerWidth,H=innerHeight;
+  if(!on){if(!c.hidden){c.hidden=true;YL.parts=[]}return}
+  const m=ydMode();if(m!==YL.mode){YL.mode=m;YL.parts=[]}c.hidden=!m;if(!m)return;
+  if(c.width!==W||c.height!==H){c.width=W;c.height=H}const x=c.getContext('2d');x.clearRect(0,0,W,H);
+  const N={rain:120,storm:180,snow:80,leaves:16,petals:20,flies:18,butter:2,fog:0}[m]||0;while(YL.parts.length<N)YL.parts.push(ydSpawn(m,W,H,false));
+  if(m==='fog'){const gr=x.createLinearGradient(0,H*.25,0,H);gr.addColorStop(0,'rgba(255,255,255,0)');gr.addColorStop(1,'rgba(240,244,250,.42)');x.fillStyle=gr;x.fillRect(0,0,W,H);return}
+  YL.parts.forEach((p,i)=>{
+    if(m==='rain'||m==='storm'){p.y+=p.v*dt;p.x-=p.v*dt*.18;if(p.y>H){YL.parts[i]=ydSpawn(m,W,H,true);return}x.strokeStyle='rgba(225,238,255,.75)';x.lineWidth=1.7;x.beginPath();x.moveTo(p.x,p.y);x.lineTo(p.x+p.l*.18,p.y-p.l);x.stroke()}
+    else if(m==='snow'){p.y+=p.v*dt;p.x+=Math.sin(t*1.2+p.p)*14*dt;if(p.y>H+5){YL.parts[i]=ydSpawn(m,W,H,true);return}x.fillStyle='rgba(255,255,255,.92)';x.beginPath();x.arc(p.x,p.y,p.s,0,7);x.fill()}
+    else if(m==='leaves'||m==='petals'){p.y+=p.v*dt;p.x+=Math.sin(t*.9+p.p)*30*dt+8*dt;p.a+=dt*1.6;if(p.y>H+20){YL.parts[i]=ydSpawn(m,W,H,true);return}
+      x.save();x.translate(p.x,p.y);x.rotate(p.a);x.scale(1,.45+.4*Math.abs(Math.sin(t*2+p.p)));x.fillStyle=p.c;x.beginPath();x.ellipse(0,0,p.s,p.s*.6,0,0,7);x.fill();x.restore()}
+    else if(m==='flies'){p.x+=Math.sin(t*.7+p.p)*18*dt;p.y+=Math.cos(t*.6+p.q)*14*dt;const a=.35+.65*Math.max(0,Math.sin(t*2.2+p.p*3));
+      const gr=x.createRadialGradient(p.x,p.y,0,p.x,p.y,9);gr.addColorStop(0,`rgba(255,250,170,${a})`);gr.addColorStop(1,'rgba(255,240,120,0)');x.fillStyle=gr;x.beginPath();x.arc(p.x,p.y,9,0,7);x.fill()}
+    else if(m==='butter'){p.x+=p.vx*dt;p.y+=Math.sin(t*2+p.p)*25*dt;if(p.x<-30||p.x>W+30){YL.parts[i]=ydSpawn(m,W,H,false);YL.parts[i].x=p.vx>0?-20:W+20;return}
+      const f=Math.abs(Math.sin(t*14+p.p));x.fillStyle=p.c;x.strokeStyle='#3B1273';x.lineWidth=1.2;[-1,1].forEach(sd=>{x.beginPath();x.ellipse(p.x+sd*5*f,p.y,6*f+1,7,0,0,7);x.fill();x.stroke()})}});
+  if(m==='storm'){YL.flash-=dt;if(YL.flash<-6-Math.random()*8){YL.flash=.25;try{SFX&&SFX.pop&&0}catch(_){}}if(YL.flash>0){x.fillStyle=`rgba(255,255,255,${YL.flash*1.4})`;x.fillRect(0,0,W,H)}}}
+// a neighbour stops by the gate: a hello, a word about the yard, then off they go
+const YD_SAY=[p=>`Your yard looks lovely. Is that ${p}?`,p=>`I could hear {n} from the lane! What a nice spot you've made.`,p=>`I was just passing. ${capF(p)}! That's a good choice for out here.`,
+  p=>`Every time I walk by, there's something new out here.`,p=>`Fresh air suits {n}. Look at those two heads go.`,p=>`I'd sit out here all day if it were mine.`];
+function ydNbPick(){const h=typeof townHour==='function'?townHour():12;if(h<8||h>=21)return null;const ks=Object.keys(RESIDENTS).filter(k=>KEEPERS[k]&&KBIB[k]&&visMet(k)&&['out','home','visit'].includes(resWhere(k)));
+  return ks.length?ks[Math.random()*ks.length|0]:null}
+function ydNbSpawn(k){const {hw,hd,P}=ydBox(),C=PLAN_CS,j=P.door[1],gz=(j+.5)*C-hd,K=KEEPERS[k]();K.kind=k;kPolish(K,k);K.g.scale.setScalar(.01);
+  K.g.position.set(-hw+.75,0,gz);K.g.rotation.y=Math.PI/2*.7;scene.add(K.g);YL.nb={K,k,t:0,a:0,said:0,out:0};YL.nbLast=Date.now();
+  try{const pp=K.g.position.clone().add(new THREE.Vector3(1.2,0,.2));petGo(pp,()=>{pet.waveT=1.8;pet.happyT=1;pet.hop=.6})}catch(_){}}
+function ydNbLines(k){const T=TALK[k]||{},B=KBIB[k]||{},it=(away&&[...away.items.values()].filter(q=>CATMAP[q.k]))||[],pc=it.length?CATMAP[it[Math.random()*it.length|0].k]:null;
+  const hi=(typeof cvLvPick==='function'&&cvLvPick(k,T,'hi',.6))||(T.out&&T.out.length?cvPick(typeof cvFitWx==='function'?cvFitWx(T.out,typeof wxNow==='function'&&wxNow()):T.out):null)||pick1((B.hi&&(B.hi.d||B.hi.m))||['Hello there!']);
+  const yd=pc?pick1(YD_SAY)(aOf(pc.n)):'Look at you two, out in the fresh air!';return[visFill(k,visTxt(hi)),visFill(k,yd)].filter(Boolean)}
+function ydNbTick(dt,t){const V=YL.nb;
+  if(!V){if(!yardOn()||kmode||openTab||traveling||styling())return;YL.nbCheck-=dt;if(YL.nbCheck>0)return;YL.nbCheck=20;
+    if(performance.now()-YL.inAt<35e3||Date.now()-YL.nbLast<6*60e3||Math.random()>.35)return;const k=ydNbPick();if(k)ydNbSpawn(k);return}
+  if(!yardOn()){scene.remove(V.K.g);YL.nb=null;return}
+  V.t+=dt;V.a+=dt;const talk=KB.K===V.K&&KB.n<KB.txt.length,act=V.out||V.a<2?'greet':'idle';try{V.K.upd(dt,t,act,Math.min(1,V.a/2),talk)}catch(_){}
+  const s=V.out?Math.max(.01,1.22*(1-V.out/.5)):Math.min(1.22,V.t*2.6);V.K.g.scale.setScalar(Math.max(.01,s));
+  if(!V.said&&V.t>1.1){V.said=1;const L=ydNbLines(V.k);L.forEach(l=>keeperSay(l,V.K));try{$('#kbub').style.setProperty('--kc',(RES[V.k]||[])[1]||'#A6E22E')}catch(_){}
+    if(!actDone('yfence:'+V.k)){actMark('yfence:'+V.k);kfAdd(V.k,1);const R=RESIDENTS[V.k];if(R&&Math.random()<.6)jrAdd(`${R.n} stopped by the gate while we were out in the yard.`,'','yardvisit',0,R.n)}}
+  if(V.said===1&&V.t>4&&KB.K===V.K&&kbT<=0){V.said=2;V.byeAt=V.t+3}
+  if(V.said===2&&V.t>V.byeAt&&!V.out){const T=TALK[V.k]||{};keeperSay(visFill(V.k,visTxt((typeof cvLvPick==='function'&&cvLvPick(V.k,T,'bye',.7))||(T.bye&&T.bye.length?cvPick(T.bye):'See you around!'))),V.K);V.said=3;V.goAt=V.t+3.2}
+  if(V.said===3&&V.t>V.goAt)V.out=(V.out||0)+dt;
+  if(V.t>40&&!V.out)V.out=.001;
+  if(V.out>=.5){scene.remove(V.K.g);YL.nb=null}}
+function ydLoop(){if(!YL.run)return;const now=performance.now(),dt=Math.min(.05,(now-(YL.last||now))/1000);YL.last=now;const t=now/1000;
+  try{ydFx(dt,t)}catch(e){console.warn('yard fx',e)}try{ydNbTick(dt,t)}catch(e){console.warn('yard visitor',e);if(YL.nb){scene.remove(YL.nb.K.g);YL.nb=null}}
+  if(!yardOn()&&!YL.nb){YL.run=false;if(YL.cv)YL.cv.hidden=true;return}requestAnimationFrame(ydLoop)}
+setInterval(()=>{try{if(yardOn()){ydGround();if(!YL.run){YL.run=true;YL.last=0;requestAnimationFrame(ydLoop)}}else if(YL.g)ydClear()}catch(e){console.warn('yard life',e)}},500);
+// arriving: a happy hop and a dash across the lawn
+{const tt=travelTo;travelTo=function(dest,then){if(dest==='yard'&&yardS().lv>0){const th=then;then=function(){YL.inAt=performance.now();YL.key='';
+    setTimeout(()=>{try{if(yardOn()&&pet.rig&&pet.mode!=='held'){pet.hop=1;pet.happyT=1.2;emote('💗');setTimeout(()=>{try{if(yardOn()&&['idle','walk'].includes(pet.mode))petGo(randomSpot())}catch(_){}},900)}}catch(_){}},700);
+    if(th)return th.apply(this,arguments)}}if(dest!=='yard'){try{ydClear()}catch(_){}if(YL.nb){scene.remove(YL.nb.K.g);YL.nb=null}}return tt.call(this,dest,then,...[].slice.call(arguments,2))}}
+// the pet sometimes wishes to go out and play in the yard (at most once a day, only with a yard that has something in it)
+{const wt=wishTick;wishTick=function(){try{const W=state&&state.wish||{},now=Date.now(),Y=yardS();
+    if(ready&&!sandbox&&state&&!W.k&&!(W.next&&now<W.next)&&Y.lv>0&&(Y.items||[]).length&&!actDone('ywish')&&!yardOn()&&Math.random()<.22){actMark('ywish');
+      state.wish={k:'yard',ev:'visit:yard',n:1,got:0,t:now,until:now+WISH_HOURS*36e5};saveSoon();updWish();wishEmote();toast(`${PN()} has a wish: ${wishText()}!`);if(openTab==='pet')renderSheet();return}}catch(e){console.warn('yard wish',e)}
+  return wt.apply(this,arguments)}}
+{const wg=wishGo;wishGo=function(){const W=state.wish;if(W&&W.k==='yard'){setTab(null);try{closeWheel()}catch(_){}if(!yardOn())travelTo('yard');return}return wg.apply(this,arguments)}}
+/* </yard-life> */
 /* </loop-fixes> */
 /* <anim-sets> */
 // per-piece animations (v128+): one Object.assign(BUILD,...) per set from .claude/anim/<set>.js (brief tools/dev/town/ANIM_BRIEF.md)
@@ -82449,7 +82546,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><p class="coachgo">Start by tapping ${nm} to say hello.</p><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=139;
+const APP_V=140;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}
