@@ -1085,6 +1085,13 @@ body:has(#fishv:not([hidden])) #fishv button{visibility:visible}
 .dcard .stock::before,.dcard .stock::after{content:none!important}
 .dcard .stock.zero{background:#EDE6F5;color:#6B4E95}
 .dcard .own{left:4px;bottom:4px;background:#3EC8F2;color:#fff;border-radius:8px}
+/* one loading bar (v136): the candy stripes are the progress */
+.orb{position:relative;overflow:hidden;background:rgba(255,255,255,.35)!important;animation:none!important}
+.orb i{display:block;height:100%;width:8%;border-radius:7px;background:repeating-linear-gradient(-45deg,var(--pink) 0 10px,var(--sun) 10px 20px,var(--sky) 20px 30px,var(--slime) 30px 40px);background-size:56.57px 56.57px;animation:candy3 .9s linear infinite;transition:width .3s ease}
+/* pop-ups keep clear of the pet wheel and open pages (v136) */
+body.sheet-open .toast,body:has(#petwheel:not([hidden])) .toast,body:has(#menuwheel:not([hidden])) .toast{top:calc(env(safe-area-inset-top,0px) + 74px)!important;max-width:min(78vw,320px)}
+.av.face{background:#fff!important;padding:0;overflow:hidden}
+.av.face img{width:100%;height:100%;object-fit:cover;transform:scale(1.15)}
 </style>
 </head>
 <body>
@@ -1186,8 +1193,7 @@ body:has(#fishv:not([hidden])) #fishv button{visibility:visible}
   <div class="load-inner">
     <img class="load-logo" src="assets/logo.webp" alt="Room for Two" width="900" height="604">
     <div class="sub">Fluffing the pillows</div>
-    <div class="orb"></div>
-    <div class="load-bar" id="loadBar" hidden><i id="loadFill"></i></div>
+    <div class="orb" id="loadBar"><i id="loadFill"></i></div>
   </div>
 </div>
 <script>
@@ -73452,6 +73458,7 @@ const WHATSNEW=[[119,'For the two of you: notes to each other are kept safe, you
   [133,'The bottom bar comes back after painting floors and walls (it got stuck hidden), and pages no longer have their own Menu or Pet back button: the bottom bar does that.'],
   [134,'About 75 new pieces, one for each need a set was missing: a comet-tail bath for Stargazer, a dunk-tank tub at the Carnival, a snack printer for Neon Byte, a seal-pup plush for Beacon and lots more. By need is much more even now.'],
   [135,'About 70 more new pieces, so every set now has something for Hunger, Hygiene and Love: a castle cake trolley, a coffin bubble bath, a tool-belt teddy, a heart bubble bath and lots more.'],
+  [136,'The town is built while the game loads, so the map opens instantly, and the colourful bar shows the real progress. Map labels no longer pile up, pop-ups keep clear of the pet wheel and pages, neighbours show their faces everywhere, the starter pet bed is roomier, and hats tuck the antennae under them.'],
   [118,'Friendships go deeper: every neighbour has five more heart-to-hearts, sends a letter (and a gift) when you become best friends, and remembers what you talked about lately. More fixes from playtesting: town projects always appear on the map (the bouncy castle comes first now), the Journal keeps months, not days, taps on the noticeboard, museum and well work, and the back button closes photos and fishing.'],
   [117,'Fixes from playtesting: finished makeovers now pay out properly (they hadn’t been!), events at the library, Town Hall and weather station pay too, party guests spread out, Today’s list sits right under the bond bar, and your pet’s Journal has a page summing up the month so far. Plus a gentler welcome back, fewer day-one strangers, and lots of small things.'],
   [116,'Polish: keepsake letters read properly in the Bag, scrolling tab rows show there’s more, the plaza tiles are brighter, civic buildings have bigger name signs, and messages no longer pop over your pet while you dress it.'],
@@ -73982,7 +73989,7 @@ function renderJournal0(body){const p=state.pet,hn=headNames(),J=state.journal;r
   body.innerHTML=`${pgHead('journal',{sub:`Written by ${esc(hn[0])} and ${esc(hn[1])}: what they got up to, even while you were away.`})+jrTabs('journal')}${J.length?html:'<p class="hint">Nothing written yet. Check back after a little while.</p>'}`}
 function renderInbox(body){const me=myId||'me';resolveNames([...new Set(state.feed.map(x=>x.by))]);
   const ms=state.inbox.map(m=>({t:m.t,from:m.from,text:m.text})).concat(state.feed.filter(f=>f.k==='note').map(f=>({t:f.t,by:f.by,text:f.text}))).sort((a,b)=>b.t-a.t).slice(0,60);
-  const row=m=>{if(m.from){const r=RES[m.from]||['?','#fff'];return`<div class="dm" style="--c:${r[1]}"><span class="av">${esc(r[0][0])}</span><div class="bw"><span class="nm">${esc(r[0])}</span><div class="bub">${esc(m.text)}<small>${ago(m.t)}</small></div></div></div>`}
+  const row=m=>{if(m.from){const r=RES[m.from]||['?','#fff'];return`<div class="dm" style="--c:${r[1]}"><span class="av${thumbs['fig_'+m.from]?' face':''}">${thumbs['fig_'+m.from]?`<img src="${thumbs['fig_'+m.from]}" alt="">`:esc(r[0][0])}</span><div class="bw"><span class="nm">${esc(r[0])}</span><div class="bub">${esc(m.text)}<small>${ago(m.t)}</small></div></div></div>`}
     const mine=m.by===me;return`<div class="dm${mine?' me':''}" style="--c:#BDEBFF">${mine?'':`<span class="av">${esc(who(m.by)[0]||'?')}</span>`}<div class="bw">${mine?'':`<span class="nm">${esc(who(m.by))}</span>`}<div class="bub">${esc(m.text)}<small>${ago(m.t)}</small></div></div></div>`};
   body.innerHTML=`${pgHead('inbox',{sub:'Messages from the neighbours, and notes between the two of you.'})}<div class="compose"><input id="note" aria-label="Write a note" maxlength="140" placeholder="Message your person" enterkeyhint="send"><button class="gel pink" id="send">Send</button></div><div class="dms">${ms.length?byDay(ms,row):'<p class="hint">No messages yet.</p>'}</div>`;
   const send=()=>{const i=$('#note'),v=i.value.trim();if(!v)return;logEvent(v,'note');td('note');i.value='';saveSoon();renderSheet();toast('Sent');markSeen('inbox')};
@@ -76717,6 +76724,19 @@ function decoBurst(id){try{const o=roomObjs().get(id);if(!o)return;const b=new T
 // button (the same buttons sit in the dock); only the shop catalogue keeps its "back to the shopkeeper" button.
 {const st=setTab;setTab=function(t){const r=st.apply(this,arguments);try{const sb=$('#sback'),sh=$('#sheet');if(sb&&!(kmode&&openTab==='shopcat')){sb.hidden=true;if(sh)sh.classList.remove('hasback')}}catch(_){}return r}}
 setInterval(()=>{try{if(!brush&&document.body.classList.contains('painting'))document.body.classList.remove('painting')}catch(_){}},1000);
+// ---- map labels never pile up (v136): after each frame, labels that would overlap one already shown are hidden (district names
+// first, then shop stickers, then the rest, nearest the middle first) and district names are kept fully on screen
+function tmDeclutter(){const lab=$('#tmLab');if(!lab)return;const [W,H]=tmSize(),boxes=[],items=[];
+  lab.querySelectorAll('.tml').forEach(b=>{if(b.style.visibility!=='visible')return;const m=/translate\(([-\d.e]+)px,\s*([-\d.e]+)px\)/.exec(b.style.transform);if(!m)return;if(!b._w){b._w=b.offsetWidth||60;b._h=b.offsetHeight||28}
+    items.push({b,x:+m[1],y:+m[2],w:b._w,h:b._h,p:b.dataset.wx!=null?0:b.dataset.sk?1:2})});
+  items.sort((a,c)=>a.p-c.p||(Math.abs(a.x-W/2)+Math.abs(a.y-H/2))-(Math.abs(c.x-W/2)+Math.abs(c.y-H/2)));
+  for(const it of items){let x=it.x;if(it.p===0)x=clamp(x,it.w/2+8,W-it.w/2-8);const L=x-it.w/2,R=x+it.w/2,T=it.y-it.h,B=it.y;
+    if(boxes.some(q=>L<q.R+6&&R>q.L-6&&T<q.B+3&&B>q.T-3)){it.b.style.visibility='hidden';continue}boxes.push({L,R,T,B});
+    if(x!==it.x)it.b.style.transform=it.b.style.transform.replace(/translate\([-\d.e]+px,/,'translate('+x.toFixed(1)+'px,')}}
+{const tf=tmFrame;tmFrame=function(){const r=tf.apply(this,arguments);try{tmDeclutter()}catch(_){}return r}}
+// ---- hats sit properly (v136): a head wearing a hat tucks its antenna tuft under it (like hair under a hat), so the hat reads
+{const dp=dressPet;dressPet=function(R,S,L){const r=dp.apply(this,arguments);try{const wp=new THREE.Vector3(),hp=new THREE.Vector3(),hats=[R.acc&&R.acc.hatL,R.acc&&R.acc.hatR].filter(Boolean);
+  (R.tufts||[]).forEach(F=>{const root=F.chain&&F.chain[0];if(!root)return;let hid=false;if(hats.length){root.updateMatrixWorld(true);root.getWorldPosition(wp);hats.forEach(h=>{h.updateMatrixWorld(true);h.getWorldPosition(hp);if(Math.hypot(hp.x-wp.x,hp.z-wp.z)<(R.sockSize&&R.sockSize.hatL||.3)*1.6)hid=true})}root.visible=!hid})}catch(e){console.warn('hat tufts',e)}return r}}
 /* </loop-fixes> */
 /* <anim-sets> */
 // per-piece animations (v128+): one Object.assign(BUILD,...) per set from .claude/anim/<set>.js (brief tools/dev/town/ANIM_BRIEF.md)
@@ -82331,6 +82351,8 @@ try{Object.assign(BUILD,(()=>{
    if(bl){bl.position.x=b0[0]-.04*d;bl.rotation.y=b0[1]+.12*d}};return g}
  }})());}catch(e){console.warn("anim set zen.js",e)}
 /* </anim-sets> */
+// the starter pet bed is roomier, so the curled-up pet fits inside it (v136)
+{const pb=BUILD.petbed;if(pb)BUILD.petbed=function(c){const g=pb.apply(this,arguments);try{if(g&&g.scale&&c!=='kit')g.scale.multiplyScalar(1.3)}catch(_){}return g}}
 // civic places get a bigger name plaque than houses (the Town Hall's was hard to read from the map)
 TM_SIGN._place=(fg,L,k)=>{const p=TM_SIGN._house(fg,L,k);p.scale.multiplyScalar(1.6);p.position.y+=.12;return p};
 function mergeInto(L,R){if(!syncBase)return{};const B=syncBase,ch={},Bkr=B.kr?JSON.parse(B.kr)||{}:{},Rkr=R.kr||{};new Set([...Object.keys(L),...Object.keys(R)]).forEach(k=>{if(k==='rev')return;
@@ -82409,12 +82431,12 @@ function openRoom(code){if(sandbox)setSandbox(false);roomCode=code;try{localStor
 let loadedOnce=false;
 // build the whole town (buildings, streets, decorations, first render) behind the loader so the map is ready when you open it
 async function preloadTown(){const bar=$('#loadBar'),fill=$('#loadFill'),sub=document.querySelector('#loader .sub'),fr=()=>new Promise(r=>requestAnimationFrame(()=>r()));
-  try{if(!tmInit())return;bar.hidden=false;if(sub)sub.textContent='Building the town';tmNormCur();tmSync(false,2);const total=tmPlaces().length;let t0=performance.now();
-    while(tm.pending&&performance.now()-t0<20000){tmPump(2);fill.style.width=Math.round(Object.keys(tm.bld).length/total*92)+'%';await fr()}
-    try{tmSeasonDecor()}catch(e){console.warn('season decor',e)}tmDraw(0);tmSnapNow();tm.snapOk=1;fill.style.width='100%';await fr()}catch(e){console.warn('preload',e)}}
+  try{if(!tmInit())return;if(sub)sub.textContent='Building the town';tmNormCur();tmSync(false,2);const total=tmPlaces().length;let t0=performance.now();
+    while(tm.pending&&performance.now()-t0<20000){tmPump(2);fill.style.width=Math.round(14+Object.keys(tm.bld).length/total*70)+'%';await fr()}
+    try{tmSeasonDecor()}catch(e){console.warn('season decor',e)}for(const f of [typeof musPlace==='function'&&musPlace,typeof fishDock==='function'&&fishDock,typeof projPlace==='function'&&projPlace])if(f)try{f()}catch(e){console.warn('preload place',e)}try{if(tmSyncNeeded&&tmSyncNeeded()){tmSync(false,99);while(tm.pending){tmPump(4);await fr()}}}catch(_){}fill.style.width='88%';if(sub)sub.textContent='Tidying the streets';await fr();await fr();try{if(tm.mergeDirty&&!tm.pending)tmMergeWorld()}catch(e){console.warn('preload merge',e)}fill.style.width='92%';if(sub)sub.textContent='Saying hello to the neighbours';try{if(initThumbR()){const ks=Object.keys(RESIDENTS).map(k=>'fig_'+k).filter(k=>CATMAP[k]&&!thumbs[k]);for(let i=0;i<ks.length;i++){try{renderThumb(ks[i])}catch(_){}if(i%4===3){fill.style.width=Math.round(92+i/ks.length*6)+'%';await fr()}}}}catch(e){console.warn('preload faces',e)}fill.style.width='98%';await fr();try{tmFresh()}catch(_){}tmDraw(0);tmSnapNow();tm.snapOk=1;fill.style.width='100%';await fr()}catch(e){console.warn('preload',e)}}
 // v112: the room opens straight away; the town is built afterwards in idle moments, one building at a time (the warm-up below and
 // tmPumpIdle). preloadTown (build it all behind the loader) is kept but unused: it was over half of an 8 s phone start.
-function finishLoad(){if(loadedOnce)return;loadedOnce=true;finishLoad2()}
+function finishLoad(){if(loadedOnce)return;loadedOnce=true;(async()=>{try{await preloadTown()}catch(e){console.warn('preload',e)}finishLoad2()})()}
 function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);ready=true;bootDone=true;$('#loader').classList.add('gone');updHUD();
   // keepers' moving parts are worked out once per kind; do it for the townsfolk in quiet moments so the map never hitches on them
   {const ks=Object.keys(RESIDENTS).filter(k=>KEEPERS[k]&&!BAKE_MOVING[k]);const step=()=>{const k=ks.shift();if(!k)return;try{const K=KEEPERS[k]();kPolish(K,k);bakeKeeper(K,k)}catch(_){}(window.requestIdleCallback?requestIdleCallback(step,{timeout:3000}):setTimeout(step,400))};setTimeout(step,6000)}
@@ -82424,7 +82446,7 @@ function finishLoad2(){setTimeout(checkDaily,4500);setTimeout(lifeCheck,5200);re
 function showCoach(){const c=document.createElement('div');c.className='coach';const nm=esc(state&&state.pet?state.pet.name:'your pet');c.innerHTML=`<h3>Welcome home</h3><ul><li><span class="ci"><img src="assets/icons/tab-pet.webp" alt=""></span>This is <b>${nm}</b>: one body, two heads, one for each of you. Tap a head to say hi, rub to pet, press and hold to pick it up.</li><li><span class="ci"><img src="assets/icons/twodo.webp" alt=""></span><b>Pet</b> shows how ${nm} is doing and today’s little list, always with one thing for the two of you.</li><li><span class="ci"><img src="assets/icons/tab-room.webp" alt=""></span><b>Explore</b> opens the town: walk the streets, meet the neighbours, pop into the shops.</li><li><span class="ci"><img src="assets/icons/tab-decorate.webp" alt=""></span><b>Menu</b> has Decorate, the Wardrobe, the Journal and your messages. Drag the room to turn it, pinch to zoom.</li></ul><p class="coachgo">Start by tapping ${nm} to say hello.</p><button class="gel pink" style="width:100%">Let’s go!</button>`;
   document.body.appendChild(c);c.querySelector('button').onclick=()=>{c.remove();try{localStorage.setItem('r42coach','1')}catch(_){}setTimeout(tdNudge,1200)}}
 // Forget the offline copy and reload so the newest version is fetched from the server.
-const APP_V=135;
+const APP_V=136;
 async function hardRefresh(noSave){toast('Getting the latest version…');if(noSave!==true)try{dirty=true;await withTimeout(flush(),2500)}catch(_){}
   try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.unregister()))}catch(_){}
   try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(_){}

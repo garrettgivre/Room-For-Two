@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v135** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v135'` in `sw.js`; bump both for anything
+**Current build: v136** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v136'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -81,7 +81,7 @@ anything the game uses. `tools/writing/holidays.md` is the holiday design doc.
    remembering, moments together, Swap-Face masks, the What's new card. Ask how the map, the sound and the bubbles feel on the phone.
 2. Ideas still open: new neighbours moving into the empty lots (needs resident models), edge scrolling in the room camera, a custom
    pattern designer for clothes (designs exist for tiles/pictures/pet patterns), push notifications (needs Garrett's OK).
-3. Known small things: (fixed in v116: Town Hall sign, snail, plaza tiles; Scone has no plaster, that note was wrong). Map far view draws ~1,490 meshes (v88 was ~1,360); watch it when adding map things.
+3. Known small things: (fixed in v116: Town Hall sign, snail, plaza tiles; v136: map labels, toasts over the wheel, faces, pet bed size, hats). Map far view draws ~1,490 meshes (v88 was ~1,360); watch it when adding map things.
 4. `firestore.rules` requires `cv >= 44` on writes and must be published by hand in the Firebase console; ask Garrett before assuming.
 5. Working setup: Garrett drives sessions from his phone via Remote Control on his PC (no cloud sessions: cost). Max 4 agents at once.
 6. Every user-visible release: add a line to `WHATSNEW`, bump `APP_V` + `sw.js` CACHE, run the three sweeps, then push.
@@ -1404,3 +1404,15 @@ end of `/* <loop-fixes> */`, `IL`.
 - v135: By-need fill-ins done: all 78 sets that lacked hunger, hygiene or love now have one piece per gap (~145 pieces in
   `/* <need-fill> */`). Counts: Hunger 112, Fun 198, Energy 338, Hygiene 131, Love 131 (energy stays highest: every seat and bed).
   Some agents generated their files from shared helper sources in `.claude/fill/x/` (gitignored).
+
+## Map built at startup again; polish (v136)
+- Garrett prefers a longer start to a pause in play: `finishLoad` awaits `preloadTown()` again (undoing v112). preloadTown builds every
+  building, places the museum/dock/projects (`musPlace`, `fishDock`, `projPlace`; on a new save these used to re-sync and re-merge the
+  whole town on the first open), runs `tmMergeWorld`, draws every resident's portrait (`renderThumb('fig_'+k)`), then `tmFresh` +
+  snapshot. Laptop: ready ~3.3 s, first map open ~30 ms blocked (was ~860). The loader has one bar: the candy-striped `.orb` is now
+  `#loadBar` with `#loadFill` inside (the old thin `.load-bar` is gone).
+- `tmDeclutter` (after every `tmFrame`): hides map labels that would overlap one already shown (district names first, then shop stickers,
+  nearest the middle first) and keeps district names on screen. Label sizes are cached on the element (`_w/_h`).
+- Toasts move to the top (74px) while a sheet or a wheel is open. Inbox resident avatars use their portrait (`.av.face`). The starter pet
+  bed (`BUILD.petbed`) is scaled 1.3 so the curled pet fits. A head wearing a hat hides its antenna tuft (`dressPet` wrapper matches each
+  tuft root to the nearest hat).
