@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v143** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v143'` in `sw.js`; bump both for anything
+**Current build: v144** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v144'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 141 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1508,3 +1508,12 @@ it skips data files that don't parse). Plus `/* <bugs141> */`.
   owned pieces and returns removed ones to storage; `pick` falls back to the yard's objects (tap-to-use outside); your own yard isn't a "house visit";
   yard edits started outside end outside; Decorate in the yard edits the yard; travel is blocked during a yard edit; painted yard tiles show as
   1-cell rugs in `yardPlan` and survive a size change; gate visitors avoid furniture; back on a Decorate sub-page returns to its front page.
+- v144 (pet and shops playtests, reports `.claude/play/pet/report.md`, `.claude/play/shops/report.md`; blocks `/* <pet-fixes144> */`,
+  `/* <shop-fixes144> */`): 0-5 am counts as night in `welcomeBack`, `jrCatchUp` and `cvOpener`; `arrScene` leaves a pet asleep in bed at night
+  alone; `tdTreat` never gives treasures; self-care journal names the food eaten; `pickJ` avoids a template used in the last week on this phone
+  (`localStorage.r42pj`); care earns bond below 90 (self-care stops at 85); care buttons: +20 the first time per need per day (`acts['carebtn:'+k]`), +5
+  after; a once-a-day nudge toward the yard/project at 2,500+ buttons; Buy stays tappable when short (keeper's poor line + "N more needed"); wallet
+  chip in the Cozy Nest/Hammer & Hue catalogues; makeover check-ins skip residents below 0, wording by stars; request fallback only to unmet
+  residents; possessives via `socPos`; "or book" only at Glow Up; Decorate resets to its front page after a makeover; tier toasts for Cool/Sour.
+  Open from these playtests (design calls for Garrett): Today lists often need town/decorating (hard for a pet-only player), bond theme gift
+  completing the "whole room set" big moment, tickets have few sinks, makeovers are a big friendship lever.
