@@ -10,8 +10,8 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v140** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v140'` in `sw.js`; bump both for anything
-user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
+**Current build: v141** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v141'` in `sw.js`; bump both for anything
+user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 141 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
 **Who and how**
@@ -1439,3 +1439,44 @@ Block `/* <yard-life> */` at the end of `/* <loop-fixes> */` (source `.claude/ya
   day (`acts['yfence:'+k]`), sometimes a Journal line, then says bye and shrinks out. Uses the shop bubble (`keeperSay`).
 - `WISH_T.yard` (ev `visit:yard`, at most once a day, `acts.ywish`, via a `wishTick` wrapper; `wishGo` travels there). Arriving: a hop
   and a dash across the lawn. Not done: the yard on the town map (the home plot is 2x2 and the cottage fills it).
+
+## The social system (v141): friendship goes negative, the town has a web of feelings
+Garrett and Beau wanted Sims-level social play and meaner-than-Nintendo residents ("go crazy, in universe"). Blocks `/* <social-sys> */`
+(engine, source `.claude/soc/engine.js`) and `/* <soc-data> */` (lines, `.claude/soc/{types,sugar,bay,hill,meadow}.js`, written by agents
+from `tools/dev/town/SOC_BRIEF.md`), both put in and refreshed by `.claude/soc/integ.py` (re-run after editing engine.js or the data;
+it skips data files that don't parse). Plus `/* <bugs141> */`.
+- **Standing** `state.kf[k].p` now runs -130..130 (shared by both players; residents treat them as one "you"): tiers `SOC_T`
+  bestie 81+, close 61, good 41, friend 21, acq 1, neutral 0, cool -1, sour -21, rival -41, enemy -61, nemesis -81 (`socTier`,
+  `socTierI`); past +-100 gains halve (hidden cushion). Old saves migrate once (`kfMig`, `f.sv=2`, `kfOldToNew`; nobody loses a title).
+  **Always read standing with `kfP(k)`** (effective, with fading: negative x0.85 a day toward 0 from `f.ft`; above Friend -1 per 3 days
+  after 5 days without contact, floor 21), change it with `kfDelta(k,d,{quiet,swing})` (bakes the fade, announces title changes) or the old
+  `kfAdd(k,n)` (old units, x3). `kfLevel(p)` still gives 0..4 for old content (KF_LV is [0,1,21,41,81]; 3 = Good and Close friend).
+  `visMet(k)` = met. Fields: `ft` last change, `t` last contact, `h` last hurt, `hs` news already mentioned, `cold` residents they cooled
+  over. `MERGE.kf` adds both phones' changes against the base (so rudeness on one phone isn't erased).
+- **Moves** (`SOC_MV`, `socResolve`): compliment, joke, ask, tease, insult, brush, mock, snipe; outcome = personality (`RTYPE`) x
+  standing x `resMood`; hurt multipliers `SOC_HURT`; two mean moves per resident per day per phone (`localStorage.r42soc`); a hurt
+  resident ends the chat. Apologies `socApol` (once a day; better after a gift, after a day, with forgiving types). Map: "Social..." in
+  `cvMenu` (`socMenu`), snipes added to dialogue replies (`cvNode` wrapper), colour classes on choices (`cvSay` renders a string third
+  element as a class: `sk` lime friendly, `sm` orange, `sx` pink-red; `cf` = "tap again to confirm"). Shop close-ups: a Social action
+  (`kSocPanel`, `kSocDo`, `kSocApol`), and at Sour or worse chat topics become brush-offs. Bad standing: brush-offs on approach
+  (`cvBegin`/`cvBusy` wrappers), warm topics hidden at Sour or worse, cold goodbyes, no home visitors, no friendly letters, house
+  visits refused at Rival or worse while they're home, Enemies turn down presents they don't love, Nemesis/Enemy notes in the Inbox
+  every few days (`socNotes`, seeded so both phones agree).
+- **Big swings** (`socSwing`: hearts and five-point stars or a grey puff, sound, card): insult/mock on their birthday or at their party, or
+  mocking someone already hurt (asks "tap again" first: `socTry`, `kSocDo.ok`); a loved birthday gift; an apology with a loved gift at
+  Rival or worse; three-star makeovers; siding with someone against their rival/nemesis in a street chat (and the other one saw it).
+- **The web**: residents' feelings about each other `rRel(a,b)` -130..130 = canon (`socPairBase`: -2..2 -> -60/-25/0/30/60, housemates
+  45+) + `rDrift` + `socSim()` (replays 20 days: decay, seeded daily town events per room + day: tiffs, a bond, sometimes a feud start or a
+  making-up, and your meddling `state.sev` from gossip). `rFeel` now reads `rRel` (so party guests, visits, street-chat moods all
+  follow). Street chats between pairs at odds (or who had a tiff/feud today) play as arguments from the `fight` kits (at most 2 a day per
+  phone, `socArgueOK`); a pair making up today plays a mend scene. `socAct` spreads what you did: witnesses (within 6 units on the map),
+  housemates and anyone with strong feelings about the victim shift their standing with you by personality; news in `state.socn`, and
+  later they mention it (`socOpener`: hear lines, cold over your friends, opinion lines, gossip lines that are only used while true).
+- **Knowledge** `state.know` {"a>b":{s,t}} (shared): learned by listening in, gossip, opinions, what they heard; residents' cards in
+  Neighbours show only what you know (`socCardHtml`, `socKnownHtml`) next to the standing bar (`socBar`). A small "Learned:" toast.
+- Footprints log mean/kind moments with the line. `{me}` in resident speech is now the Bestie nickname or "friend" (never a player's name).
+- State/merge/normalize: `socn`, `sev`, `know`, `giftG`; `SYNC_MIN_V` 141. Tests: `.claude/soc/t_soc.js`, `t_soc2.js` (walks a resident through
+  every standing), `t_bugs.js`. New facts the writers invented are in the bible's Canon log ("Social system (v141)").
+- v141 bug batch: new furniture lands in a clear spot visible above the Decorate sheet (`spawn`); photo mode follows the pet; empty Bag
+  tabs span the grid; a shop with nobody in (both staff elsewhere) shows nobody, with an honesty-jar note (`shopStaff` used to put the
+  boss behind the counter while they were somewhere else).

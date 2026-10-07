@@ -56,6 +56,16 @@ Contents
   bodies, no threats, no villains, nobody is ever mean to the player or the pet beyond a sniff, and every mean one has a soft spot.
   Who feels what about whom is fixed data (chapter 5, "How residents feel about each other"); every line must agree with it.
   (This replaces the earlier rule "no real conflict, gossip is always fond".)
+- **The social system (v141, Garrett and Beau, 2026-10-07: "go meaner than Nintendo would, it's funnier, in universe of course").**
+  Standing with each resident runs from -100 to +100 (Bestie, Close friend, Good friend, Friend, Acquaintance, Neutral, Cool, Sour,
+  Rival, Enemy, Nemesis), shared by the two players (residents treat the two of you as one: they never single out either player by
+  name). The players can be kind or properly mean (compliments, jokes, teasing, insults, mocking someone's passion, apologies), and
+  residents can be properly mean back: cutting, petty, shady, savage, backhanded, grudge-holding, badmouthing you to their friends,
+  roasting your taste and your visits. In-universe only: no slurs, nothing about real-world groups, bodies or real people, no threats
+  of harm. Residents' feelings about each other also move (rivalries, enemies, nemeses, best friends, falling out and making up),
+  including couples and housemates, with lines that match where they stand now. Bad feelings fade over about two weeks. This
+  replaces "nobody is ever mean to the player beyond a sniff" above; the pet itself is still loved by everyone, though a resident who
+  can't stand you may sniff at its outfit.
 - No romance between residents and the players. Resident couples exist (Tock and Sketch, Posy and Prickles).
 - Nothing scary. Swap-Face Night has "never a monster". Dr. Patch's clinic has hearts, never a red cross.
 - Residents warm up over time: friendship levels (New face, Regular, Friend, Good friend, Bestie) gate their stories and
@@ -2065,6 +2075,128 @@ The second set of five "deep" conversations and the Bestie letters added persona
   Dewey keeps an orange hair of Marmalade between pages 40 and 41. Lumi was once a candle. Nimbus counts puddle jumps (38 of 41 rainy days).
   Posy plants early yellow bulbs by Prickles' chair for his February birthday; Prickles has practised asking her to see the sea 400 times.
   Echo's first plaza audience was a pigeon, the Mayor and a puddle.
+
+- Social system (v141, 2026-10-07): standing with each resident runs from Nemesis to Bestie and is shared by both players; residents
+  speak to the two of you as one. Residents' feelings about each other change (feuds, making up) on top of chapter 5. The facts below were
+  invented by the writers for it; many only surface at bad standings or while a pair has fallen out, and gossip only while it is true.
+
+### Social system (v141): Sugarloaf Lane (Bunbun, Pip, Cushy, Dusty, Tutti, Scone, Crumb, Dr. Patch)
+Most only surface while a relationship is negative or at bad standing ("neg"); gossip lines only show while true.
+- Bunbun: her notebook of favourites gets a "no" heading with crossed-out names for people she's fallen out with; to them, her mum's
+  recipe book's blank last page "stays blank". Neg: the Mayor once called her rye "adequate" in a speech (with the goose there);
+  Prickles sent a burnt batch back with a note; Dusty left the tin without knocking and she didn't refill it. She walks Bolt's
+  forgotten lunch up to him herself.
+- Pip: Sketch lent him a ruler for straight labels; Batch nine was "very rich", Batch twelve "soup"; at bad standing he labels a jar
+  "Batch: Rotten. Too runny." with your names on it; at Nemesis, Prickles taught him the word "scram". His cruelty is to stop apologising.
+- Cushy: keeps a "nap list" you can be taken off. Neg: Bolt still has Cushy's ladder from the Wednesday-thumb day; Loofah dripped on
+  Cushy's best velvet; Lumi lit Cushy's lamp last one night and Cushy lay awake over it; Gloss wrote "late, asleep, late again" next to
+  Cushy's name in ink. Lumi leaves the last cup from the shared kettle for Nimbus each morning.
+- Dusty: keeps "the good chair" dusted for friends. Neg: Stitch laughed about the three needles in Dusty's fluff; Fizz left bubbles on
+  the velvet again; Bolt's sawdust ("swept it very loudly").
+- Tutti: at Nemesis she names a flavour "Sour" after you; nobody orders it. Neg: Fizz narrated her queue ("And the cone lady scoops").
+  Pos: Nimbus gave her a correct sunny forecast and got a free scoop.
+- Scone: "Team Scone" with co-captains, probation and a "second team". Neg: Prickles kept his ball ("mine now"); Dewey banned him from
+  the stacks for "speed-walking". He ran from the slide in nine seconds.
+- Crumb: at bad standing labels people like pebbles ("Ordinary. Grey. Not keeping."); at Nemesis threw a pebble that looked like you
+  into the pond. Has a pebble with two holes; the snail moved two whole bricks while she watched. Neg: Scone used her egg carton as a
+  racing track; Cobble moved her stone one over in the wall; Posy called her thinking seed "just being slow"; Dewey called a label
+  "nearly proper".
+- Dr. Patch: at Enemy has written a leaflet about you. Bunbun counts thirty-three mouths to feed (the town plus the two of you). Prickles once let Dr. Patch take his pulse. Joy was given a wrist strap and ignores it.
+- Gossip (shown only while true): Blush called Bolt's shed "the colour of a sad potato" and he repainted it the same colour; Scone told
+  Dewey the library smells of old socks; Tutti and Dr. Patch coolly polite since the ice-cream-for-breakfast week; Joy told Pixel it was
+  her favourite person and Pixel rated it "nine out of ten"; Gloss put Parcel's satchel on the floor at a party on purpose; Crumb left
+  Scone a pebble labelled "Sorry. Scone's. Don't throw."; Prickles moved his chair to keep out of Nimbus's shadow; Dusty sneezed on
+  Fizz's bubbles, Fizz called it "theatre", Dusty stayed away from the salon; Stitch and Bobbin measure each other's scarves in the
+  window; Posy brought Cobble a pot with a stone in it; Fizz and Blush argued about "glow" in front of Tutti's cart; Dewey sent Scone a
+  note saying only "Overdue" and Scone pinned it on his ribbon wall; Bunbun gave Cushy the last cinnamon bun; Prickles called Echo's
+  song "noise with a hat on"; Boing beat Joy in a bouncing race at Game Night; Cobble hasn't fixed the Mayor's wobbly step; Tutti and
+  Bunbun said "lovely" to each other six times at the bake sale; Posy left a flower on Prickles' chair and he sat on it to keep it warm;
+  Tock got cross with Boing; Pip hid behind the flour sack from Joy; Prickles ate a whole burnt batch and called it "adequate"; Bobbin
+  double-checked Stitch's repair of Dr. Patch's first stitches; the Mayor called Nimbus's forecast "pessimistic" and Nimbus rained on his
+  hat on purpose; Bolt brought Cobble in for a chip and held his hand.
+- Left open on purpose: the nickname Scone gave Prickles; the name of Crumb's snail.
+
+### Social system (v141): Bubble Bay (Fizz, Loofah, Stitch, Pom, Blush, Gloss, Bobbin, Beacon)
+"(fallen out)" lines only show while that pair are on bad terms; gossip only while true.
+- Fizz: was once booed by a whole valley and heckled by a seal at the circus. Angry, he moves people to "the back of the appointment
+  book, under the radiator", gives them the scratchy second-best towel and has Loofah run their water lukewarm; his fluffy robe going to
+  Bolt is the ultimate snub. He pops Dusty's sofa bubbles himself now, "out of respect". (Fallen out) Blush calls his glow "grease with
+  confidence" and may rename "Fizz at Dawn" to "Before Coffee"; he moves Joy's Bubble Pop poster to the laundry room; Dewey shushed him
+  before he'd said a word.
+- Loofah: tells people it dislikes that every spot is wet and every towel is cold; its punishment hum is called "leave". (Fallen out)
+  Cushy fell asleep on Loofah's napping step. Gossip: Loofah fell asleep holding its cup at boardwalk tea and Bobbin drank both.
+- Stitch: a "never drawer" for people they've fallen out with; withholds the free Tuesday hems; a second lavender bag is "for" a nemesis.
+  (Fallen out) Sketch said Stitch's shop is four millimetres out; Prickles said a mend was crooked; Stitch slept on the fabric bolts when
+  Blush's sofa was off-limits. Gossip: Blush called Bolt's beige door "municipal" and he said thank you.
+- Pom: goodbye e's measure fondness ("Byeee", "Byee", no e's); broken comb number thirteen marks a grudge; a grey curl gets named after an
+  enemy; enemies get scraped off the mood board and replaced with a flat rock; curl number one stays unnamed but is "nearly yours" after a
+  big gesture. (Fallen out) Gloss hid Pom's comb without saying which drawer.
+- Blush: spite colours "Gone off", "Overstayed", "Overcast, with regret", "scratched varnish", "relief"; paints people out of the plaza
+  painting (a fountain or a bin where they were); chose beige as Parcel's colour on Gloss's list; Cobble's stones are "riverbed after
+  rain". (Fallen out) Gloss wrote "hurry" on a tab for her.
+- Gloss: a beige tab for rivals, tabs "cancelled" and "do not"; writes nemeses in black (bought black polish for it); her list on a
+  nemesis is "longer than Parcel's, which is double-sided"; grudges get a tiny red dot; always pencil for you "just in case". Gossip: she
+  booked Fizz's entrance for 7:04 and Loofah's calm-down for 7:06; a Fizz and Joy Bubble Pop rematch is booked in pencil.
+- Bobbin: takes your knot off the thimble when cross and keeps it in the bottom drawer; threw a nemesis's thread in the bay; "a medium,
+  not a lot". (Fallen out) Bobbin left thread on the "Teapot: no thread" teapot.
+- Beacon: the warm light on the left can be switched off; a lost friend's light goes in a log; keeps a counting list and a "fog book";
+  goodbyes get short when cross ("That's a short one. You'll have noticed."). (Fallen out) Prickles called the sea overrated; Lumi once
+  didn't flare back; Parcel left the post at the top of the pier. Gossip: Lumi lights Nimbus's window lamp first; Nimbus sulks out past
+  the point and rains on Beacon's rocks.
+
+### Social system (v141): Playhouse Hill (Boing, Joy, Tock, Sketch, Bolt, Pixel, Parcel, Fold, Cobble)
+Most only surface at bad standings or in gossip while a feud is on.
+- Boing: going quiet is the big deal (the bible's); at Sour he names a toy after the two of you "Gerald" (his name for gifts he doesn't
+  like); takes you off the Toy Box box art at Nemesis. Feud with Prickles: Prickles puts Boing's singing robot in Posy's compost mid-song.
+- Blush calls Bolt's paint "a bruise in a tin" (Bolt quotes it too). Bolt secretly keeps Blush's colour card "Hard Hat Sunrise" on his
+  wall. Bolt laid Fizz's salon tiles; Fizz called him "a maestro of grout". When Bolt and Bunbun feud, Bunbun gets an out-of-town oven
+  repairman. Bolt's ultimate insult is "beige".
+- Joy: trash talk ("player zero", "GG = get gone"); at Enemy writes "NOBODY" over your names on the high score list. Feud with Dewey: he
+  wants a "NO JOY" sign on the library door and Fold refuses to paint it. Pip puts a lock on the cookie jar while he and Joy have fallen out.
+- Tock: a "kept" column and an "unlabelled boxes" listing; a ledger page for people (you're the first entry at Nemesis); two ticks in a
+  row means something's wrong. Feud with Boing: logs him "returned, damaged". Feud with Bolt: keeps the thrown hammer labelled "Tock's".
+- Sketch: a second drawer "not ever" next to "not yet"; the door that leads nowhere is "saved for" an enemy; the "good call" tally
+  reaches 43 (canon was 42).
+- Pixel: does not give tens (canon has one, for a gift); at Bestie it gives you one and says so; you "ruined" its 21-layer party cake in its bad swing;
+  Gloss put a "no cubes" sign on a waiting chair (neg only); it has decided Joy's scores with Tock 42 times (canon).
+- Parcel: a third knock means love (canon); a "no knock" door marked on the map at Enemy; knocks with an elbow at Rival. The Mayor posted
+  Cobble a letter about new stone for the sixth year and Cobble used it to level a wall. Scone posted a library fines notice back to
+  Dewey as a paper plane; it landed in the fountain.
+- Fold: at Nemesis unfolds the crane meant for you (it was folding one for everyone); the "fear-cranes" jar goes 91 -> 92 when insulted;
+  Gloss's lateness list gets a grey colour for drizzle; Fold taught Dewey to fold the museum cards and Dewey now folds them better.
+  Tock's gossip counts Fold's paper hearts at 207 (canon 206: one new heart).
+- Cobble: yawns as a brush-off ("you can go during"); at Nemesis puts the blue-grey stone you stood on back in the river. Feud with Bolt:
+  Bolt "fixes" the stone that's meant to wobble.
+- Gossip: Prickles glares Echo's plaza song to a stop and walks out of the Mayor's speeches; Nimbus "rains a very small rain" on Prickles
+  at the well; Blush says Cobble's road is "the colour of a wet Tuesday".
+
+### Social system (v141): Lantern Meadow (Mayor Marsh, Dewey, Lumi, Nimbus, Posy, Prickles, Echo)
+"if" = only at a certain standing or while a pair has fallen out; gossip only while true.
+- Mayor: the guest book has 312 signatures; the goose from his speech bites; (if fallen out with Fold) turning a paper's corners down is
+  "paper for a rude word"; (if Nemesis) he has your names removed from the welcome sign and Fold leaves a gap. He thinks "windbag in a
+  hat" is a pet name and has told everyone (he still never knows he's mocked). Gossip: Blush called Bolt's paint "a bruise in a tin" on the
+  Town Hall steps; Gloss's list of Parcel's late mornings has a contents page; Bunbun and Tutti were so polite at the bake sale the icing set early.
+- Dewey: Bobbin embroiders very small letters; Pixel once asked if the library had a search bar; (if fallen out) Joy shouted HIGH SCORE in
+  the stacks, Tock counts returns out loud; (if Enemy) your library cards go in Dewey's bottom drawer. Gossip: Dewey stamped Scone's card
+  OVERDUE right across the front while Scone was standing there.
+- Lumi: never gives anyone the skin off the hot milk, so offering it is the biggest peace gesture; Beacon also flashes short goodnights at
+  Bobbin's window; Joy and Pixel sit in the dimmed arcade at 3 a.m.; (if Enemy) Lumi lets your gate lamp go out and writes a cold letter
+  to the old lamplighter.
+- Nimbus: once rained on Fizz and Bolt arguing at the fountain to stop them; Fold called Nimbus's rain "a personal attack"; (if Enemy) a
+  barometer mark below "stormy", your umbrella comes out of the stand for forgetful people, your pages are torn from the weather book.
+- Posy: Blush says Bolt's green is "a crime against leaves"; Gloss told Parcel their boots squeak "in a beige sort of way"; Crumb brings
+  Pip the first taste of anything she likes and he saves her the spoon; half of the first strawberry is the most Posy has offered anyone
+  but Prickles; (if Nemesis) she plants nettles on your side of the path; (if offended) she presses the trampled tulip in her book.
+- Prickles: has confiscated eleven of Scone's balls; Tock turning its key twice "is swearing, for Tock" (after Joy shouted a score at
+  teatime); Bolt talked for an hour on the wall and Cobble said "Mm" once; Prickles moves his chair indoors when Nimbus floats past ("the
+  draught"). Possible fallings-out: Cobble saying "good hat" to Boing; Beacon retelling the whale as singing; Bunbun sending soft cookies;
+  Stitch charging for the scarf.
+- Echo: can do a sad trombone noise; Boing and Joy bounce together at Music night and never land together; Blush shuts the Glow Up window
+  when Fizz hums; Bunbun and Tutti sit at different tables at Music night; Scone waits for Crumb on the chorus; (if Enemy) new record
+  shelves called "Them" and "Never Again".
+- Older dialogue is often warmer than chapter 5's numbers for some pairs (the "fond rivalries": Prickles and Nimbus, Prickles and Echo,
+  Dewey and Echo/Boing/the Mayor, Bolt and Blush, Fizz and Bolt). The game shows how a pair stands now, and cards say "At odds with",
+  never "can't stand", for ordinary rivals.
 
 ## Open questions (undecided; ask Garrett before writing as fact)
 1. **Is there a sea?** Bubble Bay, the pier, the beach, the harbour, boats, gulls and Beacon's lighthouse are all over the lore, and Prickles dreams of the sea; the v60 map is countryside with
