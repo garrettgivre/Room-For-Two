@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v134** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v134'` in `sw.js`; bump both for anything
+**Current build: v135** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v135'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1400,7 +1400,7 @@ end of `/* <loop-fixes> */`, `IL`.
   `SET_ADD(setKey,{cat,build,use,need})` adds pieces to an existing set (for the By-need fill-ins, brief `tools/dev/town/FILL_BRIEF.md`).
 - v134: By-need fill-ins, first half: the `/* <need-fill> */` block right after `/* </need-sets> */` (one try-wrapped `SET_ADD` file per
   set from `.claude/fill/<set>.js`): 40 sets, ~75 pieces, one per need the set had nothing for, each with its own use animation.
-  Counts now: Hunger 90, Fun 166, Energy 326, Hygiene 100, Love 112. Still to do (agents were stopped when Garrett ran low on usage;
-  restart them fresh with FILL_BRIEF.md): books date zen cloud9 washday rbook rmayor rpencil cweather thanami / bath fort spooky tree
-  rbuilder rparcel rwindup tharvest / cafe groovy holiday lagoon fruity movie rcrane rpatch rpixel clampshed tpirate / snow games
-  spring roadtrip rcactus rgramo rposy ctownhall tcastle.
+  Counts now: Hunger 90, Fun 166, Energy 326, Hygiene 100, Love 112. 
+- v135: By-need fill-ins done: all 78 sets that lacked hunger, hygiene or love now have one piece per gap (~145 pieces in
+  `/* <need-fill> */`). Counts: Hunger 112, Fun 198, Energy 338, Hygiene 131, Love 131 (energy stays highest: every seat and bed).
+  Some agents generated their files from shared helper sources in `.claude/fill/x/` (gitignored).
