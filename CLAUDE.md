@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v145** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v145'` in `sw.js`; bump both for anything
+**Current build: v146** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v146'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 141 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1524,3 +1524,6 @@ it skips data files that don't parse). Plus `/* <bugs141> */`.
   brush-off; written pair scenes that name another time of day or weekday are skipped (`socTimeFit`); no strolls 23:00-6:00 (kids not after
   21:00); `socRelS` best/nemesis at +-60 (canon). `capF0` had a backspace instead of `\b` since v142 (never matched); **`tools/dev/town/syn.js`
   now reports control characters** and exits non-zero.
+- v146 (arcade playtest, `.claude/play/arcade/report.md`): Drop's won prizes are `gm.s.wonN` (`g.won` is Drop's Set of pockets already won; v124
+  pushed names onto it and `gmEnd` threw, so Drop never showed its results card); `bugGo` walks to a reachable side of a bug in a flowerbed.
+  Open: Drop draws ~1,150 meshes (merge its board), long Drop intro at 360, pinball XP display, pet cropped in Stack/Pop, no x on the bug ring.
