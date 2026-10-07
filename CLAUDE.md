@@ -10,7 +10,7 @@ A cozy shared 3D room + virtual pet for two people (the user, Garrett, and his b
 This file is the only memory between sessions. Read this section, then search the sections below for whatever you touch.
 Later sections are newer and win where they disagree with earlier ones (the bottom sections, v49 onward, describe the current town).
 
-**Current build: v137** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v137'` in `sw.js`; bump both for anything
+**Current build: v138** (`APP_V` in index.html next to `hardRefresh`, `CACHE='r42-v138'` in `sw.js`; bump both for anything
 user-visible, then tell Garrett to tap **Refresh app** in the Menu on both phones). `SYNC_MIN_V` is 105 (older clients refresh
 themselves instead of saving; bump it when you add or reshape shared state that old clients would strip or break).
 
@@ -1419,3 +1419,6 @@ end of `/* <loop-fixes> */`, `IL`.
 - v137: `twPetAttach` gets the pet out of a bed/seat/sleep first (leaveSeatNow, mode idle, rebuild the rig, drop a sleep blanket):
   the map sizes the pet from its bounding-box height, so a lying pet was carried out lying and scaled up huge. Garrett is fine with the
   longer start (phone ~11 s with the town and portraits built behind the loader); map frame cost is unchanged since v127 (~6-7 ms laptop).
+- v138: the map sky (`tmSkyDraw`'s `proj`) was mirrored left-right (`w/2+tan(a)...`), so sky things moved with the ground when turning
+  and the sun sat opposite the light; now `w/2-tan(a)...`, checked against the 3D camera's projection. The sky still slides vertically
+  with the curved horizon when panning/zooming (on purpose).
