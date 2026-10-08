@@ -33,7 +33,7 @@ anything the game uses. `tools/writing/holidays.md` is the holiday design doc.
 
 **Working method**
 - index.html is ~1.8 MB in one file: never rewrite it wholesale. Find things with grep, edit with small Python scripts that
-  assert each target string occurs exactly once and write via a temp file + `os.replace` (on Garrett's PC: `~/anaconda3/python.exe`;
+  assert each target string occurs exactly once and write via a temp file + `os.replace` (on Garrett's PC: `python` (3.10; `~/anaconda3` is gone since Oct 8 2026);
   scratch scripts go in `.claude/`, which is gitignored), or the Edit tool.
 - After every edit: `node tools/dev/town/syn.js` (syntax-checks every script block).
 - **Before every release, run the regression sweeps** (v79, after a crash slipped out in v76/v77): `node tools/dev/town/run.js
