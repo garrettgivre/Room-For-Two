@@ -64,27 +64,45 @@ anything the game uses. `tools/writing/holidays.md` is the holiday design doc.
   plaza, the Loop through the neighbourhoods, 8 path types with a walking hierarchy, circles as real shapes; night light pools;
   residents sit on benches, browse stalls, doors open. Lore lives in `tools/writing/GAME_BIBLE.md`.
 
-**Note to the next session (written at the end of a very long one, v59 -> v79, Oct 4 2026)**
-- Garrett is starting a fresh chat. Read this Start here section, then the bottom sections (v72 onward) for whatever you touch.
-- Everything is pushed; the working tree is clean apart from an untracked `tools/art/shop-interiors.zip` (his, leave it).
-- **Run `tools/dev/town/sweep.js`, `sweep2.js` and `sweep3.js` before every release** (sweep3 clicks through every dialogue card, the Bag, prizes, designs, photos, fishing, chats and conversations, and fails on buttons that are on screen but invisible). v76 shipped a crash that only hit events held at houses;
-  the sweeps would have caught it. Test every data shape a change touches, not just the first one that comes to mind.
+**Handoff (Oct 8 2026, end of the session v139 -> v147)**
+- Everything is pushed (v147, `3e5f32f`). Untracked and to leave alone: `tools/art/shop-interiors.zip` (Garrett's), `g3.trace` (a perf
+  trace), `tools/dev/town/RUDE_BRIEF.md` (superseded by `SOC_BRIEF.md`).
+- This session: v139 dialogue × fix, v140 yard life, v141 the social system (standing -130..130, enemies/nemeses, social moves, a web of
+  feelings between residents, gossip, knowledge), v142 social tuning, v143 every furniture piece checked with the pet using it + yard
+  fixes, v144-v147 fixes from overnight playtests (pet, shops, town, arcade). Details in the v139-v147 sections at the bottom; playtest
+  reports in `.claude/play/{social,socread,yard,pet,shops,town,arcade}/report.md` (gitignored, on the laptop).
+- Garrett drives sessions from his phone via Remote Control. He looked at graphics/engine restyles (mockups) and decided "it's fine as
+  is": don't pitch a visual overhaul again unless he asks.
+- **Run the release checks before every release**: `sweep.js` (parts 1-2, 3, 4-5), `sweep2.js`, `sweep3.js` (all must end `errors 0`),
+  `persist.js` (0 differences) and `merge.js` (nothing lost). Start long runs with the Bash tool's `run_in_background`, never a bare `&`
+  (the job dies when the call ends). `syn.js` also fails on control characters (a heredoc once turned `` into a backspace).
+- Agents: max 4 at once; tell them never to kill processes they didn't start (one ran `taskkill /IM node.exe` and killed the checks);
+  they can't write report files, so save their final message yourself. Disk: C: filled up once; big files were moved to D:. Keep test
+  screenshots small and check free space before long agent runs.
 - Search-and-replace across index.html is dangerous: it once rewrote a helper's own definition. Assert counts, read the result.
-- Judge performance by draw counts
-  (`tm.R.drawn`) and JS time, compare versions with `R42_INDEX`, and ask Garrett how it feels on his phone.
+  A `const` function can't be wrapped by reassignment; edit its definition. When wrapping, check for `x.onclick=fn` captures.
+- Judge performance by draw counts (`tm.R.drawn`) and JS time, compare versions with `R42_INDEX`, and ask Garrett how it feels on his phone.
 - Garrett liked: the round plaza, Market Street up to the Town Hall, the grid paths with tidy corners ("less blobby"), the night glow.
-  He asked for edge-hold scrolling on the map (done in v77; ask if he wants it in the room too).
 
-**Open items / what to do next** (updated Oct 5 2026, end of the overnight session v89 -> v102)
-1. Nothing from v72 onward is verified on a phone. Overnight Garrett was asleep and none of v89-v102 has been seen by him: seasons,
-   sound, 11 theme sets, ~56 town decorations, designs, photo mode, fishing, bug catching, the museum, town projects, residents
-   remembering, moments together, Swap-Face masks, the What's new card. Ask how the map, the sound and the bubbles feel on the phone.
-2. Ideas still open: new neighbours moving into the empty lots (needs resident models), edge scrolling in the room camera, a custom
-   pattern designer for clothes (designs exist for tiles/pictures/pet patterns), push notifications (needs Garrett's OK).
-3. Known small things: (fixed in v116: Town Hall sign, snail, plaza tiles; v136: map labels, toasts over the wheel, faces, pet bed size, hats). Map far view draws ~1,490 meshes (v88 was ~1,360); watch it when adding map things.
-4. `firestore.rules` requires `cv >= 44` on writes and must be published by hand in the Firebase console; ask Garrett before assuming.
-5. Working setup: Garrett drives sessions from his phone via Remote Control on his PC (no cloud sessions: cost). Max 4 agents at once.
-6. Every user-visible release: add a line to `WHATSNEW`, bump `APP_V` + `sw.js` CACHE, run the three sweeps, then push.
+**Open items / what to do next** (updated Oct 8 2026)
+1. **Ideas on the table, Garrett hasn't chosen yet** (he passed on graphics restyles and on Pokopia's habitats for now). Last offered:
+   pet dreams (a nap bubble showing a scene made from its day; Claude's pick), rumours you can start that spread through the social web
+   (second pick), letters in a bottle at the pier, a shared photo wall in the room, pet sleepovers at a neighbour's, the Mayor asking you
+   to decorate the plaza for each festival, a resident moving away and a new one arriving, the pet's own little collection of finds.
+   Older: new neighbours in the empty lots (needs resident models), edge scrolling in the room camera, a clothes pattern designer,
+   push notifications (needs Garrett's OK). Plan big features with him before building (he says when to start).
+2. **Design questions waiting for Garrett** (from the playtests): Today lists often need town/decorating, hard for a pet-only player;
+   the bond theme gift completes the "whole room set" big moment by itself; tickets have few sinks (only the capsule machine and prize
+   counter); one makeover is a big friendship jump; `{me}` in resident speech is the Bestie nickname or "friend", never a player's name: OK?
+3. Known, not fixed: Mochi Drop draws ~1,150 meshes (merge its board); the pet is cropped in Stack/Pop; Beacon/Posy/Dewey activity cards
+   ignore standing; some fight retorts read as leaving lines; showers, swings and wheels are used standing (the grown pet doesn't fit);
+   some pet beds are smaller than the curled pet; the space egg chair; makeover design is cramped at 360x640; toasts can cover bubbles
+   and reward cards; the keeper bubble placement in close-ups at 360; Jelly Threads only shows the 12 cheapest per category.
+4. Little of v72 onward has been confirmed on a phone by Garrett beyond his own play; ask how new things feel there (the social system
+   especially: Beau was expected to love the shady insults).
+5. `firestore.rules` requires `cv >= 44` on writes and must be published by hand in the Firebase console; ask Garrett before assuming.
+6. Every user-visible release: a line in `WHATSNEW`, bump `APP_V` + `sw.js` CACHE (+ `SYNC_MIN_V` if shared state changes shape), a
+   CLAUDE.md note at the bottom, the release checks, commit, push, then tell Garrett to tap **Refresh app** on both phones.
 
 ## Files
 - `index.html` — the whole app (~565 KB): CSS, a custom WebGL2 engine, game logic, UI. No build step, no framework.
